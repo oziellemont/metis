@@ -4,7 +4,7 @@
  *   DR · Dueño del Resultado      (metodología: FCE / IPE)
  *   CV · Contribuidor Vinculado   (metodología: FCI / IPI)
  */
-import type { Direction, ElementType, Period, Responsibility, ScorecardStatus, Traffic } from "./domain/types";
+import type { Direction, ElementType, Period, Responsibility, ScorecardStatus, Traffic, Unit } from "./domain/types";
 
 export const RESP: Record<Responsibility, { code: string; name: string; help: string }> = {
   owner: { code: "DR", name: "Dueño del Resultado", help: "Responsable del elemento en este alcance. Carga el dato cada periodo." },
@@ -44,9 +44,24 @@ export const TRAFFIC: Record<Traffic, { label: string; bg: string; text: string;
 export const MONTHS = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 export const MONTHS_SHORT = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
 
+/** Formato rápido por símbolo (cuando no se tiene a la mano el catálogo de unidades). */
 export function fmtValue(v: number | null | undefined, unit: string): string {
   if (v === null || v === undefined) return "—";
   if (unit === "$") return "$" + (v >= 1_000_000 ? (v / 1_000_000).toFixed(1) + "M" : v.toLocaleString("es-MX"));
   if (unit === "%") return v.toLocaleString("es-MX", { maximumFractionDigits: 1 }) + "%";
   return v.toLocaleString("es-MX", { maximumFractionDigits: 1 }) + (unit && unit !== "#" ? " " + unit : "");
+}
+
+/** Formato con la definición del catálogo de unidades: símbolo, posición (prefijo/sufijo) y decimales. */
+export function fmtWithUnit(v: number | null | undefined, u: Unit | undefined, fallbackSymbol = ""): string {
+  if (v === null || v === undefined) return "—";
+  if (!u) return fmtValue(v, fallbackSymbol);
+  const abs = Math.abs(v);
+  const compact = u.position === "prefix" && abs >= 1_000_000;
+  const num = compact
+    ? (v / 1_000_000).toLocaleString("es-MX", { maximumFractionDigits: 1 }) + "M"
+    : v.toLocaleString("es-MX", { minimumFractionDigits: 0, maximumFractionDigits: u.decimals });
+  if (u.symbol === "#") return num;
+  if (u.position === "prefix") return `${u.symbol}${u.symbol.length > 1 ? " " : ""}${num}`;
+  return `${num}${u.symbol === "%" ? "" : " "}${u.symbol}`;
 }

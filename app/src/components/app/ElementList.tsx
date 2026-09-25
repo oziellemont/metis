@@ -2,7 +2,7 @@
 import clsx from "clsx";
 import { useMetis } from "@/lib/store";
 import { Avatar, PageHeader, Sparkline, TrafficChip } from "@/components/ui/primitives";
-import { DIR, MONTHS, RESP, fmtValue } from "@/lib/labels";
+import { DIR, MONTHS, RESP } from "@/lib/labels";
 import { traffic } from "@/lib/domain/scoring";
 import type { ElementType } from "@/lib/domain/types";
 
@@ -32,7 +32,7 @@ export function ElementList({ type }: { type: ElementType }) {
                   <td className="td text-xs"><span className="inline-flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full" style={{ background: lae.color }} />{lae.name}</span></td>
                   <td className="td"><span className="inline-flex items-center gap-2 text-sm"><Avatar initials={owner.initials} size="sm" />{owner.name}</span></td>
                   <td className="td text-right tabular-nums text-slate-600">{cvs}</td>
-                  <td className="td font-medium tabular-nums">{fmtValue(r?.value, el.unit)}</td>
+                  <td className="td font-medium tabular-nums">{s.fmt(r?.value, el)}</td>
                   <td className="td"><TrafficChip t={t} /></td>
                   <td className="td">{oi ? <Sparkline values={series} targets={oi.targets} dir={el.direction} /> : <span className={clsx("text-xs text-slate-300")}>—</span>}</td>
                 </tr>

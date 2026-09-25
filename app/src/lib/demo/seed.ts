@@ -3,23 +3,41 @@
  * Sirven para el modo demo sin Supabase y como base del seed SQL.
  */
 import type {
-  Element, ElementScope, LAE, Result, Scope, ScopeType, Scorecard, ScorecardItem, StrategicObjective, Tenant, User,
+  Element, ElementScope, Invitation, LAE, Result, Scope, ScopeType, Scorecard, ScorecardItem, StrategicObjective, Tenant, Unit, User,
 } from "../domain/types";
 
 export const YEAR = 2026;
 export const CURRENT_MONTH = 9; // septiembre
 
-export const tenant: Tenant = { id: "t-andes", name: "Grupo Andes", plan: "crecimiento" };
+export const tenant: Tenant = {
+  id: "t-andes", name: "Grupo Andes", plan: "crecimiento",
+  joinCode: "ANDES-2026",
+  reminders: { enabled: true, days: [25, 1, 3], hour: 9, timezone: "America/Monterrey", escalateToManager: true, channels: { email: true, whatsapp: false } },
+};
+
+/** Catálogo de unidades. Las marcadas `system` vienen con METIS; el cliente puede agregar/editar/quitar las suyas. */
+export const units: Unit[] = [
+  { id: "un-pct", symbol: "%", name: "Porcentaje", decimals: 1, position: "suffix", system: true },
+  { id: "un-mxn", symbol: "$", name: "Pesos mexicanos", decimals: 0, position: "prefix", system: true },
+  { id: "un-usd", symbol: "USD", name: "Dólares", decimals: 0, position: "prefix", system: true },
+  { id: "un-num", symbol: "#", name: "Cantidad", decimals: 0, position: "suffix", system: true },
+  { id: "un-pts", symbol: "pts", name: "Puntos", decimals: 0, position: "suffix", system: true },
+  { id: "un-days", symbol: "días", name: "Días", decimals: 1, position: "suffix", system: true },
+  { id: "un-hrs", symbol: "hrs", name: "Horas", decimals: 1, position: "suffix", system: true },
+  { id: "un-adv", symbol: "% avance", name: "Avance de proyecto", decimals: 0, position: "suffix", system: true },
+  { id: "un-ton", symbol: "ton", name: "Toneladas", decimals: 1, position: "suffix" },
+  { id: "un-pzas", symbol: "pzas", name: "Piezas", decimals: 0, position: "suffix" },
+];
 
 export const users: User[] = [
-  { id: "u-ceo", name: "Patricia Elizondo", title: "Directora General", initials: "PE", managerId: null, role: "admin", teamName: "Dirección General" },
-  { id: "u-js", name: "Jorge Salinas", title: "Director de Operaciones", initials: "JS", managerId: "u-ceo", role: "manager", teamName: "Operaciones" },
-  { id: "u-ag", name: "Ana Garza", title: "Directora Comercial", initials: "AG", managerId: "u-ceo", role: "manager", teamName: "Comercial" },
-  { id: "u-mt", name: "Mariana Torres", title: "Gerente de Operaciones · Región Norte", initials: "MT", managerId: "u-js", role: "manager", teamName: "Operaciones Región Norte" },
-  { id: "u-lr", name: "Luis Ramírez", title: "Gerente de Logística · BU Consumo", initials: "LR", managerId: "u-js", role: "manager", teamName: "Logística" },
-  { id: "u-dp", name: "Diego Pérez", title: "Jefe de CEDIS Saltillo", initials: "DP", managerId: "u-mt", role: "collaborator", teamName: "Operaciones Región Norte" },
-  { id: "u-km", name: "Karla Mendoza", title: "Gerente de Capital Humano · Región Norte", initials: "KM", managerId: "u-mt", role: "collaborator", teamName: "Operaciones Región Norte" },
-  { id: "u-rv", name: "Raúl Villarreal", title: "Líder de Proyectos TI", initials: "RV", managerId: "u-js", role: "collaborator", teamName: "TI" },
+  { id: "u-ceo", name: "Patricia Elizondo", email: "patricia.elizondo@grupoandes.demo", title: "Directora General", initials: "PE", managerId: null, role: "admin", teamName: "Dirección General" },
+  { id: "u-js", name: "Jorge Salinas", email: "jorge.salinas@grupoandes.demo", title: "Director de Operaciones", initials: "JS", managerId: "u-ceo", role: "manager", teamName: "Operaciones" },
+  { id: "u-ag", name: "Ana Garza", email: "ana.garza@grupoandes.demo", title: "Directora Comercial", initials: "AG", managerId: "u-ceo", role: "manager", teamName: "Comercial" },
+  { id: "u-mt", name: "Mariana Torres", email: "mariana.torres@grupoandes.demo", title: "Gerente de Operaciones · Región Norte", initials: "MT", managerId: "u-js", role: "manager", teamName: "Operaciones Región Norte" },
+  { id: "u-lr", name: "Luis Ramírez", email: "luis.ramirez@grupoandes.demo", title: "Gerente de Logística · BU Consumo", initials: "LR", managerId: "u-js", role: "manager", teamName: "Logística" },
+  { id: "u-dp", name: "Diego Pérez", email: "diego.perez@grupoandes.demo", title: "Jefe de CEDIS Saltillo", initials: "DP", managerId: "u-mt", role: "collaborator", teamName: "Operaciones Región Norte" },
+  { id: "u-km", name: "Karla Mendoza", email: "karla.mendoza@grupoandes.demo", title: "Gerente de Capital Humano · Región Norte", initials: "KM", managerId: "u-mt", role: "collaborator", teamName: "Operaciones Región Norte" },
+  { id: "u-rv", name: "Raúl Villarreal", email: "raul.villarreal@grupoandes.demo", title: "Líder de Proyectos TI", initials: "RV", managerId: "u-js", role: "collaborator", teamName: "TI" },
 ];
 
 export const objectives: StrategicObjective[] = [
@@ -61,14 +79,14 @@ export const scopes: Scope[] = [
 ];
 
 export const elements: Element[] = [
-  { id: "e-otif", type: "kpi", name: "Cumplimiento de entregas OTIF", formula: "Pedidos a tiempo y completos / Pedidos totales", unit: "%", direction: "up", laeId: "l-1", allowedScopeTypeIds: ["st-nac", "st-reg", "st-cedis"] },
-  { id: "e-costlog", type: "kpi", name: "Costo logístico / Venta", formula: "Costo de distribución / Venta neta", unit: "%", direction: "down", laeId: "l-2", allowedScopeTypeIds: ["st-bu", "st-reg"] },
-  { id: "e-newacc", type: "kpi", name: "Venta a nuevas cuentas", formula: "Venta neta de clientes con antigüedad < 12 meses", unit: "$", direction: "up", laeId: "l-2", allowedScopeTypeIds: ["st-nac", "st-reg"] },
-  { id: "e-rot", type: "kpi", name: "Rotación de personal operativo", formula: "Bajas del mes / Plantilla promedio", unit: "%", direction: "down", laeId: "l-5", allowedScopeTypeIds: ["st-plant", "st-reg", "st-nac"] },
-  { id: "e-nps", type: "kpi", name: "NPS de clientes", formula: "% promotores − % detractores", unit: "pts", direction: "up", laeId: "l-4", allowedScopeTypeIds: ["st-nac", "st-reg"] },
-  { id: "e-ebitda", type: "kpi", name: "Margen EBITDA", formula: "EBITDA / Venta neta", unit: "%", direction: "up", laeId: "l-2", allowedScopeTypeIds: ["st-nac", "st-bu"] },
-  { id: "e-wms", type: "project", name: "Implementación WMS", formula: "Hitos completados / Hitos plan", unit: "% avance", direction: "up", laeId: "l-3", allowedScopeTypeIds: ["st-plant", "st-cedis"] },
-  { id: "e-portal", type: "project", name: "Portal de clientes", formula: "Hitos completados / Hitos plan", unit: "% avance", direction: "up", laeId: "l-3", allowedScopeTypeIds: ["st-nac"] },
+  { id: "e-otif", type: "kpi", name: "Cumplimiento de entregas OTIF", formula: "Pedidos a tiempo y completos / Pedidos totales", unit: "%", unitId: "un-pct", direction: "up", laeId: "l-1", allowedScopeTypeIds: ["st-nac", "st-reg", "st-cedis"] },
+  { id: "e-costlog", type: "kpi", name: "Costo logístico / Venta", formula: "Costo de distribución / Venta neta", unit: "%", unitId: "un-pct", direction: "down", laeId: "l-2", allowedScopeTypeIds: ["st-bu", "st-reg"] },
+  { id: "e-newacc", type: "kpi", name: "Venta a nuevas cuentas", formula: "Venta neta de clientes con antigüedad < 12 meses", unit: "$", unitId: "un-mxn", direction: "up", laeId: "l-2", allowedScopeTypeIds: ["st-nac", "st-reg"] },
+  { id: "e-rot", type: "kpi", name: "Rotación de personal operativo", formula: "Bajas del mes / Plantilla promedio", unit: "%", unitId: "un-pct", direction: "down", laeId: "l-5", allowedScopeTypeIds: ["st-plant", "st-reg", "st-nac"] },
+  { id: "e-nps", type: "kpi", name: "NPS de clientes", formula: "% promotores − % detractores", unit: "pts", unitId: "un-pts", direction: "up", laeId: "l-4", allowedScopeTypeIds: ["st-nac", "st-reg"] },
+  { id: "e-ebitda", type: "kpi", name: "Margen EBITDA", formula: "EBITDA / Venta neta", unit: "%", unitId: "un-pct", direction: "up", laeId: "l-2", allowedScopeTypeIds: ["st-nac", "st-bu"] },
+  { id: "e-wms", type: "project", name: "Implementación WMS", formula: "Hitos completados / Hitos plan", unit: "% avance", unitId: "un-adv", direction: "up", laeId: "l-3", allowedScopeTypeIds: ["st-plant", "st-cedis"] },
+  { id: "e-portal", type: "project", name: "Portal de clientes", formula: "Hitos completados / Hitos plan", unit: "% avance", unitId: "un-adv", direction: "up", laeId: "l-3", allowedScopeTypeIds: ["st-nac"] },
 ];
 
 export const elementScopes: ElementScope[] = [
@@ -158,5 +176,10 @@ export const results: Result[] = [
   ...series("es-portal-nac", [15, 25, 40, 52, 63, 71, 78, 84, 88, null, null, null], "u-rv"),
 ];
 
-export const demoData = { tenant, users, objectives, laes, scopeTypes, scopes, elements, elementScopes, scorecards, scorecardItems, results };
+export const invitations: Invitation[] = [
+  { id: "inv-1", email: "sofia.trevino@grupoandes.demo", role: "collaborator", managerId: "u-ag", title: "Gerente de Ventas · Región Norte", status: "pending", createdAt: ts("2026-09-20T10:00:00") },
+  { id: "inv-2", email: "hector.lozano@grupoandes.demo", role: "collaborator", managerId: "u-lr", title: "Jefe de Transporte", status: "accepted", createdAt: ts("2026-08-12T16:30:00") },
+];
+
+export const demoData = { tenant, units, users, objectives, laes, scopeTypes, scopes, elements, elementScopes, scorecards, scorecardItems, results, invitations };
 export type DemoData = typeof demoData;

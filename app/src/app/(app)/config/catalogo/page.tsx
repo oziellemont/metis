@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import clsx from "clsx";
+import Link from "next/link";
 import { Plus, FileSpreadsheet, X, Pencil } from "lucide-react";
 import { useMetis } from "@/lib/store";
 import { PageHeader } from "@/components/ui/primitives";
@@ -69,7 +70,9 @@ export default function Catalogo() {
 
 function ElementEditor({ el, onClose }: { el?: Element; onClose: () => void }) {
   const s = useMetis();
-  const [f, setF] = useState<Element>(el ?? { id: `e-${Date.now()}`, type: "kpi", name: "", formula: "", unit: "%", direction: "up", laeId: s.laes[0]?.id ?? "", allowedScopeTypeIds: [] });
+  const defaultUnit = s.units[0];
+  const [f, setF] = useState<Element>(el ?? { id: `e-${Date.now()}`, type: "kpi", name: "", formula: "", unit: defaultUnit?.symbol ?? "%", unitId: defaultUnit?.id, direction: "up", laeId: s.laes[0]?.id ?? "", allowedScopeTypeIds: [] });
+  const currentUnitId = f.unitId ?? s.units.find((u) => u.symbol === f.unit)?.id ?? "";
   const toggle = (id: string) => setF({ ...f, allowedScopeTypeIds: f.allowedScopeTypeIds.includes(id) ? f.allowedScopeTypeIds.filter((x) => x !== id) : [...f.allowedScopeTypeIds, id] });
   return (
     <div className="fixed inset-0 z-30 bg-ink/30 flex items-end sm:items-center justify-center p-4" onClick={onClose}>
@@ -82,7 +85,12 @@ function ElementEditor({ el, onClose }: { el?: Element; onClose: () => void }) {
         <div className="mt-3"><label className="label">Nombre</label><input className="input" value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} placeholder="Cumplimiento de entregas OTIF" /></div>
         <div className="mt-3"><label className="label">Fórmula</label><input className="input" value={f.formula} onChange={(e) => setF({ ...f, formula: e.target.value })} placeholder="Pedidos a tiempo y completos / Pedidos totales" /></div>
         <div className="grid grid-cols-2 gap-3 mt-3">
-          <div><label className="label">Unidad</label><input className="input" value={f.unit} onChange={(e) => setF({ ...f, unit: e.target.value })} placeholder="%, $, días, pts" /></div>
+          <div>
+            <label className="label">Unidad <Link href="/config/unidades" className="text-indigo hover:underline font-normal">· administrar</Link></label>
+            <select className="input" value={currentUnitId} onChange={(e) => { const u = s.units.find((x) => x.id === e.target.value); if (u) setF({ ...f, unitId: u.id, unit: u.symbol }); }}>
+              {s.units.map((u) => <option key={u.id} value={u.id}>{u.symbol} · {u.name}</option>)}
+            </select>
+          </div>
           <div><label className="label">LAE</label><select className="input" value={f.laeId} onChange={(e) => setF({ ...f, laeId: e.target.value })}>{s.laes.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}</select></div>
         </div>
         <div className="mt-3"><label className="label">Alcances permitidos</label><div className="flex flex-wrap gap-1.5">{s.scopeTypes.map((t) => <button key={t.id} type="button" onClick={() => toggle(t.id)} className={clsx("chip border", f.allowedScopeTypeIds.includes(t.id) ? "bg-indigo-soft text-indigo border-indigo/30" : "bg-white text-slate-500 border-slate-200")}>{t.name}</button>)}</div></div>

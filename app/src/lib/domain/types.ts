@@ -45,7 +45,8 @@ export interface Element {
   type: ElementType;
   name: string;
   formula: string;
-  unit: string; // %, $, días, # ...
+  unit: string; // símbolo de la unidad (denormalizado para lectura rápida)
+  unitId?: string; // referencia al catálogo de unidades
   direction: Direction;
   laeId: string;
   allowedScopeTypeIds: string[];
@@ -100,6 +101,7 @@ export interface Result {
 export interface User {
   id: string;
   name: string;
+  email?: string;
   title: string;
   initials: string;
   managerId?: string | null;
@@ -111,4 +113,40 @@ export interface Tenant {
   id: string;
   name: string;
   plan: "arranque" | "crecimiento" | "escala" | "corporativo";
+  /** Código de acceso con el que un colaborador se une al círculo de la empresa. */
+  joinCode?: string;
+  /** Configuración de recordatorios de cierre de mes. */
+  reminders?: ReminderSettings;
+}
+
+/** Unidad de medida del catálogo editable por el cliente ($, %, ton, pzas, días…). */
+export interface Unit {
+  id: string;
+  symbol: string;      // lo que se ve junto al número
+  name: string;        // nombre largo
+  decimals: number;    // decimales por defecto al mostrar
+  position: "prefix" | "suffix"; // $1,200  vs  95.0 %
+  system?: boolean;    // unidades base que trae METIS (se pueden editar, no borrar si están en uso)
+}
+
+export interface ReminderSettings {
+  enabled: boolean;
+  /** Días del mes en que se envía el aviso (ej. [25, 1, 3]). 1..28 */
+  days: number[];
+  /** Hora local (0–23) del envío */
+  hour: number;
+  timezone: string;
+  /** Avisar también al jefe cuando su equipo trae pendientes */
+  escalateToManager: boolean;
+  channels: { email: boolean; whatsapp: boolean };
+}
+
+export interface Invitation {
+  id: string;
+  email: string;
+  role: User["role"];
+  managerId?: string | null;
+  title?: string;
+  status: "pending" | "accepted" | "revoked";
+  createdAt: string;
 }

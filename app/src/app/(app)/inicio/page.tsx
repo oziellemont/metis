@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowRight, Upload, ClipboardList, GitBranch } from "lucide-react";
 import { useMetis } from "@/lib/store";
 import { PageHeader, Stat, TrafficChip, StatusChip, Avatar } from "@/components/ui/primitives";
-import { MONTHS, TRAFFIC, fmtValue } from "@/lib/labels";
+import { MONTHS, TRAFFIC } from "@/lib/labels";
 import type { Traffic } from "@/lib/domain/types";
 
 export default function Inicio() {
@@ -55,7 +55,7 @@ export default function Inicio() {
                       <div className="text-sm font-medium truncate">{el.name}</div>
                       <div className="text-xs text-slate-400">{sc_.name} · {e.weight}%</div>
                     </div>
-                    <div className="text-sm font-medium tabular-nums">{fmtValue(e.value, el.unit)}</div>
+                    <div className="text-sm font-medium tabular-nums">{s.fmt(e.value, el)}</div>
                     <TrafficChip t={e.traffic} />
                   </li>
                 );
