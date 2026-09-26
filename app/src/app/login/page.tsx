@@ -30,7 +30,7 @@ function Login() {
   return (
     <main className="min-h-screen grid lg:grid-cols-2">
       <section className="hidden lg:flex flex-col justify-between bg-gradient-to-br from-[#141735] via-[#1E1A5E] to-[#2B1F8A] text-white p-12">
-        <Link href="/"><Logo className="text-3xl" light /></Link>
+        <Link href="/" className="inline-flex"><Logo variant="light" height={36} priority /></Link>
         <div>
           <h2 className="text-3xl font-semibold leading-tight max-w-md">Tu perfil, dentro del círculo de tu empresa.</h2>
           <p className="mt-4 text-white/70 max-w-md">Inicias sesión con tu correo. Con el código de tu empresa o una invitación, entras a su espacio: tus objetivos, tu scorecard, tu equipo. Nada más, nada menos.</p>
@@ -42,7 +42,7 @@ function Login() {
       </section>
       <section className="flex items-center justify-center p-6">
         <div className="w-full max-w-sm">
-          <Link href="/" className="lg:hidden inline-block mb-8"><Logo className="text-2xl" /></Link>
+          <Link href="/" className="lg:hidden inline-flex mb-8"><Logo height={30} priority /></Link>
           <h1 className="text-2xl font-semibold">Entrar a METIS</h1>
           <p className="text-sm text-slate-500 mt-1">{inv ? "Tienes una invitación. Inicia sesión con el correo al que llegó." : "Usa tu correo de trabajo."}</p>
 

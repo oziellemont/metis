@@ -43,7 +43,7 @@ function Unirme() {
   return (
     <main className="min-h-screen bg-bg flex items-center justify-center p-6">
       <div className="w-full max-w-md">
-        <Link href="/" className="inline-block mb-8"><Logo className="text-2xl" /></Link>
+        <Link href="/" className="inline-flex mb-8"><Logo height={30} priority /></Link>
 
         {joined ? (
           <div className="card p-8 text-center">

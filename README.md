@@ -58,6 +58,24 @@ Para regenerar el seed cuando cambien los datos demo: `npx tsx scripts/gen-seed-
 2. `/unirme` — captura el **código de empresa** (p. ej. `ANDES-2026`, visible en *Usuarios y roles*) → RPC `metis.join_with_code` crea su `membership`. O bien llega desde el enlace de una **invitación** (`/login?inv=<token>`) → RPC `metis.accept_invitation`. Si su correo ya tenía invitación pendiente, se acepta sola al registrarse.
 3. Desde ese momento RLS le muestra sólo los datos de su empresa; el `middleware.ts` manda a `/login` si no hay sesión y a `/unirme` si no pertenece a ninguna empresa.
 
+## Identidad visual
+
+El paquete oficial del logo (v1, sep-2026) vive en `app/public/brand/`; el componente `<Logo variant=… height=… />` (`app/src/components/ui/Logo.tsx`) es la única forma de pintarlo en la app.
+
+| Archivo | Uso |
+|---|---|
+| `logo-horizontal.svg` | Logo principal sobre fondos claros (nav de la landing, sidebar, footer, reporte del Índice). |
+| `logo-horizontal-blanco.svg` | Sobre fondos oscuros neutros (hero navy, panel izquierdo del login). |
+| `logo-horizontal-blanco-mono.svg` | Todo blanco: sobre fotos o fondos índigo/morado planos. |
+| `logo-horizontal-negro.svg` | Una tinta: impresión, sellos, PDF en blanco y negro. |
+| `logo-apilado*.svg` | Espacios cuadrados (redes, portadas). |
+| `icono*.svg` | Sólo el símbolo "El Acento": header móvil de la app, avatares, marca de agua. |
+| `logo-horizontal-2000.png` | Correos (los clientes de mail no renderizan SVG). |
+| `app-icono-192/512.png` | PWA / Android (`src/app/manifest.ts`). |
+| `src/app/favicon.ico`, `icon.svg`, `apple-icon.png`, `opengraph-image.png` | Los detecta Next automáticamente: pestaña del navegador, Apple touch, tarjeta al compartir en WhatsApp/LinkedIn. |
+
+Reglas de marca: espacio libre mínimo = altura de la "ê"; mínimo 90 px de ancho en pantalla; no distorsionar, rotar, recolorear ni agregar sombras. Degradados del símbolo: `#8B7FF8→#4F3FE0` (izq.) y `#2B1F8A→#6D5DF6` (der.); wordmark `#111414` / `#FFFFFF`.
+
 ## Conceptos clave
 
 | Concepto | Descripción |

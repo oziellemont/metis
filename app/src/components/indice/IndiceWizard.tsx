@@ -109,7 +109,7 @@ export function IndiceWizard() {
       <div className="card p-8">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <Logo className="text-xl" />
+            <Logo height={26} />
             <div className="text-xs text-slate-400 mt-1">Índice de Alineación · {lead.company} · {new Date().toLocaleDateString("es-MX", { dateStyle: "long" })}</div>
             <h1 className="mt-4 text-2xl font-semibold">{lead.company} está <span style={{ color: result.level.color }}>{result.level.name.toLowerCase()}</span>.</h1>
             <p className="mt-2 text-slate-600 max-w-xl">{result.level.reading}</p>
