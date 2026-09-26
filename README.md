@@ -43,7 +43,8 @@ Sin variables de entorno la app corre en **modo demo**: los datos de Grupo Andes
 2. En el SQL Editor de Supabase ejecuta en orden:
    1. `supabase/migrations/0001_core.sql` — esquema `metis.*`, tabla pública `leads`, RLS y vistas de cumplimiento.
    2. `supabase/migrations/0002_access_units_reminders.sql` — código de empresa, invitaciones, unidades editables, ajustes de recordatorios, `notification_log`, trigger que crea el perfil al registrarse.
-   3. `supabase/seed.sql` — datos de Grupo Andes (opcional, para demo).
+   3. `supabase/migrations/0003_grants_service_role.sql` — permisos del cron (service_role) sobre `metis.*`.
+   4. `supabase/seed.sql` — datos de Grupo Andes (opcional, para demo).
 3. En Supabase → Project Settings → **Data API** → *Exposed schemas*: agrega `metis` (además de `public`). Sin esto la API responde `PGRST106 Invalid schema: metis` y el login/unirme no puede leer membresías ni llamar los RPC.
 4. En Supabase → Authentication → URL Configuration: Site URL = tu dominio de Vercel y agrega `https://<dominio>/auth/callback` a Redirect URLs. Activa el proveedor Email (magic link) y, si quieres, Google.
 5. En Vercel → Settings → General: **Root Directory = `app`** y Framework Preset = Next.js (un build que termina en 2–3 s es señal de que está desplegando la raíz del repo). Para que el sitio sea público, en Settings → **Deployment Protection** desactiva *Vercel Authentication* para Production (si no, cualquier visitante y el cron reciben un 302 al SSO de Vercel).
