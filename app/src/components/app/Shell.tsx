@@ -57,7 +57,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen flex">
       <aside className="no-print hidden md:flex w-64 shrink-0 flex-col border-r border-slate-100 bg-white px-4 py-5">
-        <Link href="/inicio" className="px-3 mb-6"><Logo className="text-2xl" /></Link>
+        <Link href="/inicio" className="px-3 mb-6 flex items-center" aria-label="Ir a inicio"><Logo height={30} priority /></Link>
         <div className="px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-2">Mi espacio</div>
         <nav className="space-y-0.5">{MI_ESPACIO.map((i) => <Item key={i.href} {...i} />)}</nav>
         {me.role === "admin" || me.role === "manager" ? (
@@ -76,7 +76,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
 
       <div className="flex-1 min-w-0 flex flex-col">
         <header className="no-print sticky top-0 z-10 flex items-center gap-3 border-b border-slate-100 bg-white/80 backdrop-blur px-4 md:px-8 py-3">
-          <Link href="/inicio" className="md:hidden"><Logo className="text-xl" /></Link>
+          <Link href="/inicio" className="md:hidden flex items-center" aria-label="Ir a inicio"><Logo variant="icon" height={28} /></Link>
           <div className="hidden md:flex items-center gap-2 flex-1 max-w-md rounded-xl bg-slate-100 px-3 py-2 text-sm text-slate-400">
             <Search size={14} /> Buscar KPI, proyecto o colaborador…
           </div>

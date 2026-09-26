@@ -116,9 +116,11 @@ function render(m: Omit<ReminderMessage, "subject" | "html" | "text"> & { tenant
   const mes = `${MONTHS_ES[m.period.month - 1]} ${m.period.year}`;
   const first = m.to.name.split(" ")[0];
   const link = `${m.appUrl.replace(/\/$/, "")}/carga`;
-  const brand = `<div style="font-family:Poppins,Arial,sans-serif;max-width:560px;margin:0 auto;padding:32px 24px;color:#171A3A">`;
+  const base = m.appUrl.replace(/\/$/, "");
+  // Logo horizontal a color (PNG: los clientes de correo no renderizan SVG). 2000px de ancho → se muestra a 120px para retina.
+  const brand = `<div style="font-family:Poppins,Arial,sans-serif;max-width:560px;margin:0 auto;padding:32px 24px;color:#171A3A"><a href="${base}" style="display:inline-block;margin-bottom:20px"><img src="${base}/brand/logo-horizontal-2000.png" width="120" height="35" alt="mêtis" style="display:block;border:0;height:35px;width:120px"></a>`;
   const btn = (label: string) => `<a href="${link}" style="display:inline-block;background:#4F3FE0;color:#fff;text-decoration:none;padding:12px 20px;border-radius:12px;font-weight:600;margin-top:16px">${label}</a>`;
-  const footer = `<p style="color:#94A3B8;font-size:12px;margin-top:32px">${m.tenantName} · METIS · Recibes este correo porque eres responsable de indicadores en tu scorecard.</p></div>`;
+  const footer = `<p style="color:#94A3B8;font-size:12px;margin-top:32px">${m.tenantName} · mêtis · Recibes este correo porque eres responsable de indicadores en tu scorecard.</p></div>`;
 
   if (m.kind === "owner") {
     const n = m.pending.length;
