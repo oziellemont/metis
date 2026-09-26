@@ -21,21 +21,21 @@ const T = uuid("tenant");
 const out: string[] = [];
 out.push(`-- ============================================================================
 -- METIS · Seed demo "Grupo Andes"  (generado por scripts/gen-seed-sql.ts)
--- Requiere 0001_core.sql. Los usuarios se crean en metis.profiles con UUIDs
+-- Requiere 0001_core.sql y 0002_access_units_reminders.sql. Los usuarios se crean en metis.profiles con UUIDs
 -- fijos; para iniciar sesión con ellos crea los mismos ids en auth.users o
 -- ajusta memberships a tus usuarios reales.
 -- ============================================================================
 begin;
 
-insert into metis.tenants (id, slug, name, fiscal_year, currency, plan)
-values ('${T}', 'grupo-andes', 'Grupo Andes', ${YEAR}, 'MXN', 'crece')
+insert into metis.tenants (id, slug, name, fiscal_year, currency, plan, join_code, settings)
+values ('${T}', 'grupo-andes', 'Grupo Andes', ${YEAR}, 'MXN', 'crece', ${q(demoData.tenant.joinCode)}, ${q(JSON.stringify({ reminders: demoData.tenant.reminders }))}::jsonb)
 on conflict (id) do nothing;
 `);
 
 // profiles (sin FK a auth.users en seed: se inserta con set session_replication_role si hace falta)
 out.push(`-- Perfiles demo (si auth.users no los tiene, ejecuta antes: alter table metis.profiles drop constraint profiles_id_fkey;)`);
 for (const u of demoData.users) {
-  const email = `${u.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, ".")}@grupoandes.demo`;
+  const email = u.email ?? `${u.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, ".")}@grupoandes.demo`;
   out.push(`insert into metis.profiles (id, full_name, email) values ('${uuid(u.id)}', ${q(u.name)}, ${q(email)}) on conflict (id) do nothing;`);
 }
 
@@ -54,12 +54,13 @@ demoData.objectives.forEach((o, i) => out.push(`insert into metis.objectives (id
 demoData.laes.forEach((l, i) => out.push(`insert into metis.laes (id, tenant_id, objective_id, code, name, color, sort_order) values ('${uuid(l.id)}', '${T}', '${uuid(l.objectiveId)}', 'LAE-${i + 1}', ${q(l.name)}, ${q(l.color)}, ${i}) on conflict do nothing;`));
 
 out.push(`\n-- Unidades`);
-const units = Array.from(new Set(demoData.elements.map((e) => e.unit)));
-for (const u of units) out.push(`insert into metis.units (id, tenant_id, symbol, name, decimals) values ('${uuid("unit:" + u)}', '${T}', ${q(u)}, ${q(u)}, ${u === "$" ? 0 : 1}) on conflict do nothing;`);
+// El trigger de tenants ya sembró las unidades base; aquí se insertan con ids fijos y se actualizan las que ya existan por símbolo.
+for (const u of demoData.units) out.push(`insert into metis.units (id, tenant_id, symbol, name, decimals, position, is_system) values ('${uuid(u.id)}', '${T}', ${q(u.symbol)}, ${q(u.name)}, ${u.decimals}, '${u.position}', ${u.system ? "true" : "false"}) on conflict (tenant_id, symbol) do update set name = excluded.name, decimals = excluded.decimals, position = excluded.position, is_system = excluded.is_system;`);
+const unitIdFor = (e: { unit: string; unitId?: string }) => `(select id from metis.units where tenant_id = '${T}' and symbol = ${q(e.unit)})`;
 
 out.push(`\n-- Catálogo de elementos`);
 demoData.elements.forEach((e, i) => {
-  out.push(`insert into metis.elements (id, tenant_id, lae_id, type, code, name, formula, unit_id, unit, direction, period) values ('${uuid(e.id)}', '${T}', '${uuid(e.laeId)}', '${e.type}', 'EL-${String(i + 1).padStart(3, "0")}', ${q(e.name)}, ${q(e.formula)}, '${uuid("unit:" + e.unit)}', ${q(e.unit)}, '${e.direction}', 'monthly') on conflict do nothing;`);
+  out.push(`insert into metis.elements (id, tenant_id, lae_id, type, code, name, formula, unit_id, unit, direction, period) values ('${uuid(e.id)}', '${T}', '${uuid(e.laeId)}', '${e.type}', 'EL-${String(i + 1).padStart(3, "0")}', ${q(e.name)}, ${q(e.formula)}, ${unitIdFor(e)}, ${q(e.unit)}, '${e.direction}', 'monthly') on conflict do nothing;`);
   for (const st of e.allowedScopeTypeIds) out.push(`insert into metis.element_allowed_scope_types (element_id, scope_type_id) values ('${uuid(e.id)}', '${uuid(st)}') on conflict do nothing;`);
 });
 
@@ -86,6 +87,12 @@ out.push(`\n-- Resultados mensuales (sólo meses con dato)`);
 for (const r of demoData.results) {
   if (r.value == null) continue;
   out.push(`insert into metis.results (tenant_id, element_scope_id, year, month, value, log, loaded_by, loaded_at) values ('${T}', '${uuid(r.elementScopeId)}', ${r.year}, ${r.month}, ${n(r.value)}, ${q(r.log)}, ${r.loadedBy ? `'${uuid(r.loadedBy)}'` : "null"}, ${r.loadedAt ? `'${r.loadedAt}'` : "now()"}) on conflict (element_scope_id, year, month) do update set value = excluded.value, log = excluded.log;`);
+}
+
+out.push(`\n-- Invitaciones demo`);
+const roleMap2: Record<string, string> = { admin: "admin", manager: "manager", collaborator: "member" };
+for (const inv of demoData.invitations) {
+  out.push(`insert into metis.invitations (id, tenant_id, email, role, title, manager_id, token, status, created_at, accepted_at) values ('${uuid(inv.id)}', '${T}', ${q(inv.email)}, '${roleMap2[inv.role] ?? "member"}', ${q(inv.title)}, ${inv.managerId ? `'${uuid(inv.managerId)}'` : "null"}, ${q("demo-" + inv.id)}, '${inv.status}', '${inv.createdAt}', ${inv.status === "accepted" ? `'${inv.createdAt}'` : "null"}) on conflict do nothing;`);
 }
 
 out.push(`\ncommit;`);

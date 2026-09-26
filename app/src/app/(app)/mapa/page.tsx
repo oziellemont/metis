@@ -4,7 +4,7 @@ import clsx from "clsx";
 import { Target, ChevronRight } from "lucide-react";
 import { useMetis } from "@/lib/store";
 import { Avatar, PageHeader, TrafficChip } from "@/components/ui/primitives";
-import { MONTHS, RESP, TRAFFIC, TYPE, fmtValue } from "@/lib/labels";
+import { MONTHS, RESP, TRAFFIC, TYPE } from "@/lib/labels";
 import { traffic } from "@/lib/domain/scoring";
 import type { Traffic } from "@/lib/domain/types";
 
@@ -93,7 +93,7 @@ export default function Mapa() {
                                   <div className="text-sm font-medium truncate">{el.name} <span className="text-slate-400 font-normal">· {sc.name}</span></div>
                                   <div className="text-xs text-slate-400 flex items-center gap-1.5"><Avatar initials={owner.initials} size="sm" />{owner.name} · {RESP.owner.code}{cvs > 0 && <> · <ChevronRight size={10} /> {cvs} {RESP.contributor.code}</>}</div>
                                 </div>
-                                <span className="text-sm font-medium tabular-nums">{fmtValue(value, el.unit)}</span>
+                                <span className="text-sm font-medium tabular-nums">{s.fmt(value, el)}</span>
                                 <TrafficChip t={t} compact />
                               </li>
                             );

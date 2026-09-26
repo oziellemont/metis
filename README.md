@@ -37,12 +37,24 @@ npm run build        # build de producción
 
 Sin variables de entorno la app corre en **modo demo**: los datos de Grupo Andes viven en memoria y los cambios se guardan en `localStorage`. Los leads del Índice también se guardan localmente.
 
-Para conectar Supabase copia `.env.example` a `.env.local` y ejecuta en el SQL Editor:
+### Conectar Supabase + Vercel
 
-1. `supabase/migrations/0001_core.sql` — esquema `metis.*`, tabla pública `leads`, RLS y vistas de cumplimiento.
-2. `supabase/seed.sql` — datos de Grupo Andes (opcional).
+1. Copia `app/.env.example` a `app/.env.local` y carga las mismas variables en Vercel (Settings → Environment Variables). Mínimo: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_APP_URL`, `CRON_SECRET`.
+2. En el SQL Editor de Supabase ejecuta en orden:
+   1. `supabase/migrations/0001_core.sql` — esquema `metis.*`, tabla pública `leads`, RLS y vistas de cumplimiento.
+   2. `supabase/migrations/0002_access_units_reminders.sql` — código de empresa, invitaciones, unidades editables, ajustes de recordatorios, `notification_log`, trigger que crea el perfil al registrarse.
+   3. `supabase/seed.sql` — datos de Grupo Andes (opcional, para demo).
+3. En Supabase → Authentication → URL Configuration: Site URL = tu dominio de Vercel y agrega `https://<dominio>/auth/callback` a Redirect URLs. Activa el proveedor Email (magic link) y, si quieres, Google.
+4. Para los correos de recordatorio crea una cuenta en [Resend](https://resend.com), verifica tu dominio y carga `RESEND_API_KEY` y `EMAIL_FROM`. Sin ellas el cron corre en *dry-run* (sólo registra).
+5. El cron ya está declarado en `app/vercel.json` (diario 15:00 UTC = 9:00 Monterrey). Vercel lo activa solo al desplegar; prueba manual: `GET /api/cron/recordatorios?dry=1&force=1` con header `Authorization: Bearer $CRON_SECRET`.
 
 Para regenerar el seed cuando cambien los datos demo: `npx tsx scripts/gen-seed-sql.ts`.
+
+### Cómo entra un usuario al círculo de su empresa
+
+1. `/login` — inicia sesión con su correo (magic link) o Google. Supabase crea `auth.users` y un trigger crea `metis.profiles`.
+2. `/unirme` — captura el **código de empresa** (p. ej. `ANDES-2026`, visible en *Usuarios y roles*) → RPC `metis.join_with_code` crea su `membership`. O bien llega desde el enlace de una **invitación** (`/login?inv=<token>`) → RPC `metis.accept_invitation`. Si su correo ya tenía invitación pendiente, se acepta sola al registrarse.
+3. Desde ese momento RLS le muestra sólo los datos de su empresa; el `middleware.ts` manda a `/login` si no hay sesión y a `/unirme` si no pertenece a ninguna empresa.
 
 ## Conceptos clave
 
@@ -54,18 +66,24 @@ Para regenerar el seed cuando cambien los datos demo: `npx tsx scripts/gen-seed-
 | **Semáforo** | Tres metas por elemento: mínima, satisfactoria, sobresaliente. Incremental (más es mejor) o decremental. |
 | **Cumplimiento ponderado** | % de logro vs meta satisfactoria (tope 120%), ponderado por mes; la ponderación debe sumar 100% cada mes. Base objetiva para compensación variable. |
 | **Flujo de scorecard** | Borrador → Enviado → Aprobado / Ajustes solicitados / Denegado, con historial. |
+| **Unidades** | Catálogo por empresa (%, $, USD, ton, pzas, días…) con símbolo, posición y decimales. El cliente agrega/edita/quita; las que están en uso no se borran. |
+| **Recordatorios** | Cada mes METIS avisa por correo a cada DR con datos pendientes (días y hora configurables) y, opcionalmente, manda un resumen al jefe. |
+| **Código de empresa / invitación** | Dos caminos para entrar al círculo de la empresa; ambos crean la `membership` que activa el RLS. |
 
 ## Rutas
 
 - `/` landing comercial · `/indice` Índice de Alineación (20 preguntas, resultado en pantalla + PDF)
 - `/inicio` panel · `/scorecard` mi scorecard · `/carga` carga mensual con propagación DR→CV
 - `/mapa` mapa de alineación · `/equipo` aprobar scorecards · `/reportes` cumplimiento por colaborador/mes
-- `/config/catalogo` `/config/alcances` `/config/usuarios` configuración
-- `/sesiones` `/compromisos` `/config/unidades` `/config/notificaciones` — v1 (placeholder)
+- `/login` `/unirme` acceso por correo + código de empresa o invitación · `/auth/callback` retorno de Supabase
+- `/config/catalogo` `/config/alcances` `/config/unidades` `/config/usuarios` (código de empresa, invitaciones) `/config/notificaciones` (recordatorios con vista previa)
+- `/api/cron/recordatorios` cron diario de Vercel
+- `/sesiones` `/compromisos` — v1 (placeholder)
 
 ## Roadmap
 
-- **Sprint 1 (este PR):** landing, Índice de Alineación, MVP en modo demo, dominio con pruebas, esquema SQL.
-- **Sprint 2:** auth Supabase + persistencia real, invitaciones, importación de catálogo desde Excel, deploy en Vercel.
-- **Sprint 3:** Sesiones WTW/WTM con deck automático y compromisos; notificaciones de carga.
+- **Sprint 1:** landing, Índice de Alineación, MVP en modo demo, dominio con pruebas, esquema SQL.
+- **Sprint 2a:** catálogo de unidades editable, recordatorios mensuales por correo (cron), acceso por código/invitación, login con magic link/Google, middleware.
+- **Sprint 2b:** persistencia real sobre Supabase (store → consultas), importación de catálogo desde Excel, deploy en Vercel.
+- **Sprint 3:** Sesiones WTW/WTM con deck automático y compromisos; alertas de KPI en rojo.
 - **Sprint 4:** IA — resumen de bitácoras, transcripción de sesiones, alertas de desvío.

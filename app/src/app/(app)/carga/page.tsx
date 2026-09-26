@@ -4,7 +4,7 @@ import clsx from "clsx";
 import { Paperclip, Save, CheckCircle2, Clock } from "lucide-react";
 import { useMetis } from "@/lib/store";
 import { Avatar, PageHeader, TrafficChip, Sparkline, RespChip } from "@/components/ui/primitives";
-import { DIR, MONTHS, MONTHS_SHORT, RESP, TYPE, fmtValue } from "@/lib/labels";
+import { DIR, MONTHS, MONTHS_SHORT, RESP, TYPE } from "@/lib/labels";
 import { traffic } from "@/lib/domain/scoring";
 
 export default function Carga() {
@@ -44,7 +44,7 @@ export default function Carga() {
                     <span className="ml-auto">{loaded ? <CheckCircle2 size={16} className="text-sob" /> : <span className="chip bg-coral-soft text-coral">Pendiente</span>}</span>
                   </div>
                   <div className="mt-1 font-medium text-sm">{el.name}</div>
-                  <div className="mt-1 flex items-center justify-between"><span className="text-sm tabular-nums">{fmtValue(r?.value, el.unit)}</span><TrafficChip t={t} /></div>
+                  <div className="mt-1 flex items-center justify-between"><span className="text-sm tabular-nums">{s.fmt(r?.value, el)}</span><TrafficChip t={t} /></div>
                 </button>
               );
             })}
@@ -105,9 +105,9 @@ function LoadPanel({ esId }: { esId: string }) {
         <div className="rounded-xl bg-slate-50 p-4">
           <div className="text-xs font-medium text-slate-500 mb-2">Metas del periodo</div>
           <div className="grid grid-cols-3 gap-2 text-center">
-            <div><div className="text-[10px] text-slate-400">Mín</div><div className="font-semibold text-min tabular-nums">{fmtValue(targets.min, el.unit)}</div></div>
-            <div><div className="text-[10px] text-slate-400">Sat</div><div className="font-semibold text-sat tabular-nums">{fmtValue(targets.sat, el.unit)}</div></div>
-            <div><div className="text-[10px] text-slate-400">Sob</div><div className="font-semibold text-sob tabular-nums">{fmtValue(targets.out, el.unit)}</div></div>
+            <div><div className="text-[10px] text-slate-400">Mín</div><div className="font-semibold text-min tabular-nums">{s.fmt(targets.min, el)}</div></div>
+            <div><div className="text-[10px] text-slate-400">Sat</div><div className="font-semibold text-sat tabular-nums">{s.fmt(targets.sat, el)}</div></div>
+            <div><div className="text-[10px] text-slate-400">Sob</div><div className="font-semibold text-sob tabular-nums">{s.fmt(targets.out, el)}</div></div>
           </div>
           <div className="mt-3 text-[11px] text-slate-400">Semáforo automático contra las tres metas según la dirección del elemento.</div>
         </div>
@@ -141,7 +141,7 @@ function LoadPanel({ esId }: { esId: string }) {
         <div className="grid grid-cols-12 gap-1">
           {series.map((v, i) => { const tt = traffic(v, targets, el.direction); return (
             <div key={i} className="text-center">
-              <div className={clsx("h-8 rounded-md flex items-center justify-center text-[10px] font-medium", tt === "pending" ? "bg-slate-50 text-slate-300" : tt === "below" ? "bg-coral-soft text-coral" : tt === "minimum" ? "bg-amber-soft text-amber" : "bg-mint-soft text-sob")}>{v === null ? "·" : fmtValue(v, el.unit).replace("%", "")}</div>
+              <div className={clsx("h-8 rounded-md flex items-center justify-center text-[10px] font-medium", tt === "pending" ? "bg-slate-50 text-slate-300" : tt === "below" ? "bg-coral-soft text-coral" : tt === "minimum" ? "bg-amber-soft text-amber" : "bg-mint-soft text-sob")}>{v === null ? "·" : s.fmt(v, el).replace("%", "")}</div>
               <div className="text-[9px] text-slate-400 mt-0.5">{MONTHS_SHORT[i]}</div>
             </div>
           ); })}

@@ -4,7 +4,7 @@ import clsx from "clsx";
 import { Plus, Send, Check, History, X, Trash2, AlertTriangle, Pencil } from "lucide-react";
 import { useMetis } from "@/lib/store";
 import { Avatar, PageHeader, RespChip, StatusChip, TrafficChip, Sparkline } from "@/components/ui/primitives";
-import { DIR, MONTHS, MONTHS_SHORT, PERIOD, RESP, STATUS, TYPE, fmtValue } from "@/lib/labels";
+import { DIR, MONTHS, MONTHS_SHORT, PERIOD, RESP, STATUS, TYPE } from "@/lib/labels";
 import { invalidMonths, totalWeight, weightFor } from "@/lib/domain/scoring";
 import type { Period, Responsibility, ScorecardItem } from "@/lib/domain/types";
 
@@ -117,10 +117,10 @@ export function ScorecardView({ userId, asManager = false }: { userId: string; a
                   <td className="td text-right font-medium tabular-nums">{weightFor(it, s.month)}%</td>
                   <td className="td"><RespChip r={it.responsibility} /></td>
                   <td className="td whitespace-nowrap tabular-nums text-slate-600">
-                    <span className="text-min">{fmtValue(it.targets.min, el.unit)}</span> · <span className="text-sat">{fmtValue(it.targets.sat, el.unit)}</span> · <span className="text-sob">{fmtValue(it.targets.out, el.unit)}</span>
+                    <span className="text-min">{s.fmt(it.targets.min, el)}</span> · <span className="text-sat">{s.fmt(it.targets.sat, el)}</span> · <span className="text-sob">{s.fmt(it.targets.out, el)}</span>
                   </td>
                   <td className="td text-slate-600">{PERIOD[it.period]}</td>
-                  <td className="td whitespace-nowrap"><div className="flex items-center gap-2"><span className="font-medium tabular-nums">{fmtValue(ev.value, el.unit)}</span><TrafficChip t={ev.traffic} compact /></div></td>
+                  <td className="td whitespace-nowrap"><div className="flex items-center gap-2"><span className="font-medium tabular-nums">{s.fmt(ev.value, el)}</span><TrafficChip t={ev.traffic} compact /></div></td>
                   <td className="td"><Sparkline values={series} targets={it.targets} dir={el.direction} /></td>
                   <td className="td">
                     {it.responsibility === "owner" ? <span className="text-xs text-slate-500">Dueño del dato</span> : (
