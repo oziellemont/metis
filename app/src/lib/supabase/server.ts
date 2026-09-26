@@ -2,9 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 
-const URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-const ANON = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
-const SERVICE = process.env.SUPABASE_SERVICE_ROLE_KEY ?? "";
+import { SUPABASE_URL as URL, SUPABASE_ANON as ANON, SUPABASE_SERVICE as SERVICE } from "./env";
 
 export const hasSupabaseServer = Boolean(URL && ANON);
 

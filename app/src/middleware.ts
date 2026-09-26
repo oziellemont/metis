@@ -6,12 +6,13 @@
  */
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { normalizeSupabaseUrl } from "@/lib/supabase/env";
 
 const APP_PREFIXES = ["/inicio", "/scorecard", "/carga", "/mapa", "/equipo", "/indicadores", "/proyectos", "/reportes", "/sesiones", "/compromisos", "/config"];
 
 export async function middleware(req: NextRequest) {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const url = normalizeSupabaseUrl(process.env.NEXT_PUBLIC_SUPABASE_URL);
+  const anon = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "").trim();
   if (!url || !anon) return NextResponse.next();
 
   let res = NextResponse.next({ request: req });

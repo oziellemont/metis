@@ -1,7 +1,7 @@
 import { createBrowserClient } from "@supabase/ssr";
+import { SUPABASE_URL, SUPABASE_ANON } from "./env";
 
-export const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-export const SUPABASE_ANON = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
+export { SUPABASE_URL, SUPABASE_ANON };
 export const hasSupabase = Boolean(SUPABASE_URL && SUPABASE_ANON);
 
 export function supabaseBrowser() {
