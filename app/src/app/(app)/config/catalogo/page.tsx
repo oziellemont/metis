@@ -1,0 +1,93 @@
+"use client";
+import { useState } from "react";
+import clsx from "clsx";
+import { Plus, FileSpreadsheet, X, Pencil } from "lucide-react";
+import { useMetis } from "@/lib/store";
+import { PageHeader } from "@/components/ui/primitives";
+import { DIR, TYPE } from "@/lib/labels";
+import type { Direction, Element, ElementType } from "@/lib/domain/types";
+
+export default function Catalogo() {
+  const s = useMetis();
+  const [editing, setEditing] = useState<Element | null | "new">(null);
+  const [q, setQ] = useState("");
+  const list = s.elements.filter((e) => e.name.toLowerCase().includes(q.toLowerCase()));
+
+  return (
+    <>
+      <PageHeader
+        title={`Catálogo de elementos · ${s.tenant.name}`}
+        subtitle="Cada elemento existe una sola vez con su fórmula, unidad y dirección. Puede medirse en varios alcances, cada uno con su dueño y sus metas."
+        actions={<><button className="btn-ghost"><FileSpreadsheet size={14} /> Importar desde Excel</button><button className="btn-primary" onClick={() => setEditing("new")}><Plus size={14} /> Nuevo elemento</button></>}
+      />
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div className="lg:col-span-2 card overflow-x-auto">
+          <div className="p-3 border-b border-slate-100"><input className="input" placeholder="Buscar en el catálogo…" value={q} onChange={(e) => setQ(e.target.value)} /></div>
+          <table className="w-full min-w-[760px]">
+            <thead className="border-b border-slate-100"><tr><th className="th">Tipo</th><th className="th">Elemento y fórmula</th><th className="th">Unidad</th><th className="th">Dir.</th><th className="th">LAE</th><th className="th">Alcances permitidos</th><th className="th text-right">En uso</th><th className="th" /></tr></thead>
+            <tbody className="divide-y divide-slate-100">
+              {list.map((e) => {
+                const lae = s.laes.find((l) => l.id === e.laeId);
+                const inUse = s.scorecardItems.filter((i) => s.elementScopes.find((es) => es.id === i.elementScopeId)?.elementId === e.id).length;
+                return (
+                  <tr key={e.id} className="hover:bg-slate-50/60">
+                    <td className="td"><span className={clsx("chip", e.type === "kpi" ? "bg-indigo-soft text-indigo" : "bg-sky-soft text-sky")}>{TYPE[e.type]}</span></td>
+                    <td className="td"><div className="font-medium">{e.name}</div><div className="text-xs text-slate-400">{e.formula}</div></td>
+                    <td className="td text-slate-600">{e.unit}</td>
+                    <td className="td" title={DIR[e.direction].long}>{DIR[e.direction].arrow}</td>
+                    <td className="td text-xs text-slate-600"><span className="inline-flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full" style={{ background: lae?.color }} />{lae?.name}</span></td>
+                    <td className="td text-xs text-slate-600">{e.allowedScopeTypeIds.map((id) => s.scopeTypes.find((t) => t.id === id)?.name).join(" · ")}</td>
+                    <td className="td text-right tabular-nums">{inUse}</td>
+                    <td className="td"><button className="p-1 text-slate-400 hover:text-indigo" onClick={() => setEditing(e)}><Pencil size={14} /></button></td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+        <div className="space-y-4">
+          <div className="card p-5">
+            <h3 className="font-semibold mb-1">Un elemento, muchos alcances</h3>
+            <p className="text-xs text-slate-500 mb-3">“OTIF” existe una sola vez, pero se mide para cada alcance con su propio dueño (DR) y metas.</p>
+            <ul className="space-y-1.5 text-sm">
+              {s.elementScopes.map((es) => {
+                const e = s.elements.find((x) => x.id === es.elementId)!; const sc = s.scopes.find((x) => x.id === es.scopeId)!; const o = s.users.find((u) => u.id === es.ownerUserId)!;
+                return <li key={es.id} className="flex items-center gap-2 text-xs"><span className="font-medium truncate">{e.name}</span><span className="text-slate-400">·</span><span className="text-slate-600">{sc.name}</span><span className="ml-auto text-slate-400 truncate">{o.initials}</span></li>;
+              })}
+            </ul>
+          </div>
+          <div className="card p-5">
+            <h3 className="font-semibold mb-1">Plantillas por industria</h3>
+            <p className="text-xs text-slate-500">Próximamente: catálogos base para manufactura, distribución y logística, retail y servicios profesionales, listos para importar y ajustar.</p>
+          </div>
+        </div>
+      </div>
+      {editing && <ElementEditor el={editing === "new" ? undefined : editing} onClose={() => setEditing(null)} />}
+    </>
+  );
+}
+
+function ElementEditor({ el, onClose }: { el?: Element; onClose: () => void }) {
+  const s = useMetis();
+  const [f, setF] = useState<Element>(el ?? { id: `e-${Date.now()}`, type: "kpi", name: "", formula: "", unit: "%", direction: "up", laeId: s.laes[0]?.id ?? "", allowedScopeTypeIds: [] });
+  const toggle = (id: string) => setF({ ...f, allowedScopeTypeIds: f.allowedScopeTypeIds.includes(id) ? f.allowedScopeTypeIds.filter((x) => x !== id) : [...f.allowedScopeTypeIds, id] });
+  return (
+    <div className="fixed inset-0 z-30 bg-ink/30 flex items-end sm:items-center justify-center p-4" onClick={onClose}>
+      <div className="card w-full max-w-lg p-6" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-4"><h3 className="font-semibold">{el ? "Editar elemento" : "Nuevo elemento"}</h3><button onClick={onClose} className="text-slate-400 hover:text-ink"><X size={18} /></button></div>
+        <div className="grid grid-cols-2 gap-3">
+          <div><label className="label">Tipo</label><select className="input" value={f.type} onChange={(e) => setF({ ...f, type: e.target.value as ElementType })}><option value="kpi">KPI</option><option value="project">Proyecto</option></select></div>
+          <div><label className="label">Dirección</label><select className="input" value={f.direction} onChange={(e) => setF({ ...f, direction: e.target.value as Direction })}><option value="up">↑ Incremental · más es mejor</option><option value="down">↓ Decremental · menos es mejor</option></select></div>
+        </div>
+        <div className="mt-3"><label className="label">Nombre</label><input className="input" value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} placeholder="Cumplimiento de entregas OTIF" /></div>
+        <div className="mt-3"><label className="label">Fórmula</label><input className="input" value={f.formula} onChange={(e) => setF({ ...f, formula: e.target.value })} placeholder="Pedidos a tiempo y completos / Pedidos totales" /></div>
+        <div className="grid grid-cols-2 gap-3 mt-3">
+          <div><label className="label">Unidad</label><input className="input" value={f.unit} onChange={(e) => setF({ ...f, unit: e.target.value })} placeholder="%, $, días, pts" /></div>
+          <div><label className="label">LAE</label><select className="input" value={f.laeId} onChange={(e) => setF({ ...f, laeId: e.target.value })}>{s.laes.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}</select></div>
+        </div>
+        <div className="mt-3"><label className="label">Alcances permitidos</label><div className="flex flex-wrap gap-1.5">{s.scopeTypes.map((t) => <button key={t.id} type="button" onClick={() => toggle(t.id)} className={clsx("chip border", f.allowedScopeTypeIds.includes(t.id) ? "bg-indigo-soft text-indigo border-indigo/30" : "bg-white text-slate-500 border-slate-200")}>{t.name}</button>)}</div></div>
+        <div className="mt-5 flex justify-end gap-2"><button className="btn-ghost" onClick={onClose}>Cancelar</button><button className="btn-primary" disabled={!f.name} onClick={() => { s.upsertElement(f); onClose(); }}>Guardar</button></div>
+      </div>
+    </div>
+  );
+}
