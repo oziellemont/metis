@@ -21,9 +21,10 @@ const T = uuid("tenant");
 const out: string[] = [];
 out.push(`-- ============================================================================
 -- METIS · Seed demo "Grupo Andes"  (generado por scripts/gen-seed-sql.ts)
--- Requiere 0001_core.sql y 0002_access_units_reminders.sql. Los usuarios se crean en metis.profiles con UUIDs
--- fijos; para iniciar sesión con ellos crea los mismos ids en auth.users o
--- ajusta memberships a tus usuarios reales.
+-- Requiere 0001_core.sql y 0002_access_units_reminders.sql.
+-- Crea 8 usuarios demo directamente en auth.users (correos @grupoandes.demo, sin
+-- contraseña) con UUIDs fijos; el trigger on_auth_user_created genera sus perfiles.
+-- Para entrar con tu propio correo usa /unirme con el código ANDES-2026.
 -- ============================================================================
 begin;
 
@@ -32,11 +33,25 @@ values ('${T}', 'grupo-andes', 'Grupo Andes', ${YEAR}, 'MXN', 'crece', ${q(demoD
 on conflict (id) do nothing;
 `);
 
-// profiles (sin FK a auth.users en seed: se inserta con set session_replication_role si hace falta)
-out.push(`-- Perfiles demo (si auth.users no los tiene, ejecuta antes: alter table metis.profiles drop constraint profiles_id_fkey;)`);
+// Usuarios demo en auth.users (+ auth.identities) para que la FK profiles -> auth.users se cumpla.
+// El trigger metis.on_auth_user_created crea el perfil; el insert a profiles queda como refuerzo idempotente.
+const emailOf = (u: { name: string; email?: string }) =>
+  u.email ?? `${u.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, ".")}@grupoandes.demo`;
+out.push(`-- Usuarios demo (auth.users + auth.identities). Sin contraseña: no se puede iniciar sesión con ellos, sólo sirven como DR/CV de la demo.`);
 for (const u of demoData.users) {
-  const email = u.email ?? `${u.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, ".")}@grupoandes.demo`;
-  out.push(`insert into metis.profiles (id, full_name, email) values ('${uuid(u.id)}', ${q(u.name)}, ${q(email)}) on conflict (id) do nothing;`);
+  const id = uuid(u.id), email = emailOf(u);
+  out.push(
+    `insert into auth.users (instance_id, id, aud, role, email, encrypted_password, email_confirmed_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at, confirmation_token, recovery_token, email_change_token_new, email_change, email_change_token_current, phone_change, phone_change_token, reauthentication_token, is_sso_user) ` +
+    `values ('00000000-0000-0000-0000-000000000000', '${id}', 'authenticated', 'authenticated', ${q(email)}, null, now(), '{"provider":"email","providers":["email"]}'::jsonb, ${q(JSON.stringify({ full_name: u.name }))}::jsonb, now(), now(), '', '', '', '', '', '', '', '', false) on conflict (id) do nothing;`,
+  );
+  out.push(
+    `insert into auth.identities (id, user_id, provider_id, provider, identity_data, created_at, updated_at) ` +
+    `values (gen_random_uuid(), '${id}', '${id}', 'email', ${q(JSON.stringify({ sub: id, email, email_verified: true }))}::jsonb, now(), now()) on conflict (provider_id, provider) do nothing;`,
+  );
+}
+out.push(`\n-- Perfiles demo (refuerzo; normalmente ya los creó el trigger)`);
+for (const u of demoData.users) {
+  out.push(`insert into metis.profiles (id, full_name, email) values ('${uuid(u.id)}', ${q(u.name)}, ${q(emailOf(u))}) on conflict (id) do update set full_name = excluded.full_name;`);
 }
 
 out.push(`\n-- Tipos de alcance y alcances`);
