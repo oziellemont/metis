@@ -131,7 +131,7 @@ function render(m: Omit<ReminderMessage, "subject" | "html" | "text"> & { tenant
     const html = `${brand}<p style="font-size:20px;font-weight:600;margin:0 0 8px">Hola ${first},</p>
 <p>${m.phase === "cierre" ? `Estamos cerrando <strong>${mes}</strong> y aún no tenemos tu dato en:` : `Se acerca el cierre de <strong>${mes}</strong>. Estos indicadores esperan tu dato:`}</p>
 <ul style="padding-left:18px">${list}</ul>
-<p>Al cargarlo, tu scorecard y el de las personas vinculadas (CV) se actualizan en el momento.</p>
+<p>Al cargarlo, tu scorecard y el de los Contributors vinculados se actualizan en el momento.</p>
 ${btn("Cargar mis resultados")}${footer}`;
     const text = `Hola ${first},\n\n${m.phase === "cierre" ? `Estamos cerrando ${mes} y aún no tenemos tu dato en:` : `Se acerca el cierre de ${mes}. Estos indicadores esperan tu dato:`}\n${m.pending.map((p) => `- ${p.elementName} · ${p.scopeName}`).join("\n")}\n\nCarga aquí: ${link}\n\n${m.tenantName} · METIS`;
     return { ...m, subject, html, text };

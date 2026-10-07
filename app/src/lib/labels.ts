@@ -1,14 +1,14 @@
 /**
  * Etiquetas visibles en la interfaz. Un solo lugar para cambiar vocabulario.
  * Siglas propuestas (ver docs/decisiones.md):
- *   DR · Dueño del Resultado      (metodología: FCE / IPE)
- *   CV · Contribuidor Vinculado   (metodología: FCI / IPI)
+ *   Owner       · dueño del resultado, captura el dato   (metodología: FCE / IPE)
+ *   Contributor · participa sin capturar                   (metodología: FCI / IPI)
  */
 import type { Direction, ElementType, Period, Responsibility, ScorecardStatus, Traffic, Unit } from "./domain/types";
 
-export const RESP: Record<Responsibility, { code: string; name: string; help: string }> = {
-  owner: { code: "DR", name: "Dueño del Resultado", help: "Responsable del elemento en este alcance. Carga el dato cada periodo." },
-  contributor: { code: "CV", name: "Contribuidor Vinculado", help: "Participa en el resultado sin ser dueño. Su scorecard se actualiza cuando el DR carga." },
+export const RESP: Record<Responsibility, { code: string; plural: string; name: string; help: string }> = {
+  owner: { code: "Owner", plural: "Owners", name: "Owner", help: "Dueño del resultado en este alcance. Carga el dato cada periodo." },
+  contributor: { code: "Contributor", plural: "Contributors", name: "Contributor", help: "Participa en el resultado sin ser dueño. Su scorecard se actualiza cuando el Owner carga." },
 };
 
 export const TYPE: Record<ElementType, string> = { kpi: "KPI", project: "PROY" };

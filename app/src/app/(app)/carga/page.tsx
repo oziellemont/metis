@@ -25,7 +25,7 @@ export default function Carga() {
         actions={<span className={clsx("chip", daysToClose <= 3 ? "bg-coral-soft text-coral" : "bg-slate-100 text-slate-600")}><Clock size={12} className="mr-1" /> Vence en {daysToClose} días</span>}
       />
       {owned.length === 0 ? (
-        <div className="card p-8 text-center text-slate-500">No eres {RESP.owner.name} de ningún elemento. Los {RESP.contributor.code} no capturan: su scorecard se actualiza solo.</div>
+        <div className="card p-8 text-center text-slate-500">No eres {RESP.owner.name} de ningún elemento. Los {RESP.contributor.plural} no capturan: su scorecard se actualiza solo.</div>
       ) : (
         <div className="grid gap-4 lg:grid-cols-5">
           <div className="lg:col-span-2 space-y-2">
@@ -119,7 +119,7 @@ function LoadPanel({ esId }: { esId: string }) {
       </div>
 
       <div className="mt-4 rounded-xl border border-dashed border-slate-200 p-4">
-        <div className="text-xs font-medium text-slate-500 mb-2">Este dato alimenta a {contributors.length} {RESP.contributor.code}</div>
+        <div className="text-xs font-medium text-slate-500 mb-2">Este dato alimenta a {contributors.length} {contributors.length === 1 ? RESP.contributor.code : RESP.contributor.plural}</div>
         <div className="flex items-center gap-2 flex-wrap">
           {contributors.map((u) => <span key={u.id} className="inline-flex items-center gap-1.5 text-xs bg-slate-50 rounded-full pl-0.5 pr-2 py-0.5"><Avatar initials={u.initials} size="sm" />{u.name}</span>)}
           {contributors.length === 0 && <span className="text-xs text-slate-400">Nadie está vinculado a este elemento todavía.</span>}

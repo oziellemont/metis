@@ -59,7 +59,7 @@ export default function Catalogo() {
   );
 }
 
-/** Medir un elemento en un alcance con su DR (Dueño del Resultado). */
+/** Medir un elemento en un alcance con su Owner (dueño del resultado). */
 function MeasureIn() {
   const s = useMetis();
   const [f, setF] = useState({ elementId: "", scopeId: "", ownerUserId: "" });
@@ -70,7 +70,7 @@ function MeasureIn() {
   return (
     <div className="card p-5">
       <h3 className="font-semibold mb-1">Un elemento, muchos alcances</h3>
-      <p className="text-xs text-slate-500 mb-3">“OTIF” existe una sola vez, pero se mide en cada alcance con su propio dueño (DR), que es quien captura el dato del mes.</p>
+      <p className="text-xs text-slate-500 mb-3">“OTIF” existe una sola vez, pero se mide en cada alcance con su propio Owner, que es quien captura el dato del mes.</p>
       <div className="space-y-2 rounded-xl bg-slate-50 p-3 mb-3">
         <select className="input" value={f.elementId} onChange={(e) => setF({ ...f, elementId: e.target.value, scopeId: "" })}>
           <option value="">Elemento…</option>
@@ -81,7 +81,7 @@ function MeasureIn() {
           {scopes.map((sc) => <option key={sc.id} value={sc.id}>{sc.name}</option>)}
         </select>
         <select className="input" value={f.ownerUserId} onChange={(e) => setF({ ...f, ownerUserId: e.target.value })}>
-          <option value="">DR · quién captura…</option>
+          <option value="">Owner · quién captura…</option>
           {s.users.map((u) => <option key={u.id} value={u.id}>{u.name}</option>)}
         </select>
         {dup && <div className="text-xs text-coral">Ese elemento ya se mide en ese alcance.</div>}
@@ -94,8 +94,8 @@ function MeasureIn() {
           return (
             <li key={es.id} className="flex items-center gap-2 text-xs">
               <span className="font-medium truncate">{e.name}</span><span className="text-slate-400">·</span><span className="text-slate-600 truncate">{sc.name}</span>
-              <select className="ml-auto input !w-auto !py-0.5 !px-1.5 !text-xs max-w-[9rem]" value={es.ownerUserId} title="DR · Dueño del Resultado" onChange={(ev) => s.upsertElementScope({ ...es, ownerUserId: ev.target.value })}>
-                <option value="">Sin DR</option>
+              <select className="ml-auto input !w-auto !py-0.5 !px-1.5 !text-xs max-w-[9rem]" value={es.ownerUserId} title="Owner · dueño del resultado, captura el dato" onChange={(ev) => s.upsertElementScope({ ...es, ownerUserId: ev.target.value })}>
+                <option value="">Sin Owner</option>
                 {s.users.map((u) => <option key={u.id} value={u.id}>{u.name}</option>)}
               </select>
             </li>

@@ -25,7 +25,7 @@ export default function Landing() {
             <div className="mt-5 rounded-xl bg-slate-50 p-4">
               <div className="flex items-center justify-between text-xs text-slate-500"><span>OTIF · Región Norte</span><span>Cierre de septiembre</span></div>
               <div className="flex items-end justify-between mt-1"><span className="text-2xl font-semibold">96.1%</span><span className="chip bg-mint-soft text-sat">Satisfactorio</span></div>
-              <div className="mt-2 text-[11px] text-slate-400">Este dato alimenta a 4 CV · se actualizó en sus scorecards al guardar</div>
+              <div className="mt-2 text-[11px] text-slate-400">Este dato alimenta a 4 Contributors · se actualizó en sus scorecards al guardar</div>
             </div>
             <div className="mt-4 grid grid-cols-4 gap-2 text-center">
               {[["18", "Sobresaliente", "text-sob"], ["41", "Satisfactorio", "text-sat"], ["9", "Mínimo", "text-amber"], ["4", "Bajo mínimo", "text-coral"]].map(([n, l, c]) => <div key={l}><div className={`text-xl font-semibold ${c}`}>{n}</div><div className="text-[10px] text-slate-400">{l}</div></div>)}
@@ -54,7 +54,7 @@ export default function Landing() {
           <div className="mt-10 grid lg:grid-cols-4 gap-5">
             {[
               [GitBranch, "Cascada conectada", "Objetivos → LAEs → KPIs y proyectos por alcance → responsables. Si cambias un objetivo, sabes exactamente qué se ve afectado."],
-              [Link2, "Un dato, una captura", "El DR (Dueño del Resultado) carga el dato una vez; los CV (Contribuidores Vinculados) se actualizan solos. Adiós a capturas duplicadas."],
+              [Link2, "Un dato, una captura", "El Owner (dueño del resultado) carga el dato una vez; los Contributors se actualizan solos. Adiós a capturas duplicadas."],
               [CalendarClock, "Ritmo de gestión automatizado", "Sesiones WTW / WTM con deck automático, comentarios previos, transcripción y compromisos con IA."],
               [Scale, "Compensación conectada a la estrategia", "Cumplimiento ponderado por persona, con metas mínima, satisfactoria y sobresaliente aprobadas por su jefe. La base objetiva para tu bono variable."],
             ].map(([Icon, t, d]) => { const I = Icon as React.ElementType; return (
@@ -80,7 +80,7 @@ export default function Landing() {
           <div className="card p-6">
             <h3 className="font-semibold">Ruta de implementación · 12 semanas</h3>
             <ol className="mt-4 space-y-3">
-              {[["1–3", "Diagnóstico", "Entrevistas, revisión de KPIs actuales e Índice de Alineación."], ["3–6", "Diseño estratégico", "Objetivos corporativos, LAEs y catálogo de elementos."], ["6–8", "Cascadeo y metas", "Alcances, responsables DR / CV y metas por nivel."], ["8–10", "Configuración y capacitación", "METIS listo, carga inicial y Academia para usuarios."], ["10–12", "Primer cierre y ritmo", "Primer cierre mensual y primeras sesiones WTW / WTM."]].map(([w, t, d]) => (
+              {[["1–3", "Diagnóstico", "Entrevistas, revisión de KPIs actuales e Índice de Alineación."], ["3–6", "Diseño estratégico", "Objetivos corporativos, LAEs y catálogo de elementos."], ["6–8", "Cascadeo y metas", "Alcances, responsables Owner / Contributor y metas por nivel."], ["8–10", "Configuración y capacitación", "METIS listo, carga inicial y Academia para usuarios."], ["10–12", "Primer cierre y ritmo", "Primer cierre mensual y primeras sesiones WTW / WTM."]].map(([w, t, d]) => (
                 <li key={w} className="flex gap-3 text-sm"><span className="chip bg-indigo-soft text-indigo shrink-0 w-14 justify-center">Sem {w}</span><div><div className="font-medium">{t}</div><div className="text-slate-500">{d}</div></div></li>
               ))}
             </ol>
@@ -92,7 +92,7 @@ export default function Landing() {
         <div className="mx-auto max-w-6xl px-6 py-20">
           <div className="text-xs font-semibold uppercase tracking-wider text-indigo">METIS Plataforma</div>
           <h2 className="mt-2 text-3xl font-semibold">Un precio que crece contigo.</h2>
-          <p className="mt-2 text-slate-600 max-w-2xl">Pagas por colaborador activo con scorecard. Todos los planes incluyen la cascada completa y los vínculos DR ↔ CV, el corazón de METIS.</p>
+          <p className="mt-2 text-slate-600 max-w-2xl">Pagas por colaborador activo con scorecard. Todos los planes incluyen la cascada completa y los vínculos Owner ↔ Contributor, el corazón de METIS.</p>
           <div className="mt-10 grid md:grid-cols-4 gap-5">
             {[["Arranque", "15 a 60", "$189", "$35,000", false], ["Crecimiento", "61 a 300", "$159", "$75,000", true], ["Escala", "301 a 1,500", "$129", "$150,000", false], ["Corporativo", "Más de 1,500", "A la medida", "Cotización", false]].map(([n, r, p, c, hot]) => (
               <div key={n as string} className={"rounded-2xl p-6 border " + (hot ? "border-indigo bg-indigo-soft/40 relative" : "border-slate-100")}>

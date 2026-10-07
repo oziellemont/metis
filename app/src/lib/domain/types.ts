@@ -7,7 +7,7 @@
 export type ElementType = "kpi" | "project";
 export type Direction = "up" | "down"; // up = incremental (↑ más es mejor), down = decremental (↓ menos es mejor)
 export type Period = "monthly" | "bimonthly" | "quarterly" | "annual";
-/** owner = DR (Dueño del Resultado) · contributor = CV (Contribuidor Vinculado) */
+/** owner = Owner (dueño del resultado, captura) · contributor = Contributor (participa sin capturar) */
 export type Responsibility = "owner" | "contributor";
 export type ScorecardStatus = "draft" | "submitted" | "approved" | "changes_requested" | "rejected";
 export type Traffic = "outstanding" | "satisfactory" | "minimum" | "below" | "pending";
