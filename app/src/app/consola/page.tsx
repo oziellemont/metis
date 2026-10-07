@@ -6,7 +6,8 @@
  */
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { Building2, Copy, Check, LogIn, Plus, Shield, Users, ClipboardList, ArrowLeft, Link2 } from "lucide-react";
+import { Building2, Copy, Check, LogIn, Plus, Shield, Users, ClipboardList, ArrowLeft, Link2, Trash2 } from "lucide-react";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Logo } from "@/components/ui/Logo";
 import { supabaseBrowser, hasSupabase } from "@/lib/supabase/client";
 import { rememberActiveTenant } from "@/lib/auth";
@@ -25,6 +26,9 @@ export default function Consola() {
   const [f, setF] = useState({ name: "", plan: "crece", ownerEmail: "", addMe: true });
   const [created, setCreated] = useState<Created | null>(null);
   const [copied, setCopied] = useState("");
+  const [toDelete, setToDelete] = useState<Client | null>(null);
+  const [delBusy, setDelBusy] = useState(false);
+  const [delErr, setDelErr] = useState("");
 
   const load = useCallback(async () => {
     if (!sb) return;
@@ -62,6 +66,23 @@ export default function Consola() {
     }
     rememberActiveTenant(c.id);
     window.location.href = "/inicio";
+  };
+
+  const remove = async () => {
+    if (!sb || !toDelete) return;
+    setDelBusy(true); setDelErr("");
+    const r = await sb.schema("metis").rpc("delete_tenant", { p_tenant: toDelete.id, p_confirm: toDelete.name });
+    setDelBusy(false);
+    if (r.error) {
+      const m = r.error.message;
+      setDelErr(/function .*delete_tenant|could not find|PGRST202/i.test(m) ? "Falta correr el PASO-7 en Supabase." : /forbidden|42501/.test(m) ? "No tienes permiso para borrar clientes." : m);
+      return;
+    }
+    if (typeof window !== "undefined" && localStorage.getItem("metis-active-tenant") === toDelete.id) localStorage.removeItem("metis-active-tenant");
+    if (created?.tenant_id === toDelete.id) setCreated(null);
+    setClients((cs) => cs.filter((c) => c.id !== toDelete.id));
+    setToDelete(null);
+    load();
   };
 
   const copy = (key: string, text: string) => { navigator.clipboard?.writeText(text); setCopied(key); setTimeout(() => setCopied(""), 1500); };
@@ -141,7 +162,10 @@ export default function Consola() {
                           </td>
                           <td className="td text-right tabular-nums"><span className="inline-flex items-center gap-1"><Users size={12} className="text-slate-400" />{c.members}</span></td>
                           <td className="td text-right tabular-nums"><span className="inline-flex items-center gap-1"><ClipboardList size={12} className="text-slate-400" />{c.scorecards}</span></td>
-                          <td className="td text-right"><button className="btn-ghost !py-1 text-xs" onClick={() => enter(c)}><LogIn size={13} /> {c.i_am_member ? "Abrir portal" : "Entrar como consultor"}</button></td>
+                          <td className="td text-right whitespace-nowrap">
+                            <button className="btn-ghost !py-1 text-xs" onClick={() => enter(c)}><LogIn size={13} /> {c.i_am_member ? "Abrir portal" : "Entrar como consultor"}</button>
+                            <button className="ml-1 inline-grid h-7 w-7 place-items-center rounded-lg text-slate-400 hover:bg-coral-soft hover:text-coral" onClick={() => { setDelErr(""); setToDelete(c); }} title={`Borrar ${c.name}`} aria-label={`Borrar ${c.name}`}><Trash2 size={14} /></button>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -152,6 +176,17 @@ export default function Consola() {
           </>
         )}
       </div>
+      <ConfirmDialog
+        open={!!toDelete}
+        title={`¿Borrar ${toDelete?.name ?? ""}?`}
+        message={<>Se borrará su portal con todos sus datos{toDelete && toDelete.members > 0 ? <> y {toDelete.members} persona{toDelete.members > 1 ? "s" : ""} perderá{toDelete.members > 1 ? "n" : ""} el acceso</> : null}. Esta acción no se puede deshacer.<br /><span className="text-slate-400">Escribe el nombre para confirmar.</span></>}
+        requireText={toDelete?.name}
+        confirmLabel="Borrar"
+        busy={delBusy}
+        error={delErr}
+        onConfirm={remove}
+        onCancel={() => { if (!delBusy) setToDelete(null); }}
+      />
     </main>
   );
 }
