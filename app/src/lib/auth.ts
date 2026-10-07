@@ -76,6 +76,16 @@ export async function acceptInvitation(token: string): Promise<{ ok: boolean; te
   return { ok: true, tenantName: demoData.tenant.name };
 }
 
+/** Correo de la sesión activa (Supabase o demo). null si no hay sesión. */
+export async function currentEmail(): Promise<string | null> {
+  const sb = supabaseBrowser();
+  if (sb) {
+    const { data } = await sb.auth.getUser();
+    return data.user?.email ?? null;
+  }
+  return getDemoSession()?.email ?? null;
+}
+
 /** ¿El usuario ya pertenece a alguna empresa? Devuelve el tenant o null. */
 export async function myTenant(): Promise<{ id: string; name: string } | null> {
   const sb = supabaseBrowser();

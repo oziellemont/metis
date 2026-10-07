@@ -11,6 +11,7 @@ export function SiteNav({ dark = false }: { dark?: boolean }) {
           <Link href="/#consultoria" className="hover:opacity-80">Consultoría</Link>
           <Link href="/#precios" className="hover:opacity-80">Precios</Link>
           <Link href="/inicio" className="hover:opacity-80">Demo</Link>
+          <Link href="/unirme" className="hover:opacity-80">Tengo un código</Link>
           <Link href="/login" className="hover:opacity-80 font-medium">Entrar</Link>
         </nav>
         <Link href="/indice" className={"btn " + (dark ? "bg-white text-ink hover:bg-white/90" : "bg-indigo text-white hover:bg-indigo-light")}>Mide tu alineación</Link>
