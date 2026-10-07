@@ -11,6 +11,18 @@ import { normalizeSupabaseUrl } from "@/lib/supabase/env";
 const APP_PREFIXES = ["/inicio", "/scorecard", "/carga", "/mapa", "/equipo", "/indicadores", "/proyectos", "/reportes", "/sesiones", "/compromisos", "/config"];
 
 export async function middleware(req: NextRequest) {
+  // Si Supabase regresó el enlace mágico a la Site URL (p. ej. "/?code=…") en lugar de /auth/callback,
+  // lo reenviamos para no perder la sesión. Pasa cuando la Redirect URL no está en la lista permitida.
+  const authCode = req.nextUrl.searchParams.get("code");
+  if (authCode && req.nextUrl.pathname !== "/auth/callback" && req.nextUrl.pathname !== "/unirme") {
+    const cb = req.nextUrl.clone();
+    cb.pathname = "/auth/callback";
+    cb.search = "";
+    cb.searchParams.set("code", authCode);
+    cb.searchParams.set("next", req.nextUrl.searchParams.get("next") ?? "/unirme");
+    return NextResponse.redirect(cb);
+  }
+
   const url = normalizeSupabaseUrl(process.env.NEXT_PUBLIC_SUPABASE_URL);
   const anon = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "").trim();
   if (!url || !anon) return NextResponse.next();
@@ -39,7 +51,11 @@ export async function middleware(req: NextRequest) {
     const { data } = await sb.schema("metis").from("memberships").select("tenant_id").eq("user_id", user.id).eq("active", true).limit(1);
     if (!data || data.length === 0) { const u = req.nextUrl.clone(); u.pathname = "/unirme"; u.search = ""; return NextResponse.redirect(u); }
   }
-  if (path === "/login" && user) { const u = req.nextUrl.clone(); u.pathname = "/unirme"; u.search = ""; return NextResponse.redirect(u); }
+  if (path === "/login" && user) {
+    // Ya tiene sesión: respeta ?next (p. ej. /unirme?code=ANDES-2026&auto=1) o manda a /unirme.
+    const n = req.nextUrl.searchParams.get("next");
+    return NextResponse.redirect(new URL(n && n.startsWith("/") ? n : "/unirme", req.url));
+  }
   return res;
 }
 

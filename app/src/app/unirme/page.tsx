@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowRight, Building2, KeyRound, MailCheck, LogOut } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
-import { acceptInvitation, getDemoSession, hasSupabase, joinWithCode, myTenant, signOut } from "@/lib/auth";
+import { acceptInvitation, currentEmail, hasSupabase, joinWithCode, myTenant, signOut } from "@/lib/auth";
 
 export default function UnirmePage() {
   return <Suspense><Unirme /></Suspense>;
@@ -19,12 +19,21 @@ function Unirme() {
   const [err, setErr] = useState("");
   const [joined, setJoined] = useState<string | null>(null);
   const [existing, setExisting] = useState<{ id: string; name: string } | null | undefined>(undefined);
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState<string | null | undefined>(undefined); // undefined = cargando, null = sin sesión
+  const auto = sp.get("auto") === "1";
 
   useEffect(() => {
-    setEmail(getDemoSession()?.email ?? "");
+    currentEmail().then(setEmail);
     myTenant().then(setExisting);
   }, []);
+
+  // Regresando del login con ?code=…&auto=1 → unirse automáticamente
+  useEffect(() => {
+    if (!auto || !email || !code || joined || inv) return;
+    setBusy(true);
+    joinWithCode(code).then((r) => { setBusy(false); if (r.ok) setJoined(r.tenantName ?? "tu empresa"); else setErr(r.error ?? "Código inválido."); });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [auto, email]);
 
   // Con invitación: aceptar automáticamente
   useEffect(() => {
@@ -34,7 +43,13 @@ function Unirme() {
   }, [inv]);
 
   const submit = async (e: React.FormEvent) => {
-    e.preventDefault(); setBusy(true); setErr("");
+    e.preventDefault(); setErr("");
+    // Sin sesión: primero iniciar sesión con el correo y regresar aquí con el código ya puesto.
+    if (hasSupabase && email === null) {
+      router.push(`/login?next=${encodeURIComponent(`/unirme?code=${code.trim()}&auto=1`)}`);
+      return;
+    }
+    setBusy(true);
     const r = await joinWithCode(code);
     setBusy(false);
     if (r.ok) setJoined(r.tenantName ?? "tu empresa"); else setErr(r.error ?? "Código inválido.");
@@ -54,7 +69,7 @@ function Unirme() {
           </div>
         ) : (
           <div className="card p-8">
-            <div className="flex items-center gap-2 text-xs text-slate-500 mb-4">{email && <><MailCheck size={14} className="text-sob" /> Sesión iniciada como <strong className="text-ink">{email}</strong></>}</div>
+            <div className="flex items-center gap-2 text-xs text-slate-500 mb-4">{email ? <><MailCheck size={14} className="text-sob" /> Sesión iniciada como <strong className="text-ink">{email}</strong></> : email === null && hasSupabase ? <span>Paso 1 de 2 · escribe el código; después te pediremos tu correo.</span> : null}</div>
             <h1 className="text-2xl font-semibold">Entra al círculo de tu empresa</h1>
             <p className="mt-1 text-sm text-slate-500">Tu administrador te compartió un <strong>código de empresa</strong> o te llegó una <strong>invitación por correo</strong>. Con cualquiera de los dos entras a su espacio.</p>
 
@@ -69,7 +84,7 @@ function Unirme() {
               <label className="label">Código de empresa</label>
               <div className="flex gap-2">
                 <div className="relative flex-1"><KeyRound size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" /><input className="input pl-9 uppercase tracking-widest font-mono" placeholder="ANDES-2026" value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} maxLength={16} autoFocus /></div>
-                <button className="btn-primary" disabled={busy || code.trim().length < 4}>{busy ? "…" : "Unirme"}</button>
+                <button className="btn-primary" disabled={busy || code.trim().length < 4}>{busy ? "…" : email === null && hasSupabase ? "Continuar" : "Unirme"}</button>
               </div>
               {err && <p className="mt-2 text-xs text-coral">{err}</p>}
               {!hasSupabase && <p className="mt-2 text-[11px] text-slate-400">Modo demo · prueba con <button type="button" className="font-mono text-indigo hover:underline" onClick={() => setCode("ANDES-2026")}>ANDES-2026</button></p>}
@@ -81,7 +96,7 @@ function Unirme() {
 
             <div className="mt-6 flex items-center justify-between text-xs text-slate-400">
               <span>¿Tu empresa aún no está en METIS? <Link href="/#precios" className="text-indigo hover:underline">Ver planes</Link></span>
-              <button className="inline-flex items-center gap-1 hover:text-ink" onClick={() => signOut().then(() => router.push("/login"))}><LogOut size={12} /> Salir</button>
+              {email && <button className="inline-flex items-center gap-1 hover:text-ink" onClick={() => signOut().then(() => router.push("/login"))}><LogOut size={12} /> Salir</button>}
             </div>
           </div>
         )}
