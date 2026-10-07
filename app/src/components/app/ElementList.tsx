@@ -26,7 +26,7 @@ export function ElementList({ type }: { type: ElementType }) {
               const t = oi ? traffic(r?.value ?? null, oi.targets, el.direction) : "pending";
               const series = Array.from({ length: 12 }, (_, m) => s.results.find((x) => x.elementScopeId === es.id && x.month === m + 1)?.value ?? null);
               return (
-                <tr key={es.id} className="hover:bg-slate-50/60">
+                <tr key={es.id} id={`es-${es.id}`} className="hover:bg-slate-50/60 scroll-mt-24">
                   <td className="td"><div className="font-medium">{el.name}</div><div className="text-xs text-slate-400">{DIR[el.direction].arrow} {el.formula}</div></td>
                   <td className="td text-slate-600">{sc.name}</td>
                   <td className="td text-xs"><span className="inline-flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full" style={{ background: lae.color }} />{lae.name}</span></td>

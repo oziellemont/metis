@@ -116,7 +116,7 @@ export async function loadTenant(sb: SupabaseClient, tenantId: string): Promise<
   const profiles = new Map<string, Row>((profR.data ?? []).map((p: Row) => [p.id, p]));
   const users: User[] = (memR.data ?? []).filter((m: Row) => m.active !== false).map((m: Row) => {
     const p = profiles.get(m.user_id);
-    const name = p?.full_name || p?.email?.split("@")[0] || "Colaborador";
+    const name = p?.full_name || nameFromEmail(p?.email) || "Colaborador";
     return {
       id: m.user_id, name, email: p?.email, title: m.title ?? "", initials: initialsOf(name),
       managerId: m.manager_id ?? null, role: uiRole(m.role), dbRole: m.role,
@@ -179,3 +179,9 @@ export async function loadTenantList(sb: SupabaseClient, userId: string): Promis
   });
 }
 
+
+/** "oziel.lemont@x.mx" → "Oziel Lemont" (cuando la persona aún no pone su nombre). */
+export function nameFromEmail(email?: string | null): string {
+  const local = (email ?? "").split("@")[0].replace(/[0-9]+$/g, "");
+  return local.split(/[._\-+]+/).filter(Boolean).map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(" ");
+}

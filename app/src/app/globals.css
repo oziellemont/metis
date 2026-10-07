@@ -23,3 +23,7 @@ body { font-feature-settings: "tnum" 1; }
   body { background: white; }
   .card { box-shadow: none; border: 1px solid #e5e7eb; }
 }
+
+/* Resaltado breve del resultado elegido en el buscador */
+@keyframes search-flash { 0%, 30% { background-color: rgb(79 63 224 / 0.12); box-shadow: 0 0 0 2px rgb(79 63 224 / 0.35); } 100% { background-color: transparent; box-shadow: 0 0 0 2px transparent; } }
+.search-flash { animation: search-flash 2.2s ease-out; border-radius: 0.75rem; }

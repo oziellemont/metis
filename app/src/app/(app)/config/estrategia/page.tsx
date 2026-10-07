@@ -31,7 +31,7 @@ export default function Estrategia() {
         {s.objectives.map((o) => {
           const laes = s.laes.filter((l) => l.objectiveId === o.id);
           return (
-            <div key={o.id} className="card p-5">
+            <div key={o.id} id={`obj-${o.id}`} className="card p-5 scroll-mt-24">
               <div className="flex items-start gap-2">
                 <div className="flex-1">
                   <div className="text-[11px] uppercase tracking-wider text-slate-400">Objetivo{o.horizon ? ` · ${o.horizon}` : ""}</div>
@@ -44,7 +44,7 @@ export default function Estrategia() {
                 {laes.map((l) => {
                   const n = s.elements.filter((e) => e.laeId === l.id).length;
                   return (
-                    <li key={l.id} className="flex items-center gap-2 text-sm rounded-xl bg-slate-50 px-3 py-2">
+                    <li key={l.id} id={`lae-${l.id}`} className="flex items-center gap-2 text-sm rounded-xl bg-slate-50 px-3 py-2">
                       <span className="h-2 w-2 rounded-full" style={{ background: l.color ?? "#94A3B8" }} />
                       <span className="font-medium">{l.name}</span>
                       <span className="text-xs text-slate-400">{n} elemento{n === 1 ? "" : "s"}</span>
