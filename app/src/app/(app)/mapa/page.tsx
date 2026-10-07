@@ -91,7 +91,7 @@ export default function Mapa() {
                                 <span className={clsx("chip shrink-0", el.type === "kpi" ? "bg-indigo-soft text-indigo" : "bg-sky-soft text-sky")}>{TYPE[el.type]}</span>
                                 <div className="min-w-0 flex-1">
                                   <div className="text-sm font-medium truncate">{el.name} <span className="text-slate-400 font-normal">· {sc.name}</span></div>
-                                  <div className="text-xs text-slate-400 flex items-center gap-1.5"><Avatar initials={owner.initials} size="sm" />{owner.name} · {RESP.owner.code}{cvs > 0 && <> · <ChevronRight size={10} /> {cvs} {RESP.contributor.code}</>}</div>
+                                  <div className="text-xs text-slate-400 flex items-center gap-1.5"><Avatar initials={owner.initials} size="sm" />{owner.name} · {RESP.owner.code}{cvs > 0 && <> · <ChevronRight size={10} /> {cvs} {cvs === 1 ? RESP.contributor.code : RESP.contributor.plural}</>}</div>
                                 </div>
                                 <span className="text-sm font-medium tabular-nums">{s.fmt(value, el)}</span>
                                 <TrafficChip t={t} compact />

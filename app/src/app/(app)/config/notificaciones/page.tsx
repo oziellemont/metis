@@ -46,7 +46,7 @@ export default function Notificaciones() {
         <div className="lg:col-span-2 space-y-4">
           <div className="card p-5">
             <div className="flex items-center justify-between">
-              <div><h3 className="font-semibold flex items-center gap-2"><Bell size={16} className="text-indigo" /> Recordatorio de cierre de mes</h3><p className="text-xs text-slate-500 mt-0.5">Se envía sólo a quien tiene datos pendientes como DR. Si ya cargó todo, no recibe nada.</p></div>
+              <div><h3 className="font-semibold flex items-center gap-2"><Bell size={16} className="text-indigo" /> Recordatorio de cierre de mes</h3><p className="text-xs text-slate-500 mt-0.5">Se envía sólo a quien tiene datos pendientes como Owner. Si ya cargó todo, no recibe nada.</p></div>
               <button type="button" onClick={() => setF({ ...f, enabled: !f.enabled })} className={clsx("relative h-6 w-11 rounded-full transition-colors", f.enabled ? "bg-mint" : "bg-slate-200")} aria-label="Activar recordatorios">
                 <span className={clsx("absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all", f.enabled ? "left-[22px]" : "left-0.5")} />
               </button>
@@ -89,7 +89,7 @@ export default function Notificaciones() {
                       <button type="button" onClick={() => setPreview(preview === i ? null : i)} className="w-full flex items-center gap-3 py-2.5 text-left hover:bg-slate-50 rounded-lg px-2">
                         <Avatar initials={u?.initials ?? "?"} size="sm" />
                         <div className="min-w-0 flex-1"><div className="text-sm font-medium truncate">{m.subject}</div><div className="text-xs text-slate-400 truncate">{m.to.email}</div></div>
-                        <span className={clsx("chip", m.kind === "owner" ? "bg-indigo-soft text-indigo" : "bg-amber-soft text-amber")}>{m.kind === "owner" ? "DR" : "Jefe"}</span>
+                        <span className={clsx("chip", m.kind === "owner" ? "bg-indigo-soft text-indigo" : "bg-amber-soft text-amber")}>{m.kind === "owner" ? "Owner" : "Jefe"}</span>
                       </button>
                       {preview === i && <div className="mb-3 mx-2 rounded-xl border border-slate-200 bg-white overflow-hidden"><iframe title="preview" srcDoc={m.html} className="w-full h-[360px]" /></div>}
                     </li>
@@ -112,7 +112,7 @@ export default function Notificaciones() {
             <h3 className="font-semibold mb-1">Cómo funciona</h3>
             <ol className="text-xs text-slate-500 space-y-1.5 list-decimal pl-4 mt-2">
               <li>Todos los días a la hora configurada, METIS revisa cada empresa.</li>
-              <li>Si hoy es uno de los días elegidos, busca qué DR tienen indicadores sin dato.</li>
+              <li>Si hoy es uno de los días elegidos, busca qué Owners tienen indicadores sin dato.</li>
               <li>Envía un correo por persona con la lista y un botón directo a <strong>Carga mensual</strong>.</li>
               <li>Si activaste el resumen, cada jefe recibe los pendientes de su equipo.</li>
               <li>Queda registro de cada envío (fecha, destinatario, estado).</li>

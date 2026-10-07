@@ -56,7 +56,7 @@ Alternativas consideradas: RD/PV (Responsable del Dato / Participante Vinculado)
 
 ## Pendientes que requieren al fundador
 
-- Confirmar siglas DR / CV (o elegir alternativa).
+- ~~Confirmar siglas DR / CV~~ → **Owner / Contributor** (ver abajo).
 - Compartir industria y tamaño de las 2–3 empresas objetivo para diseñar catálogos plantilla reales.
 - Crear proyecto en Supabase y Vercel (o compartir acceso) cuando el MVP esté listo para conectarse.
 - Confirmar paleta de colores y disponibilidad del dominio.
@@ -73,3 +73,6 @@ Alternativas consideradas: RD/PV (Responsable del Dato / Participante Vinculado)
 El perfil es uno por persona (`metis.profiles`) y puede pertenecer a varias empresas (`memberships`); RLS decide qué datos ve. El `middleware.ts` protege las rutas de la app: sin sesión → `/login`; con sesión y sin empresa → `/unirme`. Sin credenciales de Supabase todo esto se simula en modo demo.
 
 **Lo que se necesita del fundador para activar Supabase/Vercel:** ver README → *Conectar Supabase + Vercel*. En resumen: URL y anon key (públicas), service role key (sólo servidor), URL de la app en Vercel, `CRON_SECRET`, y opcionalmente una cuenta en Resend para el correo. No compartir la service role key por canales inseguros; va directo a Environment Variables de Vercel.
+
+
+**Actualización · Owner / Contributor.** Se reemplazan las siglas DR / CV por **Owner** (dueño del resultado, captura el dato) y **Contributor** (participa sin capturar; su scorecard se actualiza solo). Son palabras que la gente ya entiende sin explicación. Valores internos sin cambio (`owner` / `contributor`); las etiquetas viven en `lib/labels.ts`.

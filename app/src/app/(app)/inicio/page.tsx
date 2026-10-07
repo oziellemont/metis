@@ -32,7 +32,7 @@ export default function Inicio() {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Stat label="Mi cumplimiento ponderado" value={att.value === null ? "—" : `${att.value}%`} sub={`${att.loaded} de ${att.total} elementos con dato`} tone={att.value !== null && att.value >= 100 ? "text-sob" : att.value !== null && att.value < 90 ? "text-coral" : ""} />
-        <Stat label="Cargas pendientes este mes" value={pending.length} sub={pending.length ? "Eres DR de estos elementos" : "Todo cargado"} tone={pending.length ? "text-coral" : "text-sob"} />
+        <Stat label="Cargas pendientes este mes" value={pending.length} sub={pending.length ? "Eres Owner de estos elementos" : "Todo cargado"} tone={pending.length ? "text-coral" : "text-sob"} />
         <Stat label="Scorecards por aprobar" value={toApprove.length} sub={team.length ? `${team.length} personas en tu equipo` : "Sin reportes directos"} />
         <Stat label="Alineación de la organización" value={approvedPct === null ? "—" : `${approvedPct}%`} sub={`${s.scorecards.filter((x) => x.status === "approved").length} de ${s.scorecards.length} scorecards aprobados`} />
       </div>

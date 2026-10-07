@@ -84,7 +84,7 @@ Una sola app y una sola base de datos; **cada fila lleva `tenant_id`** y el aisl
 - **Consola METIS** (`/consola`, sólo `metis.platform_admins`): lista de clientes, alta de cliente (`create_tenant` → código de equipo + invitación al dueño), "Entrar como consultor" y **borrar cliente** (aviso de confirmación tipo iOS donde hay que escribir el nombre; borra en cascada todos sus datos pero no las cuentas de usuario).
 - **Prueba de integración** (`src/lib/portal.it.test.ts`): verifica con JWT por usuario que una empresa no puede leer ni escribir datos de otra. Se salta si no existen `METIS_IT_URL` y `METIS_IT_JWT_SECRET` (apunta a un Supabase/PostgREST de pruebas, nunca a producción).
 
-**Configurar un cliente nuevo:** Consola → Alta de cliente → (dueño entra con su invitación) → Estrategia (objetivos y LAE) → Catálogo de elementos → "Medir aquí" (elemento + alcance + DR) → cada quien crea su Scorecard y agrega elementos → Carga mensual.
+**Configurar un cliente nuevo:** Consola → Alta de cliente → (dueño entra con su invitación) → Estrategia (objetivos y LAE) → Catálogo de elementos → "Medir aquí" (elemento + alcance + Owner) → cada quien crea su Scorecard y agrega elementos → Carga mensual.
 
 ## Identidad visual
 
@@ -110,18 +110,18 @@ Reglas de marca: espacio libre mínimo = altura de la "ê"; mínimo 90 px de anc
 |---|---|
 | **Objetivo → LAE → Elemento** | Cascada estratégica. Las LAEs son Líneas de Acción Estratégica. Cada elemento (KPI o proyecto) existe una sola vez en el catálogo, con fórmula, unidad y dirección. |
 | **Alcance** | Dónde se mide un elemento (Nacional, Región, Planta, CEDIS, BU…). Un `element_scope` es la unidad real que se carga y se propaga. |
-| **DR / CV** | **Dueño del Resultado** captura el dato una vez; los **Contribuidores Vinculados** lo reciben en su scorecard automáticamente. |
+| **Owner / Contributor** | El **Owner** (dueño del resultado) captura el dato una vez; los **Contributors** lo reciben en su scorecard automáticamente. |
 | **Semáforo** | Tres metas por elemento: mínima, satisfactoria, sobresaliente. Incremental (más es mejor) o decremental. |
 | **Cumplimiento ponderado** | % de logro vs meta satisfactoria (tope 120%), ponderado por mes; la ponderación debe sumar 100% cada mes. Base objetiva para compensación variable. |
 | **Flujo de scorecard** | Borrador → Enviado → Aprobado / Ajustes solicitados / Denegado, con historial. |
 | **Unidades** | Catálogo por empresa (%, $, USD, ton, pzas, días…) con símbolo, posición y decimales. El cliente agrega/edita/quita; las que están en uso no se borran. |
-| **Recordatorios** | Cada mes METIS avisa por correo a cada DR con datos pendientes (días y hora configurables) y, opcionalmente, manda un resumen al jefe. |
+| **Recordatorios** | Cada mes METIS avisa por correo a cada Owner con datos pendientes (días y hora configurables) y, opcionalmente, manda un resumen al jefe. |
 | **Código de empresa / invitación** | Dos caminos para entrar al círculo de la empresa; ambos crean la `membership` que activa el RLS. |
 
 ## Rutas
 
 - `/` landing comercial · `/indice` Índice de Alineación (20 preguntas, resultado en pantalla + PDF)
-- `/inicio` panel · `/scorecard` mi scorecard · `/carga` carga mensual con propagación DR→CV
+- `/inicio` panel · `/scorecard` mi scorecard · `/carga` carga mensual con propagación Owner→Contributor
 - `/mapa` mapa de alineación · `/equipo` aprobar scorecards · `/reportes` cumplimiento por colaborador/mes
 - `/login` `/unirme` acceso por correo + código de empresa o invitación · `/auth/callback` retorno de Supabase
 - `/consola` consola METIS de clientes (sólo administradores de plataforma) · `/config/estrategia` objetivos y LAE
