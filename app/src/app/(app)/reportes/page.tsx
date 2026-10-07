@@ -8,7 +8,7 @@ import { MONTHS, MONTHS_SHORT } from "@/lib/labels";
 export default function Reportes() {
   const s = useMetis();
   const rows = s.users.map((u) => {
-    const sc = s.scorecards.find((x) => x.userId === u.id);
+    const sc = s.scorecards.find((x) => x.userId === u.id && x.year === s.year);
     const months = Array.from({ length: 12 }, (_, m) => (sc ? s.scorecardAttainment(sc.id, m + 1).value : null));
     const ytd = months.filter((v): v is number => v !== null);
     return { u, sc, months, ytd: ytd.length ? Math.round((ytd.reduce((a, b) => a + b, 0) / ytd.length) * 10) / 10 : null };

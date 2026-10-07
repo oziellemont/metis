@@ -4,63 +4,38 @@
  * para que la demo "recuerde" cargas y cambios. Cuando se conecte Supabase, este mismo contrato
  * (`MetisStore`) se implementa con consultas al servidor sin tocar las pantallas.
  */
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { demoData, CURRENT_MONTH, YEAR, type DemoData } from "./demo/seed";
-import type { Result, Scorecard, ScorecardItem, ScorecardStatus, Element, Scope, ScopeType, Unit, Invitation, ReminderSettings, Tenant } from "./domain/types";
-import { attainment, findResult, traffic, weightFor, weightedAttainment, type ItemEvaluation } from "./domain/scoring";
-import { fmtWithUnit } from "./labels";
+import type { Result, Scorecard, ScorecardItem, Invitation, Tenant } from "./domain/types";
+import { MetisCtx, deriveHelpers, newId, useMetis, type MetisStore } from "./store-core";
+import { hasSupabase } from "./supabase/client";
+import { SupabaseMetisProvider } from "./store-supabase";
+
+export { useMetis, newId };
+export type { MetisStore };
 
 const KEY = "metis-demo-v1";
 
-export interface MetisStore extends DemoData {
-  year: number;
-  month: number;
-  currentUserId: string;
-  setMonth: (m: number) => void;
-  setCurrentUser: (id: string) => void;
-  /** Guarda o actualiza el dato real de un elemento-alcance (lo hace el DR). */
-  saveResult: (elementScopeId: string, month: number, value: number, log?: string) => { affected: ScorecardItem[] };
-  /** Cambia el estado de un scorecard registrando historial. */
-  transition: (scorecardId: string, action: ScorecardStatus, byUserId: string, note?: string) => void;
-  updateItem: (item: ScorecardItem) => void;
-  addItem: (item: ScorecardItem) => void;
-  removeItem: (itemId: string) => void;
-  upsertElement: (el: Element) => void;
-  addScope: (s: Scope) => void;
-  addScopeType: (t: ScopeType) => void;
-  /** Catálogo de unidades (editable por el cliente). */
-  upsertUnit: (u: Unit) => void;
-  removeUnit: (unitId: string) => { ok: boolean; reason?: string };
-  unitOf: (el: Element) => Unit | undefined;
-  /** Formatea un valor con la unidad del elemento (símbolo, posición y decimales del catálogo). */
-  fmt: (v: number | null | undefined, el: Element) => string;
-  /** Acceso al círculo de la empresa. */
-  invite: (inv: Omit<Invitation, "id" | "status" | "createdAt">) => Invitation;
-  revokeInvitation: (id: string) => void;
-  regenerateJoinCode: () => string;
-  updateReminders: (r: ReminderSettings) => void;
-  reset: () => void;
-  // helpers derivados
-  evaluate: (item: ScorecardItem, month?: number) => ItemEvaluation;
-  scorecardAttainment: (scorecardId: string, month?: number) => ReturnType<typeof weightedAttainment>;
-}
-
-const Ctx = createContext<MetisStore | null>(null);
-
-type Persisted = Pick<DemoData, "results" | "scorecards" | "scorecardItems" | "elements" | "scopes" | "scopeTypes" | "elementScopes" | "units" | "invitations" | "tenant">;
+type Persisted = Pick<DemoData, "results" | "scorecards" | "scorecardItems" | "elements" | "scopes" | "scopeTypes" | "elementScopes" | "units" | "invitations" | "tenant" | "users" | "objectives" | "laes">;
 const initial = (): Persisted => ({
   results: demoData.results, scorecards: demoData.scorecards, scorecardItems: demoData.scorecardItems,
   elements: demoData.elements, scopes: demoData.scopes, scopeTypes: demoData.scopeTypes, elementScopes: demoData.elementScopes,
   units: demoData.units, invitations: demoData.invitations, tenant: demoData.tenant,
+  users: demoData.users, objectives: demoData.objectives, laes: demoData.laes,
 });
-const PERSIST_VERSION = 2;
+const PERSIST_VERSION = 3;
 export function makeJoinCode(prefix: string) {
   const A = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let c = ""; for (let i = 0; i < 4; i++) c += A[Math.floor(Math.random() * A.length)];
   return `${prefix.replace(/[^A-Za-z]/g, "").slice(0, 5).toUpperCase() || "METIS"}-${c}`;
 }
 
+/** Elige el proveedor: datos reales (Supabase) si hay credenciales; si no, demo local. */
 export function MetisProvider({ children }: { children: ReactNode }) {
+  return hasSupabase ? <SupabaseMetisProvider>{children}</SupabaseMetisProvider> : <DemoMetisProvider>{children}</DemoMetisProvider>;
+}
+
+function DemoMetisProvider({ children }: { children: ReactNode }) {
   const [data, setData] = useState<Persisted>(initial);
   const [month, setMonth] = useState(CURRENT_MONTH);
   const [currentUserId, setCurrentUser] = useState("u-mt");
@@ -72,7 +47,7 @@ export function MetisProvider({ children }: { children: ReactNode }) {
       if (raw) {
         const p = JSON.parse(raw);
         // datos guardados por una versión anterior del demo: se completan con los nuevos catálogos
-        if (p.data) setData({ ...initial(), ...p.data, ...(p.version !== PERSIST_VERSION ? { units: demoData.units, invitations: demoData.invitations, tenant: demoData.tenant } : {}) });
+        if (p.data) setData({ ...initial(), ...p.data, ...(p.version !== PERSIST_VERSION ? { units: demoData.units, invitations: demoData.invitations, tenant: demoData.tenant, users: demoData.users, objectives: demoData.objectives, laes: demoData.laes } : {}) });
         if (p.currentUserId) setCurrentUser(p.currentUserId);
         if (p.month) setMonth(p.month);
       }
@@ -90,7 +65,7 @@ export function MetisProvider({ children }: { children: ReactNode }) {
     setData((d) => {
       const idx = d.results.findIndex((r) => r.elementScopeId === esId && r.year === YEAR && r.month === m);
       const next: Result = {
-        id: idx >= 0 ? d.results[idx].id : `${esId}-${m}-${Date.now()}`, elementScopeId: esId, year: YEAR, month: m,
+        id: idx >= 0 ? d.results[idx].id : newId(), elementScopeId: esId, year: YEAR, month: m,
         value, log, loadedBy: currentUserId, loadedAt: new Date().toISOString(),
       };
       const results = idx >= 0 ? d.results.map((r, i) => (i === idx ? next : r)) : [...d.results, next];
@@ -142,18 +117,38 @@ export function MetisProvider({ children }: { children: ReactNode }) {
     return { ok: true };
   }, [data.elements]);
   const invite: MetisStore["invite"] = useCallback((inv) => {
-    const full: Invitation = { ...inv, id: `inv-${Date.now()}`, status: "pending", createdAt: new Date().toISOString() };
+    const full: Invitation = { ...inv, id: newId(), status: "pending", createdAt: new Date().toISOString() };
     setData((d) => ({ ...d, invitations: [full, ...d.invitations.filter((i) => i.email.toLowerCase() !== inv.email.toLowerCase())] }));
     return full;
   }, []);
   const revokeInvitation: MetisStore["revokeInvitation"] = useCallback((id) => {
     setData((d) => ({ ...d, invitations: d.invitations.map((i) => (i.id === id ? { ...i, status: "revoked" } : i)) }));
   }, []);
-  const regenerateJoinCode: MetisStore["regenerateJoinCode"] = useCallback(() => {
+  const regenerateJoinCode: MetisStore["regenerateJoinCode"] = useCallback(async () => {
     const code = makeJoinCode(data.tenant.name);
     setData((d) => ({ ...d, tenant: { ...d.tenant, joinCode: code } as Tenant }));
     return code;
   }, [data.tenant.name]);
+  const createScorecard: MetisStore["createScorecard"] = useCallback((userId) => {
+    setData((d) => {
+      if (d.scorecards.some((s) => s.userId === userId && s.year === YEAR)) return d;
+      const approver = d.users.find((u) => u.id === userId)?.managerId ?? "";
+      const sc: Scorecard = { id: newId(), userId, year: YEAR, status: "draft", approverId: approver ?? "", history: [{ at: new Date().toISOString(), by: currentUserId, action: "draft" }] };
+      return { ...d, scorecards: [...d.scorecards, sc] };
+    });
+  }, [currentUserId]);
+  const upsertElementScope: MetisStore["upsertElementScope"] = useCallback((es) => {
+    setData((d) => ({ ...d, elementScopes: d.elementScopes.some((x) => x.id === es.id) ? d.elementScopes.map((x) => (x.id === es.id ? es : x)) : [...d.elementScopes, es] }));
+  }, []);
+  const upsertObjective: MetisStore["upsertObjective"] = useCallback((o) => {
+    setData((d) => ({ ...d, objectives: d.objectives.some((x) => x.id === o.id) ? d.objectives.map((x) => (x.id === o.id ? o : x)) : [...d.objectives, o] }));
+  }, []);
+  const upsertLae: MetisStore["upsertLae"] = useCallback((l) => {
+    setData((d) => ({ ...d, laes: d.laes.some((x) => x.id === l.id) ? d.laes.map((x) => (x.id === l.id ? l : x)) : [...d.laes, l] }));
+  }, []);
+  const updateMember: MetisStore["updateMember"] = useCallback((userId, patch) => {
+    setData((d) => ({ ...d, users: d.users.map((u) => u.id === userId ? { ...u, ...patch, managerId: patch.managerId !== undefined ? patch.managerId : u.managerId } : u) }));
+  }, []);
   const updateReminders: MetisStore["updateReminders"] = useCallback((r) => {
     setData((d) => ({ ...d, tenant: { ...d.tenant, reminders: r } }));
   }, []);
@@ -163,34 +158,15 @@ export function MetisProvider({ children }: { children: ReactNode }) {
     setMonth(CURRENT_MONTH); setCurrentUser("u-mt");
   }, []);
 
-  const value = useMemo<MetisStore>(() => {
-    const elementOf = (esId: string) => {
-      const es = data.elementScopes.find((x) => x.id === esId)!;
-      return data.elements.find((e) => e.id === es.elementId)!;
-    };
-    const evaluate = (item: ScorecardItem, m = month): ItemEvaluation => {
-      const el = elementOf(item.elementScopeId);
-      const r = findResult(data.results, item.elementScopeId, YEAR, m);
-      const v = r?.value ?? null;
-      return { item, value: v, traffic: traffic(v, item.targets, el.direction), attainment: attainment(v, item.targets, el.direction), weight: weightFor(item, m) };
-    };
-    const scorecardAttainment = (scId: string, m = month) =>
-      weightedAttainment(data.scorecardItems.filter((i) => i.scorecardId === scId).map((i) => evaluate(i, m)));
-    const unitOf = (el: Element) => data.units.find((u) => u.id === el.unitId) ?? data.units.find((u) => u.symbol === el.unit);
-    const fmt = (v: number | null | undefined, el: Element) => fmtWithUnit(v, unitOf(el), el.unit);
-    return {
-      ...demoData, ...data, year: YEAR, month, currentUserId, setMonth, setCurrentUser,
-      saveResult, transition, updateItem, addItem, removeItem, upsertElement, addScope, addScopeType,
-      upsertUnit, removeUnit, unitOf, fmt, invite, revokeInvitation, regenerateJoinCode, updateReminders, reset,
-      evaluate, scorecardAttainment,
-    };
-  }, [data, month, currentUserId, saveResult, transition, updateItem, addItem, removeItem, upsertElement, addScope, addScopeType, upsertUnit, removeUnit, invite, revokeInvitation, regenerateJoinCode, updateReminders, reset]);
+  const value = useMemo<MetisStore>(() => ({
+    ...demoData, ...data, ...deriveHelpers(data, YEAR, month),
+    mode: "demo", tenants: [{ id: data.tenant.id, name: data.tenant.name, role: "admin" }], switchTenant: () => {}, isPlatformAdmin: false,
+    syncError: null, clearSyncError: () => {}, saving: false,
+    year: YEAR, month, currentUserId, setMonth, setCurrentUser,
+    saveResult, transition, createScorecard, updateItem, addItem, removeItem, upsertElement, upsertElementScope, addScope, addScopeType,
+    upsertObjective, upsertLae, upsertUnit, removeUnit, invite, revokeInvitation, regenerateJoinCode, updateMember, updateReminders, reset,
+  }), [data, month, currentUserId, saveResult, transition, createScorecard, updateItem, addItem, removeItem, upsertElement, upsertElementScope, addScope, addScopeType,
+    upsertObjective, upsertLae, upsertUnit, removeUnit, invite, revokeInvitation, regenerateJoinCode, updateMember, updateReminders, reset]);
 
-  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
-}
-
-export function useMetis(): MetisStore {
-  const s = useContext(Ctx);
-  if (!s) throw new Error("useMetis debe usarse dentro de <MetisProvider>");
-  return s;
+  return <MetisCtx.Provider value={value}>{children}</MetisCtx.Provider>;
 }

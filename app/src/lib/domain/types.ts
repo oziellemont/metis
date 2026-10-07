@@ -106,13 +106,22 @@ export interface User {
   initials: string;
   managerId?: string | null;
   role: "admin" | "manager" | "collaborator";
+  /** Rol en la base de datos (owner/admin/manager/member/viewer). Sólo en modo real. */
+  dbRole?: string;
   teamName?: string;
 }
 
 export interface Tenant {
   id: string;
   name: string;
-  plan: "arranque" | "crecimiento" | "escala" | "corporativo";
+  plan: string;
+  slug?: string;
+  /** Año del ejercicio que se está midiendo. */
+  fiscalYear?: number;
+  logoUrl?: string | null;
+  brandColor?: string | null;
+  /** Ajustes crudos (jsonb) para no perder llaves al guardar. */
+  settings?: Record<string, unknown>;
   /** Código de acceso con el que un colaborador se une al círculo de la empresa. */
   joinCode?: string;
   /** Configuración de recordatorios de cierre de mes. */
@@ -149,4 +158,6 @@ export interface Invitation {
   title?: string;
   status: "pending" | "accepted" | "revoked";
   createdAt: string;
+  /** Token secreto del enlace de invitación (modo real). */
+  token?: string;
 }

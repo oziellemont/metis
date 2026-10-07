@@ -2,7 +2,7 @@
 import { useMemo, useState } from "react";
 import clsx from "clsx";
 import { Plus, Send, Check, History, X, Trash2, AlertTriangle, Pencil } from "lucide-react";
-import { useMetis } from "@/lib/store";
+import { useMetis, newId } from "@/lib/store";
 import { Avatar, PageHeader, RespChip, StatusChip, TrafficChip, Sparkline } from "@/components/ui/primitives";
 import { DIR, MONTHS, MONTHS_SHORT, PERIOD, RESP, STATUS, TYPE } from "@/lib/labels";
 import { invalidMonths, totalWeight, weightFor } from "@/lib/domain/scoring";
@@ -10,9 +10,9 @@ import type { Period, Responsibility, ScorecardItem } from "@/lib/domain/types";
 
 export function ScorecardView({ userId, asManager = false }: { userId: string; asManager?: boolean }) {
   const s = useMetis();
-  const user = s.users.find((u) => u.id === userId)!;
+  const user = s.userOf(userId);
   const manager = s.users.find((u) => u.id === user.managerId);
-  const sc = s.scorecards.find((x) => x.userId === userId);
+  const sc = s.scorecards.find((x) => x.userId === userId && x.year === s.year);
   const items = useMemo(() => (sc ? s.scorecardItems.filter((i) => i.scorecardId === sc.id) : []), [s.scorecardItems, sc]);
   const [showHistory, setShowHistory] = useState(false);
   const [showWeights, setShowWeights] = useState(false);
@@ -20,14 +20,25 @@ export function ScorecardView({ userId, asManager = false }: { userId: string; a
   const [editing, setEditing] = useState<ScorecardItem | null>(null);
   const [note, setNote] = useState("");
 
-  if (!sc) return <div className="card p-8 text-center text-slate-500">Este colaborador aún no tiene scorecard {s.year}.</div>;
+  if (!sc) {
+    const me = s.userOf(s.currentUserId);
+    const canCreate = userId === s.currentUserId || user.managerId === s.currentUserId || me.role === "admin";
+    return (
+      <div className="card p-8 text-center text-slate-500">
+        <div>{userId === s.currentUserId ? "Aún no tienes" : `${user.name} aún no tiene`} scorecard {s.year}.</div>
+        {canCreate && user.id && (
+          <button className="btn-primary mt-4 mx-auto" onClick={() => s.createScorecard(userId)}><Plus size={14} /> Crear scorecard {s.year}</button>
+        )}
+      </div>
+    );
+  }
 
   const editable = !asManager && (sc.status === "draft" || sc.status === "changes_requested");
   const total = totalWeight(items, s.month);
   const badMonths = invalidMonths(items);
   const att = s.scorecardAttainment(sc.id);
   const owned = items.filter((i) => i.responsibility === "owner").length;
-  const kpis = items.filter((i) => s.elements.find((e) => e.id === s.elementScopes.find((es) => es.id === i.elementScopeId)!.elementId)!.type === "kpi").length;
+  const kpis = items.filter((i) => s.elementOf(s.esOf(i.elementScopeId).elementId).type === "kpi").length;
 
   const steps: { key: string; label: string; done: boolean }[] = [
     { key: "draft", label: "Borrador", done: true },
@@ -98,13 +109,13 @@ export function ScorecardView({ userId, asManager = false }: { userId: string; a
           </thead>
           <tbody className="divide-y divide-slate-100">
             {items.map((it) => {
-              const es = s.elementScopes.find((x) => x.id === it.elementScopeId)!;
-              const el = s.elements.find((x) => x.id === es.elementId)!;
-              const lae = s.laes.find((x) => x.id === el.laeId)!;
-              const scope = s.scopes.find((x) => x.id === es.scopeId)!;
-              const owner = s.users.find((u) => u.id === es.ownerUserId)!;
+              const es = s.esOf(it.elementScopeId);
+              const el = s.elementOf(es.elementId);
+              const lae = s.laeOf(el.laeId);
+              const scope = s.scopeOf(es.scopeId);
+              const owner = s.userOf(es.ownerUserId);
               const ev = s.evaluate(it);
-              const series = Array.from({ length: 12 }, (_, m) => s.results.find((r) => r.elementScopeId === es.id && r.month === m + 1)?.value ?? null);
+              const series = Array.from({ length: 12 }, (_, m) => s.results.find((r) => r.elementScopeId === es.id && r.month === m + 1 && r.year === s.year)?.value ?? null);
               return (
                 <tr key={it.id} className="hover:bg-slate-50/60">
                   <td className="td"><span className={clsx("chip", el.type === "kpi" ? "bg-indigo-soft text-indigo" : "bg-sky-soft text-sky")}>{TYPE[el.type]}</span></td>
@@ -191,8 +202,8 @@ function MonthlyWeights({ items, editable, onClose }: { items: ScorecardItem[]; 
         <thead><tr><th className="th">Elemento</th>{MONTHS_SHORT.map((m) => <th key={m} className="th text-right">{m}</th>)}</tr></thead>
         <tbody className="divide-y divide-slate-100">
           {items.map((it) => {
-            const es = s.elementScopes.find((x) => x.id === it.elementScopeId)!;
-            const el = s.elements.find((x) => x.id === es.elementId)!;
+            const es = s.esOf(it.elementScopeId);
+            const el = s.elementOf(es.elementId);
             return (
               <tr key={it.id}>
                 <td className="td font-medium">{el.name}</td>
@@ -233,7 +244,7 @@ function ItemEditor({ scorecardId, userId, item, onClose }: { scorecardId: strin
   const save = () => {
     if (!es) return;
     const targets = resp === "contributor" && ownerItem ? ownerItem.targets : t;
-    const next: ScorecardItem = { id: item?.id ?? `i-${Date.now()}`, scorecardId, elementScopeId: es.id, responsibility: resp, weight, monthlyWeights: item?.monthlyWeights, targets, period };
+    const next: ScorecardItem = { id: item?.id ?? newId(), scorecardId, elementScopeId: es.id, responsibility: resp, weight, monthlyWeights: item?.monthlyWeights, targets, period };
     item ? s.updateItem(next) : s.addItem(next);
     onClose();
   };
@@ -245,7 +256,7 @@ function ItemEditor({ scorecardId, userId, item, onClose }: { scorecardId: strin
         <label className="label">Elemento y alcance (del catálogo)</label>
         <select className="input" value={esId} onChange={(e) => { setEsId(e.target.value); const oi = s.scorecardItems.find((i) => i.elementScopeId === e.target.value && i.responsibility === "owner"); if (oi) setT(oi.targets); }} disabled={!!item}>
           <option value="">Selecciona…</option>
-          {s.elementScopes.map((x) => { const e = s.elements.find((y) => y.id === x.elementId)!; const sc = s.scopes.find((y) => y.id === x.scopeId)!; return <option key={x.id} value={x.id}>{TYPE[e.type]} · {e.name} · {sc.name}</option>; })}
+          {s.elementScopes.map((x) => { const e = s.elementOf(x.elementId); const sc = s.scopeOf(x.scopeId); return <option key={x.id} value={x.id}>{TYPE[e.type]} · {e.name} · {sc.name}</option>; })}
         </select>
         {es && el && owner && (
           <div className="mt-3 rounded-xl bg-slate-50 p-3 text-sm">

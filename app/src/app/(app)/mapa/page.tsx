@@ -24,13 +24,13 @@ export default function Mapa() {
   const esVisible = s.elementScopes.filter((es) => !scopeIds || scopeIds.has(es.scopeId));
 
   const evalEs = (esId: string) => {
-    const es = s.elementScopes.find((x) => x.id === esId)!;
-    const el = s.elements.find((e) => e.id === es.elementId)!;
+    const es = s.esOf(esId);
+    const el = s.elementOf(es.elementId);
     const ownerItem = s.scorecardItems.find((i) => i.elementScopeId === esId && i.responsibility === "owner");
-    const r = s.results.find((x) => x.elementScopeId === esId && x.month === s.month);
+    const r = s.results.find((x) => x.elementScopeId === esId && x.month === s.month && x.year === s.year);
     const t: Traffic = ownerItem ? traffic(r?.value ?? null, ownerItem.targets, el.direction) : "pending";
     const cvs = s.scorecardItems.filter((i) => i.elementScopeId === esId && i.responsibility === "contributor").length;
-    return { es, el, value: r?.value ?? null, t, cvs, owner: s.users.find((u) => u.id === es.ownerUserId)! };
+    return { es, el, value: r?.value ?? null, t, cvs, owner: s.userOf(es.ownerUserId) };
   };
 
   const totals: Record<Traffic, number> = { outstanding: 0, satisfactory: 0, minimum: 0, below: 0, pending: 0 };
@@ -85,7 +85,7 @@ export default function Mapa() {
                       {rows.length === 0 ? <div className="text-xs text-slate-400">Sin elementos en esta vista.</div> : (
                         <ul className="space-y-2">
                           {rows.map(({ es, el, value, t, cvs, owner }) => {
-                            const sc = s.scopes.find((x) => x.id === es.scopeId)!;
+                            const sc = s.scopeOf(es.scopeId);
                             return (
                               <li key={es.id} className="flex items-center gap-3 rounded-xl bg-slate-50/70 px-3 py-2">
                                 <span className={clsx("chip shrink-0", el.type === "kpi" ? "bg-indigo-soft text-indigo" : "bg-sky-soft text-sky")}>{TYPE[el.type]}</span>

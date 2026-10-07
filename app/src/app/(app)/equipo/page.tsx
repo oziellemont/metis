@@ -6,7 +6,7 @@ import { MONTHS } from "@/lib/labels";
 
 export default function Equipo() {
   const s = useMetis();
-  const me = s.users.find((u) => u.id === s.currentUserId)!;
+  const me = s.userOf(s.currentUserId);
   const team = s.users.filter((u) => u.managerId === me.id);
   return (
     <>
@@ -17,10 +17,10 @@ export default function Equipo() {
             <thead className="border-b border-slate-100"><tr><th className="th">Colaborador</th><th className="th">Scorecard</th><th className="th text-right">Elementos</th><th className="th text-right">Cumplimiento ponderado</th><th className="th text-right">Cargas pendientes</th><th className="th" /></tr></thead>
             <tbody className="divide-y divide-slate-100">
               {team.map((u) => {
-                const sc = s.scorecards.find((x) => x.userId === u.id);
+                const sc = s.scorecards.find((x) => x.userId === u.id && x.year === s.year);
                 const items = sc ? s.scorecardItems.filter((i) => i.scorecardId === sc.id) : [];
                 const a = sc ? s.scorecardAttainment(sc.id) : null;
-                const pend = s.elementScopes.filter((es) => es.ownerUserId === u.id && !s.results.some((r) => r.elementScopeId === es.id && r.month === s.month && r.value !== null)).length;
+                const pend = s.elementScopes.filter((es) => es.ownerUserId === u.id && !s.results.some((r) => r.elementScopeId === es.id && r.month === s.month && r.year === s.year && r.value !== null)).length;
                 return (
                   <tr key={u.id} className="hover:bg-slate-50/60">
                     <td className="td"><div className="flex items-center gap-3"><Avatar initials={u.initials} /><div><div className="font-medium">{u.name}</div><div className="text-xs text-slate-400">{u.title}</div></div></div></td>

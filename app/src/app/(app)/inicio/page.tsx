@@ -8,17 +8,17 @@ import type { Traffic } from "@/lib/domain/types";
 
 export default function Inicio() {
   const s = useMetis();
-  const me = s.users.find((u) => u.id === s.currentUserId)!;
-  const sc = s.scorecards.find((x) => x.userId === me.id);
+  const me = s.userOf(s.currentUserId);
+  const sc = s.scorecards.find((x) => x.userId === me.id && x.year === s.year);
   const items = sc ? s.scorecardItems.filter((i) => i.scorecardId === sc.id) : [];
   const evals = items.map((i) => s.evaluate(i));
   const att = sc ? s.scorecardAttainment(sc.id) : { value: null, loaded: 0, total: 0 };
 
   const myOwned = s.elementScopes.filter((es) => es.ownerUserId === me.id);
-  const pending = myOwned.filter((es) => !s.results.some((r) => r.elementScopeId === es.id && r.month === s.month && r.value !== null));
+  const pending = myOwned.filter((es) => !s.results.some((r) => r.elementScopeId === es.id && r.month === s.month && r.year === s.year && r.value !== null));
 
   const team = s.users.filter((u) => u.managerId === me.id);
-  const teamScorecards = team.map((u) => ({ u, sc: s.scorecards.find((x) => x.userId === u.id) }));
+  const teamScorecards = team.map((u) => ({ u, sc: s.scorecards.find((x) => x.userId === u.id && x.year === s.year) }));
   const toApprove = teamScorecards.filter((t) => t.sc?.status === "submitted");
 
   // Resumen organizacional (todos los items con dato en el mes)
@@ -46,9 +46,9 @@ export default function Inicio() {
           {evals.length === 0 ? <p className="text-sm text-slate-500">Aún no tienes scorecard. <Link className="text-indigo" href="/scorecard">Crea el tuyo</Link>.</p> : (
             <ul className="divide-y divide-slate-100">
               {evals.map((e) => {
-                const es = s.elementScopes.find((x) => x.id === e.item.elementScopeId)!;
-                const el = s.elements.find((x) => x.id === es.elementId)!;
-                const sc_ = s.scopes.find((x) => x.id === es.scopeId)!;
+                const es = s.esOf(e.item.elementScopeId);
+                const el = s.elementOf(es.elementId);
+                const sc_ = s.scopeOf(es.scopeId);
                 return (
                   <li key={e.item.id} className="flex items-center gap-3 py-2.5">
                     <div className="min-w-0 flex-1">
@@ -69,8 +69,8 @@ export default function Inicio() {
             <h2 className="font-semibold mb-3">Pendientes</h2>
             <ul className="space-y-2 text-sm">
               {pending.map((es) => {
-                const el = s.elements.find((x) => x.id === es.elementId)!;
-                const sc_ = s.scopes.find((x) => x.id === es.scopeId)!;
+                const el = s.elementOf(es.elementId);
+                const sc_ = s.scopeOf(es.scopeId);
                 return (
                   <li key={es.id}>
                     <Link href="/carga" className="flex items-center gap-2 rounded-xl bg-coral-soft/60 px-3 py-2 hover:bg-coral-soft">

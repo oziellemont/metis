@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Plus } from "lucide-react";
-import { useMetis } from "@/lib/store";
+import { useMetis, newId } from "@/lib/store";
 import { PageHeader } from "@/components/ui/primitives";
 import type { Scope } from "@/lib/domain/types";
 
@@ -37,7 +37,7 @@ export default function Alcances() {
           <h3 className="font-semibold mb-1">Tipos de alcance</h3>
           <p className="text-xs text-slate-500 mb-3">Se usan en todo el catálogo.</p>
           <div className="flex flex-wrap gap-1.5 mb-3">{s.scopeTypes.map((t) => <span key={t.id} className="chip bg-indigo-soft text-indigo">{t.name}</span>)}</div>
-          <div className="flex gap-2"><input className="input" placeholder="Nuevo tipo…" value={newType} onChange={(e) => setNewType(e.target.value)} /><button className="btn-primary" disabled={!newType} onClick={() => { s.addScopeType({ id: `st-${Date.now()}`, name: newType }); setNewType(""); }}><Plus size={14} /></button></div>
+          <div className="flex gap-2"><input className="input" placeholder="Nuevo tipo…" value={newType} onChange={(e) => setNewType(e.target.value)} /><button className="btn-primary" disabled={!newType} onClick={() => { s.addScopeType({ id: newId(), name: newType }); setNewType(""); }}><Plus size={14} /></button></div>
         </div>
         <div className="card p-5 lg:col-span-2">
           <h3 className="font-semibold mb-3">Jerarquía de alcances</h3>
@@ -48,7 +48,7 @@ export default function Alcances() {
               <input className="input" placeholder="Nombre" value={newScope.name} onChange={(e) => setNewScope({ ...newScope, name: e.target.value })} />
               <select className="input" value={newScope.typeId} onChange={(e) => setNewScope({ ...newScope, typeId: e.target.value })}>{s.scopeTypes.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</select>
               <select className="input" value={newScope.parentId} onChange={(e) => setNewScope({ ...newScope, parentId: e.target.value })}><option value="">Sin padre</option>{s.scopes.map((x) => <option key={x.id} value={x.id}>{x.name}</option>)}</select>
-              <button className="btn-primary" disabled={!newScope.name} onClick={() => { const sc: Scope = { id: `s-${Date.now()}`, name: newScope.name, typeId: newScope.typeId, parentId: newScope.parentId || null }; s.addScope(sc); setNewScope({ ...newScope, name: "" }); }}><Plus size={14} /> Agregar</button>
+              <button className="btn-primary" disabled={!newScope.name || !(newScope.typeId || s.scopeTypes[0]) } onClick={() => { const sc: Scope = { id: newId(), name: newScope.name, typeId: newScope.typeId || s.scopeTypes[0].id, parentId: newScope.parentId || null }; s.addScope(sc); setNewScope({ ...newScope, name: "" }); }}><Plus size={14} /> Agregar</button>
             </div>
           </div>
         </div>
