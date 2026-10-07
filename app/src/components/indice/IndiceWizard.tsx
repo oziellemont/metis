@@ -102,7 +102,7 @@ export function IndiceWizard() {
     <section className="pt-8">
       <div className="no-print flex flex-wrap items-center gap-2 mb-6">
         <button className="btn-ghost" onClick={() => window.print()}><Printer size={14} /> Descargar PDF</button>
-        <a className="btn-primary" href="mailto:hola@metis.mx?subject=Revisar%20mi%20%C3%8Dndice%20de%20Alineaci%C3%B3n"><CalendarCheck size={14} /> Agendar revisión de 45 min sin costo</a>
+        <a className="btn-primary" href="mailto:hola@metisalign.mx?subject=Revisar%20mi%20%C3%8Dndice%20de%20Alineaci%C3%B3n"><CalendarCheck size={14} /> Agendar revisión de 45 min sin costo</a>
         {mode === "local" && <span className="text-xs text-slate-400 ml-auto">Modo demo: el lead se guardó localmente (sin Supabase).</span>}
       </div>
 
@@ -141,7 +141,7 @@ export function IndiceWizard() {
 
         <div className="mt-6 grid md:grid-cols-2 gap-4">
           <div className="rounded-2xl border border-slate-100 p-5"><div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Recomendación METIS</div><p className="mt-2 text-sm text-slate-700">{result.level.recommendation}</p></div>
-          <div className="rounded-2xl border border-slate-100 p-5"><div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Siguiente paso</div><p className="mt-2 text-sm text-slate-700">Revisemos estos resultados juntos en 45 minutos, sin costo. Te mostramos cómo se vería la estrategia de {lead.company} dentro de METIS.</p><a className="text-sm text-indigo font-medium mt-2 inline-block" href="mailto:hola@metis.mx">hola@metis.mx →</a></div>
+          <div className="rounded-2xl border border-slate-100 p-5"><div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Siguiente paso</div><p className="mt-2 text-sm text-slate-700">Revisemos estos resultados juntos en 45 minutos, sin costo. Te mostramos cómo se vería la estrategia de {lead.company} dentro de METIS.</p><a className="text-sm text-indigo font-medium mt-2 inline-block" href="mailto:hola@metisalign.mx">hola@metisalign.mx →</a></div>
         </div>
         <div className="mt-6 text-[10px] text-slate-400">El Índice de Alineación es una autoevaluación. El Diagnóstico de Alineación METIS lo complementa con entrevistas al equipo directivo y revisión de KPIs reales.</div>
       </div>
