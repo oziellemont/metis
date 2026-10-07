@@ -2,7 +2,7 @@
 import { useState } from "react";
 import clsx from "clsx";
 import { Plus, Pencil, Trash2, X, Lock } from "lucide-react";
-import { useMetis } from "@/lib/store";
+import { useMetis, newId } from "@/lib/store";
 import { PageHeader } from "@/components/ui/primitives";
 import { fmtWithUnit } from "@/lib/labels";
 import type { Unit } from "@/lib/domain/types";
@@ -70,7 +70,7 @@ export default function Unidades() {
 
 function UnitEditor({ u, onClose }: { u?: Unit; onClose: () => void }) {
   const s = useMetis();
-  const [f, setF] = useState<Unit>(u ?? { id: `un-${Date.now()}`, symbol: "", name: "", decimals: 1, position: "suffix" });
+  const [f, setF] = useState<Unit>(u ?? { id: newId(), symbol: "", name: "", decimals: 1, position: "suffix" });
   const dup = s.units.some((x) => x.id !== f.id && x.symbol.trim().toLowerCase() === f.symbol.trim().toLowerCase());
   return (
     <div className="fixed inset-0 z-30 bg-ink/30 flex items-end sm:items-center justify-center p-4" onClick={onClose}>

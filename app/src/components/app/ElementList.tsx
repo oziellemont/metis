@@ -9,7 +9,7 @@ import type { ElementType } from "@/lib/domain/types";
 export function ElementList({ type }: { type: ElementType }) {
   const s = useMetis();
   const rows = s.elementScopes
-    .map((es) => ({ es, el: s.elements.find((e) => e.id === es.elementId)! }))
+    .map((es) => ({ es, el: s.elementOf(es.elementId) }))
     .filter((r) => r.el.type === type);
   return (
     <>
@@ -19,10 +19,10 @@ export function ElementList({ type }: { type: ElementType }) {
           <thead className="border-b border-slate-100"><tr><th className="th">Elemento</th><th className="th">Alcance</th><th className="th">LAE</th><th className="th">{RESP.owner.code}</th><th className="th text-right">{RESP.contributor.code}</th><th className="th">Real</th><th className="th">Estado</th><th className="th">Tendencia</th></tr></thead>
           <tbody className="divide-y divide-slate-100">
             {rows.map(({ es, el }) => {
-              const sc = s.scopes.find((x) => x.id === es.scopeId)!; const lae = s.laes.find((l) => l.id === el.laeId)!; const owner = s.users.find((u) => u.id === es.ownerUserId)!;
+              const sc = s.scopeOf(es.scopeId); const lae = s.laeOf(el.laeId); const owner = s.userOf(es.ownerUserId);
               const oi = s.scorecardItems.find((i) => i.elementScopeId === es.id && i.responsibility === "owner");
               const cvs = s.scorecardItems.filter((i) => i.elementScopeId === es.id && i.responsibility === "contributor").length;
-              const r = s.results.find((x) => x.elementScopeId === es.id && x.month === s.month);
+              const r = s.results.find((x) => x.elementScopeId === es.id && x.month === s.month && x.year === s.year);
               const t = oi ? traffic(r?.value ?? null, oi.targets, el.direction) : "pending";
               const series = Array.from({ length: 12 }, (_, m) => s.results.find((x) => x.elementScopeId === es.id && x.month === m + 1)?.value ?? null);
               return (

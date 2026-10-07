@@ -18,6 +18,7 @@ export default function Usuarios() {
   const [inviting, setInviting] = useState(false);
   const [copied, setCopied] = useState<"code" | "link" | null>(null);
   const code = s.tenant.joinCode ?? "—";
+  const isAdmin = s.userOf(s.currentUserId).role === "admin";
   const joinUrl = typeof window !== "undefined" ? `${window.location.origin}/unirme` : "/unirme";
   const copy = (what: "code" | "link") => { navigator.clipboard?.writeText(what === "code" ? code : `${joinUrl}?code=${code}`); setCopied(what); setTimeout(() => setCopied(null), 1500); };
 
@@ -44,7 +45,7 @@ export default function Usuarios() {
           <h3 className="font-semibold mb-1 flex items-center gap-2"><Mail size={16} className="text-indigo" /> Invitaciones</h3>
           {s.invitations.length === 0 ? <p className="text-xs text-slate-500">Aún no has invitado a nadie por correo.</p> : (
             <ul className="divide-y divide-slate-100 -mx-1">
-              {s.invitations.map((i) => (
+              {s.invitations.slice(0, 12).map((i) => (
                 <li key={i.id} className="flex items-center gap-2 py-2 px-1 text-sm">
                   <div className="min-w-0 flex-1"><div className="truncate font-medium text-xs">{i.email}</div><div className="text-[11px] text-slate-400 truncate">{i.title ?? ROLE[i.role]} · {new Date(i.createdAt).toLocaleDateString("es-MX", { day: "numeric", month: "short" })}</div></div>
                   <span className={clsx("chip", INV_STATUS[i.status].tone)}>{INV_STATUS[i.status].label}</span>
@@ -66,8 +67,21 @@ export default function Usuarios() {
                 <tr key={u.id}>
                   <td className="td"><div className="flex items-center gap-3"><Avatar initials={u.initials} /><div><div className="font-medium">{u.name}</div><div className="text-xs text-slate-400">{u.title}{u.email && <> · {u.email}</>}</div></div></div></td>
                   <td className="td text-slate-600">{u.teamName}</td>
-                  <td className="td text-slate-600">{m?.name ?? <span className="text-slate-400">—</span>}</td>
-                  <td className="td"><span className="chip bg-slate-100 text-slate-600">{ROLE[u.role]}</span></td>
+                  <td className="td text-slate-600">
+                    {isAdmin ? (
+                      <select className="input !py-1 !text-xs max-w-[12rem]" value={u.managerId ?? ""} onChange={(e) => s.updateMember(u.id, { managerId: e.target.value || null })} aria-label={`Jefe de ${u.name}`}>
+                        <option value="">— Nadie (máximo nivel)</option>
+                        {s.users.filter((x) => x.id !== u.id).map((x) => <option key={x.id} value={x.id}>{x.name}</option>)}
+                      </select>
+                    ) : (m?.name ?? <span className="text-slate-400">—</span>)}
+                  </td>
+                  <td className="td">
+                    {isAdmin && u.id !== s.currentUserId && u.dbRole !== "owner" ? (
+                      <select className="input !py-1 !text-xs !w-auto" value={u.role} onChange={(e) => s.updateMember(u.id, { role: e.target.value as User["role"] })} aria-label={`Rol de ${u.name}`}>
+                        <option value="collaborator">Colaborador</option><option value="manager">Jefe</option><option value="admin">Administrador</option>
+                      </select>
+                    ) : <span className="chip bg-slate-100 text-slate-600">{u.dbRole === "owner" ? "Dueño" : ROLE[u.role]}</span>}
+                  </td>
                   <td className="td text-right tabular-nums">{s.users.filter((x) => x.managerId === u.id).length}</td>
                 </tr>
               );
@@ -82,19 +96,19 @@ export default function Usuarios() {
 
 function InviteDialog({ onClose }: { onClose: () => void }) {
   const s = useMetis();
-  const me = s.users.find((u) => u.id === s.currentUserId)!;
+  const me = s.userOf(s.currentUserId);
   const [f, setF] = useState<{ email: string; role: User["role"]; managerId: string; title: string }>({ email: "", role: "collaborator", managerId: me.id, title: "" });
   const [done, setDone] = useState<Invitation | null>(null);
   const valid = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(f.email);
-  const link = typeof window !== "undefined" && done ? `${window.location.origin}/login?inv=${done.id}` : "";
+  const link = typeof window !== "undefined" && done ? `${window.location.origin}/login?inv=${done.token ?? done.id}` : "";
   return (
     <div className="fixed inset-0 z-30 bg-ink/30 flex items-end sm:items-center justify-center p-4" onClick={onClose}>
       <div className="card w-full max-w-md p-6" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4"><h3 className="font-semibold">Invitar usuario</h3><button onClick={onClose} className="text-slate-400 hover:text-ink"><X size={18} /></button></div>
         {done ? (
           <div>
-            <div className="rounded-xl bg-mint-soft p-4 text-sm"><div className="font-medium text-sob flex items-center gap-2"><Send size={14} /> Invitación enviada a {done.email}</div><p className="text-slate-600 text-xs mt-1">Al abrir el enlace e iniciar sesión con ese correo, entra directo al espacio de {s.tenant.name} con {done.title || ROLE[done.role]} como cargo.</p></div>
-            <label className="label mt-4">Enlace de la invitación (por si quieres mandarlo tú)</label>
+            <div className="rounded-xl bg-mint-soft p-4 text-sm"><div className="font-medium text-sob flex items-center gap-2"><Send size={14} /> Invitación lista para {done.email}</div><p className="text-slate-600 text-xs mt-1">Al abrir el enlace e iniciar sesión con ese correo, entra directo al espacio de {s.tenant.name} con {done.title || ROLE[done.role]} como cargo.</p></div>
+            <label className="label mt-4">Enlace de la invitación · mándaselo por correo o WhatsApp</label>
             <div className="flex gap-2"><input className="input font-mono text-xs" readOnly value={link} /><button className="btn-ghost" onClick={() => navigator.clipboard?.writeText(link)}><Copy size={14} /></button></div>
             <div className="mt-5 flex justify-end"><button className="btn-primary" onClick={onClose}>Listo</button></div>
           </div>

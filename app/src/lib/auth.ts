@@ -15,6 +15,11 @@ import { supabaseBrowser, hasSupabase } from "./supabase/client";
 import { demoData } from "./demo/seed";
 
 export const SESSION_KEY = "metis-session-v1";
+/** Empresa (portal) que se abre al entrar. La comparte el store real. */
+export const ACTIVE_TENANT_KEY = "metis-active-tenant";
+export function rememberActiveTenant(id?: string | null) {
+  try { if (id) localStorage.setItem(ACTIVE_TENANT_KEY, id); } catch { /* ignore */ }
+}
 
 export interface DemoSession { email: string; tenantId?: string; tenantName?: string; joinedVia?: "code" | "invitation"; }
 
@@ -50,8 +55,9 @@ export async function joinWithCode(code: string): Promise<{ ok: boolean; tenantN
   if (sb) {
     const { data, error } = await sb.schema("metis").rpc("join_with_code", { p_code: clean });
     if (error) return { ok: false, error: friendly(error.message) };
-    const row = Array.isArray(data) ? data[0] : data;
-    return { ok: true, tenantName: (row as { tenant_name?: string } | null)?.tenant_name };
+    const row = (Array.isArray(data) ? data[0] : data) as { tenant_id?: string; tenant_name?: string } | null;
+    rememberActiveTenant(row?.tenant_id);
+    return { ok: true, tenantName: row?.tenant_name };
   }
   // demo
   if (clean !== (demoData.tenant.joinCode ?? "").toUpperCase()) return { ok: false, error: "Ese código no corresponde a ninguna empresa. Pídeselo a tu administrador." };
@@ -66,8 +72,9 @@ export async function acceptInvitation(token: string): Promise<{ ok: boolean; te
   if (sb) {
     const { data, error } = await sb.schema("metis").rpc("accept_invitation", { p_token: token });
     if (error) return { ok: false, error: friendly(error.message) };
-    const row = Array.isArray(data) ? data[0] : data;
-    return { ok: true, tenantName: (row as { tenant_name?: string } | null)?.tenant_name };
+    const row = (Array.isArray(data) ? data[0] : data) as { tenant_id?: string; tenant_name?: string } | null;
+    rememberActiveTenant(row?.tenant_id);
+    return { ok: true, tenantName: row?.tenant_name };
   }
   const inv = demoData.invitations.find((i) => i.id === token && i.status === "pending");
   if (!inv) return { ok: false, error: "La invitación no existe o ya fue usada." };

@@ -56,6 +56,8 @@ Correo: `hola@metisalign.mx` (contacto) y `recordatorios@metisalign.mx` (Resend,
    2. `supabase/migrations/0002_access_units_reminders.sql` — código de empresa, invitaciones, unidades editables, ajustes de recordatorios, `notification_log`, trigger que crea el perfil al registrarse.
    3. `supabase/migrations/0003_grants_service_role.sql` — permisos del cron (service_role) sobre `metis.*`.
    4. `supabase/seed.sql` — datos de Grupo Andes (opcional, para demo).
+   5. `supabase/migrations/0004_fix_join_ambiguous.sql` — arreglo de `join_with_code`.
+   6. `supabase/migrations/0005_portal_por_cliente.sql` — **portal por cliente**: candados entre empresas, consola METIS, marca por empresa, Realtime.
 3. En Supabase → Project Settings → **Data API** → *Exposed schemas*: agrega `metis` (además de `public`). Sin esto la API responde `PGRST106 Invalid schema: metis` y el login/unirme no puede leer membresías ni llamar los RPC.
 4. En Supabase → Authentication → URL Configuration: Site URL = tu dominio de Vercel y agrega `https://<dominio>/auth/callback` a Redirect URLs. Activa el proveedor Email (magic link) y, si quieres, Google.
 5. En Vercel → Settings → General: **Root Directory = `app`** y Framework Preset = Next.js (un build que termina en 2–3 s es señal de que está desplegando la raíz del repo). Para que el sitio sea público, en Settings → **Deployment Protection** desactiva *Vercel Authentication* para Production (si no, cualquier visitante y el cron reciben un 302 al SSO de Vercel).
@@ -69,6 +71,19 @@ Para regenerar el seed cuando cambien los datos demo: `npx tsx scripts/gen-seed-
 1. `/login` — inicia sesión con su correo (magic link) o Google. Supabase crea `auth.users` y un trigger crea `metis.profiles`.
 2. `/unirme` — captura el **código de empresa** (p. ej. `ANDES-2026`, visible en *Usuarios y roles*) → RPC `metis.join_with_code` crea su `membership`. O bien llega desde el enlace de una **invitación** (`/login?inv=<token>`) → RPC `metis.accept_invitation`. Si su correo ya tenía invitación pendiente, se acepta sola al registrarse.
 3. Desde ese momento RLS le muestra sólo los datos de su empresa; el `middleware.ts` manda a `/login` si no hay sesión y a `/unirme` si no pertenece a ninguna empresa.
+
+### Portal por cliente (aislamiento multi-empresa)
+
+Una sola app y una sola base de datos; **cada fila lleva `tenant_id`** y el aislamiento lo hace la base de datos, no la pantalla:
+
+- **RLS** en todas las tablas `metis.*`: sólo se ven/escriben filas de empresas donde el usuario tiene `membership` (`metis.current_tenant_ids()`).
+- **Candados** (0005): trigger `assert_same_tenant` impide ligar filas de empresas distintas (p. ej. un resultado de A sobre un alcance de B) y `forbid_tenant_change` impide mover una fila a otra empresa.
+- **Proveedor Supabase** (`src/lib/store-supabase.tsx`): con Supabase configurado, todo lo que se guarda (estrategia, catálogo, alcances, unidades, scorecards, resultados, usuarios, recordatorios) va a la base de datos; los demás miembros lo ven al instante por **Realtime** (y al volver a la pestaña). Sin Supabase la app cae al modo demo (localStorage).
+- **Varias empresas**: si alguien pertenece a más de una, aparece un selector arriba; la empresa activa se recuerda en el navegador (`metis-active-tenant`) o con `?empresa=<slug>`.
+- **Consola METIS** (`/consola`, sólo `metis.platform_admins`): lista de clientes, alta de cliente (`create_tenant` → código de equipo + invitación al dueño) y "Entrar como consultor".
+- **Prueba de integración** (`src/lib/portal.it.test.ts`): verifica con JWT por usuario que una empresa no puede leer ni escribir datos de otra. Se salta si no existen `METIS_IT_URL` y `METIS_IT_JWT_SECRET` (apunta a un Supabase/PostgREST de pruebas, nunca a producción).
+
+**Configurar un cliente nuevo:** Consola → Alta de cliente → (dueño entra con su invitación) → Estrategia (objetivos y LAE) → Catálogo de elementos → "Medir aquí" (elemento + alcance + DR) → cada quien crea su Scorecard y agrega elementos → Carga mensual.
 
 ## Identidad visual
 
@@ -108,6 +123,7 @@ Reglas de marca: espacio libre mínimo = altura de la "ê"; mínimo 90 px de anc
 - `/inicio` panel · `/scorecard` mi scorecard · `/carga` carga mensual con propagación DR→CV
 - `/mapa` mapa de alineación · `/equipo` aprobar scorecards · `/reportes` cumplimiento por colaborador/mes
 - `/login` `/unirme` acceso por correo + código de empresa o invitación · `/auth/callback` retorno de Supabase
+- `/consola` consola METIS de clientes (sólo administradores de plataforma) · `/config/estrategia` objetivos y LAE
 - `/config/catalogo` `/config/alcances` `/config/unidades` `/config/usuarios` (código de empresa, invitaciones) `/config/notificaciones` (recordatorios con vista previa)
 - `/api/cron/recordatorios` cron diario de Vercel
 - `/sesiones` `/compromisos` — v1 (placeholder)

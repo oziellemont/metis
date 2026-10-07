@@ -42,6 +42,11 @@ export async function middleware(req: NextRequest) {
   const { data: { user } } = await sb.auth.getUser();
   const path = req.nextUrl.pathname;
   const isApp = APP_PREFIXES.some((p) => path === p || path.startsWith(p + "/"));
+  // Consola METIS: requiere sesión, pero no pertenecer a una empresa (el permiso lo valida la base).
+  if ((path === "/consola" || path.startsWith("/consola/")) && !user) {
+    const login = req.nextUrl.clone(); login.pathname = "/login"; login.searchParams.set("next", path);
+    return NextResponse.redirect(login);
+  }
 
   if (isApp && !user) {
     const login = req.nextUrl.clone(); login.pathname = "/login"; login.searchParams.set("next", path);

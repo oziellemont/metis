@@ -3,7 +3,7 @@ import { useState } from "react";
 import clsx from "clsx";
 import Link from "next/link";
 import { Plus, FileSpreadsheet, X, Pencil } from "lucide-react";
-import { useMetis } from "@/lib/store";
+import { useMetis, newId } from "@/lib/store";
 import { PageHeader } from "@/components/ui/primitives";
 import { DIR, TYPE } from "@/lib/labels";
 import type { Direction, Element, ElementType } from "@/lib/domain/types";
@@ -47,16 +47,7 @@ export default function Catalogo() {
           </table>
         </div>
         <div className="space-y-4">
-          <div className="card p-5">
-            <h3 className="font-semibold mb-1">Un elemento, muchos alcances</h3>
-            <p className="text-xs text-slate-500 mb-3">“OTIF” existe una sola vez, pero se mide para cada alcance con su propio dueño (DR) y metas.</p>
-            <ul className="space-y-1.5 text-sm">
-              {s.elementScopes.map((es) => {
-                const e = s.elements.find((x) => x.id === es.elementId)!; const sc = s.scopes.find((x) => x.id === es.scopeId)!; const o = s.users.find((u) => u.id === es.ownerUserId)!;
-                return <li key={es.id} className="flex items-center gap-2 text-xs"><span className="font-medium truncate">{e.name}</span><span className="text-slate-400">·</span><span className="text-slate-600">{sc.name}</span><span className="ml-auto text-slate-400 truncate">{o.initials}</span></li>;
-              })}
-            </ul>
-          </div>
+          <MeasureIn />
           <div className="card p-5">
             <h3 className="font-semibold mb-1">Plantillas por industria</h3>
             <p className="text-xs text-slate-500">Próximamente: catálogos base para manufactura, distribución y logística, retail y servicios profesionales, listos para importar y ajustar.</p>
@@ -68,10 +59,57 @@ export default function Catalogo() {
   );
 }
 
+/** Medir un elemento en un alcance con su DR (Dueño del Resultado). */
+function MeasureIn() {
+  const s = useMetis();
+  const [f, setF] = useState({ elementId: "", scopeId: "", ownerUserId: "" });
+  const el = s.elements.find((e) => e.id === f.elementId);
+  const scopes = s.scopes.filter((sc) => !el || el.allowedScopeTypeIds.length === 0 || el.allowedScopeTypeIds.includes(sc.typeId));
+  const dup = s.elementScopes.some((es) => es.elementId === f.elementId && es.scopeId === f.scopeId);
+  const ok = f.elementId && f.scopeId && f.ownerUserId && !dup;
+  return (
+    <div className="card p-5">
+      <h3 className="font-semibold mb-1">Un elemento, muchos alcances</h3>
+      <p className="text-xs text-slate-500 mb-3">“OTIF” existe una sola vez, pero se mide en cada alcance con su propio dueño (DR), que es quien captura el dato del mes.</p>
+      <div className="space-y-2 rounded-xl bg-slate-50 p-3 mb-3">
+        <select className="input" value={f.elementId} onChange={(e) => setF({ ...f, elementId: e.target.value, scopeId: "" })}>
+          <option value="">Elemento…</option>
+          {s.elements.map((e) => <option key={e.id} value={e.id}>{TYPE[e.type]} · {e.name}</option>)}
+        </select>
+        <select className="input" value={f.scopeId} onChange={(e) => setF({ ...f, scopeId: e.target.value })}>
+          <option value="">Alcance…</option>
+          {scopes.map((sc) => <option key={sc.id} value={sc.id}>{sc.name}</option>)}
+        </select>
+        <select className="input" value={f.ownerUserId} onChange={(e) => setF({ ...f, ownerUserId: e.target.value })}>
+          <option value="">DR · quién captura…</option>
+          {s.users.map((u) => <option key={u.id} value={u.id}>{u.name}</option>)}
+        </select>
+        {dup && <div className="text-xs text-coral">Ese elemento ya se mide en ese alcance.</div>}
+        <button className="btn-primary w-full justify-center" disabled={!ok} onClick={() => { s.upsertElementScope({ id: newId(), ...f }); setF({ elementId: "", scopeId: "", ownerUserId: "" }); }}><Plus size={14} /> Medir aquí</button>
+      </div>
+      <ul className="space-y-1.5 text-sm max-h-[420px] overflow-y-auto">
+        {s.elementScopes.length === 0 && <li className="text-xs text-slate-400">Aún no hay elementos asignados a un alcance.</li>}
+        {s.elementScopes.map((es) => {
+          const e = s.elementOf(es.elementId); const sc = s.scopeOf(es.scopeId);
+          return (
+            <li key={es.id} className="flex items-center gap-2 text-xs">
+              <span className="font-medium truncate">{e.name}</span><span className="text-slate-400">·</span><span className="text-slate-600 truncate">{sc.name}</span>
+              <select className="ml-auto input !w-auto !py-0.5 !px-1.5 !text-xs max-w-[9rem]" value={es.ownerUserId} title="DR · Dueño del Resultado" onChange={(ev) => s.upsertElementScope({ ...es, ownerUserId: ev.target.value })}>
+                <option value="">Sin DR</option>
+                {s.users.map((u) => <option key={u.id} value={u.id}>{u.name}</option>)}
+              </select>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
 function ElementEditor({ el, onClose }: { el?: Element; onClose: () => void }) {
   const s = useMetis();
   const defaultUnit = s.units[0];
-  const [f, setF] = useState<Element>(el ?? { id: `e-${Date.now()}`, type: "kpi", name: "", formula: "", unit: defaultUnit?.symbol ?? "%", unitId: defaultUnit?.id, direction: "up", laeId: s.laes[0]?.id ?? "", allowedScopeTypeIds: [] });
+  const [f, setF] = useState<Element>(el ?? { id: newId(), type: "kpi", name: "", formula: "", unit: defaultUnit?.symbol ?? "%", unitId: defaultUnit?.id, direction: "up", laeId: s.laes[0]?.id ?? "", allowedScopeTypeIds: [] });
   const currentUnitId = f.unitId ?? s.units.find((u) => u.symbol === f.unit)?.id ?? "";
   const toggle = (id: string) => setF({ ...f, allowedScopeTypeIds: f.allowedScopeTypeIds.includes(id) ? f.allowedScopeTypeIds.filter((x) => x !== id) : [...f.allowedScopeTypeIds, id] });
   return (
@@ -94,7 +132,8 @@ function ElementEditor({ el, onClose }: { el?: Element; onClose: () => void }) {
           <div><label className="label">LAE</label><select className="input" value={f.laeId} onChange={(e) => setF({ ...f, laeId: e.target.value })}>{s.laes.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}</select></div>
         </div>
         <div className="mt-3"><label className="label">Alcances permitidos</label><div className="flex flex-wrap gap-1.5">{s.scopeTypes.map((t) => <button key={t.id} type="button" onClick={() => toggle(t.id)} className={clsx("chip border", f.allowedScopeTypeIds.includes(t.id) ? "bg-indigo-soft text-indigo border-indigo/30" : "bg-white text-slate-500 border-slate-200")}>{t.name}</button>)}</div></div>
-        <div className="mt-5 flex justify-end gap-2"><button className="btn-ghost" onClick={onClose}>Cancelar</button><button className="btn-primary" disabled={!f.name} onClick={() => { s.upsertElement(f); onClose(); }}>Guardar</button></div>
+        <div className="mt-5 flex justify-end gap-2"><button className="btn-ghost" onClick={onClose}>Cancelar</button><button className="btn-primary" disabled={!f.name || !f.laeId} onClick={() => { s.upsertElement(f); onClose(); }}>Guardar</button></div>
+        {!s.laes.length && <p className="text-xs text-coral mt-2 text-right">Primero crea un objetivo y una LAE en <Link href="/config/estrategia" className="underline">Estrategia</Link>.</p>}
       </div>
     </div>
   );

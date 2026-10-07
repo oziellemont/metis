@@ -9,13 +9,13 @@ import { traffic } from "@/lib/domain/scoring";
 
 export default function Carga() {
   const s = useMetis();
-  const me = s.users.find((u) => u.id === s.currentUserId)!;
+  const me = s.userOf(s.currentUserId);
   const owned = useMemo(() => s.elementScopes.filter((es) => es.ownerUserId === me.id), [s.elementScopes, me.id]);
   const [selected, setSelected] = useState<string | null>(null);
-  const active = owned.find((es) => es.id === selected) ?? owned.find((es) => !s.results.some((r) => r.elementScopeId === es.id && r.month === s.month && r.value !== null)) ?? owned[0];
+  const active = owned.find((es) => es.id === selected) ?? owned.find((es) => !s.results.some((r) => r.elementScopeId === es.id && r.month === s.month && r.year === s.year && r.value !== null)) ?? owned[0];
 
   const daysToClose = 3; // demo
-  const done = owned.filter((es) => s.results.some((r) => r.elementScopeId === es.id && r.month === s.month && r.value !== null)).length;
+  const done = owned.filter((es) => s.results.some((r) => r.elementScopeId === es.id && r.month === s.month && r.year === s.year && r.value !== null)).length;
 
   return (
     <>
@@ -30,9 +30,9 @@ export default function Carga() {
         <div className="grid gap-4 lg:grid-cols-5">
           <div className="lg:col-span-2 space-y-2">
             {owned.map((es) => {
-              const el = s.elements.find((e) => e.id === es.elementId)!;
-              const sc = s.scopes.find((x) => x.id === es.scopeId)!;
-              const r = s.results.find((x) => x.elementScopeId === es.id && x.month === s.month);
+              const el = s.elementOf(es.elementId);
+              const sc = s.scopeOf(es.scopeId);
+              const r = s.results.find((x) => x.elementScopeId === es.id && x.month === s.month && x.year === s.year);
               const ownerItem = s.scorecardItems.find((i) => i.elementScopeId === es.id && i.responsibility === "owner");
               const t = ownerItem ? traffic(r?.value ?? null, ownerItem.targets, el.direction) : "pending";
               const loaded = r?.value !== null && r?.value !== undefined;
@@ -58,11 +58,11 @@ export default function Carga() {
 
 function LoadPanel({ esId }: { esId: string }) {
   const s = useMetis();
-  const es = s.elementScopes.find((x) => x.id === esId)!;
-  const el = s.elements.find((e) => e.id === es.elementId)!;
-  const sc = s.scopes.find((x) => x.id === es.scopeId)!;
-  const lae = s.laes.find((l) => l.id === el.laeId)!;
-  const existing = s.results.find((r) => r.elementScopeId === es.id && r.month === s.month);
+  const es = s.esOf(esId);
+  const el = s.elementOf(es.elementId);
+  const sc = s.scopeOf(es.scopeId);
+  const lae = s.laeOf(el.laeId);
+  const existing = s.results.find((r) => r.elementScopeId === es.id && r.month === s.month && r.year === s.year);
   const ownerItem = s.scorecardItems.find((i) => i.elementScopeId === es.id && i.responsibility === "owner");
   const targets = ownerItem?.targets ?? { min: 0, sat: 0, out: 0 };
   const [value, setValue] = useState<string>(existing?.value?.toString() ?? "");
@@ -72,8 +72,8 @@ function LoadPanel({ esId }: { esId: string }) {
   const num = value === "" ? null : Number(value);
   const t = traffic(num, targets, el.direction);
   const contributors = s.scorecardItems.filter((i) => i.elementScopeId === es.id && i.responsibility === "contributor")
-    .map((i) => s.users.find((u) => u.id === s.scorecards.find((x) => x.id === i.scorecardId)!.userId)!);
-  const series = Array.from({ length: 12 }, (_, m) => s.results.find((r) => r.elementScopeId === es.id && r.month === m + 1)?.value ?? null);
+    .map((i) => s.userOf(s.scorecardOf(i.scorecardId).userId));
+  const series = Array.from({ length: 12 }, (_, m) => s.results.find((r) => r.elementScopeId === es.id && r.month === m + 1 && r.year === s.year)?.value ?? null);
 
   const save = () => {
     if (num === null || Number.isNaN(num)) return;
