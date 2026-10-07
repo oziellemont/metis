@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Logo } from "@/components/ui/Logo";
+import { CONTACT_EMAIL } from "@/lib/site";
 
 export function SiteNav({ dark = false }: { dark?: boolean }) {
   return (
@@ -26,7 +27,7 @@ export function SiteFooter() {
       <div className="mx-auto max-w-6xl px-6 py-10 flex flex-col sm:flex-row items-start sm:items-center gap-4 text-sm text-slate-500">
         <Logo height={24} />
         <span>Estrategia · Alineación · Crecimiento</span>
-        <span className="sm:ml-auto">hola@metis.mx · Monterrey, N.L., México</span>
+        <span className="sm:ml-auto"><a href={`mailto:${CONTACT_EMAIL}`} className="hover:text-ink">{CONTACT_EMAIL}</a> · Monterrey, N.L., México</span>
         <span>© 2026 METIS</span>
       </div>
     </footer>

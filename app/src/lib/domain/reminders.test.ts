@@ -35,7 +35,7 @@ describe("pendingFor / buildReminders con datos de Grupo Andes", () => {
   });
   it("arma correos para DR con pendientes y resumen para su jefe", () => {
     const msgs = buildReminders({
-      tenantName: "Grupo Andes", appUrl: "https://app.metis.mx", settings: DEFAULT_REMINDERS,
+      tenantName: "Grupo Andes", appUrl: "https://metisalign.mx", settings: DEFAULT_REMINDERS,
       users: demoData.users, elementScopes: demoData.elementScopes, elements: demoData.elements, results: demoData.results,
       scopeName, now: new Date(2026, 9, 3),
     });
@@ -50,7 +50,7 @@ describe("pendingFor / buildReminders con datos de Grupo Andes", () => {
   });
   it("sin escalamiento no manda correos a jefes", () => {
     const msgs = buildReminders({
-      tenantName: "Grupo Andes", appUrl: "https://app.metis.mx", settings: { ...DEFAULT_REMINDERS, escalateToManager: false },
+      tenantName: "Grupo Andes", appUrl: "https://metisalign.mx", settings: { ...DEFAULT_REMINDERS, escalateToManager: false },
       users: demoData.users, elementScopes: demoData.elementScopes, elements: demoData.elements, results: demoData.results,
       scopeName, now: new Date(2026, 9, 3),
     });

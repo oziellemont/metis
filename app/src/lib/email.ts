@@ -1,3 +1,4 @@
+import { DEFAULT_EMAIL_FROM } from "@/lib/site";
 /**
  * Envío de correo transaccional vía Resend (https://resend.com) usando fetch, sin SDK.
  * Sin RESEND_API_KEY los correos se registran en consola (modo demo / desarrollo).
@@ -5,7 +6,7 @@
 export interface Mail { to: string; subject: string; html: string; text?: string }
 
 const KEY = process.env.RESEND_API_KEY ?? "";
-const FROM = process.env.EMAIL_FROM ?? "METIS <avisos@metis.mx>";
+const FROM = process.env.EMAIL_FROM ?? DEFAULT_EMAIL_FROM;
 
 export const hasEmail = Boolean(KEY);
 

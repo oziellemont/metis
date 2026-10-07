@@ -37,6 +37,17 @@ npm run build        # build de producción
 
 Sin variables de entorno la app corre en **modo demo**: los datos de Grupo Andes viven en memoria y los cambios se guardan en `localStorage`. Los leads del Índice también se guardan localmente.
 
+### Dominios
+
+| Dominio | Uso |
+|---|---|
+| **metisalign.mx** | Principal: landing, Índice, login y app. `NEXT_PUBLIC_APP_URL=https://metisalign.mx`. |
+| metisalign.com | Redirección 308 → metisalign.mx (Vercel → Domains → *Redirect to*). |
+| metisalign.app | Redirección 308 → metisalign.mx. |
+| www.* | Redirección → metisalign.mx. |
+
+Correo: `hola@metisalign.mx` (contacto) y `recordatorios@metisalign.mx` (Resend, remitente de los avisos mensuales). Constantes en `app/src/lib/site.ts`.
+
 ### Conectar Supabase + Vercel
 
 1. Copia `app/.env.example` a `app/.env.local` y carga las mismas variables en Vercel (Settings → Environment Variables). Mínimo: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_APP_URL`, `CRON_SECRET`. `NEXT_PUBLIC_SUPABASE_URL` es sólo el origen (`https://xxx.supabase.co`, **sin** `/rest/v1/`); el código lo normaliza por si acaso, pero conviene dejarlo limpio.
