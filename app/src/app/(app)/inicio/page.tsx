@@ -24,7 +24,7 @@ export default function Inicio() {
   // Resumen organizacional (todos los items con dato en el mes)
   const counts: Record<Traffic, number> = { outstanding: 0, satisfactory: 0, minimum: 0, below: 0, pending: 0 };
   s.scorecardItems.forEach((i) => { counts[s.evaluate(i).traffic]++; });
-  const approvedPct = Math.round((s.scorecards.filter((x) => x.status === "approved").length / s.scorecards.length) * 100);
+  const approvedPct = s.scorecards.length ? Math.round((s.scorecards.filter((x) => x.status === "approved").length / s.scorecards.length) * 100) : null;
 
   return (
     <>
@@ -34,7 +34,7 @@ export default function Inicio() {
         <Stat label="Mi cumplimiento ponderado" value={att.value === null ? "—" : `${att.value}%`} sub={`${att.loaded} de ${att.total} elementos con dato`} tone={att.value !== null && att.value >= 100 ? "text-sob" : att.value !== null && att.value < 90 ? "text-coral" : ""} />
         <Stat label="Cargas pendientes este mes" value={pending.length} sub={pending.length ? "Eres DR de estos elementos" : "Todo cargado"} tone={pending.length ? "text-coral" : "text-sob"} />
         <Stat label="Scorecards por aprobar" value={toApprove.length} sub={team.length ? `${team.length} personas en tu equipo` : "Sin reportes directos"} />
-        <Stat label="Alineación de la organización" value={`${approvedPct}%`} sub={`${s.scorecards.filter((x) => x.status === "approved").length} de ${s.scorecards.length} scorecards aprobados`} />
+        <Stat label="Alineación de la organización" value={approvedPct === null ? "—" : `${approvedPct}%`} sub={`${s.scorecards.filter((x) => x.status === "approved").length} de ${s.scorecards.length} scorecards aprobados`} />
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3 mt-6">
@@ -98,7 +98,7 @@ export default function Inicio() {
             <div className="text-xs text-slate-500 mb-2">Elementos de scorecard por nivel de cumplimiento</div>
             <div className="flex h-2.5 overflow-hidden rounded-full bg-slate-100">
               {(["outstanding", "satisfactory", "minimum", "below", "pending"] as Traffic[]).map((t) => (
-                <div key={t} className={TRAFFIC[t].dot} style={{ width: `${(counts[t] / s.scorecardItems.length) * 100}%` }} />
+                <div key={t} className={TRAFFIC[t].dot} style={{ width: `${s.scorecardItems.length ? (counts[t] / s.scorecardItems.length) * 100 : 0}%` }} />
               ))}
             </div>
             <div className="mt-3 grid grid-cols-5 gap-1 text-center">

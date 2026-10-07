@@ -4,12 +4,13 @@ import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import {
   Home, ClipboardList, Upload, CalendarClock, CheckSquare, GitBranch, Gauge, FolderKanban, Users, BarChart3,
-  BookOpen, MapPin, Ruler, UserCog, Bell, Search, RotateCcw, Target, Building2, AlertTriangle, X, Loader2, Shield,
+  BookOpen, MapPin, Ruler, UserCog, Bell, RotateCcw, Target, Building2, AlertTriangle, X, Loader2, Shield,
 } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { Avatar } from "@/components/ui/primitives";
 import { useMetis } from "@/lib/store";
 import { MONTHS } from "@/lib/labels";
+import { GlobalSearch, useFocusFromHash } from "@/components/app/GlobalSearch";
 
 const MI_ESPACIO = [
   { href: "/inicio", label: "Inicio", icon: Home },
@@ -37,6 +38,13 @@ export function Shell({ children }: { children: React.ReactNode }) {
   const s = useMetis();
   const me = s.userOf(s.currentUserId);
   const real = s.mode === "supabase";
+  useFocusFromHash();
+  const canConfig = me.role === "admin" || me.role === "manager";
+  const searchPages = [
+    ...MI_ESPACIO,
+    ...(canConfig ? CONFIG : []),
+    ...(s.isPlatformAdmin ? [{ href: "/consola", label: "Consola de clientes" }] : []),
+  ];
   const pendingLoads = s.elementScopes.filter((es) => es.ownerUserId === me.id)
     .filter((es) => !s.results.some((r) => r.elementScopeId === es.id && r.month === s.month && r.year === s.year && r.value !== null)).length;
 
@@ -86,9 +94,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
       <div className="flex-1 min-w-0 flex flex-col">
         <header className="no-print sticky top-0 z-10 flex items-center gap-3 border-b border-slate-100 bg-white/80 backdrop-blur px-4 md:px-8 py-3">
           <Link href="/inicio" className="md:hidden flex items-center" aria-label="Ir a inicio"><Logo variant="icon" height={28} /></Link>
-          <div className="hidden md:flex items-center gap-2 flex-1 max-w-md rounded-xl bg-slate-100 px-3 py-2 text-sm text-slate-400">
-            <Search size={14} /> Buscar KPI, proyecto o colaborador…
-          </div>
+          <GlobalSearch pages={searchPages} />
           <div className="ml-auto flex items-center gap-2">
             <select className="input !w-auto !py-1.5" value={s.month} onChange={(e) => s.setMonth(Number(e.target.value))} aria-label="Mes">
               {MONTHS.map((m, i) => <option key={m} value={i + 1}>{m} {s.year}</option>)}
