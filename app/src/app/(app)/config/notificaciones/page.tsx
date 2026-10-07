@@ -1,4 +1,5 @@
 "use client";
+import { SITE_URL } from "@/lib/site";
 import { useMemo, useState } from "react";
 import clsx from "clsx";
 import { Bell, Mail, MessageCircle, Save, Eye, CheckCircle2 } from "lucide-react";
@@ -20,7 +21,7 @@ export default function Notificaciones() {
   // Vista previa: simula la corrida del cron el día 3 del mes siguiente al mes actual del demo (cierre de ese mes)
   const simulatedNow = useMemo(() => new Date(s.year, s.month, 3, f.hour), [s.year, s.month, f.hour]);
   const msgs = useMemo(() => buildReminders({
-    tenantName: s.tenant.name, appUrl: typeof window !== "undefined" ? window.location.origin : "https://app.metis.mx",
+    tenantName: s.tenant.name, appUrl: typeof window !== "undefined" ? window.location.origin : SITE_URL,
     settings: f, users: s.users, elementScopes: s.elementScopes, elements: s.elements, results: s.results,
     scopeName: (id) => s.scopes.find((x) => x.id === id)?.name ?? "", now: simulatedNow,
   }), [f, s, simulatedNow]);
