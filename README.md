@@ -58,6 +58,7 @@ Correo: `hola@metisalign.mx` (contacto) y `recordatorios@metisalign.mx` (Resend,
    4. `supabase/seed.sql` — datos de Grupo Andes (opcional, para demo).
    5. `supabase/migrations/0004_fix_join_ambiguous.sql` — arreglo de `join_with_code`.
    6. `supabase/migrations/0005_portal_por_cliente.sql` — **portal por cliente**: candados entre empresas, consola METIS, marca por empresa, Realtime.
+   7. `supabase/migrations/0006_borrar_cliente.sql` — RPC `delete_tenant` para borrar un cliente desde la consola (sólo platform admins; exige escribir el nombre exacto).
 3. En Supabase → Project Settings → **Data API** → *Exposed schemas*: agrega `metis` (además de `public`). Sin esto la API responde `PGRST106 Invalid schema: metis` y el login/unirme no puede leer membresías ni llamar los RPC.
 4. En Supabase → Authentication → URL Configuration: Site URL = tu dominio de Vercel y agrega `https://<dominio>/auth/callback` a Redirect URLs. Activa el proveedor Email (magic link) y, si quieres, Google.
 5. En Vercel → Settings → General: **Root Directory = `app`** y Framework Preset = Next.js (un build que termina en 2–3 s es señal de que está desplegando la raíz del repo). Para que el sitio sea público, en Settings → **Deployment Protection** desactiva *Vercel Authentication* para Production (si no, cualquier visitante y el cron reciben un 302 al SSO de Vercel).
@@ -80,7 +81,7 @@ Una sola app y una sola base de datos; **cada fila lleva `tenant_id`** y el aisl
 - **Candados** (0005): trigger `assert_same_tenant` impide ligar filas de empresas distintas (p. ej. un resultado de A sobre un alcance de B) y `forbid_tenant_change` impide mover una fila a otra empresa.
 - **Proveedor Supabase** (`src/lib/store-supabase.tsx`): con Supabase configurado, todo lo que se guarda (estrategia, catálogo, alcances, unidades, scorecards, resultados, usuarios, recordatorios) va a la base de datos; los demás miembros lo ven al instante por **Realtime** (y al volver a la pestaña). Sin Supabase la app cae al modo demo (localStorage).
 - **Varias empresas**: si alguien pertenece a más de una, aparece un selector arriba; la empresa activa se recuerda en el navegador (`metis-active-tenant`) o con `?empresa=<slug>`.
-- **Consola METIS** (`/consola`, sólo `metis.platform_admins`): lista de clientes, alta de cliente (`create_tenant` → código de equipo + invitación al dueño) y "Entrar como consultor".
+- **Consola METIS** (`/consola`, sólo `metis.platform_admins`): lista de clientes, alta de cliente (`create_tenant` → código de equipo + invitación al dueño), "Entrar como consultor" y **borrar cliente** (aviso de confirmación tipo iOS donde hay que escribir el nombre; borra en cascada todos sus datos pero no las cuentas de usuario).
 - **Prueba de integración** (`src/lib/portal.it.test.ts`): verifica con JWT por usuario que una empresa no puede leer ni escribir datos de otra. Se salta si no existen `METIS_IT_URL` y `METIS_IT_JWT_SECRET` (apunta a un Supabase/PostgREST de pruebas, nunca a producción).
 
 **Configurar un cliente nuevo:** Consola → Alta de cliente → (dueño entra con su invitación) → Estrategia (objetivos y LAE) → Catálogo de elementos → "Medir aquí" (elemento + alcance + DR) → cada quien crea su Scorecard y agrega elementos → Carga mensual.
