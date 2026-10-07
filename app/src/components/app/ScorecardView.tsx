@@ -134,7 +134,7 @@ export function ScorecardView({ userId, asManager = false }: { userId: string; a
                   <td className="td whitespace-nowrap"><div className="flex items-center gap-2"><span className="font-medium tabular-nums">{s.fmt(ev.value, el)}</span><TrafficChip t={ev.traffic} compact /></div></td>
                   <td className="td"><Sparkline values={series} targets={it.targets} dir={el.direction} /></td>
                   <td className="td">
-                    {it.responsibility === "owner" ? <span className="text-xs text-slate-500">Dueño del dato</span> : (
+                    {it.responsibility === "owner" ? <span className="text-xs text-slate-500">Tú capturas</span> : (
                       <div className="flex items-center gap-2"><Avatar initials={owner.initials} size="sm" /><div className="text-xs leading-tight"><div className="font-medium">{owner.name}</div><div className="text-slate-400">{RESP.owner.code}</div></div></div>
                     )}
                   </td>
@@ -238,7 +238,7 @@ function ItemEditor({ scorecardId, userId, item, onClose }: { scorecardId: strin
   const owner = es ? s.users.find((u) => u.id === es.ownerUserId) : undefined;
   const resp: Responsibility = es?.ownerUserId === userId ? "owner" : "contributor";
 
-  // Si es CV, hereda metas del DR (si el DR ya tiene el item en su scorecard)
+  // Si es Contributor, hereda metas del Owner (si el Owner ya tiene el item en su scorecard)
   const ownerItem = es ? s.scorecardItems.find((i) => i.elementScopeId === es.id && i.responsibility === "owner") : undefined;
 
   const save = () => {

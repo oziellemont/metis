@@ -35,7 +35,7 @@ export interface MetisStore extends StoreData {
   currentUserId: string;
   setMonth: (m: number) => void;
   setCurrentUser: (id: string) => void;
-  /** Guarda o actualiza el dato real de un elemento-alcance (lo hace el DR). */
+  /** Guarda o actualiza el dato real de un elemento-alcance (lo hace el Owner). */
   saveResult: (elementScopeId: string, month: number, value: number, log?: string) => { affected: ScorecardItem[] };
   /** Cambia el estado de un scorecard registrando historial. */
   transition: (scorecardId: string, action: ScorecardStatus, byUserId: string, note?: string) => void;
@@ -44,7 +44,7 @@ export interface MetisStore extends StoreData {
   addItem: (item: ScorecardItem) => void;
   removeItem: (itemId: string) => void;
   upsertElement: (el: Element) => void;
-  /** Medir un elemento en un alcance con su DR. */
+  /** Medir un elemento en un alcance con su Owner. */
   upsertElementScope: (es: ElementScope) => void;
   addScope: (s: Scope) => void;
   addScopeType: (t: ScopeType) => void;
