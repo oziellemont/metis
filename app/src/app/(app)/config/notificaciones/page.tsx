@@ -2,7 +2,7 @@
 import { SITE_URL } from "@/lib/site";
 import { useMemo, useState } from "react";
 import clsx from "clsx";
-import { Bell, Mail, MessageCircle, Save, Eye, CheckCircle2 } from "lucide-react";
+import { Bell, Mail, MessageCircle, Save, Eye, CheckCircle2, Send } from "lucide-react";
 import { useMetis } from "@/lib/store";
 import { Avatar, PageHeader } from "@/components/ui/primitives";
 import { buildReminders, DEFAULT_REMINDERS, MONTHS_ES } from "@/lib/domain/reminders";
@@ -15,6 +15,15 @@ export default function Notificaciones() {
   const [f, setF] = useState<ReminderSettings>(s.tenant.reminders ?? DEFAULT_REMINDERS);
   const [saved, setSaved] = useState(false);
   const [preview, setPreview] = useState<number | null>(null);
+  const [test, setTest] = useState<{ busy?: boolean; ok?: boolean; msg?: string }>({});
+  const sendTest = async () => {
+    setTest({ busy: true });
+    try {
+      const r = await fetch("/api/email/prueba", { method: "POST" });
+      const j = (await r.json()) as { ok: boolean; to?: string; error?: string };
+      setTest(j.ok ? { ok: true, msg: `Listo: revisa ${j.to} (y la carpeta de spam).` } : { ok: false, msg: j.error ?? "No se pudo enviar." });
+    } catch { setTest({ ok: false, msg: "No se pudo contactar al servidor." }); }
+  };
 
   const toggleDay = (d: number) => setF({ ...f, days: f.days.includes(d) ? f.days.filter((x) => x !== d) : [...f.days, d].sort((a, b) => a - b) });
 
@@ -91,6 +100,14 @@ export default function Notificaciones() {
           </div>
         </div>
         <div className="space-y-4">
+          {s.mode === "supabase" && (
+            <div className="card p-5">
+              <h3 className="font-semibold mb-1 flex items-center gap-2"><Send size={15} className="text-indigo" /> Correo de prueba</h3>
+              <p className="text-xs text-slate-500">Te manda un correo a ti para confirmar que el envío funciona.</p>
+              <button type="button" className="btn-ghost mt-3 w-full justify-center border border-slate-200" disabled={test.busy} onClick={sendTest}>{test.busy ? "Enviando…" : "Enviarme un correo de prueba"}</button>
+              {test.msg && <p className={clsx("text-xs mt-2 rounded-lg px-3 py-2", test.ok ? "bg-mint-soft text-sob" : "bg-coral-soft text-coral")}>{test.msg}</p>}
+            </div>
+          )}
           <div className="card p-5">
             <h3 className="font-semibold mb-1">Cómo funciona</h3>
             <ol className="text-xs text-slate-500 space-y-1.5 list-decimal pl-4 mt-2">
