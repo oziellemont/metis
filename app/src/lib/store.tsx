@@ -8,6 +8,7 @@ import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react
 import { demoData, CURRENT_MONTH, YEAR, type DemoData } from "./demo/seed";
 import type { Result, Scorecard, ScorecardItem, Invitation, Tenant } from "./domain/types";
 import { MetisCtx, deriveHelpers, newId, useMetis, type MetisStore } from "./store-core";
+import { approveDrafts } from "./sessions/logic";
 import { hasSupabase } from "./supabase/client";
 import { SupabaseMetisProvider } from "./store-supabase";
 
@@ -16,14 +17,15 @@ export type { MetisStore };
 
 const KEY = "metis-demo-v1";
 
-type Persisted = Pick<DemoData, "results" | "scorecards" | "scorecardItems" | "elements" | "scopes" | "scopeTypes" | "elementScopes" | "units" | "invitations" | "tenant" | "users" | "objectives" | "laes">;
+type Persisted = Pick<DemoData, "results" | "scorecards" | "scorecardItems" | "elements" | "scopes" | "scopeTypes" | "elementScopes" | "units" | "invitations" | "tenant" | "users" | "objectives" | "laes" | "sessions" | "commitments">;
 const initial = (): Persisted => ({
   results: demoData.results, scorecards: demoData.scorecards, scorecardItems: demoData.scorecardItems,
   elements: demoData.elements, scopes: demoData.scopes, scopeTypes: demoData.scopeTypes, elementScopes: demoData.elementScopes,
   units: demoData.units, invitations: demoData.invitations, tenant: demoData.tenant,
   users: demoData.users, objectives: demoData.objectives, laes: demoData.laes,
+  sessions: demoData.sessions, commitments: demoData.commitments,
 });
-const PERSIST_VERSION = 3;
+const PERSIST_VERSION = 4;
 export function makeJoinCode(prefix: string) {
   const A = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let c = ""; for (let i = 0; i < 4; i++) c += A[Math.floor(Math.random() * A.length)];
@@ -47,7 +49,7 @@ function DemoMetisProvider({ children }: { children: ReactNode }) {
       if (raw) {
         const p = JSON.parse(raw);
         // datos guardados por una versión anterior del demo: se completan con los nuevos catálogos
-        if (p.data) setData({ ...initial(), ...p.data, ...(p.version !== PERSIST_VERSION ? { units: demoData.units, invitations: demoData.invitations, tenant: demoData.tenant, users: demoData.users, objectives: demoData.objectives, laes: demoData.laes } : {}) });
+        if (p.data) setData({ ...initial(), ...p.data, ...(p.version !== PERSIST_VERSION ? { units: demoData.units, invitations: demoData.invitations, tenant: demoData.tenant, users: demoData.users, objectives: demoData.objectives, laes: demoData.laes, sessions: demoData.sessions, commitments: demoData.commitments } : {}) });
         if (p.currentUserId) setCurrentUser(p.currentUserId);
         if (p.month) setMonth(p.month);
       }
@@ -152,6 +154,25 @@ function DemoMetisProvider({ children }: { children: ReactNode }) {
   const updateReminders: MetisStore["updateReminders"] = useCallback((r) => {
     setData((d) => ({ ...d, tenant: { ...d.tenant, reminders: r } }));
   }, []);
+  const upsertSession: MetisStore["upsertSession"] = useCallback((x) => {
+    setData((d) => ({ ...d, sessions: d.sessions.some((s) => s.id === x.id) ? d.sessions.map((s) => (s.id === x.id ? x : s)) : [...d.sessions, x] }));
+  }, []);
+  const removeSession: MetisStore["removeSession"] = useCallback((id) => {
+    setData((d) => ({ ...d, sessions: d.sessions.filter((s) => s.id !== id), commitments: d.commitments.filter((c) => !(c.sessionId === id && !c.approved)).map((c) => (c.sessionId === id ? { ...c, sessionId: null } : c)) }));
+  }, []);
+  const upsertCommitment: MetisStore["upsertCommitment"] = useCallback((x) => {
+    setData((d) => ({ ...d, commitments: d.commitments.some((c) => c.id === x.id) ? d.commitments.map((c) => (c.id === x.id ? x : c)) : [...d.commitments, x] }));
+  }, []);
+  const removeCommitment: MetisStore["removeCommitment"] = useCallback((id) => {
+    setData((d) => ({ ...d, commitments: d.commitments.filter((c) => c.id !== id) }));
+  }, []);
+  const approveSession: MetisStore["approveSession"] = useCallback((id, summary) => {
+    setData((d) => ({
+      ...d,
+      sessions: d.sessions.map((s) => (s.id === id ? { ...s, status: "closed", closedAt: new Date().toISOString(), ...(summary !== undefined ? { summary } : {}) } : s)),
+      commitments: approveDrafts(d.commitments, id),
+    }));
+  }, []);
   const reset = useCallback(() => {
     localStorage.removeItem(KEY);
     setData(initial());
@@ -165,8 +186,10 @@ function DemoMetisProvider({ children }: { children: ReactNode }) {
     year: YEAR, month, currentUserId, setMonth, setCurrentUser,
     saveResult, transition, createScorecard, updateItem, addItem, removeItem, upsertElement, upsertElementScope, addScope, addScopeType,
     upsertObjective, upsertLae, upsertUnit, removeUnit, invite, revokeInvitation, regenerateJoinCode, updateMember, updateReminders, reset,
+    upsertSession, removeSession, upsertCommitment, removeCommitment, approveSession,
   }), [data, month, currentUserId, saveResult, transition, createScorecard, updateItem, addItem, removeItem, upsertElement, upsertElementScope, addScope, addScopeType,
-    upsertObjective, upsertLae, upsertUnit, removeUnit, invite, revokeInvitation, regenerateJoinCode, updateMember, updateReminders, reset]);
+    upsertObjective, upsertLae, upsertUnit, removeUnit, invite, revokeInvitation, regenerateJoinCode, updateMember, updateReminders, reset,
+    upsertSession, removeSession, upsertCommitment, removeCommitment, approveSession]);
 
   return <MetisCtx.Provider value={value}>{children}</MetisCtx.Provider>;
 }

@@ -19,8 +19,8 @@ const MI_ESPACIO = [
   { href: "/inicio", label: "Inicio", icon: Home },
   { href: "/scorecard", label: "Mi Scorecard", icon: ClipboardList },
   { href: "/carga", label: "Carga mensual", icon: Upload, badge: true },
-  { href: "/sesiones", label: "Sesiones WTW / WTM", icon: CalendarClock, soon: true },
-  { href: "/compromisos", label: "Compromisos", icon: CheckSquare, soon: true },
+  { href: "/sesiones", label: "Sesiones WTW / WTM", icon: CalendarClock, sesBadge: true },
+  { href: "/compromisos", label: "Compromisos", icon: CheckSquare, comBadge: true },
   { href: "/mapa", label: "Mapa de alineación", icon: GitBranch },
   { href: "/indicadores", label: "Indicadores", icon: Gauge },
   { href: "/proyectos", label: "Proyectos", icon: FolderKanban },
@@ -57,7 +57,12 @@ export function Shell({ children }: { children: React.ReactNode }) {
   const pendingLoads = s.elementScopes.filter((es) => es.ownerUserId === me.id)
     .filter((es) => !s.results.some((r) => r.elementScopeId === es.id && r.month === s.month && r.year === s.year && r.value !== null)).length;
 
-  const Item = ({ href, label, icon: Icon, badge, soon }: { href: string; label: string; icon: React.ElementType; badge?: boolean; soon?: boolean }) => {
+  // compromisos abiertos que vencen hoy o antes · sesiones esperando aprobación del líder
+  const todayIso = new Date().toISOString().slice(0, 10);
+  const dueCommitments = s.commitments.filter((c) => c.approved && c.status === "open" && c.ownerId === me.id && c.dueDate && c.dueDate <= todayIso).length;
+  const sessionsToApprove = s.sessions.filter((x) => x.leaderId === me.id && (x.status === "review" || x.status === "live")).length;
+
+  const Item = ({ href, label, icon: Icon, badge, soon, sesBadge, comBadge }: { href: string; label: string; icon: React.ElementType; badge?: boolean; soon?: boolean; sesBadge?: boolean; comBadge?: boolean }) => {
     const active = path === href || path.startsWith(href + "/");
     if (locked && href !== "/academy") {
       return (
@@ -76,6 +81,8 @@ export function Shell({ children }: { children: React.ReactNode }) {
         <span className="truncate">{label}</span>
         {badge && pendingLoads > 0 && <span className="ml-auto chip bg-coral text-white text-[10px] px-1.5">{pendingLoads}</span>}
         {soon && <span className="ml-auto text-[10px] text-slate-400">v1</span>}
+        {sesBadge && sessionsToApprove > 0 && <span className="ml-auto chip bg-amber text-white text-[10px] px-1.5" title="Sesiones por aprobar">{sessionsToApprove}</span>}
+        {comBadge && dueCommitments > 0 && <span className="ml-auto chip bg-coral text-white text-[10px] px-1.5" title="Compromisos que vencen hoy o vencidos">{dueCommitments}</span>}
       </Link>
     );
   };

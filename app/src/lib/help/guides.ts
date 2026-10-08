@@ -55,19 +55,36 @@ export const GUIDES: Record<string, Guide> = {
   },
   "/sesiones": {
     title: "Sesiones WTW / WTM",
-    purpose: "Próximamente: agenda y guion de tus sesiones semanales (WTW) y mensuales (WTM).",
-    steps: ["Mientras tanto, usa el mapa o los reportes como marcador en tu sesión.", "Sigue el guion: marcador, rendición de cuentas, obstáculos y nuevos compromisos."],
+    purpose: "El ritmo del equipo natural: la WTW semanal (cómo cerró la semana, qué sigue y qué apoyos hacen falta) y la WTM de cierre de mes.",
+    steps: [
+      "Agenda tu WTW con «Agendar sesión» (puedes repetirla cada semana) y tu WTM al inicio de cada mes.",
+      "Antes de la junta abre «Preparar»: METIS ya armó el marcador y los compromisos a revisar.",
+      "En la junta usa «Presentar»: proyéctalo o compártelo en Teams, Meet o Zoom y captura compromisos persona por persona.",
+      "Al terminar revisa el borrador y pulsa «Aprobar y enviar tareas»: a cada quien le llega en «Compromisos».",
+    ],
     faqs: [
-      { q: "¿Cómo llevo una WTW hoy?", a: "20–30 min, misma hora siempre: 1) marcador, 2) cada quien reporta su compromiso, 3) despejar obstáculos, 4) nuevos compromisos. Repásalo en el módulo «Revisiones 1 a 1 y de equipo» de la Academia." },
-      { q: "¿En qué se diferencia la WTM?", a: "Es mensual, tras el cierre: se revisa el scorecard completo, los rojos y sus causas, y se ajusta el plan." },
+      { q: "¿Quién participa?", a: "Tu equipo natural: las personas que te reportan directo. Si alguien no aparece, revisa su jefe directo en Configuración → Usuarios." },
+      { q: "¿Qué se presenta en una WTW?", a: "1) Marcador con los indicadores de cada quien, 2) ¿se cumplieron los compromisos de la sesión anterior?, 3) persona por persona: cierre y compromisos de esta semana, 4) solicitudes de apoyo." },
+      { q: "¿Y en la WTM?", a: "El cierre del mes: scorecard de cada persona, rojos y amarillos con su causa, el % de compromisos cumplidos del mes y 2–3 focos para el mes siguiente." },
+      { q: "¿Los compromisos llegan en cuanto los capturo?", a: "No. Quedan como borrador hasta que el líder revisa y aprueba la sesión. Así nada sale con errores." },
+      { q: "¿Se puede grabar o transcribir la sesión?", a: "Próximamente: podrás grabar o subir el audio de Teams, Meet o Zoom y el agente de METIS propondrá el resumen y los compromisos. Tú siempre apruebas antes de enviar." },
+      { q: "¿Cómo navego la presentación?", a: "Con las flechas ← → del teclado o los botones de abajo. Esc para salir; lo capturado se guarda." },
     ],
   },
   "/compromisos": {
     title: "Compromisos",
-    purpose: "Próximamente: el registro de los compromisos semanales de cada persona y su cumplimiento.",
-    steps: ["Un buen compromiso dice qué, quién y para cuándo.", "Si no se puede marcar como cumplido o no cumplido, no es un compromiso."],
+    purpose: "Tus tareas de seguimiento: lo que te comprometiste a hacer en las sesiones y los apoyos que te pidieron.",
+    steps: [
+      "Revisa «Vencidos» y «Hoy» primero.",
+      "Marca el cuadro cuando lo cumplas: tu líder lo verá en la siguiente WTW.",
+      "Si no se cumplió o ya no aplica, usa ••• para dejarlo claro.",
+      "Si eres líder, cambia a «Mi equipo» para ver los pendientes y el % de cumplimiento de cada persona.",
+    ],
     faqs: [
-      { q: "¿Qué es un buen compromiso?", a: "Algo concreto y verificable que mueve un indicador: «Visitar a los 5 clientes top antes del viernes», no «echarle ganas a ventas»." },
+      { q: "¿Qué es un buen compromiso?", a: "Algo concreto y verificable con responsable y fecha: «Visitar a los 5 clientes top antes del viernes», no «echarle ganas a ventas». No tiene que estar ligado a un indicador." },
+      { q: "¿Cómo se calcula el % de cumplimiento?", a: "De los compromisos que vencían en las últimas 4 semanas, cuántos se marcaron como cumplidos. Los vencidos sin cerrar cuentan como no cumplidos; los cancelados y los apoyos no cuentan." },
+      { q: "¿Qué es una solicitud de apoyo?", a: "Algo que una persona necesita de otra para avanzar (por ejemplo, de TI o de su jefe). Le aparece como tarea a quien debe darlo y se revisa en la siguiente sesión." },
+      { q: "¿Puedo crear un compromiso fuera de una sesión?", a: "Sí, con «Nuevo». Se revisará en la siguiente sesión de tu equipo." },
     ],
   },
   "/mapa": {

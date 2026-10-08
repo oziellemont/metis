@@ -161,3 +161,59 @@ export interface Invitation {
   /** Token secreto del enlace de invitación (modo real). */
   token?: string;
 }
+
+/* ------------------------------------------------------------------ Sesiones y compromisos */
+/** WTW = semanal con el equipo natural · WTM = cierre de mes y enfoque del siguiente. */
+export type SessionKind = "wtw" | "wtm";
+/** scheduled = agendada · live = en curso · review = terminada, esperando aprobación del líder · closed = aprobada */
+export type SessionStatus = "scheduled" | "live" | "review" | "closed";
+
+export interface Session {
+  id: string;
+  kind: SessionKind;
+  /** Jefe directo que conduce la sesión (su equipo natural = quienes le reportan). */
+  leaderId: string;
+  /** Fecha y hora (ISO). */
+  scheduledAt: string;
+  status: SessionStatus;
+  /** Lugar o liga de Teams/Meet/Zoom. */
+  location?: string;
+  /** Notas libres de la sesión. */
+  notes?: string;
+  /** Resumen final (lo escribe el líder o, en la fase 2, el agente). */
+  summary?: string;
+  /** WTM: focos del mes siguiente (2–3). */
+  focus?: string[];
+  /** WTM: mes que se cierra. */
+  periodYear?: number;
+  periodMonth?: number;
+  closedAt?: string;
+  createdBy?: string;
+}
+
+export type CommitmentKind = "commitment" | "support";
+/** open = abierto · done = cumplido · missed = no cumplido · cancelled = ya no aplica. «Vencido» se calcula (abierto con fecha pasada). */
+export type CommitmentStatus = "open" | "done" | "missed" | "cancelled";
+
+export interface Commitment {
+  id: string;
+  kind: CommitmentKind;
+  /** Sesión donde nació (vacío si se creó suelto). */
+  sessionId?: string | null;
+  /** Responsable de cumplirlo. En un apoyo, quien debe dar el apoyo. */
+  ownerId: string;
+  /** Apoyo: quien lo pidió. */
+  requestedBy?: string | null;
+  title: string;
+  /** YYYY-MM-DD */
+  dueDate?: string | null;
+  status: CommitmentStatus;
+  /** Indicador relacionado (opcional). */
+  elementScopeId?: string | null;
+  /** false = borrador de una sesión en revisión; el líder lo aprueba antes de que llegue como tarea. */
+  approved: boolean;
+  note?: string;
+  createdBy?: string;
+  createdAt: string;
+  doneAt?: string | null;
+}
