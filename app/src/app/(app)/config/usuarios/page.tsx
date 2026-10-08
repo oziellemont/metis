@@ -5,6 +5,7 @@ import { FileSpreadsheet, Plus, KeyRound, Copy, RefreshCw, X, Mail, Send, Ban, C
 import { useMetis } from "@/lib/store";
 import { Avatar, PageHeader } from "@/components/ui/primitives";
 import type { Invitation, User } from "@/lib/domain/types";
+import { useAcademy } from "@/components/academy/AcademyProvider";
 
 const ROLE: Record<string, string> = { admin: "Administrador", manager: "Jefe", collaborator: "Colaborador" };
 const INV_STATUS: Record<Invitation["status"], { label: string; tone: string }> = {
@@ -15,6 +16,7 @@ const INV_STATUS: Record<Invitation["status"], { label: string; tone: string }> 
 
 export default function Usuarios() {
   const s = useMetis();
+  const academy = useAcademy();
   const [inviting, setInviting] = useState(false);
   const [copied, setCopied] = useState<"code" | "link" | null>(null);
   const code = s.tenant.joinCode ?? "—";
@@ -58,8 +60,8 @@ export default function Usuarios() {
       </div>
 
       <div className="card overflow-x-auto">
-        <table className="w-full min-w-[720px]">
-          <thead className="border-b border-slate-100"><tr><th className="th">Usuario</th><th className="th">Equipo</th><th className="th">Reporta a</th><th className="th">Rol</th><th className="th text-right">Reportes directos</th></tr></thead>
+        <table className="w-full min-w-[800px]">
+          <thead className="border-b border-slate-100"><tr><th className="th">Usuario</th><th className="th">Equipo</th><th className="th">Reporta a</th><th className="th">Rol</th><th className="th">Academy</th><th className="th text-right">Reportes directos</th></tr></thead>
           <tbody className="divide-y divide-slate-100">
             {s.users.map((u) => {
               const m = s.users.find((x) => x.id === u.managerId);
@@ -82,6 +84,11 @@ export default function Usuarios() {
                       </select>
                     ) : <span className="chip bg-slate-100 text-slate-600">{u.dbRole === "owner" ? "Dueño" : ROLE[u.role]}</span>}
                   </td>
+                  <td className="td">{(() => {
+                    const n = u.id === s.currentUserId ? academy.done : (academy.team[u.id] ?? 0);
+                    if (s.mode !== "supabase" && u.id !== s.currentUserId) return <span className="text-xs text-slate-300">—</span>;
+                    return n >= academy.total ? <span className="chip bg-mint-soft text-sob">Completa</span> : <span className="chip bg-amber-soft text-amber tabular-nums">{n}/{academy.total}</span>;
+                  })()}</td>
                   <td className="td text-right tabular-nums">{s.users.filter((x) => x.managerId === u.id).length}</td>
                 </tr>
               );

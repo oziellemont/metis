@@ -12,6 +12,9 @@ import { supabaseAdmin } from "@/lib/supabase/server";
 import { sendMany } from "@/lib/email";
 import { buildReminders, DEFAULT_REMINDERS, periodFor } from "@/lib/domain/reminders";
 import type { Element, ElementScope, ReminderSettings, Result, User } from "@/lib/domain/types";
+import { academyReminderEmail } from "@/lib/academy/email";
+import { MODULE_IDS } from "@/lib/academy/content";
+import { shouldRemindAcademy, type ProgressMap } from "@/lib/academy/progress";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -36,6 +39,7 @@ export async function GET(req: NextRequest) {
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
   const report: Record<string, unknown>[] = [];
+  const academy = await academyReminders(sb, tenants ?? [], appUrl, now, dry);
   for (const t of tenants ?? []) {
     const settings: ReminderSettings = { ...DEFAULT_REMINDERS, ...((t.settings as { reminders?: Partial<ReminderSettings> } | null)?.reminders ?? {}) };
     const today = localDay(settings.timezone, now);
@@ -72,5 +76,54 @@ export async function GET(req: NextRequest) {
     }
     report.push({ tenant: t.name, today, messages: msgs.length, sent, dry, recipients: msgs.map((m) => `${m.kind}:${m.to.email}`) });
   }
-  return NextResponse.json({ at: now.toISOString(), report });
+  return NextResponse.json({ at: now.toISOString(), academy, report });
+}
+
+/**
+ * Metis Academy: cada 2 días, a quien ya entró a una empresa y no ha aprobado todos los módulos.
+ * El avance es por persona, así que se manda un solo correo aunque esté en varias empresas.
+ */
+async function academyReminders(sb: NonNullable<ReturnType<typeof supabaseAdmin>>, tenants: { id: string; name: string }[], appUrl: string, now: Date, dry: boolean) {
+  const prog = await sb.from("academy_progress").select("user_id, module_id, best_score, attempts, passed_at");
+  if (prog.error) return { skipped: "Falta correr la migración 0007_academy.sql" };
+  const mem = await sb.from("memberships").select("tenant_id, user_id, profiles:profiles!memberships_user_id_fkey(full_name, email)").eq("active", true);
+  if (mem.error) return { error: mem.error.message };
+
+  type Row = { tenant_id: string; user_id: string; profiles: { full_name: string; email: string } | { full_name: string; email: string }[] | null };
+  const people = new Map<string, { tenantId: string; name: string; email: string }>();
+  for (const m of (mem.data ?? []) as unknown as Row[]) {
+    const p = Array.isArray(m.profiles) ? m.profiles[0] : m.profiles;
+    if (p?.email && !people.has(m.user_id)) people.set(m.user_id, { tenantId: m.tenant_id, name: p.full_name || p.email.split("@")[0], email: p.email });
+  }
+  const byUser = new Map<string, ProgressMap>();
+  for (const r of prog.data ?? []) {
+    const map = byUser.get(r.user_id) ?? {};
+    map[r.module_id] = { moduleId: r.module_id, bestScore: r.best_score, attempts: r.attempts, passedAt: r.passed_at };
+    byUser.set(r.user_id, map);
+  }
+  const ids = [...people.keys()];
+  const logs = ids.length
+    ? await sb.from("notification_log").select("user_id, sent_at").eq("kind", "academy_reminder").in("status", ["sent", "dry_run"]).in("user_id", ids).order("sent_at", { ascending: false })
+    : { data: [] as { user_id: string; sent_at: string }[] };
+  const last = new Map<string, Date>();
+  (logs.data ?? []).forEach((l) => { if (!last.has(l.user_id)) last.set(l.user_id, new Date(l.sent_at)); });
+
+  const due = ids.filter((id) => {
+    const p = byUser.get(id) ?? {};
+    const done = MODULE_IDS.every((m) => p[m]?.passedAt);
+    return shouldRemindAcademy(done, last.get(id) ?? null, now);
+  });
+  const tenantName = (id: string) => tenants.find((t) => t.id === id)?.name ?? "tu empresa";
+  const msgs = due.map((id) => {
+    const who = people.get(id)!;
+    return { id, who, ...academyReminderEmail({ name: who.name, tenantName: tenantName(who.tenantId), appUrl, progress: byUser.get(id) ?? {} }) };
+  });
+  if (dry || !msgs.length) return { due: msgs.length, dry, recipients: msgs.map((m) => m.who.email) };
+
+  const res = await sendMany(msgs.map((m) => ({ to: m.who.email, subject: m.subject, html: m.html, text: m.text })));
+  await sb.from("notification_log").insert(msgs.map((m, i) => ({
+    tenant_id: m.who.tenantId, user_id: m.id, channel: "email", kind: "academy_reminder",
+    subject: m.subject, status: res[i]?.ok ? (res[i]?.dryRun ? "dry_run" : "sent") : "failed", error: res[i]?.error ?? null,
+  })));
+  return { due: msgs.length, sent: res.filter((r) => r.ok).length };
 }
