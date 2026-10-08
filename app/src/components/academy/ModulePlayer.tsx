@@ -21,7 +21,7 @@ export function ModulePlayer({ mod }: { mod: Module }) {
   const onReady = useCallback((ok: boolean) => setReady(ok), []);
   const orders = useMemo(() => mod.quiz.map((q, i) => shuffledOrder(q.options.length, attempt * 31 + i * 7 + mod.n)), [mod, attempt]);
   const nextMod = MODULES.find((m) => m.n === mod.n + 1);
-  const unlocked = isUnlocked(a.progress, mod.id);
+  const unlocked = a.previewAll || isUnlocked(a.progress, mod.id);
 
   useEffect(() => { window.scrollTo({ top: 0, behavior: "smooth" }); }, [phase]);
 
