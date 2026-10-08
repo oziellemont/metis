@@ -34,3 +34,10 @@ body { font-feature-settings: "tnum" 1; }
 @keyframes academy-confetti { 0% { transform: translateY(0) rotate(0); opacity: 1; } 100% { transform: translateY(105vh) rotate(720deg); opacity: 0; } }
 .academy-confetti { animation-name: academy-confetti; animation-timing-function: cubic-bezier(.2,.6,.4,1); animation-fill-mode: forwards; }
 @media (prefers-reduced-motion: reduce) { .academy-in, .academy-confetti { animation: none; } }
+
+/* Instructor «?» · animación mínima: un halo suave que se expande cada pocos segundos */
+@keyframes help-ring { 0% { box-shadow: 0 0 0 0 rgb(20 201 142 / 0.45); } 35%, 100% { box-shadow: 0 0 0 10px rgb(20 201 142 / 0); } }
+.help-ring { animation: help-ring 3.6s ease-out infinite; }
+@keyframes help-in { from { opacity: 0; transform: translateY(6px) scale(.98); } to { opacity: 1; transform: none; } }
+.help-in { animation: help-in .22s ease-out both; transform-origin: bottom right; }
+@media (prefers-reduced-motion: reduce) { .help-ring, .help-in { animation: none; } }

@@ -1,13 +1,13 @@
 "use client";
 import Link from "next/link";
 import clsx from "clsx";
-import { ArrowRight, Check, Clock, Compass, Flag, GraduationCap, Lock, Map as MapIcon, RotateCcw, Users } from "lucide-react";
+import { ArrowRight, Check, Clock, Compass, Flag, GraduationCap, Lock, Map as MapIcon, MessagesSquare, RotateCcw, Users } from "lucide-react";
 import { useMetis } from "@/lib/store";
 import { MODULES, TOTAL_MINUTES } from "@/lib/academy/content";
 import { isPassed, isUnlocked, nextModule } from "@/lib/academy/progress";
 import { useAcademy } from "./AcademyProvider";
 
-const ICON = { compass: Compass, users: Users, flag: Flag, map: MapIcon };
+const ICON = { compass: Compass, users: Users, flag: Flag, message: MessagesSquare, map: MapIcon };
 
 export function AcademyHome() {
   const a = useAcademy();
@@ -31,7 +31,7 @@ export function AcademyHome() {
             <p className="mt-3 text-white/70 max-w-lg text-[15px] leading-relaxed">
               {a.finished
                 ? "Completaste los módulos. Puedes volver a repasarlos cuando quieras."
-                : `${MODULES.length} módulos cortos (unos ${TOTAL_MINUTES} minutos) sobre alineación estratégica, equipos y liderazgo, y un tour por la plataforma. Al terminar se desbloquea tu acceso completo a METIS.`}
+                : `${MODULES.length} módulos cortos (unos ${TOTAL_MINUTES} minutos) sobre alineación estratégica, equipos, liderazgo y revisiones 1 a 1 y de equipo, y un tour por la plataforma. Al terminar se desbloquea tu acceso completo a METIS.`}
             </p>
             {!a.finished && next && (
               <Link href={`/academy/${next.id}`} className="mt-6 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-ink hover:bg-white/90 transition-colors">
