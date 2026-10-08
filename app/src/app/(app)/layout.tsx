@@ -1,10 +1,13 @@
 import { MetisProvider } from "@/lib/store";
 import { Shell } from "@/components/app/Shell";
+import { AcademyProvider } from "@/components/academy/AcademyProvider";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <MetisProvider>
-      <Shell>{children}</Shell>
+      <AcademyProvider>
+        <Shell>{children}</Shell>
+      </AcademyProvider>
     </MetisProvider>
   );
 }

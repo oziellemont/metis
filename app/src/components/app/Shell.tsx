@@ -1,16 +1,18 @@
 "use client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
 import clsx from "clsx";
 import {
   Home, ClipboardList, Upload, CalendarClock, CheckSquare, GitBranch, Gauge, FolderKanban, Users, BarChart3,
-  BookOpen, MapPin, Ruler, UserCog, Bell, RotateCcw, Target, Building2, AlertTriangle, X, Loader2, Shield,
+  BookOpen, MapPin, Ruler, UserCog, Bell, RotateCcw, Target, Building2, AlertTriangle, X, Loader2, Shield, GraduationCap, Lock,
 } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { Avatar } from "@/components/ui/primitives";
 import { useMetis } from "@/lib/store";
 import { MONTHS } from "@/lib/labels";
 import { GlobalSearch, useFocusFromHash } from "@/components/app/GlobalSearch";
+import { useAcademy } from "@/components/academy/AcademyProvider";
 
 const MI_ESPACIO = [
   { href: "/inicio", label: "Inicio", icon: Home },
@@ -39,10 +41,16 @@ export function Shell({ children }: { children: React.ReactNode }) {
   const me = s.userOf(s.currentUserId);
   const real = s.mode === "supabase";
   useFocusFromHash();
+  const academy = useAcademy();
+  const router = useRouter();
+  const locked = academy.locked;
+  const onAcademy = path === "/academy" || path.startsWith("/academy/");
+  useEffect(() => { if (locked && !onAcademy) router.replace("/academy"); }, [locked, onAcademy, router]);
   const canConfig = me.role === "admin" || me.role === "manager";
   const searchPages = [
-    ...MI_ESPACIO,
-    ...(canConfig ? CONFIG : []),
+    { href: "/academy", label: "Metis Academy" },
+    ...(locked ? [] : MI_ESPACIO),
+    ...(locked ? [] : canConfig ? CONFIG : []),
     ...(s.isPlatformAdmin ? [{ href: "/consola", label: "Consola de clientes" }] : []),
   ];
   const pendingLoads = s.elementScopes.filter((es) => es.ownerUserId === me.id)
@@ -50,6 +58,13 @@ export function Shell({ children }: { children: React.ReactNode }) {
 
   const Item = ({ href, label, icon: Icon, badge, soon }: { href: string; label: string; icon: React.ElementType; badge?: boolean; soon?: boolean }) => {
     const active = path === href || path.startsWith(href + "/");
+    if (locked && href !== "/academy") {
+      return (
+        <span title="Se desbloquea al completar Metis Academy" className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-slate-300 cursor-not-allowed select-none">
+          <Icon size={16} className="shrink-0" /><span className="truncate">{label}</span><Lock size={12} className="ml-auto" />
+        </span>
+      );
+    }
     return (
       <Link
         href={href}
@@ -69,6 +84,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
       <aside className="no-print hidden md:flex w-64 shrink-0 flex-col border-r border-slate-100 bg-white px-4 py-5">
         <Link href="/inicio" className="px-3 mb-4 flex items-center" aria-label="Ir a inicio"><Logo height={30} priority /></Link>
         <TenantBadge />
+        <AcademyNav />
         <div className="px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-2">Mi espacio</div>
         <nav className="space-y-0.5">{MI_ESPACIO.map((i) => <Item key={i.href} {...i} />)}</nav>
         {me.role === "admin" || me.role === "manager" ? (
@@ -121,15 +137,38 @@ export function Shell({ children }: { children: React.ReactNode }) {
             <button onClick={s.reset} className="ml-auto inline-flex items-center gap-1 hover:underline"><RotateCcw size={12} /> Reiniciar demo</button>
           </div>
         )}
+        {locked && !onAcademy && (
+          <div className="no-print bg-indigo-soft text-indigo text-xs px-4 md:px-8 py-1.5">Abriendo Metis Academy…</div>
+        )}
         {s.syncError && (
           <div role="alert" className="no-print bg-coral/10 text-coral text-xs px-4 md:px-8 py-2 flex items-center gap-3">
             <AlertTriangle size={14} className="shrink-0" /><span>{s.syncError}</span>
             <button onClick={s.clearSyncError} className="ml-auto p-0.5 hover:opacity-70" aria-label="Cerrar"><X size={14} /></button>
           </div>
         )}
-        <main className="flex-1 px-4 md:px-8 py-6 max-w-[1400px] w-full mx-auto">{children}</main>
+        <main className="flex-1 px-4 md:px-8 py-6 max-w-[1400px] w-full mx-auto">{locked && !onAcademy ? null : children}</main>
       </div>
     </div>
+  );
+}
+
+/** Acceso a Metis Academy, siempre arriba del menú, con el avance del usuario. */
+function AcademyNav() {
+  const path = usePathname();
+  const a = useAcademy();
+  const active = path === "/academy" || path.startsWith("/academy/");
+  const pct = Math.round((a.done / a.total) * 100);
+  return (
+    <Link href="/academy" className={clsx("mx-1 mb-5 block rounded-xl border px-3 py-2.5 transition-colors",
+      active ? "border-indigo/30 bg-indigo-soft" : a.finished ? "border-slate-100 hover:bg-slate-50" : "border-indigo/20 bg-gradient-to-br from-indigo-soft/70 to-white hover:border-indigo/40")}>
+      <div className="flex items-center gap-2 text-sm font-medium text-ink">
+        <GraduationCap size={16} className="text-indigo shrink-0" /> Metis Academy
+        {a.finished ? <span className="ml-auto chip bg-mint-soft text-sob !px-1.5 !text-[10px]">Listo</span> : <span className="ml-auto text-[11px] font-semibold text-indigo tabular-nums">{a.done}/{a.total}</span>}
+      </div>
+      {!a.finished && (
+        <div className="mt-2 h-1 rounded-full bg-indigo/10 overflow-hidden"><div className="h-full rounded-full bg-indigo transition-all" style={{ width: `${pct}%` }} /></div>
+      )}
+    </Link>
   );
 }
 
