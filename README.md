@@ -136,3 +136,7 @@ Reglas de marca: espacio libre mínimo = altura de la "ê"; mínimo 90 px de anc
 - **Sprint 2b:** persistencia real sobre Supabase (store → consultas), importación de catálogo desde Excel, deploy en Vercel.
 - **Sprint 3:** Sesiones WTW/WTM con deck automático y compromisos; alertas de KPI en rojo.
 - **Sprint 4:** IA — resumen de bitácoras, transcripción de sesiones, alertas de desvío.
+
+### Correos de inicio de sesión (Supabase Auth)
+
+Las plantillas con el diseño de mêtis están en `app/supabase/email-templates/` (se regeneran con `python3 app/supabase/email-templates/generar.py`). Se pegan en Supabase → Authentication → Emails → Templates; los asuntos están en `ASUNTOS.md` y `vista-previa.html` las muestra todas.
