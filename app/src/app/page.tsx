@@ -66,7 +66,7 @@ export default function Landing() {
       </section>
 
       <section id="consultoria" className="mx-auto max-w-6xl px-6 py-20">
-        <div className="grid lg:grid-cols-2 gap-10 items-start">
+        <div className="grid lg:grid-cols-2 gap-10 items-center">
           <div>
             <div className="text-xs font-semibold uppercase tracking-wider text-indigo">METIS Growth Advisory</div>
             <h2 className="mt-2 text-3xl font-semibold">La herramienta ordena. El acompañamiento hace crecer.</h2>
@@ -87,29 +87,29 @@ export default function Landing() {
             </ul>
             <a href="mailto:hola@metisalign.mx?subject=Quiero%20platicar%20sobre%20METIS" className="mt-8 inline-flex items-center gap-1.5 text-sm font-medium text-indigo hover:gap-2.5 transition-all">Platiquemos de tu caso <ArrowRight size={14} /></a>
           </div>
-          <div className="rounded-3xl bg-white border border-slate-100 shadow-[0_1px_2px_rgba(23,26,58,0.04),0_12px_32px_-12px_rgba(23,26,58,0.10)] p-8">
+          <div className="rounded-3xl bg-white border border-slate-100 shadow-[0_1px_2px_rgba(23,26,58,0.04),0_12px_32px_-12px_rgba(23,26,58,0.10)] p-7 lg:p-8">
             <div className="flex items-baseline justify-between">
               <h3 className="font-semibold text-ink">Ruta de implementación</h3>
               <span className="text-xs font-medium text-slate-400 tabular-nums">12 semanas</span>
             </div>
-            <ol className="mt-8">
+            <ol className="mt-7">
               {[
-                ["1–3", "Diagnóstico", "Entrevistas, revisión de KPIs actuales e Índice de Alineación."],
-                ["3–6", "Diseño estratégico", "Objetivos corporativos, LAEs y catálogo de elementos."],
-                ["6–8", "Cascadeo y metas", "Alcances, Owners y Contributors, y metas por nivel."],
-                ["8–10", "Configuración y capacitación", "METIS listo, carga inicial y Academia para usuarios."],
+                ["1–3", "Diagnóstico", "Entrevistas, KPIs actuales e Índice de Alineación."],
+                ["3–6", "Diseño estratégico", "Objetivos, LAEs y catálogo de elementos."],
+                ["6–8", "Cascadeo y metas", "Alcances, Owners, Contributors y metas."],
+                ["8–10", "Configuración y capacitación", "Plataforma lista, carga inicial y Academia."],
                 ["10–12", "Primer cierre y ritmo", "Primer cierre mensual y sesiones WTW / WTM."],
               ].map(([w, t, d], i, arr) => (
-                <li key={w} className="relative grid grid-cols-[4.5rem_1fr] gap-x-5">
+                <li key={w} className="relative grid grid-cols-[3.75rem_1fr] gap-x-4">
                   <div className="pt-px text-right">
                     <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Semana</div>
-                    <div className="text-sm font-semibold text-indigo tabular-nums">{w}</div>
+                    <div className="text-sm font-semibold text-indigo tabular-nums leading-tight">{w}</div>
                   </div>
-                  <div className={"relative pl-7 " + (i < arr.length - 1 ? "pb-7" : "")}>
+                  <div className={"relative pl-6 " + (i < arr.length - 1 ? "pb-8" : "")}>
                     {i < arr.length - 1 && <span aria-hidden className="absolute left-[5px] top-4 bottom-0 w-px bg-gradient-to-b from-indigo/30 to-indigo/10" />}
                     <span aria-hidden className={"absolute left-0 top-1.5 h-[11px] w-[11px] rounded-full ring-4 ring-white " + (i === arr.length - 1 ? "bg-mint" : "bg-indigo")} />
                     <div className="font-medium text-ink leading-tight">{t}</div>
-                    <p className="mt-1 text-sm text-slate-500 leading-relaxed">{d}</p>
+                    <p className="mt-1 text-sm text-slate-500 leading-snug">{d}</p>
                   </div>
                 </li>
               ))}
