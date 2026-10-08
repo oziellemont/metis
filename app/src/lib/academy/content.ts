@@ -16,7 +16,7 @@ export type Block =
   | { kind: "check"; eyebrow: string; title: string; question: string; options: { text: string; correct?: boolean; why: string }[] }
   | { kind: "screen"; eyebrow: string; nav: TourScreen; title: string; body: string[] };
 
-export type TourScreen = "inicio" | "scorecard" | "carga" | "mapa" | "equipo" | "buscar";
+export type TourScreen = "inicio" | "scorecard" | "carga" | "mapa" | "equipo" | "buscar" | "ayuda";
 
 export interface Question {
   q: string;
@@ -30,7 +30,7 @@ export interface Module {
   subtitle: string;
   minutes: number;
   topics: string[];
-  icon: "compass" | "users" | "flag" | "map";
+  icon: "compass" | "users" | "flag" | "message" | "map";
   blocks: Block[];
   quiz: Question[];
 }
@@ -397,22 +397,152 @@ export const MODULES: Module[] = [
     ],
   },
 
-  // ───────────────────────────────────────────────────────────── 4 · Tour
+  // ───────────────────────────────────────────────────────────── 4 · Revisiones
+  {
+    id: "revisiones",
+    n: 4,
+    title: "Revisiones 1 a 1 y de equipo",
+    subtitle: "Cómo llevar la revisión vertical con cada colaborador y la sesión de equipo (WTW/WTM): el tono, las preguntas y el paso a paso.",
+    minutes: 8,
+    topics: ["Revisión vertical vs. de equipo", "El tono del líder", "Preguntas poderosas", "Guía 1 a 1 y WTW/WTM"],
+    icon: "message",
+    blocks: [
+      {
+        kind: "compare",
+        eyebrow: "Dos conversaciones",
+        title: "Revisión vertical y revisión de equipo: no son la misma junta",
+        intro: "Las dos son necesarias. Mezclarlas es el error más común.",
+        left: { label: "Vertical · 1 a 1", points: ["Tú y una persona de tu equipo.", "Cada 2 a 4 semanas, 30 min.", "Su scorecard, sus obstáculos y su desarrollo.", "Lo personal se queda aquí: errores, carrera, feedback."] },
+        right: { label: "De equipo · WTW / WTM", points: ["Todo el equipo, misma hora siempre.", "WTW semanal (20–30 min) · WTM mensual tras el cierre.", "El marcador común y los compromisos de cada quien.", "Nadie es exhibido: se habla de resultados, no de personas."] },
+        note: "Regla práctica: si el tema solo involucra a una persona o puede incomodarla, va al 1 a 1. Si afecta el marcador de todos, va a la sesión de equipo.",
+      },
+      {
+        kind: "compare",
+        eyebrow: "El tono",
+        title: "El tono del líder: coach, no inspector",
+        intro: "La misma pregunta puede abrir o cerrar la conversación según cómo se hace.",
+        left: { label: "Inspector", points: ["«¿Por qué otra vez en rojo?»", "Habla él el 80% del tiempo.", "Busca culpables.", "Resuelve todo por la persona.", "Cancela cuando hay urgencias."] },
+        right: { label: "Coach", points: ["«¿Qué está pasando con el OTIF y qué necesitas?»", "Escucha el 70% del tiempo.", "Busca causas y siguientes pasos.", "Pregunta primero, sugiere después.", "Protege la cita: misma hora, sin cancelar."] },
+        note: "Firme con los resultados, cálido con las personas. Exigencia y seguridad psicológica no se contraponen: se necesitan.",
+      },
+      {
+        kind: "reveal",
+        eyebrow: "Qué preguntar",
+        title: "Preguntas poderosas para cada momento",
+        intro: "Preguntas abiertas: no se contestan con sí o no. Toca cada momento.",
+        items: [
+          { tag: "1", label: "Abrir", body: "Conecta con la persona antes que con el número.", details: [{ label: "Pregunta", text: "«¿Cómo llegas hoy? ¿Qué es lo más importante que quieres tratar?»" }, { label: "Pregunta", text: "«¿Qué salió bien desde la última vez?»" }] },
+          { tag: "2", label: "Explorar", body: "Entiende la causa antes de opinar.", details: [{ label: "Pregunta", text: "«¿Qué crees que está provocando ese resultado?»" }, { label: "Pregunta", text: "«¿Qué indicador de causa podemos mover esta semana?»" }] },
+          { tag: "3", label: "Destrabar", body: "Tu trabajo como líder es quitar obstáculos.", details: [{ label: "Pregunta", text: "«¿Qué te está frenando y qué puedo hacer yo para ayudarte?»" }, { label: "Pregunta", text: "«¿A quién necesitas que te conecte?»" }] },
+          { tag: "4", label: "Comprometer", body: "Toda revisión termina en acciones concretas.", details: [{ label: "Pregunta", text: "«¿Qué vas a hacer, para cuándo y cómo sabremos que se cumplió?»" }] },
+          { tag: "5", label: "Desarrollar", body: "Mira más allá del mes: su crecimiento.", details: [{ label: "Pregunta", text: "«¿Qué habilidad quieres fortalecer este trimestre?»" }, { label: "Pregunta", text: "«¿Qué feedback tienes para mí?»" }] },
+        ],
+        note: "Evita los «¿por qué no…?»: suenan a acusación. Cámbialos por «¿qué pasó…?» o «¿qué necesitas…?».",
+      },
+      {
+        kind: "flow",
+        eyebrow: "Guía · 1 a 1",
+        title: "La conversación de desarrollo 1 a 1, paso a paso (30 min)",
+        steps: [
+          { label: "Conecta (3 min)", example: "Pregunta cómo está y qué quiere tratar. Su agenda va primero: es su espacio, no el tuyo." },
+          { label: "Revisa su scorecard (10 min)", example: "Abran juntos METIS. Reconoce los verdes con hechos concretos y explora los rojos: «¿qué está pasando?, ¿qué causa lo explica?»." },
+          { label: "Destraba (7 min)", example: "Pregunta qué lo frena y qué necesita de ti. Ofrece apoyo concreto, no discursos." },
+          { label: "Desarrollo y feedback (7 min)", example: "Un tema de crecimiento y, si aplica, feedback SCI. Pide también feedback para ti." },
+          { label: "Cierra con compromisos (3 min)", example: "Que la persona diga sus 1–3 compromisos con fecha. Tú también anota los tuyos. Se revisan en el próximo 1 a 1." },
+        ],
+        note: "Si solo hablaste de números, fue una revisión de reporte, no de desarrollo. Cuida que el paso 4 nunca se pierda.",
+      },
+      {
+        kind: "flow",
+        eyebrow: "Guía · equipo",
+        title: "La revisión de equipo (WTW), paso a paso (20–30 min)",
+        steps: [
+          { label: "Marcador primero (5 min)", example: "Proyecta el mapa o los reportes de METIS. ¿Vamos ganando o perdiendo? Sin rodeos ni presentaciones largas." },
+          { label: "Rendición de cuentas (10 min)", example: "Cada quien, 1 minuto: «Me comprometí a… Cumplí / no cumplí. Aprendí…». Sin justificaciones largas." },
+          { label: "Despejar el camino (5 min)", example: "¿Qué obstáculo necesita ayuda de otro? Se acuerda quién ayuda. Los temas largos se agendan aparte." },
+          { label: "Nuevos compromisos (5 min)", example: "Cada quien dice en voz alta su compromiso de la semana: qué, para cuándo, y qué indicador mueve." },
+          { label: "Cierre (1 min)", example: "El líder repite los acuerdos y recuerda la próxima cita. Misma hora la siguiente semana." },
+        ],
+        note: "La WTM sigue el mismo guion, pero con el scorecard completo del mes: rojos, causas y ajustes al plan. Termina con acuerdos, igual que la WTW.",
+      },
+      {
+        kind: "check",
+        eyebrow: "Pruébate",
+        title: "Un rojo frente a todos",
+        question: "En la WTW, Luis reporta que no cumplió por tercera semana seguida y el equipo se queda callado. ¿Qué haces?",
+        options: [
+          { text: "Le llamas la atención ahí mismo para que sirva de ejemplo", why: "Exhibir a alguien frente al equipo destruye la confianza y hace que todos oculten problemas." },
+          { text: "Le preguntas qué obstáculo tiene y quién puede ayudarle, y agendas un 1 a 1 para profundizar", correct: true, why: "En equipo se destraba lo urgente con respeto; lo personal y la conversación de fondo van al 1 a 1." },
+          { text: "Lo dejas pasar para no incomodar", why: "Ignorarlo le quita valor a los compromisos de todos y evita el conflicto productivo." },
+        ],
+      },
+    ],
+    quiz: [
+      {
+        q: "Ana, de tu equipo, tiene un tema personal que afecta su desempeño. ¿Dónde lo hablas?",
+        options: [
+          { text: "En la WTW, para que el equipo entienda", why: "La sesión de equipo es para el marcador común; lo personal expone a la persona." },
+          { text: "En un 1 a 1, en privado", correct: true, why: "La revisión vertical es el espacio seguro para lo personal, el feedback y el desarrollo." },
+          { text: "Por chat, para no quitar tiempo", why: "Los temas sensibles necesitan conversación, no mensajes que se malinterpretan." },
+          { text: "En la WTM con Recursos Humanos", why: "Lo primero es una conversación directa y privada entre líder y colaborador." },
+        ],
+      },
+      {
+        q: "¿Cuál pregunta refleja mejor el tono de coach ante un KPI en rojo?",
+        options: [
+          { text: "«¿Por qué no cumpliste otra vez?»", why: "El «¿por qué no…?» suena a acusación y provoca justificaciones." },
+          { text: "«Esto no puede seguir así.»", why: "Es una sentencia, no una pregunta: cierra la conversación." },
+          { text: "«¿Qué está provocando este resultado y qué necesitas para moverlo?»", correct: true, why: "Explora la causa y ofrece apoyo, sin bajar la exigencia sobre el resultado." },
+          { text: "«¿Quién tuvo la culpa?»", why: "Buscar culpables hace que la gente esconda problemas en lugar de resolverlos." },
+        ],
+      },
+      {
+        q: "En un 1 a 1 de desarrollo, ¿quién debería hablar más?",
+        options: [
+          { text: "El líder, para dar instrucciones claras", why: "Si el líder habla todo el tiempo, se pierde lo que la persona sabe y necesita." },
+          { text: "El colaborador: el líder escucha la mayor parte del tiempo y pregunta", correct: true, why: "Es su espacio: su agenda va primero y el líder guía con preguntas (aprox. 70/30)." },
+          { text: "Ambos exactamente igual, con cronómetro", why: "No se trata de medir minutos sino de que la persona se exprese y se comprometa." },
+          { text: "Da igual mientras se revisen los números", why: "Si solo se revisan números, es un reporte, no una conversación de desarrollo." },
+        ],
+      },
+      {
+        q: "¿Cuál es el orden correcto de una WTW?",
+        options: [
+          { text: "Presentaciones de cada área → dudas → cierre", why: "Eso convierte la WTW en una junta larga de reportes sin compromisos." },
+          { text: "Marcador → rendición de cuentas → despejar el camino → nuevos compromisos", correct: true, why: "Primero dónde estamos, luego qué cumplió cada quien, qué obstáculo destrabar y qué sigue." },
+          { text: "Nuevos compromisos → marcador → cierre", why: "Sin revisar primero lo prometido, los compromisos pierden peso." },
+          { text: "Lluvia de ideas libre sobre el mes", why: "La WTW necesita un guion fijo y corto para que se sostenga cada semana." },
+        ],
+      },
+      {
+        q: "¿Cómo debe terminar cualquier revisión, 1 a 1 o de equipo?",
+        options: [
+          { text: "Con una frase motivacional", why: "Motiva un momento, pero no cambia lo que pasa el lunes." },
+          { text: "Con un resumen del líder sobre lo que salió mal", why: "Cierra en negativo y sin acciones." },
+          { text: "Con compromisos concretos, con fecha, dichos por cada persona", correct: true, why: "Qué, quién y para cuándo. Dichos por la propia persona generan más compromiso y se revisan en la siguiente sesión." },
+          { text: "Con la fecha de la siguiente junta y nada más", why: "Sin acuerdos concretos, la siguiente junta empieza desde cero." },
+        ],
+      },
+    ],
+  },
+
+  // ───────────────────────────────────────────────────────────── 5 · Tour
   {
     id: "tour",
-    n: 4,
+    n: 5,
     title: "Tour por METIS",
     subtitle: "Un recorrido por la plataforma: para qué sirve cada sección y cómo encaja en tu mes.",
     minutes: 5,
-    topics: ["Inicio", "Scorecard", "Carga mensual", "Mapa", "Tu equipo"],
+    topics: ["Inicio", "Scorecard", "Carga mensual", "Mapa", "Tu equipo", "Botón de ayuda"],
     icon: "map",
     blocks: [
-      { kind: "screen", eyebrow: "1 de 6", nav: "inicio", title: "Inicio: tu mes en un vistazo", body: ["Tu cumplimiento ponderado, lo que te falta cargar y los scorecards de tu equipo por aprobar.", "Es tu punto de partida cada vez que entras."] },
-      { kind: "screen", eyebrow: "2 de 6", nav: "scorecard", title: "Mi Scorecard: cómo te mides este año", body: ["Tus KPIs y proyectos, cada uno con su peso y su semáforo.", "Lo armas en borrador, lo envías a tu jefe y, cuando lo aprueba, queda como tu compromiso del año. Toca cada estado."] },
-      { kind: "screen", eyebrow: "3 de 6", nav: "carga", title: "Carga mensual: un dato, una vez", body: ["Si eres Owner de un indicador, aquí capturas su resultado cada mes.", "Pruébalo: escribe un valor y mira cómo se actualizan los Contributors al instante."] },
-      { kind: "screen", eyebrow: "4 de 6", nav: "mapa", title: "Mapa de alineación: la cascada completa", body: ["Muestra cómo cada objetivo baja a LAEs, indicadores y personas.", "Es la respuesta visual a «¿mi trabajo a qué contribuye?». Toca un objetivo."] },
-      { kind: "screen", eyebrow: "5 de 6", nav: "equipo", title: "Mi equipo y Reportes", body: ["Si tienes gente a cargo, aquí ves el avance de cada quien y apruebas sus scorecards.", "Reportes te da la foto de toda la organización para la WTM."] },
-      { kind: "screen", eyebrow: "6 de 6", nav: "buscar", title: "Buscador y recordatorios", body: ["Presiona ⌘K (o Ctrl+K) para encontrar cualquier indicador, proyecto o persona.", "Y no tienes que acordarte del cierre: METIS te avisa por correo antes de que venza."] },
+      { kind: "screen", eyebrow: "1 de 7", nav: "inicio", title: "Inicio: tu mes en un vistazo", body: ["Tu cumplimiento ponderado, lo que te falta cargar y los scorecards de tu equipo por aprobar.", "Es tu punto de partida cada vez que entras."] },
+      { kind: "screen", eyebrow: "2 de 7", nav: "scorecard", title: "Mi Scorecard: cómo te mides este año", body: ["Tus KPIs y proyectos, cada uno con su peso y su semáforo.", "Lo armas en borrador, lo envías a tu jefe y, cuando lo aprueba, queda como tu compromiso del año. Toca cada estado."] },
+      { kind: "screen", eyebrow: "3 de 7", nav: "carga", title: "Carga mensual: un dato, una vez", body: ["Si eres Owner de un indicador, aquí capturas su resultado cada mes.", "Pruébalo: escribe un valor y mira cómo se actualizan los Contributors al instante."] },
+      { kind: "screen", eyebrow: "4 de 7", nav: "mapa", title: "Mapa de alineación: la cascada completa", body: ["Muestra cómo cada objetivo baja a LAEs, indicadores y personas.", "Es la respuesta visual a «¿mi trabajo a qué contribuye?». Toca un objetivo."] },
+      { kind: "screen", eyebrow: "5 de 7", nav: "equipo", title: "Mi equipo y Reportes", body: ["Si tienes gente a cargo, aquí ves el avance de cada quien y apruebas sus scorecards.", "Reportes te da la foto de toda la organización para la WTM."] },
+      { kind: "screen", eyebrow: "6 de 7", nav: "buscar", title: "Buscador y recordatorios", body: ["Presiona ⌘K (o Ctrl+K) para encontrar cualquier indicador, proyecto o persona.", "Y no tienes que acordarte del cierre: METIS te avisa por correo antes de que venza."] },
+      { kind: "screen", eyebrow: "7 de 7", nav: "ayuda", title: "Tu instructor: el botón «?»", body: ["En la esquina inferior derecha de cada pantalla verás un pequeño botón con un signo de interrogación.", "Ábrelo cuando tengas una duda: te explica la página en la que estás, qué hacer ahí y responde las preguntas más comunes. Pruébalo."] },
     ],
     quiz: [
       {
@@ -458,6 +588,15 @@ export const MODULES: Module[] = [
           { text: "Pedirle a tu jefe que te mande el enlace", why: "No hace falta: lo encuentras tú en segundos." },
           { text: "Presionar ⌘K (o Ctrl+K) y escribir «otif»", correct: true, why: "El buscador encuentra páginas, indicadores, proyectos y personas desde cualquier pantalla." },
           { text: "Descargar un reporte y buscarlo en Excel", why: "Es mucho más lento y el dato podría no estar actualizado." },
+        ],
+      },
+      {
+        q: "Estás en Carga mensual y no sabes cómo adjuntar evidencia. ¿Qué es lo más rápido?",
+        options: [
+          { text: "Esperar a tu próximo 1 a 1 para preguntar", why: "Puedes resolverlo en segundos sin esperar a nadie." },
+          { text: "Abrir el botón «?» de la esquina inferior derecha", correct: true, why: "El instructor te explica la página en la que estás y responde las dudas más comunes, como adjuntar evidencia." },
+          { text: "Volver a tomar Metis Academy", why: "La Academia da el panorama; para dudas puntuales de una pantalla está el botón «?»." },
+          { text: "Dejar el dato sin evidencia", why: "La evidencia respalda tu dato; mejor aprende a adjuntarla con la guía." },
         ],
       },
     ],

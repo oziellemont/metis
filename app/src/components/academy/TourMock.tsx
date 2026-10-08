@@ -2,7 +2,7 @@
 /** Pantallas simuladas e interactivas de METIS para el tour (no tocan datos reales). */
 import { useEffect, useState } from "react";
 import clsx from "clsx";
-import { Search, Check, ChevronRight, Users, Target, Gauge, ClipboardList, Upload, GitBranch, Bell } from "lucide-react";
+import { Search, Check, ChevronRight, Users, Target, Gauge, ClipboardList, Upload, GitBranch, Bell, HelpCircle, X } from "lucide-react";
 import type { TourScreen } from "@/lib/academy/content";
 
 const Frame = ({ title, icon: Icon, children }: { title: string; icon: React.ElementType; children: React.ReactNode }) => (
@@ -161,7 +161,49 @@ function Buscar() {
   );
 }
 
+function Ayuda() {
+  const [open, setOpen] = useState(false);
+  const [faq, setFaq] = useState(false);
+  return (
+    <Frame title="Carga mensual" icon={Upload}>
+      <div className="relative min-h-[244px]">
+        <div className={clsx("space-y-2 transition-opacity", open && "opacity-40")}>
+          <div className="h-3 w-32 rounded bg-slate-200" />
+          <div className="rounded-xl bg-white border border-slate-100 p-3 space-y-2">
+            <div className="h-2.5 w-40 rounded bg-slate-200" /><div className="h-7 rounded-lg bg-canvas border border-slate-100" />
+          </div>
+          <div className="rounded-xl bg-white border border-slate-100 p-3 space-y-2">
+            <div className="h-2.5 w-28 rounded bg-slate-200" /><div className="h-7 rounded-lg bg-canvas border border-slate-100" />
+          </div>
+        </div>
+        {open && (
+          <div className="help-in absolute bottom-12 right-0 w-[230px] overflow-hidden rounded-xl border border-slate-100 bg-white shadow-[0_16px_40px_-16px_rgba(23,26,58,0.45)]">
+            <div className="bg-gradient-to-br from-[#141735] via-[#1E1A5E] to-[#2B1F8A] px-3 py-2.5 text-white">
+              <div className="text-[8px] font-semibold uppercase tracking-[0.14em] text-mint">Tu guía · estás en</div>
+              <div className="text-[12px] font-semibold">Carga mensual</div>
+              <div className="text-[10px] text-white/70 leading-snug">Captura el resultado de los indicadores donde eres Owner.</div>
+            </div>
+            <div className="px-3 py-2">
+              <div className="text-[8px] font-semibold uppercase tracking-wider text-slate-400">Dudas frecuentes</div>
+              <button onClick={() => setFaq(!faq)} className="mt-1 flex w-full items-center text-left text-[10.5px] font-medium text-ink hover:text-indigo">
+                ¿Cómo adjunto evidencia?<ChevronRight size={11} className={clsx("ml-auto text-slate-400 transition-transform", faq && "rotate-90")} />
+              </button>
+              {faq && <p className="academy-in mt-1 text-[10px] leading-snug text-slate-600">Usa «Adjuntar evidencia» en la tarjeta del indicador y sube el archivo que respalda el dato.</p>}
+            </div>
+          </div>
+        )}
+        <button onClick={() => setOpen(!open)} aria-label="Botón de ayuda de prueba"
+          className="help-fab absolute bottom-0 right-0 grid h-9 w-9 place-items-center rounded-full text-white bg-gradient-to-br from-indigo-light via-indigo to-[#2B1F8A] shadow-[0_8px_18px_-6px_rgba(79,63,224,0.65)] hover:scale-105 transition-transform">
+          {!open && <span aria-hidden className="help-ring absolute inset-0 rounded-full" />}
+          {open ? <X size={15} /> : <HelpCircle size={17} />}
+        </button>
+        {!open && <div className="absolute bottom-2 right-11 text-[10px] font-medium text-indigo academy-in">Tócalo →</div>}
+      </div>
+    </Frame>
+  );
+}
+
 export function TourMock({ screen }: { screen: TourScreen }) {
-  const C = { inicio: Inicio, scorecard: Scorecard, carga: Carga, mapa: Mapa, equipo: Equipo, buscar: Buscar }[screen];
+  const C = { inicio: Inicio, scorecard: Scorecard, carga: Carga, mapa: Mapa, equipo: Equipo, buscar: Buscar, ayuda: Ayuda }[screen];
   return <C />;
 }

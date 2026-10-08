@@ -13,6 +13,7 @@ import { useMetis } from "@/lib/store";
 import { MONTHS } from "@/lib/labels";
 import { GlobalSearch, useFocusFromHash } from "@/components/app/GlobalSearch";
 import { useAcademy } from "@/components/academy/AcademyProvider";
+import { HelpGuide, openHelp } from "@/components/app/HelpGuide";
 
 const MI_ESPACIO = [
   { href: "/inicio", label: "Inicio", icon: Home },
@@ -100,10 +101,10 @@ export function Shell({ children }: { children: React.ReactNode }) {
           </>
         )}
         <div className="mt-auto pt-6">
-          <div className="rounded-2xl bg-gradient-to-br from-[#141735] via-[#1E1A5E] to-[#2B1F8A] p-4 text-white">
+          <button onClick={openHelp} className="w-full text-left rounded-2xl bg-gradient-to-br from-[#141735] via-[#1E1A5E] to-[#2B1F8A] p-4 text-white hover:brightness-110 transition">
             <div className="text-xs font-medium">¿Dudas con tu KPI?</div>
-            <div className="text-[11px] text-white/70 mt-1">Agenda 15 min con tu consultor METIS o abre la guía rápida.</div>
-          </div>
+            <div className="text-[11px] text-white/70 mt-1">Abre la guía de esta página con el botón <span className="inline-grid h-4 w-4 place-items-center rounded-full bg-white/15 text-[10px] font-semibold align-middle">?</span> o agenda 15 min con tu consultor METIS.</div>
+          </button>
         </div>
       </aside>
 
@@ -146,8 +147,9 @@ export function Shell({ children }: { children: React.ReactNode }) {
             <button onClick={s.clearSyncError} className="ml-auto p-0.5 hover:opacity-70" aria-label="Cerrar"><X size={14} /></button>
           </div>
         )}
-        <main className="flex-1 px-4 md:px-8 py-6 max-w-[1400px] w-full mx-auto">{locked && !onAcademy ? null : children}</main>
+        <main className="flex-1 px-4 md:px-8 pt-6 pb-20 max-w-[1400px] w-full mx-auto">{locked && !onAcademy ? null : children}</main>
       </div>
+      <HelpGuide />
     </div>
   );
 }
