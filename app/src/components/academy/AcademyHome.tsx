@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import clsx from "clsx";
-import { ArrowRight, Check, Clock, Compass, Flag, GraduationCap, Lock, Map as MapIcon, MessagesSquare, RotateCcw, Users } from "lucide-react";
+import { ArrowRight, Check, Clock, Compass, Eye, Flag, GraduationCap, Lock, Map as MapIcon, MessagesSquare, RotateCcw, Users } from "lucide-react";
 import { useMetis } from "@/lib/store";
 import { MODULES, TOTAL_MINUTES } from "@/lib/academy/content";
 import { isPassed, isUnlocked, nextModule } from "@/lib/academy/progress";
@@ -59,12 +59,19 @@ export function AcademyHome() {
         </div>
       )}
 
+      {a.previewAll && s.mode !== "demo" && (
+        <div className="mt-4 flex items-start gap-3 rounded-2xl border border-mint/30 bg-mint-soft/60 px-5 py-3.5 text-sm">
+          <Eye size={16} className="text-sob mt-0.5 shrink-0" />
+          <span className="text-ink"><b>Modo revisión (admin METIS):</b> puedes abrir cualquier módulo sin seguir el orden y la Academia no te bloquea la plataforma. Tus clientes sí la ven obligatoria.</span>
+        </div>
+      )}
+
       {/* módulos */}
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
         {MODULES.map((m) => {
           const Icon = ICON[m.icon];
           const passed = isPassed(a.progress, m.id);
-          const open = isUnlocked(a.progress, m.id);
+          const open = a.previewAll || isUnlocked(a.progress, m.id);
           const current = m.id === next?.id;
           const p = a.progress[m.id];
           const body = (

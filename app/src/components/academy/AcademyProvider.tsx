@@ -28,6 +28,8 @@ interface AcademyState {
   /** Solo el admin de la plataforma METIS puede saltarla (para soporte). */
   canSkip: boolean;
   skip: () => void;
+  /** Admin de METIS: nunca se le bloquea la plataforma y puede abrir cualquier módulo para revisarlo. */
+  previewAll: boolean;
   resetDemo: () => void;
 }
 
@@ -106,7 +108,8 @@ export function AcademyProvider({ children }: { children: ReactNode }) {
     return {
       ready, enforced, progress, team,
       done: completedCount(progress), total: MODULES.length, finished,
-      locked: ready && enforced && !finished && !skipped,
+      locked: ready && enforced && !finished && !skipped && !s.isPlatformAdmin,
+      previewAll: s.isPlatformAdmin,
       saveAttempt,
       canSkip: s.isPlatformAdmin,
       skip: () => { sessionStorage.setItem(SKIP_KEY, "1"); setSkipped(true); },
