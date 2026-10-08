@@ -71,17 +71,47 @@ export default function Landing() {
             <div className="text-xs font-semibold uppercase tracking-wider text-indigo">METIS Growth Advisory</div>
             <h2 className="mt-2 text-3xl font-semibold">La herramienta ordena. El acompañamiento hace crecer.</h2>
             <p className="mt-3 text-slate-600">No te dejamos solo con un software. Diseñamos contigo la estrategia, la cascadeamos hasta cada responsable y te ayudamos a sostener el ritmo de gestión.</p>
-            <ul className="mt-6 space-y-3 text-sm">
-              {[["Diagnóstico de Alineación", "2–3 semanas · $85,000 fijo"], ["Arquitectura Estratégica", "6–10 semanas · desde $180,000"], ["Growth Sprints de 90 días", "Retainer · desde $55,000/mes"], ["Estratega Fraccional", "Mínimo 6 meses · desde $95,000/mes"], ["Academia METIS", "Cursos de 4–8 h · $4,500 por participante"]].map(([t, p]) => (
-                <li key={t} className="flex items-start gap-3"><Check size={16} className="text-mint mt-0.5 shrink-0" /><div><span className="font-medium">{t}</span> <span className="text-slate-500">· {p}</span></div></li>
+            <ul className="mt-8 space-y-5">
+              {[
+                ["Diagnóstico de Alineación", "Dónde está hoy tu empresa y qué la frena."],
+                ["Arquitectura Estratégica", "Objetivos, líneas de acción y KPIs que sí se conectan."],
+                ["Growth Sprints de 90 días", "Ciclos cortos para mover los indicadores que importan."],
+                ["Estratega Fraccional", "Un director de estrategia en tu mesa, sin el costo de tiempo completo."],
+                ["Academia METIS", "Talleres prácticos para que tu equipo domine el método."],
+              ].map(([t, d]) => (
+                <li key={t} className="flex items-start gap-3">
+                  <span className="mt-0.5 h-5 w-5 shrink-0 rounded-full bg-mint/15 text-mint grid place-items-center"><Check size={12} strokeWidth={3} /></span>
+                  <div><div className="font-medium text-ink">{t}</div><div className="text-sm text-slate-500">{d}</div></div>
+                </li>
               ))}
             </ul>
+            <a href="mailto:hola@metisalign.mx?subject=Quiero%20platicar%20sobre%20METIS" className="mt-8 inline-flex items-center gap-1.5 text-sm font-medium text-indigo hover:gap-2.5 transition-all">Platiquemos de tu caso <ArrowRight size={14} /></a>
           </div>
-          <div className="card p-6">
-            <h3 className="font-semibold">Ruta de implementación · 12 semanas</h3>
-            <ol className="mt-4 space-y-3">
-              {[["1–3", "Diagnóstico", "Entrevistas, revisión de KPIs actuales e Índice de Alineación."], ["3–6", "Diseño estratégico", "Objetivos corporativos, LAEs y catálogo de elementos."], ["6–8", "Cascadeo y metas", "Alcances, responsables Owner / Contributor y metas por nivel."], ["8–10", "Configuración y capacitación", "METIS listo, carga inicial y Academia para usuarios."], ["10–12", "Primer cierre y ritmo", "Primer cierre mensual y primeras sesiones WTW / WTM."]].map(([w, t, d]) => (
-                <li key={w} className="flex gap-3 text-sm"><span className="chip bg-indigo-soft text-indigo shrink-0 w-14 justify-center">Sem {w}</span><div><div className="font-medium">{t}</div><div className="text-slate-500">{d}</div></div></li>
+          <div className="rounded-3xl bg-white border border-slate-100 shadow-[0_1px_2px_rgba(23,26,58,0.04),0_12px_32px_-12px_rgba(23,26,58,0.10)] p-8">
+            <div className="flex items-baseline justify-between">
+              <h3 className="font-semibold text-ink">Ruta de implementación</h3>
+              <span className="text-xs font-medium text-slate-400 tabular-nums">12 semanas</span>
+            </div>
+            <ol className="mt-8">
+              {[
+                ["1–3", "Diagnóstico", "Entrevistas, revisión de KPIs actuales e Índice de Alineación."],
+                ["3–6", "Diseño estratégico", "Objetivos corporativos, LAEs y catálogo de elementos."],
+                ["6–8", "Cascadeo y metas", "Alcances, Owners y Contributors, y metas por nivel."],
+                ["8–10", "Configuración y capacitación", "METIS listo, carga inicial y Academia para usuarios."],
+                ["10–12", "Primer cierre y ritmo", "Primer cierre mensual y sesiones WTW / WTM."],
+              ].map(([w, t, d], i, arr) => (
+                <li key={w} className="relative grid grid-cols-[4.5rem_1fr] gap-x-5">
+                  <div className="pt-px text-right">
+                    <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Semana</div>
+                    <div className="text-sm font-semibold text-indigo tabular-nums">{w}</div>
+                  </div>
+                  <div className={"relative pl-7 " + (i < arr.length - 1 ? "pb-7" : "")}>
+                    {i < arr.length - 1 && <span aria-hidden className="absolute left-[5px] top-4 bottom-0 w-px bg-gradient-to-b from-indigo/30 to-indigo/10" />}
+                    <span aria-hidden className={"absolute left-0 top-1.5 h-[11px] w-[11px] rounded-full ring-4 ring-white " + (i === arr.length - 1 ? "bg-mint" : "bg-indigo")} />
+                    <div className="font-medium text-ink leading-tight">{t}</div>
+                    <p className="mt-1 text-sm text-slate-500 leading-relaxed">{d}</p>
+                  </div>
+                </li>
               ))}
             </ol>
           </div>
