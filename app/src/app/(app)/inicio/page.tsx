@@ -1,10 +1,12 @@
 "use client";
 import Link from "next/link";
-import { ArrowRight, Upload, ClipboardList, GitBranch } from "lucide-react";
+import { ArrowRight, Upload, ClipboardList, GitBranch, CalendarClock, CheckSquare } from "lucide-react";
 import { useMetis } from "@/lib/store";
 import { PageHeader, Stat, TrafficChip, StatusChip, Avatar } from "@/components/ui/primitives";
 import { MONTHS, TRAFFIC } from "@/lib/labels";
 import type { Traffic } from "@/lib/domain/types";
+import { CommitmentRow } from "@/components/sessions/parts";
+import { bucketOf, sessionDateLabel, sessionTitle } from "@/lib/sessions/logic";
 
 export default function Inicio() {
   const s = useMetis();
@@ -24,6 +26,14 @@ export default function Inicio() {
   // Resumen organizacional (todos los items con dato en el mes)
   const counts: Record<Traffic, number> = { outstanding: 0, satisfactory: 0, minimum: 0, below: 0, pending: 0 };
   s.scorecardItems.forEach((i) => { counts[s.evaluate(i).traffic]++; });
+  const today = new Date();
+  const myCommitments = s.commitments.filter((c) => c.approved && c.status === "open" && c.ownerId === me.id)
+    .sort((a, b) => (a.dueDate ?? "9999").localeCompare(b.dueDate ?? "9999"));
+  const urgent = myCommitments.filter((c) => ["late", "today", "week"].includes(bucketOf(c, today)));
+  const startToday = new Date(today.getFullYear(), today.getMonth(), today.getDate()).toISOString();
+  const nextSession = s.sessions.filter((x) => (x.leaderId === me.id || x.leaderId === me.managerId) && x.status === "scheduled" && x.scheduledAt >= startToday)
+    .sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt))[0];
+  const toReview = s.sessions.filter((x) => x.leaderId === me.id && x.status === "review");
   const approvedPct = s.scorecards.length ? Math.round((s.scorecards.filter((x) => x.status === "approved").length / s.scorecards.length) * 100) : null;
 
   return (
@@ -86,8 +96,32 @@ export default function Inicio() {
                   </Link>
                 </li>
               ))}
-              {pending.length === 0 && toApprove.length === 0 && <li className="text-slate-400">Nada pendiente. 🎉</li>}
+              {toReview.map((x) => (
+                <li key={x.id}>
+                  <Link href={`/sesiones/${x.id}`} className="flex items-center gap-2 rounded-xl bg-amber-soft/70 px-3 py-2 hover:bg-amber-soft">
+                    <CalendarClock size={14} className="text-amber" /><span className="flex-1 truncate">Aprobar compromisos de {sessionTitle(x)}</span>
+                  </Link>
+                </li>
+              ))}
+              {pending.length === 0 && toApprove.length === 0 && toReview.length === 0 && <li className="text-slate-400">Nada pendiente. 🎉</li>}
             </ul>
+          </div>
+
+          <div className="card p-5">
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="font-semibold">Mis compromisos</h2>
+              <Link href="/compromisos" className="text-sm text-indigo inline-flex items-center gap-1"><CheckSquare size={14} /> {myCommitments.length} abiertos</Link>
+            </div>
+            {urgent.length === 0 ? <p className="text-sm text-slate-400">{myCommitments.length ? "Nada vence esta semana." : "Sin compromisos abiertos."}</p> : (
+              <div className="divide-y divide-slate-100">{urgent.slice(0, 4).map((c) => <CommitmentRow key={c.id} c={c} showOwner={false} compact />)}</div>
+            )}
+            {nextSession && (
+              <Link href={`/sesiones/${nextSession.id}`} className="mt-3 flex items-center gap-2 rounded-xl bg-indigo-soft/60 px-3 py-2 text-sm hover:bg-indigo-soft">
+                <CalendarClock size={14} className="text-indigo" />
+                <span className="min-w-0 flex-1 truncate">{sessionTitle(nextSession)} · {sessionDateLabel(nextSession.scheduledAt)}</span>
+                <ArrowRight size={14} className="text-indigo" />
+              </Link>
+            )}
           </div>
 
           <div className="card p-5">

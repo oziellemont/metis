@@ -15,6 +15,7 @@ import type { Element, ElementScope, ReminderSettings, Result, User } from "@/li
 import { academyReminderEmail } from "@/lib/academy/email";
 import { MODULE_IDS } from "@/lib/academy/content";
 import { shouldRemindAcademy, type ProgressMap } from "@/lib/academy/progress";
+import { commitmentReminderEmail, isWorkday } from "@/lib/sessions/email";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -40,6 +41,7 @@ export async function GET(req: NextRequest) {
 
   const report: Record<string, unknown>[] = [];
   const academy = await academyReminders(sb, tenants ?? [], appUrl, now, dry);
+  const commitments = await commitmentReminders(sb, tenants ?? [], appUrl, now, dry, force);
   for (const t of tenants ?? []) {
     const settings: ReminderSettings = { ...DEFAULT_REMINDERS, ...((t.settings as { reminders?: Partial<ReminderSettings> } | null)?.reminders ?? {}) };
     const today = localDay(settings.timezone, now);
@@ -76,7 +78,7 @@ export async function GET(req: NextRequest) {
     }
     report.push({ tenant: t.name, today, messages: msgs.length, sent, dry, recipients: msgs.map((m) => `${m.kind}:${m.to.email}`) });
   }
-  return NextResponse.json({ at: now.toISOString(), academy, report });
+  return NextResponse.json({ at: now.toISOString(), academy, commitments, report });
 }
 
 /**
@@ -123,6 +125,50 @@ async function academyReminders(sb: NonNullable<ReturnType<typeof supabaseAdmin>
   const res = await sendMany(msgs.map((m) => ({ to: m.who.email, subject: m.subject, html: m.html, text: m.text })));
   await sb.from("notification_log").insert(msgs.map((m, i) => ({
     tenant_id: m.who.tenantId, user_id: m.id, channel: "email", kind: "academy_reminder",
+    subject: m.subject, status: res[i]?.ok ? (res[i]?.dryRun ? "dry_run" : "sent") : "failed", error: res[i]?.error ?? null,
+  })));
+  return { due: msgs.length, sent: res.filter((r) => r.ok).length };
+}
+
+/**
+ * Compromisos: de lunes a viernes, un correo a cada persona con compromisos aprobados que vencen hoy o ya vencieron.
+ * Máximo uno por persona al día (se revisa notification_log).
+ */
+async function commitmentReminders(sb: NonNullable<ReturnType<typeof supabaseAdmin>>, tenants: { id: string; name: string; settings?: unknown }[], appUrl: string, now: Date, dry: boolean, force: boolean) {
+  if (!force && !isWorkday(now)) return { skipped: "fin de semana" };
+  const tz = "America/Monterrey";
+  const local = new Date(now.toLocaleString("en-US", { timeZone: tz }));
+  const today = `${local.getFullYear()}-${String(local.getMonth() + 1).padStart(2, "0")}-${String(local.getDate()).padStart(2, "0")}`;
+  const due = await sb.from("commitments").select("tenant_id, owner_id, title, due_date, kind").eq("status", "open").eq("approved", true).lte("due_date", today);
+  if (due.error) return { skipped: "Falta correr la migración 0008_sesiones.sql" };
+  const rows = (due.data ?? []).filter((r) => r.owner_id);
+  if (!rows.length) return { due: 0 };
+
+  const owners = [...new Set(rows.map((r) => r.owner_id as string))];
+  const prof = await sb.from("profiles").select("id, full_name, email").in("id", owners);
+  const people = new Map((prof.data ?? []).map((p) => [p.id as string, p as { id: string; full_name: string | null; email: string | null }]));
+  const since = new Date(now.getTime() - 20 * 3600_000).toISOString();
+  const logs = await sb.from("notification_log").select("user_id").eq("kind", "commitment_reminder").in("status", ["sent", "dry_run"]).gte("sent_at", since).in("user_id", owners);
+  const already = new Set((logs.data ?? []).map((l) => l.user_id as string));
+
+  const groups = new Map<string, { tenantId: string; items: { title: string; dueDate: string | null; late: boolean; support: boolean }[] }>();
+  for (const r of rows) {
+    const key = `${r.tenant_id}:${r.owner_id}`;
+    const g = groups.get(key) ?? { tenantId: r.tenant_id as string, items: [] };
+    g.items.push({ title: r.title as string, dueDate: r.due_date as string | null, late: (r.due_date as string) < today, support: r.kind === "support" });
+    groups.set(key, g);
+  }
+  const tenantName = (id: string) => tenants.find((t) => t.id === id)?.name ?? "tu empresa";
+  const msgs = [...groups.entries()].map(([key, g]) => {
+    const userId = key.split(":")[1];
+    const p = people.get(userId);
+    return { userId, tenantId: g.tenantId, email: p?.email ?? "", ...commitmentReminderEmail({ name: p?.full_name || (p?.email ?? "").split("@")[0], tenantName: tenantName(g.tenantId), appUrl, items: g.items }) };
+  }).filter((m) => m.email && !already.has(m.userId));
+  if (dry || !msgs.length) return { due: msgs.length, dry, recipients: msgs.map((m) => m.email) };
+
+  const res = await sendMany(msgs.map((m) => ({ to: m.email, subject: m.subject, html: m.html, text: m.text })));
+  await sb.from("notification_log").insert(msgs.map((m, i) => ({
+    tenant_id: m.tenantId, user_id: m.userId, channel: "email", kind: "commitment_reminder",
     subject: m.subject, status: res[i]?.ok ? (res[i]?.dryRun ? "dry_run" : "sent") : "failed", error: res[i]?.error ?? null,
   })));
   return { due: msgs.length, sent: res.filter((r) => r.ok).length };

@@ -5,7 +5,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { DEFAULT_REMINDERS } from "./domain/reminders";
 import type {
-  Element, ElementScope, Invitation, LAE, Period, ReminderSettings, Result, Scope, ScopeType, Scorecard, ScorecardItem,
+  Commitment, Session, Element, ElementScope, Invitation, LAE, Period, ReminderSettings, Result, Scope, ScopeType, Scorecard, ScorecardItem,
   ScorecardStatus, StrategicObjective, Tenant, Unit, User,
 } from "./domain/types";
 import { initialsOf, type StoreData, type TenantOption } from "./store-core";
@@ -13,6 +13,7 @@ import { initialsOf, type StoreData, type TenantOption } from "./store-core";
 export const REALTIME_TABLES = [
   "tenants", "memberships", "objectives", "laes", "scope_types", "scopes", "units", "elements",
   "element_allowed_scope_types", "element_scopes", "scorecards", "scorecard_items", "scorecard_events", "results", "invitations",
+  "sessions", "commitments",
 ];
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -20,7 +21,7 @@ type Row = Record<string, any>;
 
 export const EMPTY: StoreData = {
   tenant: { id: "", name: "", plan: "crece" }, units: [], users: [], objectives: [], laes: [], scopeTypes: [], scopes: [],
-  elements: [], elementScopes: [], scorecards: [], scorecardItems: [], results: [], invitations: [],
+  elements: [], elementScopes: [], scorecards: [], scorecardItems: [], results: [], invitations: [], sessions: [], commitments: [],
 };
 
 // ---------------------------------------------------------------- mapeos DB ↔ UI
@@ -70,13 +71,23 @@ export const toDb = {
   objective: (T: string, o: StrategicObjective) => { const h = o.horizon ? parseInt(o.horizon, 10) : NaN; return { id: o.id, tenant_id: T, name: o.name, description: o.description ?? null, horizon: Number.isFinite(h) ? h : null }; },
   lae: (T: string, l: LAE) => ({ id: l.id, tenant_id: T, objective_id: l.objectiveId, name: l.name, color: l.color ?? null }),
   unit: (T: string, u: Unit) => ({ id: u.id, tenant_id: T, symbol: u.symbol, name: u.name, decimals: u.decimals, position: u.position, is_system: !!u.system }),
+  session: (T: string, x: Session) => ({
+    id: x.id, tenant_id: T, kind: x.kind, leader_id: x.leaderId, scheduled_at: x.scheduledAt, status: x.status, location: x.location ?? null,
+    notes: x.notes ?? null, summary: x.summary ?? null, focus: x.focus ?? [], period_year: x.periodYear ?? null, period_month: x.periodMonth ?? null,
+    closed_at: x.closedAt ?? null, created_by: x.createdBy ?? null,
+  }),
+  commitment: (T: string, c: Commitment) => ({
+    id: c.id, tenant_id: T, kind: c.kind, session_id: c.sessionId ?? null, owner_id: c.ownerId || null, requested_by: c.requestedBy ?? null,
+    title: c.title, due_date: c.dueDate ?? null, status: c.status, element_scope_id: c.elementScopeId ?? null, approved: c.approved,
+    note: c.note ?? null, created_by: c.createdBy ?? null, done_at: c.doneAt ?? null,
+  }),
   invitation: (T: string, inv: Invitation, invitedBy: string) => ({ id: inv.id, tenant_id: T, email: inv.email.toLowerCase(), role: dbRoleFor(inv.role), title: inv.title ?? null, manager_id: inv.managerId ?? null, token: inv.token, invited_by: invitedBy }),
 };
 
 export async function loadTenant(sb: SupabaseClient, tenantId: string): Promise<StoreData> {
   const db = sb.schema("metis");
   const q = (t: string, cols = "*") => db.from(t).select(cols).eq("tenant_id", tenantId);
-  const [tenantR, memR, unitsR, objR, laeR, stR, scR, elR, esR, scdR, itR, evR, resR, invR] = await Promise.all([
+  const [tenantR, memR, unitsR, objR, laeR, stR, scR, elR, esR, scdR, itR, evR, resR, invR, sesR, comR] = await Promise.all([
     db.from("tenants").select("*").eq("id", tenantId).maybeSingle(),
     q("memberships"),
     q("units"),
@@ -91,6 +102,8 @@ export async function loadTenant(sb: SupabaseClient, tenantId: string): Promise<
     q("scorecard_events").order("created_at"),
     q("results"),
     q("invitations").order("created_at", { ascending: false }),
+    q("sessions").order("scheduled_at"),
+    q("commitments").order("created_at"),
   ]);
   const firstErr = [tenantR, memR, unitsR, objR, laeR, stR, scR, elR, esR, scdR, itR, evR, resR].find((r) => r.error)?.error;
   if (firstErr) throw new Error(firstErr.message);
@@ -161,6 +174,21 @@ export async function loadTenant(sb: SupabaseClient, tenantId: string): Promise<
       id: i.id, email: i.email, role: uiRole(i.role), managerId: i.manager_id ?? null, title: i.title ?? undefined,
       status: i.status === "pending" && new Date(i.expires_at) < new Date() ? "revoked" : i.status === "accepted" ? "accepted" : i.status === "pending" ? "pending" : "revoked",
       createdAt: i.created_at, token: i.token,
+    })),
+    // Si aún no corre la migración 0008, las tablas existen pero vacías: no se rompe nada.
+    sessions: (sesR.error ? [] : sesR.data ?? []).map((x: Row): Session => ({
+      id: x.id, kind: x.kind === "wtm" ? "wtm" : "wtw", leaderId: x.leader_id ?? x.created_by ?? "", scheduledAt: x.scheduled_at,
+      status: (["scheduled", "live", "review", "closed"].includes(x.status) ? x.status : "scheduled") as Session["status"],
+      location: x.location ?? undefined, notes: x.notes ?? undefined, summary: x.summary ?? undefined,
+      focus: Array.isArray(x.focus) ? x.focus.map(String) : [], periodYear: x.period_year ?? undefined, periodMonth: x.period_month ?? undefined,
+      closedAt: x.closed_at ?? undefined, createdBy: x.created_by ?? undefined,
+    })),
+    commitments: (comR.error ? [] : comR.data ?? []).map((c: Row): Commitment => ({
+      id: c.id, kind: c.kind === "support" ? "support" : "commitment", sessionId: c.session_id ?? null, ownerId: c.owner_id ?? "",
+      requestedBy: c.requested_by ?? null, title: c.title, dueDate: c.due_date ?? null,
+      status: (["open", "done", "missed", "cancelled"].includes(c.status) ? c.status : "open") as Commitment["status"],
+      elementScopeId: c.element_scope_id ?? null, approved: c.approved !== false, note: c.note ?? undefined,
+      createdBy: c.created_by ?? undefined, createdAt: c.created_at, doneAt: c.done_at ?? null,
     })),
   } as StoreData;
 }

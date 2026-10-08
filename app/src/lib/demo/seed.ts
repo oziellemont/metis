@@ -3,8 +3,9 @@
  * Sirven para el modo demo sin Supabase y como base del seed SQL.
  */
 import type {
-  Element, ElementScope, Invitation, LAE, Result, Scope, ScopeType, Scorecard, ScorecardItem, StrategicObjective, Tenant, Unit, User,
+  Commitment, Session, Element, ElementScope, Invitation, LAE, Result, Scope, ScopeType, Scorecard, ScorecardItem, StrategicObjective, Tenant, Unit, User,
 } from "../domain/types";
+import { demoCommitments, demoSessions } from "../sessions/demo";
 
 export const YEAR = 2026;
 export const CURRENT_MONTH = 9; // septiembre
@@ -181,5 +182,9 @@ export const invitations: Invitation[] = [
   { id: "inv-2", email: "hector.lozano@grupoandes.demo", role: "collaborator", managerId: "u-lr", title: "Jefe de Transporte", status: "accepted", createdAt: ts("2026-08-12T16:30:00") },
 ];
 
-export const demoData = { tenant, units, users, objectives, laes, scopeTypes, scopes, elements, elementScopes, scorecards, scorecardItems, results, invitations };
+/** Sesiones WTW/WTM y compromisos (relativos a hoy para que la demo siempre esté al día). */
+export const sessions: Session[] = demoSessions();
+export const commitments: Commitment[] = demoCommitments();
+
+export const demoData = { tenant, units, users, objectives, laes, scopeTypes, scopes, elements, elementScopes, scorecards, scorecardItems, results, invitations, sessions, commitments };
 export type DemoData = typeof demoData;

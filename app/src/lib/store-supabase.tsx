@@ -17,6 +17,7 @@ import type { Invitation, Result, Scorecard, ScorecardItem } from "./domain/type
 import { MetisCtx, deriveHelpers, newId, type MetisStore, type StoreData, type TenantOption } from "./store-core";
 import { EMPTY, REALTIME_TABLES, dbRoleFor, friendlyDbError, loadTenant, loadTenantList, randomToken, toDb } from "./portal-data";
 import { ACTIVE_TENANT_KEY as ACTIVE_KEY } from "./auth";
+import { approveDrafts } from "./sessions/logic";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Row = Record<string, any>;
@@ -242,6 +243,40 @@ export function SupabaseMetisProvider({ children }: { children: ReactNode }) {
     run("No se guardaron los recordatorios", () => db.from("tenants").update({ settings }).eq("id", T));
   }, [db, T, run]);
 
+  const upsertSession: MetisStore["upsertSession"] = useCallback((x) => {
+    setData((d) => ({ ...d, sessions: d.sessions.some((s) => s.id === x.id) ? d.sessions.map((s) => (s.id === x.id ? x : s)) : [...d.sessions, x] }));
+    run("No se guardó la sesión", () => db.from("sessions").upsert(toDb.session(T, x)));
+  }, [db, T, run]);
+  const removeSession: MetisStore["removeSession"] = useCallback((id) => {
+    setData((d) => ({ ...d, sessions: d.sessions.filter((s) => s.id !== id), commitments: d.commitments.filter((c) => !(c.sessionId === id && !c.approved)).map((c) => (c.sessionId === id ? { ...c, sessionId: null } : c)) }));
+    run("No se borró la sesión", async () => {
+      const del = await db.from("commitments").delete().eq("session_id", id).eq("approved", false);
+      if (del.error) return del;
+      return db.from("sessions").delete().eq("id", id);
+    });
+  }, [db, run]);
+  const upsertCommitment: MetisStore["upsertCommitment"] = useCallback((x) => {
+    setData((d) => ({ ...d, commitments: d.commitments.some((c) => c.id === x.id) ? d.commitments.map((c) => (c.id === x.id ? x : c)) : [...d.commitments, x] }));
+    run("No se guardó el compromiso", () => db.from("commitments").upsert(toDb.commitment(T, x)));
+  }, [db, T, run]);
+  const removeCommitment: MetisStore["removeCommitment"] = useCallback((id) => {
+    setData((d) => ({ ...d, commitments: d.commitments.filter((c) => c.id !== id) }));
+    run("No se borró el compromiso", () => db.from("commitments").delete().eq("id", id));
+  }, [db, run]);
+  const approveSession: MetisStore["approveSession"] = useCallback((id, summary) => {
+    const closedAt = new Date().toISOString();
+    setData((d) => ({
+      ...d,
+      sessions: d.sessions.map((s) => (s.id === id ? { ...s, status: "closed", closedAt, ...(summary !== undefined ? { summary } : {}) } : s)),
+      commitments: approveDrafts(d.commitments, id),
+    }));
+    run("No se aprobó la sesión", async () => {
+      const u = await db.from("sessions").update({ status: "closed", closed_at: closedAt, ...(summary !== undefined ? { summary } : {}) }).eq("id", id);
+      if (u.error) return u;
+      return db.from("commitments").update({ approved: true }).eq("session_id", id).eq("approved", false);
+    });
+  }, [db, run]);
+
   const reset = useCallback(() => { if (activeId) reload(activeId); }, [activeId, reload]);
   const switchTenant = useCallback((id: string) => { if (id !== activeId) setActiveId(id); }, [activeId]);
   const clearSyncError = useCallback(() => setSyncError(null), []);
@@ -253,9 +288,11 @@ export function SupabaseMetisProvider({ children }: { children: ReactNode }) {
     year, month, currentUserId: me, setMonth, setCurrentUser: noop,
     saveResult, transition, createScorecard, updateItem, addItem, removeItem, upsertElement, upsertElementScope, addScope, addScopeType,
     upsertObjective, upsertLae, upsertUnit, removeUnit, invite, revokeInvitation, regenerateJoinCode, updateMember, updateReminders, reset,
+    upsertSession, removeSession, upsertCommitment, removeCommitment, approveSession,
   }), [data, year, month, tenants, switchTenant, isPlatformAdmin, syncError, clearSyncError, pending, me, noop, saveResult, transition, createScorecard,
     updateItem, addItem, removeItem, upsertElement, upsertElementScope, addScope, addScopeType, upsertObjective, upsertLae, upsertUnit, removeUnit,
-    invite, revokeInvitation, regenerateJoinCode, updateMember, updateReminders, reset]);
+    invite, revokeInvitation, regenerateJoinCode, updateMember, updateReminders, reset,
+    upsertSession, removeSession, upsertCommitment, removeCommitment, approveSession]);
 
   if (status === "no-tenant") {
     return <Gate title="Aún no perteneces a ninguna empresa" body="Captura el código de tu empresa o abre la invitación que te enviaron." href="/unirme" cta="Unirme a mi empresa" extra={isPlatformAdmin ? { href: "/consola", cta: "Ir a la consola METIS" } : undefined} />;
