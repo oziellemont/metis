@@ -66,10 +66,9 @@ export default function Consola() {
 
   const enter = async (c: Client) => {
     if (!sb) return;
-    if (!c.i_am_member) {
-      const r = await sb.schema("metis").rpc("platform_join_tenant", { p_tenant: c.id });
-      if (r.error) { setErr(r.error.message); return; }
-    }
+    // siempre: además de unirte, te asegura el rol de administrador en ese portal
+    const r = await sb.schema("metis").rpc("platform_join_tenant", { p_tenant: c.id });
+    if (r.error && !c.i_am_member) { setErr(r.error.message); return; }
     rememberActiveTenant(c.id);
     window.location.href = "/inicio";
   };
