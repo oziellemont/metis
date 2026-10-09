@@ -2,16 +2,20 @@
 import { useState } from "react";
 import clsx from "clsx";
 import Link from "next/link";
-import { Plus, FileSpreadsheet, X, Pencil } from "lucide-react";
+import { Plus, FileSpreadsheet, X, Pencil, Trash2 } from "lucide-react";
 import { useMetis, newId } from "@/lib/store";
 import { PageHeader } from "@/components/ui/primitives";
 import { DIR, TYPE } from "@/lib/labels";
 import type { Direction, Element, ElementType } from "@/lib/domain/types";
+import { DeleteCatalogDialog } from "@/components/app/DeleteCatalogDialog";
+import type { DeletionTarget } from "@/lib/domain/deletion";
 
 export default function Catalogo() {
   const s = useMetis();
   const [editing, setEditing] = useState<Element | null | "new">(null);
   const [q, setQ] = useState("");
+  const [del, setDel] = useState<DeletionTarget | null>(null);
+  const isAdmin = s.userOf(s.currentUserId).role === "admin";
   const list = s.elements.filter((e) => e.name.toLowerCase().includes(q.toLowerCase()));
 
   return (
@@ -39,7 +43,8 @@ export default function Catalogo() {
                     <td className="td text-xs text-slate-600"><span className="inline-flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full" style={{ background: lae?.color }} />{lae?.name}</span></td>
                     <td className="td text-xs text-slate-600">{e.allowedScopeTypeIds.map((id) => s.scopeTypes.find((t) => t.id === id)?.name).join(" · ")}</td>
                     <td className="td text-right tabular-nums">{inUse}</td>
-                    <td className="td"><button className="p-1 text-slate-400 hover:text-indigo" onClick={() => setEditing(e)}><Pencil size={14} /></button></td>
+                    <td className="td whitespace-nowrap"><button className="p-1 text-slate-400 hover:text-indigo" title="Editar" onClick={() => setEditing(e)}><Pencil size={14} /></button>
+                      {isAdmin && <button className="p-1 text-slate-400 hover:text-coral" title="Borrar" aria-label={`Borrar ${e.name}`} onClick={() => setDel({ kind: "element", id: e.id })}><Trash2 size={14} /></button>}</td>
                   </tr>
                 );
               })}
@@ -47,7 +52,7 @@ export default function Catalogo() {
           </table>
         </div>
         <div className="space-y-4">
-          <MeasureIn />
+          <MeasureIn onRemove={isAdmin ? (id) => setDel({ kind: "elementScope", id }) : undefined} />
           <div className="card p-5">
             <h3 className="font-semibold mb-1">Plantillas por industria</h3>
             <p className="text-xs text-slate-500">Próximamente: catálogos base para manufactura, distribución y logística, retail y servicios profesionales, listos para importar y ajustar.</p>
@@ -55,12 +60,13 @@ export default function Catalogo() {
         </div>
       </div>
       {editing && <ElementEditor el={editing === "new" ? undefined : editing} onClose={() => setEditing(null)} />}
+      <DeleteCatalogDialog target={del} onClose={() => setDel(null)} />
     </>
   );
 }
 
 /** Medir un elemento en un alcance con su Owner (dueño del resultado). */
-function MeasureIn() {
+function MeasureIn({ onRemove }: { onRemove?: (elementScopeId: string) => void }) {
   const s = useMetis();
   const [f, setF] = useState({ elementId: "", scopeId: "", ownerUserId: "" });
   const el = s.elements.find((e) => e.id === f.elementId);
@@ -98,6 +104,7 @@ function MeasureIn() {
                 <option value="">Sin Owner</option>
                 {s.users.map((u) => <option key={u.id} value={u.id}>{u.name}</option>)}
               </select>
+              {onRemove && <button className="p-0.5 text-slate-300 hover:text-coral" title="Dejar de medir aquí" aria-label={`Quitar ${e.name} de ${sc.name}`} onClick={() => onRemove(es.id)}><X size={13} /></button>}
             </li>
           );
         })}

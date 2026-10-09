@@ -9,6 +9,7 @@ import { demoData, CURRENT_MONTH, YEAR, type DemoData } from "./demo/seed";
 import type { Result, Scorecard, ScorecardItem, Invitation, Tenant, User } from "./domain/types";
 import { MetisCtx, deriveHelpers, newId, useMetis, type MetisStore } from "./store-core";
 import { approveDrafts } from "./sessions/logic";
+import { applyDeletion, scopeTypeUsage } from "./domain/deletion";
 import { hasSupabase } from "./supabase/client";
 import { SupabaseMetisProvider } from "./store-supabase";
 
@@ -103,6 +104,13 @@ function DemoMetisProvider({ children }: { children: ReactNode }) {
   }, []);
   const addScope: MetisStore["addScope"] = useCallback((s) => setData((d) => ({ ...d, scopes: [...d.scopes, s] })), []);
   const addScopeType: MetisStore["addScopeType"] = useCallback((t) => setData((d) => ({ ...d, scopeTypes: [...d.scopeTypes, t] })), []);
+  const removeCatalog: MetisStore["removeCatalog"] = useCallback((t) => setData((d) => applyDeletion(d, t)), []);
+  const removeScopeType: MetisStore["removeScopeType"] = useCallback((typeId) => {
+    const n = scopeTypeUsage(data.scopes, typeId);
+    if (n > 0) return { ok: false, reason: `Lo usan ${n} alcance(s). Bórralos o cámbialos primero.` };
+    setData((d) => ({ ...d, scopeTypes: d.scopeTypes.filter((t) => t.id !== typeId), elements: d.elements.map((e) => ({ ...e, allowedScopeTypeIds: e.allowedScopeTypeIds.filter((x) => x !== typeId) })) }));
+    return { ok: true };
+  }, [data.scopes]);
   const upsertUnit: MetisStore["upsertUnit"] = useCallback((u) => {
     setData((d) => {
       const exists = d.units.some((x) => x.id === u.id);
@@ -209,10 +217,10 @@ function DemoMetisProvider({ children }: { children: ReactNode }) {
     mode: "demo", tenants: [{ id: data.tenant.id, name: data.tenant.name, role: "admin" }], switchTenant: () => {}, isPlatformAdmin: false,
     syncError: null, clearSyncError: () => {}, saving: false,
     year: YEAR, month, currentUserId, setMonth, setCurrentUser,
-    saveResult, transition, createScorecard, updateItem, addItem, removeItem, upsertElement, upsertElementScope, addScope, addScopeType,
+    saveResult, transition, createScorecard, updateItem, addItem, removeItem, upsertElement, upsertElementScope, addScope, addScopeType, removeCatalog, removeScopeType,
     upsertObjective, upsertLae, upsertUnit, removeUnit, invite, importOrg, revokeInvitation, regenerateJoinCode, updateMember, updateReminders, reset,
     upsertSession, removeSession, upsertCommitment, removeCommitment, approveSession,
-  }), [data, month, currentUserId, saveResult, transition, createScorecard, updateItem, addItem, removeItem, upsertElement, upsertElementScope, addScope, addScopeType,
+  }), [data, month, currentUserId, saveResult, transition, createScorecard, updateItem, addItem, removeItem, upsertElement, upsertElementScope, addScope, addScopeType, removeCatalog, removeScopeType,
     upsertObjective, upsertLae, upsertUnit, removeUnit, invite, importOrg, revokeInvitation, regenerateJoinCode, updateMember, updateReminders, reset,
     upsertSession, removeSession, upsertCommitment, removeCommitment, approveSession]);
 
