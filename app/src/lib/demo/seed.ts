@@ -14,6 +14,7 @@ export const tenant: Tenant = {
   id: "t-andes", name: "Grupo Andes", plan: "crecimiento",
   joinCode: "ANDES-2026",
   reminders: { enabled: true, days: [25, 1, 3], hour: 9, timezone: "America/Monterrey", escalateToManager: true, channels: { email: true, whatsapp: false } },
+  rv: { enabled: true, cadenceWeeks: 6 },
 };
 
 /** Catálogo de unidades. Las marcadas `system` vienen con METIS; el cliente puede agregar/editar/quitar las suyas. */

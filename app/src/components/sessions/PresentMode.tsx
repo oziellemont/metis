@@ -45,7 +45,7 @@ export function PresentMode({ session, onExit }: { session: Session; onExit: (fi
       key: "cover", label: "Portada", render: () => (
         <div className="flex h-full flex-col justify-center">
           <div className="text-sm font-semibold uppercase tracking-[0.2em] text-mint-light">{isWtm ? "Cierre de mes" : "Touchpoint semanal"}</div>
-          <h1 className="mt-3 text-5xl font-semibold leading-tight">{sessionTitle(session)}</h1>
+          <h1 className="mt-3 text-5xl font-semibold leading-tight">{sessionTitle(session, s.userOf(session.participantId).name)}</h1>
           <div className="mt-3 text-lg text-white/60">{deck.leader.teamName ?? deck.leader.title} · {sessionDateLabel(session.scheduledAt)}</div>
           <div className="mt-10 flex flex-wrap gap-3">
             {deck.people.map((p) => (
@@ -72,7 +72,7 @@ export function PresentMode({ session, onExit }: { session: Session; onExit: (fi
     list.push({
       key: "review", label: "Compromisos anteriores", render: () => (
         <>
-          <SlideTitle kicker={deck.previous ? `Desde ${sessionTitle(deck.previous)}` : "Primera sesión"} title="¿Se cumplió lo que nos comprometimos?"
+          <SlideTitle kicker={deck.previous ? `Desde ${sessionTitle(deck.previous, s.userOf(deck.previous.participantId).name)}` : "Primera sesión"} title="¿Se cumplió lo que nos comprometimos?"
             right={deck.reviewTotal > 0 ? <BigStat value={`${deck.reviewDone}/${deck.reviewTotal}`} label="cumplidos" /> : undefined} />
           {deck.review.length === 0 ? <Empty>No hay compromisos pendientes de revisar. Esta sesión arranca en limpio.</Empty> : (
             <div className="grid gap-x-8 lg:grid-cols-2">
@@ -263,7 +263,7 @@ export function PresentMode({ session, onExit }: { session: Session; onExit: (fi
       <div className="flex items-center gap-3 px-6 py-3 text-sm">
         <span className="font-semibold tracking-wide">mêtis</span>
         <span className="text-white/30">|</span>
-        <span className="truncate text-white/60">{sessionTitle(session)}</span>
+        <span className="truncate text-white/60">{sessionTitle(session, s.userOf(session.participantId).name)}</span>
         <span className="ml-2 inline-flex items-center gap-1.5 rounded-full bg-coral/20 px-2.5 py-0.5 text-xs text-[#FF9AA0]"><span className="h-1.5 w-1.5 animate-pulse rounded-full bg-coral" /> En vivo</span>
         <button onClick={exit} className="ml-auto inline-flex items-center gap-1 rounded-lg px-2 py-1 text-white/60 hover:bg-white/10 hover:text-white" aria-label="Salir del modo presentación"><X size={16} /> Salir</button>
       </div>

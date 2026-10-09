@@ -26,7 +26,7 @@ const initial = (): Persisted => ({
   users: demoData.users, objectives: demoData.objectives, laes: demoData.laes,
   sessions: demoData.sessions, commitments: demoData.commitments,
 });
-const PERSIST_VERSION = 4;
+const PERSIST_VERSION = 5;
 export function makeJoinCode(prefix: string) {
   const A = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let c = ""; for (let i = 0; i < 4; i++) c += A[Math.floor(Math.random() * A.length)];
@@ -187,6 +187,9 @@ function DemoMetisProvider({ children }: { children: ReactNode }) {
   const updateReminders: MetisStore["updateReminders"] = useCallback((r) => {
     setData((d) => ({ ...d, tenant: { ...d.tenant, reminders: r } }));
   }, []);
+  const updateRv: MetisStore["updateRv"] = useCallback((r) => {
+    setData((d) => ({ ...d, tenant: { ...d.tenant, rv: r } }));
+  }, []);
   const upsertSession: MetisStore["upsertSession"] = useCallback((x) => {
     setData((d) => ({ ...d, sessions: d.sessions.some((s) => s.id === x.id) ? d.sessions.map((s) => (s.id === x.id ? x : s)) : [...d.sessions, x] }));
   }, []);
@@ -218,10 +221,10 @@ function DemoMetisProvider({ children }: { children: ReactNode }) {
     syncError: null, clearSyncError: () => {}, saving: false,
     year: YEAR, month, currentUserId, setMonth, setCurrentUser,
     saveResult, transition, createScorecard, updateItem, addItem, removeItem, upsertElement, upsertElementScope, addScope, addScopeType, removeCatalog, removeScopeType,
-    upsertObjective, upsertLae, upsertUnit, removeUnit, invite, importOrg, revokeInvitation, regenerateJoinCode, updateMember, updateReminders, reset,
+    upsertObjective, upsertLae, upsertUnit, removeUnit, invite, importOrg, revokeInvitation, regenerateJoinCode, updateMember, updateReminders, updateRv, reset,
     upsertSession, removeSession, upsertCommitment, removeCommitment, approveSession,
   }), [data, month, currentUserId, saveResult, transition, createScorecard, updateItem, addItem, removeItem, upsertElement, upsertElementScope, addScope, addScopeType, removeCatalog, removeScopeType,
-    upsertObjective, upsertLae, upsertUnit, removeUnit, invite, importOrg, revokeInvitation, regenerateJoinCode, updateMember, updateReminders, reset,
+    upsertObjective, upsertLae, upsertUnit, removeUnit, invite, importOrg, revokeInvitation, regenerateJoinCode, updateMember, updateReminders, updateRv, reset,
     upsertSession, removeSession, upsertCommitment, removeCommitment, approveSession]);
 
   return <MetisCtx.Provider value={value}>{children}</MetisCtx.Provider>;

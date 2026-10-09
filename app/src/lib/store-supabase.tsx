@@ -305,9 +305,22 @@ export function SupabaseMetisProvider({ children }: { children: ReactNode }) {
     run("No se guardaron los recordatorios", () => db.from("tenants").update({ settings }).eq("id", T));
   }, [db, T, run]);
 
+  const updateRv: MetisStore["updateRv"] = useCallback((r) => {
+    const settings = { ...(dataRef.current.tenant.settings ?? {}), rv: r };
+    setData((d) => ({ ...d, tenant: { ...d.tenant, rv: r, settings } }));
+    run("No se guardó la configuración de Revisiones Verticales", () => db.from("tenants").update({ settings }).eq("id", T));
+  }, [db, T, run]);
+
   const upsertSession: MetisStore["upsertSession"] = useCallback((x) => {
     setData((d) => ({ ...d, sessions: d.sessions.some((s) => s.id === x.id) ? d.sessions.map((s) => (s.id === x.id ? x : s)) : [...d.sessions, x] }));
-    run("No se guardó la sesión", () => db.from("sessions").upsert(toDb.session(T, x)));
+    run("No se guardó la sesión", async () => {
+      const r = await db.from("sessions").upsert(toDb.session(T, x));
+      // Revisión Vertical agendada o movida por el jefe: mêtis manda (o actualiza) la invitación de calendario.
+      if (!r.error && x.kind === "rv" && x.status === "scheduled") {
+        fetch("/api/sesiones/rv-invitacion", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: x.id }) }).catch(() => { /* lo reintenta el cron */ });
+      }
+      return r;
+    });
   }, [db, T, run]);
   const removeSession: MetisStore["removeSession"] = useCallback((id) => {
     setData((d) => ({ ...d, sessions: d.sessions.filter((s) => s.id !== id), commitments: d.commitments.filter((c) => !(c.sessionId === id && !c.approved)).map((c) => (c.sessionId === id ? { ...c, sessionId: null } : c)) }));
@@ -349,11 +362,11 @@ export function SupabaseMetisProvider({ children }: { children: ReactNode }) {
     mode: "supabase", tenants, switchTenant, isPlatformAdmin, syncError, clearSyncError, saving: pending > 0,
     year, month, currentUserId: me, setMonth, setCurrentUser: noop,
     saveResult, transition, createScorecard, updateItem, addItem, removeItem, upsertElement, upsertElementScope, addScope, addScopeType, removeCatalog, removeScopeType,
-    upsertObjective, upsertLae, upsertUnit, removeUnit, invite, importOrg, revokeInvitation, regenerateJoinCode, updateMember, updateReminders, reset,
+    upsertObjective, upsertLae, upsertUnit, removeUnit, invite, importOrg, revokeInvitation, regenerateJoinCode, updateMember, updateReminders, updateRv, reset,
     upsertSession, removeSession, upsertCommitment, removeCommitment, approveSession,
   }), [data, year, month, tenants, switchTenant, isPlatformAdmin, syncError, clearSyncError, pending, me, noop, saveResult, transition, createScorecard,
     updateItem, addItem, removeItem, upsertElement, upsertElementScope, addScope, addScopeType, removeCatalog, removeScopeType, upsertObjective, upsertLae, upsertUnit, removeUnit,
-    invite, importOrg, revokeInvitation, regenerateJoinCode, updateMember, updateReminders, reset,
+    invite, importOrg, revokeInvitation, regenerateJoinCode, updateMember, updateReminders, updateRv, reset,
     upsertSession, removeSession, upsertCommitment, removeCommitment, approveSession]);
 
   if (status === "no-tenant") {

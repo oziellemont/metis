@@ -161,7 +161,7 @@ function Row({ c, showOwner }: { c: Commitment; showOwner: boolean }) {
   return (
     <div>
       <CommitmentRow c={c} showOwner={showOwner || c.kind === "support"} />
-      {ses && <Link href={`/sesiones/${ses.id}`} className="-mt-1.5 mb-1.5 ml-8 block text-[11px] text-slate-400 hover:text-indigo">De {sessionTitle(ses)}</Link>}
+      {ses && <Link href={`/sesiones/${ses.id}`} className="-mt-1.5 mb-1.5 ml-8 block text-[11px] text-slate-400 hover:text-indigo">De {sessionTitle(ses, s.userOf(ses.participantId).name)}</Link>}
     </div>
   );
 }

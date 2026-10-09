@@ -55,18 +55,36 @@ export function sessionsOf(sessions: Session[], leaderId: string): Session[] {
   return sessions.filter((s) => s.leaderId === leaderId).sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt));
 }
 
-/** La sesión inmediata anterior del mismo líder (de cualquier tipo). */
+/**
+ * ¿Pertenecen a la misma «línea» de seguimiento?
+ * WTW y WTM del mismo líder van juntas; cada RV (1 a 1) solo con las RV de la misma pareja jefe → colaborador.
+ */
+export function sameTrack(a: Pick<Session, "kind" | "leaderId" | "participantId">, b: Pick<Session, "kind" | "leaderId" | "participantId">): boolean {
+  if (a.leaderId !== b.leaderId) return false;
+  if (a.kind === "rv" || b.kind === "rv") return a.kind === b.kind && a.participantId === b.participantId;
+  return true;
+}
+const earlierInTrack = (sessions: Session[], session: Session) =>
+  sessionsOf(sessions, session.leaderId).filter((s) => s.id !== session.id && s.scheduledAt < session.scheduledAt && sameTrack(s, session));
+
+/** La sesión inmediata anterior de la misma línea (WTW/WTM del líder, o la RV anterior de la pareja). */
 export function previousSession(sessions: Session[], session: Session): Session | undefined {
-  const list = sessionsOf(sessions, session.leaderId).filter((s) => s.id !== session.id && s.scheduledAt < session.scheduledAt);
+  const list = earlierInTrack(sessions, session);
   return list[list.length - 1];
 }
 
+/** ¿La persona participa en la sesión? WTW/WTM: el líder y su equipo natural. RV: solo el jefe y el colaborador. */
+export function involves(session: Pick<Session, "kind" | "leaderId" | "participantId">, user: Pick<User, "id" | "managerId">): boolean {
+  if (session.kind === "rv") return session.leaderId === user.id || session.participantId === user.id;
+  return session.leaderId === user.id || (!!user.managerId && session.leaderId === user.managerId);
+}
+
 /**
- * Lo que se revisa en la sesión: compromisos de sesiones anteriores del mismo líder
+ * Lo que se revisa en la sesión: compromisos de sesiones anteriores de la misma línea
  * que siguen abiertos o que se resolvieron después de la sesión anterior.
  */
 export function commitmentsToReview(sessions: Session[], commitments: Commitment[], session: Session): Commitment[] {
-  const earlier = new Set(sessionsOf(sessions, session.leaderId).filter((s) => s.id !== session.id && s.scheduledAt < session.scheduledAt).map((s) => s.id));
+  const earlier = new Set(earlierInTrack(sessions, session).map((s) => s.id));
   const prev = previousSession(sessions, session);
   const since = prev?.scheduledAt ?? "";
   return commitments
@@ -164,8 +182,9 @@ export function dueLabel(due: string | null | undefined, today: Date): string {
 const DOW = ["dom", "lun", "mar", "mié", "jue", "vie", "sáb"];
 const MON = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
 
-export function sessionTitle(s: Pick<Session, "kind" | "scheduledAt" | "periodMonth">): string {
+export function sessionTitle(s: Pick<Session, "kind" | "scheduledAt" | "periodMonth">, participantName?: string): string {
   const d = new Date(s.scheduledAt);
+  if (s.kind === "rv") return participantName ? `Revisión Vertical · ${participantName.split(" ")[0]}` : "Revisión Vertical 1 a 1";
   if (s.kind === "wtm") {
     const m = s.periodMonth ?? wtmPeriod(s.scheduledAt).month;
     return `WTM · Cierre de ${MONTHS_LONG[m - 1]}`;

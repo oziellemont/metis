@@ -19,7 +19,7 @@ const MI_ESPACIO = [
   { href: "/inicio", label: "Inicio", icon: Home },
   { href: "/scorecard", label: "Mi Scorecard", icon: ClipboardList },
   { href: "/carga", label: "Carga mensual", icon: Upload, badge: true },
-  { href: "/sesiones", label: "Sesiones WTW / WTM", icon: CalendarClock, sesBadge: true },
+  { href: "/sesiones", label: "Sesiones", icon: CalendarClock, sesBadge: true },
   { href: "/compromisos", label: "Compromisos", icon: CheckSquare, comBadge: true },
   { href: "/mapa", label: "Mapa de alineación", icon: GitBranch },
   { href: "/indicadores", label: "Indicadores", icon: Gauge },

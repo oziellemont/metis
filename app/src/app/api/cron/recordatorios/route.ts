@@ -5,6 +5,7 @@
  * `buildReminders` y los envía; deja constancia en metis.notification_log.
  *
  * Seguridad: Vercel manda `Authorization: Bearer $CRON_SECRET`. Sin ese header se rechaza.
+ * También: Academy, compromisos vencidos y Revisiones Verticales (1 a 1) automáticas.
  * Prueba manual: GET /api/cron/recordatorios?dry=1  (con el mismo header) → no envía, sólo lista.
  */
 import { NextResponse, type NextRequest } from "next/server";
@@ -16,6 +17,7 @@ import { academyReminderEmail } from "@/lib/academy/email";
 import { MODULE_IDS } from "@/lib/academy/content";
 import { shouldRemindAcademy, type ProgressMap } from "@/lib/academy/progress";
 import { commitmentReminderEmail, isWorkday } from "@/lib/sessions/email";
+import { rvAutomation } from "@/lib/sessions/rv-server";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -36,12 +38,14 @@ export async function GET(req: NextRequest) {
 
   const now = new Date();
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? `${req.nextUrl.protocol}//${req.nextUrl.host}`;
-  const { data: tenants, error } = await sb.from("tenants").select("id, name, settings");
+  const { data: tenants, error } = await sb.from("tenants").select("id, name, settings, fiscal_year");
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
   const report: Record<string, unknown>[] = [];
   const academy = await academyReminders(sb, tenants ?? [], appUrl, now, dry);
   const commitments = await commitmentReminders(sb, tenants ?? [], appUrl, now, dry, force);
+  // Revisiones Verticales: agenda las que falten, manda invitaciones de calendario y recordatorios
+  const rv = await rvAutomation(sb, tenants ?? [], appUrl, now, dry);
   for (const t of tenants ?? []) {
     const settings: ReminderSettings = { ...DEFAULT_REMINDERS, ...((t.settings as { reminders?: Partial<ReminderSettings> } | null)?.reminders ?? {}) };
     const today = localDay(settings.timezone, now);
@@ -78,7 +82,7 @@ export async function GET(req: NextRequest) {
     }
     report.push({ tenant: t.name, today, messages: msgs.length, sent, dry, recipients: msgs.map((m) => `${m.kind}:${m.to.email}`) });
   }
-  return NextResponse.json({ at: now.toISOString(), academy, commitments, report });
+  return NextResponse.json({ at: now.toISOString(), academy, commitments, rv, report });
 }
 
 /**

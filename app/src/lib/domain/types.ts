@@ -131,6 +131,15 @@ export interface Tenant {
   joinCode?: string;
   /** Configuración de recordatorios de cierre de mes. */
   reminders?: ReminderSettings;
+  /** Revisiones verticales automáticas (1 a 1). */
+  rv?: RvSettings;
+}
+
+export interface RvSettings {
+  /** El admin de la empresa lo activa. */
+  enabled: boolean;
+  /** Cada cuántas semanas: 6 (default) u 8 (bimestral). */
+  cadenceWeeks: number;
 }
 
 /** Unidad de medida del catálogo editable por el cliente ($, %, ton, pzas, días…). */
@@ -174,7 +183,8 @@ export interface Invitation {
 
 /* ------------------------------------------------------------------ Sesiones y compromisos */
 /** WTW = semanal con el equipo natural · WTM = cierre de mes y enfoque del siguiente. */
-export type SessionKind = "wtw" | "wtm";
+/** wtw = semanal de equipo · wtm = cierre de mes · rv = revisión vertical 1 a 1 (jefe con un reporte directo). */
+export type SessionKind = "wtw" | "wtm" | "rv";
 /** scheduled = agendada · live = en curso · review = terminada, esperando aprobación del líder · closed = aprobada */
 export type SessionStatus = "scheduled" | "live" | "review" | "closed";
 
@@ -199,6 +209,10 @@ export interface Session {
   periodMonth?: number;
   closedAt?: string;
   createdBy?: string;
+  /** RV: el colaborador con quien es la revisión 1 a 1. */
+  participantId?: string | null;
+  /** RV: la agendó mêtis automáticamente. */
+  auto?: boolean;
 }
 
 export type CommitmentKind = "commitment" | "support";

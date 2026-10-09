@@ -3,7 +3,9 @@ import { DEFAULT_EMAIL_FROM } from "@/lib/site";
  * Envío de correo transaccional vía Resend (https://resend.com) usando fetch, sin SDK.
  * Sin RESEND_API_KEY los correos se registran en consola (modo demo / desarrollo).
  */
-export interface Mail { to: string; subject: string; html: string; text?: string }
+export interface MailAttachment { filename: string; content: string; contentType?: string }
+/** `content` va en texto plano; se codifica en base64 al enviar. */
+export interface Mail { to: string; subject: string; html: string; text?: string; attachments?: MailAttachment[] }
 
 const KEY = process.env.RESEND_API_KEY ?? "";
 const FROM = process.env.EMAIL_FROM ?? DEFAULT_EMAIL_FROM;
@@ -18,7 +20,10 @@ export async function sendMail(m: Mail): Promise<{ ok: boolean; id?: string; err
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { Authorization: `Bearer ${KEY}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ from: FROM, to: [m.to], subject: m.subject, html: m.html, text: m.text }),
+    body: JSON.stringify({
+      from: FROM, to: [m.to], subject: m.subject, html: m.html, text: m.text,
+      ...(m.attachments?.length ? { attachments: m.attachments.map((a) => ({ filename: a.filename, content: Buffer.from(a.content, "utf8").toString("base64"), ...(a.contentType ? { content_type: a.contentType } : {}) })) } : {}),
+    }),
   });
   if (!res.ok) return { ok: false, error: `${res.status} ${await res.text()}` };
   const j = (await res.json()) as { id?: string };

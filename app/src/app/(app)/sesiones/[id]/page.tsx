@@ -12,11 +12,20 @@ import { Scoreboard } from "@/components/sessions/Scoreboard";
 import { PresentMode } from "@/components/sessions/PresentMode";
 import { NewSessionDialog } from "@/components/sessions/NewSessionDialog";
 import { useDeck } from "@/components/sessions/useDeck";
+import { RvView } from "@/components/sessions/RvView";
 import { MONTHS } from "@/lib/labels";
 import { sessionDateLabel, sessionTitle } from "@/lib/sessions/logic";
 
 export default function SessionPage() {
-  return <Suspense fallback={null}><SessionView /></Suspense>;
+  return <Suspense fallback={null}><SessionRouter /></Suspense>;
+}
+
+function SessionRouter() {
+  const { id } = useParams<{ id: string }>();
+  const s = useMetis();
+  const session = s.sessions.find((x) => x.id === id);
+  if (session?.kind === "rv") return <RvView session={session} />;
+  return <SessionView />;
 }
 
 function SessionView() {
@@ -57,7 +66,7 @@ function SessionView() {
   };
   const copyMinutes = async () => {
     const lines = [
-      `${sessionTitle(session)} · ${sessionDateLabel(session.scheduledAt)}`,
+      `${sessionTitle(session, s.userOf(session.participantId).name)} · ${sessionDateLabel(session.scheduledAt)}`,
       summary ? `\nResumen: ${summary}` : "",
       session.focus?.length ? `\nFocos del mes:\n${session.focus.map((f, k) => `${k + 1}. ${f}`).join("\n")}` : "",
       `\nCompromisos:`,
@@ -71,7 +80,7 @@ function SessionView() {
     <>
       <Link href="/sesiones" className="mb-3 inline-flex items-center gap-1 text-sm text-slate-500 hover:text-indigo"><ArrowLeft size={14} /> Sesiones</Link>
       <PageHeader
-        title={sessionTitle(session)}
+        title={sessionTitle(session, s.userOf(session.participantId).name)}
         subtitle={`${deck.leader.name} con su equipo natural · ${deck.people.length} personas`}
         actions={isLeader ? (
           <>

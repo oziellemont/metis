@@ -35,6 +35,12 @@ export function demoSessions(now: Date = new Date()): Session[] {
     { id: "ses-js-1", kind: "wtw", leaderId: "u-js", scheduledAt: at(M, 0, 11).toISOString(), status: "closed", location: "Google Meet", createdBy: "u-js", closedAt: at(M, 0, 12).toISOString(),
       summary: "Operaciones: OTIF nacional en verde. Riesgo en costo logístico por tarifa de flete." },
     { id: "ses-js-2", kind: "wtw", leaderId: "u-js", scheduledAt: suggestDate("wtw", now, 11).toISOString(), status: "scheduled", location: "Google Meet", createdBy: "u-js" },
+    // Revisiones Verticales (1 a 1) · las agenda mêtis cada 6 semanas
+    { id: "rv-mt-dp-1", kind: "rv", leaderId: "u-mt", participantId: "u-dp", auto: true, scheduledAt: at(M, -41, 10).toISOString(), status: "closed", createdBy: "u-mt", closedAt: at(M, -41, 11).toISOString(),
+      summary: "Diego quiere crecer en planeación de transporte. Acordamos que lleve el plan de ruteo zona sur con acompañamiento de Luis." },
+    { id: "rv-mt-dp-2", kind: "rv", leaderId: "u-mt", participantId: "u-dp", auto: true, scheduledAt: at(M, 8, 10).toISOString(), status: "scheduled", location: "Oficina de Mariana", createdBy: "u-mt" },
+    { id: "rv-mt-km-1", kind: "rv", leaderId: "u-mt", participantId: "u-km", auto: true, scheduledAt: at(M, -4, 12).toISOString(), status: "scheduled", location: "Teams", createdBy: "u-mt" },
+    { id: "rv-js-mt-1", kind: "rv", leaderId: "u-js", participantId: "u-mt", auto: true, scheduledAt: at(M, 9, 11).toISOString(), status: "scheduled", location: "Google Meet", createdBy: "u-js" },
   ];
 }
 
@@ -60,6 +66,9 @@ export function demoCommitments(now: Date = new Date()): Commitment[] {
     // WTW de Jorge (Mariana es parte de su equipo)
     { ...base, id: "cm-11", sessionId: "ses-js-1", ownerId: "u-mt", title: "Enviar plan de recuperación de OTIF Saltillo", dueDate: d(4), status: "open", elementScopeId: "es-otif-norte", createdBy: "u-js", createdAt: t(0, 12) },
     { ...base, id: "cm-12", kind: "support", sessionId: "ses-js-1", ownerId: "u-rv", requestedBy: "u-mt", title: "Asignar un desarrollador a la interfaz del WMS", dueDate: d(3), status: "open", createdBy: "u-js", createdAt: t(0, 12) },
+    // 1 a 1 de Mariana con Diego (hace 6 semanas)
+    { ...base, id: "cm-rv-1", sessionId: "rv-mt-dp-1", ownerId: "u-dp", title: "Tomar el curso de planeación de rutas (TMS)", dueDate: d(-20), status: "done", doneAt: t(-21), createdBy: "u-mt", createdAt: t(-41, 11) },
+    { ...base, id: "cm-rv-2", sessionId: "rv-mt-dp-1", ownerId: "u-dp", title: "Proponer un indicador de causa para OTIF Saltillo", dueDate: d(-6), status: "open", elementScopeId: "es-otif-sal", createdBy: "u-mt", createdAt: t(-41, 11) },
     { ...base, id: "cm-13", sessionId: "ses-js-1", ownerId: "u-lr", title: "Cotizar 2 transportistas alternos", dueDate: d(4), status: "open", elementScopeId: "es-costlog-con", createdBy: "u-js", createdAt: t(0, 12) },
   ];
 }

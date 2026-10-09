@@ -18,12 +18,15 @@ export function useDeck(session: Session | undefined) {
   return useMemo(() => {
     if (!session) return null;
     const leader = s.userOf(session.leaderId);
-    const team = teamOf(s.users, session.leaderId);
+    const isRv = session.kind === "rv";
+    // RV: solo el jefe y el colaborador; en el marcador va únicamente el colaborador
+    const team = isRv ? [s.userOf(session.participantId)] : teamOf(s.users, session.leaderId);
     const people = [leader, ...team];
+    const scored = isRv ? team : people;
     const month = session.kind === "wtm" ? (session.periodMonth ?? wtmPeriod(session.scheduledAt).month) : s.month;
     const today = new Date();
 
-    const slides: PersonSlide[] = people.map((u) => {
+    const slides: PersonSlide[] = scored.map((u) => {
       const sc = s.scorecards.find((x) => x.userId === u.id && x.year === s.year);
       const items = sc ? s.scorecardItems.filter((i) => i.scorecardId === sc.id) : [];
       const kpis = items.map((i): PersonKpi => {
@@ -48,6 +51,8 @@ export function useDeck(session: Session | undefined) {
     if (session.kind === "wtm") {
       const y = session.periodYear ?? wtmPeriod(session.scheduledAt).year;
       comp = compliance(s.commitments, { from: new Date(y, month - 1, 1), to: new Date(y, month, 0), today, ownerIds: [...ids] });
+    } else if (isRv) {
+      comp = compliance(s.commitments, { from: new Date(today.getTime() - 56 * 86_400_000), to: today, today, ownerIds: team.map((u) => u.id) });
     } else {
       comp = compliance(s.commitments, { from: new Date(today.getTime() - 28 * 86_400_000), to: today, today, ownerIds: [...ids] });
     }

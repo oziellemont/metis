@@ -4,8 +4,9 @@
  */
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { DEFAULT_REMINDERS } from "./domain/reminders";
+import { DEFAULT_RV } from "./sessions/rv";
 import type {
-  Commitment, Session, Element, ElementScope, Invitation, LAE, Period, ReminderSettings, Result, Scope, ScopeType, Scorecard, ScorecardItem,
+  Commitment, Session, Element, ElementScope, Invitation, LAE, Period, ReminderSettings, RvSettings, Result, Scope, ScopeType, Scorecard, ScorecardItem,
   ScorecardStatus, StrategicObjective, Tenant, Unit, User,
 } from "./domain/types";
 import { initialsOf, type StoreData, type TenantOption } from "./store-core";
@@ -75,6 +76,8 @@ export const toDb = {
     id: x.id, tenant_id: T, kind: x.kind, leader_id: x.leaderId, scheduled_at: x.scheduledAt, status: x.status, location: x.location ?? null,
     notes: x.notes ?? null, summary: x.summary ?? null, focus: x.focus ?? [], period_year: x.periodYear ?? null, period_month: x.periodMonth ?? null,
     closed_at: x.closedAt ?? null, created_by: x.createdBy ?? null,
+    // solo las RV mandan estas columnas (así WTW/WTM siguen funcionando aunque falte la migración 0011)
+    ...(x.kind === "rv" ? { participant_id: x.participantId ?? null, auto: !!x.auto } : {}),
   }),
   commitment: (T: string, c: Commitment) => ({
     id: c.id, tenant_id: T, kind: c.kind, session_id: c.sessionId ?? null, owner_id: c.ownerId || null, requested_by: c.requestedBy ?? null,
@@ -124,6 +127,7 @@ export async function loadTenant(sb: SupabaseClient, tenantId: string): Promise<
     id: t.id, name: t.name, plan: t.plan, slug: t.slug, logoUrl: t.logo_url ?? null, brandColor: t.brand_color ?? null,
     joinCode: t.join_code ?? undefined, settings, fiscalYear: t.fiscal_year ?? undefined,
     reminders: { ...DEFAULT_REMINDERS, ...((settings.reminders as Partial<ReminderSettings>) ?? {}) },
+    rv: { ...DEFAULT_RV, ...((settings.rv as Partial<RvSettings>) ?? {}) },
   };
 
   const profiles = new Map<string, Row>((profR.data ?? []).map((p: Row) => [p.id, p]));
@@ -179,7 +183,7 @@ export async function loadTenant(sb: SupabaseClient, tenantId: string): Promise<
     })),
     // Si aún no corre la migración 0008, las tablas existen pero vacías: no se rompe nada.
     sessions: (sesR.error ? [] : sesR.data ?? []).map((x: Row): Session => ({
-      id: x.id, kind: x.kind === "wtm" ? "wtm" : "wtw", leaderId: x.leader_id ?? x.created_by ?? "", scheduledAt: x.scheduled_at,
+      id: x.id, kind: x.kind === "wtm" ? "wtm" : x.kind === "rv" ? "rv" : "wtw", participantId: x.participant_id ?? null, auto: !!x.auto, leaderId: x.leader_id ?? x.created_by ?? "", scheduledAt: x.scheduled_at,
       status: (["scheduled", "live", "review", "closed"].includes(x.status) ? x.status : "scheduled") as Session["status"],
       location: x.location ?? undefined, notes: x.notes ?? undefined, summary: x.summary ?? undefined,
       focus: Array.isArray(x.focus) ? x.focus.map(String) : [], periodYear: x.period_year ?? undefined, periodMonth: x.period_month ?? undefined,
