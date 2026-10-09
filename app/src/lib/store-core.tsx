@@ -19,6 +19,9 @@ export type StoreData = DemoData;
 
 export interface TenantOption { id: string; name: string; role: string; logoUrl?: string | null; brandColor?: string | null }
 
+export interface OrgImportRow { email: string; name: string | null; title: string | null; employee_number: string | null; area: string | null; manager_email: string | null; role: "member" | "manager" | "admin" }
+export interface OrgImportResult { ok: boolean; error?: string; invited: { email: string; invitationId: string }[]; updated: number }
+
 export interface MetisStore extends StoreData {
   mode: "demo" | "supabase";
   /** Empresas a las que pertenece el usuario (portal activo = tenant). */
@@ -67,6 +70,8 @@ export interface MetisStore extends StoreData {
   /** Acceso al círculo de la empresa. */
   invite: (inv: Omit<Invitation, "id" | "status" | "createdAt">) => Invitation;
   revokeInvitation: (id: string) => void;
+  /** Importa un organigrama: invita a los nuevos y actualiza a quienes ya están. */
+  importOrg: (rows: OrgImportRow[]) => Promise<OrgImportResult>;
   regenerateJoinCode: () => Promise<string>;
   updateMember: (userId: string, patch: { role?: User["role"]; managerId?: string | null; title?: string }) => void;
   updateReminders: (r: ReminderSettings) => void;

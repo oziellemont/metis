@@ -133,6 +133,7 @@ export async function loadTenant(sb: SupabaseClient, tenantId: string): Promise<
     return {
       id: m.user_id, name, email: p?.email, title: m.title ?? "", initials: initialsOf(name),
       managerId: m.manager_id ?? null, role: uiRole(m.role), dbRole: m.role,
+      employeeNumber: m.employee_number ?? undefined, area: m.area ?? undefined, pendingManagerEmail: m.pending_manager_email ?? undefined,
     };
   });
 
@@ -174,6 +175,7 @@ export async function loadTenant(sb: SupabaseClient, tenantId: string): Promise<
       id: i.id, email: i.email, role: uiRole(i.role), managerId: i.manager_id ?? null, title: i.title ?? undefined,
       status: i.status === "pending" && new Date(i.expires_at) < new Date() ? "revoked" : i.status === "accepted" ? "accepted" : i.status === "pending" ? "pending" : "revoked",
       createdAt: i.created_at, token: i.token,
+      name: i.full_name ?? undefined, employeeNumber: i.employee_number ?? undefined, area: i.area ?? undefined, managerEmail: i.manager_email ?? undefined,
     })),
     // Si aún no corre la migración 0008, las tablas existen pero vacías: no se rompe nada.
     sessions: (sesR.error ? [] : sesR.data ?? []).map((x: Row): Session => ({
