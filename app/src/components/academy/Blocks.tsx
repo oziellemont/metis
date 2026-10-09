@@ -2,7 +2,7 @@
 /** Render de cada tipo de tarjeta de un módulo. Cada bloque avisa con `onReady` cuando ya se puede continuar. */
 import { useEffect, useState } from "react";
 import clsx from "clsx";
-import { Check, X, ChevronRight, Lightbulb, Quote } from "lucide-react";
+import { Check, X, ChevronRight, Lightbulb, Quote, User, Users } from "lucide-react";
 import type { Block } from "@/lib/academy/content";
 import { TourMock } from "./TourMock";
 
@@ -145,7 +145,16 @@ function CompareB({ b, onReady }: { b: Extract<Block, { kind: "compare" }>; onRe
       <Eyebrow>{b.eyebrow}</Eyebrow><Title>{b.title}</Title>
       {b.intro && <p className="mt-2 text-sm text-slate-500">{b.intro}</p>}
       <div className="mt-5 grid gap-3 sm:grid-cols-2">
-        {[{ s: b.left, good: false }, { s: b.right, good: true }].map(({ s, good }, k) => (
+        {b.neutral
+          ? [{ s: b.left, Icon: User }, { s: b.right, Icon: Users }].map(({ s, Icon }, k) => (
+            <div key={s.label} className="academy-in rounded-2xl p-5 border bg-indigo-soft/40 border-indigo/15" style={{ animationDelay: `${k * 120}ms` }}>
+              <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-indigo">
+                <span className="h-5 w-5 rounded-full grid place-items-center bg-indigo text-white"><Icon size={11} strokeWidth={3} /></span>{s.label}
+              </div>
+              <ul className="mt-3 space-y-2">{s.points.map((p) => <li key={p} className="text-sm text-ink leading-snug">{p}</li>)}</ul>
+            </div>
+          ))
+          : [{ s: b.left, good: false }, { s: b.right, good: true }].map(({ s, good }, k) => (
           <div key={s.label} className={clsx("academy-in rounded-2xl p-5 border", good ? "bg-mint-soft/40 border-mint/20" : "bg-slate-50 border-slate-100")} style={{ animationDelay: `${k * 120}ms` }}>
             <div className={clsx("inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider", good ? "text-sob" : "text-slate-500")}>
               <span className={clsx("h-5 w-5 rounded-full grid place-items-center", good ? "bg-mint text-white" : "bg-slate-200 text-slate-500")}>{good ? <Check size={11} strokeWidth={3} /> : <X size={11} strokeWidth={3} />}</span>{s.label}

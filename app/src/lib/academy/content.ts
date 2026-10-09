@@ -12,7 +12,7 @@ export type Block =
   | { kind: "text"; eyebrow: string; title: string; body: string[]; callout?: { label: string; text: string; source?: string } }
   | { kind: "reveal"; eyebrow: string; title: string; intro?: string; layout?: "list" | "pyramid"; items: { tag: string; label: string; body: string; details?: Detail[] }[]; note?: string; source?: string }
   | { kind: "flow"; eyebrow: string; title: string; intro?: string; steps: { label: string; example: string }[]; note?: string }
-  | { kind: "compare"; eyebrow: string; title: string; intro?: string; left: { label: string; points: string[] }; right: { label: string; points: string[] }; note?: string }
+  | { kind: "compare"; eyebrow: string; title: string; intro?: string; left: { label: string; points: string[] }; right: { label: string; points: string[] }; note?: string; /** Dos cosas distintas y necesarias (no «mal vs. bien»). */ neutral?: boolean }
   | { kind: "check"; eyebrow: string; title: string; question: string; options: { text: string; correct?: boolean; why: string }[] }
   | { kind: "screen"; eyebrow: string; nav: TourScreen; title: string; body: string[] };
 
@@ -411,8 +411,9 @@ export const MODULES: Module[] = [
         kind: "compare",
         eyebrow: "Dos conversaciones",
         title: "Revisión vertical y revisión de equipo: no son la misma junta",
+        neutral: true,
         intro: "Las dos son necesarias. Mezclarlas es el error más común.",
-        left: { label: "Vertical · 1 a 1", points: ["Tú y una persona de tu equipo.", "Cada 2 a 4 semanas, 30 min.", "Su scorecard, sus obstáculos y su desarrollo.", "Lo personal se queda aquí: errores, carrera, feedback."] },
+        left: { label: "Vertical · 1 a 1", points: ["Tú y una persona de tu equipo.", "Cada 4 a 6 semanas, 30 min.", "Su scorecard, sus obstáculos y su desarrollo.", "Lo personal se queda aquí: errores, carrera, feedback."] },
         right: { label: "De equipo · WTW / WTM", points: ["Todo el equipo, misma hora siempre.", "WTW semanal (20–30 min) · WTM mensual tras el cierre.", "El marcador común y los compromisos de cada quien.", "Nadie es exhibido: se habla de resultados, no de personas."] },
         note: "Regla práctica: si el tema solo involucra a una persona o puede incomodarla, va al 1 a 1. Si afecta el marcador de todos, va a la sesión de equipo.",
       },
