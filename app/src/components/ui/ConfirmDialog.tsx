@@ -1,7 +1,7 @@
 "use client";
 /**
- * Aviso de confirmación minimalista estilo iOS: recuadro pequeño centrado, esquinas muy redondeadas,
- * fondo translúcido con desenfoque y dos botones a lo ancho separados por líneas finas.
+ * Aviso de confirmación minimalista: recuadro pequeño centrado, esquinas muy redondeadas y
+ * fondo translúcido con desenfoque; botones con el estilo de METIS (Cancelar blanco · acción en coral o índigo).
  * Opcionalmente pide escribir una palabra (p. ej. el nombre de la empresa) para habilitar la acción.
  */
 import { useEffect, useRef, useState } from "react";
@@ -56,7 +56,7 @@ export function ConfirmDialog({
         aria-modal="true"
         aria-labelledby="confirm-title"
         onClick={(e) => e.stopPropagation()}
-        className={`w-[290px] overflow-hidden rounded-[20px] bg-white/90 backdrop-blur-xl shadow-[0_12px_40px_-8px_rgba(23,26,58,.35)] ring-1 ring-black/5 text-center transition-all duration-200 ease-out ${shown ? "opacity-100 scale-100" : "opacity-0 scale-[1.08]"}`}
+        className={`w-[320px] overflow-hidden rounded-[20px] bg-white/90 backdrop-blur-xl shadow-[0_12px_40px_-8px_rgba(23,26,58,.35)] ring-1 ring-black/5 text-center transition-all duration-200 ease-out ${shown ? "opacity-100 scale-100" : "opacity-0 scale-[1.08]"}`}
       >
         <div className="px-5 pt-5 pb-4">
           <h2 id="confirm-title" className="text-[17px] font-semibold text-ink leading-snug">{title}</h2>
@@ -69,20 +69,20 @@ export function ConfirmDialog({
               onKeyDown={(e) => { if (e.key === "Enter" && ok) onConfirm(); }}
               placeholder={requireText}
               aria-label={`Escribe ${requireText} para confirmar`}
-              className="mt-3 w-full rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-[13px] text-center outline-none focus:border-slate-400"
+              className="mt-3 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-[13px] text-center outline-none transition focus:border-indigo focus:ring-2 focus:ring-indigo/30"
             />
           )}
           {error && <p className="mt-2 text-[12px] text-coral">{error}</p>}
         </div>
-        <div className="grid grid-cols-2 border-t border-slate-200/80 text-[16px]">
-          <button type="button" onClick={onCancel} disabled={busy} className="py-3 text-[#0A84FF] hover:bg-black/[.03] active:bg-black/[.06] disabled:opacity-50">
+        <div className="grid grid-cols-2 gap-2 px-5 pb-5">
+          <button type="button" onClick={onCancel} disabled={busy} className="btn-ghost justify-center">
             {cancelLabel}
           </button>
           <button
             type="button"
             onClick={onConfirm}
             disabled={!ok}
-            className={`py-3 border-l border-slate-200/80 font-semibold hover:bg-black/[.03] active:bg-black/[.06] disabled:opacity-35 disabled:hover:bg-transparent ${destructive ? "text-[#FF3B30]" : "text-[#0A84FF]"}`}
+            className={`btn justify-center font-semibold text-white shadow-sm ${destructive ? "bg-coral hover:bg-coral/90" : "bg-indigo hover:bg-indigo-light"}`}
           >
             {busy ? "Borrando…" : confirmLabel}
           </button>
