@@ -9,7 +9,7 @@
 import { createContext, useContext } from "react";
 import type { DemoData } from "./demo/seed";
 import type {
-  Commitment, Session, Element, ElementScope, Invitation, LAE, ReminderSettings, Result, Scope, ScopeType, Scorecard, ScorecardItem,
+  Commitment, Session, Element, ElementScope, Invitation, LAE, ReminderSettings, RvSettings, Result, Scope, ScopeType, Scorecard, ScorecardItem,
   ScorecardStatus, StrategicObjective, Tenant, Unit, User,
 } from "./domain/types";
 import { attainment, findResult, traffic, weightFor, weightedAttainment, type ItemEvaluation } from "./domain/scoring";
@@ -80,6 +80,8 @@ export interface MetisStore extends StoreData {
   regenerateJoinCode: () => Promise<string>;
   updateMember: (userId: string, patch: { role?: User["role"]; managerId?: string | null; title?: string }) => void;
   updateReminders: (r: ReminderSettings) => void;
+  /** Revisiones Verticales automáticas (1 a 1). */
+  updateRv: (r: RvSettings) => void;
   /** Sesiones WTW/WTM: crear o actualizar (agenda, estado, notas, resumen, focos). */
   upsertSession: (s: Session) => void;
   removeSession: (sessionId: string) => void;

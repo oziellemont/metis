@@ -6,7 +6,7 @@ import { PageHeader, Stat, TrafficChip, StatusChip, Avatar } from "@/components/
 import { MONTHS, TRAFFIC } from "@/lib/labels";
 import type { Traffic } from "@/lib/domain/types";
 import { CommitmentRow } from "@/components/sessions/parts";
-import { bucketOf, sessionDateLabel, sessionTitle } from "@/lib/sessions/logic";
+import { bucketOf, involves, sessionDateLabel, sessionTitle } from "@/lib/sessions/logic";
 
 export default function Inicio() {
   const s = useMetis();
@@ -31,7 +31,7 @@ export default function Inicio() {
     .sort((a, b) => (a.dueDate ?? "9999").localeCompare(b.dueDate ?? "9999"));
   const urgent = myCommitments.filter((c) => ["late", "today", "week"].includes(bucketOf(c, today)));
   const startToday = new Date(today.getFullYear(), today.getMonth(), today.getDate()).toISOString();
-  const nextSession = s.sessions.filter((x) => (x.leaderId === me.id || x.leaderId === me.managerId) && x.status === "scheduled" && x.scheduledAt >= startToday)
+  const nextSession = s.sessions.filter((x) => involves(x, me) && x.status === "scheduled" && x.scheduledAt >= startToday)
     .sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt))[0];
   const toReview = s.sessions.filter((x) => x.leaderId === me.id && x.status === "review");
   const approvedPct = s.scorecards.length ? Math.round((s.scorecards.filter((x) => x.status === "approved").length / s.scorecards.length) * 100) : null;
@@ -99,7 +99,7 @@ export default function Inicio() {
               {toReview.map((x) => (
                 <li key={x.id}>
                   <Link href={`/sesiones/${x.id}`} className="flex items-center gap-2 rounded-xl bg-amber-soft/70 px-3 py-2 hover:bg-amber-soft">
-                    <CalendarClock size={14} className="text-amber" /><span className="flex-1 truncate">Aprobar compromisos de {sessionTitle(x)}</span>
+                    <CalendarClock size={14} className="text-amber" /><span className="flex-1 truncate">Aprobar compromisos de {sessionTitle(x, s.userOf(x.participantId).name)}</span>
                   </Link>
                 </li>
               ))}
@@ -118,7 +118,7 @@ export default function Inicio() {
             {nextSession && (
               <Link href={`/sesiones/${nextSession.id}`} className="mt-3 flex items-center gap-2 rounded-xl bg-indigo-soft/60 px-3 py-2 text-sm hover:bg-indigo-soft">
                 <CalendarClock size={14} className="text-indigo" />
-                <span className="min-w-0 flex-1 truncate">{sessionTitle(nextSession)} · {sessionDateLabel(nextSession.scheduledAt)}</span>
+                <span className="min-w-0 flex-1 truncate">{sessionTitle(nextSession, s.userOf(nextSession.participantId).name)} · {sessionDateLabel(nextSession.scheduledAt)}</span>
                 <ArrowRight size={14} className="text-indigo" />
               </Link>
             )}

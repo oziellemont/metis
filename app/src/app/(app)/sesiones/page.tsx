@@ -6,6 +6,7 @@ import { ArrowRight, CalendarClock, CalendarPlus, CheckCircle2, ClipboardCheck, 
 import { useMetis } from "@/lib/store";
 import { Avatar, PageHeader } from "@/components/ui/primitives";
 import { NewSessionDialog } from "@/components/sessions/NewSessionDialog";
+import { RvPanel } from "@/components/sessions/RvPanel";
 import { Pct, SESSION_STATUS_UI } from "@/components/sessions/parts";
 import type { Session } from "@/lib/domain/types";
 import { commitmentsOfSession, compliance, sessionDateLabel, sessionTitle, teamOf } from "@/lib/sessions/logic";
@@ -21,7 +22,7 @@ export default function SesionesPage() {
   const [dialog, setDialog] = useState(false);
 
   const leaderId = tab === "mine" ? me.id : boss?.id ?? "";
-  const list = useMemo(() => s.sessions.filter((x) => x.leaderId === leaderId).sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt)), [s.sessions, leaderId]);
+  const list = useMemo(() => s.sessions.filter((x) => x.leaderId === leaderId && x.kind !== "rv").sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt)), [s.sessions, leaderId]);
   const now = new Date();
   const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
   const pendingReview = list.filter((x) => x.status === "review" || x.status === "live");
@@ -39,8 +40,8 @@ export default function SesionesPage() {
   return (
     <>
       <PageHeader
-        title="Sesiones WTW / WTM"
-        subtitle="El ritmo del equipo: cada semana, cómo se cerró y qué sigue; cada mes, el cierre y el enfoque del siguiente."
+        title="Sesiones"
+        subtitle="El ritmo del equipo: cada semana (WTW), cómo se cerró y qué sigue; cada mes (WTM), el cierre y el enfoque. Y con cada persona, su Revisión Vertical 1 a 1."
         actions={tab === "mine" && isLeader ? <button className="btn-primary" onClick={() => setDialog(true)}><CalendarPlus size={16} /> Agendar sesión</button> : undefined}
       />
 
@@ -114,6 +115,7 @@ export default function SesionesPage() {
           </div>
 
           <div className="space-y-5">
+            <RvPanel me={me} />
             <div className="card p-5">
               <div className="mb-3 flex items-center gap-2"><Users size={16} className="text-indigo" /><h2 className="font-semibold">Equipo natural</h2></div>
               <ul className="space-y-2.5">

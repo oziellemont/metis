@@ -6,6 +6,8 @@
  * Regla de diseño: ninguna tarjeta debe tomar más de ~40 segundos de lectura.
  */
 
+import { RV_GUIDE, RV_GUIDE_NOTE } from "../sessions/guide";
+
 export interface Detail { label: string; text: string }
 
 export type Block =
@@ -444,14 +446,8 @@ export const MODULES: Module[] = [
         kind: "flow",
         eyebrow: "Guía · 1 a 1",
         title: "La conversación de desarrollo 1 a 1, paso a paso (30 min)",
-        steps: [
-          { label: "Conecta (3 min)", example: "Pregunta cómo está y qué quiere tratar. Su agenda va primero: es su espacio, no el tuyo." },
-          { label: "Revisa su scorecard (10 min)", example: "Abran juntos METIS. Reconoce los verdes con hechos concretos y explora los rojos: «¿qué está pasando?, ¿qué causa lo explica?»." },
-          { label: "Destraba (7 min)", example: "Pregunta qué lo frena y qué necesita de ti. Ofrece apoyo concreto, no discursos." },
-          { label: "Desarrollo y feedback (7 min)", example: "Un tema de crecimiento y, si aplica, feedback SCI. Pide también feedback para ti." },
-          { label: "Cierra con compromisos (3 min)", example: "Que la persona diga sus 1–3 compromisos con fecha. Tú también anota los tuyos. Se revisan en el próximo 1 a 1." },
-        ],
-        note: "Si solo hablaste de números, fue una revisión de reporte, no de desarrollo. Cuida que el paso 4 nunca se pierda.",
+        steps: RV_GUIDE.map((g) => ({ label: `${g.label} (${g.minutes} min)`, example: g.example })),
+        note: RV_GUIDE_NOTE,
       },
       {
         kind: "flow",

@@ -7,6 +7,7 @@ import { useMetis } from "@/lib/store";
 import { Avatar, PageHeader } from "@/components/ui/primitives";
 import { buildReminders, DEFAULT_REMINDERS, MONTHS_ES } from "@/lib/domain/reminders";
 import type { ReminderSettings } from "@/lib/domain/types";
+import { RvSettingsCard } from "@/components/sessions/RvSettingsCard";
 
 const DAYS = Array.from({ length: 28 }, (_, i) => i + 1);
 
@@ -76,6 +77,8 @@ export default function Notificaciones() {
               </label>
             </div>
           </div>
+
+          <RvSettingsCard tz={f.timezone} />
 
           <div className="card p-5">
             <h3 className="font-semibold flex items-center gap-2"><Eye size={16} className="text-indigo" /> Vista previa · corrida del 3 de {MONTHS_ES[s.month % 12]} {s.month === 12 ? s.year + 1 : s.year}</h3>
