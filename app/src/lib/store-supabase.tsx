@@ -18,6 +18,7 @@ import { MetisCtx, deriveHelpers, newId, type MetisStore, type StoreData, type T
 import { EMPTY, REALTIME_TABLES, dbRoleFor, friendlyDbError, loadTenant, loadTenantList, randomToken, toDb } from "./portal-data";
 import { ACTIVE_TENANT_KEY as ACTIVE_KEY } from "./auth";
 import { approveDrafts } from "./sessions/logic";
+import { applyDeletion, deletionImpact, scopeTypeUsage } from "./domain/deletion";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Row = Record<string, any>;
@@ -180,6 +181,42 @@ export function SupabaseMetisProvider({ children }: { children: ReactNode }) {
     run("No se agregó el tipo de alcance", () => db.from("scope_types").insert(toDb.scopeType(T, t, dataRef.current.scopeTypes.length)));
   }, [db, T, run]);
 
+  // Borrado: primero los renglones de scorecard (la base no deja borrar un indicador que está en un scorecard),
+  // luego el elemento-alcance (sus datos capturados se van con él; los compromisos sólo pierden la liga).
+  const removeCatalog: MetisStore["removeCatalog"] = useCallback((t) => {
+    const cur = dataRef.current;
+    const imp = deletionImpact(cur, t);
+    setData((d) => applyDeletion(d, t));
+    const label = t.kind === "element" ? "No se borró el elemento" : t.kind === "scope" ? "No se borró el alcance" : "No se quitó del alcance";
+    run(label, async () => {
+      if (imp.items.length) {
+        const r = await db.from("scorecard_items").delete().in("id", imp.items.map((i) => i.id));
+        if (r.error) return r;
+      }
+      if (t.kind === "scope") {
+        if (imp.childScopes.length) {
+          const r = await db.from("scopes").update({ parent_id: imp.newParentId }).in("id", imp.childScopes.map((c) => c.id));
+          if (r.error) return r;
+        }
+        const ses = await db.from("sessions").update({ scope_id: null }).eq("scope_id", t.id);
+        if (ses.error) return ses;
+      }
+      if (imp.elementScopeIds.length) {
+        const r = await db.from("element_scopes").delete().in("id", imp.elementScopeIds);
+        if (r.error) return r;
+      }
+      if (t.kind === "element") return db.from("elements").delete().eq("id", t.id);
+      if (t.kind === "scope") return db.from("scopes").delete().eq("id", t.id);
+    });
+  }, [db, run]);
+  const removeScopeType: MetisStore["removeScopeType"] = useCallback((typeId) => {
+    const n = scopeTypeUsage(dataRef.current.scopes, typeId);
+    if (n > 0) return { ok: false, reason: `Lo usan ${n} alcance(s). Bórralos o cámbialos primero.` };
+    setData((d) => ({ ...d, scopeTypes: d.scopeTypes.filter((t) => t.id !== typeId), elements: d.elements.map((e) => ({ ...e, allowedScopeTypeIds: e.allowedScopeTypeIds.filter((x) => x !== typeId) })) }));
+    run("No se borró el tipo de alcance", () => db.from("scope_types").delete().eq("id", typeId));
+    return { ok: true };
+  }, [db, run]);
+
   const upsertObjective: MetisStore["upsertObjective"] = useCallback((o) => {
     setData((d) => ({ ...d, objectives: d.objectives.some((x) => x.id === o.id) ? d.objectives.map((x) => (x.id === o.id ? o : x)) : [...d.objectives, o] }));
     run("No se guardó el objetivo", () => db.from("objectives").upsert(toDb.objective(T, o)));
@@ -311,11 +348,11 @@ export function SupabaseMetisProvider({ children }: { children: ReactNode }) {
     ...data, ...deriveHelpers(data, year, month),
     mode: "supabase", tenants, switchTenant, isPlatformAdmin, syncError, clearSyncError, saving: pending > 0,
     year, month, currentUserId: me, setMonth, setCurrentUser: noop,
-    saveResult, transition, createScorecard, updateItem, addItem, removeItem, upsertElement, upsertElementScope, addScope, addScopeType,
+    saveResult, transition, createScorecard, updateItem, addItem, removeItem, upsertElement, upsertElementScope, addScope, addScopeType, removeCatalog, removeScopeType,
     upsertObjective, upsertLae, upsertUnit, removeUnit, invite, importOrg, revokeInvitation, regenerateJoinCode, updateMember, updateReminders, reset,
     upsertSession, removeSession, upsertCommitment, removeCommitment, approveSession,
   }), [data, year, month, tenants, switchTenant, isPlatformAdmin, syncError, clearSyncError, pending, me, noop, saveResult, transition, createScorecard,
-    updateItem, addItem, removeItem, upsertElement, upsertElementScope, addScope, addScopeType, upsertObjective, upsertLae, upsertUnit, removeUnit,
+    updateItem, addItem, removeItem, upsertElement, upsertElementScope, addScope, addScopeType, removeCatalog, removeScopeType, upsertObjective, upsertLae, upsertUnit, removeUnit,
     invite, importOrg, revokeInvitation, regenerateJoinCode, updateMember, updateReminders, reset,
     upsertSession, removeSession, upsertCommitment, removeCommitment, approveSession]);
 

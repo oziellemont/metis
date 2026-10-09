@@ -1,13 +1,18 @@
 "use client";
 import { useState } from "react";
-import { Plus } from "lucide-react";
+import { Plus, Trash2, X } from "lucide-react";
 import { useMetis, newId } from "@/lib/store";
 import { PageHeader } from "@/components/ui/primitives";
 import type { Scope } from "@/lib/domain/types";
+import { DeleteCatalogDialog } from "@/components/app/DeleteCatalogDialog";
+import type { DeletionTarget } from "@/lib/domain/deletion";
 
 export default function Alcances() {
   const s = useMetis();
   const [newType, setNewType] = useState("");
+  const isAdmin = s.userOf(s.currentUserId).role === "admin";
+  const [del, setDel] = useState<DeletionTarget | null>(null);
+  const [typeMsg, setTypeMsg] = useState<string | null>(null);
   const [newScope, setNewScope] = useState<{ name: string; typeId: string; parentId: string }>({ name: "", typeId: s.scopeTypes[0]?.id ?? "", parentId: "" });
 
   const Tree = ({ parentId, depth }: { parentId: string | null; depth: number }) => {
@@ -20,7 +25,8 @@ export default function Alcances() {
           const uses = s.elementScopes.filter((es) => es.scopeId === sc.id).length;
           return (
             <li key={sc.id} className="py-1">
-              <div className="flex items-center gap-2 text-sm"><span className="font-medium">{sc.name}</span><span className="chip bg-slate-100 text-slate-500">{t?.name}</span>{uses > 0 && <span className="text-xs text-slate-400">{uses} elementos</span>}</div>
+              <div className="group flex items-center gap-2 text-sm"><span className="font-medium">{sc.name}</span><span className="chip bg-slate-100 text-slate-500">{t?.name}</span>{uses > 0 && <span className="text-xs text-slate-400">{uses} {uses === 1 ? "elemento" : "elementos"}</span>}
+                {isAdmin && <button className="ml-auto p-1 text-slate-300 hover:text-coral sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 transition" title="Borrar alcance" aria-label={`Borrar ${sc.name}`} onClick={() => setDel({ kind: "scope", id: sc.id })}><Trash2 size={14} /></button>}</div>
               <Tree parentId={sc.id} depth={depth + 1} />
             </li>
           );
@@ -36,11 +42,18 @@ export default function Alcances() {
         <div className="card p-5">
           <h3 className="font-semibold mb-1">Tipos de alcance</h3>
           <p className="text-xs text-slate-500 mb-3">Se usan en todo el catálogo.</p>
-          <div className="flex flex-wrap gap-1.5 mb-3">{s.scopeTypes.map((t) => <span key={t.id} className="chip bg-indigo-soft text-indigo">{t.name}</span>)}</div>
+          <div className="flex flex-wrap gap-1.5 mb-3">{s.scopeTypes.map((t) => (
+            <span key={t.id} className="chip bg-indigo-soft text-indigo gap-1">{t.name}
+              {isAdmin && <button className="-mr-1 rounded-full p-0.5 text-indigo/50 hover:text-coral hover:bg-white" title="Borrar tipo" aria-label={`Borrar tipo ${t.name}`}
+                onClick={() => { const r = s.removeScopeType(t.id); setTypeMsg(r.ok ? null : `${t.name}: ${r.reason}`); }}><X size={11} /></button>}
+            </span>
+          ))}</div>
+          {typeMsg && <p className="text-xs text-coral mb-2">{typeMsg}</p>}
           <div className="flex gap-2"><input className="input" placeholder="Nuevo tipo…" value={newType} onChange={(e) => setNewType(e.target.value)} /><button className="btn-primary" disabled={!newType} onClick={() => { s.addScopeType({ id: newId(), name: newType }); setNewType(""); }}><Plus size={14} /></button></div>
         </div>
         <div className="card p-5 lg:col-span-2">
           <h3 className="font-semibold mb-3">Jerarquía de alcances</h3>
+          {s.scopes.length === 0 && <p className="text-sm text-slate-400">Aún no hay alcances.</p>}
           <Tree parentId={null} depth={0} />
           <div className="mt-5 border-t border-slate-100 pt-4">
             <div className="text-xs font-medium text-slate-500 mb-2">Agregar alcance</div>
@@ -53,6 +66,7 @@ export default function Alcances() {
           </div>
         </div>
       </div>
+      <DeleteCatalogDialog target={del} onClose={() => setDel(null)} />
     </>
   );
 }

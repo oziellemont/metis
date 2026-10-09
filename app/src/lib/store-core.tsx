@@ -14,6 +14,7 @@ import type {
 } from "./domain/types";
 import { attainment, findResult, traffic, weightFor, weightedAttainment, type ItemEvaluation } from "./domain/scoring";
 import { fmtWithUnit } from "./labels";
+import type { DeletionTarget } from "./domain/deletion";
 
 export type StoreData = DemoData;
 
@@ -51,6 +52,10 @@ export interface MetisStore extends StoreData {
   upsertElementScope: (es: ElementScope) => void;
   addScope: (s: Scope) => void;
   addScopeType: (t: ScopeType) => void;
+  /** Borra un KPI/proyecto del catálogo, un «medir aquí» o un alcance (con sus renglones de scorecard y datos). */
+  removeCatalog: (t: DeletionTarget) => void;
+  /** Borra un tipo de alcance si ningún alcance lo usa. */
+  removeScopeType: (typeId: string) => { ok: boolean; reason?: string };
   upsertObjective: (o: StrategicObjective) => void;
   upsertLae: (l: LAE) => void;
   /** Catálogo de unidades (editable por el cliente). */
