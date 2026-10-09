@@ -13,7 +13,7 @@ import { supabaseBrowser, hasSupabase } from "@/lib/supabase/client";
 import { rememberActiveTenant } from "@/lib/auth";
 
 interface Client { id: string; name: string; slug: string; plan: string; status: string; join_code: string | null; created_at: string; members: number; scorecards: number; i_am_member: boolean }
-interface Created { tenant_id: string; join_code: string; invitation_token: string | null; name: string; ownerEmail: string }
+interface Created { tenant_id: string; join_code: string; invitation_token: string | null; name: string; ownerEmail: string; mail?: { state: "sending" | "sent" | "error"; msg?: string } }
 
 const PLANS = [{ id: "arranca", label: "Arranca" }, { id: "crece", label: "Crece" }, { id: "escala", label: "Escala" }];
 
@@ -53,7 +53,13 @@ export default function Consola() {
     setBusy(false);
     if (r.error) { setErr(r.error.message); return; }
     const row = (Array.isArray(r.data) ? r.data[0] : r.data) as { tenant_id: string; join_code: string; invitation_token: string | null };
-    setCreated({ ...row, name: f.name.trim(), ownerEmail: f.ownerEmail.trim() });
+    const base: Created = { ...row, name: f.name.trim(), ownerEmail: f.ownerEmail.trim() };
+    setCreated(row.invitation_token ? { ...base, mail: { state: "sending" } } : base);
+    if (row.invitation_token) {
+      fetch("/api/invitaciones/enviar", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ token: row.invitation_token }) })
+        .then((x) => x.json()).catch(() => ({ ok: false, error: "No se pudo enviar el correo." }))
+        .then((j) => setCreated((c) => c && c.tenant_id === row.tenant_id ? { ...c, mail: j.ok ? { state: "sent", msg: `Correo enviado a ${j.to}` } : { state: "error", msg: j.error } } : c));
+    }
     setF({ name: "", plan: "crece", ownerEmail: "", addMe: true });
     load();
   };
@@ -139,6 +145,7 @@ export default function Consola() {
                       {created.invitation_token && (
                         <div className="rounded-xl bg-white p-3">
                           <div className="text-xs text-slate-500">Invitación para {created.ownerEmail}</div>
+                          {created.mail && <div className={`text-xs mt-0.5 ${created.mail.state === "error" ? "text-coral" : created.mail.state === "sent" ? "text-sob" : "text-slate-400"}`}>{created.mail.state === "sending" ? "Enviando correo…" : created.mail.state === "sent" ? `✓ ${created.mail.msg}` : created.mail.msg}</div>}
                           <button type="button" className="text-xs text-indigo mt-1 inline-flex items-center gap-1" onClick={() => copy("new-inv", `${origin}/login?inv=${created.invitation_token}`)}>{copied === "new-inv" ? <Check size={12} /> : <Copy size={12} />} Copiar enlace de invitación</button>
                         </div>
                       )}

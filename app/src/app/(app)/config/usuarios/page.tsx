@@ -1,7 +1,7 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import clsx from "clsx";
-import { FileSpreadsheet, Plus, KeyRound, Copy, RefreshCw, X, Mail, Send, Ban, Check, Link2 } from "lucide-react";
+import { FileSpreadsheet, Plus, KeyRound, Copy, RefreshCw, RotateCw, X, Mail, Send, Ban, Check, Link2, Loader2, AlertTriangle } from "lucide-react";
 import { useMetis } from "@/lib/store";
 import { Avatar, PageHeader } from "@/components/ui/primitives";
 import type { Invitation, User } from "@/lib/domain/types";
@@ -14,11 +14,32 @@ const INV_STATUS: Record<Invitation["status"], { label: string; tone: string }> 
   revoked: { label: "Revocada", tone: "bg-slate-100 text-slate-500" },
 };
 
+type SendState = { state: "sending" | "sent" | "manual" | "error"; msg?: string };
+
+/** Pide al servidor que mande (o reenvíe) el correo de una invitación. */
+async function sendInvitationEmail(id: string): Promise<SendState> {
+  try {
+    const r = await fetch("/api/invitaciones/enviar", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
+    const j = await r.json().catch(() => ({}));
+    if (j.ok) return { state: "sent", msg: `Correo enviado a ${j.to}.` };
+    if (j.notConfigured) return { state: "manual", msg: j.error };
+    return { state: "error", msg: j.error ?? "No se pudo enviar el correo." };
+  } catch {
+    return { state: "error", msg: "No se pudo enviar el correo. Revisa tu conexión." };
+  }
+}
+
 export default function Usuarios() {
   const s = useMetis();
   const academy = useAcademy();
   const [inviting, setInviting] = useState(false);
   const [copied, setCopied] = useState<"code" | "link" | null>(null);
+  const [resend, setResend] = useState<Record<string, SendState>>({});
+  const doResend = async (id: string) => {
+    setResend((r) => ({ ...r, [id]: { state: "sending" } }));
+    const res = await sendInvitationEmail(id);
+    setResend((r) => ({ ...r, [id]: res }));
+  };
   const code = s.tenant.joinCode ?? "—";
   const isAdmin = s.userOf(s.currentUserId).role === "admin";
   const joinUrl = typeof window !== "undefined" ? `${window.location.origin}/unirme` : "/unirme";
@@ -51,11 +72,17 @@ export default function Usuarios() {
                 <li key={i.id} className="flex items-center gap-2 py-2 px-1 text-sm">
                   <div className="min-w-0 flex-1"><div className="truncate font-medium text-xs">{i.email}</div><div className="text-[11px] text-slate-400 truncate">{i.title ?? ROLE[i.role]} · {new Date(i.createdAt).toLocaleDateString("es-MX", { day: "numeric", month: "short" })}</div></div>
                   <span className={clsx("chip", INV_STATUS[i.status].tone)}>{INV_STATUS[i.status].label}</span>
+                  {i.status === "pending" && s.mode === "supabase" && (
+                    <button className="p-1 text-slate-300 hover:text-indigo disabled:opacity-50" title={resend[i.id]?.msg ?? "Reenviar correo"} disabled={resend[i.id]?.state === "sending"} onClick={() => doResend(i.id)}>
+                      {resend[i.id]?.state === "sent" ? <Check size={13} className="text-sob" /> : <RotateCw size={13} className={resend[i.id]?.state === "sending" ? "animate-spin" : ""} />}
+                    </button>
+                  )}
                   {i.status === "pending" && <button className="p-1 text-slate-300 hover:text-coral" title="Revocar" onClick={() => s.revokeInvitation(i.id)}><Ban size={13} /></button>}
                 </li>
               ))}
             </ul>
           )}
+          {Object.values(resend).filter((r) => r.state === "error" || r.state === "manual").slice(-1).map((r, k) => <p key={k} className="mt-2 text-[11px] text-coral">{r.msg}</p>)}
         </div>
       </div>
 
@@ -106,6 +133,15 @@ function InviteDialog({ onClose }: { onClose: () => void }) {
   const me = s.userOf(s.currentUserId);
   const [f, setF] = useState<{ email: string; role: User["role"]; managerId: string; title: string }>({ email: "", role: "collaborator", managerId: me.id, title: "" });
   const [done, setDone] = useState<Invitation | null>(null);
+  const [mail, setMail] = useState<SendState | null>(null);
+  useEffect(() => {
+    if (!done || s.mode !== "supabase") return;
+    let alive = true;
+    setMail({ state: "sending" });
+    // pequeña espera para que la invitación termine de guardarse
+    const t = setTimeout(() => { sendInvitationEmail(done.id).then((r) => { if (alive) setMail(r); }); }, 600);
+    return () => { alive = false; clearTimeout(t); };
+  }, [done, s.mode]);
   const valid = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(f.email);
   const link = typeof window !== "undefined" && done ? `${window.location.origin}/login?inv=${done.token ?? done.id}` : "";
   return (
@@ -114,8 +150,17 @@ function InviteDialog({ onClose }: { onClose: () => void }) {
         <div className="flex items-center justify-between mb-4"><h3 className="font-semibold">Invitar usuario</h3><button onClick={onClose} className="text-slate-400 hover:text-ink"><X size={18} /></button></div>
         {done ? (
           <div>
-            <div className="rounded-xl bg-mint-soft p-4 text-sm"><div className="font-medium text-sob flex items-center gap-2"><Send size={14} /> Invitación lista para {done.email}</div><p className="text-slate-600 text-xs mt-1">Al abrir el enlace e iniciar sesión con ese correo, entra directo al espacio de {s.tenant.name} con {done.title || ROLE[done.role]} como cargo.</p></div>
-            <label className="label mt-4">Enlace de la invitación · mándaselo por correo o WhatsApp</label>
+            <div className={clsx("rounded-xl p-4 text-sm", mail?.state === "error" || mail?.state === "manual" ? "bg-amber-soft" : "bg-mint-soft")}>
+              <div className={clsx("font-medium flex items-center gap-2", mail?.state === "error" || mail?.state === "manual" ? "text-amber" : "text-sob")}>
+                {mail?.state === "sending" ? <><Loader2 size={14} className="animate-spin" /> Enviando correo a {done.email}…</>
+                  : mail?.state === "sent" ? <><Send size={14} /> Correo enviado a {done.email}</>
+                  : mail?.state === "error" || mail?.state === "manual" ? <><AlertTriangle size={14} /> Invitación guardada, pero el correo no salió</>
+                  : <><Send size={14} /> Invitación lista para {done.email}</>}
+              </div>
+              <p className="text-slate-600 text-xs mt-1">{mail?.state === "error" || mail?.state === "manual" ? `${mail.msg} ` : ""}Al abrir el enlace e iniciar sesión con ese correo, entra directo al espacio de {s.tenant.name} con {done.title || ROLE[done.role]} como cargo.</p>
+              {mail?.state === "error" && <button className="mt-2 text-xs font-medium text-indigo inline-flex items-center gap-1" onClick={() => { setMail({ state: "sending" }); sendInvitationEmail(done.id).then(setMail); }}><RotateCw size={12} /> Reintentar envío</button>}
+            </div>
+            <label className="label mt-4">{mail?.state === "sent" ? "Por si no le llega: también puedes mandarle este enlace por WhatsApp" : "Enlace de la invitación · mándaselo por correo o WhatsApp"}</label>
             <div className="flex gap-2"><input className="input font-mono text-xs" readOnly value={link} /><button className="btn-ghost" onClick={() => navigator.clipboard?.writeText(link)}><Copy size={14} /></button></div>
             <div className="mt-5 flex justify-end"><button className="btn-primary" onClick={onClose}>Listo</button></div>
           </div>
