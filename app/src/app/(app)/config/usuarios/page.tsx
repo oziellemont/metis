@@ -6,6 +6,8 @@ import { useMetis } from "@/lib/store";
 import { Avatar, PageHeader } from "@/components/ui/primitives";
 import type { Invitation, User } from "@/lib/domain/types";
 import { useAcademy } from "@/components/academy/AcademyProvider";
+import { sendInvitationEmail, type SendState } from "@/lib/invitations/send-client";
+import { ImportOrgDialog } from "@/components/org/ImportOrgDialog";
 
 const ROLE: Record<string, string> = { admin: "Administrador", manager: "Jefe", collaborator: "Colaborador" };
 const INV_STATUS: Record<Invitation["status"], { label: string; tone: string }> = {
@@ -14,25 +16,12 @@ const INV_STATUS: Record<Invitation["status"], { label: string; tone: string }> 
   revoked: { label: "Revocada", tone: "bg-slate-100 text-slate-500" },
 };
 
-type SendState = { state: "sending" | "sent" | "manual" | "error"; msg?: string };
-
-/** Pide al servidor que mande (o reenvíe) el correo de una invitación. */
-async function sendInvitationEmail(id: string): Promise<SendState> {
-  try {
-    const r = await fetch("/api/invitaciones/enviar", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
-    const j = await r.json().catch(() => ({}));
-    if (j.ok) return { state: "sent", msg: `Correo enviado a ${j.to}.` };
-    if (j.notConfigured) return { state: "manual", msg: j.error };
-    return { state: "error", msg: j.error ?? "No se pudo enviar el correo." };
-  } catch {
-    return { state: "error", msg: "No se pudo enviar el correo. Revisa tu conexión." };
-  }
-}
-
 export default function Usuarios() {
   const s = useMetis();
   const academy = useAcademy();
   const [inviting, setInviting] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [showAllInv, setShowAllInv] = useState(false);
   const [copied, setCopied] = useState<"code" | "link" | null>(null);
   const [resend, setResend] = useState<Record<string, SendState>>({});
   const doResend = async (id: string) => {
@@ -48,7 +37,7 @@ export default function Usuarios() {
   return (
     <>
       <PageHeader title="Usuarios y roles" subtitle="Jerarquía jefe–colaborador. Si alguien cambia de jefe, sus aprobaciones y sesiones se actualizan solas."
-        actions={<><button className="btn-ghost"><FileSpreadsheet size={14} /> Importar organigrama</button><button className="btn-primary" onClick={() => setInviting(true)}><Plus size={14} /> Invitar usuario</button></>} />
+        actions={<>{isAdmin && <button className="btn-ghost" onClick={() => setImporting(true)}><FileSpreadsheet size={14} /> Importar organigrama</button>}<button className="btn-primary" onClick={() => setInviting(true)}><Plus size={14} /> Invitar usuario</button></>} />
 
       <div className="grid gap-4 lg:grid-cols-3 mb-4">
         <div className="lg:col-span-2 card p-5 flex flex-col sm:flex-row sm:items-center gap-4">
@@ -67,10 +56,10 @@ export default function Usuarios() {
         <div className="card p-5">
           <h3 className="font-semibold mb-1 flex items-center gap-2"><Mail size={16} className="text-indigo" /> Invitaciones</h3>
           {s.invitations.length === 0 ? <p className="text-xs text-slate-500">Aún no has invitado a nadie por correo.</p> : (
-            <ul className="divide-y divide-slate-100 -mx-1">
-              {s.invitations.slice(0, 12).map((i) => (
+            <ul className="divide-y divide-slate-100 -mx-1 max-h-[22rem] overflow-y-auto">
+              {s.invitations.filter((i) => i.status === "pending").concat(s.invitations.filter((i) => i.status !== "pending")).slice(0, showAllInv ? 500 : 12).map((i) => (
                 <li key={i.id} className="flex items-center gap-2 py-2 px-1 text-sm">
-                  <div className="min-w-0 flex-1"><div className="truncate font-medium text-xs">{i.email}</div><div className="text-[11px] text-slate-400 truncate">{i.title ?? ROLE[i.role]} · {new Date(i.createdAt).toLocaleDateString("es-MX", { day: "numeric", month: "short" })}</div></div>
+                  <div className="min-w-0 flex-1"><div className="truncate font-medium text-xs">{i.name ?? i.email}</div><div className="text-[11px] text-slate-400 truncate">{i.name ? `${i.email} · ` : ""}{i.title ?? ROLE[i.role]} · {new Date(i.createdAt).toLocaleDateString("es-MX", { day: "numeric", month: "short" })}</div></div>
                   <span className={clsx("chip", INV_STATUS[i.status].tone)}>{INV_STATUS[i.status].label}</span>
                   {i.status === "pending" && s.mode === "supabase" && (
                     <button className="p-1 text-slate-300 hover:text-indigo disabled:opacity-50" title={resend[i.id]?.msg ?? "Reenviar correo"} disabled={resend[i.id]?.state === "sending"} onClick={() => doResend(i.id)}>
@@ -82,20 +71,21 @@ export default function Usuarios() {
               ))}
             </ul>
           )}
+          {s.invitations.length > 12 && <button className="mt-1 text-xs font-medium text-indigo" onClick={() => setShowAllInv((v) => !v)}>{showAllInv ? "Ver menos" : `Ver las ${s.invitations.length} invitaciones (${s.invitations.filter((i) => i.status === "pending").length} pendientes)`}</button>}
           {Object.values(resend).filter((r) => r.state === "error" || r.state === "manual").slice(-1).map((r, k) => <p key={k} className="mt-2 text-[11px] text-coral">{r.msg}</p>)}
         </div>
       </div>
 
       <div className="card overflow-x-auto">
         <table className="w-full min-w-[800px]">
-          <thead className="border-b border-slate-100"><tr><th className="th">Usuario</th><th className="th">Equipo</th><th className="th">Reporta a</th><th className="th">Rol</th><th className="th">Academy</th><th className="th text-right">Reportes directos</th></tr></thead>
+          <thead className="border-b border-slate-100"><tr><th className="th">Usuario</th><th className="th">Área</th><th className="th">Reporta a</th><th className="th">Rol</th><th className="th">Academy</th><th className="th text-right">Reportes directos</th></tr></thead>
           <tbody className="divide-y divide-slate-100">
             {s.users.map((u) => {
               const m = s.users.find((x) => x.id === u.managerId);
               return (
                 <tr key={u.id}>
                   <td className="td"><div className="flex items-center gap-3"><Avatar initials={u.initials} /><div><div className="font-medium">{u.name}</div><div className="text-xs text-slate-400">{u.title}{u.email && <> · {u.email}</>}</div></div></div></td>
-                  <td className="td text-slate-600">{u.teamName}</td>
+                  <td className="td text-slate-600"><div>{u.area ?? u.teamName ?? <span className="text-slate-300">—</span>}</div>{u.employeeNumber && <div className="text-[11px] text-slate-400">#{u.employeeNumber}</div>}</td>
                   <td className="td text-slate-600">
                     {isAdmin ? (
                       <select className="input !py-1 !text-xs max-w-[12rem]" value={u.managerId ?? ""} onChange={(e) => s.updateMember(u.id, { managerId: e.target.value || null })} aria-label={`Jefe de ${u.name}`}>
@@ -103,6 +93,7 @@ export default function Usuarios() {
                         {s.users.filter((x) => x.id !== u.id).map((x) => <option key={x.id} value={x.id}>{x.name}</option>)}
                       </select>
                     ) : (m?.name ?? <span className="text-slate-400">—</span>)}
+                    {!u.managerId && u.pendingManagerEmail && <div className="mt-1 text-[11px] text-amber" title="Viene del organigrama: se liga solo cuando su jefe entre a METIS">Esperando a {u.pendingManagerEmail}</div>}
                   </td>
                   <td className="td">
                     {isAdmin && u.id !== s.currentUserId && u.dbRole !== "owner" ? (
@@ -124,6 +115,7 @@ export default function Usuarios() {
         </table>
       </div>
       {inviting && <InviteDialog onClose={() => setInviting(false)} />}
+      {importing && <ImportOrgDialog onClose={() => setImporting(false)} />}
     </>
   );
 }

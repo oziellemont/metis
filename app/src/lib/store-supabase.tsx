@@ -214,6 +214,31 @@ export function SupabaseMetisProvider({ children }: { children: ReactNode }) {
     });
     return full;
   }, [db, T, me, run]);
+  const importOrg: MetisStore["importOrg"] = useCallback(async (rows) => {
+    const invited: { email: string; invitationId: string }[] = [];
+    let updated = 0;
+    setPending((p) => p + 1);
+    try {
+      // en bloques para organigramas grandes
+      for (let i = 0; i < rows.length; i += 200) {
+        const r = await db.rpc("import_org", { p_tenant: T, p_rows: rows.slice(i, i + 200) });
+        if (r.error) {
+          const msg = /function .*import_org|does not exist|schema cache/i.test(r.error.message)
+            ? "Falta correr la migración 0010_organigrama.sql en Supabase."
+            : friendlyDbError(r.error.message);
+          return { ok: false, error: i > 0 ? `${msg} (se alcanzaron a guardar ${i} personas)` : msg, invited, updated };
+        }
+        ((r.data ?? []) as { email: string; action: string; invitation_id: string | null }[]).forEach((x) => {
+          if (x.action === "invited" && x.invitation_id) invited.push({ email: x.email, invitationId: x.invitation_id });
+          else if (x.action === "updated") updated++;
+        });
+      }
+      return { ok: true, invited, updated };
+    } finally {
+      setPending((p) => p - 1);
+      reload(T);
+    }
+  }, [db, T, reload]);
   const revokeInvitation: MetisStore["revokeInvitation"] = useCallback((id) => {
     setData((d) => ({ ...d, invitations: d.invitations.map((i) => (i.id === id ? { ...i, status: "revoked" } : i)) }));
     run("No se revocó la invitación", () => db.from("invitations").update({ status: "revoked" }).eq("id", id));
@@ -287,11 +312,11 @@ export function SupabaseMetisProvider({ children }: { children: ReactNode }) {
     mode: "supabase", tenants, switchTenant, isPlatformAdmin, syncError, clearSyncError, saving: pending > 0,
     year, month, currentUserId: me, setMonth, setCurrentUser: noop,
     saveResult, transition, createScorecard, updateItem, addItem, removeItem, upsertElement, upsertElementScope, addScope, addScopeType,
-    upsertObjective, upsertLae, upsertUnit, removeUnit, invite, revokeInvitation, regenerateJoinCode, updateMember, updateReminders, reset,
+    upsertObjective, upsertLae, upsertUnit, removeUnit, invite, importOrg, revokeInvitation, regenerateJoinCode, updateMember, updateReminders, reset,
     upsertSession, removeSession, upsertCommitment, removeCommitment, approveSession,
   }), [data, year, month, tenants, switchTenant, isPlatformAdmin, syncError, clearSyncError, pending, me, noop, saveResult, transition, createScorecard,
     updateItem, addItem, removeItem, upsertElement, upsertElementScope, addScope, addScopeType, upsertObjective, upsertLae, upsertUnit, removeUnit,
-    invite, revokeInvitation, regenerateJoinCode, updateMember, updateReminders, reset,
+    invite, importOrg, revokeInvitation, regenerateJoinCode, updateMember, updateReminders, reset,
     upsertSession, removeSession, upsertCommitment, removeCommitment, approveSession]);
 
   if (status === "no-tenant") {

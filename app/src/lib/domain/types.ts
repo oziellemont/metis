@@ -109,6 +109,11 @@ export interface User {
   /** Rol en la base de datos (owner/admin/manager/member/viewer). Sólo en modo real. */
   dbRole?: string;
   teamName?: string;
+  /** Número de empleado (nómina) y área, del organigrama. */
+  employeeNumber?: string;
+  area?: string;
+  /** Su jefe viene en el organigrama pero aún no entra a METIS. */
+  pendingManagerEmail?: string;
 }
 
 export interface Tenant {
@@ -160,6 +165,11 @@ export interface Invitation {
   createdAt: string;
   /** Token secreto del enlace de invitación (modo real). */
   token?: string;
+  /** Datos del organigrama (opcionales). */
+  name?: string;
+  employeeNumber?: string;
+  area?: string;
+  managerEmail?: string;
 }
 
 /* ------------------------------------------------------------------ Sesiones y compromisos */

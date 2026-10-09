@@ -6,7 +6,7 @@
  */
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { demoData, CURRENT_MONTH, YEAR, type DemoData } from "./demo/seed";
-import type { Result, Scorecard, ScorecardItem, Invitation, Tenant } from "./domain/types";
+import type { Result, Scorecard, ScorecardItem, Invitation, Tenant, User } from "./domain/types";
 import { MetisCtx, deriveHelpers, newId, useMetis, type MetisStore } from "./store-core";
 import { approveDrafts } from "./sessions/logic";
 import { hasSupabase } from "./supabase/client";
@@ -123,6 +123,31 @@ function DemoMetisProvider({ children }: { children: ReactNode }) {
     setData((d) => ({ ...d, invitations: [full, ...d.invitations.filter((i) => i.email.toLowerCase() !== inv.email.toLowerCase())] }));
     return full;
   }, []);
+  const importOrg: MetisStore["importOrg"] = useCallback(async (rows) => {
+    const invited: { email: string; invitationId: string }[] = [];
+    let updated = 0;
+    {
+      const d = data;
+      const byEmail = new Map(d.users.filter((u) => u.email).map((u) => [u.email!.toLowerCase(), u]));
+      const uiRole = (r: string) => (r === "admin" ? "admin" : r === "manager" ? "manager" : "collaborator") as User["role"];
+      let users = d.users;
+      let invitations = d.invitations;
+      rows.forEach((r) => {
+        const mgr = r.manager_email ? byEmail.get(r.manager_email) : undefined;
+        const u = byEmail.get(r.email);
+        if (u) {
+          updated++;
+          users = users.map((x) => x.id === u.id ? { ...x, title: r.title ?? x.title, area: r.area ?? x.area, employeeNumber: r.employee_number ?? x.employeeNumber, role: x.id === currentUserId ? x.role : uiRole(r.role), managerId: r.manager_email ? mgr?.id ?? null : x.managerId, pendingManagerEmail: r.manager_email && !mgr ? r.manager_email : undefined } : x);
+        } else {
+          const inv: Invitation = { id: newId(), email: r.email, role: uiRole(r.role), managerId: mgr?.id ?? null, title: r.title ?? undefined, status: "pending", createdAt: new Date().toISOString(), name: r.name ?? undefined, employeeNumber: r.employee_number ?? undefined, area: r.area ?? undefined, managerEmail: r.manager_email ?? undefined };
+          invitations = [inv, ...invitations.filter((i) => i.email.toLowerCase() !== r.email)];
+          invited.push({ email: r.email, invitationId: inv.id });
+        }
+      });
+      setData({ ...d, users, invitations });
+    }
+    return { ok: true, invited, updated };
+  }, [currentUserId, data]);
   const revokeInvitation: MetisStore["revokeInvitation"] = useCallback((id) => {
     setData((d) => ({ ...d, invitations: d.invitations.map((i) => (i.id === id ? { ...i, status: "revoked" } : i)) }));
   }, []);
@@ -185,10 +210,10 @@ function DemoMetisProvider({ children }: { children: ReactNode }) {
     syncError: null, clearSyncError: () => {}, saving: false,
     year: YEAR, month, currentUserId, setMonth, setCurrentUser,
     saveResult, transition, createScorecard, updateItem, addItem, removeItem, upsertElement, upsertElementScope, addScope, addScopeType,
-    upsertObjective, upsertLae, upsertUnit, removeUnit, invite, revokeInvitation, regenerateJoinCode, updateMember, updateReminders, reset,
+    upsertObjective, upsertLae, upsertUnit, removeUnit, invite, importOrg, revokeInvitation, regenerateJoinCode, updateMember, updateReminders, reset,
     upsertSession, removeSession, upsertCommitment, removeCommitment, approveSession,
   }), [data, month, currentUserId, saveResult, transition, createScorecard, updateItem, addItem, removeItem, upsertElement, upsertElementScope, addScope, addScopeType,
-    upsertObjective, upsertLae, upsertUnit, removeUnit, invite, revokeInvitation, regenerateJoinCode, updateMember, updateReminders, reset,
+    upsertObjective, upsertLae, upsertUnit, removeUnit, invite, importOrg, revokeInvitation, regenerateJoinCode, updateMember, updateReminders, reset,
     upsertSession, removeSession, upsertCommitment, removeCommitment, approveSession]);
 
   return <MetisCtx.Provider value={value}>{children}</MetisCtx.Provider>;
