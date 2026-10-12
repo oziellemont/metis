@@ -57,7 +57,7 @@ export function PresentMode({ session, onExit }: { session: Session; onExit: (fi
               <div key={t} className="rounded-2xl bg-white/[0.06] p-4 ring-1 ring-white/10"><div className="text-xs text-white/40">0{k + 1}</div><div className="mt-1 text-sm font-medium">{t}</div></div>
             ))}
           </div>
-          <div className="mt-10 inline-flex items-center gap-2 text-xs text-white/40"><Mic size={13} /> Próximamente: el agente de METIS podrá transcribir la sesión y proponer los compromisos por ti.</div>
+          <div className="mt-10 inline-flex items-center gap-2 text-xs text-white/40"><Mic size={13} /> Próximamente: el agente de mêtis podrá transcribir la sesión y proponer los compromisos por ti.</div>
         </div>
       ),
     });

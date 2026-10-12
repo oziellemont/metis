@@ -1,7 +1,7 @@
 "use client";
 /**
  * Aviso de confirmación minimalista: recuadro pequeño centrado, esquinas muy redondeadas y
- * fondo translúcido con desenfoque; botones con el estilo de METIS (Cancelar blanco · acción en coral o índigo).
+ * fondo translúcido con desenfoque; botones con el estilo de mêtis (Cancelar blanco · acción en coral o índigo).
  * Opcionalmente pide escribir una palabra (p. ej. el nombre de la empresa) para habilitar la acción.
  */
 import { useEffect, useRef, useState } from "react";

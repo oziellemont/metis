@@ -40,7 +40,7 @@ export default function Notificaciones() {
     <>
       <PageHeader
         title="Notificaciones y recordatorios"
-        subtitle="Cada mes METIS avisa a todos los usuarios con datos pendientes para que cierren su mes. Tú decides los días, la hora y si el jefe recibe un resumen de su equipo."
+        subtitle="Cada mes mêtis avisa a todos los usuarios con datos pendientes para que cierren su mes. Tú decides los días, la hora y si el jefe recibe un resumen de su equipo."
         actions={<button className="btn-primary" onClick={() => { s.updateReminders(f); setSaved(true); setTimeout(() => setSaved(false), 2000); }}>{saved ? <><CheckCircle2 size={14} /> Guardado</> : <><Save size={14} /> Guardar</>}</button>}
       />
       <div className="grid gap-4 lg:grid-cols-3">
@@ -114,7 +114,7 @@ export default function Notificaciones() {
           <div className="card p-5">
             <h3 className="font-semibold mb-1">Cómo funciona</h3>
             <ol className="text-xs text-slate-500 space-y-1.5 list-decimal pl-4 mt-2">
-              <li>Todos los días a la hora configurada, METIS revisa cada empresa.</li>
+              <li>Todos los días a la hora configurada, mêtis revisa cada empresa.</li>
               <li>Si hoy es uno de los días elegidos, busca qué Owners tienen indicadores sin dato.</li>
               <li>Envía un correo por persona con la lista y un botón directo a <strong>Carga mensual</strong>.</li>
               <li>Si activaste el resumen, cada jefe recibe los pendientes de su equipo.</li>

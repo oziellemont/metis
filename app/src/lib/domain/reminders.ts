@@ -125,15 +125,15 @@ function render(m: Omit<ReminderMessage, "subject" | "html" | "text"> & { tenant
   if (m.kind === "owner") {
     const n = m.pending.length;
     const subject = m.phase === "cierre"
-      ? `Cierre de ${mes}: te faltan ${n} dato${n > 1 ? "s" : ""} en METIS`
-      : `Prepara tu cierre de ${mes} en METIS (${n} indicador${n > 1 ? "es" : ""})`;
+      ? `Cierre de ${mes}: te faltan ${n} dato${n > 1 ? "s" : ""} en mêtis`
+      : `Prepara tu cierre de ${mes} en mêtis (${n} indicador${n > 1 ? "es" : ""})`;
     const list = m.pending.map((p) => `<li style="margin:4px 0"><strong>${p.elementName}</strong> · ${p.scopeName}</li>`).join("");
     const html = `${brand}<p style="font-size:20px;font-weight:600;margin:0 0 8px">Hola ${first},</p>
 <p>${m.phase === "cierre" ? `Estamos cerrando <strong>${mes}</strong> y aún no tenemos tu dato en:` : `Se acerca el cierre de <strong>${mes}</strong>. Estos indicadores esperan tu dato:`}</p>
 <ul style="padding-left:18px">${list}</ul>
 <p>Al cargarlo, tu scorecard y el de los Contributors vinculados se actualizan en el momento.</p>
 ${btn("Cargar mis resultados")}${footer}`;
-    const text = `Hola ${first},\n\n${m.phase === "cierre" ? `Estamos cerrando ${mes} y aún no tenemos tu dato en:` : `Se acerca el cierre de ${mes}. Estos indicadores esperan tu dato:`}\n${m.pending.map((p) => `- ${p.elementName} · ${p.scopeName}`).join("\n")}\n\nCarga aquí: ${link}\n\n${m.tenantName} · METIS`;
+    const text = `Hola ${first},\n\n${m.phase === "cierre" ? `Estamos cerrando ${mes} y aún no tenemos tu dato en:` : `Se acerca el cierre de ${mes}. Estos indicadores esperan tu dato:`}\n${m.pending.map((p) => `- ${p.elementName} · ${p.scopeName}`).join("\n")}\n\nCarga aquí: ${link}\n\n${m.tenantName} · mêtis`;
     return { ...m, subject, html, text };
   }
 
@@ -145,6 +145,6 @@ ${btn("Cargar mis resultados")}${footer}`;
 <ul style="padding-left:18px">${list}</ul>
 <p>Un recordatorio tuyo en la WTW suele bastar. Si alguien ya no es dueño de ese indicador, cámbialo en Alcances.</p>
 ${btn("Ver a mi equipo")}${footer}`;
-  const text = `Hola ${first},\n\nResumen de tu equipo para el cierre de ${mes}:\n${m.team!.map((t) => `- ${t.name}: ${t.pending.length} pendiente(s) (${t.pending.map((p) => p.elementName).join(", ")})`).join("\n")}\n\n${link.replace("/carga", "/equipo")}\n\n${m.tenantName} · METIS`;
+  const text = `Hola ${first},\n\nResumen de tu equipo para el cierre de ${mes}:\n${m.team!.map((t) => `- ${t.name}: ${t.pending.length} pendiente(s) (${t.pending.map((p) => p.elementName).join(", ")})`).join("\n")}\n\n${link.replace("/carga", "/equipo")}\n\n${m.tenantName} · mêtis`;
   return { ...m, subject, html, text };
 }

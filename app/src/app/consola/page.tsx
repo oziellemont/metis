@@ -1,6 +1,6 @@
 "use client";
 /**
- * Consola METIS · sólo para el equipo METIS (tabla metis.platform_admins).
+ * Consola mêtis · sólo para el equipo mêtis (tabla metis.platform_admins).
  * Da de alta clientes (cada uno es un portal aislado), muestra su código de acceso y permite entrar a su portal.
  * La consola sólo ve conteos; los datos de cada cliente siguen protegidos por RLS.
  */
@@ -97,7 +97,7 @@ export default function Consola() {
     <main className="min-h-screen bg-bg">
       <header className="border-b border-slate-100 bg-white px-6 py-4 flex items-center gap-4">
         <Logo height={28} priority />
-        <span className="chip bg-indigo-soft text-indigo"><Shield size={12} /> Consola METIS</span>
+        <span className="chip bg-indigo-soft text-indigo"><Shield size={12} /> Consola mêtis</span>
         <Link href="/inicio" className="ml-auto btn-ghost !py-1.5"><ArrowLeft size={14} /> Volver al portal</Link>
       </header>
 
@@ -106,7 +106,7 @@ export default function Consola() {
         {state === "loading" && <div className="text-sm text-slate-500">Cargando clientes…</div>}
         {state === "forbidden" && (
           <div className="card p-8 text-center">
-            <div className="text-lg font-semibold">Esta sección es sólo para el equipo METIS</div>
+            <div className="text-lg font-semibold">Esta sección es sólo para el equipo mêtis</div>
             <p className="text-sm text-slate-500 mt-2">Tu usuario no está dado de alta como administrador de la plataforma.</p>
           </div>
         )}

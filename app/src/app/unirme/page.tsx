@@ -95,7 +95,7 @@ function Unirme() {
             </div>
 
             <div className="mt-6 flex items-center justify-between text-xs text-slate-400">
-              <span>¿Tu empresa aún no está en METIS? <Link href="/#precios" className="text-indigo hover:underline">Ver planes</Link></span>
+              <span>¿Tu empresa aún no está en mêtis? <Link href="/#precios" className="text-indigo hover:underline">Ver planes</Link></span>
               {email && <button className="inline-flex items-center gap-1 hover:text-ink" onClick={() => signOut().then(() => router.push("/login"))}><LogOut size={12} /> Salir</button>}
             </div>
           </div>

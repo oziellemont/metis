@@ -82,7 +82,7 @@ export function HelpGuide() {
             <div>
               <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">{results ? `Resultados (${results.length})` : "Dudas frecuentes"}</div>
               {faqs.length === 0 ? (
-                <p className="mt-2 text-[12.5px] text-slate-500">No encontré esa duda. Prueba con otras palabras o pregúntale a tu consultor METIS.</p>
+                <p className="mt-2 text-[12.5px] text-slate-500">No encontré esa duda. Prueba con otras palabras o pregúntale a tu consultor mêtis.</p>
               ) : (
                 <div className="mt-1.5 divide-y divide-slate-100">
                   {faqs.map((f, i) => (

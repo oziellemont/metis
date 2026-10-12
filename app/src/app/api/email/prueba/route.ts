@@ -32,9 +32,9 @@ export async function POST() {
   const html = `<div style="font-family:Poppins,Arial,sans-serif;max-width:560px;margin:0 auto;padding:32px 24px;color:#171A3A">
 <img src="${SITE_URL}/brand/logo-horizontal-2000.png" width="120" height="35" alt="mêtis" style="display:block;border:0;height:35px;width:120px;margin-bottom:20px">
 <p style="font-size:20px;font-weight:600;margin:0 0 8px">¡Funciona! 🎉</p>
-<p>Este es un correo de prueba de METIS. Si lo estás leyendo, los recordatorios de cierre de mes ya pueden salir.</p>
+<p>Este es un correo de prueba de mêtis. Si lo estás leyendo, los recordatorios de cierre de mes ya pueden salir.</p>
 <p style="color:#94A3B8;font-size:12px;margin-top:32px">mêtis · ${SITE_URL.replace(/^https?:\/\//, "")}</p></div>`;
-  const r = await sendMail({ to: email, subject: "Prueba de correo · METIS", html, text: "¡Funciona! Este es un correo de prueba de METIS." });
+  const r = await sendMail({ to: email, subject: "Prueba de correo · mêtis", html, text: "¡Funciona! Este es un correo de prueba de mêtis." });
   if (!r.ok) return NextResponse.json({ ok: false, error: explain(r.error ?? "") }, { status: 502 });
   return NextResponse.json({ ok: true, to: email, id: r.id });
 }

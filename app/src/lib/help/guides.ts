@@ -1,5 +1,5 @@
 /**
- * Instructor contextual (botón «?»): guía de cada página de METIS.
+ * Instructor contextual (botón «?»): guía de cada página de mêtis.
  * Lógica pura (sin JSX) para poder probarla con Vitest.
  */
 import { matchScore } from "../search";
@@ -16,7 +16,7 @@ const GENERAL: Faq[] = [
   { q: "¿Cómo encuentro algo rápido?", a: "Presiona ⌘K (o Ctrl+K) desde cualquier pantalla y escribe el nombre de un indicador, proyecto, persona o página." },
   { q: "¿Qué significan los colores del semáforo?", a: "Sobresaliente y Satisfactorio (verdes) = meta cumplida. Mínimo (amarillo) = debajo de la meta pero arriba del umbral, hay que actuar. Bajo mínimo (rojo) = requiere un plan. Gris = sin dato." },
   { q: "¿Qué diferencia hay entre Owner y Contributor?", a: "El Owner captura el dato de un indicador cada mes. Los Contributors lo tienen en su scorecard y se les actualiza solo: un dato, un dueño." },
-  { q: "¿Dónde repaso los conceptos?", a: "En Metis Academy (arriba del menú) puedes volver a cualquier módulo cuando quieras." },
+  { q: "¿Dónde repaso los conceptos?", a: "En mêtis Academy (arriba del menú) puedes volver a cualquier módulo cuando quieras." },
 ];
 
 export const GUIDES: Record<string, Guide> = {
@@ -49,7 +49,7 @@ export const GUIDES: Record<string, Guide> = {
     faqs: [
       { q: "¿Por qué no veo un indicador que tengo en mi scorecard?", a: "Aquí solo aparecen los indicadores donde eres Owner. Si eres Contributor, el dato lo captura el Owner y tu scorecard se actualiza solo." },
       { q: "¿Cómo adjunto evidencia?", a: "En la tarjeta del indicador usa «Adjuntar evidencia» y sube el archivo o liga que respalda el dato." },
-      { q: "¿Qué significa «Vence en N días»?", a: "Es el tiempo que queda para el cierre de captura del mes. METIS te manda recordatorio por correo antes." },
+      { q: "¿Qué significa «Vence en N días»?", a: "Es el tiempo que queda para el cierre de captura del mes. mêtis te manda recordatorio por correo antes." },
       { q: "Me equivoqué en un dato, ¿lo puedo corregir?", a: "Sí, mientras el periodo esté abierto: cambia el valor y vuelve a guardar." },
     ],
   },
@@ -58,7 +58,7 @@ export const GUIDES: Record<string, Guide> = {
     purpose: "El ritmo del equipo natural: la WTW semanal (cómo cerró la semana, qué sigue y qué apoyos hacen falta) y la WTM de cierre de mes.",
     steps: [
       "Agenda tu WTW con «Agendar sesión» (puedes repetirla cada semana) y tu WTM al inicio de cada mes.",
-      "Antes de la junta abre «Preparar»: METIS ya armó el marcador y los compromisos a revisar.",
+      "Antes de la junta abre «Preparar»: mêtis ya armó el marcador y los compromisos a revisar.",
       "En la junta usa «Presentar»: proyéctalo o compártelo en Teams, Meet o Zoom y captura compromisos persona por persona.",
       "Al terminar revisa el borrador y pulsa «Aprobar y enviar tareas»: a cada quien le llega en «Compromisos».",
     ],
@@ -67,7 +67,7 @@ export const GUIDES: Record<string, Guide> = {
       { q: "¿Qué se presenta en una WTW?", a: "1) Marcador con los indicadores de cada quien, 2) ¿se cumplieron los compromisos de la sesión anterior?, 3) persona por persona: cierre y compromisos de esta semana, 4) solicitudes de apoyo." },
       { q: "¿Y en la WTM?", a: "El cierre del mes: scorecard de cada persona, rojos y amarillos con su causa, el % de compromisos cumplidos del mes y 2–3 focos para el mes siguiente." },
       { q: "¿Los compromisos llegan en cuanto los capturo?", a: "No. Quedan como borrador hasta que el líder revisa y aprueba la sesión. Así nada sale con errores." },
-      { q: "¿Se puede grabar o transcribir la sesión?", a: "Próximamente: podrás grabar o subir el audio de Teams, Meet o Zoom y el agente de METIS propondrá el resumen y los compromisos. Tú siempre apruebas antes de enviar." },
+      { q: "¿Se puede grabar o transcribir la sesión?", a: "Próximamente: podrás grabar o subir el audio de Teams, Meet o Zoom y el agente de mêtis propondrá el resumen y los compromisos. Tú siempre apruebas antes de enviar." },
       { q: "¿Cómo navego la presentación?", a: "Con las flechas ← → del teclado o los botones de abajo. Esc para salir; lo capturado se guarda." },
     ],
   },
@@ -134,9 +134,9 @@ export const GUIDES: Record<string, Guide> = {
     ],
   },
   "/academy": {
-    title: "Metis Academy",
+    title: "mêtis Academy",
     purpose: "Módulos cortos sobre alineación estratégica, equipos, liderazgo y revisiones, más un tour de la plataforma.",
-    steps: ["Completa los módulos en orden.", "Aprueba cada quiz con 80% o más (puedes reintentar).", "Al terminar, se desbloquea todo METIS."],
+    steps: ["Completa los módulos en orden.", "Aprueba cada quiz con 80% o más (puedes reintentar).", "Al terminar, se desbloquea todo mêtis."],
     faqs: [
       { q: "¿Se guarda mi avance?", a: "Sí, automáticamente. Puedes salir y volver cuando quieras." },
       { q: "¿Qué pasa si repruebo un quiz?", a: "Ves el repaso con la explicación de cada respuesta y lo puedes intentar de nuevo las veces que quieras." },
@@ -177,7 +177,7 @@ export const GUIDES: Record<string, Guide> = {
   },
   "/config/usuarios": {
     title: "Usuarios y roles",
-    purpose: "Quién entra a METIS, su rol y a quién le reporta.",
+    purpose: "Quién entra a mêtis, su rol y a quién le reporta.",
     steps: ["Comparte el código de empresa o invita por correo.", "Asigna rol y jefe directo.", "Revisa la columna Academy para ver quién ya terminó su capacitación."],
     faqs: [
       { q: "¿Qué puede hacer cada rol?", a: "Administrador: todo, incluida la configuración. Gerente: configuración y su equipo. Colaborador: su espacio, scorecard y cargas." },
@@ -186,20 +186,20 @@ export const GUIDES: Record<string, Guide> = {
   },
   "/config/notificaciones": {
     title: "Notificaciones",
-    purpose: "Cuándo y cómo METIS recuerda las cargas del mes.",
+    purpose: "Cuándo y cómo mêtis recuerda las cargas del mes.",
     steps: ["Define los días de recordatorio y la hora.", "Activa el resumen al jefe si quieres que reciba quién falta."],
     faqs: [{ q: "¿A quién le llegan los recordatorios?", a: "A los Owners con datos pendientes del mes; el resumen, a sus jefes directos." }],
   },
   "/consola": {
     title: "Consola de clientes",
-    purpose: "Vista interna de METIS para administrar las empresas cliente.",
+    purpose: "Vista interna de mêtis para administrar las empresas cliente.",
     steps: ["Da de alta empresas y revisa su actividad."],
     faqs: [],
   },
 };
 
 const FALLBACK: Guide = {
-  title: "METIS",
+  title: "mêtis",
   purpose: "Tu plataforma de alineación estratégica.",
   steps: ["Usa el menú de la izquierda para moverte.", "Presiona ⌘K para buscar cualquier cosa."],
   faqs: [],

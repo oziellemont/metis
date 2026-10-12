@@ -89,7 +89,7 @@ export function rowsFromTable(table: unknown[][]): { rows: OrgRow[]; error?: str
   const headerIdx = table.findIndex((r) => r.some((c) => String(c ?? "").trim() !== ""));
   if (headerIdx < 0) return { rows: [], error: "El archivo está vacío." };
   const { map, missing } = mapHeaders(table[headerIdx]);
-  if (missing.length) return { rows: [], error: `No encontré las columnas: ${missing.join(", ")}. Usa la plantilla de METIS o revisa los encabezados.` };
+  if (missing.length) return { rows: [], error: `No encontré las columnas: ${missing.join(", ")}. Usa la plantilla de mêtis o revisa los encabezados.` };
   const get = (r: unknown[], k: keyof typeof map) => (map[k] === undefined ? "" : cell(r[map[k]!]));
   const rows: OrgRow[] = [];
   table.slice(headerIdx + 1).forEach((r, i) => {

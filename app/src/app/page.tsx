@@ -11,7 +11,7 @@ export default function Landing() {
           <div>
             <span className="chip bg-white/10 text-white/90">Plataforma SaaS + Consultoría en Alineación y Growth</span>
             <h1 className="mt-5 text-4xl sm:text-5xl font-semibold leading-tight">Que toda tu empresa empuje hacia el mismo lado.</h1>
-            <p className="mt-5 text-lg text-white/75 max-w-xl">METIS convierte la estrategia de tu empresa en objetivos, KPIs y proyectos claros para cada área y cada persona, medidos mes a mes. Y tu esquema de compensación por fin se conecta con la estrategia.</p>
+            <p className="mt-5 text-lg text-white/75 max-w-xl">mêtis convierte la estrategia de tu empresa en objetivos, KPIs y proyectos claros para cada área y cada persona, medidos mes a mes. Y tu esquema de compensación por fin se conecta con la estrategia.</p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link href="/indice" className="btn bg-mint text-white hover:bg-mint-light !px-5 !py-3">Mide tu Índice de Alineación <ArrowRight size={16} /></Link>
               <Link href="/inicio" className="btn bg-white/10 text-white hover:bg-white/20 !px-5 !py-3">Ver la plataforma en demo</Link>
@@ -49,7 +49,7 @@ export default function Landing() {
 
       <section id="plataforma" className="bg-white border-y border-slate-100">
         <div className="mx-auto max-w-6xl px-6 py-20">
-          <div className="text-xs font-semibold uppercase tracking-wider text-indigo">La cascada METIS</div>
+          <div className="text-xs font-semibold uppercase tracking-wider text-indigo">La cascada mêtis</div>
           <h2 className="mt-2 text-3xl font-semibold max-w-2xl">De la visión del consejo al KPI de cada persona.</h2>
           <div className="mt-10 grid lg:grid-cols-4 gap-5">
             {[
@@ -68,7 +68,7 @@ export default function Landing() {
       <section id="consultoria" className="mx-auto max-w-6xl px-6 py-20">
         <div className="grid lg:grid-cols-2 gap-10 items-center">
           <div>
-            <div className="text-xs font-semibold uppercase tracking-wider text-indigo">METIS Growth Advisory</div>
+            <div className="text-xs font-semibold uppercase tracking-wider text-indigo">mêtis Growth Advisory</div>
             <h2 className="mt-2 text-3xl font-semibold">La herramienta ordena. El acompañamiento hace crecer.</h2>
             <p className="mt-3 text-slate-600">No te dejamos solo con un software. Diseñamos contigo la estrategia, la cascadeamos hasta cada responsable y te ayudamos a sostener el ritmo de gestión.</p>
             <ul className="mt-8 space-y-5">
@@ -77,7 +77,7 @@ export default function Landing() {
                 ["Arquitectura Estratégica", "Objetivos, líneas de acción y KPIs que sí se conectan."],
                 ["Growth Sprints de 90 días", "Ciclos cortos para mover los indicadores que importan."],
                 ["Estratega Fraccional", "Un director de estrategia en tu mesa, sin el costo de tiempo completo."],
-                ["Academia METIS", "Talleres prácticos para que tu equipo domine el método."],
+                ["Academia mêtis", "Talleres prácticos para que tu equipo domine el método."],
               ].map(([t, d]) => (
                 <li key={t} className="flex items-start gap-3">
                   <span className="mt-0.5 h-5 w-5 shrink-0 rounded-full bg-mint/15 text-mint grid place-items-center"><Check size={12} strokeWidth={3} /></span>
@@ -120,9 +120,9 @@ export default function Landing() {
 
       <section id="precios" className="bg-white border-y border-slate-100">
         <div className="mx-auto max-w-6xl px-6 py-20">
-          <div className="text-xs font-semibold uppercase tracking-wider text-indigo">METIS Plataforma</div>
+          <div className="text-xs font-semibold uppercase tracking-wider text-indigo">mêtis Plataforma</div>
           <h2 className="mt-2 text-3xl font-semibold">Un precio que crece contigo.</h2>
-          <p className="mt-2 text-slate-600 max-w-2xl">Pagas por colaborador activo con scorecard. Todos los planes incluyen la cascada completa y los vínculos Owner ↔ Contributor, el corazón de METIS.</p>
+          <p className="mt-2 text-slate-600 max-w-2xl">Pagas por colaborador activo con scorecard. Todos los planes incluyen la cascada completa y los vínculos Owner ↔ Contributor, el corazón de mêtis.</p>
           <div className="mt-10 grid md:grid-cols-4 gap-5">
             {[["Arranque", "15 a 60", "$189", "$35,000", false], ["Crecimiento", "61 a 300", "$159", "$75,000", true], ["Escala", "301 a 1,500", "$129", "$150,000", false], ["Corporativo", "Más de 1,500", "A la medida", "Cotización", false]].map(([n, r, p, c, hot]) => (
               <div key={n as string} className={"rounded-2xl p-6 border " + (hot ? "border-indigo bg-indigo-soft/40 relative" : "border-slate-100")}>

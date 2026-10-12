@@ -49,7 +49,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
   useEffect(() => { if (locked && !onAcademy) router.replace("/academy"); }, [locked, onAcademy, router]);
   const canConfig = me.role === "admin" || me.role === "manager";
   const searchPages = [
-    { href: "/academy", label: "Metis Academy" },
+    { href: "/academy", label: "mêtis Academy" },
     ...(locked ? [] : MI_ESPACIO),
     ...(locked ? [] : canConfig ? CONFIG : []),
     ...(s.isPlatformAdmin ? [{ href: "/consola", label: "Consola de clientes" }] : []),
@@ -66,7 +66,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
     const active = path === href || path.startsWith(href + "/");
     if (locked && href !== "/academy") {
       return (
-        <span title="Se desbloquea al completar Metis Academy" className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-slate-300 cursor-not-allowed select-none">
+        <span title="Se desbloquea al completar mêtis Academy" className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-slate-300 cursor-not-allowed select-none">
           <Icon size={16} className="shrink-0" /><span className="truncate">{label}</span><Lock size={12} className="ml-auto" />
         </span>
       );
@@ -103,14 +103,14 @@ export function Shell({ children }: { children: React.ReactNode }) {
         ) : null}
         {s.isPlatformAdmin && (
           <>
-            <div className="px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-400 mt-6 mb-2">METIS</div>
+            <div className="px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-400 mt-6 mb-2">mêtis</div>
             <nav className="space-y-0.5"><Item href="/consola" label="Consola de clientes" icon={Shield} /></nav>
           </>
         )}
         <div className="mt-auto pt-6">
           <button onClick={openHelp} className="w-full text-left rounded-2xl bg-gradient-to-br from-[#141735] via-[#1E1A5E] to-[#2B1F8A] p-4 text-white hover:brightness-110 transition">
             <div className="text-xs font-medium">¿Dudas con tu KPI?</div>
-            <div className="text-[11px] text-white/70 mt-1">Abre la guía de esta página con el botón <span className="inline-grid h-4 w-4 place-items-center rounded-full bg-white/15 text-[10px] font-semibold align-middle">?</span> o agenda 15 min con tu consultor METIS.</div>
+            <div className="text-[11px] text-white/70 mt-1">Abre la guía de esta página con el botón <span className="inline-grid h-4 w-4 place-items-center rounded-full bg-white/15 text-[10px] font-semibold align-middle">?</span> o agenda 15 min con tu consultor mêtis.</div>
           </button>
         </div>
       </aside>
@@ -146,7 +146,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
           </div>
         )}
         {locked && !onAcademy && (
-          <div className="no-print bg-indigo-soft text-indigo text-xs px-4 md:px-8 py-1.5">Abriendo Metis Academy…</div>
+          <div className="no-print bg-indigo-soft text-indigo text-xs px-4 md:px-8 py-1.5">Abriendo mêtis Academy…</div>
         )}
         {s.syncError && (
           <div role="alert" className="no-print bg-coral/10 text-coral text-xs px-4 md:px-8 py-2 flex items-center gap-3">
@@ -161,7 +161,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
   );
 }
 
-/** Acceso a Metis Academy, siempre arriba del menú, con el avance del usuario. */
+/** Acceso a mêtis Academy, siempre arriba del menú, con el avance del usuario. */
 function AcademyNav() {
   const path = usePathname();
   const a = useAcademy();
@@ -171,7 +171,7 @@ function AcademyNav() {
     <Link href="/academy" className={clsx("mx-1 mb-5 block rounded-xl border px-3 py-2.5 transition-colors",
       active ? "border-indigo/30 bg-indigo-soft" : a.finished ? "border-slate-100 hover:bg-slate-50" : "border-indigo/20 bg-gradient-to-br from-indigo-soft/70 to-white hover:border-indigo/40")}>
       <div className="flex items-center gap-2 text-sm font-medium text-ink">
-        <GraduationCap size={16} className="text-indigo shrink-0" /> Metis Academy
+        <GraduationCap size={16} className="text-indigo shrink-0" /> mêtis Academy
         {a.finished ? <span className="ml-auto chip bg-mint-soft text-sob !px-1.5 !text-[10px]">Listo</span> : <span className="ml-auto text-[11px] font-semibold text-indigo tabular-nums">{a.done}/{a.total}</span>}
       </div>
       {!a.finished && (

@@ -1,5 +1,5 @@
 /**
- * Metis Academy · reglas de progreso (lógica pura, probada con Vitest).
+ * mêtis Academy · reglas de progreso (lógica pura, probada con Vitest).
  */
 import { MODULES, PASS_PCT, type Question } from "./content";
 

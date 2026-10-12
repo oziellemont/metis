@@ -89,7 +89,7 @@ export function NewSessionDialog({ open, onClose, onCreated, leaderId, editing }
           )}
         </div>
         <p className="mt-4 rounded-xl bg-canvas px-3 py-2 text-xs text-slate-500">
-          Participa tu equipo natural: las personas que te reportan directo. METIS arma la presentación con sus indicadores y los compromisos pendientes.
+          Participa tu equipo natural: las personas que te reportan directo. mêtis arma la presentación con sus indicadores y los compromisos pendientes.
         </p>
         <div className="mt-5 flex justify-end gap-2">
           <button className="btn-ghost" onClick={onClose}>Cancelar</button>

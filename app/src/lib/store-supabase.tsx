@@ -1,12 +1,12 @@
 "use client";
 /**
- * Store REAL de METIS: lee y escribe en Supabase (schema `metis`) para la EMPRESA ACTIVA.
+ * Store REAL de mêtis: lee y escribe en Supabase (schema `metis`) para la EMPRESA ACTIVA.
  *
  * Aislamiento por cliente ("portal"):
  *  - Cada fila de la base trae `tenant_id`. RLS en Postgres sólo deja leer/escribir filas de las
  *    empresas a las que pertenece el usuario; además hay candados (triggers) que impiden mezclar
  *    referencias entre empresas. La pantalla filtra por la empresa activa, pero la seguridad vive en la base.
- *  - Si alguien pertenece a varias empresas (p. ej. el consultor METIS), elige el portal en el selector.
+ *  - Si alguien pertenece a varias empresas (p. ej. el consultor mêtis), elige el portal en el selector.
  *
  * Colaboración: todo cambio se guarda en la base y se replica a los compañeros con Supabase Realtime
  * (cada navegador conectado al mismo portal recarga los datos al recibir el aviso).
@@ -370,7 +370,7 @@ export function SupabaseMetisProvider({ children }: { children: ReactNode }) {
     upsertSession, removeSession, upsertCommitment, removeCommitment, approveSession]);
 
   if (status === "no-tenant") {
-    return <Gate title="Aún no perteneces a ninguna empresa" body="Captura el código de tu empresa o abre la invitación que te enviaron." href="/unirme" cta="Unirme a mi empresa" extra={isPlatformAdmin ? { href: "/consola", cta: "Ir a la consola METIS" } : undefined} />;
+    return <Gate title="Aún no perteneces a ninguna empresa" body="Captura el código de tu empresa o abre la invitación que te enviaron." href="/unirme" cta="Unirme a mi empresa" extra={isPlatformAdmin ? { href: "/consola", cta: "Ir a la consola mêtis" } : undefined} />;
   }
   if (status === "error") {
     return <Gate title="No pudimos abrir el portal" body={loadError} href="/inicio" cta="Reintentar" onClick={() => window.location.reload()} />;

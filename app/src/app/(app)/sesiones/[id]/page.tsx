@@ -121,7 +121,7 @@ function SessionView() {
               <button className="btn-primary mt-4 w-full justify-center" onClick={approve}><Send size={16} /> Aprobar y enviar tareas</button>
               <div className="mt-3 flex items-start gap-2 rounded-xl bg-indigo-soft/50 p-3 text-xs text-slate-600">
                 <Mic size={14} className="mt-0.5 shrink-0 text-indigo" />
-                <span>Próximamente: graba o sube el audio de la junta (Teams, Meet o Zoom) y el agente de METIS te propondrá este borrador. Tú siempre apruebas antes de enviar.</span>
+                <span>Próximamente: graba o sube el audio de la junta (Teams, Meet o Zoom) y el agente de mêtis te propondrá este borrador. Tú siempre apruebas antes de enviar.</span>
               </div>
             </div>
           </div>

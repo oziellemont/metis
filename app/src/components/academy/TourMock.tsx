@@ -1,5 +1,5 @@
 "use client";
-/** Pantallas simuladas e interactivas de METIS para el tour (no tocan datos reales). */
+/** Pantallas simuladas e interactivas de mêtis para el tour (no tocan datos reales). */
 import { useEffect, useState } from "react";
 import clsx from "clsx";
 import { Search, Check, ChevronRight, Users, Target, Gauge, ClipboardList, Upload, GitBranch, Bell, HelpCircle, X, CalendarClock, CalendarCheck, Mail } from "lucide-react";

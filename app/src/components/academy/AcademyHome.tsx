@@ -24,14 +24,14 @@ export function AcademyHome() {
         <div aria-hidden className="absolute right-24 bottom-[-80px] h-48 w-48 rounded-full bg-mint/20 blur-3xl" />
         <div className="relative grid gap-8 md:grid-cols-[1.4fr_1fr] items-center">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-medium"><GraduationCap size={14} /> Metis Academy</div>
+            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-medium"><GraduationCap size={14} /> mêtis Academy</div>
             <h1 className="mt-4 text-2xl sm:text-3xl font-semibold leading-tight">
               {a.finished ? `¡Listo, ${me.name.split(" ")[0]}! Ya hablas el idioma de la alineación.` : `Bienvenido, ${me.name.split(" ")[0]}. Antes de empezar, aprendamos juntos.`}
             </h1>
             <p className="mt-3 text-white/70 max-w-lg text-[15px] leading-relaxed">
               {a.finished
                 ? "Completaste los módulos. Puedes volver a repasarlos cuando quieras."
-                : `${MODULES.length} módulos cortos (unos ${TOTAL_MINUTES} minutos) sobre alineación estratégica, equipos, liderazgo y revisiones 1 a 1 y de equipo, y un tour por la plataforma. Al terminar se desbloquea tu acceso completo a METIS.`}
+                : `${MODULES.length} módulos cortos (unos ${TOTAL_MINUTES} minutos) sobre alineación estratégica, equipos, liderazgo y revisiones 1 a 1 y de equipo, y un tour por la plataforma. Al terminar se desbloquea tu acceso completo a mêtis.`}
             </p>
             {!a.finished && next && (
               <Link href={`/academy/${next.id}`} className="mt-6 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-ink hover:bg-white/90 transition-colors">
@@ -55,14 +55,14 @@ export function AcademyHome() {
       {a.locked && (
         <div className="mt-4 flex items-start gap-3 rounded-2xl border border-indigo/15 bg-indigo-soft/50 px-5 py-3.5 text-sm">
           <Lock size={16} className="text-indigo mt-0.5 shrink-0" />
-          <span className="text-ink">El resto de METIS se desbloquea al aprobar los {MODULES.length} módulos. Tu avance se guarda solo: puedes salir y volver cuando quieras.</span>
+          <span className="text-ink">El resto de mêtis se desbloquea al aprobar los {MODULES.length} módulos. Tu avance se guarda solo: puedes salir y volver cuando quieras.</span>
         </div>
       )}
 
       {a.previewAll && s.mode !== "demo" && (
         <div className="mt-4 flex items-start gap-3 rounded-2xl border border-mint/30 bg-mint-soft/60 px-5 py-3.5 text-sm">
           <Eye size={16} className="text-sob mt-0.5 shrink-0" />
-          <span className="text-ink"><b>Modo revisión (admin METIS):</b> puedes abrir cualquier módulo sin seguir el orden y la Academia no te bloquea la plataforma. Tus clientes sí la ven obligatoria.</span>
+          <span className="text-ink"><b>Modo revisión (admin mêtis):</b> puedes abrir cualquier módulo sin seguir el orden y la Academia no te bloquea la plataforma. Tus clientes sí la ven obligatoria.</span>
         </div>
       )}
 
@@ -104,7 +104,7 @@ export function AcademyHome() {
         </div>
       )}
       {a.locked && a.canSkip && (
-        <div className="mt-4 text-right"><button onClick={a.skip} className="text-xs text-slate-400 hover:text-ink underline">Saltar por esta sesión (solo admin METIS)</button></div>
+        <div className="mt-4 text-right"><button onClick={a.skip} className="text-xs text-slate-400 hover:text-ink underline">Saltar por esta sesión (solo admin mêtis)</button></div>
       )}
     </div>
   );
