@@ -154,7 +154,7 @@ export function ScorecardView({ userId, asManager = false }: { userId: string; a
             <Send size={14} /> Enviar a {manager?.name.split(" ")[0] ?? "jefe"}
           </button>
         )}
-        {!asManager && editable && total !== 100 && <span className="text-xs text-coral">METIS no permite enviar si la ponderación no suma 100%.</span>}
+        {!asManager && editable && total !== 100 && <span className="text-xs text-coral">mêtis no permite enviar si la ponderación no suma 100%.</span>}
         {asManager && sc.status === "submitted" && (
           <div className="card p-4 w-full">
             <div className="text-sm font-medium mb-2">Revisión del jefe</div>

@@ -1,5 +1,5 @@
 /**
- * Metis Academy · contenido de los módulos.
+ * mêtis Academy · contenido de los módulos.
  * Lógica pura (sin JSX) para poder probarla con Vitest.
  *
  * Cada módulo = tarjetas cortas (lecturas e interacciones) + un quiz final.
@@ -98,7 +98,7 @@ export const MODULES: Module[] = [
         kind: "reveal",
         eyebrow: "Los roles",
         title: "Un dato, un dueño",
-        intro: "En METIS cada indicador, en cada alcance, tiene un solo dueño. Toca cada rol.",
+        intro: "En mêtis cada indicador, en cada alcance, tiene un solo dueño. Toca cada rol.",
         items: [
           { tag: "O", label: "Owner", body: "Dueño del resultado en un alcance. Carga el dato cada periodo y responde por él." },
           { tag: "C", label: "Contributor", body: "Participa en el resultado sin capturarlo. Su scorecard se actualiza solo cuando el Owner carga." },
@@ -303,10 +303,10 @@ export const MODULES: Module[] = [
         title: "Las 4 disciplinas de la ejecución",
         intro: "Un marco de McChesney, Covey y Huling. Toca cada disciplina.",
         items: [
-          { tag: "1", label: "Enfócate en lo crucialmente importante", body: "Pocas metas, máximo 2 o 3 por equipo. Si todo es prioridad, nada lo es.", details: [{ label: "En METIS", text: "Pocos KPIs con peso alto en tu scorecard." }] },
-          { tag: "2", label: "Actúa sobre los indicadores de causa", body: "No puedes mover las ventas del mes directamente; sí las visitas efectivas de esta semana.", details: [{ label: "En METIS", text: "Combina KPIs de resultado y de causa." }] },
-          { tag: "3", label: "Mantén un marcador convincente", body: "Simple y visible: en 5 segundos cualquiera sabe si va ganando o perdiendo.", details: [{ label: "En METIS", text: "El semáforo de tu scorecard." }] },
-          { tag: "4", label: "Crea una cadencia de rendición de cuentas", body: "Una sesión corta y fija en la que cada quien reporta sus compromisos y asume nuevos.", details: [{ label: "En METIS", text: "Las sesiones WTW y WTM." }] },
+          { tag: "1", label: "Enfócate en lo crucialmente importante", body: "Pocas metas, máximo 2 o 3 por equipo. Si todo es prioridad, nada lo es.", details: [{ label: "En mêtis", text: "Pocos KPIs con peso alto en tu scorecard." }] },
+          { tag: "2", label: "Actúa sobre los indicadores de causa", body: "No puedes mover las ventas del mes directamente; sí las visitas efectivas de esta semana.", details: [{ label: "En mêtis", text: "Combina KPIs de resultado y de causa." }] },
+          { tag: "3", label: "Mantén un marcador convincente", body: "Simple y visible: en 5 segundos cualquiera sabe si va ganando o perdiendo.", details: [{ label: "En mêtis", text: "El semáforo de tu scorecard." }] },
+          { tag: "4", label: "Crea una cadencia de rendición de cuentas", body: "Una sesión corta y fija en la que cada quien reporta sus compromisos y asume nuevos.", details: [{ label: "En mêtis", text: "Las sesiones WTW y WTM." }] },
         ],
         source: "McChesney, Covey y Huling, «Las 4 disciplinas de la ejecución» (2012).",
       },
@@ -454,7 +454,7 @@ export const MODULES: Module[] = [
         eyebrow: "Guía · equipo",
         title: "La revisión de equipo (WTW), paso a paso (20–30 min)",
         steps: [
-          { label: "Marcador primero (5 min)", example: "Proyecta el mapa o los reportes de METIS. ¿Vamos ganando o perdiendo? Sin rodeos ni presentaciones largas." },
+          { label: "Marcador primero (5 min)", example: "Proyecta el mapa o los reportes de mêtis. ¿Vamos ganando o perdiendo? Sin rodeos ni presentaciones largas." },
           { label: "Rendición de cuentas (10 min)", example: "Cada quien, 1 minuto: «Me comprometí a… Cumplí / no cumplí. Aprendí…». Sin justificaciones largas." },
           { label: "Despejar el camino (5 min)", example: "¿Qué obstáculo necesita ayuda de otro? Se acuerda quién ayuda. Los temas largos se agendan aparte." },
           { label: "Nuevos compromisos (5 min)", example: "Cada quien dice en voz alta su compromiso de la semana: qué, para cuándo, y qué indicador mueve." },
@@ -527,7 +527,7 @@ export const MODULES: Module[] = [
   {
     id: "tour",
     n: 5,
-    title: "Tour por METIS",
+    title: "Tour por mêtis",
     subtitle: "Un recorrido por la plataforma: para qué sirve cada sección y cómo encaja en tu mes.",
     minutes: 5,
     topics: ["Inicio", "Scorecard", "Carga mensual", "Mapa", "Tu equipo", "Revisiones Verticales", "Botón de ayuda"],
@@ -539,7 +539,7 @@ export const MODULES: Module[] = [
       { kind: "screen", eyebrow: "4 de 8", nav: "mapa", title: "Mapa de alineación: la cascada completa", body: ["Muestra cómo cada objetivo baja a LAEs, indicadores y personas.", "Es la respuesta visual a «¿mi trabajo a qué contribuye?». Toca un objetivo."] },
       { kind: "screen", eyebrow: "5 de 8", nav: "equipo", title: "Mi equipo y Reportes", body: ["Si tienes gente a cargo, aquí ves el avance de cada quien y apruebas sus scorecards.", "Reportes te da la foto de toda la organización para la WTM."] },
       { kind: "screen", eyebrow: "6 de 8", nav: "rv", title: "Sesiones: tu 1 a 1 se agenda solo", body: ["Cada 6 u 8 semanas, mêtis agenda tu Revisión Vertical: 30 minutos de tu jefe contigo para hablar de tu scorecard y tu desarrollo.", "Te llega la invitación para tu calendario (Outlook o Google) y un aviso 3 días antes, 1 día antes y el mismo día. Si eres jefe, recibes la guía de 5 pasos. Pruébalo: agrega la sesión a tu calendario."] },
-      { kind: "screen", eyebrow: "7 de 8", nav: "buscar", title: "Buscador y recordatorios", body: ["Presiona ⌘K (o Ctrl+K) para encontrar cualquier indicador, proyecto o persona.", "Y no tienes que acordarte del cierre: METIS te avisa por correo antes de que venza."] },
+      { kind: "screen", eyebrow: "7 de 8", nav: "buscar", title: "Buscador y recordatorios", body: ["Presiona ⌘K (o Ctrl+K) para encontrar cualquier indicador, proyecto o persona.", "Y no tienes que acordarte del cierre: mêtis te avisa por correo antes de que venza."] },
       { kind: "screen", eyebrow: "8 de 8", nav: "ayuda", title: "Tu instructor: el botón «?»", body: ["En la esquina inferior derecha de cada pantalla verás un pequeño botón con un signo de interrogación.", "Ábrelo cuando tengas una duda: te explica la página en la que estás, qué hacer ahí y responde las preguntas más comunes. Pruébalo."] },
     ],
     quiz: [
@@ -548,7 +548,7 @@ export const MODULES: Module[] = [
         options: [
           { text: "Sí: todos los que participan capturan", why: "Si todos capturaran, habría varias versiones del mismo dato." },
           { text: "No: lo captura el Owner y tu scorecard se actualiza solo", correct: true, why: "Un dato, un dueño. Tu scorecard toma el valor en cuanto el Owner lo guarda." },
-          { text: "Solo si el Owner se olvida", why: "El Contributor nunca captura; si falta el dato, METIS le recuerda al Owner." },
+          { text: "Solo si el Owner se olvida", why: "El Contributor nunca captura; si falta el dato, mêtis le recuerda al Owner." },
           { text: "Solo en el cierre anual", why: "El dato se carga cada periodo, y lo hace el Owner." },
         ],
       },
@@ -558,7 +558,7 @@ export const MODULES: Module[] = [
           { text: "Tu jefe lo aprueba o te pide ajustes", correct: true, why: "Tu jefe directo lo revisa: lo aprueba, pide ajustes o lo deniega. Lo ves reflejado en el estado." },
           { text: "Se aprueba solo en 24 horas", why: "La aprobación siempre es una decisión de tu jefe." },
           { text: "Hay que enviarlo de nuevo cada mes", why: "El scorecard se aprueba una vez al año; cada mes solo se cargan resultados." },
-          { text: "Recursos Humanos lo revisa", why: "En METIS lo aprueba tu jefe directo." },
+          { text: "Recursos Humanos lo revisa", why: "En mêtis lo aprueba tu jefe directo." },
         ],
       },
       {
@@ -580,7 +580,7 @@ export const MODULES: Module[] = [
         ],
       },
       {
-        q: "¿Cuál es la forma más rápida de encontrar el indicador «OTIF» en METIS?",
+        q: "¿Cuál es la forma más rápida de encontrar el indicador «OTIF» en mêtis?",
         options: [
           { text: "Revisar menú por menú", why: "Funciona, pero hay un camino más rápido." },
           { text: "Pedirle a tu jefe que te mande el enlace", why: "No hace falta: lo encuentras tú en segundos." },
@@ -593,7 +593,7 @@ export const MODULES: Module[] = [
         options: [
           { text: "Esperar a tu próximo 1 a 1 para preguntar", why: "Puedes resolverlo en segundos sin esperar a nadie." },
           { text: "Abrir el botón «?» de la esquina inferior derecha", correct: true, why: "El instructor te explica la página en la que estás y responde las dudas más comunes, como adjuntar evidencia." },
-          { text: "Volver a tomar Metis Academy", why: "La Academia da el panorama; para dudas puntuales de una pantalla está el botón «?»." },
+          { text: "Volver a tomar mêtis Academy", why: "La Academia da el panorama; para dudas puntuales de una pantalla está el botón «?»." },
           { text: "Dejar el dato sin evidencia", why: "La evidencia respalda tu dato; mejor aprende a adjuntarla con la guía." },
         ],
       },

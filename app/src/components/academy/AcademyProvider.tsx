@@ -1,6 +1,6 @@
 "use client";
 /**
- * Estado de Metis Academy para el usuario actual.
+ * Estado de mêtis Academy para el usuario actual.
  * - Modo real (Supabase): metis.academy_progress (migración 0007). Es OBLIGATORIA: hasta aprobar
  *   los módulos, el resto de la plataforma queda bloqueado.
  * - Modo demo: se guarda en este navegador y NO bloquea (la demo pública debe poder recorrerse libre).
@@ -25,10 +25,10 @@ interface AcademyState {
   saveAttempt: (moduleId: string, pct: number, passed: boolean) => void;
   /** Avance de otras personas de la empresa (solo admins/jefes en modo real). */
   team: Record<string, number>;
-  /** Solo el admin de la plataforma METIS puede saltarla (para soporte). */
+  /** Solo el admin de la plataforma mêtis puede saltarla (para soporte). */
   canSkip: boolean;
   skip: () => void;
-  /** Admin de METIS: nunca se le bloquea la plataforma y puede abrir cualquier módulo para revisarlo. */
+  /** Admin de mêtis: nunca se le bloquea la plataforma y puede abrir cualquier módulo para revisarlo. */
   previewAll: boolean;
   resetDemo: () => void;
 }

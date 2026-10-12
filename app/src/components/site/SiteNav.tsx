@@ -28,7 +28,7 @@ export function SiteFooter() {
         <Logo height={24} />
         <span>Estrategia · Alineación · Crecimiento</span>
         <span className="sm:ml-auto"><a href={`mailto:${CONTACT_EMAIL}`} className="hover:text-ink">{CONTACT_EMAIL}</a> · Monterrey, N.L., México</span>
-        <span>© 2026 METIS</span>
+        <span>© 2026 mêtis</span>
       </div>
     </footer>
   );

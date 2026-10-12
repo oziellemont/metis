@@ -42,7 +42,7 @@ export function IndiceWizard() {
   if (step === "intro") return (
     <section className="pt-10">
       <span className="chip bg-indigo-soft text-indigo">Gratis · 20 preguntas · 6 minutos</span>
-      <h1 className="mt-4 text-4xl font-semibold">Índice de Alineación METIS</h1>
+      <h1 className="mt-4 text-4xl font-semibold">Índice de Alineación mêtis</h1>
       <p className="mt-4 text-lg text-slate-600 max-w-2xl">Mide qué tan conectada está la estrategia de tu empresa con lo que hace cada persona el lunes por la mañana. Al terminar recibes tu índice de 0 a 100, tus cinco dimensiones y la primera brecha que conviene cerrar.</p>
       <div className="mt-8 grid sm:grid-cols-5 gap-3">
         {DIMENSIONS.map((d) => <div key={d.id} className="card p-4"><span className="h-2 w-2 rounded-full inline-block" style={{ background: d.color }} /><div className="mt-2 font-medium text-sm">{d.name}</div><div className="text-xs text-slate-500 mt-1">{d.question}</div></div>)}
@@ -90,7 +90,7 @@ export function IndiceWizard() {
           <div><label className="label">Industria</label><select className="input" value={lead.industry} onChange={(e) => setLead({ ...lead, industry: e.target.value })}>{INDUSTRIES.map((s) => <option key={s}>{s}</option>)}</select></div>
           <div className="sm:col-span-2"><label className="label">Ciudad</label><input className="input" value={lead.city} onChange={(e) => setLead({ ...lead, city: e.target.value })} placeholder="Monterrey" /></div>
         </div>
-        <label className="flex items-start gap-2 text-xs text-slate-500 mt-1"><input type="checkbox" required checked={lead.consent} onChange={(e) => setLead({ ...lead, consent: e.target.checked })} className="mt-0.5" /> Acepto que METIS me contacte para revisar mis resultados y conozco el aviso de privacidad.</label>
+        <label className="flex items-start gap-2 text-xs text-slate-500 mt-1"><input type="checkbox" required checked={lead.consent} onChange={(e) => setLead({ ...lead, consent: e.target.checked })} className="mt-0.5" /> Acepto que mêtis me contacte para revisar mis resultados y conozco el aviso de privacidad.</label>
         <button className="btn-primary !py-3 mt-2" disabled={saving}>{saving ? "Calculando…" : "Ver mi Índice de Alineación"} <ArrowRight size={16} /></button>
       </form>
     </section>
@@ -140,10 +140,10 @@ export function IndiceWizard() {
         </div>
 
         <div className="mt-6 grid md:grid-cols-2 gap-4">
-          <div className="rounded-2xl border border-slate-100 p-5"><div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Recomendación METIS</div><p className="mt-2 text-sm text-slate-700">{result.level.recommendation}</p></div>
-          <div className="rounded-2xl border border-slate-100 p-5"><div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Siguiente paso</div><p className="mt-2 text-sm text-slate-700">Revisemos estos resultados juntos en 45 minutos, sin costo. Te mostramos cómo se vería la estrategia de {lead.company} dentro de METIS.</p><a className="text-sm text-indigo font-medium mt-2 inline-block" href="mailto:hola@metisalign.mx">hola@metisalign.mx →</a></div>
+          <div className="rounded-2xl border border-slate-100 p-5"><div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Recomendación mêtis</div><p className="mt-2 text-sm text-slate-700">{result.level.recommendation}</p></div>
+          <div className="rounded-2xl border border-slate-100 p-5"><div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Siguiente paso</div><p className="mt-2 text-sm text-slate-700">Revisemos estos resultados juntos en 45 minutos, sin costo. Te mostramos cómo se vería la estrategia de {lead.company} dentro de mêtis.</p><a className="text-sm text-indigo font-medium mt-2 inline-block" href="mailto:hola@metisalign.mx">hola@metisalign.mx →</a></div>
         </div>
-        <div className="mt-6 text-[10px] text-slate-400">El Índice de Alineación es una autoevaluación. El Diagnóstico de Alineación METIS lo complementa con entrevistas al equipo directivo y revisión de KPIs reales.</div>
+        <div className="mt-6 text-[10px] text-slate-400">El Índice de Alineación es una autoevaluación. El Diagnóstico de Alineación mêtis lo complementa con entrevistas al equipo directivo y revisión de KPIs reales.</div>
       </div>
       <div className="no-print mt-6 text-sm text-slate-500">¿Quieres ver cómo funciona la plataforma? <Link href="/inicio" className="text-indigo">Entra a la demo de Grupo Andes →</Link></div>
     </section>

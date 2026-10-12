@@ -1,4 +1,4 @@
-/** Índice de Alineación METIS · 5 dimensiones × 4 preguntas · escala 0–4. Ver docs/indice-de-alineacion.md */
+/** Índice de Alineación mêtis · 5 dimensiones × 4 preguntas · escala 0–4. Ver docs/indice-de-alineacion.md */
 
 export interface Question { id: number; dim: number; text: string; options: [string, string, string, string, string] }
 export interface Dimension { id: number; name: string; short: string; question: string; color: string }
@@ -38,8 +38,8 @@ export type Answers = Record<number, number>; // questionId → 0..4
 
 export interface Level { min: number; name: string; reading: string; recommendation: string; color: string }
 export const LEVELS: Level[] = [
-  { min: 75, name: "Alineada y en ritmo", reading: "Tienes un sistema vivo. La oportunidad está en automatizar y escalar sin perder el ritmo.", recommendation: "Plataforma METIS para quitar el trabajo manual; Estratega Fraccional si estás creciendo muy rápido.", color: "#0FA36F" },
-  { min: 55, name: "Alineada con esfuerzo", reading: "Se mide, pero con mucho trabajo manual y sin consecuencias claras. La estrategia depende de personas, no de un sistema.", recommendation: "Plataforma METIS + Growth Sprints de 90 días para instalar el ritmo de gestión.", color: "#14C98E" },
+  { min: 75, name: "Alineada y en ritmo", reading: "Tienes un sistema vivo. La oportunidad está en automatizar y escalar sin perder el ritmo.", recommendation: "Plataforma mêtis para quitar el trabajo manual; Estratega Fraccional si estás creciendo muy rápido.", color: "#0FA36F" },
+  { min: 55, name: "Alineada con esfuerzo", reading: "Se mide, pero con mucho trabajo manual y sin consecuencias claras. La estrategia depende de personas, no de un sistema.", recommendation: "Plataforma mêtis + Growth Sprints de 90 días para instalar el ritmo de gestión.", color: "#14C98E" },
   { min: 30, name: "En construcción", reading: "Hay objetivos y algunos KPIs, pero sin cascada, dueños del dato ni ritmo. Cada área mide por su lado.", recommendation: "Diagnóstico de Alineación + Arquitectura Estratégica para diseñar la cascada completa.", color: "#F5A524" },
   { min: 0, name: "Desconectada", reading: "La estrategia vive en la cabeza de la dirección. La operación corre sola y el desempeño se evalúa por percepción.", recommendation: "Diagnóstico de Alineación + Arquitectura Estratégica (paquete Despegue o Aceleración).", color: "#F2545B" },
 ];

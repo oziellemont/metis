@@ -1,5 +1,5 @@
 /**
- * Metis Academy · correo de recordatorio (mismo diseño que las plantillas de Supabase Auth).
+ * mêtis Academy · correo de recordatorio (mismo diseño que las plantillas de Supabase Auth).
  */
 import { MODULES, TOTAL_MINUTES } from "./content";
 import type { ProgressMap } from "./progress";
@@ -17,8 +17,8 @@ export function academyReminderEmail(input: { name: string; tenantName: string; 
   const pct = Math.round((done / MODULES.length) * 100);
 
   const subject = done === 0
-    ? `${first}, tu acceso a METIS empieza en Metis Academy (${TOTAL_MINUTES} min)`
-    : `Te faltan ${left.length} módulo${left.length > 1 ? "s" : ""} de Metis Academy para desbloquear METIS`;
+    ? `${first}, tu acceso a mêtis empieza en mêtis Academy (${TOTAL_MINUTES} min)`
+    : `Te faltan ${left.length} módulo${left.length > 1 ? "s" : ""} de mêtis Academy para desbloquear mêtis`;
 
   const rows = MODULES.map((m) => {
     const ok = Boolean(input.progress[m.id]?.passedAt);
@@ -39,9 +39,9 @@ export function academyReminderEmail(input: { name: string; tenantName: string; 
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
       <tr><td height="4" style="height:4px;line-height:4px;font-size:0;background:${INDIGO};background-image:linear-gradient(90deg,#6D5DF6,#4F3FE0,#2B1F8A)">&nbsp;</td></tr>
       <tr><td style="padding:32px 32px 30px">
-        <div style="font-family:${FONT};font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:${INDIGO}">Metis Academy</div>
+        <div style="font-family:${FONT};font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:${INDIGO}">mêtis Academy</div>
         <div style="font-family:${FONT};font-size:22px;line-height:30px;font-weight:600;color:${INK};padding:6px 0 12px">Hola ${first}, te faltan unos ${minutesLeft} minutos</div>
-        <div style="font-family:${FONT};font-size:15px;line-height:24px;color:${SLATE};padding:0 0 18px">Antes de usar METIS en <strong>${input.tenantName}</strong>, todos pasamos por Metis Academy: lecturas cortas sobre alineación estratégica, equipos y liderazgo, más un tour por la plataforma. Al terminar se desbloquea tu acceso completo.</div>
+        <div style="font-family:${FONT};font-size:15px;line-height:24px;color:${SLATE};padding:0 0 18px">Antes de usar mêtis en <strong>${input.tenantName}</strong>, todos pasamos por mêtis Academy: lecturas cortas sobre alineación estratégica, equipos y liderazgo, más un tour por la plataforma. Al terminar se desbloquea tu acceso completo.</div>
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
           <td style="font-family:${FONT};font-size:12px;color:${MUTED};padding:0 0 6px">Tu avance</td>
           <td align="right" style="font-family:${FONT};font-size:12px;font-weight:600;color:${INK};padding:0 0 6px">${done} de ${MODULES.length}</td>
@@ -52,7 +52,7 @@ export function academyReminderEmail(input: { name: string; tenantName: string; 
         </td></tr></table>
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top:1px solid #EEF0F7;margin:0 0 20px">${rows}</table>
         <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td bgcolor="${INDIGO}" style="border-radius:12px">
-          <a href="${link}" target="_blank" style="display:inline-block;padding:14px 26px;font-family:${FONT};font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;border-radius:12px">${done === 0 ? "Empezar Metis Academy" : "Continuar donde me quedé"}</a>
+          <a href="${link}" target="_blank" style="display:inline-block;padding:14px 26px;font-family:${FONT};font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;border-radius:12px">${done === 0 ? "Empezar mêtis Academy" : "Continuar donde me quedé"}</a>
         </td></tr></table>
       </td></tr>
     </table>
@@ -61,6 +61,6 @@ export function academyReminderEmail(input: { name: string; tenantName: string; 
   <tr><td style="padding:14px 8px 0;font-family:${FONT};font-size:12px;line-height:18px;color:${MUTED}"><strong style="color:${SLATE}">mêtis</strong> · ${input.tenantName} · <a href="${base}" style="color:${MUTED}">metisalign.mx</a></td></tr>
 </table></td></tr></table></body></html>`;
 
-  const text = `Hola ${first},\n\nPara usar METIS en ${input.tenantName} primero completa Metis Academy (te faltan unos ${minutesLeft} min).\n\n${MODULES.map((m) => `${input.progress[m.id]?.passedAt ? "[x]" : "[ ]"} ${m.n}. ${m.title}`).join("\n")}\n\nContinúa aquí: ${link}\n\nmêtis`;
+  const text = `Hola ${first},\n\nPara usar mêtis en ${input.tenantName} primero completa mêtis Academy (te faltan unos ${minutesLeft} min).\n\n${MODULES.map((m) => `${input.progress[m.id]?.passedAt ? "[x]" : "[ ]"} ${m.n}. ${m.title}`).join("\n")}\n\nContinúa aquí: ${link}\n\nmêtis`;
   return { subject, html, text };
 }

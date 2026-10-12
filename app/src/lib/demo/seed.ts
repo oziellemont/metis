@@ -17,7 +17,7 @@ export const tenant: Tenant = {
   rv: { enabled: true, cadenceWeeks: 6 },
 };
 
-/** Catálogo de unidades. Las marcadas `system` vienen con METIS; el cliente puede agregar/editar/quitar las suyas. */
+/** Catálogo de unidades. Las marcadas `system` vienen con mêtis; el cliente puede agregar/editar/quitar las suyas. */
 export const units: Unit[] = [
   { id: "un-pct", symbol: "%", name: "Porcentaje", decimals: 1, position: "suffix", system: true },
   { id: "un-mxn", symbol: "$", name: "Pesos mexicanos", decimals: 0, position: "prefix", system: true },

@@ -36,7 +36,7 @@ export function ModulePlayer({ mod }: { mod: Module }) {
         <span className="mx-auto h-12 w-12 rounded-2xl bg-slate-100 text-slate-400 grid place-items-center"><Lock size={20} /></span>
         <h2 className="mt-4 text-lg font-semibold">Este módulo aún está bloqueado</h2>
         <p className="mt-1 text-sm text-slate-500">Completa primero el módulo {mod.n - 1}. Los módulos se abren en orden.</p>
-        <Link href="/academy" className="btn-primary mt-6">Volver a Metis Academy</Link>
+        <Link href="/academy" className="btn-primary mt-6">Volver a mêtis Academy</Link>
       </div>
     );
   }
@@ -120,12 +120,12 @@ export function ModulePlayer({ mod }: { mod: Module }) {
             <ScoreRing pct={grade.pct} passed={grade.passed} />
             {grade.passed ? (
               <>
-                <h2 className="mt-5 text-2xl font-semibold">{a.finished ? "¡Completaste Metis Academy!" : "¡Módulo aprobado!"}</h2>
-                <p className="mt-2 text-slate-500 max-w-md">{grade.correct} de {grade.total} correctas. {a.finished ? "Tu acceso completo a METIS ya está desbloqueado." : nextMod ? `Se desbloqueó el módulo ${nextMod.n}: ${nextMod.title}.` : ""}</p>
+                <h2 className="mt-5 text-2xl font-semibold">{a.finished ? "¡Completaste mêtis Academy!" : "¡Módulo aprobado!"}</h2>
+                <p className="mt-2 text-slate-500 max-w-md">{grade.correct} de {grade.total} correctas. {a.finished ? "Tu acceso completo a mêtis ya está desbloqueado." : nextMod ? `Se desbloqueó el módulo ${nextMod.n}: ${nextMod.title}.` : ""}</p>
                 {a.finished && <Confetti />}
                 <div className="mt-7 flex flex-wrap justify-center gap-2">
                   {a.finished
-                    ? <button onClick={() => router.push("/inicio")} className="btn-primary">Entrar a METIS <ArrowRight size={14} /></button>
+                    ? <button onClick={() => router.push("/inicio")} className="btn-primary">Entrar a mêtis <ArrowRight size={14} /></button>
                     : nextMod && <button onClick={() => router.push(`/academy/${nextMod.id}`)} className="btn-primary">Siguiente módulo <ArrowRight size={14} /></button>}
                   <Link href="/academy" className="btn-ghost">Volver a Academy</Link>
                 </div>

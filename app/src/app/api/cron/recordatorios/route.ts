@@ -86,7 +86,7 @@ export async function GET(req: NextRequest) {
 }
 
 /**
- * Metis Academy: cada 2 días, a quien ya entró a una empresa y no ha aprobado todos los módulos.
+ * mêtis Academy: cada 2 días, a quien ya entró a una empresa y no ha aprobado todos los módulos.
  * El avance es por persona, así que se manda un solo correo aunque esté en varias empresas.
  */
 async function academyReminders(sb: NonNullable<ReturnType<typeof supabaseAdmin>>, tenants: { id: string; name: string }[], appUrl: string, now: Date, dry: boolean) {

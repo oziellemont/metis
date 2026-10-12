@@ -1,6 +1,6 @@
 /**
  * Correo diario de compromisos: a cada persona con compromisos que vencen hoy o ya vencidos.
- * Mismo diseño que las demás plantillas de METIS. Lógica pura (se prueba sin servidor).
+ * Mismo diseño que las demás plantillas de mêtis. Lógica pura (se prueba sin servidor).
  */
 const INK = "#171A3A", INDIGO = "#4F3FE0", SLATE = "#475569", MUTED = "#94A3B8", CANVAS = "#F6F7FC", CORAL = "#F2545B";
 const FONT = "Poppins,'Segoe UI',Helvetica,Arial,sans-serif";

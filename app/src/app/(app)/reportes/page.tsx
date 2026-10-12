@@ -38,7 +38,7 @@ export default function Reportes() {
           </tbody>
         </table>
       </div>
-      <p className="mt-3 text-xs text-slate-400">Cumplimiento = promedio ponderado del % de logro contra meta satisfactoria (100% = satisfactorio, tope 120%). METIS no calcula nómina: la regla de pago del bono la define cada empresa. Datos al cierre de {MONTHS[s.month - 1]} {s.year}.</p>
+      <p className="mt-3 text-xs text-slate-400">Cumplimiento = promedio ponderado del % de logro contra meta satisfactoria (100% = satisfactorio, tope 120%). mêtis no calcula nómina: la regla de pago del bono la define cada empresa. Datos al cierre de {MONTHS[s.month - 1]} {s.year}.</p>
     </>
   );
 }

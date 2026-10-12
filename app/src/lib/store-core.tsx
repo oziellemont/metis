@@ -1,6 +1,6 @@
 "use client";
 /**
- * Contrato común del store de METIS. Lo implementan dos proveedores:
+ * Contrato común del store de mêtis. Lo implementan dos proveedores:
  *  - DemoProvider (store.tsx): datos ficticios en memoria + localStorage.
  *  - SupabaseProvider (store-supabase.tsx): datos reales de la empresa activa,
  *    aislados por RLS en Supabase. Lo que guarda un usuario lo ven sus compañeros.

@@ -38,12 +38,12 @@ function Login() {
             {["Sin contraseñas: te llega un enlace a tu correo", "Un mismo correo puede pertenecer a varias empresas", "Tus datos sólo los ve tu empresa"].map((t) => <li key={t} className="flex items-center gap-2"><CheckCircle2 size={16} className="text-mint" /> {t}</li>)}
           </ul>
         </div>
-        <p className="text-xs text-white/50">© 2026 METIS · Monterrey, N.L.</p>
+        <p className="text-xs text-white/50">© 2026 mêtis · Monterrey, N.L.</p>
       </section>
       <section className="flex items-center justify-center p-6">
         <div className="w-full max-w-sm">
           <Link href="/" className="lg:hidden inline-flex mb-8"><Logo height={30} priority /></Link>
-          <h1 className="text-2xl font-semibold">Entrar a METIS</h1>
+          <h1 className="text-2xl font-semibold">Entrar a mêtis</h1>
           <p className="text-sm text-slate-500 mt-1">{inv ? "Tienes una invitación. Inicia sesión con el correo al que llegó." : "Usa tu correo de trabajo."}</p>
 
           {state === "sent" ? (
@@ -63,7 +63,7 @@ function Login() {
               {!hasSupabase && <p className="text-[11px] text-slate-400 text-center">Modo demo: no se envía correo, entras directo.</p>}
             </form>
           )}
-          <p className="mt-8 text-xs text-slate-400">¿Tu empresa aún no usa METIS? <Link href="/#precios" className="text-indigo hover:underline">Conoce los planes</Link> o <Link href="/indice" className="text-indigo hover:underline">mide tu alineación gratis</Link>.</p>
+          <p className="mt-8 text-xs text-slate-400">¿Tu empresa aún no usa mêtis? <Link href="/#precios" className="text-indigo hover:underline">Conoce los planes</Link> o <Link href="/indice" className="text-indigo hover:underline">mide tu alineación gratis</Link>.</p>
         </div>
       </section>
     </main>

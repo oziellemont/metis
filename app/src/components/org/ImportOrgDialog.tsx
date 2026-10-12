@@ -98,7 +98,7 @@ export function ImportOrgDialog({ onClose }: { onClose: () => void }) {
               <div className="rounded-xl bg-indigo-soft/60 p-4 text-sm flex flex-col sm:flex-row sm:items-center gap-3">
                 <div className="flex-1">
                   <div className="font-medium text-ink">1 · Descarga la plantilla y llénala</div>
-                  <p className="text-xs text-slate-600 mt-0.5">Una fila por persona: nombre, correo, número de empleado, puesto, área, correo de su jefe directo y rol. Si dejas el rol vacío, METIS pone <b>Jefe</b> a quien tenga gente a cargo y <b>Colaborador</b> al resto.</p>
+                  <p className="text-xs text-slate-600 mt-0.5">Una fila por persona: nombre, correo, número de empleado, puesto, área, correo de su jefe directo y rol. Si dejas el rol vacío, mêtis pone <b>Jefe</b> a quien tenga gente a cargo y <b>Colaborador</b> al resto.</p>
                 </div>
                 <a href={TEMPLATE} download className="btn-ghost shrink-0 justify-center"><Download size={14} /> Plantilla Excel</a>
               </div>
@@ -123,7 +123,7 @@ export function ImportOrgDialog({ onClose }: { onClose: () => void }) {
             <>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 <Stat n={counts.fresh} label="Nuevos (se invitan)" tone="text-indigo" />
-                <Stat n={counts.existing} label="Ya en METIS (se actualizan)" tone="text-ink" />
+                <Stat n={counts.existing} label="Ya en mêtis (se actualizan)" tone="text-ink" />
                 <Stat n={counts.managers} label={`Jefes · ${counts.areas} área${counts.areas === 1 ? "" : "s"}`} tone="text-ink" />
                 <Stat n={counts.bad} label="Con error (no se importan)" tone={counts.bad ? "text-coral" : "text-sob"} />
               </div>
@@ -179,7 +179,7 @@ export function ImportOrgDialog({ onClose }: { onClose: () => void }) {
                   <div className="font-medium text-sob flex items-center gap-2"><CheckCircle2 size={16} /> Organigrama importado</div>
                   <p className="text-slate-700 mt-1">
                     {result.invited} invitación{result.invited === 1 ? "" : "es"} nueva{result.invited === 1 ? "" : "s"}{result.updated ? ` · ${result.updated} persona${result.updated === 1 ? "" : "s"} actualizada${result.updated === 1 ? "" : "s"}` : ""}.
-                    {" "}Cada quien queda bajo su jefe en cuanto entra a METIS, aunque el jefe todavía no se haya registrado.
+                    {" "}Cada quien queda bajo su jefe en cuanto entra a mêtis, aunque el jefe todavía no se haya registrado.
                   </p>
                 </div>
               )}

@@ -1,7 +1,7 @@
 import type { Direction, Result, ScorecardItem, Targets, Traffic } from "./types";
 
 /**
- * Semáforo METIS.
+ * Semáforo mêtis.
  * Incremental (up):   real ≥ sob → outstanding · ≥ sat → satisfactory · ≥ min → minimum · else below
  * Decremental (down): la misma lógica invertida (real ≤ meta).
  */

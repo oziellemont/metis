@@ -140,7 +140,7 @@ export default function SesionesPage() {
             <div className="card p-5 text-sm text-slate-600">
               <div className="mb-3 font-semibold text-ink">Cómo funciona</div>
               <ol className="space-y-2.5">
-                <li className="flex gap-2"><Step n={1} /> METIS arma la presentación: marcador, compromisos de la sesión anterior y apoyos abiertos.</li>
+                <li className="flex gap-2"><Step n={1} /> mêtis arma la presentación: marcador, compromisos de la sesión anterior y apoyos abiertos.</li>
                 <li className="flex gap-2"><Step n={2} /> En la junta capturas compromisos y apoyos: qué, quién y para cuándo.</li>
                 <li className="flex gap-2"><Step n={3} /> Al terminar revisas el borrador y lo apruebas: cada quien lo recibe como tarea.</li>
                 <li className="flex gap-2"><Step n={4} /> En la siguiente WTW aparece si se cumplió o no.</li>

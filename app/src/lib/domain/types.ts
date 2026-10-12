@@ -1,5 +1,5 @@
 /**
- * Tipos del dominio METIS.
+ * Tipos del dominio mêtis.
  * Los valores internos están en inglés (estables para la base de datos);
  * las etiquetas visibles al usuario viven en `lib/labels.ts`.
  */
@@ -112,7 +112,7 @@ export interface User {
   /** Número de empleado (nómina) y área, del organigrama. */
   employeeNumber?: string;
   area?: string;
-  /** Su jefe viene en el organigrama pero aún no entra a METIS. */
+  /** Su jefe viene en el organigrama pero aún no entra a mêtis. */
   pendingManagerEmail?: string;
 }
 
@@ -149,7 +149,7 @@ export interface Unit {
   name: string;        // nombre largo
   decimals: number;    // decimales por defecto al mostrar
   position: "prefix" | "suffix"; // $1,200  vs  95.0 %
-  system?: boolean;    // unidades base que trae METIS (se pueden editar, no borrar si están en uso)
+  system?: boolean;    // unidades base que trae mêtis (se pueden editar, no borrar si están en uso)
 }
 
 export interface ReminderSettings {

@@ -93,7 +93,7 @@ export default function Usuarios() {
                         {s.users.filter((x) => x.id !== u.id).map((x) => <option key={x.id} value={x.id}>{x.name}</option>)}
                       </select>
                     ) : (m?.name ?? <span className="text-slate-400">—</span>)}
-                    {!u.managerId && u.pendingManagerEmail && <div className="mt-1 text-[11px] text-amber" title="Viene del organigrama: se liga solo cuando su jefe entre a METIS">Esperando a {u.pendingManagerEmail}</div>}
+                    {!u.managerId && u.pendingManagerEmail && <div className="mt-1 text-[11px] text-amber" title="Viene del organigrama: se liga solo cuando su jefe entre a mêtis">Esperando a {u.pendingManagerEmail}</div>}
                   </td>
                   <td className="td">
                     {isAdmin && u.id !== s.currentUserId && u.dbRole !== "owner" ? (
