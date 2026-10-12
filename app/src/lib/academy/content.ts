@@ -18,7 +18,7 @@ export type Block =
   | { kind: "check"; eyebrow: string; title: string; question: string; options: { text: string; correct?: boolean; why: string }[] }
   | { kind: "screen"; eyebrow: string; nav: TourScreen; title: string; body: string[] };
 
-export type TourScreen = "inicio" | "scorecard" | "carga" | "mapa" | "equipo" | "buscar" | "ayuda";
+export type TourScreen = "inicio" | "scorecard" | "carga" | "mapa" | "equipo" | "rv" | "buscar" | "ayuda";
 
 export interface Question {
   q: string;
@@ -530,16 +530,17 @@ export const MODULES: Module[] = [
     title: "Tour por METIS",
     subtitle: "Un recorrido por la plataforma: para qué sirve cada sección y cómo encaja en tu mes.",
     minutes: 5,
-    topics: ["Inicio", "Scorecard", "Carga mensual", "Mapa", "Tu equipo", "Botón de ayuda"],
+    topics: ["Inicio", "Scorecard", "Carga mensual", "Mapa", "Tu equipo", "Revisiones Verticales", "Botón de ayuda"],
     icon: "map",
     blocks: [
-      { kind: "screen", eyebrow: "1 de 7", nav: "inicio", title: "Inicio: tu mes en un vistazo", body: ["Tu cumplimiento ponderado, lo que te falta cargar y los scorecards de tu equipo por aprobar.", "Es tu punto de partida cada vez que entras."] },
-      { kind: "screen", eyebrow: "2 de 7", nav: "scorecard", title: "Mi Scorecard: cómo te mides este año", body: ["Tus KPIs y proyectos, cada uno con su peso y su semáforo.", "Lo armas en borrador, lo envías a tu jefe y, cuando lo aprueba, queda como tu compromiso del año. Toca cada estado."] },
-      { kind: "screen", eyebrow: "3 de 7", nav: "carga", title: "Carga mensual: un dato, una vez", body: ["Si eres Owner de un indicador, aquí capturas su resultado cada mes.", "Pruébalo: escribe un valor y mira cómo se actualizan los Contributors al instante."] },
-      { kind: "screen", eyebrow: "4 de 7", nav: "mapa", title: "Mapa de alineación: la cascada completa", body: ["Muestra cómo cada objetivo baja a LAEs, indicadores y personas.", "Es la respuesta visual a «¿mi trabajo a qué contribuye?». Toca un objetivo."] },
-      { kind: "screen", eyebrow: "5 de 7", nav: "equipo", title: "Mi equipo y Reportes", body: ["Si tienes gente a cargo, aquí ves el avance de cada quien y apruebas sus scorecards.", "Reportes te da la foto de toda la organización para la WTM."] },
-      { kind: "screen", eyebrow: "6 de 7", nav: "buscar", title: "Buscador y recordatorios", body: ["Presiona ⌘K (o Ctrl+K) para encontrar cualquier indicador, proyecto o persona.", "Y no tienes que acordarte del cierre: METIS te avisa por correo antes de que venza."] },
-      { kind: "screen", eyebrow: "7 de 7", nav: "ayuda", title: "Tu instructor: el botón «?»", body: ["En la esquina inferior derecha de cada pantalla verás un pequeño botón con un signo de interrogación.", "Ábrelo cuando tengas una duda: te explica la página en la que estás, qué hacer ahí y responde las preguntas más comunes. Pruébalo."] },
+      { kind: "screen", eyebrow: "1 de 8", nav: "inicio", title: "Inicio: tu mes en un vistazo", body: ["Tu cumplimiento ponderado, lo que te falta cargar y los scorecards de tu equipo por aprobar.", "Es tu punto de partida cada vez que entras."] },
+      { kind: "screen", eyebrow: "2 de 8", nav: "scorecard", title: "Mi Scorecard: cómo te mides este año", body: ["Tus KPIs y proyectos, cada uno con su peso y su semáforo.", "Lo armas en borrador, lo envías a tu jefe y, cuando lo aprueba, queda como tu compromiso del año. Toca cada estado."] },
+      { kind: "screen", eyebrow: "3 de 8", nav: "carga", title: "Carga mensual: un dato, una vez", body: ["Si eres Owner de un indicador, aquí capturas su resultado cada mes.", "Pruébalo: escribe un valor y mira cómo se actualizan los Contributors al instante."] },
+      { kind: "screen", eyebrow: "4 de 8", nav: "mapa", title: "Mapa de alineación: la cascada completa", body: ["Muestra cómo cada objetivo baja a LAEs, indicadores y personas.", "Es la respuesta visual a «¿mi trabajo a qué contribuye?». Toca un objetivo."] },
+      { kind: "screen", eyebrow: "5 de 8", nav: "equipo", title: "Mi equipo y Reportes", body: ["Si tienes gente a cargo, aquí ves el avance de cada quien y apruebas sus scorecards.", "Reportes te da la foto de toda la organización para la WTM."] },
+      { kind: "screen", eyebrow: "6 de 8", nav: "rv", title: "Sesiones: tu 1 a 1 se agenda solo", body: ["Cada 6 u 8 semanas, mêtis agenda tu Revisión Vertical: 30 minutos de tu jefe contigo para hablar de tu scorecard y tu desarrollo.", "Te llega la invitación para tu calendario (Outlook o Google) y un aviso 3 días antes, 1 día antes y el mismo día. Si eres jefe, recibes la guía de 5 pasos. Pruébalo: agrega la sesión a tu calendario."] },
+      { kind: "screen", eyebrow: "7 de 8", nav: "buscar", title: "Buscador y recordatorios", body: ["Presiona ⌘K (o Ctrl+K) para encontrar cualquier indicador, proyecto o persona.", "Y no tienes que acordarte del cierre: METIS te avisa por correo antes de que venza."] },
+      { kind: "screen", eyebrow: "8 de 8", nav: "ayuda", title: "Tu instructor: el botón «?»", body: ["En la esquina inferior derecha de cada pantalla verás un pequeño botón con un signo de interrogación.", "Ábrelo cuando tengas una duda: te explica la página en la que estás, qué hacer ahí y responde las preguntas más comunes. Pruébalo."] },
     ],
     quiz: [
       {
