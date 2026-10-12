@@ -2,7 +2,7 @@
 /** Pantallas simuladas e interactivas de METIS para el tour (no tocan datos reales). */
 import { useEffect, useState } from "react";
 import clsx from "clsx";
-import { Search, Check, ChevronRight, Users, Target, Gauge, ClipboardList, Upload, GitBranch, Bell, HelpCircle, X } from "lucide-react";
+import { Search, Check, ChevronRight, Users, Target, Gauge, ClipboardList, Upload, GitBranch, Bell, HelpCircle, X, CalendarClock, CalendarCheck, Mail } from "lucide-react";
 import type { TourScreen } from "@/lib/academy/content";
 
 const Frame = ({ title, icon: Icon, children }: { title: string; icon: React.ElementType; children: React.ReactNode }) => (
@@ -137,6 +137,43 @@ function Equipo() {
   );
 }
 
+const RV_STEPS = [
+  { k: "En 3 días", d: "Revisa tu scorecard y trae 1–2 temas que quieras hablar." },
+  { k: "Mañana", d: "Llega con tus compromisos del 1 a 1 anterior revisados." },
+  { k: "Hoy · 10:30", d: "30 minutos con tu jefe. Al final, cada quien sale con sus compromisos." },
+];
+function Rv() {
+  const [added, setAdded] = useState(false);
+  const [i, setI] = useState(0);
+  return (
+    <Frame title="Sesiones · Revisión Vertical" icon={CalendarClock}>
+      <div className="rounded-xl bg-white border border-slate-100 p-3">
+        <div className="flex items-center gap-2 text-[10px] text-slate-400"><Mail size={11} className="text-indigo" /> mêtis · Invitación</div>
+        <div className="mt-1 text-[12px] font-semibold text-ink">Revisión Vertical con Luis · 1 a 1</div>
+        <div className="mt-0.5 text-[11px] text-slate-500">martes 13 de octubre · 10:30 · 30 min</div>
+        <div className="mt-2.5">
+          {added
+            ? <span className="chip bg-mint-soft text-sob !text-[10px] academy-in"><CalendarCheck size={11} className="mr-1" /> En tu calendario</span>
+            : <button onClick={() => setAdded(true)} className="chip bg-indigo text-white !text-[10px] hover:bg-indigo-light"><CalendarClock size={11} className="mr-1" /> Agregar a mi calendario</button>}
+        </div>
+      </div>
+      {added ? (
+        <div className="academy-in">
+          <div className="mt-3 text-[10px] font-semibold uppercase tracking-wider text-slate-400">Luego mêtis te avisa</div>
+          <div className="mt-1.5 flex flex-wrap gap-1.5">
+            {RV_STEPS.map((st, j) => (
+              <button key={st.k} onClick={() => setI(j)} className={clsx("chip transition-all !text-[10px]", j === i ? "bg-indigo-soft text-indigo ring-2 ring-indigo/30" : "bg-white border border-slate-200 text-slate-500 hover:border-indigo/40")}><Bell size={10} className="mr-1" />{st.k}</button>
+            ))}
+          </div>
+          <p className="mt-2 rounded-lg bg-white border border-slate-100 px-2.5 py-2 text-[11px] text-slate-600 min-h-[40px]">{RV_STEPS[i].d}</p>
+        </div>
+      ) : (
+        <p className="mt-3 text-[11px] text-slate-500">Pruébalo: agrega la sesión a tu calendario.</p>
+      )}
+    </Frame>
+  );
+}
+
 function Buscar() {
   const full = "otif";
   const [q, setQ] = useState("");
@@ -204,6 +241,6 @@ function Ayuda() {
 }
 
 export function TourMock({ screen }: { screen: TourScreen }) {
-  const C = { inicio: Inicio, scorecard: Scorecard, carga: Carga, mapa: Mapa, equipo: Equipo, buscar: Buscar, ayuda: Ayuda }[screen];
+  const C = { inicio: Inicio, scorecard: Scorecard, carga: Carga, mapa: Mapa, equipo: Equipo, rv: Rv, buscar: Buscar, ayuda: Ayuda }[screen];
   return <C />;
 }
