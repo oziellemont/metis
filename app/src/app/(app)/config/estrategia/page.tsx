@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import clsx from "clsx";
-import { Plus, Pencil, Check, X, Mountain, Flag, Gauge, FolderKanban, CalendarClock, UserCheck, AlertTriangle, Lightbulb, ArrowRight } from "lucide-react";
+import { Plus, Pencil, Trash2, Check, X, Mountain, Flag, Gauge, FolderKanban, CalendarClock, UserCheck, AlertTriangle, Lightbulb, ArrowRight } from "lucide-react";
 import { useMetis, newId } from "@/lib/store";
 import { PageHeader } from "@/components/ui/primitives";
 import type { LAE, StrategicObjective } from "@/lib/domain/types";
@@ -23,6 +23,7 @@ export default function Estrategia() {
   const [lae, setLae] = useState<LAE | null>(null);
   const [unify, setUnify] = useState(false);
   const [ideas, setIdeas] = useState(false);
+  const [del, setDel] = useState<LAE | null>(null);
 
   const current = s.objectives[0];
   const extra = s.objectives.length > 1;
@@ -137,7 +138,8 @@ export default function Estrategia() {
                           <div className="font-semibold">{l.name}</div>
                           {l.description && <p className="mt-0.5 text-xs text-slate-500">{l.description}</p>}
                         </div>
-                        {isAdmin && <button className="p-1 text-slate-400 hover:text-indigo" onClick={() => setLae(l)} aria-label="Editar LAE"><Pencil size={14} /></button>}
+                        {isAdmin && <button className="p-1 text-slate-400 hover:text-indigo" onClick={() => setLae(l)} aria-label="Editar LAE" title="Editar"><Pencil size={14} /></button>}
+                        {isAdmin && <button className="p-1 text-slate-400 hover:text-coral" onClick={() => setDel(l)} aria-label="Eliminar LAE" title="Eliminar"><Trash2 size={14} /></button>}
                       </div>
 
                       <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -202,16 +204,22 @@ export default function Estrategia() {
             </>
           )}
           <label className="label mt-3">Color</label>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             {COLORS.map((c) => (
               <button key={c} type="button" onClick={() => setLae({ ...lae, color: c })} className="grid h-7 w-7 place-items-center rounded-full" style={{ background: c }} aria-label={c}>
                 {lae.color === c && <Check size={14} className="text-white" />}
               </button>
             ))}
           </div>
+          {s.laes.some((x) => x.id === lae.id) && (
+            <button type="button" className="mt-4 inline-flex items-center gap-1 text-xs font-medium text-coral hover:underline" onClick={() => { setDel(lae); setLae(null); }}>
+              <Trash2 size={12} /> Eliminar esta línea de acción
+            </button>
+          )}
         </Modal>
       )}
       {unify && <UnifyDialog onClose={() => setUnify(false)} />}
+      {del && <DeleteLaeDialog lae={del} onClose={() => setDel(null)} />}
       {ideas && <IdeasDialog canAdd={isAdmin && !!current} existing={s.laes.map((l) => l.name.toLowerCase())}
         onPick={(idea) => { setIdeas(false); newLae(idea); }} onClose={() => setIdeas(false)} />}
     </>
@@ -328,5 +336,42 @@ function IdeasDialog({ canAdd, existing, onPick, onClose }: { canAdd: boolean; e
         <p className="mt-4 rounded-xl bg-slate-50 px-3 py-2 text-xs text-slate-500"><b>Regla de oro:</b> elige entre {LAE_MIN} y {LAE_MAX} pilares. Si tienes 7 u 8, no tienes estrategia, tienes una lista de deseos.</p>
       </div>
     </div>
+  );
+}
+
+/** Borrar una LAE. Si tiene KPIs o proyectos, primero se elige a qué línea pasarlos: nunca se pierden. */
+function DeleteLaeDialog({ lae, onClose }: { lae: LAE; onClose: () => void }) {
+  const s = useMetis();
+  const els = s.elements.filter((e) => e.laeId === lae.id);
+  const others = s.laes.filter((l) => l.id !== lae.id);
+  const [to, setTo] = useState(others[0]?.id ?? "");
+  const [err, setErr] = useState("");
+  const blocked = els.length > 0 && others.length === 0;
+  const save = () => {
+    const r = s.removeLae(lae.id, els.length ? to : undefined);
+    if (!r.ok) { setErr(r.reason ?? "No se pudo eliminar."); return; }
+    onClose();
+  };
+  return (
+    <Modal title="Eliminar línea de acción" onClose={onClose} canSave={!blocked && (els.length === 0 || !!to)} onSave={save} saveLabel="Eliminar">
+      <p className="text-sm text-slate-600">¿Seguro que quieres eliminar <b>{lae.name}</b>?</p>
+      {els.length === 0 ? (
+        <p className="mt-2 text-xs text-slate-500">No tiene KPIs ni proyectos, así que no se pierde nada.</p>
+      ) : blocked ? (
+        <p className="mt-3 rounded-xl bg-amber-soft px-3 py-2 text-xs text-amber">Tiene {els.length} KPI(s) o proyecto(s) y es la única línea de acción. Crea otra línea primero para pasarle sus KPIs y proyectos.</p>
+      ) : (
+        <>
+          <p className="mt-2 text-xs text-slate-500">Tiene {els.length} KPI(s) o proyecto(s). No se borran: pasan a la línea que elijas, con sus responsables y resultados.</p>
+          <ul className="mt-2 max-h-28 overflow-y-auto rounded-xl bg-slate-50 px-3 py-2 text-xs text-slate-600">
+            {els.map((e) => <li key={e.id} className="truncate">· {e.name}</li>)}
+          </ul>
+          <label className="label mt-3">Pasarlos a</label>
+          <select className="input" value={to} onChange={(e) => setTo(e.target.value)}>
+            {others.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
+          </select>
+        </>
+      )}
+      {err && <p className="mt-2 text-xs text-coral">{err}</p>}
+    </Modal>
   );
 }

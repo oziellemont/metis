@@ -225,6 +225,24 @@ export function SupabaseMetisProvider({ children }: { children: ReactNode }) {
     setData((d) => ({ ...d, laes: d.laes.some((x) => x.id === l.id) ? d.laes.map((x) => (x.id === l.id ? l : x)) : [...d.laes, l] }));
     run("No se guardó la LAE", () => db.from("laes").upsert(toDb.lae(T, l)));
   }, [db, T, run]);
+  const removeLae: MetisStore["removeLae"] = useCallback((id, moveElementsTo) => {
+    const has = dataRef.current.elements.some((e) => e.laeId === id);
+    if (has && !moveElementsTo) return { ok: false, reason: "Esta línea tiene KPIs o proyectos: elige a qué línea pasarlos." };
+    setData((d) => ({
+      ...d,
+      laes: d.laes.filter((l) => l.id !== id),
+      elements: moveElementsTo ? d.elements.map((e) => (e.laeId === id ? { ...e, laeId: moveElementsTo } : e)) : d.elements,
+    }));
+    // primero se mueven los elementos (la base no deja borrar una LAE con elementos) y después se borra
+    run("No se borró la línea de acción", async () => {
+      if (moveElementsTo) {
+        const r = await db.from("elements").update({ lae_id: moveElementsTo }).eq("lae_id", id);
+        if (r.error) return r;
+      }
+      return db.from("laes").delete().eq("id", id);
+    });
+    return { ok: true };
+  }, [db, run]);
   const removeObjective: MetisStore["removeObjective"] = useCallback((id, moveLaesTo) => {
     setData((d) => ({
       ...d,
@@ -377,10 +395,10 @@ export function SupabaseMetisProvider({ children }: { children: ReactNode }) {
     mode: "supabase", tenants, switchTenant, isPlatformAdmin, syncError, clearSyncError, saving: pending > 0,
     year, month, currentUserId: me, setMonth, setCurrentUser: noop,
     saveResult, transition, createScorecard, updateItem, addItem, removeItem, upsertElement, upsertElementScope, addScope, addScopeType, removeCatalog, removeScopeType,
-    upsertObjective, removeObjective, upsertLae, upsertUnit, removeUnit, invite, importOrg, revokeInvitation, regenerateJoinCode, updateMember, updateReminders, updateRv, reset,
+    upsertObjective, removeObjective, upsertLae, removeLae, upsertUnit, removeUnit, invite, importOrg, revokeInvitation, regenerateJoinCode, updateMember, updateReminders, updateRv, reset,
     upsertSession, removeSession, upsertCommitment, removeCommitment, approveSession,
   }), [data, year, month, tenants, switchTenant, isPlatformAdmin, syncError, clearSyncError, pending, me, noop, saveResult, transition, createScorecard,
-    updateItem, addItem, removeItem, upsertElement, upsertElementScope, addScope, addScopeType, removeCatalog, removeScopeType, upsertObjective, removeObjective, upsertLae, upsertUnit, removeUnit,
+    updateItem, addItem, removeItem, upsertElement, upsertElementScope, addScope, addScopeType, removeCatalog, removeScopeType, upsertObjective, removeObjective, upsertLae, removeLae, upsertUnit, removeUnit,
     invite, importOrg, revokeInvitation, regenerateJoinCode, updateMember, updateReminders, updateRv, reset,
     upsertSession, removeSession, upsertCommitment, removeCommitment, approveSession]);
 
