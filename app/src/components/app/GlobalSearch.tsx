@@ -104,16 +104,15 @@ export function GlobalSearch({ pages }: { pages: NavPage[] }) {
       });
     }
 
-    // Objetivos y LAE
+    // MEGA y LAE
     for (const o of s.objectives) {
       const sc = matchScore(q, o.name, o.description);
-      if (sc) out.push({ id: "o" + o.id, group: "Estrategia", title: o.name, sub: "Objetivo estratégico" + (o.horizon ? ` · ${o.horizon}` : ""), href: canConfig ? "/config/estrategia" : "/mapa", focus: canConfig ? `obj-${o.id}` : undefined, icon: Target, score: sc });
+      if (sc) out.push({ id: "o" + o.id, group: "Estrategia", title: o.name, sub: "MEGA" + (o.horizon ? ` · meta ${o.horizon}` : ""), href: canConfig ? "/config/estrategia" : "/mapa", focus: canConfig ? `obj-${o.id}` : undefined, icon: Target, score: sc });
     }
     for (const l of s.laes) {
       const sc = matchScore(q, l.name);
       if (!sc) continue;
-      const obj = s.objectives.find((o) => o.id === l.objectiveId);
-      out.push({ id: "l" + l.id, group: "Estrategia", title: l.name, sub: "Línea de acción" + (obj ? ` · ${obj.name}` : ""), href: canConfig ? "/config/estrategia" : "/mapa", focus: canConfig ? `lae-${l.id}` : undefined, icon: Flag, color: l.color ?? undefined, score: sc });
+      out.push({ id: "l" + l.id, group: "Estrategia", title: l.name, sub: "Línea de Acción Estratégica", href: canConfig ? "/config/estrategia" : "/mapa", focus: canConfig ? `lae-${l.id}` : undefined, icon: Flag, color: l.color ?? undefined, score: sc });
     }
 
     // los grupos con la mejor coincidencia van primero (p. ej. "ana" → la persona antes que sus KPIs)

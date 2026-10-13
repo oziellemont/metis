@@ -42,7 +42,7 @@ export default function Landing() {
           <h2 className="mt-2 text-3xl font-semibold max-w-2xl">De la visión del consejo al KPI de cada persona.</h2>
           <div className="mt-10 grid lg:grid-cols-4 gap-5">
             {[
-              [GitBranch, "Cascada conectada", "Objetivos → LAEs → KPIs y proyectos por alcance → responsables. Si cambias un objetivo, sabes exactamente qué se ve afectado."],
+              [GitBranch, "Cascada conectada", "MEGA → Líneas de Acción → KPIs y proyectos por alcance → responsables. Si cambias una línea de acción, sabes exactamente qué se ve afectado."],
               [Link2, "Un dato, una captura", "El Owner (dueño del resultado) carga el dato una vez; los Contributors se actualizan solos. Adiós a capturas duplicadas."],
               [CalendarClock, "Ritmo de gestión automatizado", "Sesiones WTW / WTM con deck automático, comentarios previos, transcripción y compromisos con IA."],
               [Scale, "Compensación conectada a la estrategia", "Cumplimiento ponderado por persona, con metas mínima, satisfactoria y sobresaliente aprobadas por su jefe. La base objetiva para tu bono variable."],
@@ -63,7 +63,7 @@ export default function Landing() {
             <ul className="mt-8 space-y-5">
               {[
                 ["Diagnóstico de Alineación", "Dónde está hoy tu empresa y qué la frena."],
-                ["Arquitectura Estratégica", "Objetivos, líneas de acción y KPIs que sí se conectan."],
+                ["Arquitectura Estratégica", "La MEGA, sus líneas de acción, KPIs y proyectos, conectados."],
                 ["Growth Sprints de 90 días", "Ciclos cortos para mover los indicadores que importan."],
                 ["Estratega Fraccional", "Un director de estrategia en tu mesa, sin el costo de tiempo completo."],
                 ["Academia mêtis", "Talleres prácticos para que tu equipo domine el método."],
@@ -84,7 +84,7 @@ export default function Landing() {
             <ol className="mt-7">
               {[
                 ["1–3", "Diagnóstico", "Entrevistas, KPIs actuales e Índice de Alineación."],
-                ["3–6", "Diseño estratégico", "Objetivos, LAEs y catálogo de elementos."],
+                ["3–6", "Diseño estratégico", "MEGA, líneas de acción, KPIs y proyectos."],
                 ["6–8", "Cascadeo y metas", "Alcances, Owners, Contributors y metas."],
                 ["8–10", "Configuración y capacitación", "Plataforma lista, carga inicial y Academia."],
                 ["10–12", "Primer cierre y ritmo", "Primer cierre mensual y sesiones WTW / WTM."],

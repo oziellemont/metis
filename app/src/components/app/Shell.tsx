@@ -28,7 +28,7 @@ const MI_ESPACIO = [
   { href: "/reportes", label: "Reportes", icon: BarChart3 },
 ];
 const CONFIG = [
-  { href: "/config/estrategia", label: "Estrategia (objetivos y LAE)", icon: Target },
+  { href: "/config/estrategia", label: "Estrategia (MEGA y LAE)", icon: Target },
   { href: "/config/catalogo", label: "Catálogo de elementos", icon: BookOpen },
   { href: "/config/alcances", label: "Alcances", icon: MapPin },
   { href: "/config/unidades", label: "Unidades de medida", icon: Ruler },

@@ -70,7 +70,7 @@ export const toDb = {
   scope: (T: string, sc: Scope) => ({ id: sc.id, tenant_id: T, scope_type_id: sc.typeId, parent_id: sc.parentId ?? null, name: sc.name }),
   scopeType: (T: string, t: ScopeType, level: number) => ({ id: t.id, tenant_id: T, name: t.name, level }),
   objective: (T: string, o: StrategicObjective) => { const h = o.horizon ? parseInt(o.horizon, 10) : NaN; return { id: o.id, tenant_id: T, name: o.name, description: o.description ?? null, horizon: Number.isFinite(h) ? h : null }; },
-  lae: (T: string, l: LAE) => ({ id: l.id, tenant_id: T, objective_id: l.objectiveId, name: l.name, color: l.color ?? null }),
+  lae: (T: string, l: LAE) => ({ id: l.id, tenant_id: T, objective_id: l.objectiveId, name: l.name, description: l.description ?? null, color: l.color ?? null }),
   unit: (T: string, u: Unit) => ({ id: u.id, tenant_id: T, symbol: u.symbol, name: u.name, decimals: u.decimals, position: u.position, is_system: !!u.system }),
   session: (T: string, x: Session) => ({
     id: x.id, tenant_id: T, kind: x.kind, leader_id: x.leaderId, scheduled_at: x.scheduledAt, status: x.status, location: x.location ?? null,
@@ -154,7 +154,7 @@ export async function loadTenant(sb: SupabaseClient, tenantId: string): Promise<
     users,
     units: (unitsR.data ?? []).map((u: Row): Unit => ({ id: u.id, symbol: u.symbol, name: u.name, decimals: u.decimals, position: u.position ?? "suffix", system: !!u.is_system })),
     objectives: (objR.data ?? []).map((o: Row): StrategicObjective => ({ id: o.id, name: o.name, description: o.description ?? undefined, horizon: o.horizon ? String(o.horizon) : undefined })),
-    laes: (laeR.data ?? []).map((l: Row): LAE => ({ id: l.id, objectiveId: l.objective_id, name: l.name, color: l.color ?? undefined })),
+    laes: (laeR.data ?? []).map((l: Row): LAE => ({ id: l.id, objectiveId: l.objective_id, name: l.name, description: l.description ?? undefined, color: l.color ?? undefined })),
     scopeTypes: (stR.data ?? []).map((s: Row): ScopeType => ({ id: s.id, name: s.name })),
     scopes: (scR.data ?? []).map((s: Row): Scope => ({ id: s.id, typeId: s.scope_type_id, name: s.name, parentId: s.parent_id ?? null })),
     elements: (elR.data ?? []).filter((e: Row) => e.active !== false).map((e: Row): Element => ({

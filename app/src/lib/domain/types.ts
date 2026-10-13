@@ -12,18 +12,23 @@ export type Responsibility = "owner" | "contributor";
 export type ScorecardStatus = "draft" | "submitted" | "approved" | "changes_requested" | "rejected";
 export type Traffic = "outstanding" | "satisfactory" | "minimum" | "pending";
 
+/**
+ * MEGA · Meta Estratégica Grande y Ambiciosa: el faro de la empresa a 5–10 años.
+ * Cada empresa tiene UNA MEGA (se guarda en la tabla `objectives`; el primer registro es la MEGA).
+ */
 export interface StrategicObjective {
   id: string;
   name: string;
   description?: string;
-  horizon?: string; // ej. "2028"
+  horizon?: string; // año meta, ej. "2032"
 }
 
-/** LAE · Línea de Acción Estratégica */
+/** LAE · Línea de Acción Estratégica: uno de los 3–4 pilares para lograr la MEGA. De cada LAE cuelgan sus KPIs y proyectos. */
 export interface LAE {
   id: string;
-  objectiveId: string;
+  objectiveId: string; // la MEGA
   name: string;
+  description?: string;
   color?: string;
 }
 

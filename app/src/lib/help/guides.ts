@@ -89,10 +89,10 @@ export const GUIDES: Record<string, Guide> = {
   },
   "/mapa": {
     title: "Mapa de alineación",
-    purpose: "La cascada completa: cómo cada objetivo baja a LAEs, indicadores y personas.",
-    steps: ["Elige la vista por alcance (empresa, región, planta…).", "Abre un objetivo para ver sus LAEs e indicadores.", "Usa el conteo por semáforo para ubicar qué va en Mínimo."],
+    purpose: "La cascada completa: cómo la MEGA baja a sus Líneas de Acción, a los KPIs y proyectos y a cada persona.",
+    steps: ["Elige la vista por alcance (empresa, región, planta…).", "Arriba está la MEGA; debajo, cada línea de acción con sus KPIs y proyectos.", "Usa el conteo por semáforo para ubicar qué va en Mínimo."],
     faqs: [
-      { q: "¿Qué es una LAE?", a: "Línea de Acción Estratégica: el «cómo» de un objetivo. Cada LAE se mide con uno o varios indicadores." },
+      { q: "¿Qué es una LAE?", a: "Línea de Acción Estratégica: uno de los 3 o 4 pilares para lograr la MEGA (por ejemplo, Expansión de mercado). Cada LAE se mide con KPIs y se ejecuta con proyectos." },
       { q: "¿Para qué me sirve el mapa?", a: "Para responder «¿mi trabajo a qué contribuye?» y para usarlo como marcador en las sesiones de equipo." },
       { q: "¿Qué significa «Vista: alcance»?", a: "Filtra el mapa por un nivel de la organización (por ejemplo una región) para ver solo su cascada." },
     ],
@@ -145,11 +145,11 @@ export const GUIDES: Record<string, Guide> = {
   },
   "/config/estrategia": {
     title: "Estrategia",
-    purpose: "Los objetivos estratégicos y sus Líneas de Acción Estratégica (LAE): la parte alta de la cascada.",
-    steps: ["Da de alta los objetivos de la empresa.", "Agrega a cada objetivo sus LAEs.", "Después conecta indicadores a cada LAE desde el catálogo."],
+    purpose: "La MEGA de la empresa y sus Líneas de Acción Estratégica (LAE), con los KPIs y proyectos de cada una: la parte alta de la cascada.",
+    steps: ["Define la MEGA: la meta grande y ambiciosa a 5–10 años.", "Agrega las 3 o 4 Líneas de Acción (pilares) que la hacen posible.", "En cada línea, agrega sus KPIs (cómo medimos) y sus proyectos (qué ejecutamos)."],
     faqs: [
-      { q: "¿Cuántos objetivos conviene tener?", a: "Pocos: de 3 a 6. Si todo es prioridad, nada lo es." },
-      { q: "¿Qué es una buena LAE?", a: "Una ruta concreta para lograr el objetivo, por ejemplo «Expandir canal moderno» para «Crecer rentablemente»." },
+      { q: "¿Qué es la MEGA?", a: "La Meta Estratégica Grande y Ambiciosa: el objetivo supremo de la empresa a 5–10 años. Audaz, clara, medible y con fecha. Hay una sola y se evalúa cada año." }, { q: "¿Cuántas líneas de acción y proyectos?", a: "De 3 a 4 líneas de acción, y 1 o 2 proyectos de alto impacto por línea cada año. Si todo es prioridad, nada lo es." },
+      { q: "¿Qué es una buena LAE?", a: "Un pilar concreto para lograr la MEGA, por ejemplo «Expansión de mercado», «Excelencia operativa», «Retención del cliente» o «Talento y cultura»." },
     ],
   },
   "/config/catalogo": {

@@ -42,18 +42,17 @@ export const users: User[] = [
   { id: "u-rv", name: "Raúl Villarreal", email: "raul.villarreal@grupoandes.demo", title: "Líder de Proyectos TI", initials: "RV", managerId: "u-js", role: "collaborator", teamName: "TI" },
 ];
 
+/** La MEGA de Grupo Andes: una sola meta grande y ambiciosa, de la que cuelgan sus LAE (pilares). */
 export const objectives: StrategicObjective[] = [
-  { id: "o-1", name: "Crecer EBITDA 40% a 2028", horizon: "2028", description: "Pasar de $180M a $252M de EBITDA con crecimiento rentable y excelencia operativa." },
-  { id: "o-2", name: "Ser el proveedor preferido en el norte del país", horizon: "2028", description: "Cuota de mercado #1 en Región Norte con el mejor nivel de servicio." },
-  { id: "o-3", name: "Equipo que crece con la empresa", horizon: "2028", description: "Rotación operativa menor a 3% y sucesión lista para cada puesto clave." },
+  { id: "o-1", name: "Ser el distribuidor #1 del norte de México y llegar a $300M de EBITDA en 2032", horizon: "2032", description: "Pasar de $180M a $300M de EBITDA, con la mejor experiencia de servicio de la región y un equipo que crece con la empresa." },
 ];
 
+/** Las 4 Líneas de Acción Estratégica (pilares) para lograr la MEGA. */
 export const laes: LAE[] = [
-  { id: "l-1", objectiveId: "o-1", name: "Excelencia operativa", color: "#4F3FE0" },
-  { id: "l-2", objectiveId: "o-1", name: "Crecimiento rentable", color: "#14C98E" },
-  { id: "l-3", objectiveId: "o-2", name: "Transformación digital", color: "#2FA7F5" },
-  { id: "l-4", objectiveId: "o-2", name: "Experiencia de cliente", color: "#F5A524" },
-  { id: "l-5", objectiveId: "o-3", name: "Talento y cultura", color: "#F2545B" },
+  { id: "l-1", objectiveId: "o-1", name: "Crecimiento rentable", description: "Comercial: ganar cuentas nuevas sin sacrificar margen.", color: "#14C98E" },
+  { id: "l-2", objectiveId: "o-1", name: "Excelencia operativa", description: "Operación: entregar perfecto y al menor costo.", color: "#4F3FE0" },
+  { id: "l-3", objectiveId: "o-1", name: "Experiencia del cliente", description: "Servicio: que el cliente nos recomiende y se quede.", color: "#F5A524" },
+  { id: "l-4", objectiveId: "o-1", name: "Talento y cultura", description: "Humano: retener y desarrollar a la gente clave.", color: "#F2545B" },
 ];
 
 export const scopeTypes: ScopeType[] = [
@@ -81,13 +80,13 @@ export const scopes: Scope[] = [
 ];
 
 export const elements: Element[] = [
-  { id: "e-otif", type: "kpi", name: "Cumplimiento de entregas OTIF", formula: "Pedidos a tiempo y completos / Pedidos totales", unit: "%", unitId: "un-pct", direction: "up", laeId: "l-1", allowedScopeTypeIds: ["st-nac", "st-reg", "st-cedis"] },
+  { id: "e-otif", type: "kpi", name: "Cumplimiento de entregas OTIF", formula: "Pedidos a tiempo y completos / Pedidos totales", unit: "%", unitId: "un-pct", direction: "up", laeId: "l-2", allowedScopeTypeIds: ["st-nac", "st-reg", "st-cedis"] },
   { id: "e-costlog", type: "kpi", name: "Costo logístico / Venta", formula: "Costo de distribución / Venta neta", unit: "%", unitId: "un-pct", direction: "down", laeId: "l-2", allowedScopeTypeIds: ["st-bu", "st-reg"] },
-  { id: "e-newacc", type: "kpi", name: "Venta a nuevas cuentas", formula: "Venta neta de clientes con antigüedad < 12 meses", unit: "$", unitId: "un-mxn", direction: "up", laeId: "l-2", allowedScopeTypeIds: ["st-nac", "st-reg"] },
-  { id: "e-rot", type: "kpi", name: "Rotación de personal operativo", formula: "Bajas del mes / Plantilla promedio", unit: "%", unitId: "un-pct", direction: "down", laeId: "l-5", allowedScopeTypeIds: ["st-plant", "st-reg", "st-nac"] },
-  { id: "e-nps", type: "kpi", name: "NPS de clientes", formula: "% promotores − % detractores", unit: "pts", unitId: "un-pts", direction: "up", laeId: "l-4", allowedScopeTypeIds: ["st-nac", "st-reg"] },
-  { id: "e-ebitda", type: "kpi", name: "Margen EBITDA", formula: "EBITDA / Venta neta", unit: "%", unitId: "un-pct", direction: "up", laeId: "l-2", allowedScopeTypeIds: ["st-nac", "st-bu"] },
-  { id: "e-wms", type: "project", name: "Implementación WMS", formula: "Hitos completados / Hitos plan", unit: "% avance", unitId: "un-adv", direction: "up", laeId: "l-3", allowedScopeTypeIds: ["st-plant", "st-cedis"] },
+  { id: "e-newacc", type: "kpi", name: "Venta a nuevas cuentas", formula: "Venta neta de clientes con antigüedad < 12 meses", unit: "$", unitId: "un-mxn", direction: "up", laeId: "l-1", allowedScopeTypeIds: ["st-nac", "st-reg"] },
+  { id: "e-rot", type: "kpi", name: "Rotación de personal operativo", formula: "Bajas del mes / Plantilla promedio", unit: "%", unitId: "un-pct", direction: "down", laeId: "l-4", allowedScopeTypeIds: ["st-plant", "st-reg", "st-nac"] },
+  { id: "e-nps", type: "kpi", name: "NPS de clientes", formula: "% promotores − % detractores", unit: "pts", unitId: "un-pts", direction: "up", laeId: "l-3", allowedScopeTypeIds: ["st-nac", "st-reg"] },
+  { id: "e-ebitda", type: "kpi", name: "Margen EBITDA", formula: "EBITDA / Venta neta", unit: "%", unitId: "un-pct", direction: "up", laeId: "l-1", allowedScopeTypeIds: ["st-nac", "st-bu"] },
+  { id: "e-wms", type: "project", name: "Implementación WMS", formula: "Hitos completados / Hitos plan", unit: "% avance", unitId: "un-adv", direction: "up", laeId: "l-2", allowedScopeTypeIds: ["st-plant", "st-cedis"] },
   { id: "e-portal", type: "project", name: "Portal de clientes", formula: "Hitos completados / Hitos plan", unit: "% avance", unitId: "un-adv", direction: "up", laeId: "l-3", allowedScopeTypeIds: ["st-nac"] },
 ];
 

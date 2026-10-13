@@ -52,11 +52,11 @@ function useSteps(n: number, every = 450, delay = 250) {
 
 function Cascada() {
   const k = useSteps(7, 380);
-  const laes = [["Expandir canal moderno", ["AG", "LR"]], ["Entregas perfectas", ["DP", "KM", "JS"]], ["Reducir merma", ["RV"]]] as const;
+  const laes = [["Expansión de mercado", ["AG", "LR"]], ["Excelencia operativa", ["DP", "KM", "JS"]], ["Talento y cultura", ["RV"]]] as const;
   return (
     <div>
       <div className={clsx("mx-auto w-fit flex items-center gap-2 rounded-xl bg-indigo text-white px-3 py-2 text-[12px] font-semibold transition-all duration-500", k >= 1 ? "opacity-100" : "opacity-0 -translate-y-1")}>
-        <Target size={13} /> Crecer 15% con rentabilidad
+        <Target size={13} /> MEGA · #1 del norte en 2032
       </div>
       <div className="relative mt-1 h-5">
         <div className={clsx("absolute left-1/2 top-0 w-px bg-indigo/30 transition-all duration-500", k >= 2 ? "h-2.5" : "h-0")} />

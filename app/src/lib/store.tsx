@@ -26,7 +26,7 @@ const initial = (): Persisted => ({
   users: demoData.users, objectives: demoData.objectives, laes: demoData.laes,
   sessions: demoData.sessions, commitments: demoData.commitments,
 });
-const PERSIST_VERSION = 5;
+const PERSIST_VERSION = 6;
 export function makeJoinCode(prefix: string) {
   const A = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let c = ""; for (let i = 0; i < 4; i++) c += A[Math.floor(Math.random() * A.length)];
@@ -50,7 +50,7 @@ function DemoMetisProvider({ children }: { children: ReactNode }) {
       if (raw) {
         const p = JSON.parse(raw);
         // datos guardados por una versión anterior del demo: se completan con los nuevos catálogos
-        if (p.data) setData({ ...initial(), ...p.data, ...(p.version !== PERSIST_VERSION ? { units: demoData.units, invitations: demoData.invitations, tenant: demoData.tenant, users: demoData.users, objectives: demoData.objectives, laes: demoData.laes, sessions: demoData.sessions, commitments: demoData.commitments } : {}) });
+        if (p.data) setData({ ...initial(), ...p.data, ...(p.version !== PERSIST_VERSION ? { units: demoData.units, invitations: demoData.invitations, tenant: demoData.tenant, users: demoData.users, objectives: demoData.objectives, laes: demoData.laes, elements: demoData.elements, sessions: demoData.sessions, commitments: demoData.commitments } : {}) });
         if (p.currentUserId) setCurrentUser(p.currentUserId);
         if (p.month) setMonth(p.month);
       }
@@ -181,6 +181,13 @@ function DemoMetisProvider({ children }: { children: ReactNode }) {
   const upsertLae: MetisStore["upsertLae"] = useCallback((l) => {
     setData((d) => ({ ...d, laes: d.laes.some((x) => x.id === l.id) ? d.laes.map((x) => (x.id === l.id ? l : x)) : [...d.laes, l] }));
   }, []);
+  const removeObjective: MetisStore["removeObjective"] = useCallback((id, moveLaesTo) => {
+    setData((d) => ({
+      ...d,
+      objectives: d.objectives.filter((o) => o.id !== id),
+      laes: moveLaesTo ? d.laes.map((l) => (l.objectiveId === id ? { ...l, objectiveId: moveLaesTo } : l)) : d.laes.filter((l) => l.objectiveId !== id),
+    }));
+  }, []);
   const updateMember: MetisStore["updateMember"] = useCallback((userId, patch) => {
     setData((d) => ({ ...d, users: d.users.map((u) => u.id === userId ? { ...u, ...patch, managerId: patch.managerId !== undefined ? patch.managerId : u.managerId } : u) }));
   }, []);
@@ -221,10 +228,10 @@ function DemoMetisProvider({ children }: { children: ReactNode }) {
     syncError: null, clearSyncError: () => {}, saving: false,
     year: YEAR, month, currentUserId, setMonth, setCurrentUser,
     saveResult, transition, createScorecard, updateItem, addItem, removeItem, upsertElement, upsertElementScope, addScope, addScopeType, removeCatalog, removeScopeType,
-    upsertObjective, upsertLae, upsertUnit, removeUnit, invite, importOrg, revokeInvitation, regenerateJoinCode, updateMember, updateReminders, updateRv, reset,
+    upsertObjective, removeObjective, upsertLae, upsertUnit, removeUnit, invite, importOrg, revokeInvitation, regenerateJoinCode, updateMember, updateReminders, updateRv, reset,
     upsertSession, removeSession, upsertCommitment, removeCommitment, approveSession,
   }), [data, month, currentUserId, saveResult, transition, createScorecard, updateItem, addItem, removeItem, upsertElement, upsertElementScope, addScope, addScopeType, removeCatalog, removeScopeType,
-    upsertObjective, upsertLae, upsertUnit, removeUnit, invite, importOrg, revokeInvitation, regenerateJoinCode, updateMember, updateReminders, updateRv, reset,
+    upsertObjective, removeObjective, upsertLae, upsertUnit, removeUnit, invite, importOrg, revokeInvitation, regenerateJoinCode, updateMember, updateReminders, updateRv, reset,
     upsertSession, removeSession, upsertCommitment, removeCommitment, approveSession]);
 
   return <MetisCtx.Provider value={value}>{children}</MetisCtx.Provider>;
