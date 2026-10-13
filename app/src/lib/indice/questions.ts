@@ -13,7 +13,7 @@ export const DIMENSIONS: Dimension[] = [
 
 export const QUESTIONS: Question[] = [
   { id: 1, dim: 1, text: "¿La empresa tiene una MEGA (meta grande y ambiciosa a 5–10 años) escrita, medible y con fecha?", options: ["No existe", "Existe una visión general sin métricas", "Hay una meta pero sólo la conoce la dirección", "Hay una meta medible compartida con gerentes", "Toda la organización la conoce y puede citarla"] },
-  { id: 2, dim: 1, text: "¿La MEGA está traducida en 3 o 4 líneas de acción estratégica, cada una con sus KPIs y proyectos?", options: ["No", "De forma informal", "Existen en una presentación anual", "Existen y cada área sabe cuál le toca", "Cada área tiene sus líneas de acción con dueño y revisión periódica"] },
+  { id: 2, dim: 1, text: "¿La MEGA está traducida en 3 a 5 líneas de acción estratégica propias del negocio, cada una con sus KPIs y proyectos?", options: ["No", "De forma informal", "Existen en una presentación anual", "Existen y cada área sabe cuál le toca", "Cada área tiene sus líneas de acción con dueño y revisión periódica"] },
   { id: 3, dim: 1, text: "Cuando cambia una prioridad estratégica, ¿se sabe qué KPIs, proyectos y personas se ven afectados?", options: ["No", "Se averigua preguntando", "Se identifica con trabajo manual", "Existe un mapa parcial", "Existe un mapa conectado y actualizado"] },
   { id: 4, dim: 1, text: "¿La planeación anual conecta presupuesto, metas y proyectos en un solo ejercicio?", options: ["Cada uno por su lado", "Presupuesto sin metas operativas", "Metas sin presupuesto ligado", "Conectados con esfuerzo manual", "Un solo proceso integrado"] },
   { id: 5, dim: 2, text: "¿Cada gerente y colaborador clave tiene un conjunto explícito de KPIs y proyectos por los que responde?", options: ["No", "Sólo la dirección", "Sólo gerentes", "Gerentes y mandos medios", "Todos los colaboradores con responsabilidad de resultado"] },
@@ -45,7 +45,7 @@ export const LEVELS: Level[] = [
 ];
 
 export const GAP_ADVICE: Record<number, [string, string]> = {
-  1: ["Define una MEGA: una meta grande, ambiciosa y medible a 5–10 años, y compártela con todos los gerentes.", "Baja la MEGA a 3 o 4 líneas de acción estratégica; en cada una define sus KPIs y 1 o 2 proyectos, con un solo dueño cada uno."],
+  1: ["Define una MEGA: una meta grande, ambiciosa y medible a 5–10 años, y compártela con todos los gerentes.", "Baja la MEGA a 3 a 5 líneas de acción propias de tu negocio (lo que tienes que dominar sí o sí para lograrla); en cada una define sus KPIs y 1 o 2 proyectos, con un solo dueño cada uno."],
   2: ["Asigna a cada gerente un scorecard corto (5–8 elementos) con ponderación que sume 100%.", "Define tres niveles de meta (mínima, satisfactoria, sobresaliente) antes de que arranque el periodo."],
   3: ["Crea un catálogo único de KPIs con fórmula, unidad y dirección; prohíbe definiciones paralelas.", "Nombra un dueño del dato por KPI y alcance; los demás se vinculan y no vuelven a capturar."],
   4: ["Instala una sesión semanal de 45 minutos y una mensual tras el cierre, con agenda fija.", "Cierra cada sesión con compromisos con responsable y fecha, y revísalos al abrir la siguiente."],

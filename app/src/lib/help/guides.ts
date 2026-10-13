@@ -92,7 +92,7 @@ export const GUIDES: Record<string, Guide> = {
     purpose: "La cascada completa: cómo la MEGA baja a sus Líneas de Acción, a los KPIs y proyectos y a cada persona.",
     steps: ["Elige la vista por alcance (empresa, región, planta…).", "Arriba está la MEGA; debajo, cada línea de acción con sus KPIs y proyectos.", "Usa el conteo por semáforo para ubicar qué va en Mínimo."],
     faqs: [
-      { q: "¿Qué es una LAE?", a: "Línea de Acción Estratégica: uno de los 3 o 4 pilares para lograr la MEGA (por ejemplo, Expansión de mercado). Cada LAE se mide con KPIs y se ejecuta con proyectos." },
+      { q: "¿Qué es una LAE?", a: "Línea de Acción Estratégica: uno de los 3 a 5 pilares para lograr la MEGA. No hay una lista fija: nacen de la naturaleza de tu negocio (por ejemplo, Expansión de mercado, Institucionalización o Cero defectos). Cada LAE se mide con KPIs y se ejecuta con proyectos." },
       { q: "¿Para qué me sirve el mapa?", a: "Para responder «¿mi trabajo a qué contribuye?» y para usarlo como marcador en las sesiones de equipo." },
       { q: "¿Qué significa «Vista: alcance»?", a: "Filtra el mapa por un nivel de la organización (por ejemplo una región) para ver solo su cascada." },
     ],
@@ -146,9 +146,9 @@ export const GUIDES: Record<string, Guide> = {
   "/config/estrategia": {
     title: "Estrategia",
     purpose: "La MEGA de la empresa y sus Líneas de Acción Estratégica (LAE), con los KPIs y proyectos de cada una: la parte alta de la cascada.",
-    steps: ["Define la MEGA: la meta grande y ambiciosa a 5–10 años.", "Agrega las 3 o 4 Líneas de Acción (pilares) que la hacen posible.", "En cada línea, agrega sus KPIs (cómo medimos) y sus proyectos (qué ejecutamos)."],
+    steps: ["Define la MEGA: la meta grande y ambiciosa a 5–10 años.", "Agrega de 3 a 5 Líneas de Acción (pilares) propias de tu negocio: lo que tienes que dominar sí o sí para lograr la MEGA. Si necesitas inspiración, usa «Ideas de pilares».", "En cada línea, agrega sus KPIs (cómo medimos) y sus proyectos (qué ejecutamos)."],
     faqs: [
-      { q: "¿Qué es la MEGA?", a: "La Meta Estratégica Grande y Ambiciosa: el objetivo supremo de la empresa a 5–10 años. Audaz, clara, medible y con fecha. Hay una sola y se evalúa cada año." }, { q: "¿Cuántas líneas de acción y proyectos?", a: "De 3 a 4 líneas de acción, y 1 o 2 proyectos de alto impacto por línea cada año. Si todo es prioridad, nada lo es." },
+      { q: "¿Qué es la MEGA?", a: "La Meta Estratégica Grande y Ambiciosa: el objetivo supremo de la empresa a 5–10 años. Audaz, clara, medible y con fecha. Hay una sola y se evalúa cada año." }, { q: "¿Cuántas líneas de acción y proyectos?", a: "De 3 a 5 líneas de acción como máximo (con 7 u 8 no hay estrategia, hay una lista de deseos), y 1 o 2 proyectos de alto impacto por línea cada año." }, { q: "¿Los pilares tienen que ser Comercial, Operación, Cliente y Talento?", a: "No. Ese equilibrio viene del Balanced Scorecard y es una buena base, pero los pilares deben nacer de tu MEGA. Pregúntate qué capacidades, mercados o cambios estructurales tienes que dominar sí o sí para lograrla: una startup pensará en capital y escalabilidad; una fábrica, en automatización y calidad; una empresa familiar, en institucionalización y sucesión." },
       { q: "¿Qué es una buena LAE?", a: "Un pilar concreto para lograr la MEGA, por ejemplo «Expansión de mercado», «Excelencia operativa», «Retención del cliente» o «Talento y cultura»." },
     ],
   },

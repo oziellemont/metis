@@ -23,7 +23,7 @@ export interface StrategicObjective {
   horizon?: string; // año meta, ej. "2032"
 }
 
-/** LAE · Línea de Acción Estratégica: uno de los 3–4 pilares para lograr la MEGA. De cada LAE cuelgan sus KPIs y proyectos. */
+/** LAE · Línea de Acción Estratégica: uno de los 3 a 5 pilares propios del negocio para lograr la MEGA (no hay lista fija). De cada LAE cuelgan sus KPIs y proyectos. */
 export interface LAE {
   id: string;
   objectiveId: string; // la MEGA
