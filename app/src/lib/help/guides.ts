@@ -154,7 +154,7 @@ export const GUIDES: Record<string, Guide> = {
     ],
     faqs: [
       { q: "¿Qué es la MEGA?", a: "La Meta Estratégica Grande y Ambiciosa: el objetivo supremo de la empresa a 5–10 años. Audaz, clara, medible y con fecha. Hay una sola y se evalúa cada año." },
-      { q: "¿Cuántas líneas de acción y proyectos?", a: "De 3 a 5 líneas de acción como máximo (con 7 u 8 no hay estrategia, hay una lista de deseos) y 1 o 2 proyectos de alto impacto por línea cada año. Debes poder explicarlas en un minuto." },
+      { q: "¿Cuántas líneas de acción y proyectos?", a: "De 3 a 5 líneas de acción como máximo (con 7 u 8 no hay estrategia, hay una lista de deseos) y 1 o 2 proyectos de alto impacto por línea cada año. Debes poder explicarlas en un minuto. mêtis no deja crear más de 5: si necesitas otra, primero elimina o fusiona una." },
       { q: "¿Los pilares tienen que ser Comercial, Operación, Cliente y Talento?", a: "No. Ese equilibrio viene del Balanced Scorecard y es una buena base, pero los pilares deben nacer de tu MEGA: una startup pensará en capital y escalabilidad; una fábrica, en automatización y calidad; una empresa familiar, en institucionalización y sucesión." },
       { q: "¿Cada cuándo se revisa cada cosa?", a: "Los KPIs cada mes, los proyectos cada quincena y la MEGA una vez al año." },
       { q: "¿Cómo leo el árbol?", a: "Arriba la MEGA; debajo, cada línea de acción; y colgando de cada línea, sus KPIs y proyectos con la inicial de su responsable. Si ves «Sin dueño» o una caja vacía, ahí falta algo." },

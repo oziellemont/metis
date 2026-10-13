@@ -12,6 +12,7 @@ import { approveDrafts } from "./sessions/logic";
 import { applyDeletion, scopeTypeUsage } from "./domain/deletion";
 import { hasSupabase } from "./supabase/client";
 import { SupabaseMetisProvider } from "./store-supabase";
+import { LAE_MAX } from "@/lib/strategy/pillars";
 
 export { useMetis, newId };
 export type { MetisStore };
@@ -179,7 +180,12 @@ function DemoMetisProvider({ children }: { children: ReactNode }) {
     setData((d) => ({ ...d, objectives: d.objectives.some((x) => x.id === o.id) ? d.objectives.map((x) => (x.id === o.id ? o : x)) : [...d.objectives, o] }));
   }, []);
   const upsertLae: MetisStore["upsertLae"] = useCallback((l) => {
-    setData((d) => ({ ...d, laes: d.laes.some((x) => x.id === l.id) ? d.laes.map((x) => (x.id === l.id ? l : x)) : [...d.laes, l] }));
+    // Máximo LAE_MAX líneas de acción: una nueva más allá del límite no se guarda.
+    setData((d) => {
+      const exists = d.laes.some((x) => x.id === l.id);
+      if (!exists && d.laes.length >= LAE_MAX) return d;
+      return { ...d, laes: exists ? d.laes.map((x) => (x.id === l.id ? l : x)) : [...d.laes, l] };
+    });
   }, []);
   const removeLae: MetisStore["removeLae"] = useCallback((id, moveElementsTo) => {
     const has = data.elements.some((e) => e.laeId === id);

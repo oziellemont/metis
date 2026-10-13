@@ -40,8 +40,10 @@ export default function Estrategia() {
   const laesEnd = T.lae + laes.length * T.laeStep;
 
   const newMega = () => setMega({ id: newId(), name: "", horizon: String(s.year + 6) });
-  const newLae = (idea?: PillarIdea) => current && setLae({ id: newId(), objectiveId: current.id, name: idea?.name ?? "", description: idea?.description, color: BRAND });
+  const newLae = (idea?: PillarIdea) => current && s.laes.length < LAE_MAX && setLae({ id: newId(), objectiveId: current.id, name: idea?.name ?? "", description: idea?.description, color: BRAND });
   const n = Math.min(Math.max(laes.length, 1), 5);
+  const full = s.laes.length >= LAE_MAX;
+  const fullMsg = `Máximo ${LAE_MAX} líneas de acción. Para agregar otra, elimina o fusiona una.`;
 
   return (
     <>
@@ -54,7 +56,7 @@ export default function Estrategia() {
         {isAdmin && current && (
           <div className="flex gap-2">
             <button className="btn-ghost" onClick={() => setIdeas(true)}><Lightbulb size={14} /> Ideas</button>
-            <button className="btn-primary" onClick={() => newLae()}><Plus size={14} /> Línea de acción</button>
+            <button className="btn-primary disabled:cursor-not-allowed disabled:opacity-50" onClick={() => newLae()} disabled={full} title={full ? fullMsg : undefined}><Plus size={14} /> Línea de acción</button>
           </div>
         )}
       </div>
@@ -127,8 +129,9 @@ export default function Estrategia() {
 
             {laes.length > 0 && (
               <p className={clsx("academy-in mt-5 text-center text-[11px]", laes.length < LAE_MIN || laes.length > LAE_MAX ? "text-amber" : "text-slate-400")} style={d(laesEnd + 600)}>
-                {laes.length > LAE_MAX ? `${laes.length} líneas de acción: con más de ${LAE_MAX} no hay estrategia, hay una lista de deseos.`
+                {laes.length > LAE_MAX ? `${laes.length} líneas de acción: el máximo es ${LAE_MAX}. Elimina o fusiona ${laes.length - LAE_MAX} para enfocar la estrategia.`
                   : laes.length < LAE_MIN ? `${laes.length} de ${LAE_MIN}–${LAE_MAX} líneas de acción: te falta${LAE_MIN - laes.length === 1 ? "" : "n"} ${LAE_MIN - laes.length} para completar la estrategia.`
+                  : laes.length === LAE_MAX ? `${LAE_MAX} líneas de acción · el máximo · La MEGA se evalúa una vez al año`
                   : `${laes.length} líneas de acción · La MEGA se evalúa una vez al año`}
               </p>
             )}
@@ -174,7 +177,7 @@ export default function Estrategia() {
       )}
       {unify && <UnifyDialog onClose={() => setUnify(false)} />}
       {del && <DeleteLaeDialog lae={del} onClose={() => setDel(null)} />}
-      {ideas && <IdeasDialog canAdd={isAdmin && !!current} existing={s.laes.map((l) => l.name.toLowerCase())}
+      {ideas && <IdeasDialog canAdd={isAdmin && !!current && !full} full={full} existing={s.laes.map((l) => l.name.toLowerCase())}
         onPick={(idea) => { setIdeas(false); newLae(idea); }} onClose={() => setIdeas(false)} />}
     </>
   );
@@ -299,7 +302,7 @@ function Modal({ title, children, onClose, onSave, canSave, saveLabel = "Guardar
 }
 
 /** Inspiración: los pilares cambian por completo según la MEGA. Nada aquí es obligatorio. */
-function IdeasDialog({ canAdd, existing, onPick, onClose }: { canAdd: boolean; existing: string[]; onPick: (i: PillarIdea) => void; onClose: () => void }) {
+function IdeasDialog({ canAdd, full, existing, onPick, onClose }: { canAdd: boolean; full: boolean; existing: string[]; onPick: (i: PillarIdea) => void; onClose: () => void }) {
   const [set, setSet] = useState(PILLAR_SETS[0].id);
   const cur = PILLAR_SETS.find((x) => x.id === set) ?? PILLAR_SETS[0];
   return (
@@ -335,6 +338,7 @@ function IdeasDialog({ canAdd, existing, onPick, onClose }: { canAdd: boolean; e
             );
           })}
         </ul>
+        {full && <p className="mt-4 rounded-xl bg-amber-soft px-3 py-2 text-xs text-amber">Ya tienes {LAE_MAX} líneas de acción, el máximo. Úsalas como inspiración para renombrar o fusionar las que tienes.</p>}
         <p className="mt-4 rounded-xl bg-slate-50 px-3 py-2 text-xs text-slate-500"><b>Regla de oro:</b> elige entre {LAE_MIN} y {LAE_MAX} pilares. Si tienes 7 u 8, no tienes estrategia, tienes una lista de deseos.</p>
       </div>
     </div>
