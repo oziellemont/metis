@@ -1,31 +1,28 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import clsx from "clsx";
-import { Plus, Pencil, Trash2, Check, X, Mountain, Gauge, FolderKanban, AlertTriangle, Lightbulb, BarChart3, GitFork } from "lucide-react";
+import { Plus, Pencil, Trash2, Check, X, Mountain, Gauge, FolderKanban, AlertTriangle, Lightbulb, GitFork } from "lucide-react";
 import { useMetis, newId } from "@/lib/store";
 import { Avatar } from "@/components/ui/primitives";
 import type { LAE, StrategicObjective } from "@/lib/domain/types";
 import { LAE_MIN, LAE_MAX, PILLAR_SETS, type PillarIdea } from "@/lib/strategy/pillars";
 
-const COLORS = ["#4F3FE0", "#14C98E", "#2FA7F5", "#F5A524", "#F2545B", "#8B5CF6", "#0EA5A4", "#64748B"];
-const COLS: Record<number, string> = { 1: "sm:grid-cols-1", 2: "sm:grid-cols-2", 3: "sm:grid-cols-3", 4: "sm:grid-cols-4", 5: "sm:grid-cols-5" };
+/** Un solo color de marca para todas las líneas: el morado de mêtis. */
+const BRAND = "#4F3FE0";
+const COLS: Record<number, string> = { 1: "md:grid-cols-1", 2: "md:grid-cols-2", 3: "md:grid-cols-3", 4: "md:grid-cols-4", 5: "md:grid-cols-5" };
 
-/** Se enciende un instante después de montar: dispara las transiciones de entrada (como el hero de la web). */
-function useReveal(dep?: unknown) {
-  const [on, setOn] = useState(false);
-  useEffect(() => {
-    setOn(false);
-    const t = setTimeout(() => setOn(true), 60);
-    return () => clearTimeout(t);
-  }, [dep]);
-  return on;
-}
+/** Retraso (ms) para cada pieza del árbol: MEGA → conectores → líneas → KPIs y proyectos. */
+const T = { mega: 0, stem: 350, bar: 550, lae: 800, laeStep: 150, rail: 250, box: 120, boxStep: 80 };
+const d = (ms: number) => ({ animationDelay: `${ms}ms` });
+/** Centro horizontal de la columna i (de n) dentro de una cuadrícula con separación de 12px. */
+const colX = (i: number, n: number) => `calc((100% - ${(n - 1) * 12}px) / ${n} * ${i + 0.5} + ${i * 12}px)`;
 
 /**
  * Estrategia: de lo general a lo particular.
  *   MEGA (una, 5–10 años) → Líneas de Acción (3 a 5, propias del negocio) → KPIs y proyectos de cada línea.
- * Diseño limpio: la cascada arriba, el detalle de la línea elegida abajo. La explicación vive en el botón «?».
+ * Todo se ve como un árbol que se despliega al abrir la página (igual que la cascada de la web).
+ * La explicación y las reglas viven en el botón «?».
  */
 export default function Estrategia() {
   const s = useMetis();
@@ -35,20 +32,15 @@ export default function Estrategia() {
   const [unify, setUnify] = useState(false);
   const [ideas, setIdeas] = useState(false);
   const [del, setDel] = useState<LAE | null>(null);
-  const [selId, setSelId] = useState<string | null>(null);
 
   const current = s.objectives[0];
   const extra = s.objectives.length > 1;
   const laes = current ? (extra ? s.laes : s.laes.filter((l) => l.objectiveId === current.id)) : [];
-  const sel = laes.find((l) => l.id === selId) ?? laes[0];
-  const elsOf = (l: LAE) => s.elements.filter((e) => e.laeId === l.id);
   const ownersOf = (elementId: string) => [...new Set(s.elementScopes.filter((es) => es.elementId === elementId).map((es) => es.ownerUserId).filter(Boolean))];
-  const peopleOf = (l: LAE) => [...new Set(elsOf(l).flatMap((e) => ownersOf(e.id)))];
-  const maxEls = Math.max(1, ...laes.map((l) => elsOf(l).length));
-  const on = useReveal(laes.length);
+  const laesEnd = T.lae + laes.length * T.laeStep;
 
   const newMega = () => setMega({ id: newId(), name: "", horizon: String(s.year + 6) });
-  const newLae = (idea?: PillarIdea) => current && setLae({ id: newId(), objectiveId: current.id, name: idea?.name ?? "", description: idea?.description, color: COLORS[s.laes.length % COLORS.length] });
+  const newLae = (idea?: PillarIdea) => current && setLae({ id: newId(), objectiveId: current.id, name: idea?.name ?? "", description: idea?.description, color: BRAND });
   const n = Math.min(Math.max(laes.length, 1), 5);
 
   return (
@@ -87,115 +79,61 @@ export default function Estrategia() {
             : <p className="mt-6 text-xs text-slate-400">Un administrador de {s.tenant.name} la define.</p>}
         </div>
       ) : (
-        <>
-          {/* La cascada: MEGA → líneas de acción */}
-          <section className="card p-5 sm:p-7">
-            <div className="flex items-center gap-2 text-sm font-semibold"><GitFork size={15} className="text-indigo" /> La estrategia, de lo general a lo particular</div>
+        <section className="card p-5 sm:p-7">
+          <div className="flex items-center gap-2 text-sm font-semibold"><GitFork size={15} className="text-indigo" /> La estrategia, de lo general a lo particular</div>
 
-            <div className="mt-5 rounded-3xl bg-slate-50 p-4 sm:p-6">
-              {/* MEGA */}
-              <div className={clsx("relative mx-auto max-w-2xl rounded-2xl bg-gradient-to-br from-[#141735] via-[#1E1A5E] to-[#2B1F8A] px-5 py-4 text-center text-white shadow-card transition-all duration-500 motion-reduce:transition-none",
-                on ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-1")}>
-                <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-mint-light">MEGA{current.horizon ? ` · ${current.horizon}` : ""}</div>
-                <div className="mt-1 text-[15px] font-semibold leading-snug sm:text-lg">{current.name}</div>
-                {current.description && <p className="mx-auto mt-1.5 max-w-xl text-xs text-white/60">{current.description}</p>}
-                {isAdmin && <button className="absolute right-2.5 top-2.5 rounded-lg p-1.5 text-white/50 hover:bg-white/10 hover:text-white" onClick={() => setMega(current)} aria-label="Editar MEGA" title="Editar la MEGA"><Pencil size={13} /></button>}
-              </div>
-
-              {/* Conectores */}
-              {laes.length > 0 && (
-                <div className="relative h-6" aria-hidden>
-                  <div className={clsx("absolute left-1/2 top-0 w-px bg-indigo/25 transition-all duration-500 motion-reduce:transition-none", on ? "h-3" : "h-0")} style={{ transitionDelay: "250ms" }} />
-                  {laes.length > 1 && (
-                    <div className={clsx("absolute top-3 hidden h-px origin-center bg-indigo/25 transition-transform duration-500 motion-reduce:transition-none sm:block", on ? "scale-x-100" : "scale-x-0")}
-                      style={{ left: `${50 / n}%`, right: `${50 / n}%`, transitionDelay: "450ms" }} />
-                  )}
-                </div>
-              )}
-
-              {/* Líneas de acción */}
-              {laes.length === 0 ? (
-                <div className="mt-6 text-center">
-                  <div className="text-xs font-semibold uppercase tracking-[0.2em] text-indigo">Paso 2 · Líneas de acción</div>
-                  <p className="mx-auto mt-2 max-w-md text-sm text-slate-500">¿Qué tiene que dominar la empresa, sí o sí, para lograr la MEGA? Elige de {LAE_MIN} a {LAE_MAX} pilares propios de tu negocio.</p>
-                  {isAdmin && (
-                    <div className="mt-4 flex justify-center gap-2">
-                      <button className="btn-ghost" onClick={() => setIdeas(true)}><Lightbulb size={14} /> Ver ideas</button>
-                      <button className="btn-primary" onClick={() => newLae()}><Plus size={14} /> Agregar la primera</button>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className={clsx("grid grid-cols-2 gap-2.5", COLS[n])}>
-                  {laes.map((l, i) => {
-                    const els = elsOf(l);
-                    const k = els.filter((e) => e.type === "kpi").length;
-                    const p = els.length - k;
-                    const ppl = peopleOf(l);
-                    const active = sel?.id === l.id;
-                    return (
-                      <button key={l.id} onClick={() => setSelId(l.id)}
-                        className={clsx("group relative overflow-hidden rounded-2xl border bg-white p-3 text-center transition-all duration-500 motion-reduce:transition-none",
-                          active ? "border-indigo/40 ring-2 ring-indigo/15" : "border-slate-100 hover:border-slate-200 hover:shadow-card",
-                          on ? "opacity-100 translate-y-0" : "opacity-0 translate-y-1.5")}
-                        style={{ transitionDelay: on ? `${650 + i * 110}ms` : "0ms" }}>
-                        <span className="absolute inset-x-0 top-0 h-1" style={{ background: l.color ?? "#94A3B8" }} />
-                        <div className="mt-1 min-h-[34px] text-[13px] font-medium leading-tight text-ink">{l.name}</div>
-                        <div className="mt-1 text-[11px] text-slate-400">{k} KPI{k === 1 ? "" : "s"} · {p} proyecto{p === 1 ? "" : "s"}</div>
-                        <div className="mt-2 flex h-5 justify-center -space-x-1.5">
-                          {ppl.slice(0, 4).map((u, j) => (
-                            <span key={u} className={clsx("transition-all duration-300 motion-reduce:transition-none", on ? "opacity-100 scale-100" : "opacity-0 scale-50")}
-                              style={{ transitionDelay: on ? `${1100 + i * 110 + j * 80}ms` : "0ms" }}>
-                              <Avatar initials={s.userOf(u).initials} size="sm" className="!h-5 !w-5 !text-[8px] ring-2 ring-white" />
-                            </span>
-                          ))}
-                          {ppl.length > 4 && <span className="grid h-5 w-5 place-items-center rounded-full bg-slate-100 text-[8px] font-semibold text-slate-500 ring-2 ring-white">+{ppl.length - 4}</span>}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-
-              {laes.length > 0 && (
-                <p className={clsx("mt-4 text-center text-[11px] transition-opacity duration-500 motion-reduce:transition-none", on ? "opacity-100" : "opacity-0",
-                  laes.length < LAE_MIN || laes.length > LAE_MAX ? "text-amber" : "text-slate-400")} style={{ transitionDelay: on ? "1300ms" : "0ms" }}>
-                  {laes.length > LAE_MAX ? `${laes.length} líneas de acción: con más de ${LAE_MAX} no hay estrategia, hay una lista de deseos.`
-                    : laes.length < LAE_MIN ? `${laes.length} de ${LAE_MIN}–${LAE_MAX} líneas de acción: te falta${LAE_MIN - laes.length === 1 ? "" : "n"} ${LAE_MIN - laes.length} para completar la estrategia.`
-                    : `${laes.length} líneas de acción · La MEGA se evalúa una vez al año`}
-                </p>
-              )}
+          <div className="mt-5 rounded-3xl bg-slate-50 p-4 sm:p-6">
+            {/* MEGA */}
+            <div id={`obj-${current.id}`} className="tree-drop relative mx-auto max-w-2xl rounded-2xl bg-gradient-to-br from-[#141735] via-[#1E1A5E] to-[#2B1F8A] px-5 py-4 text-center text-white shadow-card" style={d(T.mega)}>
+              <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-mint-light">MEGA{current.horizon ? ` · ${current.horizon}` : ""}</div>
+              <div className="mt-1 text-[15px] font-semibold leading-snug sm:text-lg">{current.name}</div>
+              {current.description && <p className="mx-auto mt-1.5 max-w-xl text-xs text-white/60">{current.description}</p>}
+              {isAdmin && <button className="absolute right-2.5 top-2.5 rounded-lg p-1.5 text-white/50 hover:bg-white/10 hover:text-white" onClick={() => setMega(current)} aria-label="Editar MEGA" title="Editar la MEGA"><Pencil size={13} /></button>}
             </div>
 
-            {/* Balance: barras animadas, como «Resultados» */}
-            {laes.length > 1 && (
-              <div className="mt-5">
-                <div className="flex items-center justify-between text-xs text-slate-500">
-                  <span className="flex items-center gap-1.5 font-semibold text-ink"><BarChart3 size={13} className="text-indigo" /> KPIs y proyectos por línea</span>
-                  <span>{laes.reduce((a, l) => a + elsOf(l).length, 0)} en total</span>
-                </div>
-                <div className="mt-2.5 space-y-2">
-                  {laes.map((l, i) => {
-                    const c = elsOf(l).length;
-                    return (
-                      <button key={l.id} onClick={() => setSelId(l.id)} className="flex w-full items-center gap-3 text-left text-xs">
-                        <span className={clsx("w-28 truncate sm:w-44", sel?.id === l.id ? "font-medium text-ink" : "text-slate-500")}>{l.name}</span>
-                        <span className="h-2.5 flex-1 overflow-hidden rounded-full bg-slate-100">
-                          <span className="block h-full rounded-full transition-[width] duration-1000 ease-out motion-reduce:transition-none"
-                            style={{ width: on ? `${(c / maxEls) * 100}%` : "0%", background: l.color ?? "#94A3B8", transitionDelay: on ? `${300 + i * 140}ms` : "0ms" }} />
-                        </span>
-                        <span className="w-5 text-right font-semibold tabular-nums text-ink">{c}</span>
-                      </button>
-                    );
-                  })}
-                </div>
+            {laes.length === 0 ? (
+              <div className="academy-in mt-6 text-center" style={d(T.stem)}>
+                <div className="text-xs font-semibold uppercase tracking-[0.2em] text-indigo">Paso 2 · Líneas de acción</div>
+                <p className="mx-auto mt-2 max-w-md text-sm text-slate-500">¿Qué tiene que dominar la empresa, sí o sí, para lograr la MEGA? Elige de {LAE_MIN} a {LAE_MAX} pilares propios de tu negocio.</p>
+                {isAdmin && (
+                  <div className="mt-4 flex justify-center gap-2">
+                    <button className="btn-ghost" onClick={() => setIdeas(true)}><Lightbulb size={14} /> Ver ideas</button>
+                    <button className="btn-primary" onClick={() => newLae()}><Plus size={14} /> Agregar la primera</button>
+                  </div>
+                )}
               </div>
-            )}
-          </section>
+            ) : (
+              <>
+                {/* Conectores MEGA → líneas */}
+                <div className="relative h-5" aria-hidden>
+                  <div className="tree-grow-y absolute left-1/2 top-0 h-2.5 w-px bg-indigo/30" style={d(T.stem)} />
+                  {laes.length > 1 && (
+                    <div className="tree-grow-x absolute top-2.5 hidden h-px bg-indigo/30 md:block" style={{ left: colX(0, n), right: colX(0, n), ...d(T.bar) }} />
+                  )}
+                  {laes.length > 1 && laes.map((l, i) => (
+                    <div key={l.id} className="tree-grow-y absolute top-2.5 hidden h-2.5 w-px bg-indigo/30 md:block" style={{ left: colX(i, n), ...d(T.lae + i * T.laeStep - 120) }} />
+                  ))}
+                </div>
 
-          {/* Detalle de la línea elegida */}
-          {sel && <LaeDetail key={sel.id} lae={sel} isAdmin={isAdmin} onEdit={() => setLae(sel)} onDelete={() => setDel(sel)} ownersOf={ownersOf} />}
-        </>
+                {/* Líneas de acción, cada una con sus KPIs y proyectos debajo */}
+                <div className={clsx("grid gap-4 md:gap-3", COLS[n])}>
+                  {laes.map((l, i) => (
+                    <LaeColumn key={l.id} lae={l} i={i} laesEnd={laesEnd} isAdmin={isAdmin} ownersOf={ownersOf}
+                      onEdit={() => setLae(l)} onDelete={() => setDel(l)} />
+                  ))}
+                </div>
+              </>
+            )}
+
+            {laes.length > 0 && (
+              <p className={clsx("academy-in mt-5 text-center text-[11px]", laes.length < LAE_MIN || laes.length > LAE_MAX ? "text-amber" : "text-slate-400")} style={d(laesEnd + 600)}>
+                {laes.length > LAE_MAX ? `${laes.length} líneas de acción: con más de ${LAE_MAX} no hay estrategia, hay una lista de deseos.`
+                  : laes.length < LAE_MIN ? `${laes.length} de ${LAE_MIN}–${LAE_MAX} líneas de acción: te falta${LAE_MIN - laes.length === 1 ? "" : "n"} ${LAE_MIN - laes.length} para completar la estrategia.`
+                  : `${laes.length} líneas de acción · La MEGA se evalúa una vez al año`}
+              </p>
+            )}
+          </div>
+        </section>
       )}
       {mega && (
         <Modal title={s.objectives.some((x) => x.id === mega.id) ? "Editar la MEGA" : "Definir la MEGA"} onClose={() => setMega(null)}
@@ -227,14 +165,6 @@ export default function Estrategia() {
               </select>
             </>
           )}
-          <label className="label mt-3">Color</label>
-          <div className="flex flex-wrap gap-2">
-            {COLORS.map((c) => (
-              <button key={c} type="button" onClick={() => setLae({ ...lae, color: c })} className="grid h-7 w-7 place-items-center rounded-full" style={{ background: c }} aria-label={c}>
-                {lae.color === c && <Check size={14} className="text-white" />}
-              </button>
-            ))}
-          </div>
           {s.laes.some((x) => x.id === lae.id) && (
             <button type="button" className="mt-4 inline-flex items-center gap-1 text-xs font-medium text-coral hover:underline" onClick={() => { setDel(lae); setLae(null); }}>
               <Trash2 size={12} /> Eliminar esta línea de acción
@@ -250,81 +180,82 @@ export default function Estrategia() {
   );
 }
 
-
-/** Detalle de una línea de acción: lo que medimos (KPIs) y lo que ejecutamos (proyectos), con su responsable. */
-function LaeDetail({ lae, isAdmin, onEdit, onDelete, ownersOf }: {
-  lae: LAE; isAdmin: boolean; onEdit: () => void; onDelete: () => void; ownersOf: (elementId: string) => string[];
+/** Una rama del árbol: la línea de acción y, colgando de ella, sus KPIs y proyectos con su responsable. */
+function LaeColumn({ lae, i, laesEnd, isAdmin, ownersOf, onEdit, onDelete }: {
+  lae: LAE; i: number; laesEnd: number; isAdmin: boolean; ownersOf: (elementId: string) => string[]; onEdit: () => void; onDelete: () => void;
 }) {
   const s = useMetis();
   const els = s.elements.filter((e) => e.laeId === lae.id);
   const kpis = els.filter((e) => e.type === "kpi");
   const projects = els.filter((e) => e.type === "project");
-  return (
-    <section className="card academy-in mt-4 overflow-hidden">
-      <div className="h-1" style={{ background: lae.color ?? "#94A3B8" }} />
-      <div className="p-5 sm:p-6">
-        <div className="flex items-start gap-3">
-          <div className="min-w-0 flex-1">
-            <div className="text-lg font-semibold">{lae.name}</div>
-            {lae.description && <p className="mt-0.5 text-sm text-slate-500">{lae.description}</p>}
-          </div>
-          {isAdmin && (
-            <div className="flex shrink-0 gap-0.5">
-              <button className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-50 hover:text-indigo" onClick={onEdit} aria-label="Editar LAE" title="Editar"><Pencil size={14} /></button>
-              <button className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-50 hover:text-coral" onClick={onDelete} aria-label="Eliminar LAE" title="Eliminar"><Trash2 size={14} /></button>
-            </div>
-          )}
-        </div>
+  const start = T.lae + i * T.laeStep;
+  // Las cajitas bajan después de que aparecen todas las líneas, rama por rama.
+  const boxStart = laesEnd + T.rail + i * 60;
 
-        <div className="mt-5 grid gap-6 sm:grid-cols-2">
-          <List icon={Gauge} title="KPIs" hint="Cómo medimos · cada mes" items={kpis} ownersOf={ownersOf}
-            add={isAdmin ? `/config/catalogo?nuevo=kpi&lae=${lae.id}` : undefined} addLabel="Agregar KPI"
-            empty="Agrega al menos un KPI para saber si esta línea avanza." />
-          <List icon={FolderKanban} title="Proyectos estratégicos" hint="Qué ejecutamos · cada quincena" items={projects} ownersOf={ownersOf}
-            add={isAdmin ? `/config/catalogo?nuevo=project&lae=${lae.id}` : undefined} addLabel="Agregar proyecto"
-            empty="Sin proyectos todavía. Lo ideal: 1 o 2 de alto impacto al año."
-            warn={projects.length > 2 ? "Prioriza: lo ideal son 1 o 2 proyectos de alto impacto por línea al año." : undefined} />
-        </div>
+  return (
+    <div className="flex min-w-0 flex-col">
+      {/* Tarjeta de la línea de acción */}
+      <div id={`lae-${lae.id}`} className="tree-pop group relative rounded-2xl border border-slate-100 bg-white px-3 pb-3 pt-3.5 text-center shadow-sm" style={d(start)}>
+        <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-indigo/70">Línea {i + 1}</div>
+        <div className="mt-1 text-[13px] font-semibold leading-tight text-ink">{lae.name}</div>
+        {lae.description && <div className="mt-1 line-clamp-2 text-[11px] leading-snug text-slate-400">{lae.description}</div>}
+        {isAdmin && (
+          <div className="absolute right-1.5 top-1.5 flex gap-0.5 transition-opacity md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">
+            <button className="rounded-md p-1 text-slate-300 hover:bg-slate-50 hover:text-indigo" onClick={onEdit} aria-label="Editar LAE" title="Editar"><Pencil size={12} /></button>
+            <button className="rounded-md p-1 text-slate-300 hover:bg-slate-50 hover:text-coral" onClick={onDelete} aria-label="Eliminar LAE" title="Eliminar"><Trash2 size={12} /></button>
+          </div>
+        )}
       </div>
-    </section>
+
+      {/* Riel: de la línea bajan sus KPIs y proyectos */}
+      <div className="relative ml-4 mt-0 flex-1 pl-3 pt-2">
+        <span className="tree-grow-y absolute bottom-2 left-0 top-0 w-px bg-indigo/20" style={d(boxStart - 150)} aria-hidden />
+        <Group icon={Gauge} label="KPIs" items={kpis} ownersOf={ownersOf} start={boxStart} empty="Sin KPIs todavía" />
+        <Group icon={FolderKanban} label="Proyectos" items={projects} ownersOf={ownersOf} start={boxStart + (kpis.length + 1) * T.boxStep} empty="Sin proyectos todavía"
+          warn={projects.length > 2 ? "Lo ideal: 1 o 2 por línea" : undefined} />
+        {isAdmin && (
+          <div className="academy-in mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[11px]" style={d(boxStart + (els.length + 2) * T.boxStep)}>
+            <Link href={`/config/catalogo?nuevo=kpi&lae=${lae.id}`} className="inline-flex items-center gap-0.5 font-medium text-indigo/80 hover:text-indigo hover:underline"><Plus size={11} /> KPI</Link>
+            <Link href={`/config/catalogo?nuevo=project&lae=${lae.id}`} className="inline-flex items-center gap-0.5 font-medium text-indigo/80 hover:text-indigo hover:underline"><Plus size={11} /> Proyecto</Link>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 
-function List({ icon: Icon, title, hint, items, ownersOf, add, addLabel, empty, warn }: {
-  icon: typeof Gauge; title: string; hint: string; items: { id: string; name: string }[]; ownersOf: (id: string) => string[];
-  add?: string; addLabel: string; empty: string; warn?: string;
+function Group({ icon: Icon, label, items, ownersOf, start, empty, warn }: {
+  icon: typeof Gauge; label: string; items: { id: string; name: string }[]; ownersOf: (id: string) => string[]; start: number; empty: string; warn?: string;
 }) {
   const s = useMetis();
   return (
-    <div>
-      <div className="flex items-baseline gap-2">
-        <span className="flex items-center gap-1.5 text-sm font-semibold"><Icon size={14} className="text-indigo" /> {title}</span>
-        <span className="text-xs text-slate-400">{hint}</span>
+    <div className="mb-2.5">
+      <div className="academy-in mb-1.5 flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400" style={d(start)}>
+        <Icon size={11} className="text-indigo/60" /> {label}
       </div>
       {items.length === 0 ? (
-        <p className="mt-3 rounded-xl border border-dashed border-slate-200 px-3 py-3 text-xs text-slate-400">{empty}</p>
+        <div className="academy-in rounded-xl border border-dashed border-slate-200 px-2.5 py-2 text-[11px] text-slate-400" style={d(start + T.boxStep)}>{empty}</div>
       ) : (
-        <ul className="mt-2 divide-y divide-slate-100">
-          {items.map((it, i) => {
+        <ul className="space-y-1.5">
+          {items.map((it, j) => {
             const owners = ownersOf(it.id);
             const u = owners[0] ? s.userOf(owners[0]) : null;
             return (
-              <li key={it.id} className="academy-in flex items-center gap-3 py-2.5" style={{ animationDelay: `${i * 60}ms` }}>
-                <span className="min-w-0 flex-1 truncate text-sm">{it.name}</span>
+              <li key={it.id} className="tree-slide relative flex items-center gap-2 rounded-xl border border-slate-100 bg-white px-2.5 py-2" style={d(start + (j + 1) * T.boxStep)}>
+                <span className="absolute -left-3 top-1/2 h-px w-3 bg-indigo/20" aria-hidden />
+                <span className="min-w-0 flex-1 line-clamp-2 text-[12px] leading-snug text-ink" title={it.name}>{it.name}</span>
                 {u ? (
-                  <span className="flex shrink-0 items-center gap-1.5 text-xs text-slate-500" title={`Responsable: ${u.name}`}>
-                    <Avatar initials={u.initials} size="sm" />
-                    <span className="hidden max-w-[8rem] truncate md:inline">{u.name.split(" ")[0]}</span>
-                    {owners.length > 1 && <span className="text-slate-400">+{owners.length - 1}</span>}
+                  <span className="flex shrink-0 items-center" title={`Responsable: ${u.name}${owners.length > 1 ? ` y ${owners.length - 1} más` : ""}`}>
+                    <Avatar initials={u.initials} size="sm" className="!h-5 !w-5 !text-[8px]" />
+                    {owners.length > 1 && <span className="ml-0.5 text-[10px] text-slate-400">+{owners.length - 1}</span>}
                   </span>
-                ) : <span className="shrink-0 rounded-full bg-amber-soft px-2 py-0.5 text-[11px] text-amber">Sin dueño</span>}
+                ) : <span className="shrink-0 rounded-full bg-amber-soft px-1.5 py-0.5 text-[10px] text-amber" title="Asigna un responsable en el Catálogo">Sin dueño</span>}
               </li>
             );
           })}
         </ul>
       )}
-      {warn && <p className="mt-2 text-xs text-amber">{warn}</p>}
-      {add && <Link href={add} className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-indigo hover:underline"><Plus size={12} /> {addLabel}</Link>}
+      {warn && <p className="mt-1 text-[10.5px] text-amber">{warn}</p>}
     </div>
   );
 }
