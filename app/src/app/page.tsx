@@ -11,7 +11,7 @@ export default function Landing() {
         <section className="mx-auto max-w-6xl px-6 pt-14 pb-24 grid lg:grid-cols-2 gap-12 items-center">
           <div>
             <span className="chip bg-white/10 text-white/90">Plataforma SaaS + Consultoría en Alineación y Growth</span>
-            <h1 className="mt-5 text-4xl sm:text-5xl font-semibold leading-[1.15] tracking-tight">Que toda tu empresa empuje hacia el mismo lado.</h1>
+            <h1 className="mt-5 text-4xl leading-[1.2] sm:text-5xl sm:leading-[1.2] font-semibold tracking-tight">Que toda tu empresa empuje hacia el mismo lado.</h1>
             <p className="mt-5 text-lg text-white/75 max-w-xl">mêtis convierte la estrategia de tu empresa en objetivos, KPIs y proyectos claros para cada área y cada persona, medidos mes a mes.</p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link href="/indice" className="btn bg-mint text-white hover:bg-mint-light !px-5 !py-3">Mide tu Índice de Alineación <ArrowRight size={16} /></Link>
