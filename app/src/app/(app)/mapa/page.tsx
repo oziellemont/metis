@@ -1,7 +1,7 @@
 "use client";
 import { useMemo, useState } from "react";
 import clsx from "clsx";
-import { Target, ChevronRight } from "lucide-react";
+import { Mountain, ChevronRight } from "lucide-react";
 import { useMetis } from "@/lib/store";
 import { Avatar, PageHeader, TrafficChip } from "@/components/ui/primitives";
 import { MONTHS, RESP, TRAFFIC, TYPE } from "@/lib/labels";
@@ -33,6 +33,8 @@ export default function Mapa() {
     return { es, el, value: r?.value ?? null, t, cvs, owner: s.userOf(es.ownerUserId) };
   };
 
+  const mega = s.objectives[0];
+  const laes = s.laes;
   const totals: Record<Traffic, number> = { outstanding: 0, satisfactory: 0, minimum: 0, pending: 0 };
   esVisible.forEach((es) => totals[evalEs(es.id).t]++);
 
@@ -40,7 +42,7 @@ export default function Mapa() {
     <>
       <PageHeader
         title={`Mapa de alineación ${s.year}`}
-        subtitle={`Objetivos → LAEs → KPIs y proyectos por alcance → responsables · ${MONTHS[s.month - 1]}`}
+        subtitle={`MEGA → Líneas de Acción (LAE) → KPIs y proyectos por alcance → responsables · ${MONTHS[s.month - 1]}`}
         actions={
           <select className="input !w-auto" value={scopeFilter} onChange={(e) => setScopeFilter(e.target.value)}>
             <option value="all">Vista: toda la empresa</option>
@@ -54,33 +56,33 @@ export default function Mapa() {
         {(["outstanding", "satisfactory", "minimum", "pending"] as Traffic[]).map((t) => (
           <span key={t} className="inline-flex items-center gap-1.5 text-sm"><span className={clsx("h-2 w-2 rounded-full", TRAFFIC[t].dot)} />{totals[t]} <span className="text-slate-400">{TRAFFIC[t].label}</span></span>
         ))}
-        <span className="ml-auto text-xs text-slate-400">100% de los elementos conectados a una LAE y a un objetivo</span>
+        <span className="ml-auto text-xs text-slate-400">Cada KPI y proyecto conectado a una LAE y a la MEGA</span>
       </div>
 
       <div className="space-y-6">
-        {s.objectives.map((o) => {
-          const oLaes = s.laes.filter((l) => l.objectiveId === o.id);
-          return (
-            <section key={o.id} className="card p-5">
-              <div className="flex items-start gap-3">
-                <span className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#1E1A5E] to-[#4F3FE0] text-white inline-flex items-center justify-center shrink-0"><Target size={18} /></span>
-                <div>
-                  <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Objetivo corporativo · Dirección General</div>
-                  <h2 className="text-lg font-semibold">{o.name}</h2>
-                  {o.description && <p className="text-sm text-slate-500">{o.description}</p>}
-                </div>
+        {mega && (
+          <section className="rounded-3xl bg-gradient-to-br from-[#141735] via-[#1E1A5E] to-[#2B1F8A] p-5 text-white">
+            <div className="flex items-start gap-3">
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white/10"><Mountain size={18} /></span>
+              <div>
+                <div className="text-[11px] font-semibold uppercase tracking-wider text-mint-light">MEGA{mega.horizon ? ` · meta ${mega.horizon}` : ""} · Dirección General</div>
+                <h2 className="text-lg font-semibold">{mega.name}</h2>
+                {mega.description && <p className="text-sm text-white/70">{mega.description}</p>}
               </div>
-
-              <div className={clsx("mt-5 grid gap-4", oLaes.length > 1 ? "lg:grid-cols-2" : "")}>
-                {oLaes.map((l) => {
+            </div>
+          </section>
+        )}
+        {!mega && <div className="card p-6 text-center text-sm text-slate-500">Todavía no hay MEGA. Defínela en Configuración → Estrategia.</div>}
+        <div className={clsx("grid gap-4", laes.length > 1 ? "lg:grid-cols-2" : "")}>
+                {laes.map((l) => {
                   const els = s.elements.filter((e) => e.laeId === l.id);
                   const rows = els.flatMap((e) => esVisible.filter((es) => es.elementId === e.id).map((es) => evalEs(es.id)));
                   return (
-                    <div key={l.id} className="rounded-2xl border border-slate-100 p-4">
+                    <div key={l.id} className="card overflow-hidden"><div className="h-1.5" style={{ background: l.color ?? "#94A3B8" }} /><div className="p-4">
                       <div className="flex items-center gap-2 mb-3">
                         <span className="h-2.5 w-2.5 rounded-full" style={{ background: l.color }} />
                         <div className="font-medium">{l.name}</div>
-                        <span className="text-xs text-slate-400">LAE · {rows.length} {rows.length === 1 ? "elemento" : "elementos"}</span>
+                        <span className="text-xs text-slate-400">Línea de acción · {rows.length} {rows.length === 1 ? "KPI o proyecto" : "KPIs y proyectos"}</span>
                       </div>
                       {rows.length === 0 ? <div className="text-xs text-slate-400">Sin elementos en esta vista.</div> : (
                         <ul className="space-y-2">
@@ -100,13 +102,10 @@ export default function Mapa() {
                           })}
                         </ul>
                       )}
-                    </div>
+                    </div></div>
                   );
                 })}
-              </div>
-            </section>
-          );
-        })}
+        </div>
       </div>
     </>
   );

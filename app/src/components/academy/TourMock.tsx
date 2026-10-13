@@ -87,26 +87,31 @@ function Carga() {
   );
 }
 
-const OBJS = [
-  { o: "Crecer rentablemente", laes: [["Expandir canal moderno", "Venta canal moderno · 3 personas"], ["Mejorar margen", "Margen bruto · 2 personas"]] },
-  { o: "Excelencia operativa", laes: [["Entregas perfectas", "OTIF · 4 personas"], ["Reducir desperdicio", "Merma · 2 personas"]] },
-];
+const MEGA = "Ser el distribuidor #1 del norte en 2032";
+const LAES = [
+  { l: "Crecimiento rentable", k: [["kpi", "Venta canal moderno · 3 personas"], ["project", "Apertura Monterrey Sur · 1 dueño"]] },
+  { l: "Excelencia operativa", k: [["kpi", "OTIF · 4 personas"], ["project", "Implementación WMS · 1 dueño"]] },
+  { l: "Talento y cultura", k: [["kpi", "Rotación operativa · 2 personas"]] },
+] as const;
 function Mapa() {
   const [open, setOpen] = useState<number | null>(0);
   return (
     <Frame title="Mapa de alineación" icon={GitBranch}>
-      <div className="space-y-2">
-        {OBJS.map((x, i) => (
-          <div key={x.o} className="rounded-xl bg-white border border-slate-100">
+      <div className="rounded-xl bg-gradient-to-br from-[#1E1A5E] to-[#4F3FE0] px-3 py-2 text-white">
+        <div className="text-[9px] font-semibold uppercase tracking-wider text-white/60">MEGA · 2032</div>
+        <div className="flex items-center gap-1.5 text-[12px] font-semibold"><Target size={12} /> {MEGA}</div>
+      </div>
+      <div className="mt-2 space-y-2">
+        {LAES.map((x, i) => (
+          <div key={x.l} className="rounded-xl bg-white border border-slate-100">
             <button onClick={() => setOpen(open === i ? null : i)} className="w-full flex items-center gap-2 px-3 py-2 text-[12px] font-semibold text-ink">
-              <Target size={12} className="text-indigo" /> {x.o}<ChevronRight size={12} className={clsx("ml-auto transition-transform text-slate-400", open === i && "rotate-90")} />
+              <span className="text-[9px] font-semibold uppercase tracking-wider text-indigo">LAE</span> {x.l}<ChevronRight size={12} className={clsx("ml-auto transition-transform text-slate-400", open === i && "rotate-90")} />
             </button>
             {open === i && (
-              <div className="px-3 pb-3 space-y-1.5 academy-in">
-                {x.laes.map(([l, k]) => (
-                  <div key={l} className="ml-3 border-l-2 border-indigo/20 pl-3">
-                    <div className="text-[11px] font-medium text-ink">{l}</div>
-                    <div className="text-[10px] text-slate-500 flex items-center gap-1"><Gauge size={10} /> {k}</div>
+              <div className="px-3 pb-3 space-y-1 academy-in">
+                {x.k.map(([t, k]) => (
+                  <div key={k} className="ml-3 border-l-2 border-indigo/20 pl-3 text-[10.5px] text-slate-600 flex items-center gap-1">
+                    <Gauge size={10} className={t === "kpi" ? "text-indigo" : "text-sky"} /> <span className="font-medium">{t === "kpi" ? "KPI" : "Proyecto"}:</span> {k}
                   </div>
                 ))}
               </div>

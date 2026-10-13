@@ -57,6 +57,8 @@ export interface MetisStore extends StoreData {
   /** Borra un tipo de alcance si ningún alcance lo usa. */
   removeScopeType: (typeId: string) => { ok: boolean; reason?: string };
   upsertObjective: (o: StrategicObjective) => void;
+  /** Borra un objetivo/MEGA. Si se indica `moveLaesTo`, sus LAE se pasan antes a esa MEGA (así no se pierde nada). */
+  removeObjective: (id: string, moveLaesTo?: string) => void;
   upsertLae: (l: LAE) => void;
   /** Catálogo de unidades (editable por el cliente). */
   upsertUnit: (u: Unit) => void;

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import clsx from "clsx";
 import Link from "next/link";
 import { Plus, FileSpreadsheet, X, Pencil, Trash2 } from "lucide-react";
@@ -13,6 +13,17 @@ import type { DeletionTarget } from "@/lib/domain/deletion";
 export default function Catalogo() {
   const s = useMetis();
   const [editing, setEditing] = useState<Element | null | "new">(null);
+  const [preset, setPreset] = useState<{ type: ElementType; laeId: string } | null>(null);
+  // desde Estrategia: /config/catalogo?nuevo=kpi&lae=… abre el alta con la LAE ya elegida
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    const t = q.get("nuevo");
+    if (t === "kpi" || t === "project") {
+      setPreset({ type: t, laeId: q.get("lae") ?? "" });
+      setEditing("new");
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+  }, []);
   const [q, setQ] = useState("");
   const [del, setDel] = useState<DeletionTarget | null>(null);
   const isAdmin = s.userOf(s.currentUserId).role === "admin";
@@ -59,7 +70,7 @@ export default function Catalogo() {
           </div>
         </div>
       </div>
-      {editing && <ElementEditor el={editing === "new" ? undefined : editing} onClose={() => setEditing(null)} />}
+      {editing && <ElementEditor el={editing === "new" ? undefined : editing} preset={editing === "new" ? preset ?? undefined : undefined} onClose={() => { setEditing(null); setPreset(null); }} />}
       <DeleteCatalogDialog target={del} onClose={() => setDel(null)} />
     </>
   );
@@ -113,10 +124,10 @@ function MeasureIn({ onRemove }: { onRemove?: (elementScopeId: string) => void }
   );
 }
 
-function ElementEditor({ el, onClose }: { el?: Element; onClose: () => void }) {
+function ElementEditor({ el, preset, onClose }: { el?: Element; preset?: { type: ElementType; laeId: string }; onClose: () => void }) {
   const s = useMetis();
   const defaultUnit = s.units[0];
-  const [f, setF] = useState<Element>(el ?? { id: newId(), type: "kpi", name: "", formula: "", unit: defaultUnit?.symbol ?? "%", unitId: defaultUnit?.id, direction: "up", laeId: s.laes[0]?.id ?? "", allowedScopeTypeIds: [] });
+  const [f, setF] = useState<Element>(el ?? { id: newId(), type: preset?.type ?? "kpi", name: "", formula: "", unit: defaultUnit?.symbol ?? "%", unitId: defaultUnit?.id, direction: "up", laeId: (preset?.laeId && s.laes.some((l) => l.id === preset.laeId) ? preset.laeId : s.laes[0]?.id) ?? "", allowedScopeTypeIds: [] });
   const currentUnitId = f.unitId ?? s.units.find((u) => u.symbol === f.unit)?.id ?? "";
   const toggle = (id: string) => setF({ ...f, allowedScopeTypeIds: f.allowedScopeTypeIds.includes(id) ? f.allowedScopeTypeIds.filter((x) => x !== id) : [...f.allowedScopeTypeIds, id] });
   return (
@@ -136,11 +147,11 @@ function ElementEditor({ el, onClose }: { el?: Element; onClose: () => void }) {
               {s.units.map((u) => <option key={u.id} value={u.id}>{u.symbol} · {u.name}</option>)}
             </select>
           </div>
-          <div><label className="label">LAE</label><select className="input" value={f.laeId} onChange={(e) => setF({ ...f, laeId: e.target.value })}>{s.laes.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}</select></div>
+          <div><label className="label">Línea de Acción (LAE)</label><select className="input" value={f.laeId} onChange={(e) => setF({ ...f, laeId: e.target.value })}>{s.laes.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}</select></div>
         </div>
         <div className="mt-3"><label className="label">Alcances permitidos</label><div className="flex flex-wrap gap-1.5">{s.scopeTypes.map((t) => <button key={t.id} type="button" onClick={() => toggle(t.id)} className={clsx("chip border", f.allowedScopeTypeIds.includes(t.id) ? "bg-indigo-soft text-indigo border-indigo/30" : "bg-white text-slate-500 border-slate-200")}>{t.name}</button>)}</div></div>
         <div className="mt-5 flex justify-end gap-2"><button className="btn-ghost" onClick={onClose}>Cancelar</button><button className="btn-primary" disabled={!f.name || !f.laeId} onClick={() => { s.upsertElement(f); onClose(); }}>Guardar</button></div>
-        {!s.laes.length && <p className="text-xs text-coral mt-2 text-right">Primero crea un objetivo y una LAE en <Link href="/config/estrategia" className="underline">Estrategia</Link>.</p>}
+        {!s.laes.length && <p className="text-xs text-coral mt-2 text-right">Primero define la MEGA y sus Líneas de Acción en <Link href="/config/estrategia" className="underline">Estrategia</Link>.</p>}
       </div>
     </div>
   );
