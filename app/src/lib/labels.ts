@@ -37,7 +37,6 @@ export const TRAFFIC: Record<Traffic, { label: string; bg: string; text: string;
   outstanding: { label: "Sobresaliente", bg: "bg-mint-soft", text: "text-sob", dot: "bg-sob" },
   satisfactory: { label: "Satisfactorio", bg: "bg-mint-soft", text: "text-sat", dot: "bg-sat" },
   minimum: { label: "Mínimo", bg: "bg-amber-soft", text: "text-amber", dot: "bg-min" },
-  below: { label: "Bajo mínimo", bg: "bg-coral-soft", text: "text-coral", dot: "bg-bajo" },
   pending: { label: "Sin dato", bg: "bg-slate-100", text: "text-slate-500", dot: "bg-slate-300" },
 };
 

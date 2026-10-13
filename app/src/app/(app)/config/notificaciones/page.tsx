@@ -124,7 +124,7 @@ export default function Notificaciones() {
           <div className="card p-5">
             <h3 className="font-semibold mb-1">También en la hoja de ruta</h3>
             <ul className="text-xs text-slate-500 space-y-1 mt-2">
-              <li>· Alerta cuando un KPI cae a rojo dos meses seguidos</li>
+              <li>· Alerta cuando un KPI queda en Mínimo dos meses seguidos</li>
               <li>· Aviso al jefe cuando un scorecard espera su aprobación</li>
               <li>· Recordatorio de compromisos vencidos</li>
               <li>· WhatsApp y Microsoft Teams como canales</li>

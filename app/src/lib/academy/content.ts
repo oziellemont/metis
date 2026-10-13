@@ -574,7 +574,7 @@ export const MODULES: Module[] = [
         q: "Un KPI aparece en «Mínimo». ¿Qué significa?",
         options: [
           { text: "Que todavía no tiene dato", why: "Eso se muestra como «Sin dato»." },
-          { text: "Que va por debajo de la meta pero arriba del umbral mínimo: hay que actuar", correct: true, why: "Es la zona de alerta: todavía cuenta, pero si no se corrige puede caer a «Bajo mínimo»." },
+          { text: "Que va por debajo de la meta: hay que actuar", correct: true, why: "Es la zona de alerta: toca buscar la causa y acordar un plan para regresar a Satisfactorio." },
           { text: "Que superó la meta", why: "Eso sería «Satisfactorio» o «Sobresaliente»." },
           { text: "Que el KPI tiene poco peso", why: "El semáforo mide el resultado, no el peso." },
         ],

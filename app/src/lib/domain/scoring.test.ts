@@ -10,7 +10,7 @@ describe("semáforo incremental (↑)", () => {
     expect(traffic(98, t, "up")).toBe("outstanding");
     expect(traffic(96.1, t, "up")).toBe("satisfactory");
     expect(traffic(93, t, "up")).toBe("minimum");
-    expect(traffic(91.9, t, "up")).toBe("below");
+    expect(traffic(91.9, t, "up")).toBe("minimum"); // solo 3 niveles: debajo de la meta = Mínimo
     expect(traffic(null, t, "up")).toBe("pending");
   });
 });
@@ -21,7 +21,7 @@ describe("semáforo decremental (↓)", () => {
     expect(traffic(5.3, d, "down")).toBe("outstanding");
     expect(traffic(5.8, d, "down")).toBe("satisfactory");
     expect(traffic(5.9, d, "down")).toBe("minimum");
-    expect(traffic(6.3, d, "down")).toBe("below");
+    expect(traffic(6.3, d, "down")).toBe("minimum");
   });
 });
 
@@ -65,7 +65,7 @@ describe("cumplimiento ponderado", () => {
   });
   it("pondera correctamente", () => {
     const r = weightedAttainment([
-      { item: item("a", 75), value: 0, traffic: "below", attainment: 80, weight: 75 },
+      { item: item("a", 75), value: 0, traffic: "minimum", attainment: 80, weight: 75 },
       { item: item("b", 25), value: 0, traffic: "outstanding", attainment: 120, weight: 25 },
     ]);
     expect(r.value).toBe(90);

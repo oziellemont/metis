@@ -144,7 +144,7 @@ describe("invitación de calendario", () => {
 describe("correos", () => {
   const base = { tenantName: "Grupo Andes", appUrl: "https://www.metisalign.mx/", sessionId: "s1", whenLabel: "martes 13 de octubre · 10:30", leader: { name: "Mariana Torres" }, participant: { name: "Diego Pérez" } };
   it("al jefe: la guía de 5 pasos y el scorecard del colaborador", () => {
-    const m = rvReminderEmail({ ...base, to: "leader", stage: "d3", attainment: 92.5, kpis: [{ name: "OTIF", scope: "Saltillo", value: "91%", target: "95%", traffic: "below" }], openCommitments: [{ title: "Indicador de causa", late: true }] });
+    const m = rvReminderEmail({ ...base, to: "leader", stage: "d3", attainment: 92.5, kpis: [{ name: "OTIF", scope: "Saltillo", value: "91%", target: "95%", traffic: "minimum" }], openCommitments: [{ title: "Indicador de causa", late: true }] });
     expect(m.subject).toBe("En 3 días: tu 1 a 1 con Diego");
     for (const g of RV_GUIDE) expect(m.html).toContain(g.label);
     expect(m.html).toContain("Scorecard de Diego");

@@ -4,7 +4,7 @@ const COPY: Record<string, string> = {
   "Sesiones WTW / WTM": "Win the Week · Win the Month. El jefe programa una vez; mêtis arma el deck 2 días antes, el equipo comenta en su slide, la sesión ocurre en Teams/Meet y la IA propone compromisos. Llega en v1 (Q1–Q2 2027).",
   "Compromisos": "Compromisos con responsable, fecha y KPI vinculado, generados desde las sesiones. Escalamiento automático si vencen dos veces. Llega con el módulo de sesiones.",
   "Unidades de medida": "Catálogo de unidades (%, $, días, pts, toneladas…) con formato por país. En el MVP la unidad se captura como texto en cada elemento.",
-  "Notificaciones": "Recordatorios antes del cierre y alertas cuando un KPI cae a rojo, por correo, Teams o WhatsApp.",
+  "Notificaciones": "Recordatorios antes del cierre y alertas cuando un KPI cae debajo de la meta, por correo, Teams o WhatsApp.",
 };
 
 export function Soon({ title }: { title: string }) {

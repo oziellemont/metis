@@ -37,7 +37,7 @@ export function useDeck(session: Session | undefined) {
         return { id: i.id, name: el.name, scope: s.scopeOf(es.scopeId).name, value: s.fmt(ev.value, el), target: s.fmt(i.targets.sat, el), traffic: ev.traffic, log: r?.log, weight: ev.weight };
       });
       const att = sc ? s.scorecardAttainment(sc.id, month).value : null;
-      return { user: u, attainment: att, kpis, reds: kpis.filter((k) => k.traffic === "below").length };
+      return { user: u, attainment: att, kpis, reds: kpis.filter((k) => k.traffic === "minimum").length };
     });
 
     const review = commitmentsToReview(s.sessions, s.commitments, session);
@@ -45,7 +45,7 @@ export function useDeck(session: Session | undefined) {
     const ids = new Set(people.map((p) => p.id));
     // apoyos abiertos que involucran al equipo (los pide o los debe dar alguien del equipo)
     const supports = s.commitments.filter((c) => c.kind === "support" && c.approved && c.status === "open" && c.sessionId !== session.id && (ids.has(c.ownerId) || (c.requestedBy && ids.has(c.requestedBy))));
-    const reds = slides.flatMap((p) => p.kpis.filter((k) => k.traffic === "below" || k.traffic === "minimum").map((k) => ({ ...k, user: p.user })));
+    const reds = slides.flatMap((p) => p.kpis.filter((k) => k.traffic === "minimum").map((k) => ({ ...k, user: p.user })));
 
     let comp;
     if (session.kind === "wtm") {

@@ -12,7 +12,7 @@ import type { RvStage } from "./rv";
 
 const INK = "#171A3A", INDIGO = "#4F3FE0", SLATE = "#475569", MUTED = "#94A3B8", CANVAS = "#F6F7FC", CORAL = "#F2545B", MINT = "#12B886";
 const FONT = "Poppins,'Segoe UI',Helvetica,Arial,sans-serif";
-const DOT: Record<Traffic, string> = { outstanding: "#0E9F6E", satisfactory: "#12B886", minimum: "#F5A524", below: CORAL, pending: "#CBD5E1" };
+const DOT: Record<Traffic, string> = { outstanding: "#0E9F6E", satisfactory: "#12B886", minimum: "#F5A524", pending: "#CBD5E1" };
 
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]!));
 const first = (name: string) => (name || "").trim().split(/\s+/)[0] || "Hola";
