@@ -60,6 +60,8 @@ export interface MetisStore extends StoreData {
   /** Borra un objetivo/MEGA. Si se indica `moveLaesTo`, sus LAE se pasan antes a esa MEGA (así no se pierde nada). */
   removeObjective: (id: string, moveLaesTo?: string) => void;
   upsertLae: (l: LAE) => void;
+  /** Borra una LAE. Si tiene KPIs/proyectos, se mueven a `moveElementsTo` (obligatorio en ese caso). */
+  removeLae: (id: string, moveElementsTo?: string) => { ok: boolean; reason?: string };
   /** Catálogo de unidades (editable por el cliente). */
   upsertUnit: (u: Unit) => void;
   removeUnit: (unitId: string) => { ok: boolean; reason?: string };
