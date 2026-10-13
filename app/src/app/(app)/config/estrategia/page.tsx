@@ -6,13 +6,14 @@ import { Plus, Pencil, Check, X, Mountain, Flag, Gauge, FolderKanban, CalendarCl
 import { useMetis, newId } from "@/lib/store";
 import { PageHeader } from "@/components/ui/primitives";
 import type { LAE, StrategicObjective } from "@/lib/domain/types";
+import { LAE_MIN, LAE_MAX, PILLAR_QUESTION, PILLAR_SETS, type PillarIdea } from "@/lib/strategy/pillars";
 
 const COLORS = ["#4F3FE0", "#14C98E", "#2FA7F5", "#F5A524", "#F2545B", "#8B5CF6", "#0EA5A4", "#64748B"];
 
 /**
  * Estrategia: de lo general a lo particular.
  *   1. MEGA (Meta Estratégica Grande y Ambiciosa, 5–10 años) · una por empresa
- *   2. LAE (Líneas de Acción Estratégica) · 3 o 4 pilares para lograr la MEGA
+ *   2. LAE (Líneas de Acción Estratégica) · 3 a 5 pilares propios del negocio (no hay lista fija)
  *   3. KPIs (cómo medimos) y Proyectos (qué ejecutamos) · cuelgan de cada LAE
  */
 export default function Estrategia() {
@@ -21,6 +22,7 @@ export default function Estrategia() {
   const [mega, setMega] = useState<StrategicObjective | null>(null);
   const [lae, setLae] = useState<LAE | null>(null);
   const [unify, setUnify] = useState(false);
+  const [ideas, setIdeas] = useState(false);
 
   const current = s.objectives[0];
   const extra = s.objectives.length > 1;
@@ -30,12 +32,12 @@ export default function Estrategia() {
 
   const steps = [
     { n: 1, label: "MEGA", hint: "La meta grande a 5–10 años", done: !!current },
-    { n: 2, label: "Líneas de Acción (LAE)", hint: "3 o 4 pilares", done: laes.length >= 3 },
+    { n: 2, label: "Líneas de Acción (LAE)", hint: `${LAE_MIN} a ${LAE_MAX} pilares propios`, done: laes.length >= LAE_MIN },
     { n: 3, label: "KPIs y proyectos", hint: "En cada LAE", done: laes.length > 0 && withKpi === laes.length },
   ];
 
   const newMega = () => setMega({ id: newId(), name: "", horizon: String(s.year + 6) });
-  const newLae = () => current && setLae({ id: newId(), objectiveId: current.id, name: "", color: COLORS[s.laes.length % COLORS.length] });
+  const newLae = (idea?: PillarIdea) => current && setLae({ id: newId(), objectiveId: current.id, name: idea?.name ?? "", description: idea?.description, color: COLORS[s.laes.length % COLORS.length] });
 
   return (
     <>
@@ -103,17 +105,21 @@ export default function Estrategia() {
           <div className="mb-3 flex flex-wrap items-end gap-3">
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-indigo"><Flag size={13} /> Paso 2 · Líneas de Acción Estratégica</div>
-              <p className="mt-1 text-sm text-slate-500">Los 3 o 4 grandes pilares en los que la empresa se enfoca para lograr la MEGA. Por ejemplo: Comercial, Operación, Cliente y Talento.</p>
+              <p className="mt-1 text-sm text-slate-500">Entre {LAE_MIN} y {LAE_MAX} pilares <b>propios de tu negocio</b>: no hay una lista fija, nacen de la MEGA y de lo que hoy te separa de ella. Para encontrarlos, pregúntate: <i>{PILLAR_QUESTION}</i></p>
             </div>
-            <span className={clsx("chip", laes.length >= 3 && laes.length <= 4 ? "bg-mint-soft text-sob" : "bg-amber-soft text-amber")}>
-              {laes.length} de 3–4 pilares
+            <span className={clsx("chip", laes.length >= LAE_MIN && laes.length <= LAE_MAX ? "bg-mint-soft text-sob" : "bg-amber-soft text-amber")}>
+              {laes.length} de {LAE_MIN}–{LAE_MAX} pilares
             </span>
-            {isAdmin && <button className="btn-primary" onClick={newLae}><Plus size={14} /> Agregar LAE</button>}
+            <button className="btn-ghost" onClick={() => setIdeas(true)}><Lightbulb size={14} /> Ideas de pilares</button>
+            {isAdmin && <button className="btn-primary" onClick={() => newLae()}><Plus size={14} /> Agregar LAE</button>}
           </div>
-          {laes.length > 4 && <p className="mb-3 text-xs text-amber">Tienes más de 4 líneas de acción. Si todo es prioridad, nada lo es: considera juntar algunas.</p>}
+          {laes.length > LAE_MAX && <p className="mb-3 text-xs text-amber">Tienes {laes.length} líneas de acción. Con más de {LAE_MAX} no hay estrategia, hay una lista de deseos: junta o elimina algunas. Debes poder explicarlas en un minuto.</p>}
 
           {laes.length === 0 ? (
-            <div className="card p-8 text-center text-sm text-slate-500">Aún no hay líneas de acción. {isAdmin && "Agrega el primer pilar que hará posible la MEGA."}</div>
+            <div className="card p-8 text-center text-sm text-slate-500">
+              Aún no hay líneas de acción. {isAdmin && "Agrega el primer pilar que hará posible la MEGA."}
+              <div className="mt-2"><button className="text-indigo font-medium hover:underline" onClick={() => setIdeas(true)}>Ver ideas según el tipo de MEGA</button></div>
+            </div>
           ) : (
             <div className="grid gap-4 lg:grid-cols-2">
               {laes.map((l) => {
@@ -158,7 +164,7 @@ export default function Estrategia() {
         <section className="mt-6 card p-5">
           <div className="flex items-center gap-2 text-sm font-semibold"><Lightbulb size={15} className="text-amber" /> Para que la estrategia sí baje</div>
           <div className="mt-3 grid gap-3 sm:grid-cols-3 text-sm">
-            <Tip icon={Flag} title="Prioriza">Máximo 1 o 2 proyectos de alto impacto por línea de acción cada año.</Tip>
+            <Tip icon={Flag} title="Enfoca">De {LAE_MIN} a {LAE_MAX} líneas de acción y máximo 1 o 2 proyectos de alto impacto por línea cada año.</Tip>
             <Tip icon={UserCheck} title="Un solo dueño">Cada KPI y cada proyecto tiene un único responsable (Owner), normalmente un director o gerente.</Tip>
             <Tip icon={CalendarClock} title="Ritmo de gestión">Los KPIs se revisan cada mes, los proyectos cada quincena y la MEGA una vez al año.</Tip>
           </div>
@@ -182,7 +188,7 @@ export default function Estrategia() {
       {lae && (
         <Modal title={s.laes.some((x) => x.id === lae.id) ? "Editar línea de acción" : "Nueva línea de acción"} onClose={() => setLae(null)}
           canSave={!!lae.name.trim()} onSave={() => { s.upsertLae({ ...lae, name: lae.name.trim(), description: lae.description?.trim() || undefined }); setLae(null); }}>
-          <p className="mb-3 text-xs text-slate-500">Un pilar que la empresa necesita para lograr la MEGA. Después le agregas sus KPIs y proyectos.</p>
+          <p className="mb-3 text-xs text-slate-500">Una capacidad, mercado o cambio que la empresa tiene que dominar sí o sí para lograr la MEGA. Ponle el nombre que tenga sentido en tu negocio; después le agregas sus KPIs y proyectos.</p>
           <label className="label">Nombre</label>
           <input className="input" value={lae.name} onChange={(e) => setLae({ ...lae, name: e.target.value })} placeholder="Expansión de mercado" autoFocus />
           <label className="label mt-3">¿Qué abarca? (opcional)</label>
@@ -206,6 +212,8 @@ export default function Estrategia() {
         </Modal>
       )}
       {unify && <UnifyDialog onClose={() => setUnify(false)} />}
+      {ideas && <IdeasDialog canAdd={isAdmin && !!current} existing={s.laes.map((l) => l.name.toLowerCase())}
+        onPick={(idea) => { setIdeas(false); newLae(idea); }} onClose={() => setIdeas(false)} />}
     </>
   );
 }
@@ -275,6 +283,49 @@ function Modal({ title, children, onClose, onSave, canSave, saveLabel = "Guardar
         <div className="mb-4 flex items-center justify-between"><h3 className="font-semibold">{title}</h3><button onClick={onClose} className="text-slate-400 hover:text-ink"><X size={18} /></button></div>
         {children}
         <div className="mt-5 flex justify-end gap-2"><button className="btn-ghost" onClick={onClose}>Cancelar</button><button className="btn-primary" disabled={!canSave} onClick={onSave}>{saveLabel}</button></div>
+      </div>
+    </div>
+  );
+}
+
+/** Inspiración: los pilares cambian por completo según la MEGA. Nada aquí es obligatorio. */
+function IdeasDialog({ canAdd, existing, onPick, onClose }: { canAdd: boolean; existing: string[]; onPick: (i: PillarIdea) => void; onClose: () => void }) {
+  const [set, setSet] = useState(PILLAR_SETS[0].id);
+  const cur = PILLAR_SETS.find((x) => x.id === set) ?? PILLAR_SETS[0];
+  return (
+    <div className="fixed inset-0 z-30 flex items-end justify-center bg-ink/30 p-4 sm:items-center" onClick={onClose}>
+      <div className="card w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between">
+          <h3 className="font-semibold">Ideas de pilares según tu MEGA</h3>
+          <button onClick={onClose} className="text-slate-400 hover:text-ink" aria-label="Cerrar"><X size={16} /></button>
+        </div>
+        <p className="mt-1 text-sm text-slate-500">No hay pilares obligatorios: nacen de la naturaleza de tu negocio y de los obstáculos que te separan de la MEGA. Úsalos como inspiración y modifícalos, fusiónalos o cámbialos.</p>
+        <div className="mt-4 flex flex-wrap gap-1.5">
+          {PILLAR_SETS.map((p) => (
+            <button key={p.id} onClick={() => setSet(p.id)}
+              className={clsx("rounded-full px-3 py-1 text-xs font-medium", set === p.id ? "bg-indigo text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200")}>
+              {p.label}
+            </button>
+          ))}
+        </div>
+        <p className="mt-3 text-xs text-slate-400">{cur.when}</p>
+        <ul className="mt-2 grid gap-2 sm:grid-cols-2">
+          {cur.ideas.map((i) => {
+            const has = existing.includes(i.name.toLowerCase());
+            return (
+              <li key={i.name} className="flex items-start gap-2 rounded-xl border border-slate-200 p-3">
+                <div className="min-w-0 flex-1">
+                  <div className="text-sm font-medium">{i.name}</div>
+                  <div className="text-xs text-slate-500">{i.description}</div>
+                </div>
+                {canAdd && (has
+                  ? <span className="shrink-0 text-xs text-sob">Ya la tienes</span>
+                  : <button className="shrink-0 text-xs font-medium text-indigo hover:underline" onClick={() => onPick(i)}>Usar</button>)}
+              </li>
+            );
+          })}
+        </ul>
+        <p className="mt-4 rounded-xl bg-slate-50 px-3 py-2 text-xs text-slate-500"><b>Regla de oro:</b> elige entre {LAE_MIN} y {LAE_MAX} pilares. Si tienes 7 u 8, no tienes estrategia, tienes una lista de deseos.</p>
       </div>
     </div>
   );

@@ -47,7 +47,7 @@ export const objectives: StrategicObjective[] = [
   { id: "o-1", name: "Ser el distribuidor #1 del norte de México y llegar a $300M de EBITDA en 2032", horizon: "2032", description: "Pasar de $180M a $300M de EBITDA, con la mejor experiencia de servicio de la región y un equipo que crece con la empresa." },
 ];
 
-/** Las 4 Líneas de Acción Estratégica (pilares) para lograr la MEGA. */
+/** Las Líneas de Acción Estratégica (pilares) de Grupo Andes: elegidas para SU MEGA, no una lista fija. */
 export const laes: LAE[] = [
   { id: "l-1", objectiveId: "o-1", name: "Crecimiento rentable", description: "Comercial: ganar cuentas nuevas sin sacrificar margen.", color: "#14C98E" },
   { id: "l-2", objectiveId: "o-1", name: "Excelencia operativa", description: "Operación: entregar perfecto y al menor costo.", color: "#4F3FE0" },

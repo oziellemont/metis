@@ -79,7 +79,7 @@ export const MODULES: Module[] = [
         intro: "Así baja la MEGA hasta tu scorecard, de lo general a lo particular. Avanza paso a paso.",
         steps: [
           { label: "MEGA · Meta Estratégica Grande y Ambiciosa", example: "Ser el distribuidor #1 del norte con $300M de EBITDA en 2032" },
-          { label: "LAE · Línea de Acción Estratégica", example: "Expansión de mercado (uno de 3 o 4 pilares)" },
+          { label: "LAE · Línea de Acción Estratégica", example: "Expansión de mercado (uno de 3 a 5 pilares propios del negocio)" },
           { label: "KPI o proyecto estratégico, por alcance", example: "Venta canal moderno · Región Norte" },
           { label: "Owner y Contributors", example: "Owner: Gerente Regional · Contributors: 3 supervisores" },
           { label: "Scorecard personal", example: "Ese KPI pesa 30% en el scorecard de cada uno" },
@@ -139,7 +139,7 @@ export const MODULES: Module[] = [
         q: "¿Qué papel juega una LAE dentro de la cascada?",
         options: [
           { text: "Es el bono que se paga al cumplir un KPI", why: "La compensación se conecta al scorecard, pero no es lo que define una LAE." },
-          { text: "Es uno de los 3 o 4 pilares para lograr la MEGA, y agrupa sus KPIs y proyectos", correct: true, why: "La LAE es el puente: aterriza la MEGA en pilares concretos que sí se pueden medir (KPIs) y ejecutar (proyectos)." },
+          { text: "Es uno de los 3 a 5 pilares que la empresa elige para lograr la MEGA, y agrupa sus KPIs y proyectos", correct: true, why: "La LAE es el puente: aterriza la MEGA en pilares concretos que sí se pueden medir (KPIs) y ejecutar (proyectos)." },
           { text: "Es el nombre técnico del scorecard", why: "El scorecard es personal; la LAE vive en la estrategia de la empresa." },
           { text: "Es la meta numérica de cada indicador", why: "La meta vive en el scorecard; la LAE es el frente de acción." },
         ],
