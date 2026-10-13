@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, Check, GitBranch, Link2, CalendarClock, Scale, ShieldCheck, Sparkles } from "lucide-react";
 import { SiteNav, SiteFooter } from "@/components/site/SiteNav";
+import { HeroStory } from "@/components/site/HeroStory";
 
 export default function Landing() {
   return (
@@ -10,27 +11,15 @@ export default function Landing() {
         <section className="mx-auto max-w-6xl px-6 pt-14 pb-24 grid lg:grid-cols-2 gap-12 items-center">
           <div>
             <span className="chip bg-white/10 text-white/90">Plataforma SaaS + Consultoría en Alineación y Growth</span>
-            <h1 className="mt-5 text-4xl sm:text-5xl font-semibold leading-tight">Que toda tu empresa empuje hacia el mismo lado.</h1>
-            <p className="mt-5 text-lg text-white/75 max-w-xl">mêtis convierte la estrategia de tu empresa en objetivos, KPIs y proyectos claros para cada área y cada persona, medidos mes a mes. Y tu esquema de compensación por fin se conecta con la estrategia.</p>
+            <h1 className="mt-5 text-4xl sm:text-5xl font-semibold leading-[1.15] tracking-tight">Que toda tu empresa empuje hacia el mismo lado.</h1>
+            <p className="mt-5 text-lg text-white/75 max-w-xl">mêtis convierte la estrategia de tu empresa en objetivos, KPIs y proyectos claros para cada área y cada persona, medidos mes a mes.</p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link href="/indice" className="btn bg-mint text-white hover:bg-mint-light !px-5 !py-3">Mide tu Índice de Alineación <ArrowRight size={16} /></Link>
               <Link href="/inicio" className="btn bg-white/10 text-white hover:bg-white/20 !px-5 !py-3">Ver la plataforma en demo</Link>
             </div>
             <p className="mt-4 text-xs text-white/50">Gratis · 6 minutos · resultado inmediato en PDF</p>
           </div>
-          <div className="card !bg-white/95 text-ink p-6 shadow-2xl">
-            <div className="text-xs text-slate-400">Alineación de la organización</div>
-            <div className="text-4xl font-semibold text-indigo mt-1">94%</div>
-            <div className="text-xs text-slate-500">312 colaboradores con scorecard aprobado</div>
-            <div className="mt-5 rounded-xl bg-slate-50 p-4">
-              <div className="flex items-center justify-between text-xs text-slate-500"><span>OTIF · Región Norte</span><span>Cierre de septiembre</span></div>
-              <div className="flex items-end justify-between mt-1"><span className="text-2xl font-semibold">96.1%</span><span className="chip bg-mint-soft text-sat">Satisfactorio</span></div>
-              <div className="mt-2 text-[11px] text-slate-400">Este dato alimenta a 4 Contributors · se actualizó en sus scorecards al guardar</div>
-            </div>
-            <div className="mt-4 grid grid-cols-4 gap-2 text-center">
-              {[["18", "Sobresaliente", "text-sob"], ["41", "Satisfactorio", "text-sat"], ["9", "Mínimo", "text-amber"], ["4", "Bajo mínimo", "text-coral"]].map(([n, l, c]) => <div key={l}><div className={`text-xl font-semibold ${c}`}>{n}</div><div className="text-[10px] text-slate-400">{l}</div></div>)}
-            </div>
-          </div>
+          <HeroStory />
         </section>
       </div>
 

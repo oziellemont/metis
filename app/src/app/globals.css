@@ -41,3 +41,8 @@ body { font-feature-settings: "tnum" 1; }
 @keyframes help-in { from { opacity: 0; transform: translateY(6px) scale(.98); } to { opacity: 1; transform: none; } }
 .help-in { animation: help-in .22s ease-out both; transform-origin: bottom right; }
 @media (prefers-reduced-motion: reduce) { .help-ring, .help-in { animation: none; } }
+
+/* Hero de la página pública: barra de avance de cada escena */
+@keyframes hero-progress { from { width: 0%; } to { width: 100%; } }
+.hero-progress { animation: hero-progress linear both; }
+@media (prefers-reduced-motion: reduce) { .hero-progress { animation: none; width: 100%; } }
