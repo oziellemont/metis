@@ -104,7 +104,7 @@ export function PresentMode({ session, onExit }: { session: Session; onExit: (fi
                 </div>
                 <BigStat value={p.attainment === null ? "—" : `${p.attainment}%`} label="cumplimiento" />
               </div>
-              <div className="grid gap-6 lg:grid-cols-2">
+              <div className="grid gap-6 lg:grid-cols-2 [&>*]:min-w-0">
                 <div>
                   <Section icon={Target} title="Sus indicadores" />
                   {p.kpis.length === 0 ? <Empty>Sin scorecard este año.</Empty> : (
@@ -115,7 +115,7 @@ export function PresentMode({ session, onExit }: { session: Session; onExit: (fi
                             <span className={clsx("h-2.5 w-2.5 shrink-0 rounded-full", { outstanding: "bg-sob", satisfactory: "bg-sat", minimum: "bg-min", pending: "bg-white/30" }[k.traffic])} />
                             <span className="min-w-0 flex-1 truncate text-sm">{k.name} <span className="text-white/40">· {k.scope}</span></span>
                             <span className="text-sm font-semibold tabular-nums">{k.value}</span>
-                            <span className="w-20 text-right text-xs text-white/40 tabular-nums">meta {k.target}</span>
+                            <span className="min-w-[5rem] shrink-0 whitespace-nowrap text-right text-xs text-white/40 tabular-nums">meta {k.target}</span>
                           </div>
                           {k.log && <div className="ml-4.5 mt-0.5 pl-[18px] text-xs italic text-white/50">“{k.log}”</div>}
                         </li>
@@ -146,7 +146,7 @@ export function PresentMode({ session, onExit }: { session: Session; onExit: (fi
         return (
           <>
             <SlideTitle kicker="Destrabar" title="¿Qué apoyo necesitamos y de quién?" />
-            <div className="grid gap-6 lg:grid-cols-2">
+            <div className="grid gap-6 lg:grid-cols-2 [&>*]:min-w-0">
               <div>
                 <Section icon={HandHelping} title="Apoyos abiertos" />
                 {deck.supports.length === 0 ? <Empty>No hay apoyos abiertos.</Empty> : <div className="divide-y divide-white/10">{deck.supports.map((c) => <CommitmentRow key={c.id} c={c} dark />)}</div>}
@@ -267,7 +267,7 @@ export function PresentMode({ session, onExit }: { session: Session; onExit: (fi
         <span className="ml-2 inline-flex items-center gap-1.5 rounded-full bg-coral/20 px-2.5 py-0.5 text-xs text-[#FF9AA0]"><span className="h-1.5 w-1.5 animate-pulse rounded-full bg-coral" /> En vivo</span>
         <button onClick={exit} className="ml-auto inline-flex items-center gap-1 rounded-lg px-2 py-1 text-white/60 hover:bg-white/10 hover:text-white" aria-label="Salir del modo presentación"><X size={16} /> Salir</button>
       </div>
-      <div key={cur.key} className="academy-in flex-1 overflow-y-auto px-6 pb-6 sm:px-12 lg:px-20">
+      <div key={cur.key} className="academy-in flex-1 overflow-y-auto overflow-x-hidden px-6 pb-6 sm:px-12 lg:px-20">
         <div className="mx-auto h-full max-w-6xl py-4">{cur.render()}</div>
       </div>
       <div className="flex items-center gap-3 border-t border-white/10 px-6 py-3">

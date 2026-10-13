@@ -170,28 +170,32 @@ export function QuickCapture({ people, defaultOwnerId, sessionId, approved, dark
         ))}
         <span className={clsx("ml-auto hidden text-[11px] sm:block", dark ? "text-white/40" : "text-slate-400")}>Enter para agregar</span>
       </div>
-      <form onSubmit={(e) => { e.preventDefault(); add(); }} className="grid gap-2 sm:grid-cols-[1fr_auto_auto_auto]">
-        <input ref={input} autoFocus={autoFocus} value={title} onChange={(e) => setTitle(e.target.value)} className={field}
+      <form onSubmit={(e) => { e.preventDefault(); add(); }} className="space-y-2">
+        <input ref={input} autoFocus={autoFocus} value={title} onChange={(e) => setTitle(e.target.value)} className={clsx(field, "w-full")}
           placeholder={kind === "commitment" ? "¿Qué se compromete a hacer? (algo verificable)" : "¿Qué apoyo necesita?"} aria-label="Descripción" />
-        {kind === "support" ? (
-          <div className="flex items-center gap-1">
-            <select value={requestedBy} onChange={(e) => setRequestedBy(e.target.value)} className={clsx(field, "!w-auto")} aria-label="Quién lo pide" title="Quién lo pide">
-              {people.map((u) => <option className={opt} key={u.id} value={u.id}>{u.name.split(" ")[0]}</option>)}
+        <div className="flex flex-wrap items-center gap-2">
+          {kind === "support" ? (
+            <div className="flex min-w-[16rem] flex-1 items-center gap-2">
+              <select value={requestedBy} onChange={(e) => setRequestedBy(e.target.value)} className={clsx(field, "min-w-0 flex-1")} aria-label="Quién lo pide" title="Quién lo pide">
+                {people.map((u) => <option className={opt} key={u.id} value={u.id}>{u.name.split(" ")[0]}</option>)}
+              </select>
+              <span className={clsx("shrink-0 whitespace-nowrap text-xs", dark ? "text-white/50" : "text-slate-400")}>pide a</span>
+              <select value={ownerId} onChange={(e) => setOwnerId(e.target.value)} className={clsx(field, "min-w-0 flex-1")} aria-label="A quién se le pide">
+                {s.users.map((u) => <option className={opt} key={u.id} value={u.id}>{u.name}</option>)}
+              </select>
+            </div>
+          ) : (
+            <select value={ownerId} onChange={(e) => setOwnerId(e.target.value)} className={clsx(field, "min-w-[10rem] flex-1")} aria-label="Responsable">
+              {people.map((u) => <option className={opt} key={u.id} value={u.id}>{u.name}</option>)}
             </select>
-            <span className={clsx("text-xs", dark ? "text-white/50" : "text-slate-400")}>pide a</span>
-            <select value={ownerId} onChange={(e) => setOwnerId(e.target.value)} className={clsx(field, "!w-auto")} aria-label="A quién se le pide">
-              {s.users.map((u) => <option className={opt} key={u.id} value={u.id}>{u.name}</option>)}
-            </select>
+          )}
+          <div className="ml-auto flex items-center gap-2">
+            <input type="date" value={due} onChange={(e) => setDue(e.target.value)} className={clsx(field, "!w-auto", dark && "[color-scheme:dark]")} aria-label="Fecha compromiso" />
+            <button type="submit" className={clsx("inline-flex shrink-0 items-center justify-center gap-1 whitespace-nowrap rounded-xl px-4 py-2 text-sm font-semibold transition", dark ? "bg-mint text-white hover:bg-mint-light" : "bg-indigo text-white hover:bg-indigo-light")}>
+              <Plus size={15} /> Agregar
+            </button>
           </div>
-        ) : (
-          <select value={ownerId} onChange={(e) => setOwnerId(e.target.value)} className={clsx(field, "!w-auto")} aria-label="Responsable">
-            {people.map((u) => <option className={opt} key={u.id} value={u.id}>{u.name}</option>)}
-          </select>
-        )}
-        <input type="date" value={due} onChange={(e) => setDue(e.target.value)} className={clsx(field, "!w-auto", dark && "[color-scheme:dark]")} aria-label="Fecha compromiso" />
-        <button type="submit" className={clsx("inline-flex items-center justify-center gap-1 rounded-xl px-4 py-2 text-sm font-semibold transition", dark ? "bg-mint text-white hover:bg-mint-light" : "bg-indigo text-white hover:bg-indigo-light")}>
-          <Plus size={15} /> Agregar
-        </button>
+        </div>
       </form>
       <div className="mt-2">
         {!showKpi ? (
