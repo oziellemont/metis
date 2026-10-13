@@ -140,11 +140,11 @@ function Ritmo() {
 
 function Foto() {
   const k = useSteps(1, 100, 200);
-  const rows = [["Sobresaliente", 18, "bg-sob"], ["Satisfactorio", 41, "bg-sat"], ["Mínimo", 9, "bg-min"], ["Bajo mínimo", 4, "bg-bajo"]] as const;
+  const rows = [["Sobresaliente", 18, "bg-sob"], ["Satisfactorio", 41, "bg-sat"], ["Mínimo", 9, "bg-min"]] as const;
   const max = 41;
   return (
     <div>
-      <div className="flex items-center justify-between text-[11px] text-slate-500"><span className="font-semibold text-ink">Cierre de septiembre</span><span>72 indicadores</span></div>
+      <div className="flex items-center justify-between text-[11px] text-slate-500"><span className="font-semibold text-ink">Cierre de septiembre</span><span>68 indicadores</span></div>
       <div className="mt-2.5 space-y-2">
         {rows.map(([l, n, c], i) => (
           <div key={l} className="flex items-center gap-2 text-[11px]">

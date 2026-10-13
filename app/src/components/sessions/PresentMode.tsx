@@ -1,7 +1,7 @@
 "use client";
 /**
  * Modo presentación de una sesión WTW / WTM (pantalla completa, para proyectar o compartir en Teams/Meet/Zoom).
- * Guion: portada → marcador → compromisos de la sesión anterior → persona por persona → apoyos → (WTM: rojos y focos) → cierre.
+ * Guion: portada → marcador → compromisos de la sesión anterior → persona por persona → apoyos → (WTM: debajo de la meta y focos) → cierre.
  * Lo que se captura aquí queda como BORRADOR; al terminar, la sesión pasa a «Por aprobar».
  */
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -53,7 +53,7 @@ export function PresentMode({ session, onExit }: { session: Session; onExit: (fi
             ))}
           </div>
           <div className="mt-12 grid max-w-3xl gap-3 sm:grid-cols-4">
-            {(isWtm ? ["Marcador del mes", "Compromisos", "Rojos y causas", "Focos del mes"] : ["Marcador", "¿Se cumplió?", "Esta semana", "Apoyos"]).map((t, k) => (
+            {(isWtm ? ["Marcador del mes", "Compromisos", "Debajo de la meta", "Focos del mes"] : ["Marcador", "¿Se cumplió?", "Esta semana", "Apoyos"]).map((t, k) => (
               <div key={t} className="rounded-2xl bg-white/[0.06] p-4 ring-1 ring-white/10"><div className="text-xs text-white/40">0{k + 1}</div><div className="mt-1 text-sm font-medium">{t}</div></div>
             ))}
           </div>
@@ -112,7 +112,7 @@ export function PresentMode({ session, onExit }: { session: Session; onExit: (fi
                       {p.kpis.map((k) => (
                         <li key={k.id} className="py-2">
                           <div className="flex items-center gap-2">
-                            <span className={clsx("h-2.5 w-2.5 shrink-0 rounded-full", { outstanding: "bg-sob", satisfactory: "bg-sat", minimum: "bg-min", below: "bg-bajo", pending: "bg-white/30" }[k.traffic])} />
+                            <span className={clsx("h-2.5 w-2.5 shrink-0 rounded-full", { outstanding: "bg-sob", satisfactory: "bg-sat", minimum: "bg-min", pending: "bg-white/30" }[k.traffic])} />
                             <span className="min-w-0 flex-1 truncate text-sm">{k.name} <span className="text-white/40">· {k.scope}</span></span>
                             <span className="text-sm font-semibold tabular-nums">{k.value}</span>
                             <span className="w-20 text-right text-xs text-white/40 tabular-nums">meta {k.target}</span>
@@ -164,15 +164,15 @@ export function PresentMode({ session, onExit }: { session: Session; onExit: (fi
     });
     if (isWtm) {
       list.push({
-        key: "reds", label: "Rojos", render: () => (
+        key: "reds", label: "Debajo de la meta", render: () => (
           <>
-            <SlideTitle kicker={`Cierre de ${MONTHS[deck.month - 1]}`} title="Rojos y amarillos: ¿causa y plan?" />
+            <SlideTitle kicker={`Cierre de ${MONTHS[deck.month - 1]}`} title="Debajo de la meta: ¿causa y plan?" />
             {deck.pending > 0 && <div className="mb-3 rounded-2xl bg-amber/15 px-4 py-2.5 text-sm text-amber ring-1 ring-amber/30">{deck.pending} de {deck.kpiTotal} indicadores aún no tienen resultado de {MONTHS[deck.month - 1].toLowerCase()}. Pide que se carguen para cerrar el mes completo.</div>}
-            {deck.reds.length === 0 ? <Empty>{deck.pending === deck.kpiTotal && deck.kpiTotal > 0 ? "Todavía no hay resultados cargados de este mes." : "Ningún indicador en rojo o amarillo. 🎉"}</Empty> : (
+            {deck.reds.length === 0 ? <Empty>{deck.pending === deck.kpiTotal && deck.kpiTotal > 0 ? "Todavía no hay resultados cargados de este mes." : "Ningún indicador debajo de la meta. 🎉"}</Empty> : (
               <ul className="grid gap-2 lg:grid-cols-2">
                 {deck.reds.map((k) => (
                   <li key={k.id + k.user.id} className="flex items-center gap-3 rounded-2xl bg-white/[0.06] p-3 ring-1 ring-white/10">
-                    <span className={clsx("h-3 w-3 shrink-0 rounded-full", k.traffic === "below" ? "bg-bajo" : "bg-min")} />
+                    <span className={clsx("h-3 w-3 shrink-0 rounded-full", "bg-min")} />
                     <div className="min-w-0 flex-1">
                       <div className="truncate text-sm font-medium">{k.name} · {k.scope}</div>
                       <div className="truncate text-xs text-white/50">{k.user.name}{k.log ? ` · “${k.log}”` : ""}</div>

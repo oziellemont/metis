@@ -14,7 +14,7 @@ export interface Guide {
 
 const GENERAL: Faq[] = [
   { q: "¿Cómo encuentro algo rápido?", a: "Presiona ⌘K (o Ctrl+K) desde cualquier pantalla y escribe el nombre de un indicador, proyecto, persona o página." },
-  { q: "¿Qué significan los colores del semáforo?", a: "Sobresaliente y Satisfactorio (verdes) = meta cumplida. Mínimo (amarillo) = debajo de la meta pero arriba del umbral, hay que actuar. Bajo mínimo (rojo) = requiere un plan. Gris = sin dato." },
+  { q: "¿Qué significan los colores del semáforo?", a: "Sobresaliente y Satisfactorio (verdes) = meta cumplida. Mínimo (amarillo) = debajo de la meta: hay que actuar y acordar un plan. Gris = sin dato." },
   { q: "¿Qué diferencia hay entre Owner y Contributor?", a: "El Owner captura el dato de un indicador cada mes. Los Contributors lo tienen en su scorecard y se les actualiza solo: un dato, un dueño." },
   { q: "¿Dónde repaso los conceptos?", a: "En mêtis Academy (arriba del menú) puedes volver a cualquier módulo cuando quieras." },
 ];
@@ -65,7 +65,7 @@ export const GUIDES: Record<string, Guide> = {
     faqs: [
       { q: "¿Quién participa?", a: "Tu equipo natural: las personas que te reportan directo. Si alguien no aparece, revisa su jefe directo en Configuración → Usuarios." },
       { q: "¿Qué se presenta en una WTW?", a: "1) Marcador con los indicadores de cada quien, 2) ¿se cumplieron los compromisos de la sesión anterior?, 3) persona por persona: cierre y compromisos de esta semana, 4) solicitudes de apoyo." },
-      { q: "¿Y en la WTM?", a: "El cierre del mes: scorecard de cada persona, rojos y amarillos con su causa, el % de compromisos cumplidos del mes y 2–3 focos para el mes siguiente." },
+      { q: "¿Y en la WTM?", a: "El cierre del mes: scorecard de cada persona, lo que va debajo de la meta con su causa, el % de compromisos cumplidos del mes y 2–3 focos para el mes siguiente." },
       { q: "¿Los compromisos llegan en cuanto los capturo?", a: "No. Quedan como borrador hasta que el líder revisa y aprueba la sesión. Así nada sale con errores." },
       { q: "¿Se puede grabar o transcribir la sesión?", a: "Próximamente: podrás grabar o subir el audio de Teams, Meet o Zoom y el agente de mêtis propondrá el resumen y los compromisos. Tú siempre apruebas antes de enviar." },
       { q: "¿Cómo navego la presentación?", a: "Con las flechas ← → del teclado o los botones de abajo. Esc para salir; lo capturado se guarda." },
@@ -90,7 +90,7 @@ export const GUIDES: Record<string, Guide> = {
   "/mapa": {
     title: "Mapa de alineación",
     purpose: "La cascada completa: cómo cada objetivo baja a LAEs, indicadores y personas.",
-    steps: ["Elige la vista por alcance (empresa, región, planta…).", "Abre un objetivo para ver sus LAEs e indicadores.", "Usa el conteo por semáforo para ubicar dónde están los rojos."],
+    steps: ["Elige la vista por alcance (empresa, región, planta…).", "Abre un objetivo para ver sus LAEs e indicadores.", "Usa el conteo por semáforo para ubicar qué va en Mínimo."],
     faqs: [
       { q: "¿Qué es una LAE?", a: "Línea de Acción Estratégica: el «cómo» de un objetivo. Cada LAE se mide con uno o varios indicadores." },
       { q: "¿Para qué me sirve el mapa?", a: "Para responder «¿mi trabajo a qué contribuye?» y para usarlo como marcador en las sesiones de equipo." },
@@ -120,7 +120,7 @@ export const GUIDES: Record<string, Guide> = {
     steps: ["Revisa el cumplimiento de cada colaborador.", "Usa «Revisar y aprobar» en los scorecards enviados.", "Prepara tus 1 a 1 abriendo «Ver scorecard»."],
     faqs: [
       { q: "¿Cómo apruebo un scorecard?", a: "Abre «Revisar y aprobar». Puedes Aprobar, Solicitar ajustes o Denegar; en los dos últimos deja una nota clara de qué cambiar." },
-      { q: "¿Cómo preparo un 1 a 1?", a: "Abre su scorecard antes: reconoce los verdes con hechos y lleva preguntas para los rojos («¿qué está pasando?, ¿qué necesitas?»). Cierra con compromisos con fecha." },
+      { q: "¿Cómo preparo un 1 a 1?", a: "Abre su scorecard antes: reconoce los verdes con hechos y lleva preguntas para lo que va en Mínimo («¿qué está pasando?, ¿qué necesitas?»). Cierra con compromisos con fecha." },
       { q: "¿Qué tono uso en la revisión?", a: "Coach, no inspector: firme con los resultados, cálido con las personas. Escucha más de lo que hablas." },
     ],
   },
@@ -129,7 +129,7 @@ export const GUIDES: Record<string, Guide> = {
     purpose: "La foto de toda la organización: ideal para la WTM y para dirección.",
     steps: ["Elige el mes en la barra superior.", "Descarga el PDF para presentarlo o exporta a CSV para analizarlo."],
     faqs: [
-      { q: "¿Cómo lo uso en la WTM?", a: "Proyéctalo como marcador al inicio de la sesión: dónde vamos ganando, dónde perdiendo y qué rojos requieren plan." },
+      { q: "¿Cómo lo uso en la WTM?", a: "Proyéctalo como marcador al inicio de la sesión: dónde vamos ganando, dónde perdiendo y qué indicadores en Mínimo requieren plan." },
       { q: "¿Puedo abrirlo en Excel?", a: "Sí, con «Exportar CSV»." },
     ],
   },

@@ -24,7 +24,7 @@ export default function Inicio() {
   const toApprove = teamScorecards.filter((t) => t.sc?.status === "submitted");
 
   // Resumen organizacional (todos los items con dato en el mes)
-  const counts: Record<Traffic, number> = { outstanding: 0, satisfactory: 0, minimum: 0, below: 0, pending: 0 };
+  const counts: Record<Traffic, number> = { outstanding: 0, satisfactory: 0, minimum: 0, pending: 0 };
   s.scorecardItems.forEach((i) => { counts[s.evaluate(i).traffic]++; });
   const today = new Date();
   const myCommitments = s.commitments.filter((c) => c.approved && c.status === "open" && c.ownerId === me.id)
@@ -131,12 +131,12 @@ export default function Inicio() {
             </div>
             <div className="text-xs text-slate-500 mb-2">Elementos de scorecard por nivel de cumplimiento</div>
             <div className="flex h-2.5 overflow-hidden rounded-full bg-slate-100">
-              {(["outstanding", "satisfactory", "minimum", "below", "pending"] as Traffic[]).map((t) => (
+              {(["outstanding", "satisfactory", "minimum", "pending"] as Traffic[]).map((t) => (
                 <div key={t} className={TRAFFIC[t].dot} style={{ width: `${s.scorecardItems.length ? (counts[t] / s.scorecardItems.length) * 100 : 0}%` }} />
               ))}
             </div>
             <div className="mt-3 grid grid-cols-5 gap-1 text-center">
-              {(["outstanding", "satisfactory", "minimum", "below", "pending"] as Traffic[]).map((t) => (
+              {(["outstanding", "satisfactory", "minimum", "pending"] as Traffic[]).map((t) => (
                 <div key={t}><div className={`text-lg font-semibold ${TRAFFIC[t].text}`}>{counts[t]}</div><div className="text-[10px] text-slate-400 leading-tight">{TRAFFIC[t].label}</div></div>
               ))}
             </div>

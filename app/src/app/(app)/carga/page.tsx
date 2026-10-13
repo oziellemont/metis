@@ -141,7 +141,7 @@ function LoadPanel({ esId }: { esId: string }) {
         <div className="grid grid-cols-12 gap-1">
           {series.map((v, i) => { const tt = traffic(v, targets, el.direction); return (
             <div key={i} className="text-center">
-              <div className={clsx("h-8 rounded-md flex items-center justify-center text-[10px] font-medium", tt === "pending" ? "bg-slate-50 text-slate-300" : tt === "below" ? "bg-coral-soft text-coral" : tt === "minimum" ? "bg-amber-soft text-amber" : "bg-mint-soft text-sob")}>{v === null ? "·" : s.fmt(v, el).replace("%", "")}</div>
+              <div className={clsx("h-8 rounded-md flex items-center justify-center text-[10px] font-medium", tt === "pending" ? "bg-slate-50 text-slate-300" : tt === "minimum" ? "bg-amber-soft text-amber" : "bg-mint-soft text-sob")}>{v === null ? "·" : s.fmt(v, el).replace("%", "")}</div>
               <div className="text-[9px] text-slate-400 mt-0.5">{MONTHS_SHORT[i]}</div>
             </div>
           ); })}

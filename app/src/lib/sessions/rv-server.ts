@@ -126,7 +126,7 @@ async function scorecardSnapshot(sb: Admin, tenant: TenantRow, now: Date, userId
       };
       return { kpi, ev: { item, value, traffic: kpi.traffic, attainment: attainment(value, t, dir), weight: weightFor(item, month) } };
     });
-    const order: Traffic[] = ["below", "minimum", "pending", "satisfactory", "outstanding"];
+    const order: Traffic[] = ["minimum", "pending", "satisfactory", "outstanding"];
     out.set(sc.user_id as string, {
       attainment: weightedAttainment(evals.map((x) => x.ev)).value,
       kpis: evals.map((x) => x.kpi).sort((a, b) => order.indexOf(a.traffic) - order.indexOf(b.traffic)),

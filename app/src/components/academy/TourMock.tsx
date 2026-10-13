@@ -64,7 +64,7 @@ function Carga() {
   const val = Number(v);
   const has = v !== "" && !Number.isNaN(val);
   const pct = has ? Math.round((val / 95) * 100) : null;
-  const tone = pct === null ? "bg-slate-300" : pct >= 100 ? "bg-sob" : pct >= 90 ? "bg-min" : "bg-bajo";
+  const tone = pct === null ? "bg-slate-300" : pct >= 100 ? "bg-sob" : "bg-min";
   return (
     <Frame title="Carga mensual" icon={Upload}>
       <div className="rounded-xl bg-white border border-slate-100 p-3">

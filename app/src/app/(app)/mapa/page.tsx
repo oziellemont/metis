@@ -33,7 +33,7 @@ export default function Mapa() {
     return { es, el, value: r?.value ?? null, t, cvs, owner: s.userOf(es.ownerUserId) };
   };
 
-  const totals: Record<Traffic, number> = { outstanding: 0, satisfactory: 0, minimum: 0, below: 0, pending: 0 };
+  const totals: Record<Traffic, number> = { outstanding: 0, satisfactory: 0, minimum: 0, pending: 0 };
   esVisible.forEach((es) => totals[evalEs(es.id).t]++);
 
   return (
@@ -51,7 +51,7 @@ export default function Mapa() {
 
       <div className="card p-4 mb-6 flex flex-wrap items-center gap-4">
         <span className="text-sm text-slate-500">{esVisible.length} elementos-alcance</span>
-        {(["outstanding", "satisfactory", "minimum", "below", "pending"] as Traffic[]).map((t) => (
+        {(["outstanding", "satisfactory", "minimum", "pending"] as Traffic[]).map((t) => (
           <span key={t} className="inline-flex items-center gap-1.5 text-sm"><span className={clsx("h-2 w-2 rounded-full", TRAFFIC[t].dot)} />{totals[t]} <span className="text-slate-400">{TRAFFIC[t].label}</span></span>
         ))}
         <span className="ml-auto text-xs text-slate-400">100% de los elementos conectados a una LAE y a un objetivo</span>

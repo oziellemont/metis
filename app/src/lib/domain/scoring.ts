@@ -2,7 +2,8 @@ import type { Direction, Result, ScorecardItem, Targets, Traffic } from "./types
 
 /**
  * Semáforo mêtis.
- * Incremental (up):   real ≥ sob → outstanding · ≥ sat → satisfactory · ≥ min → minimum · else below
+ * Tres niveles: Sobresaliente, Satisfactorio y Mínimo.
+ * Incremental (up):   real ≥ sob → outstanding · ≥ sat → satisfactory · debajo de la meta → minimum
  * Decremental (down): la misma lógica invertida (real ≤ meta).
  */
 export function traffic(value: number | null | undefined, t: Targets, dir: Direction): Traffic {
@@ -10,8 +11,7 @@ export function traffic(value: number | null | undefined, t: Targets, dir: Direc
   const ge = (a: number, b: number) => (dir === "up" ? a >= b : a <= b);
   if (ge(value, t.out)) return "outstanding";
   if (ge(value, t.sat)) return "satisfactory";
-  if (ge(value, t.min)) return "minimum";
-  return "below";
+  return "minimum";
 }
 
 /**
@@ -89,4 +89,4 @@ export function affectedItems(items: ScorecardItem[], elementScopeId: string): S
   return items.filter((i) => i.elementScopeId === elementScopeId);
 }
 
-export const TRAFFIC_ORDER: Traffic[] = ["outstanding", "satisfactory", "minimum", "below", "pending"];
+export const TRAFFIC_ORDER: Traffic[] = ["outstanding", "satisfactory", "minimum", "pending"];

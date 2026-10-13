@@ -10,7 +10,7 @@ export type Period = "monthly" | "bimonthly" | "quarterly" | "annual";
 /** owner = Owner (dueño del resultado, captura) · contributor = Contributor (participa sin capturar) */
 export type Responsibility = "owner" | "contributor";
 export type ScorecardStatus = "draft" | "submitted" | "approved" | "changes_requested" | "rejected";
-export type Traffic = "outstanding" | "satisfactory" | "minimum" | "below" | "pending";
+export type Traffic = "outstanding" | "satisfactory" | "minimum" | "pending";
 
 export interface StrategicObjective {
   id: string;

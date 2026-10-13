@@ -39,7 +39,7 @@ export function Scoreboard({ slides, dark = false, detailed = false }: { slides:
           ) : (
             <div className="mt-3 flex flex-wrap gap-1">
               {p.kpis.map((k) => <span key={k.id} title={`${k.name} · ${k.value} (meta ${k.target})`}><TrafficChip t={k.traffic} compact /></span>)}
-              {p.reds > 0 && <span className={clsx("ml-auto text-xs font-medium", dark ? "text-[#FF9AA0]" : "text-coral")}>{p.reds} en rojo</span>}
+              {p.reds > 0 && <span className={clsx("ml-auto text-xs font-medium", dark ? "text-amber" : "text-amber")}>{p.reds} debajo de la meta</span>}
             </div>
           )}
         </div>
