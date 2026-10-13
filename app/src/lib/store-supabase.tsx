@@ -19,6 +19,7 @@ import { EMPTY, REALTIME_TABLES, dbRoleFor, friendlyDbError, loadTenant, loadTen
 import { ACTIVE_TENANT_KEY as ACTIVE_KEY } from "./auth";
 import { approveDrafts } from "./sessions/logic";
 import { applyDeletion, deletionImpact, scopeTypeUsage } from "./domain/deletion";
+import { LAE_MAX } from "@/lib/strategy/pillars";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Row = Record<string, any>;
@@ -222,6 +223,9 @@ export function SupabaseMetisProvider({ children }: { children: ReactNode }) {
     run("No se guardó el objetivo", () => db.from("objectives").upsert(toDb.objective(T, o)));
   }, [db, T, run]);
   const upsertLae: MetisStore["upsertLae"] = useCallback((l) => {
+    // Máximo LAE_MAX líneas de acción: una nueva más allá del límite no se guarda.
+    const cur = dataRef.current.laes;
+    if (!cur.some((x) => x.id === l.id) && cur.length >= LAE_MAX) return;
     setData((d) => ({ ...d, laes: d.laes.some((x) => x.id === l.id) ? d.laes.map((x) => (x.id === l.id ? l : x)) : [...d.laes, l] }));
     run("No se guardó la LAE", () => db.from("laes").upsert(toDb.lae(T, l)));
   }, [db, T, run]);
