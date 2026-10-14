@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PRICE_TIERS } from "@/lib/billing";
 import { ArrowRight, Check, GitBranch, Link2, CalendarClock, Scale, ShieldCheck, Sparkles } from "lucide-react";
 import { SiteNav, SiteFooter } from "@/components/site/SiteNav";
 import { HeroStory } from "@/components/site/HeroStory";
@@ -111,18 +112,18 @@ export default function Landing() {
         <div className="mx-auto max-w-6xl px-6 py-20">
           <div className="text-xs font-semibold uppercase tracking-wider text-indigo">mêtis Plataforma</div>
           <h2 className="mt-2 text-3xl font-semibold">Un precio que crece contigo.</h2>
-          <p className="mt-2 text-slate-600 max-w-2xl">Pagas por colaborador activo con scorecard. Todos los planes incluyen la cascada completa y los vínculos Owner ↔ Contributor, el corazón de mêtis.</p>
+          <p className="mt-2 text-slate-600 max-w-2xl">Pagas solo por los colaboradores activos con scorecard, no por toda tu plantilla. Todos los planes incluyen la cascada completa y los vínculos Owner ↔ Contributor, el corazón de mêtis.</p>
           <div className="mt-10 grid md:grid-cols-4 gap-5">
-            {[["Arranque", "15 a 60", "$189", "$35,000", false], ["Crecimiento", "61 a 300", "$159", "$75,000", true], ["Escala", "301 a 1,500", "$129", "$150,000", false], ["Corporativo", "Más de 1,500", "A la medida", "Cotización", false]].map(([n, r, p, c, hot]) => (
+            {PRICE_TIERS.map((t) => [t.name, t.to ? `${t.from.toLocaleString("es-MX")} a ${t.to.toLocaleString("es-MX")}` : `Más de ${(t.from - 1).toLocaleString("es-MX")}`, t.price ? `$${t.price}` : "A la medida", t.setup, !!t.hot]).map(([n, r, p, c, hot]) => (
               <div key={n as string} className={"rounded-2xl p-6 border " + (hot ? "border-indigo bg-indigo-soft/40 relative" : "border-slate-100")}>
                 {hot && <span className="absolute -top-3 left-6 chip bg-indigo text-white">Más elegido</span>}
-                <div className="font-semibold">{n as string}</div><div className="text-xs text-slate-500">{r as string} colaboradores</div>
-                <div className="mt-4 text-3xl font-semibold">{p as string}</div><div className="text-xs text-slate-500">{(p as string).startsWith("$") ? "MXN por colaborador / mes, plan anual" : "Precio por volumen y alcance"}</div>
+                <div className="font-semibold">{n as string}</div><div className="text-xs text-slate-500">{r as string} colaboradores con scorecard</div>
+                <div className="mt-4 text-3xl font-semibold">{p as string}</div><div className="text-xs text-slate-500">{(p as string).startsWith("$") ? "MXN por colaborador con scorecard / mes, plan anual" : "Precio por volumen y alcance"}</div>
                 <div className="mt-4 text-xs text-slate-500">Configuración inicial: {c as string}</div>
               </div>
             ))}
           </div>
-          <p className="mt-6 text-xs text-slate-400">Precios en MXN antes de IVA. Mínimo 15 colaboradores. La configuración inicial se bonifica al 100% si contratas la Arquitectura Estratégica. Los primeros 10 Clientes Fundadores reciben 20% de descuento en plataforma durante 24 meses.</p>
+          <p className="mt-6 text-xs text-slate-400">Precios en MXN antes de IVA. Mínimo 15 colaboradores con scorecard. Se factura el número máximo de scorecards activos del mes. La configuración inicial se bonifica al 100% si contratas la Arquitectura Estratégica. Los primeros 10 Clientes Fundadores reciben 20% de descuento en plataforma durante 24 meses.</p>
         </div>
       </section>
 
