@@ -58,4 +58,5 @@ body { font-feature-settings: "tnum" 1; }
 .tree-slide { animation: tree-slide .4s ease-out both; }
 .tree-grow-y { animation: tree-grow-y .4s ease-out both; transform-origin: top; }
 .tree-grow-x { animation: tree-grow-x .5s ease-out both; transform-origin: center; }
-@media (prefers-reduced-motion: reduce) { .tree-drop, .tree-pop, .tree-slide, .tree-grow-y, .tree-grow-x { animation: none; } }
+.ruta-ring { animation: help-ring 1.6s ease-out 3 both; }
+@media (prefers-reduced-motion: reduce) { .ruta-ring, .tree-drop, .tree-pop, .tree-slide, .tree-grow-y, .tree-grow-x { animation: none; } }
