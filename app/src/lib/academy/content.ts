@@ -45,9 +45,9 @@ export const MODULES: Module[] = [
     id: "alineacion",
     n: 1,
     title: "¿Qué es la alineación estratégica?",
-    subtitle: "Por qué las estrategias fallan al bajar y cómo se conectan la MEGA, las líneas de acción, los indicadores y las personas.",
-    minutes: 6,
-    topics: ["Línea de vista", "La cascada", "Indicadores de causa", "Owner y Contributor"],
+    subtitle: "Por qué las estrategias fallan al bajar, cómo se define la MEGA, cómo nacen las líneas de acción y cómo se conectan con los indicadores y las personas.",
+    minutes: 8,
+    topics: ["Línea de vista", "La cascada", "La MEGA", "Líneas de acción", "Indicadores de causa", "Owner y Contributor"],
     icon: "compass",
     blocks: [
       {
@@ -85,6 +85,63 @@ export const MODULES: Module[] = [
           { label: "Scorecard personal", example: "Ese KPI pesa 30% en el scorecard de cada uno" },
         ],
         note: "Si cambia una línea de acción, la cascada te dice exactamente qué KPIs, proyectos y personas se ven afectados.",
+      },
+      {
+        kind: "reveal",
+        eyebrow: "La MEGA",
+        title: "Una sola meta que guía a toda la empresa",
+        intro: "La MEGA es la Meta Estratégica Grande y Ambiciosa, a 5 o 10 años. Una buena MEGA cumple cuatro cosas. Toca cada una.",
+        items: [
+          { tag: "1", label: "Audaz", body: "Da un poco de vértigo. Si se logra con lo que ya hacemos, no es una MEGA: es el presupuesto del año." },
+          { tag: "2", label: "Clara", body: "Cualquier persona la entiende y la recuerda a la primera, sin necesidad de explicarla." },
+          { tag: "3", label: "Medible", body: "Tiene un número con el que se sabrá, sin discusión, si se logró o no." },
+          { tag: "4", label: "Con fecha", body: "Dice para cuándo. Sin fecha, todo se puede dejar para después." },
+        ],
+        note: "La MEGA se revisa una vez al año. No cambia cada mes: es el faro hacia el que empuja toda la empresa.",
+      },
+      {
+        kind: "compare",
+        eyebrow: "La MEGA",
+        title: "¿Cuál de estas guía a toda una empresa?",
+        left: { label: "Débil", points: ["«Ser los mejores del mercado».", "«Crecer de forma sostenida».", "Nadie sabe si se logró ni para cuándo."] },
+        right: { label: "Fuerte", points: ["«Ser el distribuidor #1 del norte y llegar a $300M de EBITDA en 2032».", "Audaz, clara, con número y con fecha.", "Todos saben hacia dónde empujar."] },
+      },
+      {
+        kind: "reveal",
+        eyebrow: "Las líneas de acción",
+        title: "Las líneas de acción nacen de tu MEGA, no de una plantilla",
+        intro: "Se descubren con una pregunta: ¿qué tiene que dominar la empresa, sí o sí, para que la MEGA sea realidad? Por eso cambian según la MEGA. Toca cada ejemplo.",
+        items: [
+          { tag: "1", label: "MEGA: duplicar ventas", body: "Los pilares giran en torno a vender y entregar más.", details: [{ label: "Ejemplos", text: "Fuerza comercial · Marketing y marca · Capacidad instalada" }] },
+          { tag: "2", label: "MEGA: ser la operación más eficiente", body: "Para una fábrica o una operación intensiva, todo gira alrededor del costo y la calidad.", details: [{ label: "Ejemplos", text: "Automatización · Cadena de suministro · Cero defectos" }] },
+          { tag: "3", label: "MEGA: vender la empresa o atraer a un socio", body: "Lo que importa es estar en orden y que los números se puedan comprobar.", details: [{ label: "Ejemplos", text: "Cumplimiento legal · Gobierno corporativo · Rentabilidad" }] },
+          { tag: "4", label: "MEGA: multiplicar el tamaño", body: "Una startup en hipercrecimiento necesita capital, clientes y un producto que aguante el crecimiento.", details: [{ label: "Ejemplos", text: "Levantamiento de capital · Adquisición de clientes · Talento top" }] },
+        ],
+        note: "Las 4 perspectivas del Balanced Scorecard (finanzas, clientes, procesos y personas) son un buen punto de partida, pero no son obligatorias. Usa los pilares que tengan sentido en tu negocio.",
+        source: "Collins y Porras (BHAG) · Kaplan y Norton (Balanced Scorecard) · McChesney, Covey y Huling (4DX)",
+      },
+      {
+        kind: "reveal",
+        eyebrow: "Las reglas de foco",
+        title: "Pocas cosas, bien hechas",
+        intro: "Toca cada regla.",
+        items: [
+          { tag: "3–5", label: "De 3 a 5 líneas de acción", body: "Con 7 u 8 no hay estrategia, hay una lista de deseos. Por eso mêtis no deja crear más de 5." },
+          { tag: "1–2", label: "1 o 2 proyectos por línea, al año", body: "Pocos proyectos de alto impacto que sí se terminen, en vez de diez a medias." },
+          { tag: "1×", label: "Cada cosa tiene su ritmo", body: "La MEGA se revisa una vez al año, los KPIs cada mes y los proyectos cada quincena." },
+        ],
+        note: "Debes poder explicar tu estrategia en un minuto: la MEGA y sus 3 a 5 líneas de acción.",
+      },
+      {
+        kind: "check",
+        eyebrow: "Pruébate",
+        title: "Ocho líneas de acción",
+        question: "El equipo directivo sale de su planeación con 8 líneas de acción, «porque todo es importante». ¿Qué le recomiendas?",
+        options: [
+          { text: "Perfecto: entre más líneas, más completa la estrategia", why: "Con 8 frentes el esfuerzo se reparte tanto que ninguno avanza de verdad." },
+          { text: "Volver a la pregunta guía y quedarse con 3 a 5, fusionando o descartando las demás", correct: true, why: "Exacto. Lo que no es indispensable para la MEGA puede vivir como un KPI dentro de otra línea, o esperar al siguiente año." },
+          { text: "Dejarlas todas y darles el mismo peso", why: "Darles el mismo peso no resuelve la falta de foco: solo la esconde." },
+        ],
       },
       {
         kind: "compare",
@@ -136,10 +193,19 @@ export const MODULES: Module[] = [
         ],
       },
       {
+        q: "¿Cuál de estas frases es una buena MEGA?",
+        options: [
+          { text: "«Ser una empresa reconocida por su excelencia»", why: "Suena bien, pero no tiene número ni fecha: nadie podría decir si ya se logró." },
+          { text: "«Crecer 8% este año»", why: "Es una meta del presupuesto anual. La MEGA mira de 5 a 10 años y debe ser más audaz." },
+          { text: "«Ser el distribuidor #1 del norte y llegar a $300M de EBITDA en 2032»", correct: true, why: "Es audaz, clara, medible y tiene fecha: las cuatro cosas que necesita una MEGA." },
+          { text: "«Mejorar continuamente en todas las áreas»", why: "Es una buena intención, pero no es ni audaz ni medible." },
+        ],
+      },
+      {
         q: "¿Qué papel juega una LAE dentro de la cascada?",
         options: [
           { text: "Es el bono que se paga al cumplir un KPI", why: "La compensación se conecta al scorecard, pero no es lo que define una LAE." },
-          { text: "Es uno de los 3 a 5 pilares que la empresa elige para lograr la MEGA, y agrupa sus KPIs y proyectos", correct: true, why: "La LAE es el puente: aterriza la MEGA en pilares concretos que sí se pueden medir (KPIs) y ejecutar (proyectos)." },
+          { text: "Es uno de los 3 a 5 pilares que la empresa elige para lograr la MEGA, y agrupa sus KPIs y proyectos", correct: true, why: "La LAE es el puente: aterriza la MEGA en pilares propios del negocio que sí se pueden medir (KPIs) y ejecutar (proyectos)." },
           { text: "Es el nombre técnico del scorecard", why: "El scorecard es personal; la LAE vive en la estrategia de la empresa." },
           { text: "Es la meta numérica de cada indicador", why: "La meta vive en el scorecard; la LAE es el frente de acción." },
         ],

@@ -28,10 +28,11 @@ describe("calificación", () => {
   const wrong = quiz.map((q) => q.options.findIndex((o) => !o.correct));
   it("todo bien → 100 y aprueba", () => expect(gradeQuiz(quiz, right)).toMatchObject({ pct: 100, passed: true }));
   it("todo mal → 0 y reprueba", () => expect(gradeQuiz(quiz, wrong).passed).toBe(false));
-  it(`aprueba con ${PASS_PCT}% (4 de 5)`, () => {
-    const a = [...right]; a[0] = wrong[0];
-    expect(gradeQuiz(quiz, a)).toMatchObject({ correct: 4, pct: 80, passed: true });
-    a[1] = wrong[1];
+  it(`aprueba con ${PASS_PCT}% y reprueba debajo`, () => {
+    const need = Math.ceil((quiz.length * PASS_PCT) / 100);
+    const a = right.map((r, i) => (i < quiz.length - need ? wrong[i] : r));
+    expect(gradeQuiz(quiz, a)).toMatchObject({ correct: need, passed: true });
+    a[quiz.length - need] = wrong[quiz.length - need];
     expect(gradeQuiz(quiz, a).passed).toBe(false);
   });
 });
