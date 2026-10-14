@@ -61,7 +61,7 @@ export default function Landing() {
             <div className="text-xs font-semibold uppercase tracking-wider text-indigo">mêtis Growth Advisory</div>
             <h2 className="mt-2 text-3xl font-semibold">La herramienta ordena. El acompañamiento hace crecer.</h2>
             <p className="mt-3 text-slate-600">No te dejamos solo con un software. Diseñamos contigo la estrategia, la cascadeamos hasta cada responsable y te ayudamos a sostener el ritmo de gestión.</p>
-            <ul className="mt-8 space-y-5">
+            <ul className="mt-8 space-y-5 hidden lg:block">
               {[
                 ["Diagnóstico de Alineación", "Dónde está hoy tu empresa y qué la frena."],
                 ["Arquitectura Estratégica", "La MEGA, sus líneas de acción, KPIs y proyectos, conectados."],
