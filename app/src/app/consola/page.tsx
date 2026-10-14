@@ -6,13 +6,16 @@
  */
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { Building2, Copy, Check, LogIn, Plus, Shield, Users, ClipboardList, ArrowLeft, Link2, Trash2 } from "lucide-react";
+import { Building2, Copy, Check, LogIn, Plus, Shield, Users, ClipboardList, ArrowLeft, Link2, Trash2, Download, Receipt } from "lucide-react";
+import { monthlyEstimate, mxn, MIN_SEATS } from "@/lib/billing";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Logo } from "@/components/ui/Logo";
 import { supabaseBrowser, hasSupabase } from "@/lib/supabase/client";
 import { rememberActiveTenant } from "@/lib/auth";
 
 interface Client { id: string; name: string; slug: string; plan: string; status: string; join_code: string | null; created_at: string; members: number; scorecards: number; i_am_member: boolean }
+interface Billing { tenant_id: string; billable: number; peak: number; members: number }
+interface HistoryRow { tenant_name: string; period: string; peak: number; billable: number; members: number }
 interface Created { tenant_id: string; join_code: string; invitation_token: string | null; name: string; ownerEmail: string; mail?: { state: "sending" | "sent" | "error"; msg?: string } }
 
 const PLANS = [{ id: "arranca", label: "Arranca" }, { id: "crece", label: "Crece" }, { id: "escala", label: "Escala" }];
@@ -29,6 +32,8 @@ export default function Consola() {
   const [toDelete, setToDelete] = useState<Client | null>(null);
   const [delBusy, setDelBusy] = useState(false);
   const [delErr, setDelErr] = useState("");
+  const [billing, setBilling] = useState<Record<string, Billing> | null>(null); // null = falta la migración 0012
+  const [billErr, setBillErr] = useState("");
 
   const load = useCallback(async () => {
     if (!sb) return;
@@ -36,6 +41,10 @@ export default function Consola() {
     if (r.error) { setState(/forbidden|42501/i.test(r.error.message) ? "forbidden" : "ready"); if (!/forbidden|42501/i.test(r.error.message)) setErr(r.error.message); return; }
     setClients((r.data ?? []) as Client[]);
     setState("ready");
+    const b = await sb.schema("metis").rpc("platform_billing");
+    if (b.error) { setBilling(null); setBillErr(/platform_billing|PGRST202|could not find/i.test(b.error.message) ? "Para ver el cobro por scorecard falta correr la migración 0012 en Supabase." : b.error.message); return; }
+    setBillErr("");
+    setBilling(Object.fromEntries(((b.data ?? []) as Billing[]).map((x) => [x.tenant_id, x])));
   }, [sb]);
 
   useEffect(() => {
@@ -89,6 +98,22 @@ export default function Consola() {
     setToDelete(null);
     load();
   };
+
+  const exportCsv = async () => {
+    if (!sb) return;
+    const r = await sb.schema("metis").rpc("platform_billing_history", { p_months: 12 });
+    if (r.error) { setBillErr(r.error.message); return; }
+    const rows = (r.data ?? []) as HistoryRow[];
+    const head = ["Mes", "Cliente", "Con scorecard (pico, se cobra)", "Con scorecard (último conteo)", "Personas activas", "Escalón", "Precio", "Estimado MXN antes de IVA"];
+    const body = rows.map((x) => { const e = monthlyEstimate(x.peak); return [x.period, x.tenant_name, x.peak, x.billable, x.members, e.tier.name, e.tier.price ?? "", e.amount ?? "A la medida"]; });
+    const csv = [head, ...body].map((l) => l.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("\n");
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" }));
+    a.download = `metis-cobro-${new Date().toISOString().slice(0, 7)}.csv`;
+    a.click();
+  };
+  const month = new Date().toLocaleDateString("es-MX", { month: "long", year: "numeric" });
+  const totals = billing ? clients.reduce((acc, c) => { const b = billing[c.id]; if (!b || c.status === "suspended") return acc; const e = monthlyEstimate(b.peak); return { seats: acc.seats + b.peak, amount: acc.amount + (e.amount ?? 0) }; }, { seats: 0, amount: 0 }) : null;
 
   const copy = (key: string, text: string) => { navigator.clipboard?.writeText(text); setCopied(key); setTimeout(() => setCopied(""), 1500); };
   const origin = typeof window !== "undefined" ? window.location.origin : "";
@@ -152,11 +177,28 @@ export default function Consola() {
                   </div>
                 )}
 
+                <div className="card p-5">
+                  <div className="flex flex-wrap items-start gap-3">
+                    <div>
+                      <h2 className="font-semibold flex items-center gap-2"><Receipt size={16} className="text-indigo" /> Cobro de {month}</h2>
+                      <p className="text-xs text-slate-500 mt-1 max-w-xl">Se cobra por colaborador activo <b>con scorecard</b> del año (al menos un KPI o proyecto). No cuentan quienes no tienen scorecard ni el equipo mêtis. Se factura el <b>pico del mes</b>; mínimo {MIN_SEATS} por cliente.</p>
+                    </div>
+                    {billing && <button type="button" className="ml-auto btn-ghost !py-1.5 text-xs" onClick={exportCsv}><Download size={13} /> Exportar 12 meses (CSV)</button>}
+                  </div>
+                  {billErr && <div className="mt-3 rounded-xl bg-amber-soft text-amber-800 text-xs px-3 py-2">{billErr}</div>}
+                  {totals && (
+                    <div className="grid grid-cols-2 gap-3 mt-4">
+                      <div className="rounded-xl bg-indigo-soft/50 p-3"><div className="text-xs text-slate-500">Colaboradores con scorecard</div><div className="text-2xl font-semibold tabular-nums">{totals.seats}</div></div>
+                      <div className="rounded-xl bg-indigo-soft/50 p-3"><div className="text-xs text-slate-500">Estimado del mes (antes de IVA y descuentos)</div><div className="text-2xl font-semibold tabular-nums">{mxn(totals.amount)}</div></div>
+                    </div>
+                  )}
+                </div>
+
                 <div className="card overflow-x-auto">
-                  <table className="w-full min-w-[640px]">
-                    <thead className="border-b border-slate-100"><tr><th className="th">Cliente</th><th className="th">Plan</th><th className="th">Código</th><th className="th text-right">Personas</th><th className="th text-right">Scorecards</th><th className="th" /></tr></thead>
+                  <table className="w-full min-w-[760px]">
+                    <thead className="border-b border-slate-100"><tr><th className="th">Cliente</th><th className="th">Plan</th><th className="th">Código</th><th className="th text-right">Personas</th><th className="th text-right" title="Activos con scorecard del año · pico del mes">Se cobran</th><th className="th text-right">Estimado / mes</th><th className="th" /></tr></thead>
                     <tbody className="divide-y divide-slate-100">
-                      {clients.length === 0 && <tr><td className="td text-slate-400" colSpan={6}>Aún no hay clientes.</td></tr>}
+                      {clients.length === 0 && <tr><td className="td text-slate-400" colSpan={7}>Aún no hay clientes.</td></tr>}
                       {clients.map((c) => (
                         <tr key={c.id}>
                           <td className="td"><div className="flex items-center gap-2"><Building2 size={14} className="text-slate-400" /><div><div className="font-medium">{c.name}</div><div className="text-[11px] text-slate-400">alta {new Date(c.created_at).toLocaleDateString("es-MX", { day: "numeric", month: "short", year: "numeric" })}</div></div></div></td>
@@ -167,7 +209,23 @@ export default function Consola() {
                             ) : "—"}
                           </td>
                           <td className="td text-right tabular-nums"><span className="inline-flex items-center gap-1"><Users size={12} className="text-slate-400" />{c.members}</span></td>
-                          <td className="td text-right tabular-nums"><span className="inline-flex items-center gap-1"><ClipboardList size={12} className="text-slate-400" />{c.scorecards}</span></td>
+                          {(() => {
+                            const b = billing?.[c.id];
+                            if (!b) return <><td className="td text-right tabular-nums text-slate-400"><span className="inline-flex items-center gap-1"><ClipboardList size={12} />{c.scorecards}</span></td><td className="td text-right text-slate-300">—</td></>;
+                            const e = monthlyEstimate(b.peak);
+                            return (
+                              <>
+                                <td className="td text-right tabular-nums">
+                                  <div className="inline-flex items-center gap-1 font-semibold"><ClipboardList size={12} className="text-indigo" />{b.peak}</div>
+                                  <div className="text-[11px] text-slate-400">{b.billable !== b.peak ? `hoy ${b.billable} · ` : ""}{b.members > 0 ? `${Math.round((b.peak / b.members) * 100)}% de ${b.members}` : "sin personas"}</div>
+                                </td>
+                                <td className="td text-right tabular-nums">
+                                  <div className="font-medium">{e.amount === null ? "A la medida" : mxn(e.amount)}</div>
+                                  <div className="text-[11px] text-slate-400">{e.tier.name}{e.tier.price ? ` · ${e.charged} × $${e.tier.price}` : ""}{b.peak < MIN_SEATS ? " (mínimo)" : ""}</div>
+                                </td>
+                              </>
+                            );
+                          })()}
                           <td className="td text-right whitespace-nowrap">
                             <button className="btn-ghost !py-1 text-xs" onClick={() => enter(c)}><LogIn size={13} /> {c.i_am_member ? "Abrir portal" : "Entrar como consultor"}</button>
                             <button className="ml-1 inline-grid h-7 w-7 place-items-center rounded-lg text-slate-400 hover:bg-coral-soft hover:text-coral" onClick={() => { setDelErr(""); setToDelete(c); }} title={`Borrar ${c.name}`} aria-label={`Borrar ${c.name}`}><Trash2 size={14} /></button>

@@ -5,7 +5,7 @@
  * `buildReminders` y los envía; deja constancia en metis.notification_log.
  *
  * Seguridad: Vercel manda `Authorization: Bearer $CRON_SECRET`. Sin ese header se rechaza.
- * También: Academy, compromisos vencidos y Revisiones Verticales (1 a 1) automáticas.
+ * También: foto diaria para el cobro por scorecard (0012), Academy, compromisos vencidos y Revisiones Verticales (1 a 1) automáticas.
  * Prueba manual: GET /api/cron/recordatorios?dry=1  (con el mismo header) → no envía, sólo lista.
  */
 import { NextResponse, type NextRequest } from "next/server";
@@ -46,6 +46,8 @@ export async function GET(req: NextRequest) {
   const commitments = await commitmentReminders(sb, tenants ?? [], appUrl, now, dry, force);
   // Revisiones Verticales: agenda las que falten, manda invitaciones de calendario y recordatorios
   const rv = await rvAutomation(sb, tenants ?? [], appUrl, now, dry);
+  // Cobro: foto diaria de colaboradores con scorecard (se factura el pico del mes). Requiere 0012.
+  const billing = dry ? { skipped: "dry" } : await sb.rpc("billing_snapshot").then((r) => (r.error ? { error: r.error.message } : { tenants: r.data }));
   for (const t of tenants ?? []) {
     const settings: ReminderSettings = { ...DEFAULT_REMINDERS, ...((t.settings as { reminders?: Partial<ReminderSettings> } | null)?.reminders ?? {}) };
     const today = localDay(settings.timezone, now);
@@ -82,7 +84,7 @@ export async function GET(req: NextRequest) {
     }
     report.push({ tenant: t.name, today, messages: msgs.length, sent, dry, recipients: msgs.map((m) => `${m.kind}:${m.to.email}`) });
   }
-  return NextResponse.json({ at: now.toISOString(), academy, commitments, rv, report });
+  return NextResponse.json({ at: now.toISOString(), academy, commitments, rv, billing, report });
 }
 
 /**
