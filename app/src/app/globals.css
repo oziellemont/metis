@@ -59,4 +59,9 @@ body { font-feature-settings: "tnum" 1; }
 .tree-grow-y { animation: tree-grow-y .4s ease-out both; transform-origin: top; }
 .tree-grow-x { animation: tree-grow-x .5s ease-out both; transform-origin: center; }
 .ruta-ring { animation: help-ring 1.6s ease-out 3 both; }
-@media (prefers-reduced-motion: reduce) { .ruta-ring, .tree-drop, .tree-pop, .tree-slide, .tree-grow-y, .tree-grow-x { animation: none; } }
+@keyframes pyr-breathe { 0%, 100% { background-color: #EEECFD; } 50% { background-color: #D8D3FB; } }
+@keyframes pyr-shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
+.pyr-next { animation: tree-pop .5s cubic-bezier(.2,.7,.2,1) both, pyr-breathe 1.8s ease-in-out .9s infinite; }
+.pyr-breathe { animation: pyr-breathe 1.8s ease-in-out infinite; }
+.pyr-shake { animation: pyr-shake .4s ease-in-out; }
+@media (prefers-reduced-motion: reduce) { .pyr-breathe, .pyr-next, .pyr-shake, .ruta-ring, .tree-drop, .tree-pop, .tree-slide, .tree-grow-y, .tree-grow-x { animation: none; } }
