@@ -5,7 +5,7 @@ import { DEFAULT_EMAIL_FROM } from "@/lib/site";
  */
 export interface MailAttachment { filename: string; content: string; contentType?: string }
 /** `content` va en texto plano; se codifica en base64 al enviar. */
-export interface Mail { to: string; subject: string; html: string; text?: string; attachments?: MailAttachment[] }
+export interface Mail { to: string; subject: string; from?: string; replyTo?: string; html: string; text?: string; attachments?: MailAttachment[] }
 
 const KEY = process.env.RESEND_API_KEY ?? "";
 const FROM = process.env.EMAIL_FROM ?? DEFAULT_EMAIL_FROM;
@@ -21,7 +21,7 @@ export async function sendMail(m: Mail): Promise<{ ok: boolean; id?: string; err
     method: "POST",
     headers: { Authorization: `Bearer ${KEY}`, "Content-Type": "application/json" },
     body: JSON.stringify({
-      from: FROM, to: [m.to], subject: m.subject, html: m.html, text: m.text,
+      from: m.from ?? FROM, to: [m.to], ...(m.replyTo ? { reply_to: m.replyTo } : {}), subject: m.subject, html: m.html, text: m.text,
       ...(m.attachments?.length ? { attachments: m.attachments.map((a) => ({ filename: a.filename, content: Buffer.from(a.content, "utf8").toString("base64"), ...(a.contentType ? { content_type: a.contentType } : {}) })) } : {}),
     }),
   });

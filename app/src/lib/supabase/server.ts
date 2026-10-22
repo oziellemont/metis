@@ -26,3 +26,9 @@ export function supabaseAdmin() {
   if (!URL || !SERVICE) return null;
   return createClient(URL, SERVICE, { auth: { persistSession: false, autoRefreshToken: false }, db: { schema: "metis" } });
 }
+
+/** Cliente de servicio para el apartado de mêtis CEO (esquema "ceo", separado de "metis"). */
+export function supabaseCeoAdmin() {
+  if (!URL || !SERVICE) return null;
+  return createClient(URL, SERVICE, { auth: { persistSession: false, autoRefreshToken: false }, db: { schema: "ceo" } });
+}
