@@ -65,3 +65,10 @@ body { font-feature-settings: "tnum" 1; }
 .pyr-breathe { animation: pyr-breathe 1.8s ease-in-out infinite; }
 .pyr-shake { animation: pyr-shake .4s ease-in-out; }
 @media (prefers-reduced-motion: reduce) { .pyr-breathe, .pyr-next, .pyr-shake, .ruta-ring, .tree-drop, .tree-pop, .tree-slide, .tree-grow-y, .tree-grow-x { animation: none; } }
+
+/* mêtis CEO */
+@keyframes ceo-flicker { 0%, 100% { transform: scale(1) rotate(0); } 25% { transform: scale(1.08, .96) rotate(-3deg); } 50% { transform: scale(.96, 1.06) rotate(2deg); } 75% { transform: scale(1.04, .98) rotate(-1deg); } }
+.ceo-flame { transform-origin: 50% 90%; animation: ceo-flicker 1.6s ease-in-out infinite; }
+@keyframes ceo-pop { 0% { transform: scale(.4); opacity: 0; } 60% { transform: scale(1.15); opacity: 1; } 100% { transform: scale(1); } }
+.ceo-pop { animation: ceo-pop .55s cubic-bezier(.2,.7,.2,1) both; }
+@media (prefers-reduced-motion: reduce) { .ceo-flame, .ceo-pop { animation: none; } }

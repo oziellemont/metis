@@ -10,7 +10,23 @@ import { normalizeSupabaseUrl } from "@/lib/supabase/env";
 
 const APP_PREFIXES = ["/inicio", "/scorecard", "/carga", "/mapa", "/equipo", "/indicadores", "/proyectos", "/reportes", "/sesiones", "/compromisos", "/config", "/academy"];
 
+const CEO_HOSTS = ["metisalign.app", "www.metisalign.app"];
+const CEO_PASSTHROUGH = ["/ceo", "/api", "/auth", "/login", "/_next", "/brand"];
+
 export async function middleware(req: NextRequest) {
+  // metisalign.app → mêtis CEO. Misma app y mismo código: solo se reescribe la ruta hacia /ceo.
+  const host = (req.headers.get("host") ?? "").split(":")[0].toLowerCase();
+  if (CEO_HOSTS.includes(host)) {
+    const p = req.nextUrl.pathname;
+    if (!CEO_PASSTHROUGH.some((x) => p === x || p.startsWith(x + "/"))) {
+      const u = req.nextUrl.clone();
+      u.pathname = p === "/" ? "/ceo" : "/ceo" + p;
+      return NextResponse.rewrite(u);
+    }
+    if (p === "/login" || p.startsWith("/auth")) { /* sigue el flujo normal de sesión */ }
+    else return NextResponse.next();
+  }
+
   // Si Supabase regresó el enlace mágico a la Site URL (p. ej. "/?code=…") en lugar de /auth/callback,
   // lo reenviamos para no perder la sesión. Pasa cuando la Redirect URL no está en la lista permitida.
   const authCode = req.nextUrl.searchParams.get("code");

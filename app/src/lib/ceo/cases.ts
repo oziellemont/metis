@@ -1,0 +1,451 @@
+/**
+ * mêtis CEO · Temporada 1 «Tus primeros 90 días» en Botanas Cumbre.
+ * Cada día de juego = ~2 semanas en la empresa. Los mensajes llegan a lo largo del día real.
+ *
+ * Reglas de redacción:
+ *  - Nada de «caso de estudio» en tercera persona: te escriben a TI, con su voz y sus intereses.
+ *  - Ninguna opción es tonta: todas tienen algo a favor y un costo.
+ *  - `score` sólo da XP (qué tan cerca está de los principios de «De CERO a CEO»); nunca se muestra como «correcta».
+ */
+import type { Item } from "./types";
+
+export const SEASON = { n: 1, name: "Tus primeros 90 días", company: "Botanas Cumbre" };
+export const SEASON_DAYS = 7;
+
+export const ITEMS: Item[] = [
+  // ════════════════════════════════════════════════ DÍA 1 · Llegada
+  {
+    id: "d1-bienvenida", day: 1, slot: 1, channel: "email", from: "ramiro",
+    subject: "Bienvenido a Cumbre. Mañana empiezas.",
+    preview: "Te dejo la silla que ocupé 38 años. No te voy a mentir: no todos están contentos…",
+    body: [
+      "Querido amigo:",
+      "Mañana te sientas en la silla que ocupé 38 años. Lo decidí con el consejo y lo sostengo: Cumbre necesita a alguien que no se apellide Garza para dar el siguiente paso.",
+      "No te voy a mentir. No todos están contentos. Héctor esperaba el puesto, mi hijo Diego cree que debía ser él, y en la planta te van a ver como «el de la oficina». Las ventas crecen 3% mientras la inflación va en 4.5%. Y SuperNorte nos aprieta cada trimestre.",
+      "El consejo te va a pedir un plan en 90 días. Yo nada más te pido una cosa: dime cómo vas a usar tus primeros 30. Quiero entenderte antes de que todos empiecen a opinar.",
+      "Con afecto y con fe,\nRamiro",
+    ],
+    data: { title: "Tu primer tablero", rows: [["Ventas", "$410 M · +3% anual"], ["Margen operativo", "9.8% (era 13% hace 4 años)"], ["Rotación en planta", "34% anual"], ["Cliente principal", "SuperNorte · 31% de las ventas"]] },
+    ask: "¿Cómo usas tus primeros 30 días?",
+    options: [
+      { id: "a", text: "Escuchar primero: 1 a 1 con los 12 líderes clave, dos turnos completos en la planta y visitas a los 5 clientes más grandes. Plan hasta el día 30.", reply: ["Me gusta. Así entré yo hace 38 años: con las manos en el cacahuate.", "Te voy a pedir que también escuches a los que no hablan en las juntas. Ahí está la verdad de esta empresa."], outcome: "La gente nota que preguntas antes de mandar. El consejo se impacienta un poco.", effects: { equipo: 6, clientes: 3, consejo: -2 }, style: { horizonte: 2, estilo: 2, foco: 1, riesgo: -1 }, score: 3 },
+      { id: "b", text: "Llegar con fuerza: en la primera semana anuncio 5 prioridades y 2 victorias rápidas para que todos vean que hay rumbo.", reply: ["Rumbo hace falta, eso que ni qué.", "Nada más cuida que tus 5 prioridades no sean las de tu empresa anterior. Aquí la gente lleva décadas y va a medir si la entendiste."], outcome: "El consejo aplaude la energía. En los pasillos se comenta que «ya llegó con la receta hecha».", effects: { consejo: 5, equipo: -4 }, style: { horizonte: -1, riesgo: 1, estilo: -2, conflicto: 1 }, score: 1 },
+      { id: "c", text: "Perfil bajo: me encierro con Finanzas a entender los números a fondo antes de hablar con nadie.", reply: ["Los números no mienten, pero tampoco cuentan toda la historia.", "Si te encierras, la gente va a llenar el silencio con chismes. Te lo digo por experiencia."], outcome: "Entiendes el negocio por dentro, pero la organización no te conoce y empiezan los rumores.", effects: { margen: 2, equipo: -3, consejo: 1 }, style: { foco: -2, estilo: -1, conflicto: -1 }, score: 1 },
+    ],
+    expired: { reply: ["No supe de ti. Espero que estés bien."], outcome: "Tu primer silencio se notó. El fundador se queda con dudas.", effects: { consejo: -6 } },
+    lesson: "mentalidad",
+    bitacora: { title: "Liderar es cargar responsabilidad", text: "Los primeros días definen si la gente te ve como alguien que vino a servir o a brillar. Escuchar antes de mandar no es lentitud: es construir el contexto donde tus decisiones van a caer.", nota: "La gente no se activa con control; se activa con claridad, confianza y responsabilidad." },
+    areas: ["personas", "estrategia"],
+  },
+  {
+    id: "d1-hector", day: 1, slot: 2, channel: "whatsapp", from: "hector",
+    subject: "Héctor Salinas", preview: "Buenas. Me dicen que vas a revisar las comisiones de mi equipo…",
+    body: [
+      "Buenas, ¿cómo vas en tu primer día?",
+      "Oye, me dicen que vas a revisar las comisiones de mi equipo 🤔",
+      "Nomás para que lo sepas: llevo 22 años aquí. Esos vendedores me siguen a mí, no a un organigrama.",
+      "Si se les mueve el esquema se me van con la competencia y se llevan las cuentas. Y yo no voy a poder detenerlos.",
+      "Avísame qué piensas hacer.",
+    ],
+    ask: "Héctor está dolido y te está midiendo. ¿Qué le contestas?",
+    options: [
+      { id: "a", text: "«Héctor, hoy mismo te invito a comer. Quiero entender qué le preocupa a tu equipo y qué te importa a ti. Nada se mueve sin que lo platiquemos.»", reply: ["Va. A las 2 en el Gran Pastor.", "…", "Gracias por no contestarme con un correo. Te digo algo: no me molesta que revises comisiones. Me molesta enterarme por los pasillos."], outcome: "Debajo de su posición («no toquen las comisiones») había un interés: respeto y que no lo ignoren. Ganas un aliado incómodo pero leal.", effects: { equipo: 5, clientes: 2 }, style: { foco: 2, estilo: 1, conflicto: 1 }, score: 3 },
+      { id: "b", text: "«Héctor, te agradezco. La revisión va porque el esquema premia volumen con descuento y nos está comiendo el margen. Te comparto el análisis el lunes.»", reply: ["Ok.", "Aquí estaré el lunes."], outcome: "Fuiste claro y con datos, pero por mensaje. Héctor se siente informado, no escuchado.", effects: { margen: 1, equipo: -2 }, style: { foco: -1, conflicto: 2, estilo: -1 }, score: 2 },
+      { id: "c", text: "No contestar hoy. Le pido a Mariana (Personas) que lo atienda y le explique el proceso.", reply: ["(Visto ✓✓)"], outcome: "Héctor siente que lo mandaste con Recursos Humanos. En su equipo corre la voz: «al nuevo no le importamos».", effects: { equipo: -5 }, style: { conflicto: -2, estilo: -1 }, score: 0 },
+    ],
+    expired: { reply: ["(Visto ✓✓)", "Ok, entendido."], outcome: "El silencio también es una respuesta. Héctor la tomó como desprecio.", effects: { equipo: -6 } },
+    lesson: "negociacion",
+    bitacora: { title: "No negocies posiciones", text: "Héctor dijo «no toquen las comisiones» (posición). Lo que estaba protegiendo era respeto, su lugar y a su gente (intereses). Cuando atiendes el interés, la posición se vuelve negociable.", nota: "La posición es la puerta de entrada; el interés es la habitación donde realmente se negocia." },
+    areas: ["personas", "negociacion"],
+    deadlineH: 12,
+  },
+
+  // ════════════════════════════════════════════════ DÍA 2 · El cliente aprieta
+  {
+    id: "d2-supernorte", day: 2, slot: 1, channel: "email", from: "sofia",
+    subject: "Condiciones comerciales 2027 · Botanas Cumbre",
+    preview: "Para mantener sus dos frentes de anaquel necesitamos 4 puntos adicionales de descuento y pasar a 90 días…",
+    body: [
+      "Estimado Director:",
+      "Primero, bienvenido. Nos dio gusto saber del relevo en Cumbre.",
+      "Como cada año, revisamos condiciones con nuestros proveedores estratégicos. Para mantener sus dos frentes de anaquel en las 140 tiendas, necesitamos 4 puntos adicionales de descuento y pasar el plazo de pago de 60 a 90 días a partir de enero.",
+      "Sabemos que es un ajuste importante. También le comento que una marca regional nos ofreció condiciones muy competitivas por ese espacio.",
+      "Quedo atenta a su respuesta antes del viernes.",
+      "Saludos cordiales,\nSofía Leal · Compradora de categoría Botanas",
+    ],
+    data: { title: "Lucía (Finanzas) te armó esto en 20 minutos", rows: [["Ventas a SuperNorte", "$127 M al año"], ["Margen de la cuenta hoy", "7.1%"], ["Si damos 4 pts", "Margen 3.1% · −$5.1 M al año"], ["Si pasamos a 90 días", "Necesitamos ≈ $10 M más de capital de trabajo"], ["Rotación de Cumbre en sus tiendas", "1.4× la de la marca regional"]], note: "Nota de Lucía: «Ojo, nuestras papas rotan mejor que las de ellos. SuperNorte también pierde si nos saca.»" },
+    ask: "¿Cómo respondes a SuperNorte?",
+    options: [
+      { id: "a", text: "Aceptar. Es el 31% de las ventas y no puedo arriesgarme en mi primer mes.", reply: ["Excelente, Director. Le agradecemos mucho la disposición.", "Le hago llegar el anexo para firma esta semana."], outcome: "Conservas el anaquel, pero pierdes $5 M de margen al año y necesitas $10 M de caja. Y SuperNorte aprendió que contigo basta con apretar.", effects: { clientes: 3, margen: -9, caja: -8 }, style: { riesgo: -2, conflicto: -2, horizonte: -1 }, score: 0 },
+      { id: "b", text: "Pedir una reunión con datos: nuestra rotación es 1.4× la de la competencia. Propongo invertir 1.5 puntos en promociones conjuntas atadas a volumen y mantener 60 días.", reply: ["Interesante. No tenía el dato de rotación por tienda.", "Lo reviso con mi gerente. Si el plan de promociones viene con metas por tienda, lo podemos considerar.", "¿Le parece el jueves a las 10?"], outcome: "Cambiaste la conversación de «cuánto me das» a «cómo crecemos los dos». Si te funciona, creas valor antes de pelearlo.", effects: { clientes: 2, margen: -2, consejo: 3 }, style: { horizonte: 2, conflicto: 1, foco: -1, riesgo: 1 }, score: 3 },
+      { id: "c", text: "Responder firme: si nos aprietan, sacamos producto y apostamos por tiendas de conveniencia. No vamos a regalar margen.", reply: ["Entiendo su postura, Director.", "Lo comentaré internamente."], outcome: "Defendiste el margen con tu poder. Pero tu alternativa (las tiendas de conveniencia) todavía no existe: estás alardeando.", effects: { margen: 2, clientes: -8, consejo: -3 }, style: { riesgo: 2, conflicto: 2, estilo: -1 }, score: 1 },
+    ],
+    expired: { reply: ["Director, al no recibir respuesta asumimos que aceptan las nuevas condiciones.", "Le enviamos el anexo."], outcome: "No responder también es decidir: te aplicaron las condiciones por default.", effects: { margen: -9, caja: -8, consejo: -4 } },
+    lesson: "negociacion",
+    bitacora: { title: "MAPAN: el poder está en tus alternativas", text: "Tu fuerza no dependía de sonar duro, sino de tu mejor alternativa y de entender la de SuperNorte: perder un producto que rota 1.4× también les cuesta. Antes de pelear la rebanada, pregúntate si la mesa puede crecer.", nota: "La mejor forma de negociar con fuerza no es sonar fuerte; es construir alternativas antes de necesitarlas." },
+    areas: ["clientes", "negociacion", "finanzas"],
+  },
+  {
+    id: "d2-ana", day: 2, slot: 2, channel: "reporte", from: "ana",
+    subject: "Pronóstico Q1 · versión final (22 láminas)",
+    preview: "Le comparto el pronóstico que me pidió. Incluí todo el detalle por SKU, canal y región…",
+    body: [
+      "Buen día, Director:",
+      "Le comparto el pronóstico de ventas del Q1 que me pidió para la junta con el consejo. Incluí todo el detalle por SKU, canal, región y mes, y 6 escenarios de precio.",
+      "Me desvelé un poco, pero quería que tuviera toda la información. 😊",
+      "Quedo atenta a sus comentarios.\nAna",
+    ],
+    data: { title: "Lo que ves al abrir el archivo", rows: [["Láminas", "22"], ["Tablas", "17 (letra de 8 puntos)"], ["Conclusión o recomendación", "— ninguna —"], ["Lámina 19 de 22", "«Las papas premium crecen 28% y la línea tradicional cae 6%» (enterrado en una tabla)"]], note: "La junta con el consejo es en 9 días." },
+    ask: "Ana trabajó mucho, pero no te sirve así. ¿Qué haces?",
+    options: [
+      { id: "a", text: "Responder rápido: «Ana, esto no sirve para un consejo. Necesito 3 láminas con conclusión. Para mañana.»", reply: ["Entendido, Director.", "Disculpe."], outcome: "Mañana tendrás 3 láminas. También tendrás a una analista que ya no se va a desvelar por ti.", effects: { equipo: -4, consejo: 1 }, style: { conflicto: 2, foco: -2, estilo: -2, horizonte: -1 }, score: 1 },
+      { id: "b", text: "Sentarme 20 minutos con ella: reconocer el trabajo, enseñarle a empezar por el final (¿qué tiene que decidir el consejo?) y pedirle una página con su recomendación.", reply: ["Muchas gracias por el tiempo, Director. Nunca nadie me había explicado lo de «empezar por el final».", "Ya vi que lo importante estaba en la lámina 19. Le mando una página el jueves. ¿Puedo proponer qué hacer con la línea tradicional?"], outcome: "Inviertes 20 minutos y ganas a alguien que el próximo trimestre ya no te va a necesitar para esto.", effects: { equipo: 5, consejo: 2 }, style: { foco: 2, horizonte: 2, estilo: 1 }, score: 3 },
+      { id: "c", text: "Agradecerle y armar yo mismo la presentación esta noche. Es más rápido.", reply: ["¡Qué bueno que le sirvió! 😊"], outcome: "La presentación queda bien. Ana nunca se entera de lo que faltaba y tú acabas de comprarte trabajo para cada trimestre.", effects: { consejo: 2, equipo: -1 }, style: { estilo: -2, conflicto: -1, horizonte: -2 }, score: 1 },
+    ],
+    expired: { reply: ["Director, ¿pudo ver el pronóstico? 🙂"], outcome: "Ana se quedó esperando. El trabajo de 3 noches pasó sin comentario.", effects: { equipo: -3 } },
+    lesson: "comunicacion",
+    bitacora: { title: "Empieza con el final", text: "Ana tenía la gran idea (premium +28%, tradicional −6%) en la lámina 19. Las presentaciones ejecutivas empiezan con el big picture y una recomendación. Y enseñar eso es más valioso que corregirlo.", nota: "Una presentación no debe demostrar que trabajaste mucho; debe hacer que la audiencia entienda rápido y actúe mejor." },
+    areas: ["comunicacion", "personas"],
+  },
+  {
+    id: "c-hector-aliado", day: 2, slot: 3, channel: "whatsapp", from: "hector",
+    subject: "Héctor Salinas", preview: "Me enteré de lo de SuperNorte. A Sofía la conozco desde que era practicante…",
+    trigger: { item: "d1-hector", options: ["a"] },
+    body: [
+      "Me enteré de lo de SuperNorte.",
+      "A Sofía la conozco desde que era practicante en la tienda de Lincoln 😅",
+      "Si quieres te acompaño a la junta. Sé qué le piden a ella sus jefes y en qué puede ceder.",
+    ],
+    ask: "Héctor ofrece ayuda después de la comida. ¿Lo involucras?",
+    options: [
+      { id: "a", text: "«Me encantaría. Arma tú la propuesta de promociones y yo te acompaño.»", reply: ["Va. Te la paso mañana temprano 💪"], outcome: "Héctor recupera protagonismo en lo que mejor sabe hacer. Tu primer aliado en el comité.", effects: { clientes: 4, equipo: 4 }, style: { estilo: 2, foco: 1 }, score: 3 },
+      { id: "b", text: "«Gracias, Héctor. Esta la llevo yo para que SuperNorte me conozca; te cuento cómo nos va.»", reply: ["Ok, como veas."], outcome: "Es razonable querer presentarte, pero dejaste pasar la mejor carta que tenías.", effects: { clientes: 1 }, style: { estilo: -1 }, score: 1 },
+    ],
+    expired: { reply: ["Bueno, ahí me avisas."], outcome: "La ayuda de Héctor quedó en el aire.", effects: { equipo: -1 } },
+    bitacora: { title: "El aliado incómodo", text: "Quien compitió contigo por el puesto puede ser tu mayor riesgo o tu mejor aliado. La diferencia casi siempre está en la primera conversación.", nota: "El CEO que solo sabe ordenar se queda corto; el CEO que sabe negociar mueve sistemas completos sin romper relaciones." },
+    areas: ["personas"], deadlineH: 12,
+  },
+
+  // ════════════════════════════════════════════════ DÍA 3 · Planta e innovación
+  {
+    id: "d3-planta", day: 3, slot: 1, channel: "llamada", from: "javier",
+    subject: "Llamada perdida · Javier Ortiz (Planta)", preview: "Jefe, tenemos un problema en la línea 2 y el pedido de SuperNorte sale el lunes…",
+    body: [
+      "🔴 Mensaje de voz · 0:48",
+      "«Jefe, buenas. Le marco porque tenemos un problemón. El tostador de la línea 2 está fallando y anoche a un muchacho, Toño, casi le cae encima una charola caliente. Nomás fue el susto, gracias a Dios.»",
+      "«El técnico dice que hay que parar 36 horas para cambiar el sensor. Pero si paramos no sale completo el pedido de SuperNorte del lunes. Los muchachos dicen que le aguantan con cuidado. Usted dígame.»",
+    ],
+    data: { title: "Lo que sabes", rows: [["Paro para reparar", "36 horas"], ["Pedido SuperNorte en riesgo", "18% del volumen de la semana"], ["Penalización por entrega incompleta", "$420 mil"], ["Incidentes en la línea 2 este año", "3 (ninguno reportado formalmente)"]] },
+    ask: "¿Qué le dices a Javier?",
+    options: [
+      { id: "a", text: "Parar la línea ya. Reparamos, y yo llamo a SuperNorte para avisar del retraso y proponer entrega parcial. Ese mismo día voy a la planta a hablar con Toño y el turno.", reply: ["Sí, jefe. Ahorita la paramos.", "Le digo a los muchachos que usted va a venir. Le va a caer bien a la gente, nunca viene nadie de arriba."], outcome: "Pagas la penalización, pero la planta acaba de aprender que aquí la seguridad sí está por encima del pedido. Eso no lo compra ninguna campaña.", effects: { caja: -3, clientes: -2, equipo: 8 }, style: { horizonte: 2, foco: 2, riesgo: -1, conflicto: 1 }, score: 3 },
+      { id: "b", text: "Que le sigan con cuidado hasta el lunes y que reparen el fin de semana siguiente. Que pongan a alguien vigilando el tostador.", reply: ["Ok, jefe. Así le hacemos.", "Le pongo a un supervisor ahí todo el turno."], outcome: "Sale el pedido completo. El riesgo sigue ahí y todos en la planta escucharon qué es más importante para el nuevo director.", effects: { clientes: 2, equipo: -6 }, style: { horizonte: -2, riesgo: 2, foco: -2 }, score: 0 },
+      { id: "c", text: "Que Javier decida: él conoce la planta mejor que yo. Que me avise qué resolvió.", reply: ["Ok, jefe…", "Pues le paramos, ¿no? Mejor no arriesgarnos."], outcome: "Javier hizo lo correcto, pero sintió que lo dejaste solo con una decisión que te tocaba a ti. Delegar no es lo mismo que soltar.", effects: { equipo: 1, caja: -3, clientes: -2 }, style: { estilo: 1, conflicto: -2 }, score: 1 },
+    ],
+    expired: { reply: ["Jefe, no lo localicé. Le seguimos así."], outcome: "Sin respuesta, la línea siguió trabajando con el sensor fallando.", effects: { equipo: -7 } },
+    lesson: "cultura",
+    bitacora: { title: "La ética se ve cuando hay dinero en juego", text: "Los valores escritos no dicen nada. Lo que la gente recuerda es qué decidió el director cuando la seguridad y el pedido chocaron. Y la seguridad psicológica empieza por la física.", nota: "La ética de una empresa no se mide por sus valores escritos, sino por lo que decide no tolerar cuando hay dinero en juego." },
+    areas: ["etica", "operacion", "cultura"], deadlineH: 8,
+  },
+  {
+    id: "d3-diego", day: 3, slot: 2, channel: "whatsapp", from: "diego",
+    subject: "Diego Garza", preview: "Te quiero presentar «Cumbre Selección». Mi papá ya lo vio y le encanta 🔥",
+    body: [
+      "Hola!! Te quiero presentar algo que traigo desde hace un año 🔥",
+      "«Cumbre Selección»: papas premium con chile de árbol, sal de mar y empaque kraft. Para el mercado que hoy le compra a marcas gringas.",
+      "Mi papá ya lo vio y le encanta.",
+      "Necesito $6 M para el lanzamiento nacional: TV regional, influencers y 1,200 tiendas. Si arrancamos en enero llegamos al Super Bowl 🏈",
+      "¿Me das luz verde? 🙏",
+    ],
+    data: { title: "Lo que hay detrás", rows: [["Prueba con consumidores", "Ninguna todavía"], ["Margen estimado", "41% vs 24% de la línea tradicional"], ["Presupuesto de marketing anual de todo Cumbre", "$9 M"], ["Dato de Ana (lámina 19)", "Las papas premium del mercado crecen 28%"]] },
+    ask: "El hijo del fundador quiere $6 M. ¿Qué le respondes?",
+    options: [
+      { id: "a", text: "Luz verde. La idea es buena, el mercado crece y tiene el respaldo de Don Ramiro.", reply: ["¡¡GRACIAS!! 🙌🙌", "No te vas a arrepentir. Mañana mismo llamo a la agencia."], outcome: "Diego está feliz y el fundador también. Apostaste dos terceras partes del marketing del año a algo que nadie ha probado.", effects: { caja: -9, consejo: 3, equipo: 2 }, style: { riesgo: 2, horizonte: 1, conflicto: -2 }, score: 1 },
+      { id: "b", text: "Sí, pero como piloto: $800 mil, 30 tiendas de Monterrey, 8 semanas. Si rota y no se come a la línea tradicional, escalamos con todo. Tú lo lideras.", reply: ["Mmm… yo quería llegar al Super Bowl 😅", "Pero ok, tiene sentido. Si funciona en 30, nadie me lo va a poder negar.", "Le voy a pedir a Ana que me ayude con las métricas."], outcome: "Mantienes viva la idea, proteges la caja y le das a Diego la oportunidad de ganárselo con datos, no por apellido.", effects: { caja: -2, equipo: 3, consejo: 1 }, style: { riesgo: 0, horizonte: 2, foco: 1, estilo: 1 }, score: 3 },
+      { id: "c", text: "No por ahora. Primero hay que arreglar el margen del negocio actual.", reply: ["Ok.", "Pensé que tú sí ibas a entender que necesitamos innovar."], outcome: "Proteges la caja, pero matas una idea con potencial real y te ganas un enemigo con apellido Garza.", effects: { caja: 1, consejo: -5, equipo: -2 }, style: { riesgo: -2, horizonte: -2, conflicto: 1 }, score: 1 },
+    ],
+    expired: { reply: ["¿Lo pudiste ver? 👀", "Le voy a decir a mi papá que lo revise contigo."], outcome: "Diego fue directo con su papá. La decisión se te está saliendo de las manos.", effects: { consejo: -4 } },
+    lesson: "innovacion",
+    bitacora: { title: "Pilotos antes de apostar", text: "Las ideas que cambian mercados rara vez parecen obvias. Tampoco se apuestan completas sin evidencia. Un piloto bien diseñado protege la caja y a la idea al mismo tiempo.", nota: "Un piloto no sirve para demostrar que tenías razón; sirve para aprender antes de apostar en grande." },
+    areas: ["estrategia", "finanzas", "personas"],
+  },
+  {
+    id: "c-hector-renuncia", day: 3, slot: 3, channel: "email", from: "mariana",
+    subject: "URGENTE · Renuncia de Héctor Salinas", preview: "Héctor presentó su renuncia esta mañana. Dice que Bocadi le ofreció la Dirección Comercial…",
+    trigger: { item: "d1-hector", options: ["c", "__expired"] },
+    body: [
+      "Director:",
+      "Héctor presentó su renuncia esta mañana. Bocadi (nuestra competencia directa) le ofreció la Dirección Comercial.",
+      "En la entrevista de salida me dijo, textual: «El nuevo ni me contestó. No voy a esperar a que me corran».",
+      "Lo que me preocupa: dos de sus vendedores ya están preguntando por su finiquito y él maneja personalmente la relación con 3 cadenas regionales ($48 M al año).",
+      "¿Cómo quieres que procedamos?",
+      "Mariana",
+    ],
+    ask: "¿Qué haces con la renuncia de Héctor?",
+    options: [
+      { id: "a", text: "Ir hoy a verlo en persona. Reconocer mi error, escuchar y hacerle una contraoferta que incluya lo que de verdad le importa.", reply: ["(Héctor, por WhatsApp) Te agradezco que vinieras. De verdad.", "Me quedo hasta fin de año para la transición. Lo de Bocadi ya lo firmé, pero no me voy a llevar a nadie. Te doy mi palabra."], outcome: "No lo recuperas, pero salvas la transición, las cuentas y tu reputación ante el equipo comercial.", effects: { clientes: 2, equipo: 3 }, style: { foco: 2, conflicto: 2 }, score: 3 },
+      { id: "b", text: "Aceptar la renuncia, blindar las 3 cadenas con visitas mías esta semana y ascender a su mejor vendedor como interino.", reply: ["(Mariana) Entendido. Preparo el comunicado y la carta de interinato."], outcome: "Rápido y práctico. Las cadenas se quedan, pero el equipo comercial queda sin líder con experiencia.", effects: { clientes: -3, equipo: -3 }, style: { conflicto: 1, foco: -1 }, score: 2 },
+      { id: "c", text: "Igualar la oferta de Bocadi con más dinero. Que se quede a como dé lugar.", reply: ["(Héctor) No es dinero. Gracias."], outcome: "El problema nunca fue el sueldo. Le ofreciste dinero a alguien que pedía respeto.", effects: { clientes: -6, equipo: -4, caja: -1 }, style: { foco: -2, riesgo: 1 }, score: 0 },
+    ],
+    expired: { reply: ["(Mariana) Director, Héctor se fue hoy. Se llevó a dos vendedores."], outcome: "Volviste a dejar pasar a Héctor. Esta vez se llevó gente y cuentas.", effects: { clientes: -10, equipo: -6 } },
+    lesson: "personas",
+    bitacora: { title: "Las personas no son el problema", text: "Una renuncia casi nunca empieza el día que se presenta. Empieza en las conversaciones que no se tuvieron.", nota: "El liderazgo no consiste en estar al mando. Consiste en cuidar a las personas que están a tu cargo." },
+    areas: ["personas"], deadlineH: 10,
+  },
+
+  // ════════════════════════════════════════════════ DÍA 4 · Alineación y sindicato
+  {
+    id: "d4-objetivos", day: 4, slot: 1, channel: "reporte", from: "lucia",
+    subject: "Objetivos 2027 por área · no cuadran", preview: "Recibí los objetivos de cada director. Si los sumamos, la empresa se contradice…",
+    body: [
+      "Director:",
+      "Ya recibí los objetivos 2027 de cada director. Te soy honesta: si los sumamos, la empresa se contradice.",
+      "Comercial quiere +12% en volumen (con descuento). Planta quiere menos cambios de línea (menos variedad). Marca quiere lanzar 9 productos nuevos. Y Finanzas (yo) quiere subir el margen 2 puntos.",
+      "Cada quien tiene razón desde su silla. Y cada quien cobra bono por lo suyo.",
+      "¿Cómo quieres que lo armemos?",
+      "Lucía",
+    ],
+    data: { title: "Los bonos 2026 que se pagaron", rows: [["Comercial", "110% (volumen)"], ["Planta", "95% (eficiencia)"], ["Marca", "100% (lanzamientos)"], ["Resultado de la empresa", "Margen −1.2 pts 😬"]], note: "Todos ganaron bono. La empresa perdió margen." },
+    ask: "¿Cómo armas los objetivos de 2027?",
+    options: [
+      { id: "a", text: "Definir con el comité UNA meta para la empresa (la MEGA), bajarla en cascada a líneas de acción y que cada director tenga indicadores que la empujen. El bono depende de su scorecard y del resultado de la empresa.", reply: ["Por fin. Es lo que llevo pidiendo 3 años.", "Te propongo un taller de un día con el comité. Ojo: Héctor y Javier van a sentir que pierden autonomía."], outcome: "Empiezas a construir línea de vista: cada persona va a saber cómo su trabajo mueve el resultado. Duele al principio; es lo que más rinde.", effects: { margen: 5, consejo: 4, equipo: -1 }, style: { horizonte: 2, estilo: 2, conflicto: 1 }, score: 3 },
+      { id: "b", text: "Que cada director mantenga sus objetivos; ellos conocen su área. Yo nada más reviso que estén retadores.", reply: ["Ok… lo dejo así.", "Nada más te aviso que el año que entra vamos a tener la misma conversación."], outcome: "Respetas la autonomía, pero dejas que cada área reme hacia su lado. Otro año de bonos pagados con margen perdido.", effects: { equipo: 2, margen: -4 }, style: { conflicto: -2, estilo: 1 }, score: 0 },
+      { id: "c", text: "Pongo yo los objetivos de cada área este fin de semana y los comunico el lunes.", reply: ["Ok. Si quieres te paso la plantilla.", "Te sugiero que al menos lo platiques con cada uno antes del lunes."], outcome: "Los objetivos ahora cuadran en papel. Pero nadie los siente suyos y se nota en el primer mes.", effects: { margen: 2, equipo: -4 }, style: { estilo: -2, conflicto: 1, horizonte: 1 }, score: 1 },
+    ],
+    expired: { reply: ["Director, como no definimos nada, uso los objetivos que mandaron."], outcome: "Sin decisión, cada área siguió con lo suyo.", effects: { margen: -4, consejo: -2 } },
+    lesson: "alineacion",
+    bitacora: { title: "La estrategia falla al bajar", text: "Cuando cada área tiene objetivos que se contradicen, todos pueden ganar bono mientras la empresa pierde. Alinear es una meta, una cascada y un scorecard por persona conectado con ella.", nota: "La ejecución empieza cuando una organización deja de hablar en generalidades y empieza a comprometerse con decisiones claras." },
+    areas: ["alineacion", "estrategia"],
+  },
+  {
+    id: "d4-sindicato", day: 4, slot: 2, channel: "junta", from: "roberto",
+    subject: "Junta · Revisión salarial con el sindicato", preview: "Roberto Cantú pide 9%. La inflación fue 4.5% y el presupuesto aguanta 5%…",
+    body: ["Sala de juntas de la planta, 11:00. Mariana (Personas) y Lucía (Finanzas) te acompañan. Del otro lado: Roberto Cantú y dos delegados."],
+    lines: [
+      { who: "roberto", text: "Director, bienvenido. Vamos al grano: la base pide 9%. La gente ya no la arma con lo que gana. Y le recuerdo que en 2019 cerramos la planta 4 días." },
+      { who: "lucia", text: "(en voz baja) El presupuesto aguanta 5%. Cada punto arriba nos cuesta $1.3 M al año." },
+      { who: "mariana", text: "(en voz baja) La rotación en planta es 34%. Se nos van por $300 a la semana con la maquiladora de enfrente." },
+      { who: "roberto", text: "¿Qué nos ofrece?" },
+    ],
+    data: { title: "Contexto", rows: [["Inflación anual", "4.5%"], ["Petición del sindicato", "9%"], ["Presupuesto", "5%"], ["Merma de producto en planta", "4.8% (meta de la industria: 2.5%)"]] },
+    ask: "Roberto espera tu respuesta en la mesa.",
+    options: [
+      { id: "a", text: "«Roberto, ofrezco 5% fijo y un bono trimestral de hasta 4% si bajamos la merma de 4.8% a 3%. Lo que ahorramos en merma, lo repartimos. Y lo medimos juntos, con un tablero que ustedes también ven.»", reply: ["Mmm. Eso nunca nos lo habían ofrecido.", "La gente va a querer ver números claros cada mes. Si usted se compromete a eso, lo llevo a la asamblea."], outcome: "Convertiste una pelea de posiciones en un interés común. Si la merma baja, el bono se paga solo.", effects: { equipo: 6, margen: 3, caja: -2 }, style: { horizonte: 2, estilo: 2, foco: 1, riesgo: 1 }, score: 3 },
+      { id: "b", text: "«Roberto, les damos 9%. Esta gente lo merece y no quiero empezar con un conflicto.»", reply: ["Así se habla, Director. 🤝", "(Lucía te manda un WhatsApp debajo de la mesa: 😳)"], outcome: "Paz inmediata. Pero son $5.2 M más al año sin ninguna mejora atada. Y el consejo te va a preguntar por qué.", effects: { equipo: 5, margen: -7, consejo: -5 }, style: { conflicto: -2, foco: 2, riesgo: 1 }, score: 1 },
+      { id: "c", text: "«La inflación fue 4.5%. Ofrecemos 4.5% y es nuestra última oferta. La ley y el contrato están de nuestro lado.»", reply: ["Pues así lo vamos a llevar a la asamblea, Director.", "Nada más le digo que la gente tiene memoria."], outcome: "Resolviste por derechos y por poder. Tienes la razón legal, pero se encendieron los focos rojos de un posible paro.", effects: { margen: 1, equipo: -8, consejo: -1 }, style: { conflicto: 2, foco: -2, estilo: -2 }, score: 0 },
+    ],
+    expired: { reply: ["(Roberto) Director, nos levantamos de la mesa. Se cita a asamblea."], outcome: "Te pararon la negociación por no presentar oferta.", effects: { equipo: -9, consejo: -3 } },
+    lesson: "negociacion",
+    bitacora: { title: "Intereses, derechos y poder", text: "Tenías tres caminos: resolver por poder (imponer), por derechos (el contrato) o por intereses (qué necesita cada quien). Los tres existen, pero no cuestan lo mismo.", nota: "El poder puede cerrar una conversación, pero los intereses bien entendidos pueden resolver el problema que la originó." },
+    areas: ["negociacion", "personas", "finanzas"], deadlineH: 10,
+  },
+  {
+    id: "c-supernorte-castigo", day: 4, slot: 3, channel: "email", from: "sofia",
+    subject: "Reasignación de espacio en anaquel", preview: "Le informo que a partir del día 1 reasignaremos uno de sus dos frentes…",
+    trigger: { item: "d2-supernorte", options: ["c"] },
+    body: [
+      "Director:",
+      "Le informo que a partir del día 1 reasignaremos uno de sus dos frentes de anaquel en 140 tiendas a otro proveedor regional.",
+      "Lamentamos no haber encontrado un punto de acuerdo.",
+      "Sofía Leal",
+    ],
+    data: { title: "Impacto estimado (Lucía)", rows: [["Ventas en riesgo", "≈ $38 M al año"], ["Tiendas de conveniencia (tu «alternativa»)", "0 contratos firmados"]] },
+    ask: "Perdiste medio anaquel. ¿Qué haces?",
+    options: [
+      { id: "a", text: "Llamar a Sofía, reconocer que fui demasiado duro y volver con la propuesta de promociones atadas a volumen y los datos de rotación.", reply: ["Le agradezco la llamada, Director. No es común.", "No puedo revertir la decisión de inmediato, pero si me manda la propuesta la revisamos para el siguiente trimestre."], outcome: "Reparas la relación. Recuperar el espacio va a costar un trimestre.", effects: { clientes: 3, consejo: 1 }, style: { conflicto: 1, horizonte: 2 }, score: 3 },
+      { id: "b", text: "Sostener la postura y acelerar la entrada a tiendas de conveniencia, aunque haya que dar descuentos ahí.", reply: ["(Comercial) Va a tomar mínimo 6 meses entrar a Oxxo, jefe."], outcome: "Construyes la alternativa que debiste tener antes de amenazar. Mientras tanto, pierdes ventas.", effects: { clientes: -4, margen: -2, caja: -2 }, style: { riesgo: 2, conflicto: 1 }, score: 1 },
+    ],
+    expired: { reply: ["(SuperNorte) Se aplica la reasignación."], outcome: "Perdiste el frente sin dar pelea ni reparar.", effects: { clientes: -5 } },
+    bitacora: { title: "La reputación es capital negociador", text: "Amenazar sin una alternativa real es apostar tu credibilidad. Y reparar a tiempo también es liderazgo.", nota: "La reputación es capital negociador; no la gastes para ganar una concesión que mañana te cerrará puertas." },
+    areas: ["clientes", "negociacion"],
+  },
+
+  // ════════════════════════════════════════════════ DÍA 5 · Consejo y capital
+  {
+    id: "d5-credito", day: 5, slot: 1, channel: "reporte", from: "lucia",
+    subject: "Propuesta · Línea automatizada y crédito de $40 M", preview: "Banorte nos ofrece $40 M a 5 años para automatizar el empaque. VPN positivo, pero…",
+    body: [
+      "Director:",
+      "Banorte nos ofrece un crédito de $40 M a 5 años (TIIE + 2.5) para automatizar la línea de empaque. Javier lleva 2 años pidiéndolo.",
+      "Los números salen positivos, pero quiero que veas el riesgo antes del consejo.",
+      "Lucía",
+    ],
+    data: { title: "Análisis de la inversión", rows: [["Inversión", "$40 M"], ["Ahorro anual estimado", "$11 M (mano de obra y merma)"], ["VPN a 12% (costo de capital)", "+$7.8 M"], ["Recuperación", "4.2 años"], ["Deuda / EBITDA", "pasa de 1.1× a 2.4×"], ["Si las ventas caen 10%", "Deuda / EBITDA 3.1× (límite del banco: 3.0×)"], ["Puestos que se eliminan", "22 en empaque"]], note: "Fase 1 sola (la mitad de la línea): $18 M, ahorro de $5.5 M, se paga con flujo propio en 14 meses." },
+    ask: "¿Qué recomiendas al consejo?",
+    options: [
+      { id: "a", text: "Tomar los $40 M completos. El VPN es positivo y el que no invierte se queda atrás.", reply: ["Ok, lo presento así.", "Nada más dejo anotado el riesgo del covenant si las ventas caen. El consejo lo va a preguntar."], outcome: "Inviertes en grande. Si el mercado se mueve en tu contra, el apalancamiento te quita libertad.", effects: { margen: 4, caja: -6, consejo: -1, equipo: -3 }, style: { riesgo: 2, horizonte: 1, foco: -2 }, score: 1 },
+      { id: "b", text: "Hacer la fase 1 con flujo propio ($18 M) y preparar la fase 2 según resultados. A las 22 personas de empaque las reubicamos en las vacantes que dejó la rotación y las capacitamos para operar la línea nueva.", reply: ["Me gusta mucho. Menos riesgo y conservamos la opción de crecer.", "Mariana dice que tiene 26 vacantes abiertas en planta. Cuadra perfecto."], outcome: "Asignas capital con disciplina: tomas el valor sin comprometer la libertad de la empresa y sin romper la confianza de la planta.", effects: { margen: 3, caja: -3, equipo: 4, consejo: 4 }, style: { riesgo: -1, horizonte: 2, foco: 2 }, score: 3 },
+      { id: "c", text: "Posponerlo un año hasta que el negocio esté más estable.", reply: ["Ok. Javier se va a desanimar, te aviso.", "El ahorro de $11 M al año también se pospone."], outcome: "Cuidas la caja hoy, pero dejas en la mesa un proyecto con valor y la merma sigue costando.", effects: { caja: 1, margen: -2, equipo: -2 }, style: { riesgo: -2, horizonte: -1 }, score: 1 },
+    ],
+    expired: { reply: ["Lo saqué de la agenda del consejo."], outcome: "La inversión quedó en el limbo.", effects: { margen: -2, consejo: -2 } },
+    lesson: "finanzas",
+    bitacora: { title: "El CEO como asignador de capital", text: "El VPN positivo dice que hay valor; el apalancamiento dice cuánto te puede costar si te equivocas. Escalonar la inversión es comprarte opciones.", nota: "El apalancamiento puede hacerte ver más rentable, pero también puede quitarte libertad cuando más la necesitas." },
+    areas: ["finanzas", "operacion", "personas"],
+  },
+  {
+    id: "d5-consejo", day: 5, slot: 2, channel: "email", from: "carla",
+    subject: "Para tu sesión del jueves con el consejo", preview: "Un consejo de alguien que ha visto muchos debuts: decide con qué abres…",
+    body: [
+      "Hola:",
+      "Soy Carla Méndez, consejera independiente. Un consejo de alguien que ha visto muchos debuts de directores: el consejo decide en los primeros 2 minutos si confía en ti.",
+      "Vas a tener 20 minutos. Don Ramiro va a estar en la cabecera y Diego en la sala.",
+      "¿Con qué vas a abrir? Mándame tu primer minuto y te digo lo que pienso.",
+      "Carla",
+    ],
+    ask: "¿Con qué abres tu primera sesión de consejo?",
+    options: [
+      { id: "a", text: "«Cumbre puede volver a 13% de margen en 3 años sin dejar de ser Cumbre. Para eso hoy les pido tres decisiones. Les explico por qué.»", reply: ["Esto es. Empezaste por el final y pediste algo concreto.", "Un consejo: después cuenta una sola historia, la de la planta o la de Ana. Las historias convencen más que 20 gráficas."], outcome: "Abres con dirección y una petición clara. El consejo levanta la vista del celular.", effects: { consejo: 7 }, style: { horizonte: 2, conflicto: 1 }, score: 3 },
+      { id: "b", text: "«Les agradezco la confianza. Quiero contarles todo lo que he hecho en estas semanas: me reuní con 40 personas, visité 5 clientes…»", reply: ["Mmm. Va a sonar a reporte de actividades.", "El consejo no quiere saber qué hiciste; quiere saber qué ves y qué propones."], outcome: "Empiezas demostrando esfuerzo, no dirección. La atención se va al minuto 3.", effects: { consejo: -1 }, style: { conflicto: -1 }, score: 1 },
+      { id: "c", text: "«La empresa está peor de lo que me dijeron. El margen cayó 4 puntos en la administración anterior y hay que cambiar casi todo.»", reply: ["Cuidado. Don Ramiro va a estar en la cabecera.", "Puede ser cierto, pero abrir culpando al pasado te pone en contra de la sala completa."], outcome: "Tienes razón en los números. Pero acabas de convertir al fundador en tu oposición.", effects: { consejo: -7, equipo: -1 }, style: { conflicto: 2, estilo: -2 }, score: 0 },
+    ],
+    expired: { reply: ["No me llegó nada. Suerte el jueves."], outcome: "Llegaste a tu primer consejo sin preparar la apertura.", effects: { consejo: -4 } },
+    lesson: "comunicacion",
+    bitacora: { title: "Ocho segundos para ganar el derecho a ser escuchado", text: "En un consejo, la primera frase decide si te escuchan o si revisan el celular. Empieza con el final: qué ves, qué propones y qué necesitas que decidan.", nota: "No empieces demostrando cuánto sabes; empieza demostrando por qué importa." },
+    areas: ["comunicacion", "estrategia"],
+  },
+  {
+    id: "c-ana-brilla", day: 5, slot: 3, channel: "whatsapp", from: "ana",
+    subject: "Ana Martínez", preview: "Director! Le mando la página. ¿Puedo presentar yo esa parte en el consejo? 😬",
+    trigger: { item: "d2-ana", options: ["b"] },
+    body: [
+      "Director!! Le mando la página 📄",
+      "Recomendación: mover 15% de la capacidad de la línea tradicional a premium en 2027. Con eso el margen sube 1.1 puntos.",
+      "Una pregunta… ¿me dejaría presentar yo esa parte en el consejo? Son 3 minutos. Si no, lo entiendo totalmente 😬",
+    ],
+    ask: "Ana quiere presentar ante el consejo. ¿Qué decides?",
+    options: [
+      { id: "a", text: "«Sí. Ensayamos mañana 15 minutos. Yo te presento y tú cierras con tu recomendación.»", reply: ["😭😭 ¡Gracias! Voy a ensayar hoy en la noche.", "(Después del consejo, Carla te escribe: «¿Quién es Ana? Esa muchacha tiene futuro.»)"], outcome: "Formaste talento a la vista del consejo. Para un CEO, eso vale más que lucirse.", effects: { equipo: 5, consejo: 3 }, style: { foco: 2, horizonte: 2, riesgo: 1 }, score: 3 },
+      { id: "b", text: "«Gran trabajo, Ana. Esta vez lo presento yo porque es mi primer consejo; pero le voy a decir a todos que fue tuyo.»", reply: ["Claro, Director. Gracias por darme crédito 🙂"], outcome: "Prudente y generoso. Ana se queda con ganas de más.", effects: { equipo: 2, consejo: 1 }, style: { riesgo: -1 }, score: 2 },
+    ],
+    expired: { reply: ["Ok, supongo que no 🙂"], outcome: "Ana se quedó sin respuesta.", effects: { equipo: -2 } },
+    lesson: "personas",
+    bitacora: { title: "Desarrollar talento es la prioridad número uno", text: "Un líder que no tiene dos o tres posibles reemplazos no está desarrollando talento; está protegiendo su silla.", nota: "El verdadero liderazgo no se mide por cuánta gente te sigue, sino por cuánta gente crece contigo." },
+    areas: ["personas"], deadlineH: 12,
+  },
+  {
+    id: "c-planta-accidente", day: 5, slot: 4, channel: "llamada", from: "javier",
+    subject: "Llamada perdida · Javier Ortiz (Planta)", preview: "Jefe… pasó lo que temíamos en la línea 2. Toño está en el Seguro…",
+    trigger: { item: "d3-planta", options: ["b", "__expired"] },
+    body: [
+      "🔴 Mensaje de voz · 0:31",
+      "«Jefe… pasó lo que temíamos en la línea 2. A Toño le cayó aceite caliente en el brazo. Ya está en el Seguro, quemadura de segundo grado. Está estable.»",
+      "«Los muchachos están muy molestos. Roberto ya habló a la STPS. Mañana viene un inspector.»",
+    ],
+    ask: "¿Qué haces ahora?",
+    options: [
+      { id: "a", text: "Ir hoy al hospital y luego a la planta. Asumir públicamente la responsabilidad, parar la línea 2 hasta repararla y crear con el sindicato una comisión de seguridad con poder para detener cualquier línea.", reply: ["(Roberto) Director, no esperaba verlo en la planta. Se lo reconozco.", "La gente está dolida, pero eso de la comisión con poder de parar… eso nunca había pasado aquí."], outcome: "No borra el error, pero cambia la historia que se va a contar en la planta durante años.", effects: { equipo: 4, caja: -3, consejo: -2 }, style: { conflicto: 2, foco: 2, horizonte: 2 }, score: 3 },
+      { id: "b", text: "Que Jurídico y Personas atiendan la inspección y a la familia de Toño. Yo me mantengo al margen para no complicar el tema legal.", reply: ["(Mariana) Ok, lo coordino. Nada más te digo que en la planta preguntan dónde estás."], outcome: "Legalmente protegido. Humanamente ausente. La planta ya sacó sus conclusiones.", effects: { equipo: -8, consejo: -3 }, style: { conflicto: -2, foco: -2 }, score: 0 },
+    ],
+    expired: { reply: ["(Mariana) El inspector llegó y no estabas. Hay multa."], outcome: "Accidente, multa y un director ausente.", effects: { equipo: -10, caja: -3, consejo: -4 } },
+    lesson: "cultura",
+    bitacora: { title: "Walk the talk", text: "La gente escucha el discurso, pero cree en la conducta. Después de un error, lo que haces en las siguientes 24 horas define tu credibilidad.", nota: "El cambio no se vuelve creíble cuando se anuncia. Se vuelve creíble cuando la gente ve al líder vivirlo primero." },
+    areas: ["etica", "cultura", "operacion"], deadlineH: 6,
+  },
+
+  // ════════════════════════════════════════════════ DÍA 6 · Cultura y ética
+  {
+    id: "d6-gastos", day: 6, slot: 1, channel: "email", from: "mariana",
+    subject: "Confidencial · Auditoría de gastos de Fernando Rocha", preview: "Fernando, nuestro mejor vendedor, infló comprobantes por $38 mil en 6 meses…",
+    body: [
+      "Director (confidencial):",
+      "Auditoría interna encontró que Fernando Rocha, nuestro mejor vendedor (vende $31 M al año, 7.5% de la empresa), infló comprobantes de gasolina y comidas por $38 mil en 6 meses.",
+      "La política dice baja inmediata. Pero ya varios me han dicho «es Fernando, todos saben que así es, y vende como nadie».",
+      "Lo que decidas, todo el equipo comercial se va a enterar. ¿Cómo procedemos?",
+      "Mariana",
+    ],
+    ask: "¿Qué decides con Fernando?",
+    options: [
+      { id: "a", text: "Aplicar la política: baja con respeto y en privado, sin exhibirlo, recuperando el monto. Yo mismo explico al equipo comercial que aquí la integridad no depende de cuánto vendes.", reply: ["(Mariana) Entendido. Lo hacemos mañana a primera hora, con cuidado.", "(Una semana después) Dos vendedores me dijeron en confianza que ya era hora. Uno me contó que él siempre se sintió tonto por reportar sus gastos exactos."], outcome: "Pierdes ventas a corto plazo. Ganas algo más difícil de construir: que la regla sea igual para todos.", effects: { clientes: -4, equipo: 5, consejo: 3 }, style: { conflicto: 2, horizonte: 2, foco: -1 }, score: 3 },
+      { id: "b", text: "Darle una segunda oportunidad en privado: que devuelva el dinero, firme un acta y no se habla más del tema.", reply: ["(Mariana) Lo hago así.", "(Un mes después) Ya se sabe en todo el equipo. Me preguntan si la política aplica para todos o nada más para los que venden poco."], outcome: "Proteges las ventas de Fernando y le enseñas a toda la empresa que la ética tiene precio.", effects: { clientes: 1, equipo: -6, consejo: -2 }, style: { conflicto: -2, foco: -1, horizonte: -2 }, score: 0 },
+      { id: "c", text: "Que lo decida su jefe directo en Comercial. Es su equipo.", reply: ["(Mariana) Ok, le paso el expediente.", "(Comercial le da una amonestación verbal.)"], outcome: "Evitaste la decisión. La cultura la decidió alguien más por ti.", effects: { equipo: -3, consejo: -1 }, style: { conflicto: -2, estilo: 1 }, score: 1 },
+    ],
+    expired: { reply: ["(Mariana) Como no hubo instrucción, el caso se quedó archivado."], outcome: "Archivar también comunica.", effects: { equipo: -5 } },
+    lesson: "cultura",
+    bitacora: { title: "La cultura real se revela en lo que se tolera", text: "La cultura no es lo que dicen los valores en la pared. Es lo que la empresa decide premiar, tolerar y promover, sobre todo cuando quien rompe la regla es el que más vende.", nota: "La cultura real se revela en lo que la empresa decide premiar, tolerar y promover." },
+    areas: ["etica", "cultura"],
+  },
+  {
+    id: "d6-clima", day: 6, slot: 2, channel: "reporte", from: "mariana",
+    subject: "Resultados de la encuesta de clima", preview: "Participó el 81%. La frase que más se repite: «aquí no se le puede decir que no a un jefe»…",
+    body: [
+      "Director:",
+      "Participó el 81%. Te comparto lo más fuerte. Algunas frases textuales de los comentarios abiertos:",
+      "«Aquí no se le puede decir que no a un jefe.»\n«Las decisiones importantes se toman en la oficina de Don Ramiro, aunque ya no sea el director.»\n«Nadie sabe cómo su trabajo afecta los resultados.»\n«El que se equivoca, paga. Mejor no proponer nada.»",
+      "Mariana",
+    ],
+    data: { title: "Indicadores clave", rows: [["«Puedo expresar desacuerdo sin consecuencias»", "31%"], ["«Sé cómo mi trabajo contribuye a la estrategia»", "28%"], ["«Recomendaría Cumbre como lugar para trabajar»", "57%"], ["«Mi jefe me da retroalimentación al menos una vez al mes»", "22%"]] },
+    ask: "¿Cuál es tu primera jugada para cambiar la cultura?",
+    options: [
+      { id: "a", text: "Lanzar una campaña de valores renovados: carteles, video del director y un evento de lanzamiento con toda la empresa.", reply: ["(Mariana) Lo puedo tener en 3 semanas.", "Te soy honesta: tuvimos una campaña igual en 2021. Los carteles siguen en el comedor."], outcome: "Se ve bien, pero la gente ya aprendió a ignorar los carteles. La cultura no cambia por decreto.", effects: { equipo: -1, caja: -1 }, style: { estilo: -1, horizonte: -1 }, score: 0 },
+      { id: "b", text: "Cambiar rituales: revisiones 1 a 1 mensuales de cada líder con su equipo, contar en cada junta mensual una historia de alguien que dijo «no» y tuvo razón, y empezar yo pidiendo retroalimentación en público.", reply: ["(Mariana) Eso me emociona. Es más lento, pero es real.", "Te propongo arrancar con tu comité: si ellos no lo hacen, nadie lo va a hacer."], outcome: "La cultura se cambia conversación por conversación. Empezaste por lo que la gente puede ver: a ti.", effects: { equipo: 7, consejo: 1 }, style: { horizonte: 2, estilo: 2, foco: 2 }, score: 3 },
+      { id: "c", text: "Hablar con Don Ramiro para pedirle que deje de entrar a las decisiones operativas. Es el origen del problema.", reply: ["(Don Ramiro, al día siguiente) Me dolió lo que me dijiste. Pero tienes razón.", "Nada más te pido que no me saques de todo. Esta empresa también es mi vida."], outcome: "Atacas una causa raíz con valentía. Es necesario, pero solo no alcanza para cambiar la cultura.", effects: { equipo: 3, consejo: -3 }, style: { conflicto: 2, riesgo: 1 }, score: 2 },
+    ],
+    expired: { reply: ["(Mariana) ¿Lo pudiste ver? El comité pregunta qué vamos a hacer."], outcome: "La encuesta se quedó en el cajón. Lo de siempre, pensó la gente.", effects: { equipo: -5 } },
+    lesson: "equipos",
+    bitacora: { title: "El cambio ocurre conversación por conversación", text: "Si nadie puede decir que no, no hay conflicto productivo. Y sin conflicto productivo los compromisos son superficiales. Esto se cambia con rituales y ejemplo, no con carteles.", nota: "La cultura se cambia menos con discursos masivos y más con conversaciones repetidas que modifican comportamientos." },
+    areas: ["cultura", "personas", "alineacion"],
+  },
+  {
+    id: "c-ana-renuncia", day: 6, slot: 3, channel: "email", from: "mariana",
+    subject: "Renuncia de Ana Martínez (Planeación)", preview: "Ana aceptó una oferta en Bocadi. En la salida dijo que nunca supo si su trabajo servía…",
+    trigger: { item: "d2-ana", options: ["a", "c", "__expired"] },
+    body: [
+      "Director:",
+      "Ana Martínez (Planeación Comercial) aceptó una oferta en Bocadi.",
+      "En la entrevista de salida dijo: «Me gusta Cumbre, pero nunca supe si mi trabajo servía. Allá me ofrecen un mentor».",
+      "Ella armó el análisis de premium (+28%) que estás usando para la estrategia. ¿Quieres hacer algo?",
+      "Mariana",
+    ],
+    ask: "¿Qué haces?",
+    options: [
+      { id: "a", text: "Hablar con ella hoy: reconocer su trabajo con nombre y apellido y preguntarle qué la haría quedarse. Si se va, que se vaya bien.", reply: ["(Ana) Gracias por buscarme. La verdad, me hubiera gustado escuchar esto hace un mes.", "Ya firmé, pero le dejo documentado todo el modelo para quien llegue."], outcome: "No la retienes, pero aprendes la lección y te queda la puerta abierta.", effects: { equipo: 2 }, style: { foco: 2, conflicto: 1 }, score: 3 },
+      { id: "b", text: "Que Personas le haga una contraoferta de sueldo.", reply: ["(Ana) Agradezco mucho, pero no es el sueldo."], outcome: "Volviste a ofrecer dinero cuando lo que faltaba era desarrollo.", effects: { equipo: -2, caja: -1 }, style: { foco: -1 }, score: 1 },
+    ],
+    expired: { reply: ["(Mariana) Hoy fue su último día."], outcome: "Se fue un talento sin que nadie le dijera gracias.", effects: { equipo: -3 } },
+    lesson: "personas",
+    bitacora: { title: "La gente se va de sus jefes", text: "El talento joven no se queda por sueldo; se queda donde crece. Retroalimentación y desarrollo son trabajo del líder, no de Recursos Humanos.", nota: "Liderar bien es darle a cada persona la mezcla correcta de claridad, apoyo y autonomía para su momento de desarrollo." },
+    areas: ["personas"],
+  },
+
+  // ════════════════════════════════════════════════ DÍA 7 · Cierre de temporada
+  {
+    id: "c-piloto", day: 7, slot: 1, channel: "reporte", from: "diego",
+    subject: "Resultados del piloto · Cumbre Selección (8 semanas)", preview: "Rotación 1.8× vs la categoría. Margen 39%. Pero ojo con la canibalización…",
+    trigger: { item: "d3-diego", options: ["b"] },
+    body: [
+      "Hola! Ya tenemos resultados del piloto. Ana me ayudó con las métricas 🙌",
+      "Te los comparto tal cual, con lo bueno y lo malo.",
+    ],
+    data: { title: "Piloto · 30 tiendas · 8 semanas", rows: [["Rotación vs la categoría", "1.8×"], ["Margen real", "39%"], ["Recompra", "34% de los compradores"], ["Canibalización de la línea tradicional", "22% de las ventas nuevas"], ["Ventas incrementales netas (anualizadas)", "≈ $14 M"]], note: "Diego: «Sé que la canibalización no es lo ideal, pero el margen compensa.»" },
+    ask: "¿Qué sigue para Cumbre Selección?",
+    options: [
+      { id: "a", text: "Escalar por etapas: 300 tiendas del noreste en el Q2, con el mismo tablero. Diego lo sigue liderando y me presenta cada mes.", reply: ["¡¡Vamos!! 🚀", "Y gracias por no dármelo nomás porque sí. Ahora sí me lo gané."], outcome: "Escalas lo que funciona con datos y formas a un posible sucesor en el camino.", effects: { margen: 4, clientes: 3, consejo: 4 }, style: { horizonte: 2, riesgo: 1, foco: 1 }, score: 3 },
+      { id: "b", text: "Lanzamiento nacional inmediato con los $6 M originales.", reply: ["¡Eso! Llamo a la agencia hoy mismo 🔥"], outcome: "La evidencia era buena, pero saltar de 30 a 1,200 tiendas sin probar logística ni rentabilidad por región es otra apuesta.", effects: { margen: 2, caja: -6, consejo: 1 }, style: { riesgo: 2 }, score: 1 },
+    ],
+    expired: { reply: ["Bueno… sigo esperando 😕"], outcome: "El piloto exitoso se quedó congelado.", effects: { consejo: -2, equipo: -2 } },
+    lesson: "innovacion",
+    bitacora: { title: "Progreso visible", text: "Un piloto que funciona es la mejor herramienta de cambio: convierte una opinión en evidencia y a un promotor en dueño.", nota: "El cambio sostenible no se impone; se diseña para que la mejor opción también sea la más deseable." },
+    areas: ["estrategia", "personas"],
+  },
+  {
+    id: "d7-sucesion", day: 7, slot: 2, channel: "email", from: "ramiro",
+    subject: "Una última cosa antes de cerrar tus 90 días", preview: "Diego me pidió la Dirección Comercial. Quiero tu opinión, no tu permiso…",
+    body: [
+      "Querido amigo:",
+      "Pasaron tus primeros 90 días. Te escribo como fundador, no como presidente del consejo.",
+      "Diego me pidió la Dirección Comercial cuando se abra el puesto el año que entra. Es mi hijo y lo quiero ver crecer. Pero quiero tu opinión honesta, no tu permiso. Si me dices que no está listo, lo voy a respetar.",
+      "¿Qué recomiendas?",
+      "Ramiro",
+    ],
+    ask: "El fundador te pide tu opinión sobre su hijo. ¿Qué le recomiendas?",
+    options: [
+      { id: "a", text: "«Don Ramiro, Diego tiene talento. Propongo un plan de 12 meses con metas claras y un mentor fuera de la familia. Que compita en igualdad con un candidato interno y uno externo, y que el consejo decida con evidencia.»", reply: ["Esa es la respuesta de un director general.", "No me dijiste lo que quería oír. Me dijiste lo que la empresa necesita. Gracias."], outcome: "Cuidas a la empresa, al fundador y a Diego al mismo tiempo. Así se construye una sucesión: con criterio, no con apellido.", effects: { consejo: 7, equipo: 4 }, style: { horizonte: 2, estilo: 2, conflicto: 2 }, score: 3 },
+      { id: "b", text: "«Sí, Diego está listo. Tiene la visión que necesitamos.»", reply: ["Gracias. Me da mucho gusto.", "(Carla, la consejera, te escribe esa noche: «¿Estás seguro? El equipo comercial no lo ve así.»)"], outcome: "Complaces al fundador. El equipo comercial siente que el techo de cristal tiene apellido.", effects: { consejo: 2, equipo: -6 }, style: { conflicto: -2, riesgo: 1 }, score: 0 },
+      { id: "c", text: "«Con todo respeto, no. Mezclar familia y dirección nos va a costar. Busquemos a alguien de fuera.»", reply: ["Entiendo. Me duele, pero lo entiendo.", "Hablaré con Diego. No va a ser fácil para él."], outcome: "Fuiste honesto y claro. Pero cerraste una puerta sin darle a Diego la oportunidad de demostrar.", effects: { consejo: -2, equipo: 1 }, style: { conflicto: 2, estilo: -1 }, score: 1 },
+    ],
+    expired: { reply: ["Supongo que estás muy ocupado. Lo platicamos después."], outcome: "Dejaste al fundador sin respuesta en el tema más sensible.", effects: { consejo: -6 } },
+    lesson: "personas",
+    bitacora: { title: "El líder adecuado cambia el destino", text: "No se llena un puesto porque el organigrama (o el apellido) lo pide. Se forma y se elige al líder correcto con evidencia. Ese es el trabajo del arquitecto social.", nota: "Un proyecto estratégico sin el líder correcto es una apuesta cara con baja probabilidad de éxito." },
+    areas: ["personas", "estrategia"],
+  },
+];

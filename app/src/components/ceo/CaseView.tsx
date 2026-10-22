@@ -1,0 +1,287 @@
+"use client";
+import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
+import clsx from "clsx";
+import { ArrowLeft, ArrowRight, BookOpen, CheckCheck, Clock, Lightbulb, PhoneMissed, Play, Quote, Sparkles, XCircle } from "lucide-react";
+import { CAST, firstName } from "@/lib/ceo/cast";
+import { KPI_LABEL, XP } from "@/lib/ceo/engine";
+import { lessonById } from "@/lib/ceo/lessons";
+import type { Entry, Item, KpiKey, Option } from "@/lib/ceo/types";
+import { useCeo } from "./CeoProvider";
+import { Avatar, ChannelChip, clock, until } from "./ui";
+
+export function CaseView({ id }: { id: string }) {
+  const c = useCeo();
+  const e = c.entries.find((x) => x.item.id === id);
+  const [picked, setPicked] = useState<string | null>(null);
+  const [justDecided, setJustDecided] = useState(false);
+
+  useEffect(() => { if (e && e.status !== "futuro") c.markRead(id); }, [e?.status, id]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { window.scrollTo({ top: 0 }); }, [id]);
+
+  if (!e || e.status === "futuro") {
+    return (
+      <div className="card p-8 max-w-lg mx-auto text-center">
+        <h2 className="text-lg font-semibold">Este asunto todavía no llega</h2>
+        <p className="mt-1 text-sm text-slate-500">Cuando llegue lo verás en tu bandeja.</p>
+        <Link href="/ceo/bandeja" className="btn-primary mt-6">Ir a la bandeja</Link>
+      </div>
+    );
+  }
+
+  const it = e.item;
+  const confirm = () => { if (!picked) return; c.decide(it.id, picked); setJustDecided(true); window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" }); };
+  const nextPending = c.pending.find((p) => p.item.id !== it.id);
+
+  return (
+    <div className="max-w-3xl mx-auto">
+      <Link href="/ceo/bandeja" className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-ink"><ArrowLeft size={15} /> Bandeja</Link>
+
+      <article className="mt-3 academy-in">
+        {it.channel === "whatsapp" ? <WhatsApp e={e} /> : it.channel === "llamada" ? <Call e={e} /> : it.channel === "junta" ? <Meeting e={e} /> : <Mail e={e} />}
+      </article>
+
+      {it.data && <DataCard d={it.data} />}
+
+      {/* decisión */}
+      {e.status === "pendiente" && (
+        <section className="mt-5 card p-5 sm:p-6 academy-in">
+          <div className="flex items-center justify-between gap-3">
+            <div className="text-[11px] font-semibold uppercase tracking-wider text-indigo">Tu decisión</div>
+            <span className={clsx("chip gap-1", e.deadline - c.now < 3 * 3_600_000 ? "bg-coral-soft text-coral" : "bg-amber-soft text-amber")}><Clock size={11} /> Vence en {until(e.deadline, c.now)}</span>
+          </div>
+          <h2 className="mt-2 text-lg sm:text-xl font-semibold text-ink leading-snug">{it.ask}</h2>
+          <div className="mt-4 space-y-2.5">
+            {it.options.map((o, i) => (
+              <button key={o.id} onClick={() => setPicked(o.id)} className={clsx("w-full text-left rounded-2xl border-2 p-4 flex gap-3 transition-all", picked === o.id ? "border-indigo bg-indigo-soft/50 shadow-[0_10px_30px_-18px_rgba(79,63,224,.6)]" : "border-slate-100 hover:border-indigo/30 hover:bg-slate-50")}>
+                <span className={clsx("h-7 w-7 rounded-full grid place-items-center text-xs font-bold shrink-0", picked === o.id ? "bg-indigo text-white" : "bg-slate-100 text-slate-500")}>{String.fromCharCode(65 + i)}</span>
+                <span className="text-[15px] text-ink leading-relaxed">{o.text}</span>
+              </button>
+            ))}
+          </div>
+          <button disabled={!picked} onClick={confirm} className="btn-primary w-full justify-center mt-5 py-3 text-base">Tomar la decisión <ArrowRight size={16} /></button>
+          <p className="mt-2 text-center text-[11px] text-slate-400">No hay vuelta atrás. Como en la vida real.</p>
+        </section>
+      )}
+
+      {(e.status === "decidido" || e.status === "vencido") && <Outcome e={e} fresh={justDecided} />}
+
+      {(e.status === "decidido" || e.status === "vencido") && (
+        <div className="mt-5 flex flex-wrap gap-3 justify-between">
+          <Link href="/ceo" className="btn-ghost">Volver a Hoy</Link>
+          {nextPending ? <Link href={`/ceo/caso/${nextPending.item.id}`} className="btn-primary">Siguiente asunto: {firstName(nextPending.item.from)} <ArrowRight size={15} /></Link>
+            : c.nextArrival ? <span className="text-sm text-slate-500 self-center">Tu siguiente asunto llega a las {clock(c.nextArrival)}.</span> : null}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ───────────────────────────────────────────── canales
+function Header({ it, at, now }: { it: Item; at: number; now: number }) {
+  const p = CAST[it.from];
+  return (
+    <div className="flex items-start gap-3">
+      <Avatar id={it.from} size={44} />
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap items-center gap-2"><span className="font-semibold text-ink">{p.name}</span><ChannelChip c={it.channel} /></div>
+        <div className="text-xs text-slate-500">{p.role}</div>
+      </div>
+      <span className="text-[11px] text-slate-400 whitespace-nowrap">{clock(at)}{now - at > 86_400_000 ? ` · ${new Date(at).toLocaleDateString("es-MX", { day: "numeric", month: "short" })}` : ""}</span>
+    </div>
+  );
+}
+
+function Mail({ e }: { e: Entry }) {
+  const c = useCeo();
+  return (
+    <div className="card overflow-hidden">
+      <div className="px-5 sm:px-6 pt-5 pb-4 border-b border-slate-100">
+        <Header it={e.item} at={e.arrivesAt} now={c.now} />
+        <h1 className="mt-4 text-lg sm:text-xl font-semibold text-ink leading-snug">{e.item.subject}</h1>
+        <div className="mt-1 text-xs text-slate-400">Para: {c.s.name || "Director General"} &lt;direccion@botanascumbre.mx&gt;</div>
+      </div>
+      <div className="px-5 sm:px-6 py-5 space-y-3 text-[15px] leading-relaxed text-slate-700">
+        {e.item.body.map((p, i) => <p key={i} className="whitespace-pre-line">{p}</p>)}
+      </div>
+    </div>
+  );
+}
+
+function WhatsApp({ e }: { e: Entry }) {
+  const c = useCeo();
+  const [shown, setShown] = useState(e.status === "pendiente" && !c.s.read[e.item.id] ? 1 : e.item.body.length);
+  useEffect(() => {
+    if (shown >= e.item.body.length) return;
+    const t = setTimeout(() => setShown((n) => n + 1), 650);
+    return () => clearTimeout(t);
+  }, [shown, e.item.body.length]);
+  const p = CAST[e.item.from];
+  return (
+    <div className="rounded-3xl overflow-hidden shadow-card border border-slate-100">
+      <div className="bg-[#075E54] text-white px-4 py-3 flex items-center gap-3">
+        <Avatar id={e.item.from} size={38} />
+        <div className="min-w-0"><div className="font-semibold text-sm truncate">{p.name}</div><div className="text-[11px] text-white/70 truncate">{shown < e.item.body.length ? "escribiendo…" : p.role}</div></div>
+        <ChannelChip c="whatsapp" className="ml-auto" />
+      </div>
+      <div className="bg-[#ECE5DD] px-3 sm:px-5 py-5 space-y-2 min-h-[180px]" style={{ backgroundImage: "radial-gradient(rgba(0,0,0,.035) 1px, transparent 1px)", backgroundSize: "14px 14px" }}>
+        <div className="text-center"><span className="chip bg-white/80 text-slate-500 text-[11px]">{clock(e.arrivesAt)}</span></div>
+        {e.item.body.slice(0, shown).map((m, i) => (
+          <div key={i} className="max-w-[85%] rounded-2xl rounded-tl-md bg-white px-3.5 py-2 text-[15px] text-ink shadow-sm academy-in">{m}</div>
+        ))}
+        {shown < e.item.body.length && <div className="w-14 rounded-2xl bg-white px-3 py-2.5 flex gap-1"><span className="h-1.5 w-1.5 rounded-full bg-slate-400 animate-bounce" /><span className="h-1.5 w-1.5 rounded-full bg-slate-400 animate-bounce [animation-delay:.15s]" /><span className="h-1.5 w-1.5 rounded-full bg-slate-400 animate-bounce [animation-delay:.3s]" /></div>}
+        {e.option && (
+          <>
+            <div className="flex justify-end"><div className="max-w-[85%] rounded-2xl rounded-tr-md bg-[#DCF8C6] px-3.5 py-2 text-[15px] text-ink shadow-sm">{e.option.text.replace(/^«|»$/g, "")}<span className="ml-2 inline-flex text-[#34B7F1] align-bottom"><CheckCheck size={14} /></span></div></div>
+            {e.option.reply.map((m, i) => <div key={`r${i}`} className="max-w-[85%] rounded-2xl rounded-tl-md bg-white px-3.5 py-2 text-[15px] text-ink shadow-sm">{m}</div>)}
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function Call({ e }: { e: Entry }) {
+  const c = useCeo();
+  const [play, setPlay] = useState(e.status !== "pendiente" || !!c.s.read[e.item.id]);
+  const [voice, ...rest] = e.item.body;
+  return (
+    <div className="card overflow-hidden">
+      <div className="bg-gradient-to-br from-[#2A1B1F] to-[#4A1F26] text-white px-5 py-6 text-center">
+        <Avatar id={e.item.from} size={64} className="mx-auto ring-4 ring-white/10" />
+        <div className="mt-3 font-semibold">{CAST[e.item.from].name}</div>
+        <div className="text-xs text-white/60 inline-flex items-center gap-1.5 mt-1"><PhoneMissed size={12} className="text-coral" /> Llamada perdida · {clock(e.arrivesAt)}</div>
+      </div>
+      <div className="p-5 sm:p-6">
+        <button onClick={() => setPlay(true)} className={clsx("w-full flex items-center gap-3 rounded-2xl p-3 transition-colors", play ? "bg-slate-50" : "bg-indigo-soft hover:bg-indigo-soft/70")}>
+          <span className="h-10 w-10 rounded-full bg-indigo text-white grid place-items-center"><Play size={16} className="ml-0.5" /></span>
+          <span className="flex-1 flex items-center gap-[3px] h-8">{Array.from({ length: 38 }, (_, i) => <span key={i} className={clsx("w-[3px] rounded-full", play ? "bg-indigo/60" : "bg-indigo/30")} style={{ height: `${20 + Math.abs(Math.sin(i * 1.7)) * 70}%` }} />)}</span>
+          <span className="text-xs text-slate-500 tabular-nums">{voice.replace(/[^0-9:]/g, "") || "0:45"}</span>
+        </button>
+        {!play && <p className="mt-2 text-center text-xs text-slate-400">Toca para escuchar el mensaje de voz</p>}
+        {play && <div className="mt-4 space-y-3 text-[15px] leading-relaxed text-slate-700 academy-in">{rest.map((p, i) => <p key={i} className="italic">{p}</p>)}</div>}
+      </div>
+    </div>
+  );
+}
+
+function Meeting({ e }: { e: Entry }) {
+  const c = useCeo();
+  const lines = e.item.lines ?? [];
+  const [shown, setShown] = useState(e.status === "pendiente" && !c.s.read[e.item.id] ? 1 : lines.length);
+  useEffect(() => {
+    if (shown >= lines.length) return;
+    const t = setTimeout(() => setShown((n) => n + 1), 1100);
+    return () => clearTimeout(t);
+  }, [shown, lines.length]);
+  return (
+    <div className="card overflow-hidden">
+      <div className="px-5 sm:px-6 pt-5 pb-4 border-b border-slate-100">
+        <Header it={e.item} at={e.arrivesAt} now={c.now} />
+        <h1 className="mt-4 text-lg sm:text-xl font-semibold text-ink leading-snug">{e.item.subject}</h1>
+        {e.item.body.map((p, i) => <p key={i} className="mt-2 text-sm text-slate-500">{p}</p>)}
+      </div>
+      <div className="px-5 sm:px-6 py-5 space-y-4">
+        {lines.slice(0, shown).map((l, i) => (
+          <div key={i} className="flex gap-3 academy-in">
+            <Avatar id={l.who} size={34} />
+            <div><div className="text-xs font-semibold text-slate-500">{firstName(l.who)}</div><p className={clsx("mt-0.5 text-[15px] leading-relaxed", l.text.startsWith("(") ? "text-slate-500 italic" : "text-ink")}>{l.text}</p></div>
+          </div>
+        ))}
+        {shown < lines.length && <button onClick={() => setShown(lines.length)} className="text-xs text-indigo font-medium">Saltar →</button>}
+      </div>
+    </div>
+  );
+}
+
+function DataCard({ d }: { d: NonNullable<Item["data"]> }) {
+  return (
+    <section className="mt-4 card p-5 sm:p-6">
+      <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">{d.title}</div>
+      <dl className="mt-3 divide-y divide-slate-100">
+        {d.rows.map(([k, v]) => <div key={k} className="flex justify-between gap-4 py-2 text-sm"><dt className="text-slate-500">{k}</dt><dd className="font-semibold text-ink text-right tabular-nums">{v}</dd></div>)}
+      </dl>
+      {d.note && <p className="mt-3 rounded-xl bg-amber-soft/60 px-3.5 py-2.5 text-sm text-ink">{d.note}</p>}
+    </section>
+  );
+}
+
+// ───────────────────────────────────────────── consecuencia
+function Outcome({ e, fresh }: { e: Entry; fresh: boolean }) {
+  const c = useCeo();
+  const it = e.item;
+  const expired = e.status === "vencido";
+  const o = e.option as Option | undefined;
+  const reply = expired ? it.expired.reply : o?.reply ?? [];
+  const effects = (expired ? it.expired.effects : o?.effects) ?? {};
+  const outcome = expired ? it.expired.outcome : o?.outcome;
+  const lesson = it.lesson ? lessonById(it.lesson) : undefined;
+  const xp = o ? XP.decision + o.score * XP.perPoint + (e.decision && e.decision.at - e.arrivesAt <= (e.deadline - e.arrivesAt) / 2 ? XP.onTime : 0) : 0;
+  const myIdx = o ? it.options.findIndex((x) => x.id === o.id) : -1;
+
+  return (
+    <section className={clsx("mt-5 space-y-4", fresh && "academy-in")}>
+      {o && it.channel !== "whatsapp" && (
+        <div className="card p-5 sm:p-6">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Decidiste</div>
+          <p className="mt-1.5 text-[15px] text-ink font-medium leading-relaxed">{String.fromCharCode(65 + myIdx)}. {o.text}</p>
+          <div className="mt-4 space-y-2">
+            {reply.map((r, i) => <div key={i} className="flex gap-2.5"><Avatar id={it.from} size={26} /><p className="text-[15px] text-slate-700 leading-relaxed">{r}</p></div>)}
+          </div>
+        </div>
+      )}
+      {expired && (
+        <div className="card p-5 sm:p-6 border-coral/20">
+          <div className="flex items-center gap-2 text-coral text-sm font-semibold"><XCircle size={16} /> Venció sin tu respuesta</div>
+          <div className="mt-3 space-y-2">{reply.map((r, i) => <div key={i} className="flex gap-2.5"><Avatar id={it.from} size={26} /><p className="text-[15px] text-slate-700">{r}</p></div>)}</div>
+        </div>
+      )}
+
+      <div className="card p-5 sm:p-6">
+        <div className="flex items-center justify-between">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Qué pasó en Botanas Cumbre</div>
+          {xp > 0 && <span className={clsx("chip bg-indigo text-white gap-1", fresh && "ceo-pop")}><Sparkles size={11} /> +{xp} XP</span>}
+        </div>
+        <p className="mt-2 text-[15px] text-ink leading-relaxed">{outcome}</p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {(Object.keys(effects) as KpiKey[]).filter((k) => effects[k]).map((k, i) => (
+            <span key={k} className={clsx("chip px-3 py-1 text-sm gap-1.5", (effects[k] ?? 0) > 0 ? "bg-mint-soft text-sob" : "bg-coral-soft text-coral", fresh && "tree-pop")} style={fresh ? { animationDelay: `${200 + i * 120}ms` } : undefined}>
+              {KPI_LABEL[k]} <b className="tabular-nums">{(effects[k] ?? 0) > 0 ? "+" : ""}{effects[k]}</b>
+            </span>
+          ))}
+        </div>
+        {o && <ProfileHint o={o} />}
+      </div>
+
+      <div className="relative rounded-2xl border border-slate-100 bg-gradient-to-br from-white to-indigo-soft/50 p-5 sm:p-6">
+        <Quote size={20} className="absolute right-5 top-5 text-indigo/20" />
+        <div className="text-[11px] font-semibold uppercase tracking-wider text-indigo">Bitácora del CEO</div>
+        <h3 className="mt-1.5 font-semibold text-ink">{it.bitacora.title}</h3>
+        <p className="mt-2 text-sm text-slate-600 leading-relaxed">{it.bitacora.text}</p>
+        <div className="mt-4 flex gap-2.5 rounded-xl bg-white/80 px-4 py-3"><Lightbulb size={16} className="text-indigo shrink-0 mt-0.5" /><p className="text-sm text-ink"><b>Nota CEO:</b> {it.bitacora.nota}<span className="block text-[11px] text-slate-400 mt-1">De CERO a CEO · Oziel Leal Montemayor</span></p></div>
+        {lesson && (
+          <Link href={`/ceo/academy/${lesson.id}?from=${it.id}`} className="mt-4 flex items-center gap-3 rounded-xl bg-indigo text-white px-4 py-3 hover:bg-indigo-light transition-colors">
+            <BookOpen size={18} />
+            <span className="flex-1 text-sm"><b>Aprende la teoría:</b> {lesson.title} · {lesson.minutes} min</span>
+            {c.s.lessons[lesson.id] ? <span className="chip bg-white/20 text-white">Completada</span> : <span className="chip bg-white/20 text-white">+30 XP</span>}
+          </Link>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function ProfileHint({ o }: { o: Option }) {
+  const tags = useMemo(() => {
+    const t: string[] = [];
+    const s = o.style;
+    if ((s.horizonte ?? 0) >= 2) t.push("Largo plazo"); if ((s.horizonte ?? 0) <= -2) t.push("Corto plazo");
+    if ((s.riesgo ?? 0) >= 2) t.push("Audaz"); if ((s.riesgo ?? 0) <= -2) t.push("Prudente");
+    if ((s.foco ?? 0) >= 2) t.push("Personas"); if ((s.foco ?? 0) <= -2) t.push("Números");
+    if ((s.estilo ?? 0) >= 2) t.push("Involucras"); if ((s.estilo ?? 0) <= -2) t.push("Decides solo");
+    if ((s.conflicto ?? 0) >= 2) t.push("Encaras"); if ((s.conflicto ?? 0) <= -2) t.push("Evitas el conflicto");
+    return t;
+  }, [o]);
+  if (!tags.length) return null;
+  return <div className="mt-4 pt-4 border-t border-slate-100 flex flex-wrap items-center gap-1.5 text-xs text-slate-500">Esta decisión suma a tu perfil: {tags.map((t) => <span key={t} className="chip bg-slate-100 text-slate-600">{t}</span>)}</div>;
+}
