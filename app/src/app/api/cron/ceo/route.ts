@@ -16,7 +16,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { supabaseCeoAdmin } from "@/lib/supabase/server";
 import { sendMail } from "@/lib/email";
-import { newState } from "@/lib/ceo/engine";
+import { migrate, packOf } from "@/lib/ceo/engine";
 import { jobsFor, type Sent } from "@/lib/ceo/schedule";
 import { renderJob } from "@/lib/ceo/mailer";
 import { ceoWhatsappText, fromHeader, sendWhatsapp } from "@/lib/ceo/notify";
@@ -42,9 +42,7 @@ export async function GET(req: NextRequest) {
   const out: { user: string; key: string; subject: string; at?: string; ok: boolean; error?: string }[] = [];
   for (const p of players ?? []) {
     if (Date.now() - real > 50_000) break; // margen antes del límite de 60 s; lo que falte sale en la siguiente corrida
-    const base = newState();
-    const s: CeoState = { ...base, ...(p.state as CeoState) };
-    s.settings = { ...base.settings, ...(s.settings ?? {}) };
+    const s: CeoState = migrate(p.state);
     if (!s.startedAt) continue;
     const sent: Sent = { ...((p.sent as Sent) ?? {}) };
     const jobs = jobsFor(s, sent, real, { plan });
@@ -66,7 +64,7 @@ export async function GET(req: NextRequest) {
       out.push({ user: p.user_id, key: job.key, subject: m.subject, at, ok: r.ok, error: r.error });
       if (r.ok && !dry) { sent[job.key] = real; changed = true; }
       // WhatsApp (opcional) solo para asuntos que llegan ya, no para los programados.
-      if (job.kind === "case" && !at && p.notify_whatsapp && p.phone && !dry) await sendWhatsapp(p.phone, ceoWhatsappText({ appUrl, entry: job.entry }));
+      if (job.kind === "case" && !at && p.notify_whatsapp && p.phone && !dry) await sendWhatsapp(p.phone, ceoWhatsappText({ appUrl, entry: job.entry, pack: packOf(s) }));
     }
     if (changed) await sb.from("players").update({ sent, last_notified_at: new Date(real).toISOString() }).eq("user_id", p.user_id);
   }

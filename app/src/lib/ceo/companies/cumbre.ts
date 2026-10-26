@@ -1,0 +1,72 @@
+/**
+ * Empresa 1 · Botanas Cumbre (consumo masivo, familiar, Monterrey).
+ * Todos los nombres de personas, empresas y cadenas son ficticios.
+ */
+import type { CompanyPack } from "../types";
+import { ITEMS } from "./cumbre-items";
+
+export const CUMBRE: CompanyPack = {
+  id: "cumbre",
+  name: "Botanas Cumbre",
+  short: "Cumbre",
+  industry: "Consumo masivo",
+  emoji: "🥜",
+  city: "Monterrey, N.L.",
+  tagline: "Empresa familiar de botanas. El fundador te deja su silla.",
+  pitch: "Empresa familiar regiomontana de botanas y cacahuates. 38 años, 240 colaboradores, una planta en Apodaca y $410 millones de ventas al año. El fundador acaba de dejar la dirección y te eligió a ti: el primer Director General que no es de la familia.",
+  facts: [
+    ["Ventas anuales", "$410 M MXN"],
+    ["Colaboradores", "240 (168 en planta)"],
+    ["Cliente principal", "SuperNorte · 31% de las ventas"],
+    ["Caja disponible", "≈ 7 semanas de operación"],
+  ],
+  domain: "botanascumbre.mx",
+  season: { name: "Tus primeros 90 días", days: 7 },
+  difficulty: 1,
+  kpiStart: { caja: 60, margen: 54, equipo: 57, clientes: 64, consejo: 62 },
+  kpiLabel: { caja: "Caja", margen: "Margen", equipo: "Equipo", clientes: "Clientes", consejo: "Consejo" },
+  kpiHint: {
+    caja: "Semanas de operación cubiertas con el efectivo y las líneas disponibles.",
+    margen: "Rentabilidad operativa: lo que queda de cada peso vendido.",
+    equipo: "Clima, confianza y talento clave que se queda.",
+    clientes: "Lealtad de las cadenas y tiendas que pagan la nómina.",
+    consejo: "Confianza del consejo y de la familia fundadora en tu dirección.",
+  },
+  roles: { assistant: "paty", board: "carla", chair: "ramiro" },
+  welcome: "Busqué durante un año a quien se sentara en mi silla. El consejo y yo te elegimos a ti. No todos están contentos, y te lo digo de frente: aquí la gente lleva décadas y te va a medir desde el primer día.",
+  cast: {
+    ramiro: { id: "ramiro", name: "Don Ramiro Garza", role: "Fundador · Presidente del consejo", initials: "RG", group: "consejo", cares: "Que Cumbre siga siendo Cumbre y que su hijo tenga futuro." },
+    carla: { id: "carla", name: "Carla Méndez", role: "Consejera independiente", initials: "CM", group: "consejo", cares: "Gobierno corporativo, números claros y que el consejo no sea un club familiar." },
+    lucia: { id: "lucia", name: "Lucía Treviño", role: "Directora de Finanzas", initials: "LT", group: "comite", reportsTo: "ceo", cares: "Recuperar el margen y no rebasar los límites del banco." },
+    hector: { id: "hector", name: "Héctor Salinas", role: "Director Comercial · 22 años en Cumbre", initials: "HS", group: "comite", reportsTo: "ceo", cares: "Respeto, su gente y sus cuentas. Esperaba tu puesto." },
+    mariana: { id: "mariana", name: "Mariana Villarreal", role: "Directora de Personas", initials: "MV", group: "comite", reportsTo: "ceo", cares: "Bajar la rotación de planta (34%) y que la cultura cambie de verdad." },
+    javier: { id: "javier", name: "Javier Ortiz", role: "Gerente de Planta", initials: "JO", group: "comite", reportsTo: "ceo", cares: "Seguridad, equipo nuevo y que alguien de arriba pise la planta." },
+    diego: { id: "diego", name: "Diego Garza", role: "Gerente de Marca · hijo del fundador", initials: "DG", group: "equipo", reportsTo: "hector", cares: "Demostrar que puede dirigir. Su proyecto premium." },
+    ana: { id: "ana", name: "Ana Martínez", role: "Analista de Planeación Comercial", initials: "AM", group: "equipo", reportsTo: "hector", cares: "Aprender, crecer y saber que su trabajo sirve." },
+    paty: { id: "paty", name: "Paty Elizondo", role: "Tu asistente ejecutiva", initials: "PE", group: "equipo", reportsTo: "ceo", cares: "Que no se te caiga nada. Conoce todos los chismes." },
+    roberto: { id: "roberto", name: "Roberto Cantú", role: "Secretario general del sindicato", initials: "RC", group: "externo", cares: "Salario real para la base. En 2019 pararon la planta 4 días." },
+    sofia: { id: "sofia", name: "Sofía Leal", role: "Compradora de categoría · SuperNorte", initials: "SL", group: "externo", cares: "Margen para su cadena y cumplir su meta del trimestre." },
+  },
+  ties: [
+    { a: "ramiro", b: "diego", kind: "influye", note: "Padre e hijo. Don Ramiro quiere verlo dirigir." },
+    { a: "hector", b: "diego", kind: "tension", note: "Diego es su subordinado… y el hijo del dueño." },
+    { a: "hector", b: "sofia", kind: "alianza", note: "La conoce desde que era practicante." },
+    { a: "lucia", b: "carla", kind: "alianza", note: "Hablan el mismo idioma: números y gobierno." },
+    { a: "carla", b: "ramiro", kind: "tension", note: "Carla quiere un consejo profesional; Ramiro sigue opinando de todo." },
+    { a: "javier", b: "roberto", kind: "alianza", note: "Se conocen de toda la vida en la planta." },
+    { a: "mariana", b: "roberto", kind: "tension", note: "Cada revisión salarial termina a gritos." },
+    { a: "lucia", b: "hector", kind: "tension", note: "Ella culpa a los descuentos del margen perdido." },
+    { a: "ana", b: "diego", kind: "alianza", note: "Ana le arma los números a Diego." },
+    { a: "paty", b: "ramiro", kind: "influye", note: "Fue su asistente 15 años. Todo lo que pasa, él lo sabe." },
+  ],
+  glossary: [
+    { term: "Frente de anaquel", def: "Espacio visible de tu producto en la tienda. Más frentes = más ventas; la cadena los cobra." },
+    { term: "Rotación", def: "Qué tan rápido se vende tu producto en el anaquel. Es tu mejor argumento ante la cadena." },
+    { term: "Plazo de pago", def: "Días que tarda el cliente en pagarte. Pasar de 60 a 90 días te exige más caja." },
+    { term: "Canibalización", def: "Cuando un producto nuevo le quita ventas a uno tuyo en lugar de a la competencia." },
+    { term: "Merma", def: "Producto que se pierde en el proceso. En botanas, la meta de la industria ronda 2.5%." },
+    { term: "Covenant", def: "Condición del crédito (por ejemplo, deuda/EBITDA menor a 3×). Si la rompes, el banco manda." },
+    { term: "MEGA", def: "La meta grande de la empresa de la que se desprenden los objetivos de cada área." },
+  ],
+  items: ITEMS,
+};

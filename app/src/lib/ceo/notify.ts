@@ -3,8 +3,9 @@
  * Las plantillas viven en ./emails; las reglas de "qué toca mandar y cuándo" en ./schedule.
  * Sin credenciales todo corre en modo prueba (se registra en consola, no se envía).
  */
-import { CAST, COMPANY } from "./cast";
-import type { Entry } from "./types";
+import { personOf } from "./cast";
+import { CUMBRE } from "./companies/cumbre";
+import type { CompanyPack, Entry } from "./types";
 import type { Mailable } from "./emails";
 import { DEFAULT_EMAIL_FROM } from "@/lib/site";
 import { plain } from "./emails";
@@ -20,10 +21,11 @@ export function fromHeader(m: Pick<Mailable, "fromName">) {
   return `${m.fromName.replace(/[<>"]/g, "")} <${senderAddress()}>`;
 }
 
-export function ceoWhatsappText(input: { appUrl: string; entry: Entry }) {
+export function ceoWhatsappText(input: { appUrl: string; entry: Entry; pack?: CompanyPack }) {
   const { item } = input.entry;
-  const who = CAST[item.from];
-  return `*${who.name}* · ${COMPANY.name}\n${plain(item.preview)}\n\nResponder: ${input.appUrl.replace(/\/$/, "")}/caso/${item.id}`;
+  const pk = input.pack ?? CUMBRE;
+  const who = personOf(pk, item.from);
+  return `*${who.name}* · ${pk.name}\n${plain(item.preview)}\n\nResponder: ${input.appUrl.replace(/\/$/, "")}/caso/${item.id}`;
 }
 
 /** Normaliza a formato internacional (+52…). Si son 10 dígitos, asume México. */

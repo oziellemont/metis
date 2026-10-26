@@ -2,9 +2,10 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
-import { ArrowLeft, ArrowRight, BookOpen, CheckCheck, Clock, Lightbulb, PhoneMissed, Play, Quote, Sparkles, XCircle } from "lucide-react";
-import { CAST, firstName } from "@/lib/ceo/cast";
-import { KPI_LABEL, XP } from "@/lib/ceo/engine";
+import { ArrowLeft, ArrowRight, BookOpen, CheckCheck, ChevronDown, Clock, Globe2, Lightbulb, Network, PhoneMissed, Play, Quote, Sparkles, XCircle } from "lucide-react";
+import { firstName, personOf } from "@/lib/ceo/cast";
+import { XP, scaled } from "@/lib/ceo/engine";
+import { OrgMap } from "./OrgMap";
 import { lessonById } from "@/lib/ceo/lessons";
 import type { Entry, Item, KpiKey, Option } from "@/lib/ceo/types";
 import { useCeo } from "./CeoProvider";
@@ -43,6 +44,8 @@ export function CaseView({ id }: { id: string }) {
 
       {it.data && <DataCard d={it.data} />}
 
+      <WhoIsInvolved it={it} open={e.status === "pendiente"} />
+
       {/* decisión */}
       {e.status === "pendiente" && (
         <section className="mt-5 card p-5 sm:p-6 academy-in">
@@ -69,7 +72,7 @@ export function CaseView({ id }: { id: string }) {
       {(e.status === "decidido" || e.status === "vencido") && (
         <div className="mt-5 flex flex-wrap gap-3 justify-between">
           <Link href="/ceo" className="btn-ghost">Volver a Hoy</Link>
-          {nextPending ? <Link href={`/ceo/caso/${nextPending.item.id}`} className="btn-primary">Siguiente asunto: {firstName(nextPending.item.from)} <ArrowRight size={15} /></Link>
+          {nextPending ? <Link href={`/ceo/caso/${nextPending.item.id}`} className="btn-primary">Siguiente asunto: {firstName(c.pack, nextPending.item.from)} <ArrowRight size={15} /></Link>
             : c.nextArrival ? <span className="text-sm text-slate-500 self-center">Tu siguiente asunto llega a las {clock(c.nextArrival)}.</span> : null}
         </div>
       )}
@@ -79,7 +82,8 @@ export function CaseView({ id }: { id: string }) {
 
 // ───────────────────────────────────────────── canales
 function Header({ it, at, now }: { it: Item; at: number; now: number }) {
-  const p = CAST[it.from];
+  const c = useCeo();
+  const p = personOf(c.pack, it.from);
   return (
     <div className="flex items-start gap-3">
       <Avatar id={it.from} size={44} />
@@ -99,7 +103,7 @@ function Mail({ e }: { e: Entry }) {
       <div className="px-5 sm:px-6 pt-5 pb-4 border-b border-slate-100">
         <Header it={e.item} at={e.arrivesAt} now={c.now} />
         <h1 className="mt-4 text-lg sm:text-xl font-semibold text-ink leading-snug">{e.item.subject}</h1>
-        <div className="mt-1 text-xs text-slate-400">Para: {c.s.name || "Director General"} &lt;direccion@botanascumbre.mx&gt;</div>
+        <div className="mt-1 text-xs text-slate-400">Para: {c.s.name || "Director General"} &lt;direccion@{c.pack.domain}&gt;</div>
       </div>
       <div className="px-5 sm:px-6 py-5 space-y-3 text-[15px] leading-relaxed text-slate-700">
         {e.item.body.map((p, i) => <p key={i} className="whitespace-pre-line">{p}</p>)}
@@ -116,7 +120,7 @@ function WhatsApp({ e }: { e: Entry }) {
     const t = setTimeout(() => setShown((n) => n + 1), 650);
     return () => clearTimeout(t);
   }, [shown, e.item.body.length]);
-  const p = CAST[e.item.from];
+  const p = personOf(c.pack, e.item.from);
   return (
     <div className="rounded-3xl overflow-hidden shadow-card border border-slate-100">
       <div className="bg-[#075E54] text-white px-4 py-3 flex items-center gap-3">
@@ -149,7 +153,7 @@ function Call({ e }: { e: Entry }) {
     <div className="card overflow-hidden">
       <div className="bg-gradient-to-br from-[#2A1B1F] to-[#4A1F26] text-white px-5 py-6 text-center">
         <Avatar id={e.item.from} size={64} className="mx-auto ring-4 ring-white/10" />
-        <div className="mt-3 font-semibold">{CAST[e.item.from].name}</div>
+        <div className="mt-3 font-semibold">{personOf(c.pack, e.item.from).name}</div>
         <div className="text-xs text-white/60 inline-flex items-center gap-1.5 mt-1"><PhoneMissed size={12} className="text-coral" /> Llamada perdida · {clock(e.arrivesAt)}</div>
       </div>
       <div className="p-5 sm:p-6">
@@ -185,12 +189,43 @@ function Meeting({ e }: { e: Entry }) {
         {lines.slice(0, shown).map((l, i) => (
           <div key={i} className="flex gap-3 academy-in">
             <Avatar id={l.who} size={34} />
-            <div><div className="text-xs font-semibold text-slate-500">{firstName(l.who)}</div><p className={clsx("mt-0.5 text-[15px] leading-relaxed", l.text.startsWith("(") ? "text-slate-500 italic" : "text-ink")}>{l.text}</p></div>
+            <div><div className="text-xs font-semibold text-slate-500">{firstName(c.pack, l.who)}</div><p className={clsx("mt-0.5 text-[15px] leading-relaxed", l.text.startsWith("(") ? "text-slate-500 italic" : "text-ink")}>{l.text}</p></div>
           </div>
         ))}
         {shown < lines.length && <button onClick={() => setShown(lines.length)} className="text-xs text-indigo font-medium">Saltar →</button>}
       </div>
     </div>
+  );
+}
+
+function WhoIsInvolved({ it, open: initial }: { it: Item; open: boolean }) {
+  const c = useCeo();
+  const [open, setOpen] = useState(initial);
+  const ids = [it.from, ...(it.involves ?? []), ...(it.lines ?? []).map((l) => l.who)].filter((x, i, a) => a.indexOf(x) === i && !!c.pack.cast[x]);
+  const ties = c.pack.ties.filter((t) => ids.includes(t.a) && ids.includes(t.b));
+  return (
+    <section className="mt-4 card overflow-hidden">
+      <button onClick={() => setOpen((v) => !v)} className="w-full flex items-center gap-3 px-5 sm:px-6 py-4 text-left">
+        <span className="h-9 w-9 rounded-xl bg-indigo-soft text-indigo grid place-items-center shrink-0"><Network size={17} /></span>
+        <span className="flex-1 min-w-0">
+          <span className="block text-sm font-semibold text-ink">Quién está en juego</span>
+          <span className="block text-xs text-slate-500 truncate">{ids.map((x) => firstName(c.pack, x)).join(", ")}{ties.length ? ` · ${ties.length} ${ties.length === 1 ? "relación" : "relaciones"} que cuidar` : ""}</span>
+        </span>
+        <ChevronDown size={18} className={clsx("text-slate-400 transition-transform", open && "rotate-180")} />
+      </button>
+      {open && (
+        <div className="px-3 sm:px-5 pb-5 academy-in">
+          {ties.length > 0 && (
+            <ul className="mx-2 mb-2 space-y-1.5">
+              {ties.map((t, i) => (
+                <li key={i} className="text-xs text-slate-600 flex gap-2"><span className={clsx("mt-1 h-2 w-2 rounded-full shrink-0", t.kind === "tension" ? "bg-coral" : t.kind === "alianza" ? "bg-indigo" : "bg-ink")} /><span><b className="text-ink">{firstName(c.pack, t.a)} y {firstName(c.pack, t.b)}:</b> {t.note}</span></li>
+              ))}
+            </ul>
+          )}
+          <OrgMap pack={c.pack} highlight={ids} compact />
+        </div>
+      )}
+    </section>
   );
 }
 
@@ -213,7 +248,7 @@ function Outcome({ e, fresh }: { e: Entry; fresh: boolean }) {
   const expired = e.status === "vencido";
   const o = e.option as Option | undefined;
   const reply = expired ? it.expired.reply : o?.reply ?? [];
-  const effects = (expired ? it.expired.effects : o?.effects) ?? {};
+  const effects = scaled((expired ? it.expired.effects : o?.effects) ?? {}, c.s.tier);
   const outcome = expired ? it.expired.outcome : o?.outcome;
   const lesson = it.lesson ? lessonById(it.lesson) : undefined;
   const xp = o ? XP.decision + o.score * XP.perPoint + (e.decision && e.decision.at - e.arrivesAt <= (e.deadline - e.arrivesAt) / 2 ? XP.onTime : 0) : 0;
@@ -239,19 +274,28 @@ function Outcome({ e, fresh }: { e: Entry; fresh: boolean }) {
 
       <div className="card p-5 sm:p-6">
         <div className="flex items-center justify-between">
-          <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Qué pasó en Botanas Cumbre</div>
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Qué pasó en {c.pack.name}</div>
           {xp > 0 && <span className={clsx("chip bg-indigo text-white gap-1", fresh && "ceo-pop")}><Sparkles size={11} /> +{xp} XP</span>}
         </div>
         <p className="mt-2 text-[15px] text-ink leading-relaxed">{outcome}</p>
         <div className="mt-4 flex flex-wrap gap-2">
           {(Object.keys(effects) as KpiKey[]).filter((k) => effects[k]).map((k, i) => (
             <span key={k} className={clsx("chip px-3 py-1 text-sm gap-1.5", (effects[k] ?? 0) > 0 ? "bg-mint-soft text-sob" : "bg-coral-soft text-coral", fresh && "tree-pop")} style={fresh ? { animationDelay: `${200 + i * 120}ms` } : undefined}>
-              {KPI_LABEL[k]} <b className="tabular-nums">{(effects[k] ?? 0) > 0 ? "+" : ""}{effects[k]}</b>
+              {c.pack.kpiLabel[k]} <b className="tabular-nums">{(effects[k] ?? 0) > 0 ? "+" : ""}{effects[k]}</b>
             </span>
           ))}
         </div>
         {o && <ProfileHint o={o} />}
       </div>
+
+      {it.real && (
+        <div className="rounded-2xl bg-gradient-to-br from-[#141735] to-[#2B1F8A] p-5 sm:p-6 text-white">
+          <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-white/60"><Globe2 size={13} /> Lo que pasó en la vida real · {it.real.company}</div>
+          <h3 className="mt-1.5 font-semibold">{it.real.title}</h3>
+          <p className="mt-2 text-sm text-white/75 leading-relaxed">{it.real.text}</p>
+          <p className="mt-3 text-[10px] text-white/40">Basado en el tipo de dilema que viven empresas reales. Nombres y cifras ficticios.</p>
+        </div>
+      )}
 
       <div className="relative rounded-2xl border border-slate-100 bg-gradient-to-br from-white to-indigo-soft/50 p-5 sm:p-6">
         <Quote size={20} className="absolute right-5 top-5 text-indigo/20" />

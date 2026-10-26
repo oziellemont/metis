@@ -2,12 +2,16 @@
 import clsx from "clsx";
 import { useId } from "react";
 import { Mail, MessageCircle, FileBarChart, Users, PhoneMissed } from "lucide-react";
-import { CAST } from "@/lib/ceo/cast";
-import type { CastId, Channel, KpiKey } from "@/lib/ceo/types";
+import { avatarHex, personOf } from "@/lib/ceo/cast";
+import type { CastId, Channel, CompanyPack, KpiKey } from "@/lib/ceo/types";
+import { useCeo } from "./CeoProvider";
 
-export function Avatar({ id, size = 40, className }: { id: CastId; size?: number; className?: string }) {
-  const p = CAST[id];
-  return <span className={clsx("shrink-0 rounded-full grid place-items-center font-semibold", p.color, className)} style={{ width: size, height: size, fontSize: size * 0.36 }}>{p.initials}</span>;
+/** Avatar de un personaje. Usa la empresa actual, o la que se pase en `pack` (p. ej. en el onboarding). */
+export function Avatar({ id, size = 40, className, pack }: { id: CastId; size?: number; className?: string; pack?: CompanyPack }) {
+  const c = useCeo();
+  const pk = pack ?? c.pack;
+  const p = personOf(pk, id);
+  return <span className={clsx("shrink-0 rounded-full grid place-items-center font-semibold text-white", className)} style={{ width: size, height: size, fontSize: size * 0.36, background: avatarHex(pk, id) }}>{p.initials}</span>;
 }
 
 export const CHANNEL: Record<Channel, { label: string; Icon: typeof Mail; cls: string }> = {
@@ -23,12 +27,13 @@ export function ChannelChip({ c, className }: { c: Channel; className?: string }
   return <span className={clsx("chip gap-1", cls, className)}><Icon size={11} /> {label}</span>;
 }
 
-export const KPI_COLOR: Record<KpiKey, string> = { caja: "from-sky to-[#5CC0FF]", margen: "from-indigo to-indigo-light", equipo: "from-mint to-mint-light", clientes: "from-amber to-[#FFC65C]", consejo: "from-[#5B2A86] to-[#8B5CF6]" };
-
-export function Bar({ value, k, className }: { value: number; k: KpiKey; className?: string }) {
+/** Todas las barras usan el mismo lenguaje de mêtis (índigo). Bajo la línea de aprobación, el índigo se aclara. */
+export function Bar({ value, line, className, dark }: { value: number; k?: KpiKey; line?: number; className?: string; dark?: boolean }) {
+  const below = line !== undefined && value < line;
   return (
-    <div className={clsx("h-2 rounded-full bg-slate-100 overflow-hidden", className)}>
-      <div className={clsx("h-full rounded-full bg-gradient-to-r transition-all duration-700", KPI_COLOR[k])} style={{ width: `${value}%` }} />
+    <div className={clsx("relative h-2 rounded-full", dark ? "bg-white/15" : "bg-indigo-soft/70", className)}>
+      <div className={clsx("h-full rounded-full transition-all duration-700", below ? "bg-indigo/40" : "bg-gradient-to-r from-indigo-light to-indigo")} style={{ width: `${value}%` }} />
+      {line !== undefined && <span title={`Línea de aprobación: ${line}`} className={clsx("absolute -top-1 -bottom-1 w-0.5 rounded-full", dark ? "bg-white/70" : "bg-ink/70")} style={{ left: `${line}%` }} />}
     </div>
   );
 }

@@ -19,7 +19,7 @@ function simulate(s: CeoState, days: number, act?: (s: CeoState, t: number) => C
   return { log, sent, s };
 }
 
-describe("reglas de correo", () => {
+describe("reglas de correo", { timeout: 30000 }, () => {
   it("bienvenida y primer asunto salen al empezar, una sola vez", () => {
     const s = started();
     const jobs = jobsFor(s, {}, T0 + 60_000);

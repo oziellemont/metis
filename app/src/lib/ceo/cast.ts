@@ -1,41 +1,42 @@
-import type { CastId } from "./types";
+/**
+ * Ayudantes del elenco. Cada empresa trae su propio elenco en su paquete (`pack.cast`);
+ * aquí sólo resolvemos nombres y colores de avatar con la paleta de mêtis.
+ */
+import type { CastId, CompanyPack, Person } from "./types";
 
-export const COMPANY = {
-  name: "Botanas Cumbre",
-  city: "Monterrey, N.L.",
-  pitch: "Empresa familiar regiomontana de botanas y cacahuates. 38 años, 240 colaboradores, una planta en Apodaca y $410 millones de ventas al año. El fundador acaba de dejar la dirección y te eligió a ti: el primer Director General que no es de la familia.",
-  facts: [
-    ["Ventas anuales", "$410 M MXN"],
-    ["Colaboradores", "240 (168 en planta)"],
-    ["Cliente principal", "SuperNorte · 31% de las ventas"],
-    ["Caja disponible", "≈ 7 semanas de operación"],
-  ] as [string, string][],
+/** Tonos de avatar: sólo la familia índigo/tinta de mêtis (nada de arcoíris). */
+const AVATAR_TONES = ["#4F3FE0", "#2B1F8A", "#171A3A", "#6D5DF6", "#3A2DB8", "#475569", "#5B4BE8", "#24206B"];
+const TONE_BY_GROUP: Record<Person["group"], number[]> = {
+  consejo: [2, 1, 7],
+  comite: [0, 4, 6, 3],
+  equipo: [3, 6, 0, 4],
+  externo: [5, 2],
 };
 
-export interface Person { id: CastId; name: string; role: string; initials: string; color: string; phone?: string }
+const UNKNOWN: Person = { id: "?", name: "Alguien", role: "", initials: "?", group: "externo" };
 
-export const CAST: Record<CastId, Person> = {
-  ramiro: { id: "ramiro", name: "Don Ramiro Garza", role: "Fundador · Presidente del consejo", initials: "RG", color: "bg-[#1E1A5E] text-white" },
-  lucia: { id: "lucia", name: "Lucía Treviño", role: "Directora de Finanzas", initials: "LT", color: "bg-sky text-white" },
-  hector: { id: "hector", name: "Héctor Salinas", role: "Director Comercial · 22 años en Cumbre", initials: "HS", color: "bg-amber text-white" },
-  mariana: { id: "mariana", name: "Mariana Villarreal", role: "Directora de Personas", initials: "MV", color: "bg-mint text-white" },
-  diego: { id: "diego", name: "Diego Garza", role: "Gerente de Marca · hijo del fundador", initials: "DG", color: "bg-indigo-light text-white" },
-  paty: { id: "paty", name: "Paty Elizondo", role: "Tu asistente ejecutiva", initials: "PE", color: "bg-coral text-white" },
-  javier: { id: "javier", name: "Javier Ortiz", role: "Gerente de Planta", initials: "JO", color: "bg-slate-600 text-white" },
-  roberto: { id: "roberto", name: "Roberto Cantú", role: "Secretario general del sindicato", initials: "RC", color: "bg-[#8A5A2B] text-white" },
-  sofia: { id: "sofia", name: "Sofía Leal", role: "Compradora de categoría · SuperNorte", initials: "SL", color: "bg-[#C2185B] text-white" },
-  ana: { id: "ana", name: "Ana Martínez", role: "Analista de Planeación Comercial", initials: "AM", color: "bg-[#0E7C86] text-white" },
-  carla: { id: "carla", name: "Carla Méndez", role: "Consejera independiente", initials: "CM", color: "bg-[#5B2A86] text-white" },
-};
+export function personOf(pack: CompanyPack, id: CastId): Person {
+  return pack.cast[id] ?? { ...UNKNOWN, id, name: id };
+}
 
-/** Organigrama (para la pantalla «Tu empresa»). */
-export const ORG: { lead: CastId; team: CastId[] }[] = [
-  { lead: "ramiro", team: ["carla"] },
-  { lead: "lucia", team: [] },
-  { lead: "hector", team: ["ana", "diego"] },
-  { lead: "mariana", team: [] },
-  { lead: "javier", team: [] },
-];
+/** Nombre de pila (sin «Don», «Doña», «Lic.», «Ing.», «Chef»). */
+export function firstName(pack: CompanyPack, id: CastId): string {
+  return personOf(pack, id).name.replace(/^(Don|Doña|Lic\.|Ing\.|Chef|Dr\.|Dra\.)\s+/, "").split(" ")[0];
+}
 
-/** Nombre de pila (sin "Don"/"Doña"). */
-export const firstName = (id: CastId) => CAST[id].name.replace(/^(Don|Doña|Lic\.|Ing\.)\s+/, "").split(" ")[0];
+/** Color hex del avatar de una persona (estable, dentro de la paleta mêtis). */
+export function avatarHex(pack: CompanyPack, id: CastId): string {
+  const p = pack.cast[id];
+  if (!p) return AVATAR_TONES[5];
+  const ids = Object.keys(pack.cast).filter((k) => pack.cast[k].group === p.group);
+  const tones = TONE_BY_GROUP[p.group];
+  return AVATAR_TONES[tones[Math.max(0, ids.indexOf(id)) % tones.length]];
+}
+
+/** Organigrama: quién te reporta y su equipo. */
+export function orgOf(pack: CompanyPack): { lead: CastId; team: CastId[] }[] {
+  const all = Object.values(pack.cast);
+  return all
+    .filter((p) => p.reportsTo === "ceo" && p.id !== pack.roles.assistant)
+    .map((p) => ({ lead: p.id, team: all.filter((x) => x.reportsTo === p.id).map((x) => x.id) }));
+}

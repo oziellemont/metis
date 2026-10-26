@@ -6,11 +6,10 @@
 import { NextResponse } from "next/server";
 import { supabaseCeoAdmin, supabaseServer } from "@/lib/supabase/server";
 import { sendMail } from "@/lib/email";
-import { newState } from "@/lib/ceo/engine";
+import { migrate, packOf } from "@/lib/ceo/engine";
 import { welcomeEmail } from "@/lib/ceo/emails";
 import { fromHeader } from "@/lib/ceo/notify";
 import type { Sent } from "@/lib/ceo/schedule";
-import type { CeoState } from "@/lib/ceo/types";
 
 export const dynamic = "force-dynamic";
 
@@ -29,11 +28,10 @@ export async function POST() {
   const to = p.email || u.user.email;
   if (!to || !p.notify_email) return NextResponse.json({ ok: true, skipped: true });
 
-  const base = newState();
-  const s = { ...base, ...(p.state as CeoState) };
-  const settings = { ...base.settings, ...(s.settings ?? {}) };
+  const s = migrate(p.state);
+  const settings = s.settings;
   const appUrl = process.env.CEO_APP_URL ?? "https://metisalign.app";
-  const m = welcomeEmail({ name: p.name ?? "", appUrl, windowStart: settings.windowStart, windowEnd: settings.windowEnd });
+  const m = welcomeEmail({ pack: packOf(s), name: p.name ?? "", appUrl, windowStart: settings.windowStart, windowEnd: settings.windowEnd });
   const r = await sendMail({
     to, from: fromHeader(m), subject: m.subject, html: m.html, text: m.text,
     idempotencyKey: `ceo:${u.user.id}:welcome`, tags: [{ name: "app", value: "ceo" }, { name: "tipo", value: "welcome" }],
