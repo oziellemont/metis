@@ -43,7 +43,8 @@ Sin variables de entorno la app corre en **modo demo**: los datos de Grupo Andes
 |---|---|
 | **metisalign.mx** | Principal: landing, Índice, login y app. `NEXT_PUBLIC_APP_URL=https://metisalign.mx`. |
 | metisalign.com | Redirección 308 → metisalign.mx (Vercel → Domains → *Redirect to*). |
-| metisalign.app | Redirección 308 → metisalign.mx. |
+| **metis.ceo** | mêtis CEO: `/` es la landing (`/simulador`) y el resto se reescribe hacia `/ceo`. |
+| metisalign.app | Dominio anterior de CEO: el middleware manda todo a metis.ceo vía `/mudanza` (se lleva la partida guardada en el navegador). |
 | www.* | Redirección → metisalign.mx. |
 
 Correo: `hola@metisalign.mx` (contacto) y `recordatorios@metisalign.mx` (Resend, remitente de los avisos mensuales). Constantes en `app/src/lib/site.ts`.

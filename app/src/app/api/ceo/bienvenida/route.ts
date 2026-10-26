@@ -1,3 +1,4 @@
+import { CEO_URL } from "@/lib/site";
 /**
  * mêtis CEO · correo de bienvenida (carta de Ramiro).
  * Lo llama la app la primera vez que el jugador guarda su avance con la cuenta conectada.
@@ -30,7 +31,7 @@ export async function POST() {
 
   const s = migrate(p.state);
   const settings = s.settings;
-  const appUrl = process.env.CEO_APP_URL ?? "https://metisalign.app";
+  const appUrl = process.env.CEO_APP_URL ?? CEO_URL;
   const m = welcomeEmail({ pack: packOf(s), name: p.name ?? "", appUrl, windowStart: settings.windowStart, windowEnd: settings.windowEnd });
   const r = await sendMail({
     to, from: fromHeader(m), subject: m.subject, html: m.html, text: m.text,

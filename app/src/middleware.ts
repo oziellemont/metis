@@ -10,17 +10,34 @@ import { normalizeSupabaseUrl } from "@/lib/supabase/env";
 
 const APP_PREFIXES = ["/inicio", "/scorecard", "/carga", "/mapa", "/equipo", "/indicadores", "/proyectos", "/reportes", "/sesiones", "/compromisos", "/config", "/academy"];
 
-const CEO_HOSTS = ["metisalign.app", "www.metisalign.app"];
-const CEO_PASSTHROUGH = ["/ceo", "/api", "/auth", "/login", "/_next", "/brand"];
+const CEO_HOSTS = ["metis.ceo", "www.metis.ceo"];
+/** Dominio anterior de mêtis CEO: todo se manda a metis.ceo (vía /mudanza, que se lleva la partida guardada). */
+const OLD_CEO_HOSTS = ["metisalign.app", "www.metisalign.app"];
+const CEO_PASSTHROUGH = ["/ceo", "/api", "/auth", "/login", "/_next", "/brand", "/mudanza", "/simulador"];
+
+/** Ruta pública de CEO («/caso/x») → ruta interna («/ceo/caso/x»). */
+const toCeoPath = (p: string) => (p === "/" ? "/ceo" : p === "/ceo" || p.startsWith("/ceo/") ? p : "/ceo" + p);
 
 export async function middleware(req: NextRequest) {
-  // metisalign.app → mêtis CEO. Misma app y mismo código: solo se reescribe la ruta hacia /ceo.
   const host = (req.headers.get("host") ?? "").split(":")[0].toLowerCase();
+  const p = req.nextUrl.pathname;
+
+  // metisalign.app → metis.ceo. Pasa por /mudanza para llevarse el avance de quien juega sin cuenta.
+  if (OLD_CEO_HOSTS.includes(host)) {
+    if (p === "/mudanza" || p.startsWith("/_next") || p.startsWith("/brand") || p.startsWith("/auth")) return NextResponse.next();
+    const u = req.nextUrl.clone();
+    u.pathname = "/mudanza";
+    u.search = "";
+    u.searchParams.set("to", toCeoPath(p) + req.nextUrl.search);
+    return NextResponse.redirect(u, 307);
+  }
+
+  // metis.ceo → mêtis CEO. «/» es la landing; lo demás se reescribe hacia /ceo. Misma app, mismo código.
   if (CEO_HOSTS.includes(host)) {
-    const p = req.nextUrl.pathname;
+    if (p === "/") { const u = req.nextUrl.clone(); u.pathname = "/simulador"; return NextResponse.rewrite(u); }
     if (!CEO_PASSTHROUGH.some((x) => p === x || p.startsWith(x + "/"))) {
       const u = req.nextUrl.clone();
-      u.pathname = p === "/" ? "/ceo" : "/ceo" + p;
+      u.pathname = toCeoPath(p);
       return NextResponse.rewrite(u);
     }
     if (p === "/login" || p.startsWith("/auth")) { /* sigue el flujo normal de sesión */ }
