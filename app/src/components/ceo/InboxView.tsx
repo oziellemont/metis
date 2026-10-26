@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useState } from "react";
 import clsx from "clsx";
 import { Check, Clock, Hourglass, XCircle } from "lucide-react";
-import { CAST } from "@/lib/ceo/cast";
+import { personOf } from "@/lib/ceo/cast";
 import { useCeo } from "./CeoProvider";
 import { Avatar, ChannelChip, clock, rel, until } from "./ui";
 
@@ -38,7 +38,7 @@ export function InboxView() {
               <div className="relative"><Avatar id={e.item.from} size={42} />{unread && <span className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full bg-coral ring-2 ring-white" />}</div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <span className={clsx("text-sm truncate", unread ? "font-semibold text-ink" : "font-medium text-slate-700")}>{CAST[e.item.from].name}</span>
+                  <span className={clsx("text-sm truncate", unread ? "font-semibold text-ink" : "font-medium text-slate-700")}>{personOf(c.pack, e.item.from).name}</span>
                   <ChannelChip c={e.item.channel} className="hidden sm:inline-flex" />
                   <span className="ml-auto text-[11px] text-slate-400 whitespace-nowrap">{rel(e.arrivesAt, c.now)}</span>
                 </div>

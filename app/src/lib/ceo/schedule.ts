@@ -13,8 +13,7 @@
  *  season        cierre de temporada
  *  welcome       bienvenida (si no salió al conectar la cuenta)
  */
-import { ITEMS, SEASON_DAYS } from "./cases";
-import { DAY, H, KPI_START, dayKey, entries, healthOf, kpis, levelOf, localMidnight, profileOf, seasonDay, streakOf, xpOf } from "./engine";
+import { DAY, H, dayKey, entries, healthOf, kpis, levelOf, localMidnight, packOf, profileOf, rulesOf, seasonDay, seasonDoneOf, streakOf, verdictOf, xpOf } from "./engine";
 import { LESSONS } from "./lessons";
 import type { CeoState, Entry, Kpis } from "./types";
 
@@ -26,11 +25,11 @@ export type Job =
   | { key: string; kind: "digest"; data: Digest; at?: number }
   | { key: string; kind: "streak"; streak: number; pending: number; lessonId?: string; lessonTitle?: string }
   | { key: string; kind: "nudge"; days: number; pending: Entry[] }
-  | { key: string; kind: "season"; health: number; xp: number; level: string; archetype: string; archetypeText: string; decisions: number; bestStreak: number };
+  | { key: string; kind: "season"; health: number; xp: number; level: string; archetype: string; archetypeText: string; decisions: number; bestStreak: number; passed: boolean; passLine: number; kpis: Kpis };
 
 export interface Digest {
   day: number; seasonDays: number; kpis: Kpis; kpiDelta: Kpis; health: number; streak: number; xp: number; level: string;
-  pending: Entry[]; expiredYesterday: Entry[]; decidedYesterday: number; todayCount: number; firstAt?: string;
+  pending: Entry[]; expiredYesterday: Entry[]; decidedYesterday: number; todayCount: number; firstAt?: string; passLine: number;
 }
 
 const LOOKBACK = 6 * H;       // no mandar asuntos que llegaron hace más de 6 h
@@ -55,8 +54,8 @@ export function jobsFor(s: CeoState, sent: Sent, real: number, opts: { plan?: bo
   const today = dayKey(now, tz);
   const es = entries(s, now);
   const pending = es.filter((e) => e.status === "pendiente");
-  const baseIds = ITEMS.filter((i) => !i.trigger).map((i) => i.id);
-  const seasonDone = baseIds.every((id) => es.some((e) => e.item.id === id && (e.status === "decidido" || e.status === "vencido"))) && pending.length === 0;
+  const pack = packOf(s);
+  const seasonDone = seasonDoneOf(s, now);
   const jobs: Job[] = [];
   const inWindow = h >= windowStart && h < windowEnd + 1;
 
@@ -107,8 +106,8 @@ export function jobsFor(s: CeoState, sent: Sent, real: number, opts: { plan?: bo
     jobs.push({
       key: digestKey, kind: "digest", ...(opts.plan && !morning && digestAt > real + 5 * 60_000 ? { at: digestAt } : {}),
       data: {
-        day, seasonDays: SEASON_DAYS, kpis: k,
-        kpiDelta: Object.fromEntries((Object.keys(k) as (keyof Kpis)[]).map((x) => [x, k[x] - KPI_START[x]])) as unknown as Kpis,
+        day, seasonDays: pack.season.days, kpis: k, passLine: rulesOf(s.tier).passLine,
+        kpiDelta: Object.fromEntries((Object.keys(k) as (keyof Kpis)[]).map((x) => [x, k[x] - pack.kpiStart[x]])) as unknown as Kpis,
         health: healthOf(k), streak: streakOf(s, now).days, xp, level: levelOf(xp).name,
         pending, expiredYesterday: es.filter((e) => e.status === "vencido" && e.deadline >= yStart && e.deadline < yEnd),
         decidedYesterday: Object.values(s.decisions).filter((d) => d.at >= yStart && d.at < yEnd).length,
@@ -134,9 +133,11 @@ export function jobsFor(s: CeoState, sent: Sent, real: number, opts: { plan?: bo
   }
 
   // 6 · cierre de temporada
-  if (seasonDone && !sent.season) {
-    const k = kpis(s, now), xp = xpOf(s, now), pr = profileOf(s, now);
-    jobs.push({ key: "season", kind: "season", health: healthOf(k), xp, level: levelOf(xp).name, archetype: pr.archetype.name, archetypeText: pr.archetype.text, decisions: pr.decisions, bestStreak: st.best });
+  // (una clave por empresa y vuelta: así cada empresa de la carrera tiene su propio cierre)
+  const seasonKey = (s.career ?? []).length ? `season:${s.company}:${(s.career ?? []).length}` : "season";
+  if (seasonDone && !sent[seasonKey]) {
+    const k = kpis(s, now), xp = xpOf(s, now), pr = profileOf(s, now), v = verdictOf(s, now);
+    jobs.push({ key: seasonKey, kind: "season", health: healthOf(k), xp, level: levelOf(xp).name, archetype: pr.archetype.name, archetypeText: pr.archetype.text, decisions: pr.decisions, bestStreak: st.best, passed: v.passed, passLine: v.passLine, kpis: k });
   }
 
   // Si ya hay un asunto nuevo o un resumen, el recordatorio de racha sobra (no saturar).

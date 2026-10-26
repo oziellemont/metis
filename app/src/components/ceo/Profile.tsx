@@ -86,7 +86,7 @@ export function Profile() {
                   <div className="text-sm font-medium text-ink truncate">{e.item.bitacora.title}</div>
                   <div className="text-xs text-slate-500 truncate">{e.status === "vencido" ? "Lo dejaste vencer" : `Elegiste: ${e.option?.text}`}</div>
                 </div>
-                <span className="text-[11px] text-slate-400 shrink-0">{firstName(e.item.from)} · {rel(e.decision?.at ?? e.deadline, c.now)}</span>
+                <span className="text-[11px] text-slate-400 shrink-0">{firstName(c.pack, e.item.from)} · {rel(e.decision?.at ?? e.deadline, c.now)}</span>
               </Link>
             </li>
           ))}

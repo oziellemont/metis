@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import clsx from "clsx";
 import { ArrowLeft, ArrowRight, Check, Clock, Coins, Compass, Flag, Flame as FlameIcon, GraduationCap, Handshake, Layers, MessagesSquare, Rocket, Sparkles, Target, Users, Zap } from "lucide-react";
 import { BlockView } from "@/components/academy/Blocks";
-import { ITEMS } from "@/lib/ceo/cases";
+
 import { LESSONS, type Lesson } from "@/lib/ceo/lessons";
 import { useCeo } from "./CeoProvider";
 
@@ -27,7 +27,7 @@ export function CeoAcademyHome() {
           </div>
           <div className="rounded-2xl bg-white/10 backdrop-blur p-5">
             <div className="flex items-baseline justify-between"><span className="text-xs text-white/60">Tu avance</span><span className="text-sm font-semibold tabular-nums">{done} de {LESSONS.length}</span></div>
-            <div className="mt-2 h-2 rounded-full bg-white/15 overflow-hidden"><div className="h-full rounded-full bg-gradient-to-r from-mint to-mint-light transition-all duration-700" style={{ width: `${pct}%` }} /></div>
+            <div className="mt-2 h-2 rounded-full bg-white/15 overflow-hidden"><div className="h-full rounded-full bg-gradient-to-r from-indigo-light to-white transition-all duration-700" style={{ width: `${pct}%` }} /></div>
             <p className="mt-3 text-[11px] text-white/60">+30 XP por lección y cuenta para tu racha del día.</p>
           </div>
         </div>
@@ -37,7 +37,7 @@ export function CeoAcademyHome() {
         {LESSONS.map((l) => {
           const Icon = ICON[l.icon];
           const ok = !!c.s.lessons[l.id];
-          const cases = ITEMS.filter((i) => i.lesson === l.id);
+          const cases = c.pack.items.filter((i) => i.lesson === l.id);
           const lived = cases.filter((i) => c.entries.some((e) => e.item.id === i.id && (e.status === "decidido" || e.status === "vencido"))).length;
           const suggested = !ok && lived > 0;
           return (

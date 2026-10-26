@@ -1,18 +1,18 @@
 "use client";
 import Link from "next/link";
 import clsx from "clsx";
-import { ArrowRight, BookOpen, Clock, FastForward, Hourglass, Info, PartyPopper } from "lucide-react";
-import { KPI_HINT, KPI_LABEL, KPI_START } from "@/lib/ceo/engine";
-import { CAST, COMPANY, firstName } from "@/lib/ceo/cast";
-import { SEASON, SEASON_DAYS } from "@/lib/ceo/cases";
+import { ArrowRight, BookOpen, Clock, FastForward, Hourglass, Info, Trophy } from "lucide-react";
+import { KPI_KEYS } from "@/lib/ceo/engine";
+import { firstName, personOf } from "@/lib/ceo/cast";
 import { LESSONS } from "@/lib/ceo/lessons";
-import type { KpiKey } from "@/lib/ceo/types";
 import { useCeo } from "./CeoProvider";
 import { Avatar, Bar, ChannelChip, Delta, Flame, clock, rel, until } from "./ui";
 
 export function Today() {
   const c = useCeo();
   const first = c.s.name.split(" ")[0] || "CEO";
+  const pk = c.pack;
+  const v = c.verdict;
   const hr = new Date(c.now).getHours();
   const hello = hr < 12 ? "Buenos días" : hr < 19 ? "Buenas tardes" : "Buenas noches";
   const lastDecided = [...c.entries].filter((e) => e.status === "decidido").sort((a, b) => b.decision!.at - a.decision!.at).slice(0, 3);
@@ -26,17 +26,17 @@ export function Today() {
         <div aria-hidden className="absolute right-24 bottom-[-80px] h-48 w-48 rounded-full bg-mint/20 blur-3xl" />
         <div className="relative grid gap-6 md:grid-cols-[1.5fr_1fr] items-center">
           <div>
-            <div className="text-xs text-white/60">{COMPANY.name} · Temporada {SEASON.n} · Día {c.day} de {SEASON_DAYS}</div>
+            <div className="text-xs text-white/60">{pk.emoji} {pk.name} · {pk.industry} · Día {c.day} de {pk.season.days}{c.s.tier > 0 ? ` · Exigencia ${c.rules.name}` : ""}</div>
             <h1 className="mt-2 text-2xl sm:text-3xl font-semibold leading-tight">
-              {c.seasonDone ? `Cerraste tus primeros 90 días, ${first}.` : c.pending.length ? `${hello}, ${first}. Tienes ${c.pending.length} ${c.pending.length === 1 ? "asunto" : "asuntos"} esperando tu decisión.` : `${hello}, ${first}. Todo al día.`}
+              {c.seasonDone ? (v.passed ? `Aprobaste ${pk.short}, ${first}. Te espera otra empresa.` : `Cerraste la temporada en ${pk.short}, ${first}. El consejo pide otra vuelta.`) : c.pending.length ? `${hello}, ${first}. Tienes ${c.pending.length} ${c.pending.length === 1 ? "asunto" : "asuntos"} esperando tu decisión.` : `${hello}, ${first}. Todo al día.`}
             </h1>
             {c.pending[0] && !c.seasonDone && (
-              <Link href={`/ceo/caso/${c.pending[0].item.id}`} className="mt-5 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-ink hover:bg-white/90">Atender: {firstName(c.pending[0].item.from)} <ArrowRight size={15} /></Link>
+              <Link href={`/ceo/caso/${c.pending[0].item.id}`} className="mt-5 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-ink hover:bg-white/90">Atender: {firstName(pk, c.pending[0].item.from)} <ArrowRight size={15} /></Link>
             )}
             {!c.pending.length && c.nextArrival && !c.seasonDone && (
               <p className="mt-4 inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2 text-sm text-white/80"><Hourglass size={14} /> Tu siguiente asunto llega en {until(c.nextArrival, c.now)} ({clock(c.nextArrival)}).</p>
             )}
-            {c.seasonDone && <Link href="/ceo/perfil" className="mt-5 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-ink"><PartyPopper size={15} /> Ver mi perfil de CEO</Link>}
+            {c.seasonDone && <Link href="/ceo/carrera" className="mt-5 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-ink"><Trophy size={15} /> Ver el veredicto del consejo</Link>}
           </div>
           {/* racha */}
           <div className="rounded-2xl bg-white/10 backdrop-blur p-5">
@@ -54,12 +54,12 @@ export function Today() {
 
       {/* indicadores */}
       <section className="card p-5 sm:p-6">
-        <div className="flex items-center justify-between"><h2 className="font-semibold text-ink">Tu empresa hoy</h2><span className="text-xs text-slate-400">Salud general <b className="text-ink tabular-nums">{c.health}</b>/100</span></div>
+        <div className="flex flex-wrap items-center justify-between gap-2"><h2 className="font-semibold text-ink">Tu empresa hoy</h2><span className="text-xs text-slate-400">Para ascender, todos los rubros en <b className="text-ink tabular-nums">{v.passLine}</b> o más · <b className="text-ink tabular-nums">{KPI_KEYS.filter((k) => v.approved[k]).length}/5</b> aprobados</span></div>
         <div className="mt-4 grid gap-4 sm:grid-cols-5">
-          {(Object.keys(KPI_LABEL) as KpiKey[]).map((k) => (
-            <div key={k} title={KPI_HINT[k]}>
-              <div className="flex items-baseline justify-between"><span className="text-xs font-medium text-slate-500 inline-flex items-center gap-1">{KPI_LABEL[k]} <Info size={10} className="text-slate-300" /></span><span className="text-sm font-semibold tabular-nums">{c.kpis[k]} <Delta n={c.kpis[k] - KPI_START[k]} /></span></div>
-              <Bar value={c.kpis[k]} k={k} className="mt-1.5" />
+          {KPI_KEYS.map((k) => (
+            <div key={k} title={pk.kpiHint[k]}>
+              <div className="flex items-baseline justify-between gap-1"><span className="text-xs font-medium text-slate-500 inline-flex items-center gap-1 truncate">{pk.kpiLabel[k]} <Info size={10} className="text-slate-300 shrink-0" /></span><span className="text-sm font-semibold tabular-nums whitespace-nowrap">{c.kpis[k]} <Delta n={c.kpis[k] - pk.kpiStart[k]} /></span></div>
+              <Bar value={c.kpis[k]} k={k} line={v.passLine} className="mt-1.5" />
             </div>
           ))}
         </div>
@@ -75,7 +75,7 @@ export function Today() {
                 <li key={e.item.id}><Link href={`/ceo/caso/${e.item.id}`} className="flex gap-3 py-3 group">
                   <Avatar id={e.item.from} size={38} />
                   <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2"><span className="text-sm font-semibold text-ink truncate">{CAST[e.item.from].name}</span><ChannelChip c={e.item.channel} /></div>
+                    <div className="flex items-center gap-2"><span className="text-sm font-semibold text-ink truncate">{personOf(pk, e.item.from).name}</span><ChannelChip c={e.item.channel} /></div>
                     <div className="text-sm text-slate-600 truncate">{e.item.subject}</div>
                     <div className={clsx("mt-0.5 text-[11px] inline-flex items-center gap-1", e.deadline - c.now < 3 * 3_600_000 ? "text-coral font-medium" : "text-slate-400")}><Clock size={11} /> Vence en {until(e.deadline, c.now)}</div>
                   </div>

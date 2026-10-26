@@ -12,7 +12,8 @@ export type Axis = "horizonte" | "riesgo" | "foco" | "estilo" | "conflicto";
 export type Channel = "email" | "whatsapp" | "reporte" | "junta" | "llamada";
 export type Area = "personas" | "estrategia" | "finanzas" | "clientes" | "operacion" | "cultura" | "etica" | "comunicacion" | "negociacion" | "alineacion";
 
-export type CastId = "ramiro" | "lucia" | "hector" | "mariana" | "diego" | "paty" | "javier" | "roberto" | "sofia" | "ana" | "carla";
+/** Id de un personaje dentro de su empresa (cada paquete trae su elenco). */
+export type CastId = string;
 
 export interface Option {
   id: string;
@@ -56,6 +57,10 @@ export interface Item {
   /** Consecuencia que regresa: sólo llega si en `item` elegiste alguna de `options` ("__expired" = no respondiste). */
   trigger?: { item: string; options: string[] };
   deadlineH?: number;
+  /** Otras personas que se ven afectadas (se resaltan en el mapa de relaciones). */
+  involves?: CastId[];
+  /** «Lo que pasó en la vida real»: un caso parecido en otra empresa (nombres ficticios). */
+  real?: { company: string; title: string; text: string };
 }
 
 export interface Settings {
@@ -73,12 +78,36 @@ export interface Settings {
 
 export interface Decision { option: string; at: number }
 
+/** Una empresa ya jugada (queda en tu carrera). */
+export interface CareerRun {
+  company: string;
+  tier: number;
+  startedAt: number;
+  endedAt: number;
+  kpis: Kpis;
+  health: number;
+  /** % de asuntos base respondidos (no vencidos). */
+  answered: number;
+  passed: boolean;
+  xp: number;
+  decisions: Record<string, Decision>;
+  lessons?: string[];
+}
+
 export interface CeoState {
-  v: 1;
+  v: 2;
   name: string;
   alias: string;
+  /** Empresa que diriges ahora (id del paquete). */
+  company: string;
+  /** Exigencia de esta empresa: 0 = primera; sube con cada ascenso (+2 en modo Legendario). */
+  tier: number;
+  legendary?: boolean;
+  /** Empresas que ya cerraste (aprobadas o no). */
+  career: CareerRun[];
   startedAt: number | null;
   settings: Settings;
+  /** Decisiones de la empresa actual. */
   decisions: Record<string, Decision>;
   /** Hora de llegada congelada la primera vez que se vio (cambiar ajustes no mueve lo ya recibido). */
   pinned: Record<string, number>;
@@ -99,4 +128,57 @@ export interface Entry {
   status: EntryStatus;
   decision?: Decision;
   option?: Option;
+}
+
+// ───────────────────────────────────────────── paquetes de empresa
+export interface Person {
+  id: CastId;
+  name: string;
+  role: string;
+  initials: string;
+  /** A quién le reporta (id) o "ceo" si te reporta a ti. Sin valor = actor externo o del consejo. */
+  reportsTo?: CastId | "ceo";
+  /** Grupo en el mapa: consejo, comité (te reportan), equipo, externos. */
+  group: "consejo" | "comite" | "equipo" | "externo";
+  /** Lo que le importa (se ve en el mapa). */
+  cares?: string;
+}
+
+/** Relación entre dos personas en el mapa. */
+export interface Tie {
+  a: CastId;
+  b: CastId;
+  kind: "alianza" | "tension" | "influye";
+  note: string;
+}
+
+export interface CompanyPack {
+  id: string;
+  name: string;
+  /** Nombre corto para textos («en Cumbre»). */
+  short: string;
+  industry: string;
+  /** Emoji o icono corto del giro. */
+  emoji: string;
+  city: string;
+  tagline: string;
+  pitch: string;
+  facts: [string, string][];
+  /** Dominio ficticio del correo interno. */
+  domain: string;
+  season: { name: string; days: number };
+  /** 1 = la más accesible … 3 = la más exigente. */
+  difficulty: 1 | 2 | 3;
+  kpiStart: Kpis;
+  /** Cómo se llaman los 5 indicadores en esta industria (internamente siempre son los mismos). */
+  kpiLabel: Record<KpiKey, string>;
+  kpiHint: Record<KpiKey, string>;
+  cast: Record<CastId, Person>;
+  ties: Tie[];
+  /** Quién te escribe los recordatorios (asistente), quién habla por el consejo y quién preside. */
+  roles: { assistant: CastId; board: CastId; chair: CastId };
+  /** Carta de nombramiento (onboarding). */
+  welcome: string;
+  glossary: { term: string; def: string }[];
+  items: Item[];
 }

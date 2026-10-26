@@ -2,22 +2,51 @@
  * mêtis CEO · motor del simulador. Lógica pura (sin React ni navegador) para usarla
  * igual en la app, en el cron que agenda correos/WhatsApp y en las pruebas.
  */
-import type { Axis, CeoState, Entry, Item, KpiKey, Kpis, Option, Settings } from "./types";
-import { ITEMS, SEASON_DAYS } from "./cases";
+import type { Axis, CareerRun, CeoState, CompanyPack, Decision, Entry, Item, KpiKey, Kpis, Option, Settings } from "./types";
+import { COMPANIES, FIRST_COMPANY, companyById } from "./companies";
 
 export const H = 3_600_000;
 export const DAY = 24 * H;
 export const DEFAULT_DEADLINE_H = 24;
 
+export const KPI_KEYS: KpiKey[] = ["caja", "margen", "equipo", "clientes", "consejo"];
+/** Valores de la primera empresa (compatibilidad). Cada empresa trae los suyos en `kpiStart`. */
 export const KPI_START: Kpis = { caja: 58, margen: 52, equipo: 55, clientes: 62, consejo: 60 };
 export const KPI_LABEL: Record<KpiKey, string> = { caja: "Caja", margen: "Margen", equipo: "Equipo", clientes: "Clientes", consejo: "Consejo" };
-export const KPI_HINT: Record<KpiKey, string> = {
-  caja: "Semanas de operación cubiertas con el efectivo y las líneas disponibles.",
-  margen: "Rentabilidad operativa: lo que queda de cada peso vendido.",
-  equipo: "Clima, confianza y talento clave que se queda.",
-  clientes: "Lealtad y salud de las cuentas que pagan la nómina.",
-  consejo: "Confianza del consejo y de la familia fundadora en tu dirección.",
-};
+
+// ───────────────────────────────────────────── empresa actual y exigencia
+export const packOf = (s: Pick<CeoState, "company">): CompanyPack => companyById(s.company);
+
+/**
+ * Exigencia por nivel (tier). Cada empresa que apruebas sube un nivel; el modo Legendario suma 1 más.
+ * Calibrado con simulaciones: en el nivel 0 un jugador cuidadoso aprueba con margen y uno al azar casi nunca.
+ *  - los golpes pegan más fuerte y las buenas noticias rinden menos,
+ *  - los plazos se acortan,
+ *  - la línea de aprobación de cada rubro sube (el consejo exige más).
+ */
+export function rulesOf(tier: number) {
+  const t = Math.max(0, Math.min(tier, 6));
+  return {
+    tier: t,
+    hit: 1 + 0.08 * t,
+    gain: Math.max(0.85, 1 - 0.03 * t),
+    deadline: Math.max(0.5, 1 - 0.1 * t),
+    passLine: Math.min(60, 50 + 2 * t),
+    minAnswered: 0.8,
+    name: ["Director debutante", "Director con oficio", "Director probado", "Director de alto riesgo", "Director de crisis", "Legendario", "Legendario+"][t],
+  };
+}
+export function scaled(eff: Partial<Kpis> | undefined, tier: number): Partial<Kpis> {
+  if (!eff) return {};
+  const r = rulesOf(tier);
+  const out: Partial<Kpis> = {};
+  for (const k of Object.keys(eff) as KpiKey[]) {
+    const v = eff[k] ?? 0;
+    out[k] = v < 0 ? Math.round(v * r.hit) : Math.round(v * r.gain);
+  }
+  return out;
+}
+const deadlineOf = (s: CeoState, it: Item) => Math.max(3, Math.round((it.deadlineH ?? DEFAULT_DEADLINE_H) * rulesOf(s.tier).deadline));
 
 export const DEFAULT_SETTINGS: Settings = {
   tz: "America/Monterrey", windowStart: 8, windowEnd: 19, email: "", phone: "",
@@ -25,7 +54,20 @@ export const DEFAULT_SETTINGS: Settings = {
 };
 
 export function newState(): CeoState {
-  return { v: 1, name: "", alias: "", startedAt: null, settings: { ...DEFAULT_SETTINGS }, decisions: {}, pinned: {}, read: {}, lessons: {}, lastActiveAt: 0, clockOffset: 0, savedAt: 0 };
+  return { v: 2, name: "", alias: "", company: FIRST_COMPANY, tier: 0, career: [], startedAt: null, settings: { ...DEFAULT_SETTINGS }, decisions: {}, pinned: {}, read: {}, lessons: {}, lastActiveAt: 0, clockOffset: 0, savedAt: 0 };
+}
+
+/** Lee un estado guardado (v1 o v2) sin perder avance: v1 = Botanas Cumbre, nivel 0. */
+export function migrate(raw: unknown): CeoState {
+  const base = newState();
+  if (!raw || typeof raw !== "object") return base;
+  const r = raw as Partial<CeoState> & { v?: number };
+  const out: CeoState = { ...base, ...r, v: 2, settings: { ...base.settings, ...(r.settings ?? {}) } } as CeoState;
+  if (!r.v || r.v < 2 || !r.company) { out.company = FIRST_COMPANY; out.tier = r.tier ?? 0; out.career = r.career ?? []; }
+  if (!COMPANIES.some((c) => c.id === out.company)) out.company = FIRST_COMPANY;
+  out.career = Array.isArray(out.career) ? out.career : [];
+  out.tier = typeof out.tier === "number" ? out.tier : 0;
+  return out;
 }
 
 // ───────────────────────────────────────────── tiempo y zona horaria
@@ -55,8 +97,15 @@ export function rand01(seed: string): number {
   return ((h >>> 0) % 100000) / 100000;
 }
 
-const SLOTS_PER_DAY: Record<number, number> = {};
-for (const it of ITEMS) SLOTS_PER_DAY[it.day] = Math.max(SLOTS_PER_DAY[it.day] ?? 0, it.slot);
+const SLOTS: Record<string, Record<number, number>> = {};
+function slotsOf(p: CompanyPack) {
+  if (!SLOTS[p.id]) {
+    const m: Record<number, number> = {};
+    for (const it of p.items) m[it.day] = Math.max(m[it.day] ?? 0, it.slot);
+    SLOTS[p.id] = m;
+  }
+  return SLOTS[p.id];
+}
 
 /** Hora de llegada de un mensaje (determinista para cada jugador). */
 export function arrivalOf(s: CeoState, it: Item): number {
@@ -71,7 +120,7 @@ export function arrivalOf(s: CeoState, it: Item): number {
   const base = localMidnight(start, tz) + (it.day - 1) * DAY;
   if (s.settings.intensivo) return base + ws * H + (it.slot - 1) * 5 * 60_000;
   const span = Math.max(1, we - ws) * H;
-  const n = SLOTS_PER_DAY[it.day] || 1;
+  const n = slotsOf(packOf(s))[it.day] || 1;
   const part = span / n;
   return Math.round(base + ws * H + part * (it.slot - 1) + part * (0.1 + rand01(seed) * 0.8));
 }
@@ -80,10 +129,10 @@ export function arrivalOf(s: CeoState, it: Item): number {
 export function resolution(s: CeoState, itemId: string, now: number): string | null {
   const d = s.decisions[itemId];
   if (d) return d.option;
-  const it = ITEMS.find((x) => x.id === itemId);
+  const it = packOf(s).items.find((x) => x.id === itemId);
   if (!it || !isActive(s, it, now)) return null;
   const at = arrivalOf(s, it);
-  return now >= at + (it.deadlineH ?? DEFAULT_DEADLINE_H) * H ? "__expired" : null;
+  return now >= at + deadlineOf(s, it) * H ? "__expired" : null;
 }
 
 /** ¿Este mensaje existe para este jugador? (Las consecuencias sólo llegan si se cumplió su detonador.) */
@@ -96,7 +145,7 @@ export function isActive(s: CeoState, it: Item, now: number): boolean {
 export function entries(s: CeoState, now = nowOf(s)): Entry[] {
   if (!s.startedAt) return [];
   const out: Entry[] = [];
-  for (const it of ITEMS) {
+  for (const it of packOf(s).items) {
     if (!isActive(s, it, now)) continue;
     let arrivesAt = arrivalOf(s, it);
     // Una consecuencia nunca llega antes de que se haya resuelto lo que la detona.
@@ -104,7 +153,7 @@ export function entries(s: CeoState, now = nowOf(s)): Entry[] {
       const t = s.decisions[it.trigger.item];
       if (t) arrivesAt = Math.max(arrivesAt, t.at + 2 * 60_000);
     }
-    const deadline = arrivesAt + (it.deadlineH ?? DEFAULT_DEADLINE_H) * H;
+    const deadline = arrivesAt + deadlineOf(s, it) * H;
     const decision = s.decisions[it.id];
     const status = decision ? "decidido" : now < arrivesAt ? "futuro" : now >= deadline ? "vencido" : "pendiente";
     out.push({ item: it, arrivesAt, deadline, status, decision, option: decision ? it.options.find((o) => o.id === decision.option) : undefined });
@@ -115,25 +164,36 @@ export function entries(s: CeoState, now = nowOf(s)): Entry[] {
 // ───────────────────────────────────────────── indicadores, XP, perfil
 const clamp = (n: number) => Math.max(0, Math.min(100, Math.round(n)));
 
+/** Efecto real (ya ajustado a tu nivel de exigencia) de lo que pasó en un asunto. */
+export function effectOf(s: CeoState, e: Entry): Partial<Kpis> {
+  const eff = e.status === "decidido" ? e.option?.effects : e.status === "vencido" ? e.item.expired.effects : undefined;
+  return scaled(eff, s.tier);
+}
 export function kpis(s: CeoState, now = nowOf(s)): Kpis {
-  const k = { ...KPI_START };
+  const k = { ...packOf(s).kpiStart };
   for (const e of entries(s, now)) {
-    const eff = e.status === "decidido" ? e.option?.effects : e.status === "vencido" ? e.item.expired.effects : undefined;
-    if (eff) for (const key of Object.keys(eff) as KpiKey[]) k[key] = clamp(k[key] + (eff[key] ?? 0));
+    const eff = effectOf(s, e);
+    for (const key of Object.keys(eff) as KpiKey[]) k[key] = clamp(k[key] + (eff[key] ?? 0));
   }
   return k;
 }
 export const healthOf = (k: Kpis) => Math.round((k.caja + k.margen + k.equipo + k.clientes + k.consejo) / 5);
 
 export const XP = { decision: 20, perPoint: 10, onTime: 5, lesson: 30 };
-export function xpOf(s: CeoState, now = nowOf(s)): number {
+/** XP de las decisiones de la empresa actual (sin lecciones). */
+export function runXp(s: CeoState, now = nowOf(s)): number {
   let xp = 0;
   for (const e of entries(s, now)) {
     if (e.status !== "decidido" || !e.option || !e.decision) continue;
     xp += XP.decision + e.option.score * XP.perPoint;
     if (e.decision.at - e.arrivesAt <= (e.deadline - e.arrivesAt) / 2) xp += XP.onTime;
   }
-  return xp + Object.keys(s.lessons).length * XP.lesson;
+  return xp;
+}
+/** XP total de la carrera: empresas anteriores + la actual + lecciones. */
+export function xpOf(s: CeoState, now = nowOf(s)): number {
+  const past = (s.career ?? []).reduce((a, r) => a + (r.xp || 0), 0);
+  return past + runXp(s, now) + Object.keys(s.lessons).length * XP.lesson;
 }
 
 export const LEVELS = [
@@ -155,6 +215,7 @@ export function streakOf(s: CeoState, now = nowOf(s)) {
   const tz = s.settings.tz;
   const days = new Set<string>();
   Object.values(s.decisions).forEach((d) => days.add(dayKey(d.at, tz)));
+  (s.career ?? []).forEach((r) => Object.values(r.decisions ?? {}).forEach((d) => days.add(dayKey(d.at, tz))));
   Object.values(s.lessons).forEach((t) => days.add(dayKey(t, tz)));
   const today = dayKey(now, tz);
   const doneToday = days.has(today);
@@ -190,12 +251,25 @@ export const AXES: { key: Axis; left: string; right: string }[] = [
 export function profileOf(s: CeoState, now = nowOf(s)) {
   const sum: Record<Axis, number> = { horizonte: 0, riesgo: 0, foco: 0, estilo: 0, conflicto: 0 };
   const cnt: Record<Axis, number> = { horizonte: 0, riesgo: 0, foco: 0, estilo: 0, conflicto: 0 };
-  for (const e of entries(s, now)) {
-    if (!e.option) continue;
-    for (const a of Object.keys(e.option.style) as Axis[]) { sum[a] += e.option.style[a] ?? 0; cnt[a]++; }
+  const chosen = chosenOptions(s, now);
+  for (const o of chosen) {
+    for (const a of Object.keys(o.style) as Axis[]) { sum[a] += o.style[a] ?? 0; cnt[a]++; }
   }
   const axes = AXES.map((a) => ({ ...a, value: cnt[a.key] ? Math.round((sum[a.key] / cnt[a.key]) * 50) : 0, n: cnt[a.key] }));
-  return { axes, archetype: archetypeOf(axes), decisions: Object.keys(s.decisions).length };
+  return { axes, archetype: archetypeOf(axes), decisions: chosen.length };
+}
+/** Todas las opciones que has elegido en tu carrera (empresas anteriores + actual). */
+export function chosenOptions(s: CeoState, now = nowOf(s)): Option[] {
+  const out: Option[] = [];
+  for (const r of s.career ?? []) {
+    const p = companyById(r.company);
+    for (const [id, d] of Object.entries(r.decisions ?? {})) {
+      const o = p.items.find((i) => i.id === id)?.options.find((x) => x.id === d.option);
+      if (o) out.push(o);
+    }
+  }
+  for (const e of entries(s, now)) if (e.option) out.push(e.option);
+  return out;
 }
 function archetypeOf(axes: { key: Axis; value: number; n: number }[]) {
   const v = Object.fromEntries(axes.map((a) => [a.key, a.value])) as Record<Axis, number>;
@@ -216,8 +290,9 @@ export function badgesOf(s: CeoState, now = nowOf(s)): Badge[] {
   const expired = es.filter((e) => e.status === "vencido").length;
   const k = kpis(s, now);
   const st = streakOf(s, now);
-  const base = ITEMS.filter((i) => !i.trigger).length;
-  const baseDone = es.filter((e) => !e.item.trigger && e.status !== "futuro" && e.status !== "pendiente").length;
+  const passed = (s.career ?? []).filter((r) => r.passed);
+  const industries = new Set(passed.map((r) => companyById(r.company).industry));
+  const allGreen = (s.career ?? []).some((r) => KPI_KEYS.every((x) => r.kpis[x] >= 70));
   return [
     { id: "primera", name: "Primera decisión", text: "Tomaste tu primera decisión como CEO.", on: decided >= 1 },
     { id: "racha3", name: "Tres al hilo", text: "3 días seguidos al frente.", on: st.best >= 3 },
@@ -226,7 +301,10 @@ export function badgesOf(s: CeoState, now = nowOf(s)): Badge[] {
     { id: "gente", name: "Arquitecto social", text: "Llevaste el indicador de Equipo a 70 o más.", on: k.equipo >= 70 },
     { id: "caja", name: "Guardián de la caja", text: "Llevaste la Caja a 70 o más.", on: k.caja >= 70 },
     { id: "lector", name: "Teoría en mano", text: "Completaste 5 lecciones de mêtis Academy.", on: Object.keys(s.lessons).length >= 5 },
-    { id: "temporada", name: "Primeros 90 días", text: "Cerraste la temporada completa.", on: baseDone >= base },
+    { id: "ascenso", name: "Ascenso", text: "Aprobaste tu primera empresa en todos los rubros.", on: passed.length >= 1 },
+    { id: "multigiro", name: "Multigiro", text: "Aprobaste empresas de 3 industrias distintas.", on: industries.size >= 3 },
+    { id: "impecable", name: "Impecable", text: "Cerraste una empresa con todos los rubros en 70 o más.", on: allGreen },
+    { id: "legendario", name: "Legendario", text: "Aprobaste una empresa en modo Legendario.", on: (s.career ?? []).some((r) => r.passed && r.tier >= 2 && s.legendary) },
   ];
 }
 
@@ -257,10 +335,93 @@ export function skipToNext(s: CeoState, real = Date.now()): CeoState {
 export function seasonDay(s: CeoState, now = nowOf(s)): number {
   if (!s.startedAt) return 0;
   const d = Math.floor((localMidnight(now, s.settings.tz) - localMidnight(s.startedAt, s.settings.tz)) / DAY) + 1;
-  return Math.min(Math.max(d, 1), SEASON_DAYS);
+  return Math.min(Math.max(d, 1), packOf(s).season.days);
 }
 
 /** Mensajes que llegan entre `from` y `to` (para que el cron agende correo y WhatsApp). */
 export function arrivalsBetween(s: CeoState, from: number, to: number): Entry[] {
   return entries(s, to).filter((e) => e.arrivesAt >= from && e.arrivesAt < to && !e.decision);
+}
+
+// ───────────────────────────────────────────── carrera: cierre, veredicto y ascenso
+/** ¿Ya se resolvió todo lo de esta empresa? */
+export function seasonDoneOf(s: CeoState, now = nowOf(s)): boolean {
+  if (!s.startedAt) return false;
+  const es = entries(s, now);
+  const base = packOf(s).items.filter((i) => !i.trigger);
+  const done = (id: string) => es.some((e) => e.item.id === id && (e.status === "decidido" || e.status === "vencido"));
+  return base.every((i) => done(i.id)) && !es.some((e) => e.status === "pendiente" || (e.status === "futuro" && !e.item.trigger));
+}
+
+export interface Verdict {
+  kpis: Kpis;
+  health: number;
+  passLine: number;
+  /** Rubros aprobados (≥ línea). */
+  approved: Record<KpiKey, boolean>;
+  allApproved: boolean;
+  answered: number;
+  answeredOk: boolean;
+  passed: boolean;
+}
+export function verdictOf(s: CeoState, now = nowOf(s)): Verdict {
+  const k = kpis(s, now);
+  const r = rulesOf(s.tier);
+  const es = entries(s, now).filter((e) => e.status === "decidido" || e.status === "vencido");
+  const answered = es.length ? es.filter((e) => e.status === "decidido").length / es.length : 0;
+  const approved = Object.fromEntries(KPI_KEYS.map((x) => [x, k[x] >= r.passLine])) as Record<KpiKey, boolean>;
+  const allApproved = KPI_KEYS.every((x) => approved[x]);
+  const answeredOk = answered >= r.minAnswered;
+  return { kpis: k, health: healthOf(k), passLine: r.passLine, approved, allApproved, answered, answeredOk, passed: allApproved && answeredOk };
+}
+
+/** Siguiente empresa: aleatoria entre las que no has aprobado (estable por jugador). */
+export function nextCompanyOf(s: CeoState): { id: string; legendary: boolean } {
+  const passed = new Set((s.career ?? []).filter((r) => r.passed).map((r) => r.company));
+  passed.add(s.company);
+  const left = COMPANIES.filter((c) => !passed.has(c.id));
+  const pool = left.length ? left : COMPANIES.filter((c) => c.id !== s.company);
+  const pick = pool[Math.floor(rand01(`${s.alias || s.name}|${(s.career ?? []).length}|next`) * pool.length)] ?? COMPANIES[0];
+  return { id: pick.id, legendary: !left.length };
+}
+
+function closeRun(s: CeoState, now: number): CareerRun {
+  const v = verdictOf(s, now);
+  return {
+    company: s.company, tier: s.tier, startedAt: s.startedAt ?? now, endedAt: now, kpis: v.kpis, health: v.health,
+    answered: Math.round(v.answered * 100), passed: v.passed, xp: runXp(s, now), decisions: s.decisions as Record<string, Decision>,
+  };
+}
+const fresh = (s: CeoState, company: string, tier: number, now: number, legendary?: boolean): CeoState => ({
+  ...s, company, tier, legendary: legendary ?? s.legendary, startedAt: now, decisions: {}, pinned: {}, read: {}, lastActiveAt: now, savedAt: now,
+});
+
+/** Cierra la empresa actual y pasa a la siguiente (si aprobaste) o la repite (si no). */
+export function advance(s: CeoState, now = nowOf(s)): CeoState {
+  if (!seasonDoneOf(s, now)) return s;
+  const run = closeRun(s, now);
+  const career = [...(s.career ?? []), run];
+  const after = { ...s, career };
+  if (!run.passed) return fresh(after, s.company, s.tier, now);
+  const next = nextCompanyOf(after);
+  const passedCount = career.filter((r) => r.passed).length;
+  const legendary = next.legendary || !!s.legendary;
+  return fresh(after, next.id, passedCount + (legendary ? 1 : 0), now, legendary);
+}
+
+/** Cambiar de empresa a media temporada (solo antes de la primera decisión). */
+export function switchCompany(s: CeoState, company: string, now = nowOf(s)): CeoState {
+  if (Object.keys(s.decisions).length || !COMPANIES.some((c) => c.id === company)) return s;
+  return fresh(s, company, s.tier, now);
+}
+
+/** Opción A domina a B si es igual o mejor en todos los rubros y mejor en al menos uno. */
+export function dominates(a: Partial<Kpis>, b: Partial<Kpis>): boolean {
+  let better = false;
+  for (const k of KPI_KEYS) {
+    const x = a[k] ?? 0, y = b[k] ?? 0;
+    if (x < y) return false;
+    if (x > y) better = true;
+  }
+  return better;
 }

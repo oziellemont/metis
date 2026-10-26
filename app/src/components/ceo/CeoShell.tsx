@@ -3,7 +3,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import clsx from "clsx";
-import { Home, Inbox, GraduationCap, Trophy, UserRound, Settings, X, Building2 } from "lucide-react";
+import { Home, Inbox, GraduationCap, Trophy, UserRound, Settings, X, Building2, Network, Route } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { useCeo } from "./CeoProvider";
 import { Flame } from "./ui";
@@ -11,8 +11,10 @@ import { Flame } from "./ui";
 const NAV = [
   { href: "/ceo", label: "Hoy", Icon: Home },
   { href: "/ceo/bandeja", label: "Bandeja", Icon: Inbox, badge: true },
+  { href: "/ceo/empresa", label: "Empresa", Icon: Network },
+  { href: "/ceo/carrera", label: "Carrera", Icon: Route },
   { href: "/ceo/academy", label: "Academy", Icon: GraduationCap },
-  { href: "/ceo/ranking", label: "Ranking", Icon: Trophy },
+  { href: "/ceo/ranking", label: "Ranking", Icon: Trophy, desktop: true },
   { href: "/ceo/perfil", label: "Perfil", Icon: UserRound },
 ];
 
@@ -38,10 +40,10 @@ export function CeoShell({ children }: { children: React.ReactNode }) {
       <aside className="hidden lg:flex fixed inset-y-0 left-0 w-60 flex-col bg-white border-r border-slate-100 px-4 py-5">
         <Link href="/ceo" className="flex items-center gap-2 px-2"><Logo height={26} /><span className="chip bg-ink text-white text-[10px] tracking-wider">CEO</span></Link>
         <div className="mt-6 rounded-2xl bg-gradient-to-br from-[#141735] to-[#2B1F8A] p-4 text-white">
-          <div className="flex items-center justify-between text-xs text-white/60"><span className="inline-flex items-center gap-1"><Building2 size={12} /> Botanas Cumbre</span><span>Día {c.day}</span></div>
+          <div className="flex items-center justify-between text-xs text-white/60"><span className="inline-flex items-center gap-1 min-w-0"><Building2 size={12} className="shrink-0" /> <span className="truncate">{c.pack.name}</span></span><span>Día {c.day}</span></div>
           <div className="mt-2 text-sm font-semibold truncate">{c.s.name || "CEO"}</div>
           <div className="text-xs text-white/60">{c.level.name}</div>
-          <div className="mt-2 h-1.5 rounded-full bg-white/15 overflow-hidden"><div className="h-full bg-gradient-to-r from-mint to-mint-light" style={{ width: `${c.level.pct}%` }} /></div>
+          <div className="mt-2 h-1.5 rounded-full bg-white/15 overflow-hidden"><div className="h-full bg-gradient-to-r from-indigo-light to-white" style={{ width: `${c.level.pct}%` }} /></div>
           <div className="mt-1 text-[11px] text-white/50 tabular-nums">{c.xp} XP{c.level.next ? ` · ${c.level.next.min - c.xp} para ${c.level.next.short}` : ""}</div>
         </div>
         <nav className="mt-5 space-y-1">
@@ -66,6 +68,7 @@ export function CeoShell({ children }: { children: React.ReactNode }) {
         <div className="flex items-center gap-3 text-sm">
           <span className={clsx("inline-flex items-center gap-1 font-semibold tabular-nums", c.streak.atRisk && "text-amber")}><Flame on={c.streak.days > 0 && c.streak.doneToday} size={17} /> {c.streak.days}</span>
           <span className="inline-flex items-center gap-1 font-semibold tabular-nums text-indigo">{c.xp} <span className="text-[10px] text-slate-400">XP</span></span>
+          <Link href="/ceo/ranking" aria-label="Ranking" className="text-slate-400"><Trophy size={18} /></Link>
           <Link href="/ceo/ajustes" aria-label="Ajustes" className="text-slate-400"><Settings size={18} /></Link>
         </div>
       </header>
@@ -75,9 +78,9 @@ export function CeoShell({ children }: { children: React.ReactNode }) {
       </main>
 
       {/* móvil: barra inferior */}
-      <nav className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-white border-t border-slate-100 grid grid-cols-5 pb-[env(safe-area-inset-bottom)]">
-        {NAV.map(({ href, label, Icon, badge }) => (
-          <Link key={href} href={href} className={clsx("relative flex flex-col items-center gap-0.5 py-2 text-[11px] font-medium", active(href) ? "text-indigo" : "text-slate-400")}>
+      <nav className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-white border-t border-slate-100 grid grid-cols-6 pb-[env(safe-area-inset-bottom)]">
+        {NAV.filter((x) => !x.desktop).map(({ href, label, Icon, badge }) => (
+          <Link key={href} href={href} className={clsx("relative flex flex-col items-center gap-0.5 py-2 text-[10px] font-medium", active(href) ? "text-indigo" : "text-slate-400")}>
             <Icon size={21} strokeWidth={active(href) ? 2.4 : 2} /> {label}
             {badge && n > 0 && <span className="absolute top-1 left-1/2 ml-2 h-4 min-w-4 px-1 rounded-full bg-coral text-white text-[10px] font-semibold grid place-items-center">{n}</span>}
           </Link>

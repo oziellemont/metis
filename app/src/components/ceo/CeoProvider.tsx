@@ -6,9 +6,8 @@
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { supabaseBrowser } from "@/lib/supabase/client";
-import { ITEMS } from "@/lib/ceo/cases";
-import { decide as decideFn, entries as entriesFn, healthOf, kpis as kpisFn, levelOf, newState, nowOf, pinArrived, seasonDay, skipToNext, streakOf, xpOf } from "@/lib/ceo/engine";
-import type { CeoState, Entry, Kpis, Settings } from "@/lib/ceo/types";
+import { advance as advanceFn, decide as decideFn, entries as entriesFn, healthOf, kpis as kpisFn, levelOf, migrate, newState, nowOf, packOf, pinArrived, rulesOf, seasonDay, seasonDoneOf, skipToNext, streakOf, switchCompany as switchFn, verdictOf, xpOf, type Verdict } from "@/lib/ceo/engine";
+import type { CeoState, CompanyPack, Entry, Kpis, Settings } from "@/lib/ceo/types";
 
 const KEY = "metis-ceo-v1";
 
@@ -18,6 +17,9 @@ interface Ctx {
   ready: boolean;
   s: CeoState;
   now: number;
+  pack: CompanyPack;
+  rules: ReturnType<typeof rulesOf>;
+  verdict: Verdict;
   entries: Entry[];
   inbox: Entry[];
   pending: Entry[];
@@ -33,7 +35,11 @@ interface Ctx {
   synced: boolean;
   toast: Toast | null;
   dismissToast: () => void;
-  start: (p: { name: string; email: string; phone: string; settings?: Partial<Settings> }) => void;
+  start: (p: { name: string; email: string; phone: string; company?: string; settings?: Partial<Settings> }) => void;
+  /** Cierra la empresa: asciende (si aprobaste) o la repite. */
+  advance: () => void;
+  /** Cambiar de empresa antes de la primera decisión. */
+  switchCompany: (id: string) => void;
   decide: (itemId: string, optionId: string) => void;
   markRead: (itemId: string) => void;
   completeLesson: (id: string) => void;
@@ -67,7 +73,7 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     try {
       const raw = localStorage.getItem(KEY);
-      if (raw) setS({ ...newState(), ...JSON.parse(raw) });
+      if (raw) setS(migrate(JSON.parse(raw)));
     } catch { /* ignore */ }
     setReady(true);
     const t = setInterval(() => setTick(Date.now()), 10_000);
@@ -88,7 +94,7 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
       setUser({ id: u.id, email: u.email ?? "" });
       const { data: row } = await sb.schema("ceo").from("players").select("state").eq("user_id", u.id).maybeSingle();
       const remote = row?.state as CeoState | undefined;
-      if (remote && alive) setS((local) => (remote.savedAt > local.savedAt ? { ...newState(), ...remote } : local));
+      if (remote && alive) setS((local) => (remote.savedAt > local.savedAt ? migrate(remote) : local));
       setSynced(true);
     })().catch(() => { /* sin esquema ceo todavía: se juega local */ });
     return () => { alive = false; };
@@ -151,13 +157,14 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
   const k = useMemo(() => kpisFn(s, now), [s, now]);
   const xp = useMemo(() => xpOf(s, now), [s, now]);
   const streak = useMemo(() => streakOf(s, now), [s, now]);
-  const baseIds = ITEMS.filter((i) => !i.trigger).map((i) => i.id);
-  const seasonDone = !!s.startedAt && baseIds.every((id) => entries.find((e) => e.item.id === id && (e.status === "decidido" || e.status === "vencido"))) && pending.length === 0;
+  const seasonDone = useMemo(() => seasonDoneOf(s, now), [s, now]);
+  const verdict = useMemo(() => verdictOf(s, now), [s, now]);
+  const pack = packOf(s);
   const nextArrival = entries.find((e) => e.status === "futuro")?.arrivesAt ?? null;
 
-  const start: Ctx["start"] = useCallback(({ name, email, phone, settings }) => {
+  const start: Ctx["start"] = useCallback(({ name, email, phone, company, settings }) => {
     const t = Date.now();
-    setS((p) => ({ ...newState(), name: name.trim(), alias: aliasOf(name), startedAt: t, lastActiveAt: t, savedAt: t, settings: { ...p.settings, ...settings, email, phone, tz: Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Monterrey" } }));
+    setS((p) => ({ ...newState(), company: company || newState().company, name: name.trim(), alias: aliasOf(name), startedAt: t, lastActiveAt: t, savedAt: t, settings: { ...p.settings, ...settings, email, phone, tz: Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Monterrey" } }));
     seen.current = null;
   }, []);
   const decide = useCallback((itemId: string, optionId: string) => setS((p) => { const n = decideFn(p, itemId, optionId, nowOf(p)); return n === p ? p : { ...n, savedAt: Date.now() }; }), []);
@@ -168,11 +175,13 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
     return { ...q, name: name ?? q.name, alias: alias ?? q.alias, settings: { ...q.settings, ...rest }, savedAt: Date.now() };
   }), []);
   const skipNext = useCallback(() => { setS((p) => ({ ...skipToNext(p), savedAt: Date.now() })); setTick(Date.now()); }, []);
+  const advance = useCallback(() => { setS((p) => { const n = advanceFn(p, nowOf(p)); return n === p ? p : { ...n, savedAt: Date.now() }; }); seen.current = null; setTick(Date.now()); }, []);
+  const switchCompany = useCallback((id: string) => { setS((p) => { const n = switchFn(p, id, nowOf(p)); return n === p ? p : { ...n, savedAt: Date.now() }; }); seen.current = null; }, []);
   const reset = useCallback(() => { localStorage.removeItem(KEY); seen.current = null; setS(newState()); }, []);
 
   const value: Ctx = {
-    ready, s, now, entries, inbox, pending, kpis: k, health: healthOf(k), xp, level: levelOf(xp), streak, day: seasonDay(s, now), seasonDone, nextArrival,
-    user, synced, toast, dismissToast: () => setToast(null), start, decide, markRead, completeLesson, updateSettings, skipNext, reset,
+    ready, s, now, pack, rules: rulesOf(s.tier), verdict, entries, inbox, pending, kpis: k, health: healthOf(k), xp, level: levelOf(xp), streak, day: seasonDay(s, now), seasonDone, nextArrival,
+    user, synced, toast, dismissToast: () => setToast(null), start, advance, switchCompany, decide, markRead, completeLesson, updateSettings, skipNext, reset,
   };
   return <C.Provider value={value}>{children}</C.Provider>;
 }
