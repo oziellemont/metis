@@ -471,7 +471,6 @@ export const FORJA: CompanyPack = {
     title: "Forja 0 defectos: calidad en la fuente",
     what: "Que cada operador pueda parar la línea y que los defectos se resuelvan donde nacen, no en una inspección al final.",
     why: "Aurora amenaza con poner la planta en revisión por los escapes. El fondo quiere ver el cambio en 24 semanas, antes de la cotización de la plataforma 2028.",
-    opensDay: 3,
     stakeholders: [
       { id: "zertuche", start: 34, likes: ["avance"], dislikes: ["townhall"], secret: "«Me da igual cómo lo hagas. Tráeme la tasa de defectos cada mes y el consejo es tuyo.»" },
       { id: "regina", start: 24, likes: ["avance", "piloto"], dislikes: ["capacitacion"], secret: "«Cada hora de capacitación es una hora sin producir. Demuéstrame que esto paga y te dejo en paz.»" },

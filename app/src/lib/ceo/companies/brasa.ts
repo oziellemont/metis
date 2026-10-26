@@ -409,7 +409,6 @@ export const BRASA: CompanyPack = {
     title: "Brasa Un Solo Estándar",
     what: "Que las 34 sucursales trabajen con la misma receta, la misma porción y el mismo servicio, medidos cada semana.",
     why: "Cada sucursal hace las cosas a su modo: las porciones varían 20% y la calificación en apps va de 3.6 a 4.8. El consejo quiere el estándar en 24 semanas, antes de decidir si se franquicia.",
-    opensDay: 3,
     stakeholders: [
       { id: "ignacio", start: 24, likes: ["ejemplo", "entrevista"], dislikes: ["avance"], leader: true, secret: "«Mi arrachera no cabe en un manual. Si cocinas conmigo un día, te ayudo a escribirlo.»" },
       { id: "lourdes", start: 34, likes: ["avance", "coalicion"], secret: "«Sin estándar no hay franquicias. Te apoyo con todo, pero lo quiero rápido.»" },

@@ -13,7 +13,7 @@
  *  season        cierre de temporada
  *  welcome       bienvenida (si no salió al conectar la cuenta)
  */
-import { DAY, H, dayKey, entries, healthOf, kpis, levelOf, localMidnight, packOf, profileOf, rulesOf, seasonDay, seasonDoneOf, streakOf, verdictOf, xpOf } from "./engine";
+import { DAY, H, casesDoneOf, dayKey, entries, healthOf, kpis, levelOf, localMidnight, packOf, profileOf, rulesOf, seasonDay, seasonDoneOf, streakOf, verdictOf, xpOf } from "./engine";
 import { LESSONS } from "./lessons";
 import type { CeoState, Entry, Kpis } from "./types";
 
@@ -56,6 +56,7 @@ export function jobsFor(s: CeoState, sent: Sent, real: number, opts: { plan?: bo
   const pending = es.filter((e) => e.status === "pendiente");
   const pack = packOf(s);
   const seasonDone = seasonDoneOf(s, now);
+  const casesDone = casesDoneOf(s, now);
   const jobs: Job[] = [];
   const inWindow = h >= windowStart && h < windowEnd + 1;
 
@@ -95,7 +96,7 @@ export function jobsFor(s: CeoState, sent: Sent, real: number, opts: { plan?: bo
   const startedToday = dayKey(s.startedAt, tz) === today;
   const digestKey = `digest:${today}`;
   const morning = h >= windowStart - 1 && h < windowStart + 3;
-  if (!sent[digestKey] && !startedToday && !seasonDone && (morning || opts.plan)) {
+  if (!sent[digestKey] && !startedToday && !casesDone && (morning || opts.plan)) {
     const k = kpis(s, now);
     const xp = xpOf(s, now);
     const yStart = localMidnight(now, tz) - DAY, yEnd = localMidnight(now, tz);

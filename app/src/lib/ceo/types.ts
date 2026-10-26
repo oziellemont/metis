@@ -133,8 +133,6 @@ export interface ChangeDef {
   what: string;
   /** Por qué el consejo lo pidió. */
   why: string;
-  /** Día de la temporada en que se abre. */
-  opensDay: number;
   stakeholders: Stakeholder[];
 }
 

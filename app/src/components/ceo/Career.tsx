@@ -30,11 +30,11 @@ export function Career() {
         <div className="relative">
           <div className="text-xs text-white/60">{pk.emoji} {pk.name} · {pk.industry} · Exigencia: {r.name}</div>
           <h1 className="mt-2 text-2xl sm:text-3xl font-semibold leading-tight">
-            {!c.seasonDone ? "El consejo te evalúa al cierre de la temporada." : v.passed ? `Aprobaste ${pk.short}.` : `Todavía no apruebas ${pk.short}.`}
+            {!c.seasonDone ? (c.changeOpen ? "Te falta el reto final: el cambio." : "El consejo te evalúa al cierre del nivel.") : v.passed ? `Aprobaste ${pk.short}.` : `Todavía no apruebas ${pk.short}.`}
           </h1>
           <p className="mt-2 text-sm text-white/70 max-w-xl">
             {!c.seasonDone
-              ? `Para ascender necesitas cerrar con todos los rubros en ${v.passLine} o más y responder al menos el ${Math.round(r.minAnswered * 100)}% de los asuntos. No basta con un buen promedio: el consejo revisa cada rubro.`
+              ? `${c.changeOpen ? "Cerraste los asuntos. Presenta tu proyecto de cambio al consejo para recibir el veredicto. " : "El nivel cierra con un reto de cambio cuando termines tus asuntos. "}Para ascender necesitas cerrar con todos los rubros en ${v.passLine} o más y responder al menos el ${Math.round(r.minAnswered * 100)}% de los asuntos. No basta con un buen promedio: el consejo revisa cada rubro.`
               : v.passed
                 ? "El consejo firmó tu evaluación. Otra empresa, de otro giro, ya preguntó por ti. Allá los golpes pegan más fuerte y los plazos son más cortos."
                 : "Algunos rubros quedaron debajo de la línea. Puedes volver a dirigir la misma empresa con lo que ya sabes y probar otros caminos."}
@@ -56,7 +56,8 @@ export function Career() {
               {v.passed ? <><Trophy size={16} /> Aceptar el nuevo nombramiento <ArrowRight size={15} /></> : <><RotateCcw size={16} /> Volver a dirigir {pk.short}</>}
             </button>
           )}
-          {!c.seasonDone && <Link href="/ceo" className="mt-6 inline-flex items-center gap-2 rounded-xl bg-white/10 px-5 py-2.5 text-sm font-medium hover:bg-white/15">Seguir dirigiendo <ArrowRight size={15} /></Link>}
+          {!c.seasonDone && c.changeOpen && <Link href="/ceo/cambio" className="mt-6 mr-2 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-ink hover:bg-white/90">Ir al reto final <ArrowRight size={15} /></Link>}
+          {!c.seasonDone && !c.changeOpen && <Link href="/ceo" className="mt-6 inline-flex items-center gap-2 rounded-xl bg-white/10 px-5 py-2.5 text-sm font-medium hover:bg-white/15">Seguir dirigiendo <ArrowRight size={15} /></Link>}
         </div>
       </section>
 

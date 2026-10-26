@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import clsx from "clsx";
-import { ArrowRight, BookOpen, Clock, FastForward, Hourglass, Info, Trophy } from "lucide-react";
+import { ArrowRight, BookOpen, Clock, FastForward, Flag, Hourglass, Info, Lock, Trophy } from "lucide-react";
 import { KPI_KEYS } from "@/lib/ceo/engine";
 import { firstName, personOf } from "@/lib/ceo/cast";
 import { LESSONS } from "@/lib/ceo/lessons";
@@ -28,7 +28,7 @@ export function Today() {
           <div>
             <div className="text-xs text-white/60">{pk.emoji} {pk.name} · {pk.industry} · Día {c.day} de {pk.season.days}{c.s.tier > 0 ? ` · Exigencia ${c.rules.name}` : ""}</div>
             <h1 className="mt-2 text-2xl sm:text-3xl font-semibold leading-tight">
-              {c.seasonDone ? (v.passed ? `Aprobaste ${pk.short}, ${first}. Te espera otra empresa.` : `Cerraste la temporada en ${pk.short}, ${first}. El consejo pide otra vuelta.`) : c.pending.length ? `${hello}, ${first}. Tienes ${c.pending.length} ${c.pending.length === 1 ? "asunto" : "asuntos"} esperando tu decisión.` : `${hello}, ${first}. Todo al día.`}
+              {c.seasonDone ? (v.passed ? `Aprobaste ${pk.short}, ${first}. Te espera otra empresa.` : `Cerraste la temporada en ${pk.short}, ${first}. El consejo pide otra vuelta.`) : c.changeOpen ? `${first}, cerraste los asuntos. Falta el reto final: lograr que tu gente adopte el cambio.` : c.pending.length ? `${hello}, ${first}. Tienes ${c.pending.length} ${c.pending.length === 1 ? "asunto" : "asuntos"} esperando tu decisión.` : `${hello}, ${first}. Todo al día.`}
             </h1>
             {c.pending[0] && !c.seasonDone && (
               <Link href={`/ceo/caso/${c.pending[0].item.id}`} className="mt-5 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-ink hover:bg-white/90">Atender: {firstName(pk, c.pending[0].item.from)} <ArrowRight size={15} /></Link>
@@ -36,6 +36,7 @@ export function Today() {
             {!c.pending.length && c.nextArrival && !c.seasonDone && (
               <p className="mt-4 inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2 text-sm text-white/80"><Hourglass size={14} /> Tu siguiente asunto llega en {until(c.nextArrival, c.now)} ({clock(c.nextArrival)}).</p>
             )}
+            {c.changeOpen && !c.seasonDone && <Link href="/ceo/cambio" className="mt-5 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-ink hover:bg-white/90"><Flag size={15} /> {c.change ? "Seguir con el cambio" : "Arrancar el reto final"} <ArrowRight size={15} /></Link>}
             {c.seasonDone && <Link href="/ceo/carrera" className="mt-5 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-ink"><Trophy size={15} /> Ver el veredicto del consejo</Link>}
           </div>
           {/* racha */}
@@ -123,13 +124,15 @@ function ChangeCard() {
   const c = useCeo();
   const def = c.pack.change;
   const sim = c.change;
-  const label = !c.changeOpen ? `Se abre el día ${def.opensDay}` : !sim ? "Listo para arrancar" : sim.done ? (sim.ok ? "Logrado" : "Cerrado sin masa crítica") : `${sim.adopted}/${sim.total} adoptaron · ${sim.weeksLeft} semanas`;
+  const pr = c.cases;
+  const label = !c.changeOpen ? `Se abre al cerrar tus asuntos · ${pr.done}/${pr.total}` : !sim ? "Listo para arrancar" : sim.done ? (sim.ok ? "Logrado" : "Cerrado sin masa crítica") : `${sim.adopted}/${sim.total} adoptaron · ${sim.weeksLeft} semanas`;
+  const pct = !c.changeOpen ? pr.done / Math.max(1, pr.total) : sim ? sim.share : 0;
   return (
     <Link href="/ceo/cambio" className="block rounded-2xl bg-gradient-to-br from-[#141735] to-[#2B1F8A] p-5 text-white hover:-translate-y-0.5 transition-transform">
-      <div className="text-[11px] font-semibold uppercase tracking-wider text-white/60">Proyecto de cambio</div>
+      <div className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-white/60">{c.changeOpen ? <Flag size={11} /> : <Lock size={11} />} Reto final del nivel</div>
       <div className="mt-1 font-semibold leading-snug">{def.title}</div>
       <div className="mt-2 text-xs text-white/70">{label}</div>
-      {sim && <div className="mt-2 h-1.5 rounded-full bg-white/15"><div className="h-full rounded-full bg-gradient-to-r from-indigo-light to-white" style={{ width: `${Math.round(sim.share * 100)}%` }} /></div>}
+      <div className="mt-2 h-1.5 rounded-full bg-white/15"><div className="h-full rounded-full bg-gradient-to-r from-indigo-light to-white" style={{ width: `${Math.round(pct * 100)}%` }} /></div>
     </Link>
   );
 }
