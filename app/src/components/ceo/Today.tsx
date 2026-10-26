@@ -93,6 +93,7 @@ export function Today() {
         </section>
 
         <div className="space-y-5">
+          <ChangeCard />
           {nextLesson && (
             <Link href={`/ceo/academy/${nextLesson.id}`} className="card p-5 flex gap-4 items-start hover:-translate-y-0.5 transition-transform">
               <span className="h-11 w-11 rounded-2xl bg-indigo-soft text-indigo grid place-items-center shrink-0"><BookOpen size={20} /></span>
@@ -115,5 +116,20 @@ export function Today() {
         </div>
       </div>
     </div>
+  );
+}
+
+function ChangeCard() {
+  const c = useCeo();
+  const def = c.pack.change;
+  const sim = c.change;
+  const label = !c.changeOpen ? `Se abre el día ${def.opensDay}` : !sim ? "Listo para arrancar" : sim.done ? (sim.ok ? "Logrado" : "Cerrado sin masa crítica") : `${sim.adopted}/${sim.total} adoptaron · ${sim.weeksLeft} semanas`;
+  return (
+    <Link href="/ceo/cambio" className="block rounded-2xl bg-gradient-to-br from-[#141735] to-[#2B1F8A] p-5 text-white hover:-translate-y-0.5 transition-transform">
+      <div className="text-[11px] font-semibold uppercase tracking-wider text-white/60">Proyecto de cambio</div>
+      <div className="mt-1 font-semibold leading-snug">{def.title}</div>
+      <div className="mt-2 text-xs text-white/70">{label}</div>
+      {sim && <div className="mt-2 h-1.5 rounded-full bg-white/15"><div className="h-full rounded-full bg-gradient-to-r from-indigo-light to-white" style={{ width: `${Math.round(sim.share * 100)}%` }} /></div>}
+    </Link>
   );
 }

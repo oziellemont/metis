@@ -68,5 +68,23 @@ export const CUMBRE: CompanyPack = {
     { term: "Covenant", def: "Condición del crédito (por ejemplo, deuda/EBITDA menor a 3×). Si la rompes, el banco manda." },
     { term: "MEGA", def: "La meta grande de la empresa de la que se desprenden los objetivos de cada área." },
   ],
+  change: {
+    title: "Cumbre Una: un solo tablero para toda la empresa",
+    what: "Pasar de que cada área persiga su propio bono a que todos trabajen con una meta común y un scorecard por persona conectado a ella.",
+    why: "Todos ganaron bono en 2026 y la empresa perdió 1.2 puntos de margen. El consejo te pide que en 24 semanas la mayoría del comité y de los líderes clave trabaje así. Si no, se pierde otro año.",
+    opensDay: 3,
+    stakeholders: [
+      { id: "ramiro", start: 22, likes: ["entrevista", "ejemplo"], dislikes: ["incentivos"], leader: true, secret: "«No me molesta el tablero. Me molesta enterarme por otros. Si me lo explicas tú primero y en persona, lo defiendo en el consejo.»" },
+      { id: "carla", start: 34, likes: ["avance", "piloto"], secret: "«Te apoyo, pero necesito ver números a las 8 semanas. Si no hay avance visible, el consejo se te voltea.»" },
+      { id: "lucia", start: 38, likes: ["coalicion", "avance"], secret: "«Llevo dos años pidiendo esto. Ponme a cargo del tablero y lo saco.»" },
+      { id: "hector", start: 14, likes: ["entrevista", "reconocer"], dislikes: ["townhall"], leader: true, secret: "«Mis vendedores viven de la comisión. Si me cambias el bono sin que yo lo diseñe, se van. Si me dejas diseñarlo, te lo vendo yo.»" },
+      { id: "mariana", start: 30, likes: ["capacitacion", "incentivos"], secret: "«Los líderes no saben dar retroalimentación. Si no los capacitamos, el scorecard va a ser un Excel más.»" },
+      { id: "javier", start: 24, likes: ["piloto", "capacitacion"], secret: "«En planta nadie cree en las juntas. Pruébalo en la línea 2 y si funciona, la planta te sigue.»" },
+      { id: "diego", start: 28, likes: ["piloto", "reconocer"], secret: "«Si mi línea premium es el piloto, me echo el proyecto al hombro. Pero que mi papá vea que fue mérito mío.»" },
+      { id: "ana", start: 36, likes: ["capacitacion", "reconocer"], secret: "«Puedo armar los tableros de todos, pero nadie me escucha porque soy analista.»" },
+      { id: "roberto", start: 12, likes: ["entrevista", "townhall"], dislikes: ["coalicion"], secret: "«Cada vez que la empresa \"alinea\", alguien pierde su chamba. Si me explicas que no es un recorte, no te lo bloqueo.»" },
+      { id: "paty", start: 40, likes: ["ejemplo"], secret: "«La gente me pregunta a mí qué está pasando. Si yo lo entiendo, el chisme trabaja a tu favor.»" },
+    ],
+  },
   items: ITEMS,
 };

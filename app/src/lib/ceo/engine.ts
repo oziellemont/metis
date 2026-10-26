@@ -4,6 +4,7 @@
  */
 import type { Axis, CareerRun, CeoState, CompanyPack, Decision, Entry, Item, KpiKey, Kpis, Option, Settings } from "./types";
 import { COMPANIES, FIRST_COMPANY, companyById } from "./companies";
+import { changeEffect, simulate, type ChangeSim } from "./change";
 
 export const H = 3_600_000;
 export const DAY = 24 * H;
@@ -171,11 +172,38 @@ export function effectOf(s: CeoState, e: Entry): Partial<Kpis> {
 }
 export function kpis(s: CeoState, now = nowOf(s)): Kpis {
   const k = { ...packOf(s).kpiStart };
-  for (const e of entries(s, now)) {
+  const es = entries(s, now);
+  for (const e of es) {
     const eff = effectOf(s, e);
     for (const key of Object.keys(eff) as KpiKey[]) k[key] = clamp(k[key] + (eff[key] ?? 0));
   }
+  const ce = changeKpiEffect(s, now, es);
+  for (const key of Object.keys(ce) as KpiKey[]) k[key] = clamp(k[key] + (ce[key] ?? 0));
   return k;
+}
+
+// ───────────────────────────── proyecto de cambio
+/** ¿Ya se abrió el proyecto de cambio de esta empresa? */
+export function changeOpen(s: CeoState, now = nowOf(s)): boolean {
+  return !!s.startedAt && seasonDay(s, now) >= packOf(s).change.opensDay;
+}
+/** Simulación del proyecto de la empresa actual (null si no ha arrancado). */
+export function changeSimOf(s: CeoState): ChangeSim | null {
+  if (!s.change || s.change.company !== s.company) return null;
+  const pack = packOf(s);
+  return simulate(pack.change, pack, s.change);
+}
+function baseDone(s: CeoState, es: Entry[]): boolean {
+  const done = new Set(es.filter((e) => e.status === "decidido" || e.status === "vencido").map((e) => e.item.id));
+  return packOf(s).items.filter((i) => !i.trigger).every((i) => done.has(i.id));
+}
+/** Lo que el proyecto suma a los indicadores: al cerrarlo, o al terminar la temporada (si no lo hiciste, cuenta como no logrado). */
+export function changeKpiEffect(s: CeoState, now = nowOf(s), es = entries(s, now)): Partial<Kpis> {
+  if (!s.startedAt) return {};
+  const sim = changeSimOf(s);
+  if (sim?.done) return scaled(changeEffect(sim), s.tier);
+  if (baseDone(s, es)) return scaled(changeEffect(sim ?? { share: 0, ok: false }), s.tier);
+  return {};
 }
 export const healthOf = (k: Kpis) => Math.round((k.caja + k.margen + k.equipo + k.clientes + k.consejo) / 5);
 
@@ -390,10 +418,11 @@ function closeRun(s: CeoState, now: number): CareerRun {
   return {
     company: s.company, tier: s.tier, startedAt: s.startedAt ?? now, endedAt: now, kpis: v.kpis, health: v.health,
     answered: Math.round(v.answered * 100), passed: v.passed, xp: runXp(s, now), decisions: s.decisions as Record<string, Decision>,
+    change: (() => { const sim = changeSimOf(s); return { adopted: sim?.adopted ?? 0, weeks: sim?.weeksUsed ?? 0, ok: !!sim?.ok }; })(),
   };
 }
 const fresh = (s: CeoState, company: string, tier: number, now: number, legendary?: boolean): CeoState => ({
-  ...s, company, tier, legendary: legendary ?? s.legendary, startedAt: now, decisions: {}, pinned: {}, read: {}, lastActiveAt: now, savedAt: now,
+  ...s, company, tier, legendary: legendary ?? s.legendary, startedAt: now, decisions: {}, pinned: {}, read: {}, change: undefined, lastActiveAt: now, savedAt: now,
 });
 
 /** Cierra la empresa actual y pasa a la siguiente (si aprobaste) o la repite (si no). */
