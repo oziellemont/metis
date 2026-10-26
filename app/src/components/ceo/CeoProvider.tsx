@@ -115,7 +115,14 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
         decisions: Object.keys(s.decisions).length, email: s.settings.email || user.email, phone: s.settings.phone,
         notify_email: s.settings.notifyEmail, notify_whatsapp: s.settings.notifyWhatsapp, tz: s.settings.tz,
         updated_at: new Date().toISOString(),
-      }).then(({ error }) => { if (!error) setSynced(true); });
+      }).then(({ error }) => {
+        if (error) return;
+        setSynced(true);
+        // Primera vez con cuenta: carta de bienvenida por correo (el servidor evita duplicados).
+        const wk = `${KEY}:welcome:${user.id}`;
+        try { if (localStorage.getItem(wk)) return; localStorage.setItem(wk, "1"); } catch { return; }
+        fetch("/api/ceo/bienvenida", { method: "POST" }).catch(() => { /* el cron la manda de respaldo */ });
+      });
     }, 1200);
   }, [s, ready, user]);
 

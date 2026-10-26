@@ -13,7 +13,21 @@ INK, INDIGO, SLATE, MUTED, CANVAS = "#171A3A", "#4F3FE0", "#475569", "#94A3B8", 
 FONT = "Poppins,'Segoe UI',Helvetica,Arial,sans-serif"
 
 
-def layout(preheader: str, title: str, body: str, button: str | None, url: str | None, note: str) -> str:
+CEO_SITE = "https://metisalign.app"
+# Desde dónde pide el enlace la app de mêtis CEO (ver CeoSettings → emailRedirectTo).
+CEO_REDIRECTS = [
+    "https://metisalign.app/auth/callback?next=/ceo",
+    "https://www.metisalign.app/auth/callback?next=/ceo",
+    "https://www.metisalign.mx/auth/callback?next=/ceo",
+    "https://metisalign.mx/auth/callback?next=/ceo",
+]
+CEO_IF = "{{ if eq .RedirectTo " + " ".join(f'"{u}"' for u in CEO_REDIRECTS) + " }}"
+CEO_FOOTER = (f'<strong style="color:{SLATE}">mêtis CEO</strong> · Entrena como CEO dirigiendo una empresa simulada<br>'
+              f'<a href="{CEO_SITE}" style="color:{MUTED};text-decoration:underline">metisalign.app</a> · '
+              f'<a href="mailto:{CONTACT}" style="color:{MUTED};text-decoration:underline">{CONTACT}</a>')
+
+
+def layout(preheader: str, title: str, body: str, button: str | None, url: str | None, note: str, ceo: bool = False) -> str:
     btn = ""
     fallback = ""
     if button and url:
@@ -30,6 +44,12 @@ def layout(preheader: str, title: str, body: str, button: str | None, url: str |
                 ¿El botón no funciona? Copia y pega este enlace en tu navegador:<br>
                 <a href="{url}" style="color:{INDIGO};word-break:break-all;text-decoration:underline">{url}</a>
               </td></tr>"""
+    site = CEO_SITE if ceo else SITE
+    logo = (f'<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td valign="middle"><a href="{site}" target="_blank"><img src="{LOGO}" width="120" height="35" alt="mêtis" style="display:block;border:0;width:120px;height:35px"></a></td>'
+            + (f'<td valign="middle" style="padding-left:8px"><span style="display:inline-block;padding:4px 9px;border-radius:999px;background:{INK};color:#ffffff;font-family:{FONT};font-size:11px;font-weight:700;letter-spacing:1.5px">CEO</span></td>' if ceo else "")
+            + "</tr></table>")
+    footer = CEO_FOOTER if ceo else (f'<strong style="color:{SLATE}">mêtis</strong> · Alineación estratégica · Monterrey, México<br>'
+                                     f'<a href="{SITE}" style="color:{MUTED};text-decoration:underline">metisalign.mx</a> · <a href="mailto:{CONTACT}" style="color:{MUTED};text-decoration:underline">{CONTACT}</a>')
     return f"""<!DOCTYPE html>
 <html lang="es">
 <head>
@@ -44,7 +64,7 @@ def layout(preheader: str, title: str, body: str, button: str | None, url: str |
     <tr><td align="center" style="padding:32px 16px">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:560px">
         <tr><td style="padding:0 4px 18px">
-          <a href="{SITE}" target="_blank"><img src="{LOGO}" width="120" height="35" alt="mêtis" style="display:block;border:0;width:120px;height:35px"></a>
+          {logo}
         </td></tr>
         <tr><td bgcolor="#ffffff" style="border-radius:20px;border:1px solid #E8EAF4;overflow:hidden">
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -61,8 +81,7 @@ def layout(preheader: str, title: str, body: str, button: str | None, url: str |
           {note}
         </td></tr>
         <tr><td style="padding:14px 8px 0;font-family:{FONT};font-size:12px;line-height:18px;color:{MUTED}">
-          <strong style="color:{SLATE}">mêtis</strong> · Alineación estratégica · Monterrey, México<br>
-          <a href="{SITE}" style="color:{MUTED};text-decoration:underline">metisalign.mx</a> · <a href="mailto:{CONTACT}" style="color:{MUTED};text-decoration:underline">{CONTACT}</a>
+          {footer}
         </td></tr>
       </table>
     </td></tr>
@@ -145,18 +164,55 @@ TEMPLATES = [
 ]
 
 
+# Versión mêtis CEO de las plantillas que usa metisalign.app (registro y enlace de acceso).
+# Supabase manda UNA plantilla por tipo; el archivo final lleva las dos y elige con {{ if }} según desde dónde se pidió.
+B = 'style="color:#171A3A"'
+CEO = {
+    "1-confirmar-registro.html": {
+        "preheader": "Un clic y empiezas tu primer día como Director General.",
+        "title": "Confirma tu correo y toma la silla",
+        "body": f"Estás a un clic de dirigir <strong {B}>Botanas Cumbre</strong> en <strong {B}>mêtis CEO</strong>. Confirma que <strong {B}>{{{{ .Email }}}}</strong> es tu correo: ahí te escribirá tu equipo cada día y ahí te llegarán tus recordatorios. Tu avance queda guardado y entra al ranking.",
+        "button": "Confirmar y entrar a mi oficina",
+        "note": "Este enlace vence en 24 horas. " + SAFE,
+    },
+    "3-enlace-de-acceso.html": {
+        "preheader": "Tu equipo te espera. Entra con un clic, sin contraseña.",
+        "title": "Tu oficina te espera",
+        "body": f"Recibimos una solicitud para entrar a <strong {B}>mêtis CEO</strong> con <strong {B}>{{{{ .Email }}}}</strong>. Da clic en el botón y vuelves a tu oficina de Botanas Cumbre con todo tu avance, sin contraseña.",
+        "button": "Entrar a mi oficina",
+        "note": "Por seguridad, este enlace sirve una sola vez y vence en 1 hora. " + SAFE,
+    },
+}
+
+
+def build(t: dict) -> str:
+    html = layout(t["preheader"], t["title"], t["body"], t["button"], t["url"], t["note"])
+    c = CEO.get(t["file"])
+    if not c:
+        return html
+    ceo = layout(c["preheader"], c["title"], c["body"], c["button"], t["url"], c["note"], ceo=True)
+    return CEO_IF + "\n" + ceo + "{{ else }}\n" + html + "{{ end }}\n"
+
+
+def demo(html: str) -> str:
+    return (html.replace("{{ .ConfirmationURL }}", SITE + "/auth/confirm?token=ejemplo")
+                .replace("{{ .Email }}", "oziel@empresa.mx").replace("{{ .NewEmail }}", "oziel.nuevo@empresa.mx")
+                .replace("{{ .Token }}", "482913"))
+
+
 def main() -> None:
     out = Path(__file__).parent
     previews = []
     for t in TEMPLATES:
-        html = layout(t["preheader"], t["title"], t["body"], t["button"], t["url"], t["note"])
-        (out / t["file"]).write_text(html, encoding="utf-8")
-        demo = (html.replace("{{ .ConfirmationURL }}", SITE + "/auth/confirm?token=ejemplo")
-                    .replace("{{ .Email }}", "oziel@empresa.mx").replace("{{ .NewEmail }}", "oziel.nuevo@empresa.mx")
-                    .replace("{{ .Token }}", "482913"))
-        srcdoc = demo.replace("&", "&amp;").replace('"', "&quot;")
-        previews.append(f'<section><h2>{t["supabase"]}</h2><p><b>Asunto:</b> {t["subject"]} &nbsp;·&nbsp; <b>Archivo:</b> {t["file"]}</p>'
-                        f'<iframe srcdoc="{srcdoc}"></iframe></section>')
+        (out / t["file"]).write_text(build(t), encoding="utf-8")
+        variants = [(" · versión mêtis" if t["file"] in CEO else "", layout(t["preheader"], t["title"], t["body"], t["button"], t["url"], t["note"]))]
+        if t["file"] in CEO:
+            c = CEO[t["file"]]
+            variants.insert(0, (" · versión mêtis CEO (metisalign.app)", layout(c["preheader"], c["title"], c["body"], c["button"], t["url"], c["note"], ceo=True)))
+        for label, html in variants:
+            srcdoc = demo(html).replace(chr(38), chr(38) + "amp;").replace(chr(34), chr(38) + "quot;")
+            previews.append(f'<section><h2>{t["supabase"]}{label}</h2><p><b>Asunto:</b> {t["subject"]} &nbsp;·&nbsp; <b>Archivo:</b> {t["file"]}</p>'
+                            f'<iframe srcdoc="{srcdoc}"></iframe></section>')
     (out / "vista-previa.html").write_text(
         "<!DOCTYPE html><html lang='es'><meta charset='utf-8'><title>mêtis · correos</title>"
         "<style>body{font-family:Arial,sans-serif;background:#e9ebf3;margin:0;padding:24px;color:#171A3A}"
@@ -168,7 +224,8 @@ def main() -> None:
     # Guía de asuntos para copiar
     lines = ["# Asuntos para Supabase → Authentication → Emails\n"]
     for t in TEMPLATES:
-        lines.append(f"- **{t['supabase']}** → archivo `{t['file']}` · asunto: `{t['subject']}`")
+        extra = " · trae versión mêtis y versión mêtis CEO (elige sola)" if t["file"] in CEO else ""
+        lines.append(f"- **{t['supabase']}** → archivo `{t['file']}` · asunto: `{t['subject']}`{extra}")
     (out / "ASUNTOS.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
