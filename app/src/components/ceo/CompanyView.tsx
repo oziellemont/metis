@@ -44,7 +44,7 @@ export function CompanyView() {
       <section className="card p-5 sm:p-6">
         <div className="flex items-center gap-2"><Network size={17} className="text-indigo" /><h2 className="font-semibold text-ink">Mapa de la organización</h2></div>
         <p className="mt-1 text-sm text-slate-500">Quién le reporta a quién, quiénes se apoyan y dónde hay fricción. En un caso, las decisiones casi nunca afectan a una sola persona.</p>
-        <div className="mt-4"><OrgMap pack={pk} /></div>
+        <div className="mt-4"><OrgMap pack={pk} relations={c.relations} /></div>
       </section>
 
       <section className="card p-5 sm:p-6">

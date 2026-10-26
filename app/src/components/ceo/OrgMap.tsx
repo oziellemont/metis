@@ -45,7 +45,7 @@ const TIE_STYLE: Record<Tie["kind"], { stroke: string; dash?: string; label: str
   influye: { stroke: "#171A3A", dash: "2 4", label: "Influye en" },
 };
 
-export function OrgMap({ pack, highlight, compact }: { pack: CompanyPack; highlight?: CastId[]; compact?: boolean }) {
+export function OrgMap({ pack, highlight, compact, relations }: { pack: CompanyPack; highlight?: CastId[]; compact?: boolean; relations?: Record<CastId, number> }) {
   const pos = useMemo(() => layout(pack), [pack]);
   const [sel, setSel] = useState<CastId | null>(null);
   const hl = new Set(highlight ?? []);
@@ -107,6 +107,7 @@ export function OrgMap({ pack, highlight, compact }: { pack: CompanyPack; highli
             return (
               <g key={p.id} onClick={() => setSel((s) => (s === p.id ? null : p.id))} className="cursor-pointer" opacity={dim(p.id) ? 0.3 : 1}>
                 {(isHl || sel === p.id) && <circle cx={at.x} cy={at.y} r={R + 6} fill="none" stroke="#4F3FE0" strokeWidth={2.5} className={isHl && !sel ? "ceo-ring" : undefined} />}
+                {relations && <circle cx={at.x} cy={at.y} r={R + 2.5} fill="none" stroke={(relations[p.id] ?? 50) >= 60 ? "#4F3FE0" : (relations[p.id] ?? 50) <= 40 ? "#F2545B" : "#CBD5E1"} strokeWidth={2.5} strokeDasharray={(relations[p.id] ?? 50) <= 40 ? "3 3" : undefined} />}
                 <circle cx={at.x} cy={at.y} r={R} fill={avatarHex(pack, p.id)} />
                 <text x={at.x} y={at.y + 4.5} textAnchor="middle" fontSize="12.5" fontWeight={600} fill="#fff">{p.initials}</text>
                 <text x={at.x} y={at.y + R + 15} textAnchor="middle" fontSize="11.5" fontWeight={600} fill="#171A3A">{firstName(pack, p.id)}</text>
@@ -123,6 +124,8 @@ export function OrgMap({ pack, highlight, compact }: { pack: CompanyPack; highli
             <svg width="22" height="6"><line x1="0" y1="3" x2="22" y2="3" stroke={TIE_STYLE[k].stroke} strokeWidth="2" strokeDasharray={TIE_STYLE[k].dash} /></svg>{TIE_STYLE[k].label}
           </span>
         ))}
+        {relations && <span className="inline-flex items-center gap-1.5"><svg width="12" height="12"><circle cx="6" cy="6" r="4.5" fill="none" stroke="#4F3FE0" strokeWidth="2" /></svg>Confía en ti</span>}
+        {relations && <span className="inline-flex items-center gap-1.5"><svg width="12" height="12"><circle cx="6" cy="6" r="4.5" fill="none" stroke="#F2545B" strokeWidth="2" strokeDasharray="2 2" /></svg>Relación fría</span>}
         <span className="text-slate-400">· Toca a una persona para ver qué le importa.</span>
       </div>
 
@@ -133,6 +136,7 @@ export function OrgMap({ pack, highlight, compact }: { pack: CompanyPack; highli
             <div className="min-w-0"><div className="text-sm font-semibold text-ink">{selP.name}</div><div className="text-xs text-slate-500">{selP.role}</div></div>
           </div>
           {selP.cares && <p className="mt-3 text-sm text-ink"><b className="text-indigo">Le importa:</b> {selP.cares}</p>}
+          {relations && <p className="mt-1 text-xs text-slate-500">Tu relación con {firstName(pack, selP.id)}: <b className="text-ink tabular-nums">{relations[selP.id] ?? 50}/100</b></p>}
           {selTies.length > 0 && (
             <ul className="mt-2 space-y-1">
               {selTies.map((t, i) => {

@@ -27,6 +27,8 @@ export interface Option {
   style: Partial<Record<Axis, number>>;
   /** Qué tan alineada está con los principios del libro (0–3). Sólo se traduce en XP, nunca en «correcto». */
   score: 0 | 1 | 2 | 3;
+  /** Cómo le cae a cada persona del caso (−2 … +2). Se propaga por el mapa: aliados, rivales e influidos. */
+  stance?: Record<CastId, number>;
 }
 
 export interface DataBlock { title: string; rows: [string, string][]; note?: string }
@@ -92,6 +94,48 @@ export interface CareerRun {
   xp: number;
   decisions: Record<string, Decision>;
   lessons?: string[];
+  /** Resultado del proyecto de cambio de esa empresa. */
+  change?: { adopted: number; weeks: number; ok: boolean };
+}
+
+// ───────────────────────────── proyecto de cambio
+/** Palancas de cambio (De CERO a CEO, Parte IX). */
+export type LeverId = "ejemplo" | "entrevista" | "townhall" | "capacitacion" | "piloto" | "avance" | "coalicion" | "reconocer" | "incentivos";
+
+export interface ChangeMove { lever: LeverId; targets: CastId[]; at: number }
+
+export interface ChangeState {
+  company: string;
+  /** Relación con cada persona al arrancar (congelada: lo que hiciste antes ya cuenta). */
+  rel0: Record<CastId, number>;
+  moves: ChangeMove[];
+  /** Semanas disponibles (dependen de la exigencia). */
+  weeks?: number;
+  closedAt?: number;
+}
+
+export interface Stakeholder {
+  id: CastId;
+  /** Disposición inicial (0–40). */
+  start: number;
+  /** Palancas que le mueven más / que le caen mal (se descubren con una entrevista). */
+  likes: LeverId[];
+  dislikes?: LeverId[];
+  /** Lo que confiesa en la entrevista. */
+  secret: string;
+  /** Formador de opinión: lo que haga arrastra a otros. */
+  leader?: boolean;
+}
+
+export interface ChangeDef {
+  title: string;
+  /** En una línea: qué cambia. */
+  what: string;
+  /** Por qué el consejo lo pidió. */
+  why: string;
+  /** Día de la temporada en que se abre. */
+  opensDay: number;
+  stakeholders: Stakeholder[];
 }
 
 export interface CeoState {
@@ -114,6 +158,8 @@ export interface CeoState {
   read: Record<string, number>;
   lessons: Record<string, number>;
   lastActiveAt: number;
+  /** Proyecto de cambio de la empresa actual. */
+  change?: ChangeState;
   /** Adelanto de reloj del modo prueba (ms). */
   clockOffset: number;
   savedAt: number;
@@ -181,4 +227,6 @@ export interface CompanyPack {
   welcome: string;
   glossary: { term: string; def: string }[];
   items: Item[];
+  /** Proyecto de cambio de la temporada (inspirado en simuladores de gestión del cambio). */
+  change: ChangeDef;
 }

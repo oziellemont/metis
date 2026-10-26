@@ -7,7 +7,10 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { advance as advanceFn, decide as decideFn, entries as entriesFn, healthOf, kpis as kpisFn, levelOf, migrate, newState, nowOf, packOf, pinArrived, rulesOf, seasonDay, seasonDoneOf, skipToNext, streakOf, switchCompany as switchFn, verdictOf, xpOf, type Verdict } from "@/lib/ceo/engine";
-import type { CeoState, CompanyPack, Entry, Kpis, Settings } from "@/lib/ceo/types";
+import { changeOpen, changeSimOf } from "@/lib/ceo/engine";
+import { closeChange as closeChangeFn, playLever as playLeverFn, relationsOf, startChange as startChangeFn } from "@/lib/ceo/relations";
+import type { ChangeSim } from "@/lib/ceo/change";
+import type { CastId, CeoState, CompanyPack, Entry, Kpis, LeverId, Settings } from "@/lib/ceo/types";
 
 const KEY = "metis-ceo-v1";
 
@@ -31,6 +34,14 @@ interface Ctx {
   day: number;
   seasonDone: boolean;
   nextArrival: number | null;
+  /** Relación con cada persona (0–100), según tus decisiones. */
+  relations: Record<CastId, number>;
+  /** Proyecto de cambio. */
+  changeOpen: boolean;
+  change: ChangeSim | null;
+  startChange: () => void;
+  playLever: (lever: LeverId, targets: CastId[]) => void;
+  closeChange: () => void;
   user: { id: string; email: string } | null;
   synced: boolean;
   toast: Toast | null;
@@ -160,6 +171,8 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
   const seasonDone = useMemo(() => seasonDoneOf(s, now), [s, now]);
   const verdict = useMemo(() => verdictOf(s, now), [s, now]);
   const pack = packOf(s);
+  const relations = useMemo(() => relationsOf(s, now), [s, now]);
+  const change = useMemo(() => changeSimOf(s), [s]);
   const nextArrival = entries.find((e) => e.status === "futuro")?.arrivesAt ?? null;
 
   const start: Ctx["start"] = useCallback(({ name, email, phone, company, settings }) => {
@@ -177,10 +190,14 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
   const skipNext = useCallback(() => { setS((p) => ({ ...skipToNext(p), savedAt: Date.now() })); setTick(Date.now()); }, []);
   const advance = useCallback(() => { setS((p) => { const n = advanceFn(p, nowOf(p)); return n === p ? p : { ...n, savedAt: Date.now() }; }); seen.current = null; setTick(Date.now()); }, []);
   const switchCompany = useCallback((id: string) => { setS((p) => { const n = switchFn(p, id, nowOf(p)); return n === p ? p : { ...n, savedAt: Date.now() }; }); seen.current = null; }, []);
+  const startChange = useCallback(() => setS((p) => { const n = startChangeFn(p, nowOf(p)); return n === p ? p : { ...n, savedAt: Date.now() }; }), []);
+  const playLever = useCallback((lever: LeverId, targets: CastId[]) => setS((p) => { const n = playLeverFn(p, lever, targets, nowOf(p)); return n === p ? p : { ...n, savedAt: Date.now() }; }), []);
+  const closeChange = useCallback(() => setS((p) => { const n = closeChangeFn(p, nowOf(p)); return n === p ? p : { ...n, savedAt: Date.now() }; }), []);
   const reset = useCallback(() => { localStorage.removeItem(KEY); seen.current = null; setS(newState()); }, []);
 
   const value: Ctx = {
     ready, s, now, pack, rules: rulesOf(s.tier), verdict, entries, inbox, pending, kpis: k, health: healthOf(k), xp, level: levelOf(xp), streak, day: seasonDay(s, now), seasonDone, nextArrival,
+    relations, changeOpen: changeOpen(s, now), change, startChange, playLever, closeChange,
     user, synced, toast, dismissToast: () => setToast(null), start, advance, switchCompany, decide, markRead, completeLesson, updateSettings, skipNext, reset,
   };
   return <C.Provider value={value}>{children}</C.Provider>;

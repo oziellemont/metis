@@ -3,7 +3,36 @@ import { LESSONS } from "./lessons";
 import { COMPANIES } from "./companies";
 import { CUMBRE } from "./companies/cumbre";
 import { DAY, H, KPI_KEYS, advance, arrivalOf, decide, dominates, entries, kpis, levelOf, localMidnight, migrate, newState, nextCompanyOf, pinArrived, profileOf, rulesOf, scaled, seasonDoneOf, skipToNext, streakOf, verdictOf, xpOf, KPI_START } from "./engine";
-import type { CeoState } from "./types";
+import type { CeoState, ChangeMove, CompanyPack, LeverId } from "./types";
+import { LEVERS, canUse, leverById, simulate } from "./change";
+import { entryRipples, playLever, relationsOf, ripplesOf, startChange } from "./relations";
+import { changeKpiEffect, changeOpen } from "./engine";
+
+/** Jugador estratégico: en cada paso elige la palanca que más acerca a la meta por semana usada. */
+function greedyPlan(pack: CompanyPack, rel0: Record<string, number>): ChangeMove[] {
+  const ids = pack.change.stakeholders.map((x) => x.id);
+  const cands: ChangeMove[] = [];
+  for (const l of LEVERS) {
+    if (l.targets === 0) cands.push({ lever: l.id, targets: [], at: 0 });
+    else if (l.targets === 1) ids.forEach((i) => cands.push({ lever: l.id, targets: [i], at: 0 }));
+    else for (let a = 0; a < ids.length; a++) for (let b = a + 1; b < ids.length; b++) {
+      if (l.targets === 2) cands.push({ lever: l.id, targets: [ids[a], ids[b]], at: 0 });
+      else for (let c = b + 1; c < ids.length; c++) cands.push({ lever: l.id, targets: [ids[a], ids[b], ids[c]], at: 0 });
+    }
+  }
+  const score = (m: ChangeMove[]) => { const r = simulate(pack.change, pack, { rel0, moves: m }); return r.adopted * 100 + Object.values(r.values).reduce((x, y) => x + y, 0) / 10 + r.credibility / 5; };
+  const moves: ChangeMove[] = [];
+  for (;;) {
+    const sim = simulate(pack.change, pack, { rel0, moves });
+    if (sim.done) break;
+    let best: ChangeMove | null = null, bs = -Infinity;
+    const base = score(moves);
+    for (const c of cands) { if (!canUse(sim, c.lever, c.targets)) continue; const v = (score([...moves, c]) - base) / leverById(c.lever).weeks; if (v > bs) { bs = v; best = c; } }
+    if (!best) break;
+    moves.push(best);
+  }
+  return moves;
+}
 
 const T0 = Date.UTC(2026, 9, 5, 15, 0, 0); // 5-oct-2026 09:00 en Monterrey (UTC−6)
 const started = (over: Partial<CeoState> = {}): CeoState => ({ ...newState(), name: "Oziel", alias: "oziel", startedAt: T0, ...over });
@@ -50,6 +79,43 @@ describe.each(COMPANIES.map((c) => [c.name, c] as const))("contenido · %s", (_n
       if (!(v.some((x) => (x ?? 0) > 0) && v.some((x) => (x ?? 0) < 0))) bad.push(`${it.id}/${o.id}`);
     }
     expect(bad).toEqual([]);
+  });
+  it("cada decisión afecta a personas del caso: toda opción mueve a alguien y las opciones no mueven igual", () => {
+    const bad: string[] = [];
+    for (const it of pack.items) {
+      const inCase = new Set([it.from, ...(it.involves ?? []), ...(it.lines ?? []).map((l) => l.who)]);
+      for (const o of it.options) {
+        const st = o.stance ?? {};
+        if (!Object.keys(st).length) bad.push(`${it.id}/${o.id} sin postura`);
+        for (const [id, v] of Object.entries(st)) {
+          if (!pack.cast[id]) bad.push(`${it.id}/${o.id}: ${id} no existe`);
+          if (Math.abs(v) > 2) bad.push(`${it.id}/${o.id}: ${id}=${v}`);
+          if (!inCase.has(id)) bad.push(`${it.id}/${o.id}: ${id} no está en el caso`);
+        }
+      }
+      const sig = it.options.map((o) => JSON.stringify(Object.entries(o.stance ?? {}).sort()));
+      if (new Set(sig).size !== sig.length) bad.push(`${it.id}: dos opciones mueven igual a la gente`);
+    }
+    expect(bad).toEqual([]);
+  });
+  it("proyecto de cambio: personas del elenco, palancas válidas, al menos un formador de opinión", () => {
+    const ch = pack.change;
+    expect(ch.stakeholders.length).toBeGreaterThanOrEqual(8);
+    expect(ch.stakeholders.some((x) => x.leader)).toBe(true);
+    for (const st of ch.stakeholders) {
+      expect(pack.cast[st.id], st.id).toBeTruthy();
+      for (const l of [...st.likes, ...(st.dislikes ?? [])]) expect(LEVERS.some((x) => x.id === l), `${st.id}:${l}`).toBe(true);
+    }
+  });
+  it("proyecto de cambio: quien escucha y usa la red lo logra; quien solo da discursos, no", () => {
+    const rel0 = {};
+    const smart = greedyPlan(pack, rel0);
+    expect(simulate(pack.change, pack, { rel0, moves: smart }).ok).toBe(true);
+    const speeches = (["townhall", "ejemplo", "townhall", "incentivos", "townhall", "incentivos", "avance", "townhall", "avance", "incentivos"] as LeverId[]).map((lever) => ({ lever, targets: [], at: 0 }));
+    expect(simulate(pack.change, pack, { rel0, moves: speeches }).ok).toBe(false);
+    // con las relaciones rotas, el mismo plan ya no alcanza
+    const cold = Object.fromEntries(pack.change.stakeholders.map((x) => [x.id, 30]));
+    expect(simulate(pack.change, pack, { rel0: cold, moves: smart }).adopted).toBeLessThan(simulate(pack.change, pack, { rel0, moves: smart }).adopted);
   });
   it("una temporada se siente como días reales de CEO: 2–3 decisiones base por día", () => {
     for (let d = 1; d <= pack.season.days; d++) {
@@ -217,5 +283,49 @@ describe("carrera multiempresa", () => {
     const all = { ...s, career: COMPANIES.filter((c) => c.id !== "brasa").map((c) => ({ ...s.career[0], company: c.id })) };
     expect(nextCompanyOf(all).legendary).toBe(true);
     expect(KPI_KEYS.length).toBe(5);
+  });
+});
+
+describe("relaciones y proyecto de cambio", () => {
+  it("una decisión se propaga por el mapa: aliados, rivales e influidos", () => {
+    // En Cumbre, Lucía y Héctor están en tensión; Lucía y Carla son aliadas.
+    const r = ripplesOf(CUMBRE, { lucia: 2 });
+    const by = Object.fromEntries(r.map((x) => [x.id, x]));
+    expect(by.lucia.delta).toBeGreaterThan(0);
+    expect(by.carla.delta).toBeGreaterThan(0);
+    expect(by.carla.kind).toBe("alianza");
+    expect(by.hector.delta).toBeLessThan(0);
+    expect(by.hector.kind).toBe("tension");
+  });
+  it("dejar vencer un asunto enfría la relación con quien te escribió", () => {
+    const it = CUMBRE.items[1];
+    const r = entryRipples(CUMBRE, { status: "vencido", item: it });
+    expect(r.find((x) => x.id === it.from)!.delta).toBeLessThan(0);
+  });
+  it("tus decisiones cambian tus relaciones y con ellas el arranque del proyecto", () => {
+    let s = started();
+    const hector = CUMBRE.items.find((i) => i.id === "d1-hector")!;
+    const t = arrivalOf(s, hector) + 60_000;
+    const good = decide(s, "d1-hector", "a", t);
+    const bad = decide(s, "d1-hector", "c", t);
+    expect(relationsOf(good, t).hector).toBeGreaterThan(relationsOf(bad, t).hector);
+    // el proyecto abre el día 3
+    const d3 = T0 + 2 * DAY + 10 * H;
+    expect(changeOpen(s, T0 + H)).toBe(false);
+    expect(changeOpen(s, d3)).toBe(true);
+    const g = startChange(good, d3), b = startChange(bad, d3);
+    expect(g.change!.rel0.hector).toBeGreaterThan(b.change!.rel0.hector);
+    s = playLever(g, "entrevista", ["hector"], d3);
+    expect(s.change!.moves.length).toBe(1);
+    // no se puede pasar del tiempo
+    let x = s; for (let i = 0; i < 40; i++) x = playLever(x, "piloto", ["lucia", "ana"], d3);
+    const used = x.change!.moves.reduce((a, m) => a + leverById(m.lever).weeks, 0);
+    expect(used).toBeLessThanOrEqual(x.change!.weeks!);
+  });
+  it("si no haces el proyecto, al terminar la temporada cuenta como no logrado", () => {
+    let s = started();
+    const end = T0 + 30 * DAY;
+    for (const e of entries(s, end)) if (!e.item.trigger) s = { ...s, decisions: { ...s.decisions } };
+    expect(Object.values(changeKpiEffect(s, end)).some((v) => (v ?? 0) < 0)).toBe(true);
   });
 });

@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, BookOpen, CheckCheck, ChevronDown, Clock, Globe2
 import { firstName, personOf } from "@/lib/ceo/cast";
 import { XP, scaled } from "@/lib/ceo/engine";
 import { OrgMap } from "./OrgMap";
+import { entryRipples, moodOf, REL_START } from "@/lib/ceo/relations";
 import { lessonById } from "@/lib/ceo/lessons";
 import type { Entry, Item, KpiKey, Option } from "@/lib/ceo/types";
 import { useCeo } from "./CeoProvider";
@@ -222,7 +223,11 @@ function WhoIsInvolved({ it, open: initial }: { it: Item; open: boolean }) {
               ))}
             </ul>
           )}
-          <OrgMap pack={c.pack} highlight={ids} compact />
+          <div className="mx-2 mb-3 flex flex-wrap gap-1.5">
+            {ids.map((x) => { const m = moodOf(c.relations[x] ?? REL_START); return <span key={x} className={clsx("chip text-[11px] gap-1", m.tone === "aliado" || m.tone === "bien" ? "bg-indigo-soft text-indigo" : m.tone === "frio" || m.tone === "roto" ? "bg-coral-soft text-coral" : "bg-slate-100 text-slate-600")}>{firstName(c.pack, x)} · {m.label}</span>; })}
+          </div>
+          <OrgMap pack={c.pack} highlight={ids} compact relations={c.relations} />
+          <p className="mx-2 mt-2 text-[11px] text-slate-400">Lo que decidas no solo le llega a quien te escribe: sus aliados lo resienten, sus rivales lo celebran y a quien influye le llega su opinión.</p>
         </div>
       )}
     </section>
@@ -280,13 +285,15 @@ function Outcome({ e, fresh }: { e: Entry; fresh: boolean }) {
         <p className="mt-2 text-[15px] text-ink leading-relaxed">{outcome}</p>
         <div className="mt-4 flex flex-wrap gap-2">
           {(Object.keys(effects) as KpiKey[]).filter((k) => effects[k]).map((k, i) => (
-            <span key={k} className={clsx("chip px-3 py-1 text-sm gap-1.5", (effects[k] ?? 0) > 0 ? "bg-mint-soft text-sob" : "bg-coral-soft text-coral", fresh && "tree-pop")} style={fresh ? { animationDelay: `${200 + i * 120}ms` } : undefined}>
+            <span key={k} className={clsx("chip px-3 py-1 text-sm gap-1.5", (effects[k] ?? 0) > 0 ? "bg-indigo-soft text-indigo" : "bg-coral-soft text-coral", fresh && "tree-pop")} style={fresh ? { animationDelay: `${200 + i * 120}ms` } : undefined}>
               {c.pack.kpiLabel[k]} <b className="tabular-nums">{(effects[k] ?? 0) > 0 ? "+" : ""}{effects[k]}</b>
             </span>
           ))}
         </div>
         {o && <ProfileHint o={o} />}
       </div>
+
+      <Ripples e={e} fresh={fresh} />
 
       {it.real && (
         <div className="rounded-2xl bg-gradient-to-br from-[#141735] to-[#2B1F8A] p-5 sm:p-6 text-white">
@@ -328,4 +335,36 @@ function ProfileHint({ o }: { o: Option }) {
   }, [o]);
   if (!tags.length) return null;
   return <div className="mt-4 pt-4 border-t border-slate-100 flex flex-wrap items-center gap-1.5 text-xs text-slate-500">Esta decisión suma a tu perfil: {tags.map((t) => <span key={t} className="chip bg-slate-100 text-slate-600">{t}</span>)}</div>;
+}
+
+// ───────────────────────────── cómo lo tomó tu gente
+const VIA: Record<string, string> = { alianza: "por su alianza con", influye: "porque le influye", tension: "por su tensión con" };
+function Ripples({ e, fresh }: { e: Entry; fresh: boolean }) {
+  const c = useCeo();
+  const rs = entryRipples(c.pack, e).sort((a, b) => (a.kind === "directo" ? 0 : 1) - (b.kind === "directo" ? 0 : 1) || Math.abs(b.delta) - Math.abs(a.delta));
+  if (!rs.length) return null;
+  return (
+    <div className="card p-5 sm:p-6">
+      <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Cómo lo tomó tu gente</div>
+      <ul className="mt-3 space-y-2">
+        {rs.map((r, i) => {
+          const now = c.relations[r.id] ?? REL_START;
+          return (
+            <li key={r.id} className={clsx("flex items-center gap-3", fresh && "tree-pop")} style={fresh ? { animationDelay: `${150 + i * 90}ms` } : undefined}>
+              <Avatar id={r.id} size={30} />
+              <div className="flex-1 min-w-0 text-sm">
+                <span className="font-semibold text-ink">{firstName(c.pack, r.id)}</span>{" "}
+                <span className="text-slate-500">{r.kind === "directo" ? (r.delta > 0 ? "lo valoró" : "lo resintió") : r.kind === "tension"
+                  ? `${r.delta > 0 ? "se acercó: no se lleva con" : "se alejó: no se lleva con"} ${firstName(c.pack, r.via!)}${r.delta > 0 ? ", a quien no le gustó" : ", a quien sí le gustó"}`
+                  : `${r.delta > 0 ? "se acercó" : "se alejó"} ${VIA[r.kind]} ${firstName(c.pack, r.via!)}`}</span>
+                <span className="block text-[11px] text-slate-400">Relación contigo: {moodOf(now).label}</span>
+              </div>
+              <span className={clsx("chip text-xs tabular-nums", r.delta > 0 ? "bg-indigo-soft text-indigo" : "bg-coral-soft text-coral")}>{r.delta > 0 ? "+" : ""}{r.delta}</span>
+            </li>
+          );
+        })}
+      </ul>
+      <p className="mt-3 text-[11px] text-slate-400">Estas relaciones pesan en tu proyecto de cambio: quien confía en ti arranca más cerca de adoptarlo.</p>
+    </div>
+  );
 }
