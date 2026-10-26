@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
   const sb = supabaseCeoAdmin();
   if (!sb) return NextResponse.json({ error: "Supabase no configurado (SUPABASE_SERVICE_ROLE_KEY)" }, { status: 503 });
 
-  const appUrl = process.env.CEO_APP_URL ?? (process.env.CEO_MOVED === "1" ? CEO_URL : "https://metisalign.app");
+  const appUrl = process.env.CEO_APP_URL ?? (process.env.CEO_MOVED !== "0" ? CEO_URL : "https://metisalign.app");
   const real = Date.now();
   const { data: players, error } = await sb.from("players").select("user_id, name, email, phone, notify_email, notify_whatsapp, state, sent").limit(2000);
   if (error) return NextResponse.json({ error: error.message, hint: error.code === "42703" ? "Falta correr la migración 0014_ceo_correos.sql" : undefined }, { status: 500 });

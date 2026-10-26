@@ -23,8 +23,8 @@ export async function middleware(req: NextRequest) {
   const p = req.nextUrl.pathname;
 
   // metisalign.app → metis.ceo. Pasa por /mudanza para llevarse el avance de quien juega sin cuenta.
-  // Se activa con CEO_MOVED=1 en Vercel, una vez que metis.ceo ya responde (antes, metisalign.app sigue sirviendo CEO).
-  const moved = process.env.CEO_MOVED === "1";
+  // metis.ceo ya responde: la mudanza está activa. (CEO_MOVED=0 en Vercel la apaga si hiciera falta.)
+  const moved = process.env.CEO_MOVED !== "0";
   if (moved && OLD_CEO_HOSTS.includes(host)) {
     if (p === "/mudanza" || p.startsWith("/_next") || p.startsWith("/brand") || p.startsWith("/auth")) return NextResponse.next();
     const u = req.nextUrl.clone();
