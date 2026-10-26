@@ -78,7 +78,7 @@ function shell(o: Shell) {
   <tr><td style="padding:16px 10px 0;font-family:${FONT};font-size:12px;line-height:18px;color:${MUTED}">
     ${o.footer ? `${o.footer}<br><br>` : ""}
     <b style="color:${SLATE}">mêtis CEO</b> · Entrena como CEO dirigiendo una empresa simulada. ${esc(o.pack.name)} y sus personajes son ficticios.<br>
-    <a href="${base(o.appUrl)}/ajustes" style="color:${MUTED};text-decoration:underline">Cambiar mis avisos</a> · <a href="${base(o.appUrl)}" style="color:${MUTED};text-decoration:underline">metisalign.app</a>
+    <a href="${base(o.appUrl)}/ajustes" style="color:${MUTED};text-decoration:underline">Cambiar mis avisos</a> · <a href="${base(o.appUrl)}" style="color:${MUTED};text-decoration:underline">metis.ceo</a>
   </td></tr>
 </table></td></tr></table></body></html>`;
 }
