@@ -23,7 +23,9 @@ export async function middleware(req: NextRequest) {
   const p = req.nextUrl.pathname;
 
   // metisalign.app → metis.ceo. Pasa por /mudanza para llevarse el avance de quien juega sin cuenta.
-  if (OLD_CEO_HOSTS.includes(host)) {
+  // Se activa con CEO_MOVED=1 en Vercel, una vez que metis.ceo ya responde (antes, metisalign.app sigue sirviendo CEO).
+  const moved = process.env.CEO_MOVED === "1";
+  if (moved && OLD_CEO_HOSTS.includes(host)) {
     if (p === "/mudanza" || p.startsWith("/_next") || p.startsWith("/brand") || p.startsWith("/auth")) return NextResponse.next();
     const u = req.nextUrl.clone();
     u.pathname = "/mudanza";
@@ -33,7 +35,7 @@ export async function middleware(req: NextRequest) {
   }
 
   // metis.ceo → mêtis CEO. «/» es la landing; lo demás se reescribe hacia /ceo. Misma app, mismo código.
-  if (CEO_HOSTS.includes(host)) {
+  if (CEO_HOSTS.includes(host) || (!moved && OLD_CEO_HOSTS.includes(host))) {
     if (p === "/") { const u = req.nextUrl.clone(); u.pathname = "/simulador"; return NextResponse.rewrite(u); }
     if (!CEO_PASSTHROUGH.some((x) => p === x || p.startsWith(x + "/"))) {
       const u = req.nextUrl.clone();

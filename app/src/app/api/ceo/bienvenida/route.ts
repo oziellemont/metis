@@ -31,7 +31,7 @@ export async function POST() {
 
   const s = migrate(p.state);
   const settings = s.settings;
-  const appUrl = process.env.CEO_APP_URL ?? CEO_URL;
+  const appUrl = process.env.CEO_APP_URL ?? (process.env.CEO_MOVED === "1" ? CEO_URL : "https://metisalign.app");
   const m = welcomeEmail({ pack: packOf(s), name: p.name ?? "", appUrl, windowStart: settings.windowStart, windowEnd: settings.windowEnd });
   const r = await sendMail({
     to, from: fromHeader(m), subject: m.subject, html: m.html, text: m.text,
