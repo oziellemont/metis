@@ -5,7 +5,7 @@
  */
 import { useEffect, useState } from "react";
 import clsx from "clsx";
-import { Check, Crown, Lock, Sparkles, Lightbulb, Mail, MessageCircle, FileText, Users } from "lucide-react";
+import { Check, Crown, Lock, Sparkles, Lightbulb, Mail, MessageCircle, FileText, Users, Inbox, Scale, TrendingUp } from "lucide-react";
 import { Flame } from "@/components/ceo/ui";
 import { useInView } from "./useInView";
 
@@ -53,7 +53,7 @@ export function CeoStats({ items }: { items: [number, string][] }) {
 export function StreakVisual() {
   const { ref, on, anim } = useInView();
   const days = ["L", "M", "M", "J", "V", "S", "D"];
-  const msgs = [[Mail, "Lucía · Finanzas", "El banco quiere revisar el covenant.", "8:12"], [MessageCircle, "Héctor · Comercial", "SuperNorte pide más descuento.", "13:40"], [FileText, "Reporte de planta", "Merma de 7.8% esta semana.", "17:05"]] as const;
+  const msgs = [[Mail, "Lucía · Finanzas", "Necesito tu visto bueno para el presupuesto.", "8:12"], [MessageCircle, "Héctor · Comercial", "SuperNorte pide más descuento.", "13:40"], [FileText, "Mariana · Personas", "Renunció alguien clave. ¿Hablamos?", "17:05"]] as const;
   return (
     <div ref={ref} className={CARD + " p-7"}>
       <div className={anim("tree-drop", 0).className} style={anim("tree-drop", 0).style}>
@@ -126,7 +126,7 @@ export function TeamVisual() {
       </div>
       <div className={"mt-5 flex items-center gap-3 rounded-xl bg-indigo-soft px-3.5 py-2.5 " + anim("tree-pop", 1500).className} style={anim("tree-pop", 1500).style}>
         <span className="h-8 w-8 rounded-lg bg-indigo text-white grid place-items-center"><Users size={15} /></span>
-        <div className="text-[12px] text-indigo"><strong>Palanca: Coalición.</strong> Sumaste a quien más influye y el resto se movió.</div>
+        <div className="text-[12px] text-indigo"><strong>Convenciste a Lucía primero.</strong> Los demás la siguieron.</div>
       </div>
     </div>
   );
@@ -227,6 +227,24 @@ export function BoardVisual() {
         ))}
       </div>
       <div className={"mt-4 text-[11.5px] text-slate-400 " + anim("tree-pop", 1200).className} style={anim("tree-pop", 1200).style}>Cada rubro debe pasar la línea de aprobación, y en cada empresa el consejo exige más.</div>
+    </div>
+  );
+}
+
+/* ---------- Así funciona: 3 pasos ---------- */
+const STEP_ICONS = { inbox: Inbox, decide: Scale, up: TrendingUp } as const;
+export function HowSteps({ steps }: { steps: { n: string; t: string; d: string; icon: keyof typeof STEP_ICONS }[] }) {
+  const { ref, anim } = useInView(0.3);
+  return (
+    <div ref={ref} className="relative grid md:grid-cols-3 gap-5">
+      <div aria-hidden className={"hidden md:block absolute top-10 left-[16.6%] right-[16.6%] h-px bg-indigo/20 " + anim("tree-grow-x", 300).className} style={anim("tree-grow-x", 300).style} />
+      {steps.map((st, i) => { const a = anim("tree-pop", 150 + i * 220); const I = STEP_ICONS[st.icon]; return (
+        <div key={st.n} className={"relative text-center " + a.className} style={a.style}>
+          <span className="relative mx-auto h-20 w-20 rounded-3xl bg-white border border-slate-100 shadow-card grid place-items-center text-indigo"><I size={30} /><span className="absolute -top-2 -right-2 h-7 w-7 rounded-full bg-indigo text-white text-[13px] font-semibold grid place-items-center">{st.n}</span></span>
+          <h3 className="mt-5 text-xl font-semibold text-ink">{st.t}</h3>
+          <p className="mt-2 text-slate-600 max-w-xs mx-auto">{st.d}</p>
+        </div>
+      ); })}
     </div>
   );
 }

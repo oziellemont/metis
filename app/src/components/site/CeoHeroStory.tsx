@@ -61,10 +61,10 @@ function Caso() {
         <span className="chip bg-mint-soft text-sob !text-[10px] gap-1"><MessageCircle size={10} /> WhatsApp</span>
       </div>
       <div className={clsx("mt-2 ml-4 rounded-2xl rounded-tl-md bg-indigo text-white px-3 py-2 text-[11.5px] leading-snug transition-all duration-500", k >= 2 ? "opacity-100" : "opacity-0 translate-y-1")}>
-        SuperNorte pide 6% más de descuento o nos saca de 40 tiendas. Es el 31% de nuestras ventas. ¿Qué hago?
+        SuperNorte quiere 6% más de descuento o deja de vendernos. ¿Qué le digo?
       </div>
       <div className={clsx("mt-3 grid grid-cols-2 gap-2 transition-all duration-500", k >= 3 ? "opacity-100" : "opacity-0 translate-y-1")}>
-        <div className="rounded-xl bg-white border border-slate-100 p-2"><div className="text-[9.5px] text-slate-400">En juego</div><div className="text-[12px] font-semibold text-ink">$127 M de ventas</div></div>
+        <div className="rounded-xl bg-white border border-slate-100 p-2"><div className="text-[9.5px] text-slate-400">Es tu cliente más grande</div><div className="text-[12px] font-semibold text-ink">1 de cada 3 pesos</div></div>
         <div className="rounded-xl bg-white border border-slate-100 p-2"><div className="text-[9.5px] text-slate-400 flex items-center gap-1"><Clock size={9} /> Responde en</div><div className="text-[12px] font-semibold text-coral tabular-nums">3 h 40 min</div></div>
       </div>
       <p className={clsx("mt-3 text-center text-[11px] text-slate-500 transition-opacity duration-500", k >= 4 ? "opacity-100" : "opacity-0")}>Llega a tu celular, como en una empresa de verdad.</p>
@@ -74,8 +74,8 @@ function Caso() {
 
 function Decide() {
   const k = useSteps(5, 480, 250);
-  const opts = ["Aceptar el 6% para no perder la cuenta", "Ofrecer 3% a cambio de más espacio en anaquel", "Decir que no y buscar otras cadenas"];
-  const kp = [["Margen", 54, 61], ["Clientes", 64, 69], ["Equipo", 57, 52]] as const;
+  const opts = ["Aceptar el 6% para no perder la cuenta", "Ofrecer 3% si nos compran más", "Decir que no y buscar otras cadenas"];
+  const kp = [["Utilidad", 54, 61], ["Clientes", 64, 69], ["Tu equipo", 57, 52]] as const;
   return (
     <div>
       <div className="space-y-1.5">
@@ -94,7 +94,7 @@ function Decide() {
           const d = b - a;
           return (
             <div key={l} className="flex items-center gap-2 text-[11px]">
-              <span className="w-14 text-slate-500">{l}</span>
+              <span className="w-16 text-slate-500">{l}</span>
               <div className="flex-1 h-2 rounded-full bg-slate-100 overflow-hidden"><div className={clsx("h-full rounded-full transition-all duration-700 ease-out", d >= 0 ? "bg-indigo" : "bg-coral")} style={{ width: `${v}%` }} /></div>
               <span className={clsx("w-7 text-right font-semibold tabular-nums transition-opacity duration-300", k >= 3 + Math.min(i, 1) ? "opacity-100" : "opacity-0", d >= 0 ? "text-sob" : "text-coral")}>{d > 0 ? "+" : ""}{d}</span>
             </div>
@@ -112,19 +112,19 @@ function Aprende() {
     <div>
       <div className={clsx("rounded-xl bg-white border border-slate-100 p-3 transition-all duration-500", k >= 1 ? "opacity-100" : "opacity-0 translate-y-1")}>
         <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-indigo"><Lightbulb size={11} /> Nota CEO</div>
-        <p className="mt-1.5 text-[12px] leading-snug text-ink">Un cliente que es el 31% de tus ventas no es un cliente: es un socio con poder. Negocia valor, no precio.</p>
-        <div className="mt-1.5 text-[9.5px] text-slate-400">De CERO a CEO · Parte V</div>
+        <p className="mt-1.5 text-[12px] leading-snug text-ink">Cuando un cliente pesa tanto, no regales precio: ofrece algo que también le sirva a él.</p>
+        <div className="mt-1.5 text-[9.5px] text-slate-400">De CERO a CEO</div>
       </div>
       <div className={clsx("mt-2 rounded-xl bg-white border border-slate-100 p-3 transition-all duration-500", k >= 2 ? "opacity-100" : "opacity-0 translate-y-1")}>
         <div className="text-[11px] font-semibold text-ink">¿Qué protegiste con tu decisión?</div>
         <div className="mt-2 flex flex-wrap gap-1.5">
-          {["El margen", "La relación", "El volumen"].map((o, i) => (
+          {["La utilidad", "La relación", "Las ventas"].map((o, i) => (
             <span key={o} className={clsx("rounded-full border px-2 py-0.5 text-[10.5px] transition-all duration-300", i === 0 && k >= 3 ? "border-mint bg-mint-soft text-sob font-semibold" : "border-slate-200 text-slate-500")}>{i === 0 && k >= 3 && "✓ "}{o}</span>
           ))}
         </div>
       </div>
       <div className={clsx("mt-3 flex items-center justify-center gap-2 transition-all duration-500", k >= 4 ? "opacity-100 scale-100" : "opacity-0 scale-95")}>
-        <span className="chip bg-indigo text-white !text-[11px]">+30 XP</span><span className="text-[11px] text-slate-500">Lección completada</span>
+        <span className="chip bg-indigo text-white !text-[11px]">+30 puntos</span><span className="text-[11px] text-slate-500">¡Bien decidido!</span>
       </div>
     </div>
   );
@@ -149,7 +149,7 @@ function Sube() {
       </div>
       <div className={clsx("mt-2.5 flex items-center gap-2.5 rounded-xl bg-indigo-soft px-3 py-2 transition-all duration-500", k >= 6 ? "opacity-100" : "opacity-0 translate-y-1")}>
         <span className="h-7 w-7 rounded-lg bg-indigo text-white grid place-items-center"><Crown size={14} /></span>
-        <div className="text-[11px] text-indigo"><strong>Te llama Forja Norte.</strong> Empresa más grande, nuevo giro, más exigente.</div>
+        <div className="text-[11px] text-indigo"><strong>¡Te llama otra empresa!</strong> Más grande y más retadora.</div>
       </div>
     </div>
   );
