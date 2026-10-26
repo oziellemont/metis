@@ -29,3 +29,6 @@ export function monthlyEstimate(seats: number, discountPct = 0): { seats: number
 }
 
 export const mxn = (n: number) => n.toLocaleString("es-MX", { style: "currency", currency: "MXN", maximumFractionDigits: 0 });
+
+/** mêtis CEO (www.metis.ceo): suscripción individual mensual, en MXN. */
+export const CEO_PRICE_MXN = 59;
