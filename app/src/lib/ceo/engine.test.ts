@@ -5,8 +5,8 @@ import { CUMBRE } from "./companies/cumbre";
 import { DAY, H, KPI_KEYS, advance, arrivalOf, decide, dominates, entries, kpis, levelOf, localMidnight, migrate, newState, nextCompanyOf, pinArrived, profileOf, rulesOf, scaled, seasonDoneOf, skipToNext, streakOf, verdictOf, xpOf, KPI_START } from "./engine";
 import type { CeoState, ChangeMove, CompanyPack, LeverId } from "./types";
 import { LEVERS, canUse, leverById, simulate } from "./change";
-import { entryRipples, playLever, relationsOf, ripplesOf, startChange } from "./relations";
-import { changeKpiEffect, changeOpen } from "./engine";
+import { closeChange, entryRipples, playLever, relationsOf, ripplesOf, startChange } from "./relations";
+import { casesDoneOf, changeKpiEffect, changeOpen, packOf } from "./engine";
 
 /** Jugador estratégico: en cada paso elige la palanca que más acerca a la meta por semana usada. */
 function greedyPlan(pack: CompanyPack, rel0: Record<string, number>): ChangeMove[] {
@@ -207,6 +207,35 @@ describe("racha, nivel y perfil", () => {
   });
 });
 
+type Picker = (os: { id: string; effects: Record<string, number | undefined> }[], s: CeoState, t: number, itemId: string) => string;
+/** Juega la temporada: cierra los asuntos y luego el reto de cambio ("smart" = plan estratégico, "skip" = lo presenta sin hacer nada, "open" = lo deja abierto). */
+const finish = (s0: CeoState, pick: Picker, change: "smart" | "skip" | "open" = "smart") => {
+  let s = s0;
+  let t = T0;
+  for (let i = 0; i < 400 && !casesDoneOf(s, t); i++) {
+    const p = entries(s, t).find((e) => e.status === "pendiente");
+    if (p) { s = decide(s, p.item.id, pick(p.item.options as never, s, t, p.item.id), t); t += 60_000; continue; }
+    const nx = entries(s, t).find((e) => e.status === "futuro");
+    t = nx ? nx.arrivesAt + 1000 : t + H;
+  }
+  if (change === "open") return { s, t };
+  s = startChange(s, t);
+  if (change === "smart") for (const m of greedyPlan(packOf(s), s.change!.rel0)) s = playLever(s, m.lever, m.targets, t);
+  s = closeChange(s, t);
+  return { s, t };
+};
+// jugador cuidadoso: elige la opción que deja mejor su rubro más débil
+const careful = (s: CeoState, t: number, itemId: string, ids: string[]) => {
+  const line = rulesOf(s.tier).passLine;
+  let pick = ids[0], bv = -1e9;
+  for (const o of ids) { const k = kpis(decide(s, itemId, o, t), t); const v = Math.min(...KPI_KEYS.map((x) => k[x] - line)) * 10 + KPI_KEYS.reduce((a, x) => a + k[x], 0) / 50; if (v > bv) { bv = v; pick = o; } }
+  return pick;
+};
+const best: Picker = (os, s, t, itemId) => careful(s, t, itemId, os.map((o) => o.id));
+const worst: Picker = (os) => os.slice().sort((a, b) => sum(a.effects) - sum(b.effects))[0].id;
+const sum = (e: Record<string, number | undefined>) => Object.values(e).reduce<number>((a, x) => a + (x ?? 0), 0);
+
+
 describe("carrera multiempresa", () => {
   it("migra un avance v1 sin perder nada (queda en Botanas Cumbre, nivel 0)", () => {
     const v1 = { v: 1, name: "Oziel", alias: "oziel", startedAt: T0, decisions: { "d1-bienvenida": { option: "a", at: T0 + 1000 } }, pinned: {}, read: {}, lessons: { x: T0 }, settings: { tz: "America/Monterrey" }, lastActiveAt: T0, clockOffset: 0, savedAt: T0 };
@@ -226,36 +255,13 @@ describe("carrera multiempresa", () => {
     expect(s3.caja!).toBeLessThan(-10);
     expect(s3.equipo!).toBeLessThan(10);
   });
-  type Picker = (os: { id: string; effects: Record<string, number | undefined> }[], s: CeoState, t: number, itemId: string) => string;
-  const finish = (s0: CeoState, pick: Picker) => {
-    let s = s0;
-    let t = T0;
-    for (let i = 0; i < 400 && !seasonDoneOf(s, t); i++) {
-      const p = entries(s, t).find((e) => e.status === "pendiente");
-      if (p) { s = decide(s, p.item.id, pick(p.item.options as never, s, t, p.item.id), t); t += 60_000; continue; }
-      const nx = entries(s, t).find((e) => e.status === "futuro");
-      t = nx ? nx.arrivesAt + 1000 : t + H;
-    }
-    return { s, t };
-  };
-  // jugador cuidadoso: elige la opción que deja mejor su rubro más débil
-  const careful = (s: CeoState, t: number, itemId: string, ids: string[]) => {
-    const line = rulesOf(s.tier).passLine;
-    let pick = ids[0], bv = -1e9;
-    for (const o of ids) { const k = kpis(decide(s, itemId, o, t), t); const v = Math.min(...KPI_KEYS.map((x) => k[x] - line)) * 10 + KPI_KEYS.reduce((a, x) => a + k[x], 0) / 50; if (v > bv) { bv = v; pick = o; } }
-    return pick;
-  };
-  const best: Picker = (os, s, t, itemId) => careful(s, t, itemId, os.map((o) => o.id));
-  const worst: Picker = (os) => os.slice().sort((a, b) => sum(a.effects) - sum(b.effects))[0].id;
-  const sum = (e: Record<string, number | undefined>) => Object.values(e).reduce<number>((a, x) => a + (x ?? 0), 0);
-
   it.each(COMPANIES.map((c) => [c.id] as const))("%s: se puede aprobar con buenas decisiones y reprobar con malas", (id) => {
     const good = finish(started({ company: id }), best);
     expect(rulesOf(0).passLine).toBe(50);
     expect(seasonDoneOf(good.s, good.t)).toBe(true);
     const vg = verdictOf(good.s, good.t);
     expect(vg.passed, JSON.stringify(vg.kpis)).toBe(true);
-    const bad = finish(started({ company: id }), worst);
+    const bad = finish(started({ company: id }), worst, "skip");
     expect(verdictOf(bad.s, bad.t).passed).toBe(false);
   });
   it("al aprobar asciende a otra empresa (de otro giro) y sube la exigencia; al reprobar repite", () => {
@@ -309,12 +315,13 @@ describe("relaciones y proyecto de cambio", () => {
     const good = decide(s, "d1-hector", "a", t);
     const bad = decide(s, "d1-hector", "c", t);
     expect(relationsOf(good, t).hector).toBeGreaterThan(relationsOf(bad, t).hector);
-    // el proyecto abre el día 3
-    const d3 = T0 + 2 * DAY + 10 * H;
+    // el reto final se abre hasta cerrar los asuntos
     expect(changeOpen(s, T0 + H)).toBe(false);
-    expect(changeOpen(s, d3)).toBe(true);
-    const g = startChange(good, d3), b = startChange(bad, d3);
-    expect(g.change!.rel0.hector).toBeGreaterThan(b.change!.rel0.hector);
+    const done = finish(good, best, "open");
+    expect(changeOpen(done.s, done.t)).toBe(true);
+    const d3 = done.t;
+    const g = startChange(done.s, d3);
+    const b = startChange(finish(bad, best, "open").s, d3);
     s = playLever(g, "entrevista", ["hector"], d3);
     expect(s.change!.moves.length).toBe(1);
     // no se puede pasar del tiempo
@@ -322,10 +329,15 @@ describe("relaciones y proyecto de cambio", () => {
     const used = x.change!.moves.reduce((a, m) => a + leverById(m.lever).weeks, 0);
     expect(used).toBeLessThanOrEqual(x.change!.weeks!);
   });
-  it("si no haces el proyecto, al terminar la temporada cuenta como no logrado", () => {
-    let s = started();
-    const end = T0 + 30 * DAY;
-    for (const e of entries(s, end)) if (!e.item.trigger) s = { ...s, decisions: { ...s.decisions } };
-    expect(Object.values(changeKpiEffect(s, end)).some((v) => (v ?? 0) < 0)).toBe(true);
+  it("el nivel no cierra (ni hay veredicto) hasta presentar el cambio; el resultado pega en los rubros", () => {
+    const done = finish(started(), best, "open");
+    expect(changeOpen(done.s, done.t)).toBe(true);
+    expect(seasonDoneOf(done.s, done.t)).toBe(false);
+    expect(advance(done.s, done.t)).toBe(done.s);
+    const before = kpis(done.s, done.t);
+    const s1 = closeChange(startChange(done.s, done.t), done.t);
+    expect(seasonDoneOf(s1, done.t)).toBe(true);
+    expect(Object.values(changeKpiEffect(s1)).some((v) => (v ?? 0) < 0)).toBe(true);
+    expect(kpis(s1, done.t).consejo).toBeLessThan(before.consejo);
   });
 });

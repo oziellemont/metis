@@ -7,7 +7,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { advance as advanceFn, decide as decideFn, entries as entriesFn, healthOf, kpis as kpisFn, levelOf, migrate, newState, nowOf, packOf, pinArrived, rulesOf, seasonDay, seasonDoneOf, skipToNext, streakOf, switchCompany as switchFn, verdictOf, xpOf, type Verdict } from "@/lib/ceo/engine";
-import { changeOpen, changeSimOf } from "@/lib/ceo/engine";
+import { casesProgress, changeOpen, changeSimOf } from "@/lib/ceo/engine";
 import { closeChange as closeChangeFn, playLever as playLeverFn, relationsOf, startChange as startChangeFn } from "@/lib/ceo/relations";
 import type { ChangeSim } from "@/lib/ceo/change";
 import type { CastId, CeoState, CompanyPack, Entry, Kpis, LeverId, Settings } from "@/lib/ceo/types";
@@ -38,6 +38,8 @@ interface Ctx {
   relations: Record<CastId, number>;
   /** Proyecto de cambio. */
   changeOpen: boolean;
+  /** Asuntos base cerrados / total (el reto final se abre al cerrarlos todos). */
+  cases: { done: number; total: number };
   change: ChangeSim | null;
   startChange: () => void;
   playLever: (lever: LeverId, targets: CastId[]) => void;
@@ -197,7 +199,7 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
 
   const value: Ctx = {
     ready, s, now, pack, rules: rulesOf(s.tier), verdict, entries, inbox, pending, kpis: k, health: healthOf(k), xp, level: levelOf(xp), streak, day: seasonDay(s, now), seasonDone, nextArrival,
-    relations, changeOpen: changeOpen(s, now), change, startChange, playLever, closeChange,
+    relations, changeOpen: changeOpen(s, now), cases: casesProgress(s, now, entries), change, startChange, playLever, closeChange,
     user, synced, toast, dismissToast: () => setToast(null), start, advance, switchCompany, decide, markRead, completeLesson, updateSettings, skipNext, reset,
   };
   return <C.Provider value={value}>{children}</C.Provider>;

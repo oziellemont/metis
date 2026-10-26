@@ -177,15 +177,15 @@ export function kpis(s: CeoState, now = nowOf(s)): Kpis {
     const eff = effectOf(s, e);
     for (const key of Object.keys(eff) as KpiKey[]) k[key] = clamp(k[key] + (eff[key] ?? 0));
   }
-  const ce = changeKpiEffect(s, now, es);
+  const ce = changeKpiEffect(s);
   for (const key of Object.keys(ce) as KpiKey[]) k[key] = clamp(k[key] + (ce[key] ?? 0));
   return k;
 }
 
 // ───────────────────────────── proyecto de cambio
-/** ¿Ya se abrió el proyecto de cambio de esta empresa? */
+/** ¿Ya se abrió el reto final (proyecto de cambio)? Se abre al cerrar todos los asuntos de la temporada. */
 export function changeOpen(s: CeoState, now = nowOf(s)): boolean {
-  return !!s.startedAt && seasonDay(s, now) >= packOf(s).change.opensDay;
+  return casesDoneOf(s, now);
 }
 /** Simulación del proyecto de la empresa actual (null si no ha arrancado). */
 export function changeSimOf(s: CeoState): ChangeSim | null {
@@ -193,17 +193,17 @@ export function changeSimOf(s: CeoState): ChangeSim | null {
   const pack = packOf(s);
   return simulate(pack.change, pack, s.change);
 }
-function baseDone(s: CeoState, es: Entry[]): boolean {
+/** Asuntos base cerrados (decididos o vencidos) sobre el total. */
+export function casesProgress(s: CeoState, now = nowOf(s), es = entries(s, now)): { done: number; total: number } {
   const done = new Set(es.filter((e) => e.status === "decidido" || e.status === "vencido").map((e) => e.item.id));
-  return packOf(s).items.filter((i) => !i.trigger).every((i) => done.has(i.id));
+  const base = packOf(s).items.filter((i) => !i.trigger);
+  return { done: base.filter((i) => done.has(i.id)).length, total: base.length };
 }
-/** Lo que el proyecto suma a los indicadores: al cerrarlo, o al terminar la temporada (si no lo hiciste, cuenta como no logrado). */
-export function changeKpiEffect(s: CeoState, now = nowOf(s), es = entries(s, now)): Partial<Kpis> {
+/** Lo que el proyecto de cambio suma a los indicadores (cuando lo presentas al consejo o se acaban las semanas). */
+export function changeKpiEffect(s: CeoState): Partial<Kpis> {
   if (!s.startedAt) return {};
   const sim = changeSimOf(s);
-  if (sim?.done) return scaled(changeEffect(sim), s.tier);
-  if (baseDone(s, es)) return scaled(changeEffect(sim ?? { share: 0, ok: false }), s.tier);
-  return {};
+  return sim?.done ? scaled(changeEffect(sim), s.tier) : {};
 }
 export const healthOf = (k: Kpis) => Math.round((k.caja + k.margen + k.equipo + k.clientes + k.consejo) / 5);
 
@@ -373,12 +373,17 @@ export function arrivalsBetween(s: CeoState, from: number, to: number): Entry[] 
 
 // ───────────────────────────────────────────── carrera: cierre, veredicto y ascenso
 /** ¿Ya se resolvió todo lo de esta empresa? */
-export function seasonDoneOf(s: CeoState, now = nowOf(s)): boolean {
+/** ¿Ya cerraste todos los asuntos? (base decididos o vencidos y nada pendiente). Abre el reto final. */
+export function casesDoneOf(s: CeoState, now = nowOf(s)): boolean {
   if (!s.startedAt) return false;
   const es = entries(s, now);
   const base = packOf(s).items.filter((i) => !i.trigger);
   const done = (id: string) => es.some((e) => e.item.id === id && (e.status === "decidido" || e.status === "vencido"));
   return base.every((i) => done(i.id)) && !es.some((e) => e.status === "pendiente" || (e.status === "futuro" && !e.item.trigger));
+}
+/** Fin del nivel: cerraste los asuntos Y el reto final (proyecto de cambio). Hasta entonces no hay veredicto. */
+export function seasonDoneOf(s: CeoState, now = nowOf(s)): boolean {
+  return casesDoneOf(s, now) && !!changeSimOf(s)?.done;
 }
 
 export interface Verdict {

@@ -72,7 +72,6 @@ export const CUMBRE: CompanyPack = {
     title: "Cumbre Una: un solo tablero para toda la empresa",
     what: "Pasar de que cada área persiga su propio bono a que todos trabajen con una meta común y un scorecard por persona conectado a ella.",
     why: "Todos ganaron bono en 2026 y la empresa perdió 1.2 puntos de margen. El consejo te pide que en 24 semanas la mayoría del comité y de los líderes clave trabaje así. Si no, se pierde otro año.",
-    opensDay: 3,
     stakeholders: [
       { id: "ramiro", start: 22, likes: ["entrevista", "ejemplo"], dislikes: ["incentivos"], leader: true, secret: "«No me molesta el tablero. Me molesta enterarme por otros. Si me lo explicas tú primero y en persona, lo defiendo en el consejo.»" },
       { id: "carla", start: 34, likes: ["avance", "piloto"], secret: "«Te apoyo, pero necesito ver números a las 8 semanas. Si no hay avance visible, el consejo se te voltea.»" },
