@@ -1,0 +1,1613 @@
+{
+ "id": "forja-azar",
+ "description": "Forja con elecciones al azar (semilla fija) y plan de cambio parcial.",
+ "actions": [
+  {
+   "type": "start",
+   "at": 1791212400000,
+   "name": "Elena",
+   "company": "forja",
+   "settings": {
+    "tz": "America/Monterrey"
+   }
+  },
+  {
+   "type": "dilemma",
+   "at": 1791212420000,
+   "id": "n2",
+   "option": 2
+  },
+  {
+   "type": "decide",
+   "at": 1791212420000,
+   "item": "fn-d1-carta",
+   "option": "b"
+  },
+  {
+   "type": "decide",
+   "at": 1791214380616,
+   "item": "fn-d1-andon",
+   "option": "c"
+  },
+  {
+   "type": "dilemma",
+   "at": 1791307454390,
+   "id": "g1",
+   "option": 1
+  },
+  {
+   "type": "decide",
+   "at": 1791307454390,
+   "item": "fn-d2-precio",
+   "option": "c"
+  },
+  {
+   "type": "decide",
+   "at": 1791324376854,
+   "item": "fn-d2-soldadores",
+   "option": "b"
+  },
+  {
+   "type": "dilemma",
+   "at": 1791413972141,
+   "id": "d4",
+   "option": 0
+  },
+  {
+   "type": "decide",
+   "at": 1791413972141,
+   "item": "fn-d3-ppap",
+   "option": "c"
+  },
+  {
+   "type": "dilemma",
+   "at": 1791472015003,
+   "id": "e2",
+   "option": 2
+  },
+  {
+   "type": "decide",
+   "at": 1791472015003,
+   "item": "fn-c-kaizen",
+   "option": "b"
+  },
+  {
+   "type": "decide",
+   "at": 1791486113934,
+   "item": "fn-d4-recap",
+   "option": "c"
+  },
+  {
+   "type": "decide",
+   "at": 1791502751003,
+   "item": "fn-d4-pleito",
+   "option": "b"
+  },
+  {
+   "type": "dilemma",
+   "at": 1791563411467,
+   "id": "v4",
+   "option": 0
+  },
+  {
+   "type": "decide",
+   "at": 1791563411467,
+   "item": "fn-d5-ciber",
+   "option": "c"
+  },
+  {
+   "type": "decide",
+   "at": 1791575890917,
+   "item": "fn-d5-plataforma",
+   "option": "c"
+  },
+  {
+   "type": "dilemma",
+   "at": 1791647116344,
+   "id": "c1",
+   "option": 1
+  },
+  {
+   "type": "decide",
+   "at": 1791647116344,
+   "item": "fn-d6-proveedor",
+   "option": "a"
+  },
+  {
+   "type": "decide",
+   "at": 1791664536290,
+   "item": "fn-d6-denuncia",
+   "option": "a"
+  },
+  {
+   "type": "decide",
+   "at": 1791678318568,
+   "item": "fn-c-escuela",
+   "option": "a"
+  },
+  {
+   "type": "dilemma",
+   "at": 1791738893338,
+   "id": "s1",
+   "option": 3
+  },
+  {
+   "type": "decide",
+   "at": 1791738893338,
+   "item": "fn-d7-consejo",
+   "option": "c"
+  },
+  {
+   "type": "decide",
+   "at": 1791757336600,
+   "item": "fn-d7-sindicato",
+   "option": "b"
+  },
+  {
+   "type": "changeStart",
+   "at": 1791757456600
+  },
+  {
+   "type": "lever",
+   "at": 1791757486600,
+   "lever": "capacitacion",
+   "targets": [
+    "laura",
+    "teresa",
+    "karla"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1791757516600,
+   "lever": "capacitacion",
+   "targets": [
+    "laura",
+    "teresa",
+    "karla"
+   ]
+  },
+  {
+   "type": "changeClose",
+   "at": 1791757576600
+  },
+  {
+   "type": "advance",
+   "at": 1791757636600
+  }
+ ],
+ "checkpoints": [
+  {
+   "after": 4,
+   "at": 1791307434390,
+   "snapshot": {
+    "company": "forja",
+    "tier": 0,
+    "legendary": false,
+    "seasonDay": 2,
+    "kpis": {
+     "caja": 64,
+     "margen": 62,
+     "equipo": 60,
+     "clientes": 66,
+     "consejo": 77
+    },
+    "health": 66,
+    "xp": 105,
+    "level": 0,
+    "relations": {
+     "zertuche": 58,
+     "regina": 66,
+     "marcos": 50,
+     "ramon": 26,
+     "laura": 63,
+     "daniela": 48,
+     "teresa": 50,
+     "chuy": 50,
+     "karla": 54,
+     "paty": 50,
+     "greg": 50,
+     "fermin": 41
+    },
+    "progress": {
+     "done": 2,
+     "total": 13
+    },
+    "statuses": {
+     "fn-d1-carta": "decidido",
+     "fn-d1-andon": "decidido",
+     "fn-d2-precio": "pendiente",
+     "fn-d2-soldadores": "futuro",
+     "fn-d3-ppap": "futuro",
+     "fn-c-kaizen": "futuro",
+     "fn-d4-recap": "futuro",
+     "fn-d4-pleito": "futuro",
+     "fn-d5-ciber": "futuro",
+     "fn-d5-plataforma": "futuro",
+     "fn-d6-proveedor": "futuro",
+     "fn-d6-denuncia": "futuro",
+     "fn-d7-consejo": "futuro",
+     "fn-d7-sindicato": "futuro"
+    },
+    "timing": {
+     "fn-d1-carta": [
+      15,
+      86400
+     ],
+     "fn-d1-andon": [
+      1980,
+      43200
+     ],
+     "fn-d2-precio": [
+      95033,
+      86400
+     ],
+     "fn-d2-soldadores": [
+      111976,
+      86400
+     ],
+     "fn-d3-ppap": [
+      201551,
+      36000
+     ],
+     "fn-c-kaizen": [
+      259594,
+      43200
+     ],
+     "fn-d4-recap": [
+      273713,
+      86400
+     ],
+     "fn-d4-pleito": [
+      290350,
+      43200
+     ],
+     "fn-d5-ciber": [
+      350990,
+      21600
+     ],
+     "fn-d5-plataforma": [
+      363490,
+      86400
+     ],
+     "fn-d6-proveedor": [
+      434695,
+      57600
+     ],
+     "fn-d6-denuncia": [
+      452135,
+      43200
+     ],
+     "fn-d7-consejo": [
+      526472,
+      86400
+     ],
+     "fn-d7-sindicato": [
+      544936,
+      21600
+     ]
+    },
+    "decisions": {
+     "fn-d1-carta": "b",
+     "fn-d1-andon": "c"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 1,
+     "best": 1
+    },
+    "profile": {
+     "archetype": "Estratega equilibrado",
+     "axes": {
+      "horizonte": 0,
+      "riesgo": 50,
+      "foco": -100,
+      "estilo": 0,
+      "conflicto": 50
+     }
+    },
+    "badges": [
+     "primera"
+    ],
+    "dilemmas": {
+     "n2": 2
+    },
+    "lessons": [],
+    "career": []
+   }
+  },
+  {
+   "after": 7,
+   "at": 1791413952141,
+   "snapshot": {
+    "company": "forja",
+    "tier": 0,
+    "legendary": false,
+    "seasonDay": 3,
+    "kpis": {
+     "caja": 61,
+     "margen": 60,
+     "equipo": 60,
+     "clientes": 66,
+     "consejo": 77
+    },
+    "health": 65,
+    "xp": 240,
+    "level": 1,
+    "relations": {
+     "zertuche": 62,
+     "regina": 62,
+     "marcos": 42,
+     "ramon": 18,
+     "laura": 63,
+     "daniela": 56,
+     "teresa": 66,
+     "chuy": 46,
+     "karla": 54,
+     "paty": 50,
+     "greg": 58,
+     "fermin": 49
+    },
+    "progress": {
+     "done": 4,
+     "total": 13
+    },
+    "statuses": {
+     "fn-d1-carta": "decidido",
+     "fn-d1-andon": "decidido",
+     "fn-d2-precio": "decidido",
+     "fn-d2-soldadores": "decidido",
+     "fn-d3-ppap": "pendiente",
+     "fn-c-kaizen": "futuro",
+     "fn-d4-recap": "futuro",
+     "fn-d4-pleito": "futuro",
+     "fn-d5-ciber": "futuro",
+     "fn-d5-plataforma": "futuro",
+     "fn-d6-proveedor": "futuro",
+     "fn-d6-denuncia": "futuro",
+     "fn-c-escuela": "futuro",
+     "fn-d7-consejo": "futuro",
+     "fn-d7-sindicato": "futuro"
+    },
+    "timing": {
+     "fn-d1-carta": [
+      15,
+      86400
+     ],
+     "fn-d1-andon": [
+      1980,
+      43200
+     ],
+     "fn-d2-precio": [
+      95033,
+      86400
+     ],
+     "fn-d2-soldadores": [
+      111976,
+      86400
+     ],
+     "fn-d3-ppap": [
+      201551,
+      36000
+     ],
+     "fn-c-kaizen": [
+      259594,
+      43200
+     ],
+     "fn-d4-recap": [
+      273713,
+      86400
+     ],
+     "fn-d4-pleito": [
+      290350,
+      43200
+     ],
+     "fn-d5-ciber": [
+      350990,
+      21600
+     ],
+     "fn-d5-plataforma": [
+      363490,
+      86400
+     ],
+     "fn-d6-proveedor": [
+      434695,
+      57600
+     ],
+     "fn-d6-denuncia": [
+      452135,
+      43200
+     ],
+     "fn-c-escuela": [
+      465918,
+      43200
+     ],
+     "fn-d7-consejo": [
+      526472,
+      86400
+     ],
+     "fn-d7-sindicato": [
+      544936,
+      21600
+     ]
+    },
+    "decisions": {
+     "fn-d1-carta": "b",
+     "fn-d1-andon": "c",
+     "fn-d2-precio": "c",
+     "fn-d2-soldadores": "b"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 2,
+     "best": 2
+    },
+    "profile": {
+     "archetype": "Constructor visionario",
+     "axes": {
+      "horizonte": 50,
+      "riesgo": 50,
+      "foco": 0,
+      "estilo": 33,
+      "conflicto": 50
+     }
+    },
+    "badges": [
+     "primera"
+    ],
+    "dilemmas": {
+     "n2": 2,
+     "g1": 1
+    },
+    "lessons": [],
+    "career": []
+   }
+  },
+  {
+   "after": 9,
+   "at": 1791471995003,
+   "snapshot": {
+    "company": "forja",
+    "tier": 0,
+    "legendary": false,
+    "seasonDay": 4,
+    "kpis": {
+     "caja": 59,
+     "margen": 57,
+     "equipo": 62,
+     "clientes": 67,
+     "consejo": 77
+    },
+    "health": 64,
+    "xp": 310,
+    "level": 1,
+    "relations": {
+     "zertuche": 66,
+     "regina": 58,
+     "marcos": 34,
+     "ramon": 16,
+     "laura": 71,
+     "daniela": 59,
+     "teresa": 66,
+     "chuy": 46,
+     "karla": 58,
+     "paty": 50,
+     "greg": 66,
+     "fermin": 49
+    },
+    "progress": {
+     "done": 5,
+     "total": 13
+    },
+    "statuses": {
+     "fn-d1-carta": "decidido",
+     "fn-d1-andon": "decidido",
+     "fn-d2-precio": "decidido",
+     "fn-d2-soldadores": "decidido",
+     "fn-d3-ppap": "decidido",
+     "fn-c-kaizen": "pendiente",
+     "fn-d4-recap": "futuro",
+     "fn-d4-pleito": "futuro",
+     "fn-d5-ciber": "futuro",
+     "fn-d5-plataforma": "futuro",
+     "fn-d6-proveedor": "futuro",
+     "fn-d6-denuncia": "futuro",
+     "fn-c-escuela": "futuro",
+     "fn-d7-consejo": "futuro",
+     "fn-d7-sindicato": "futuro"
+    },
+    "timing": {
+     "fn-d1-carta": [
+      15,
+      86400
+     ],
+     "fn-d1-andon": [
+      1980,
+      43200
+     ],
+     "fn-d2-precio": [
+      95033,
+      86400
+     ],
+     "fn-d2-soldadores": [
+      111976,
+      86400
+     ],
+     "fn-d3-ppap": [
+      201551,
+      36000
+     ],
+     "fn-c-kaizen": [
+      259594,
+      43200
+     ],
+     "fn-d4-recap": [
+      273713,
+      86400
+     ],
+     "fn-d4-pleito": [
+      290350,
+      43200
+     ],
+     "fn-d5-ciber": [
+      350990,
+      21600
+     ],
+     "fn-d5-plataforma": [
+      363490,
+      86400
+     ],
+     "fn-d6-proveedor": [
+      434695,
+      57600
+     ],
+     "fn-d6-denuncia": [
+      452135,
+      43200
+     ],
+     "fn-c-escuela": [
+      465918,
+      43200
+     ],
+     "fn-d7-consejo": [
+      526472,
+      86400
+     ],
+     "fn-d7-sindicato": [
+      544936,
+      21600
+     ]
+    },
+    "decisions": {
+     "fn-d1-carta": "b",
+     "fn-d1-andon": "c",
+     "fn-d2-precio": "c",
+     "fn-d2-soldadores": "b",
+     "fn-d3-ppap": "c"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 3,
+     "best": 3
+    },
+    "profile": {
+     "archetype": "Constructor visionario",
+     "axes": {
+      "horizonte": 50,
+      "riesgo": 50,
+      "foco": 0,
+      "estilo": 38,
+      "conflicto": 50
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "puntual"
+    ],
+    "dilemmas": {
+     "n2": 2,
+     "g1": 1,
+     "d4": 0
+    },
+    "lessons": [],
+    "career": []
+   }
+  },
+  {
+   "after": 13,
+   "at": 1791563391467,
+   "snapshot": {
+    "company": "forja",
+    "tier": 0,
+    "legendary": false,
+    "seasonDay": 5,
+    "kpis": {
+     "caja": 60,
+     "margen": 61,
+     "equipo": 62,
+     "clientes": 65,
+     "consejo": 72
+    },
+    "health": 64,
+    "xp": 450,
+    "level": 2,
+    "relations": {
+     "zertuche": 58,
+     "regina": 42,
+     "marcos": 42,
+     "ramon": 40,
+     "laura": 53,
+     "daniela": 64,
+     "teresa": 66,
+     "chuy": 46,
+     "karla": 50,
+     "paty": 50,
+     "greg": 66,
+     "fermin": 58
+    },
+    "progress": {
+     "done": 7,
+     "total": 13
+    },
+    "statuses": {
+     "fn-d1-carta": "decidido",
+     "fn-d1-andon": "decidido",
+     "fn-d2-precio": "decidido",
+     "fn-d2-soldadores": "decidido",
+     "fn-d3-ppap": "decidido",
+     "fn-c-kaizen": "decidido",
+     "fn-d4-recap": "decidido",
+     "fn-d4-pleito": "decidido",
+     "fn-d5-ciber": "pendiente",
+     "fn-d5-plataforma": "futuro",
+     "fn-d6-proveedor": "futuro",
+     "fn-d6-denuncia": "futuro",
+     "fn-c-escuela": "futuro",
+     "fn-d7-consejo": "futuro",
+     "fn-d7-sindicato": "futuro"
+    },
+    "timing": {
+     "fn-d1-carta": [
+      15,
+      86400
+     ],
+     "fn-d1-andon": [
+      1980,
+      43200
+     ],
+     "fn-d2-precio": [
+      95033,
+      86400
+     ],
+     "fn-d2-soldadores": [
+      111976,
+      86400
+     ],
+     "fn-d3-ppap": [
+      201551,
+      36000
+     ],
+     "fn-c-kaizen": [
+      259594,
+      43200
+     ],
+     "fn-d4-recap": [
+      273713,
+      86400
+     ],
+     "fn-d4-pleito": [
+      290350,
+      43200
+     ],
+     "fn-d5-ciber": [
+      350990,
+      21600
+     ],
+     "fn-d5-plataforma": [
+      363490,
+      86400
+     ],
+     "fn-d6-proveedor": [
+      434695,
+      57600
+     ],
+     "fn-d6-denuncia": [
+      452135,
+      43200
+     ],
+     "fn-c-escuela": [
+      465918,
+      43200
+     ],
+     "fn-d7-consejo": [
+      526472,
+      86400
+     ],
+     "fn-d7-sindicato": [
+      544936,
+      21600
+     ]
+    },
+    "decisions": {
+     "fn-d1-carta": "b",
+     "fn-d1-andon": "c",
+     "fn-d2-precio": "c",
+     "fn-d2-soldadores": "b",
+     "fn-d3-ppap": "c",
+     "fn-c-kaizen": "b",
+     "fn-d4-recap": "c",
+     "fn-d4-pleito": "b"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 4,
+     "best": 4
+    },
+    "profile": {
+     "archetype": "Estratega equilibrado",
+     "axes": {
+      "horizonte": 57,
+      "riesgo": -10,
+      "foco": -33,
+      "estilo": 20,
+      "conflicto": 38
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "puntual"
+    ],
+    "dilemmas": {
+     "n2": 2,
+     "g1": 1,
+     "d4": 0,
+     "e2": 2
+    },
+    "lessons": [],
+    "career": []
+   }
+  },
+  {
+   "after": 16,
+   "at": 1791647096344,
+   "snapshot": {
+    "company": "forja",
+    "tier": 0,
+    "legendary": false,
+    "seasonDay": 6,
+    "kpis": {
+     "caja": 55,
+     "margen": 61,
+     "equipo": 62,
+     "clientes": 66,
+     "consejo": 74
+    },
+    "health": 64,
+    "xp": 580,
+    "level": 2,
+    "relations": {
+     "zertuche": 66,
+     "regina": 52,
+     "marcos": 58,
+     "ramon": 32,
+     "laura": 55,
+     "daniela": 67,
+     "teresa": 66,
+     "chuy": 42,
+     "karla": 50,
+     "paty": 50,
+     "greg": 74,
+     "fermin": 55
+    },
+    "progress": {
+     "done": 9,
+     "total": 13
+    },
+    "statuses": {
+     "fn-d1-carta": "decidido",
+     "fn-d1-andon": "decidido",
+     "fn-d2-precio": "decidido",
+     "fn-d2-soldadores": "decidido",
+     "fn-d3-ppap": "decidido",
+     "fn-c-kaizen": "decidido",
+     "fn-d4-recap": "decidido",
+     "fn-d4-pleito": "decidido",
+     "fn-d5-ciber": "decidido",
+     "fn-d5-plataforma": "decidido",
+     "fn-d6-proveedor": "pendiente",
+     "fn-d6-denuncia": "futuro",
+     "fn-c-escuela": "futuro",
+     "fn-d7-consejo": "futuro",
+     "fn-d7-sindicato": "futuro"
+    },
+    "timing": {
+     "fn-d1-carta": [
+      15,
+      86400
+     ],
+     "fn-d1-andon": [
+      1980,
+      43200
+     ],
+     "fn-d2-precio": [
+      95033,
+      86400
+     ],
+     "fn-d2-soldadores": [
+      111976,
+      86400
+     ],
+     "fn-d3-ppap": [
+      201551,
+      36000
+     ],
+     "fn-c-kaizen": [
+      259594,
+      43200
+     ],
+     "fn-d4-recap": [
+      273713,
+      86400
+     ],
+     "fn-d4-pleito": [
+      290350,
+      43200
+     ],
+     "fn-d5-ciber": [
+      350990,
+      21600
+     ],
+     "fn-d5-plataforma": [
+      363490,
+      86400
+     ],
+     "fn-d6-proveedor": [
+      434695,
+      57600
+     ],
+     "fn-d6-denuncia": [
+      452135,
+      43200
+     ],
+     "fn-c-escuela": [
+      465918,
+      43200
+     ],
+     "fn-d7-consejo": [
+      526472,
+      86400
+     ],
+     "fn-d7-sindicato": [
+      544936,
+      21600
+     ]
+    },
+    "decisions": {
+     "fn-d1-carta": "b",
+     "fn-d1-andon": "c",
+     "fn-d2-precio": "c",
+     "fn-d2-soldadores": "b",
+     "fn-d3-ppap": "c",
+     "fn-c-kaizen": "b",
+     "fn-d4-recap": "c",
+     "fn-d4-pleito": "b",
+     "fn-d5-ciber": "c",
+     "fn-d5-plataforma": "c"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 5,
+     "best": 5
+    },
+    "profile": {
+     "archetype": "Integrador",
+     "axes": {
+      "horizonte": 61,
+      "riesgo": -14,
+      "foco": -33,
+      "estilo": 36,
+      "conflicto": 38
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "puntual"
+    ],
+    "dilemmas": {
+     "n2": 2,
+     "g1": 1,
+     "d4": 0,
+     "e2": 2,
+     "v4": 0
+    },
+    "lessons": [],
+    "career": []
+   }
+  },
+  {
+   "after": 20,
+   "at": 1791738873338,
+   "snapshot": {
+    "company": "forja",
+    "tier": 0,
+    "legendary": false,
+    "seasonDay": 7,
+    "kpis": {
+     "caja": 49,
+     "margen": 59,
+     "equipo": 70,
+     "clientes": 68,
+     "consejo": 74
+    },
+    "health": 64,
+    "xp": 770,
+    "level": 3,
+    "relations": {
+     "zertuche": 66,
+     "regina": 44,
+     "marcos": 42,
+     "ramon": 32,
+     "laura": 55,
+     "daniela": 67,
+     "teresa": 90,
+     "chuy": 42,
+     "karla": 58,
+     "paty": 50,
+     "greg": 74,
+     "fermin": 53
+    },
+    "progress": {
+     "done": 11,
+     "total": 13
+    },
+    "statuses": {
+     "fn-d1-carta": "decidido",
+     "fn-d1-andon": "decidido",
+     "fn-d2-precio": "decidido",
+     "fn-d2-soldadores": "decidido",
+     "fn-d3-ppap": "decidido",
+     "fn-c-kaizen": "decidido",
+     "fn-d4-recap": "decidido",
+     "fn-d4-pleito": "decidido",
+     "fn-d5-ciber": "decidido",
+     "fn-d5-plataforma": "decidido",
+     "fn-d6-proveedor": "decidido",
+     "fn-d6-denuncia": "decidido",
+     "fn-c-escuela": "decidido",
+     "fn-d7-consejo": "pendiente",
+     "fn-d7-sindicato": "futuro"
+    },
+    "timing": {
+     "fn-d1-carta": [
+      15,
+      86400
+     ],
+     "fn-d1-andon": [
+      1980,
+      43200
+     ],
+     "fn-d2-precio": [
+      95033,
+      86400
+     ],
+     "fn-d2-soldadores": [
+      111976,
+      86400
+     ],
+     "fn-d3-ppap": [
+      201551,
+      36000
+     ],
+     "fn-c-kaizen": [
+      259594,
+      43200
+     ],
+     "fn-d4-recap": [
+      273713,
+      86400
+     ],
+     "fn-d4-pleito": [
+      290350,
+      43200
+     ],
+     "fn-d5-ciber": [
+      350990,
+      21600
+     ],
+     "fn-d5-plataforma": [
+      363490,
+      86400
+     ],
+     "fn-d6-proveedor": [
+      434695,
+      57600
+     ],
+     "fn-d6-denuncia": [
+      452135,
+      43200
+     ],
+     "fn-c-escuela": [
+      465918,
+      43200
+     ],
+     "fn-d7-consejo": [
+      526472,
+      86400
+     ],
+     "fn-d7-sindicato": [
+      544936,
+      21600
+     ]
+    },
+    "decisions": {
+     "fn-d1-carta": "b",
+     "fn-d1-andon": "c",
+     "fn-d2-precio": "c",
+     "fn-d2-soldadores": "b",
+     "fn-d3-ppap": "c",
+     "fn-c-kaizen": "b",
+     "fn-d4-recap": "c",
+     "fn-d4-pleito": "b",
+     "fn-d5-ciber": "c",
+     "fn-d5-plataforma": "c",
+     "fn-d6-proveedor": "a",
+     "fn-d6-denuncia": "a",
+     "fn-c-escuela": "a"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 6,
+     "best": 6
+    },
+    "profile": {
+     "archetype": "Integrador",
+     "axes": {
+      "horizonte": 67,
+      "riesgo": -6,
+      "foco": 20,
+      "estilo": 38,
+      "conflicto": 50
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "puntual",
+     "gente"
+    ],
+    "dilemmas": {
+     "n2": 2,
+     "g1": 1,
+     "d4": 0,
+     "e2": 2,
+     "v4": 0,
+     "c1": 1
+    },
+    "lessons": [],
+    "career": []
+   }
+  },
+  {
+   "after": 23,
+   "at": 1791757396600,
+   "snapshot": {
+    "company": "forja",
+    "tier": 0,
+    "legendary": false,
+    "seasonDay": 7,
+    "kpis": {
+     "caja": 48,
+     "margen": 56,
+     "equipo": 72,
+     "clientes": 68,
+     "consejo": 70
+    },
+    "health": 63,
+    "xp": 865,
+    "level": 3,
+    "relations": {
+     "zertuche": 50,
+     "regina": 38,
+     "marcos": 42,
+     "ramon": 34,
+     "laura": 53,
+     "daniela": 67,
+     "teresa": 93,
+     "chuy": 46,
+     "karla": 58,
+     "paty": 50,
+     "greg": 74,
+     "fermin": 53
+    },
+    "progress": {
+     "done": 13,
+     "total": 13
+    },
+    "statuses": {
+     "fn-d1-carta": "decidido",
+     "fn-d1-andon": "decidido",
+     "fn-d2-precio": "decidido",
+     "fn-d2-soldadores": "decidido",
+     "fn-d3-ppap": "decidido",
+     "fn-c-kaizen": "decidido",
+     "fn-d4-recap": "decidido",
+     "fn-d4-pleito": "decidido",
+     "fn-d5-ciber": "decidido",
+     "fn-d5-plataforma": "decidido",
+     "fn-d6-proveedor": "decidido",
+     "fn-d6-denuncia": "decidido",
+     "fn-c-escuela": "decidido",
+     "fn-d7-consejo": "decidido",
+     "fn-d7-sindicato": "decidido"
+    },
+    "timing": {
+     "fn-d1-carta": [
+      15,
+      86400
+     ],
+     "fn-d1-andon": [
+      1980,
+      43200
+     ],
+     "fn-d2-precio": [
+      95033,
+      86400
+     ],
+     "fn-d2-soldadores": [
+      111976,
+      86400
+     ],
+     "fn-d3-ppap": [
+      201551,
+      36000
+     ],
+     "fn-c-kaizen": [
+      259594,
+      43200
+     ],
+     "fn-d4-recap": [
+      273713,
+      86400
+     ],
+     "fn-d4-pleito": [
+      290350,
+      43200
+     ],
+     "fn-d5-ciber": [
+      350990,
+      21600
+     ],
+     "fn-d5-plataforma": [
+      363490,
+      86400
+     ],
+     "fn-d6-proveedor": [
+      434695,
+      57600
+     ],
+     "fn-d6-denuncia": [
+      452135,
+      43200
+     ],
+     "fn-c-escuela": [
+      465918,
+      43200
+     ],
+     "fn-d7-consejo": [
+      526472,
+      86400
+     ],
+     "fn-d7-sindicato": [
+      544936,
+      21600
+     ]
+    },
+    "decisions": {
+     "fn-d1-carta": "b",
+     "fn-d1-andon": "c",
+     "fn-d2-precio": "c",
+     "fn-d2-soldadores": "b",
+     "fn-d3-ppap": "c",
+     "fn-c-kaizen": "b",
+     "fn-d4-recap": "c",
+     "fn-d4-pleito": "b",
+     "fn-d5-ciber": "c",
+     "fn-d5-plataforma": "c",
+     "fn-d6-proveedor": "a",
+     "fn-d6-denuncia": "a",
+     "fn-c-escuela": "a",
+     "fn-d7-consejo": "c",
+     "fn-d7-sindicato": "b"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 7,
+     "best": 7
+    },
+    "profile": {
+     "archetype": "Arquitecto social",
+     "axes": {
+      "horizonte": 67,
+      "riesgo": 0,
+      "foco": 33,
+      "estilo": 28,
+      "conflicto": 21
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "racha7",
+     "puntual",
+     "gente"
+    ],
+    "dilemmas": {
+     "n2": 2,
+     "g1": 1,
+     "d4": 0,
+     "e2": 2,
+     "v4": 0,
+     "c1": 1,
+     "s1": 3
+    },
+    "lessons": [],
+    "career": []
+   }
+  },
+  {
+   "after": 27,
+   "at": 1791757576600,
+   "snapshot": {
+    "company": "forja",
+    "tier": 0,
+    "legendary": false,
+    "seasonDay": 7,
+    "kpis": {
+     "caja": 46,
+     "margen": 56,
+     "equipo": 69,
+     "clientes": 68,
+     "consejo": 65
+    },
+    "health": 61,
+    "xp": 865,
+    "level": 3,
+    "relations": {
+     "zertuche": 50,
+     "regina": 38,
+     "marcos": 42,
+     "ramon": 34,
+     "laura": 53,
+     "daniela": 67,
+     "teresa": 93,
+     "chuy": 46,
+     "karla": 58,
+     "paty": 50,
+     "greg": 74,
+     "fermin": 53
+    },
+    "progress": {
+     "done": 13,
+     "total": 13
+    },
+    "statuses": {
+     "fn-d1-carta": "decidido",
+     "fn-d1-andon": "decidido",
+     "fn-d2-precio": "decidido",
+     "fn-d2-soldadores": "decidido",
+     "fn-d3-ppap": "decidido",
+     "fn-c-kaizen": "decidido",
+     "fn-d4-recap": "decidido",
+     "fn-d4-pleito": "decidido",
+     "fn-d5-ciber": "decidido",
+     "fn-d5-plataforma": "decidido",
+     "fn-d6-proveedor": "decidido",
+     "fn-d6-denuncia": "decidido",
+     "fn-c-escuela": "decidido",
+     "fn-d7-consejo": "decidido",
+     "fn-d7-sindicato": "decidido"
+    },
+    "timing": {
+     "fn-d1-carta": [
+      15,
+      86400
+     ],
+     "fn-d1-andon": [
+      1980,
+      43200
+     ],
+     "fn-d2-precio": [
+      95033,
+      86400
+     ],
+     "fn-d2-soldadores": [
+      111976,
+      86400
+     ],
+     "fn-d3-ppap": [
+      201551,
+      36000
+     ],
+     "fn-c-kaizen": [
+      259594,
+      43200
+     ],
+     "fn-d4-recap": [
+      273713,
+      86400
+     ],
+     "fn-d4-pleito": [
+      290350,
+      43200
+     ],
+     "fn-d5-ciber": [
+      350990,
+      21600
+     ],
+     "fn-d5-plataforma": [
+      363490,
+      86400
+     ],
+     "fn-d6-proveedor": [
+      434695,
+      57600
+     ],
+     "fn-d6-denuncia": [
+      452135,
+      43200
+     ],
+     "fn-c-escuela": [
+      465918,
+      43200
+     ],
+     "fn-d7-consejo": [
+      526472,
+      86400
+     ],
+     "fn-d7-sindicato": [
+      544936,
+      21600
+     ]
+    },
+    "decisions": {
+     "fn-d1-carta": "b",
+     "fn-d1-andon": "c",
+     "fn-d2-precio": "c",
+     "fn-d2-soldadores": "b",
+     "fn-d3-ppap": "c",
+     "fn-c-kaizen": "b",
+     "fn-d4-recap": "c",
+     "fn-d4-pleito": "b",
+     "fn-d5-ciber": "c",
+     "fn-d5-plataforma": "c",
+     "fn-d6-proveedor": "a",
+     "fn-d6-denuncia": "a",
+     "fn-c-escuela": "a",
+     "fn-d7-consejo": "c",
+     "fn-d7-sindicato": "b"
+    },
+    "change": {
+     "adopted": 3,
+     "share": 0.3,
+     "weeksUsed": 6,
+     "credibility": 50,
+     "done": true,
+     "ok": false
+    },
+    "verdict": {
+     "passed": false,
+     "passLine": 50,
+     "answered": 1,
+     "approved": {
+      "caja": false,
+      "margen": true,
+      "equipo": true,
+      "clientes": true,
+      "consejo": true
+     }
+    },
+    "streak": {
+     "days": 7,
+     "best": 7
+    },
+    "profile": {
+     "archetype": "Arquitecto social",
+     "axes": {
+      "horizonte": 67,
+      "riesgo": 0,
+      "foco": 33,
+      "estilo": 28,
+      "conflicto": 21
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "racha7",
+     "puntual"
+    ],
+    "dilemmas": {
+     "n2": 2,
+     "g1": 1,
+     "d4": 0,
+     "e2": 2,
+     "v4": 0,
+     "c1": 1,
+     "s1": 3
+    },
+    "lessons": [],
+    "career": []
+   }
+  },
+  {
+   "after": 28,
+   "at": 1791757636600,
+   "snapshot": {
+    "company": "forja",
+    "tier": 0,
+    "legendary": false,
+    "seasonDay": 1,
+    "kpis": {
+     "caja": 64,
+     "margen": 60,
+     "equipo": 64,
+     "clientes": 66,
+     "consejo": 70
+    },
+    "health": 65,
+    "xp": 865,
+    "level": 3,
+    "relations": {
+     "zertuche": 50,
+     "regina": 50,
+     "marcos": 50,
+     "ramon": 50,
+     "laura": 50,
+     "daniela": 50,
+     "teresa": 50,
+     "chuy": 50,
+     "karla": 50,
+     "paty": 50,
+     "greg": 50,
+     "fermin": 50
+    },
+    "progress": {
+     "done": 0,
+     "total": 13
+    },
+    "statuses": {
+     "fn-d1-carta": "futuro",
+     "fn-d1-andon": "futuro",
+     "fn-d2-precio": "futuro",
+     "fn-d2-soldadores": "futuro",
+     "fn-d3-ppap": "futuro",
+     "fn-d4-recap": "futuro",
+     "fn-d4-pleito": "futuro",
+     "fn-d5-ciber": "futuro",
+     "fn-d5-plataforma": "futuro",
+     "fn-d6-proveedor": "futuro",
+     "fn-d6-denuncia": "futuro",
+     "fn-d7-consejo": "futuro",
+     "fn-d7-sindicato": "futuro"
+    },
+    "timing": {
+     "fn-d1-carta": [
+      15,
+      86400
+     ],
+     "fn-d1-andon": [
+      2182,
+      43200
+     ],
+     "fn-d2-precio": [
+      62953,
+      86400
+     ],
+     "fn-d2-soldadores": [
+      85583,
+      86400
+     ],
+     "fn-d3-ppap": [
+      174535,
+      36000
+     ],
+     "fn-d4-recap": [
+      251567,
+      86400
+     ],
+     "fn-d4-pleito": [
+      266729,
+      43200
+     ],
+     "fn-d5-ciber": [
+      325461,
+      21600
+     ],
+     "fn-d5-plataforma": [
+      333945,
+      86400
+     ],
+     "fn-d6-proveedor": [
+      404985,
+      57600
+     ],
+     "fn-d6-denuncia": [
+      426390,
+      43200
+     ],
+     "fn-d7-consejo": [
+      504663,
+      86400
+     ],
+     "fn-d7-sindicato": [
+      518237,
+      21600
+     ]
+    },
+    "decisions": {},
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 7,
+     "best": 7
+    },
+    "profile": {
+     "archetype": "Arquitecto social",
+     "axes": {
+      "horizonte": 67,
+      "riesgo": 0,
+      "foco": 33,
+      "estilo": 28,
+      "conflicto": 21
+     }
+    },
+    "badges": [
+     "racha3",
+     "racha7"
+    ],
+    "dilemmas": {
+     "n2": 2,
+     "g1": 1,
+     "d4": 0,
+     "e2": 2,
+     "v4": 0,
+     "c1": 1,
+     "s1": 3
+    },
+    "lessons": [],
+    "career": [
+     {
+      "company": "forja",
+      "tier": 0,
+      "passed": false,
+      "health": 61,
+      "answered": 100,
+      "xp": 735,
+      "kpis": {
+       "caja": 46,
+       "margen": 56,
+       "equipo": 69,
+       "clientes": 68,
+       "consejo": 65
+      },
+      "change": {
+       "adopted": 3,
+       "weeks": 6,
+       "ok": false
+      }
+     }
+    ]
+   }
+  }
+ ]
+}

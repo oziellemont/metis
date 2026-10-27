@@ -1,0 +1,8629 @@
+{
+ "id": "carrera-legendaria",
+ "description": "Carrera larga con el jugador cuidadoso: aprueba Cumbre (nivel 0) y Forja (nivel 1); en Brasa nivel 2 reprueba por Caja 53 < 54 y repite con el mismo resultado (hallazgo de balance registrado en F0-1).",
+ "actions": [
+  {
+   "type": "start",
+   "at": 1791212400000,
+   "name": "Hugo Leal",
+   "company": "cumbre",
+   "settings": {
+    "tz": "America/Monterrey"
+   }
+  },
+  {
+   "type": "dilemma",
+   "at": 1791212420000,
+   "id": "n2",
+   "option": 1
+  },
+  {
+   "type": "lesson",
+   "at": 1791212440000,
+   "id": "mentalidad"
+  },
+  {
+   "type": "decide",
+   "at": 1791212440000,
+   "item": "d1-bienvenida",
+   "option": "a"
+  },
+  {
+   "type": "decide",
+   "at": 1791214135768,
+   "item": "d1-hector",
+   "option": "b"
+  },
+  {
+   "type": "dilemma",
+   "at": 1791296883672,
+   "id": "a2",
+   "option": 1
+  },
+  {
+   "type": "lesson",
+   "at": 1791296903672,
+   "id": "personas"
+  },
+  {
+   "type": "decide",
+   "at": 1791296903672,
+   "item": "d2-supernorte",
+   "option": "c"
+  },
+  {
+   "type": "decide",
+   "at": 1791310590722,
+   "item": "d2-ana",
+   "option": "b"
+  },
+  {
+   "type": "dilemma",
+   "at": 1791383965003,
+   "id": "d5",
+   "option": 1
+  },
+  {
+   "type": "lesson",
+   "at": 1791383985003,
+   "id": "equipos"
+  },
+  {
+   "type": "decide",
+   "at": 1791383985003,
+   "item": "d3-planta",
+   "option": "b"
+  },
+  {
+   "type": "decide",
+   "at": 1791401574290,
+   "item": "d3-diego",
+   "option": "b"
+  },
+  {
+   "type": "dilemma",
+   "at": 1791479809022,
+   "id": "e3",
+   "option": 1
+  },
+  {
+   "type": "lesson",
+   "at": 1791479829022,
+   "id": "alineacion"
+  },
+  {
+   "type": "decide",
+   "at": 1791479829022,
+   "item": "d4-objetivos",
+   "option": "a"
+  },
+  {
+   "type": "decide",
+   "at": 1791487255682,
+   "item": "d4-sindicato",
+   "option": "b"
+  },
+  {
+   "type": "decide",
+   "at": 1791502467678,
+   "item": "c-supernorte-castigo",
+   "option": "b"
+  },
+  {
+   "type": "dilemma",
+   "at": 1791559441092,
+   "id": "v4",
+   "option": 1
+  },
+  {
+   "type": "lesson",
+   "at": 1791559461092,
+   "id": "negociacion"
+  },
+  {
+   "type": "decide",
+   "at": 1791559461092,
+   "item": "d5-credito",
+   "option": "b"
+  },
+  {
+   "type": "decide",
+   "at": 1791568110520,
+   "item": "d5-consejo",
+   "option": "a"
+  },
+  {
+   "type": "decide",
+   "at": 1791576621510,
+   "item": "c-ana-brilla",
+   "option": "a"
+  },
+  {
+   "type": "decide",
+   "at": 1791592470539,
+   "item": "c-planta-accidente",
+   "option": "b"
+  },
+  {
+   "type": "dilemma",
+   "at": 1791650927870,
+   "id": "c2",
+   "option": 1
+  },
+  {
+   "type": "lesson",
+   "at": 1791650947870,
+   "id": "comunicacion"
+  },
+  {
+   "type": "decide",
+   "at": 1791650947870,
+   "item": "d6-gastos",
+   "option": "b"
+  },
+  {
+   "type": "decide",
+   "at": 1791662620706,
+   "item": "d6-clima",
+   "option": "c"
+  },
+  {
+   "type": "dilemma",
+   "at": 1791732163397,
+   "id": "s1",
+   "option": 1
+  },
+  {
+   "type": "lesson",
+   "at": 1791732183397,
+   "id": "cultura"
+  },
+  {
+   "type": "decide",
+   "at": 1791732183397,
+   "item": "c-piloto",
+   "option": "b"
+  },
+  {
+   "type": "decide",
+   "at": 1791763624763,
+   "item": "d7-sucesion",
+   "option": "a"
+  },
+  {
+   "type": "changeStart",
+   "at": 1791763744763
+  },
+  {
+   "type": "lever",
+   "at": 1791763774763,
+   "lever": "piloto",
+   "targets": [
+    "carla",
+    "diego"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1791763804763,
+   "lever": "coalicion",
+   "targets": [
+    "lucia",
+    "diego",
+    "ana"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1791763834763,
+   "lever": "avance",
+   "targets": []
+  },
+  {
+   "type": "lever",
+   "at": 1791763864763,
+   "lever": "ejemplo",
+   "targets": []
+  },
+  {
+   "type": "lever",
+   "at": 1791763894763,
+   "lever": "capacitacion",
+   "targets": [
+    "mariana",
+    "ana",
+    "paty"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1791763924763,
+   "lever": "avance",
+   "targets": []
+  },
+  {
+   "type": "lever",
+   "at": 1791763954763,
+   "lever": "entrevista",
+   "targets": [
+    "hector"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1791763984763,
+   "lever": "entrevista",
+   "targets": [
+    "roberto"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1791764014763,
+   "lever": "reconocer",
+   "targets": [
+    "mariana",
+    "paty"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1791764044763,
+   "lever": "piloto",
+   "targets": [
+    "ramiro",
+    "mariana"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1791764074763,
+   "lever": "reconocer",
+   "targets": [
+    "ana",
+    "paty"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1791764104763,
+   "lever": "entrevista",
+   "targets": [
+    "hector"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1791764134763,
+   "lever": "entrevista",
+   "targets": [
+    "hector"
+   ]
+  },
+  {
+   "type": "changeClose",
+   "at": 1791764194763
+  },
+  {
+   "type": "advance",
+   "at": 1791764254763
+  },
+  {
+   "type": "lesson",
+   "at": 1791764274763,
+   "id": "finanzas"
+  },
+  {
+   "type": "decide",
+   "at": 1791764274763,
+   "item": "fn-d1-carta",
+   "option": "a"
+  },
+  {
+   "type": "decide",
+   "at": 1791767456331,
+   "item": "fn-d1-andon",
+   "option": "b"
+  },
+  {
+   "type": "dilemma",
+   "at": 1791825198456,
+   "id": "g1",
+   "option": 1
+  },
+  {
+   "type": "lesson",
+   "at": 1791825218456,
+   "id": "innovacion"
+  },
+  {
+   "type": "decide",
+   "at": 1791825218456,
+   "item": "fn-d2-precio",
+   "option": "b"
+  },
+  {
+   "type": "decide",
+   "at": 1791843674507,
+   "item": "fn-d2-soldadores",
+   "option": "c"
+  },
+  {
+   "type": "dilemma",
+   "at": 1791913235362,
+   "id": "q2",
+   "option": 1
+  },
+  {
+   "type": "lesson",
+   "at": 1791913255362,
+   "id": "estrategia"
+  },
+  {
+   "type": "decide",
+   "at": 1791913255362,
+   "item": "fn-c-escape",
+   "option": "a"
+  },
+  {
+   "type": "decide",
+   "at": 1791924735477,
+   "item": "fn-d3-ppap",
+   "option": "a"
+  },
+  {
+   "type": "dilemma",
+   "at": 1792008743678,
+   "id": "k1",
+   "option": 1
+  },
+  {
+   "type": "lesson",
+   "at": 1792008763678,
+   "id": "mentalidad-2"
+  },
+  {
+   "type": "decide",
+   "at": 1792008763678,
+   "item": "fn-d4-recap",
+   "option": "c"
+  },
+  {
+   "type": "decide",
+   "at": 1792015586411,
+   "item": "fn-d4-pleito",
+   "option": "a"
+  },
+  {
+   "type": "dilemma",
+   "at": 1792076601902,
+   "id": "p3",
+   "option": 1
+  },
+  {
+   "type": "lesson",
+   "at": 1792076621902,
+   "id": "personas-2"
+  },
+  {
+   "type": "decide",
+   "at": 1792076621902,
+   "item": "fn-d5-ciber",
+   "option": "a"
+  },
+  {
+   "type": "decide",
+   "at": 1792089776622,
+   "item": "fn-d5-plataforma",
+   "option": "c"
+  },
+  {
+   "type": "dilemma",
+   "at": 1792165344322,
+   "id": "r3",
+   "option": 1
+  },
+  {
+   "type": "lesson",
+   "at": 1792165364322,
+   "id": "personas-3"
+  },
+  {
+   "type": "decide",
+   "at": 1792165364322,
+   "item": "fn-d6-proveedor",
+   "option": "b"
+  },
+  {
+   "type": "decide",
+   "at": 1792177662309,
+   "item": "fn-d6-denuncia",
+   "option": "a"
+  },
+  {
+   "type": "dilemma",
+   "at": 1792251808104,
+   "id": "d3",
+   "option": 1
+  },
+  {
+   "type": "lesson",
+   "at": 1792251828104,
+   "id": "conversaciones"
+  },
+  {
+   "type": "decide",
+   "at": 1792251828104,
+   "item": "fn-d7-consejo",
+   "option": "a"
+  },
+  {
+   "type": "decide",
+   "at": 1792282330000,
+   "item": "fn-d7-sindicato",
+   "option": "a"
+  },
+  {
+   "type": "changeStart",
+   "at": 1792282450000
+  },
+  {
+   "type": "lever",
+   "at": 1792282480000,
+   "lever": "capacitacion",
+   "targets": [
+    "laura",
+    "teresa",
+    "karla"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1792282510000,
+   "lever": "reconocer",
+   "targets": [
+    "laura",
+    "daniela"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1792282540000,
+   "lever": "piloto",
+   "targets": [
+    "marcos",
+    "teresa"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1792282570000,
+   "lever": "avance",
+   "targets": []
+  },
+  {
+   "type": "lever",
+   "at": 1792282600000,
+   "lever": "avance",
+   "targets": []
+  },
+  {
+   "type": "lever",
+   "at": 1792282630000,
+   "lever": "piloto",
+   "targets": [
+    "chuy",
+    "karla"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1792282660000,
+   "lever": "ejemplo",
+   "targets": []
+  },
+  {
+   "type": "lever",
+   "at": 1792282690000,
+   "lever": "reconocer",
+   "targets": [
+    "marcos",
+    "chuy"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1792282720000,
+   "lever": "piloto",
+   "targets": [
+    "regina",
+    "chuy"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1792282750000,
+   "lever": "avance",
+   "targets": []
+  },
+  {
+   "type": "changeClose",
+   "at": 1792282810000
+  },
+  {
+   "type": "advance",
+   "at": 1792282870000
+  },
+  {
+   "type": "lesson",
+   "at": 1792282890000,
+   "id": "conversaciones-2"
+  },
+  {
+   "type": "decide",
+   "at": 1792282890000,
+   "item": "gb-d1-carta",
+   "option": "a"
+  },
+  {
+   "type": "decide",
+   "at": 1792284130016,
+   "item": "gb-d1-app",
+   "option": "c"
+  },
+  {
+   "type": "dilemma",
+   "at": 1792338524693,
+   "id": "q3",
+   "option": 0
+  },
+  {
+   "type": "lesson",
+   "at": 1792338544693,
+   "id": "equipos-2"
+  },
+  {
+   "type": "decide",
+   "at": 1792338544693,
+   "item": "gb-d2-menu",
+   "option": "b"
+  },
+  {
+   "type": "decide",
+   "at": 1792355434168,
+   "item": "gb-d2-propinas",
+   "option": "a"
+  },
+  {
+   "type": "dilemma",
+   "at": 1792420409237,
+   "id": "r2",
+   "option": 1
+  },
+  {
+   "type": "lesson",
+   "at": 1792420429237,
+   "id": "alineacion-2"
+  },
+  {
+   "type": "decide",
+   "at": 1792420429237,
+   "item": "gb-d3-brote",
+   "option": "c"
+  },
+  {
+   "type": "decide",
+   "at": 1792435154757,
+   "item": "gb-d3-franquicia",
+   "option": "b"
+  },
+  {
+   "type": "decide",
+   "at": 1792453139387,
+   "item": "gb-c-cocinas",
+   "option": "a"
+  },
+  {
+   "type": "dilemma",
+   "at": 1792519076366,
+   "id": "s3",
+   "option": 1
+  },
+  {
+   "type": "lesson",
+   "at": 1792519096366,
+   "id": "negociacion-2"
+  },
+  {
+   "type": "decide",
+   "at": 1792519096366,
+   "item": "gb-d4-carne",
+   "option": "a"
+  },
+  {
+   "type": "decide",
+   "at": 1792541306022,
+   "item": "gb-d4-gerente",
+   "option": "a"
+  },
+  {
+   "type": "dilemma",
+   "at": 1792602543749,
+   "id": "v2",
+   "option": 1
+  },
+  {
+   "type": "lesson",
+   "at": 1792602563749,
+   "id": "comunicacion-2"
+  },
+  {
+   "type": "decide",
+   "at": 1792602563749,
+   "item": "gb-d5-cdmx",
+   "option": "b"
+  },
+  {
+   "type": "dilemma",
+   "at": 1792692711293,
+   "id": "e5",
+   "option": 1
+  },
+  {
+   "type": "lesson",
+   "at": 1792692731293,
+   "id": "cultura-2"
+  },
+  {
+   "type": "decide",
+   "at": 1792692731293,
+   "item": "gb-d6-dark",
+   "option": "c"
+  },
+  {
+   "type": "decide",
+   "at": 1792699813432,
+   "item": "gb-d6-sucesion",
+   "option": "b"
+  },
+  {
+   "type": "dilemma",
+   "at": 1792771327992,
+   "id": "p2",
+   "option": 1
+  },
+  {
+   "type": "lesson",
+   "at": 1792771347992,
+   "id": "finanzas-2"
+  },
+  {
+   "type": "decide",
+   "at": 1792771347992,
+   "item": "gb-d7-consejo",
+   "option": "b"
+  },
+  {
+   "type": "changeStart",
+   "at": 1792771467992
+  },
+  {
+   "type": "lever",
+   "at": 1792771497992,
+   "lever": "ejemplo",
+   "targets": []
+  },
+  {
+   "type": "lever",
+   "at": 1792771527992,
+   "lever": "capacitacion",
+   "targets": [
+    "ignacio",
+    "andres",
+    "vero"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1792771557992,
+   "lever": "entrevista",
+   "targets": [
+    "ignacio"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1792771587992,
+   "lever": "entrevista",
+   "targets": [
+    "andres"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1792771617992,
+   "lever": "capacitacion",
+   "targets": [
+    "ignacio",
+    "andres",
+    "vero"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1792771647992,
+   "lever": "avance",
+   "targets": []
+  },
+  {
+   "type": "lever",
+   "at": 1792771677992,
+   "lever": "piloto",
+   "targets": [
+    "lourdes",
+    "paty"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1792771707992,
+   "lever": "entrevista",
+   "targets": [
+    "lourdes"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1792771737992,
+   "lever": "avance",
+   "targets": []
+  },
+  {
+   "type": "lever",
+   "at": 1792771767992,
+   "lever": "reconocer",
+   "targets": [
+    "lourdes",
+    "paty"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1792771797992,
+   "lever": "reconocer",
+   "targets": [
+    "lourdes",
+    "paty"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1792771827992,
+   "lever": "avance",
+   "targets": []
+  },
+  {
+   "type": "changeClose",
+   "at": 1792771887992
+  },
+  {
+   "type": "advance",
+   "at": 1792771947992
+  },
+  {
+   "type": "decide",
+   "at": 1792771963992,
+   "item": "gb-d1-carta",
+   "option": "a"
+  },
+  {
+   "type": "decide",
+   "at": 1792774587288,
+   "item": "gb-d1-app",
+   "option": "c"
+  },
+  {
+   "type": "dilemma",
+   "at": 1792854165365,
+   "id": "n4",
+   "option": 1
+  },
+  {
+   "type": "decide",
+   "at": 1792854165365,
+   "item": "gb-d2-menu",
+   "option": "b"
+  },
+  {
+   "type": "decide",
+   "at": 1792865235160,
+   "item": "gb-d2-propinas",
+   "option": "a"
+  },
+  {
+   "type": "dilemma",
+   "at": 1792938258216,
+   "id": "g4",
+   "option": 0
+  },
+  {
+   "type": "decide",
+   "at": 1792938258216,
+   "item": "gb-d3-brote",
+   "option": "c"
+  },
+  {
+   "type": "decide",
+   "at": 1792951914366,
+   "item": "gb-d3-franquicia",
+   "option": "b"
+  },
+  {
+   "type": "decide",
+   "at": 1792970862069,
+   "item": "gb-c-cocinas",
+   "option": "a"
+  },
+  {
+   "type": "dilemma",
+   "at": 1793036649835,
+   "id": "k2",
+   "option": 0
+  },
+  {
+   "type": "decide",
+   "at": 1793036649835,
+   "item": "gb-d4-carne",
+   "option": "a"
+  },
+  {
+   "type": "decide",
+   "at": 1793050737098,
+   "item": "gb-d4-gerente",
+   "option": "a"
+  },
+  {
+   "type": "dilemma",
+   "at": 1793111926670,
+   "id": "c4",
+   "option": 1
+  },
+  {
+   "type": "decide",
+   "at": 1793111926670,
+   "item": "gb-d5-cdmx",
+   "option": "b"
+  },
+  {
+   "type": "dilemma",
+   "at": 1793205860966,
+   "id": "a3",
+   "option": 1
+  },
+  {
+   "type": "decide",
+   "at": 1793205860966,
+   "item": "gb-d6-dark",
+   "option": "c"
+  },
+  {
+   "type": "decide",
+   "at": 1793220784898,
+   "item": "gb-d6-sucesion",
+   "option": "b"
+  },
+  {
+   "type": "dilemma",
+   "at": 1793313747134,
+   "id": "n5",
+   "option": 1
+  },
+  {
+   "type": "decide",
+   "at": 1793313747134,
+   "item": "gb-d7-consejo",
+   "option": "b"
+  },
+  {
+   "type": "changeStart",
+   "at": 1793313867134
+  },
+  {
+   "type": "lever",
+   "at": 1793313897134,
+   "lever": "ejemplo",
+   "targets": []
+  },
+  {
+   "type": "lever",
+   "at": 1793313927134,
+   "lever": "capacitacion",
+   "targets": [
+    "ignacio",
+    "andres",
+    "vero"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1793313957134,
+   "lever": "entrevista",
+   "targets": [
+    "ignacio"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1793313987134,
+   "lever": "entrevista",
+   "targets": [
+    "andres"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1793314017134,
+   "lever": "capacitacion",
+   "targets": [
+    "ignacio",
+    "andres",
+    "vero"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1793314047134,
+   "lever": "avance",
+   "targets": []
+  },
+  {
+   "type": "lever",
+   "at": 1793314077134,
+   "lever": "piloto",
+   "targets": [
+    "lourdes",
+    "paty"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1793314107134,
+   "lever": "entrevista",
+   "targets": [
+    "lourdes"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1793314137134,
+   "lever": "avance",
+   "targets": []
+  },
+  {
+   "type": "lever",
+   "at": 1793314167134,
+   "lever": "reconocer",
+   "targets": [
+    "lourdes",
+    "paty"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1793314197134,
+   "lever": "reconocer",
+   "targets": [
+    "lourdes",
+    "paty"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1793314227134,
+   "lever": "avance",
+   "targets": []
+  },
+  {
+   "type": "changeClose",
+   "at": 1793314287134
+  },
+  {
+   "type": "advance",
+   "at": 1793314347134
+  }
+ ],
+ "checkpoints": [
+  {
+   "after": 5,
+   "at": 1791296863672,
+   "snapshot": {
+    "company": "cumbre",
+    "tier": 0,
+    "legendary": false,
+    "seasonDay": 2,
+    "kpis": {
+     "caja": 60,
+     "margen": 57,
+     "equipo": 60,
+     "clientes": 67,
+     "consejo": 60
+    },
+    "health": 61,
+    "xp": 155,
+    "level": 1,
+    "relations": {
+     "ramiro": 42,
+     "carla": 55,
+     "lucia": 56,
+     "hector": 50,
+     "mariana": 50,
+     "javier": 58,
+     "diego": 48,
+     "ana": 50,
+     "paty": 50,
+     "roberto": 53,
+     "sofia": 50
+    },
+    "progress": {
+     "done": 2,
+     "total": 13
+    },
+    "statuses": {
+     "d1-bienvenida": "decidido",
+     "d1-hector": "decidido",
+     "d2-supernorte": "pendiente",
+     "d2-ana": "futuro",
+     "d3-planta": "futuro",
+     "d3-diego": "futuro",
+     "d4-objetivos": "futuro",
+     "d4-sindicato": "futuro",
+     "d5-credito": "futuro",
+     "d5-consejo": "futuro",
+     "d6-gastos": "futuro",
+     "d6-clima": "futuro",
+     "d7-sucesion": "futuro"
+    },
+    "timing": {
+     "d1-bienvenida": [
+      15,
+      86400
+     ],
+     "d1-hector": [
+      1735,
+      43200
+     ],
+     "d2-supernorte": [
+      84463,
+      86400
+     ],
+     "d2-ana": [
+      98190,
+      86400
+     ],
+     "d3-planta": [
+      171544,
+      28800
+     ],
+     "d3-diego": [
+      189173,
+      86400
+     ],
+     "d4-objetivos": [
+      267388,
+      86400
+     ],
+     "d4-sindicato": [
+      274855,
+      36000
+     ],
+     "d5-credito": [
+      347020,
+      86400
+     ],
+     "d5-consejo": [
+      355710,
+      86400
+     ],
+     "d6-gastos": [
+      438507,
+      86400
+     ],
+     "d6-clima": [
+      450220,
+      86400
+     ],
+     "d7-sucesion": [
+      551224,
+      86400
+     ]
+    },
+    "decisions": {
+     "d1-bienvenida": "a",
+     "d1-hector": "b"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 1,
+     "best": 1
+    },
+    "profile": {
+     "archetype": "Estratega equilibrado",
+     "axes": {
+      "horizonte": 100,
+      "riesgo": -50,
+      "foco": 0,
+      "estilo": 25,
+      "conflicto": 100
+     }
+    },
+    "badges": [
+     "primera"
+    ],
+    "dilemmas": {
+     "n2": 1
+    },
+    "lessons": [
+     "mentalidad"
+    ],
+    "career": []
+   }
+  },
+  {
+   "after": 9,
+   "at": 1791383945003,
+   "snapshot": {
+    "company": "cumbre",
+    "tier": 0,
+    "legendary": false,
+    "seasonDay": 3,
+    "kpis": {
+     "caja": 60,
+     "margen": 59,
+     "equipo": 65,
+     "clientes": 59,
+     "consejo": 60
+    },
+    "health": 61,
+    "xp": 300,
+    "level": 1,
+    "relations": {
+     "ramiro": 42,
+     "carla": 58,
+     "lucia": 64,
+     "hector": 42,
+     "mariana": 50,
+     "javier": 58,
+     "diego": 56,
+     "ana": 66,
+     "paty": 50,
+     "roberto": 53,
+     "sofia": 34
+    },
+    "progress": {
+     "done": 4,
+     "total": 13
+    },
+    "statuses": {
+     "d1-bienvenida": "decidido",
+     "d1-hector": "decidido",
+     "d2-supernorte": "decidido",
+     "d2-ana": "decidido",
+     "d3-planta": "pendiente",
+     "d3-diego": "futuro",
+     "d4-objetivos": "futuro",
+     "d4-sindicato": "futuro",
+     "c-supernorte-castigo": "futuro",
+     "d5-credito": "futuro",
+     "d5-consejo": "futuro",
+     "c-ana-brilla": "futuro",
+     "d6-gastos": "futuro",
+     "d6-clima": "futuro",
+     "d7-sucesion": "futuro"
+    },
+    "timing": {
+     "d1-bienvenida": [
+      15,
+      86400
+     ],
+     "d1-hector": [
+      1735,
+      43200
+     ],
+     "d2-supernorte": [
+      84463,
+      86400
+     ],
+     "d2-ana": [
+      98190,
+      86400
+     ],
+     "d3-planta": [
+      171544,
+      28800
+     ],
+     "d3-diego": [
+      189173,
+      86400
+     ],
+     "d4-objetivos": [
+      267388,
+      86400
+     ],
+     "d4-sindicato": [
+      274855,
+      36000
+     ],
+     "c-supernorte-castigo": [
+      290067,
+      86400
+     ],
+     "d5-credito": [
+      347020,
+      86400
+     ],
+     "d5-consejo": [
+      355710,
+      86400
+     ],
+     "c-ana-brilla": [
+      364221,
+      43200
+     ],
+     "d6-gastos": [
+      438507,
+      86400
+     ],
+     "d6-clima": [
+      450220,
+      86400
+     ],
+     "d7-sucesion": [
+      551224,
+      86400
+     ]
+    },
+    "decisions": {
+     "d1-bienvenida": "a",
+     "d1-hector": "b",
+     "d2-supernorte": "c",
+     "d2-ana": "b"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 2,
+     "best": 2
+    },
+    "profile": {
+     "archetype": "Estratega equilibrado",
+     "axes": {
+      "horizonte": 100,
+      "riesgo": 25,
+      "foco": 33,
+      "estilo": 13,
+      "conflicto": 100
+     }
+    },
+    "badges": [
+     "primera"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "a2": 1
+    },
+    "lessons": [
+     "mentalidad",
+     "personas"
+    ],
+    "career": []
+   }
+  },
+  {
+   "after": 13,
+   "at": 1791479789022,
+   "snapshot": {
+    "company": "cumbre",
+    "tier": 0,
+    "legendary": false,
+    "seasonDay": 4,
+    "kpis": {
+     "caja": 59,
+     "margen": 59,
+     "equipo": 62,
+     "clientes": 61,
+     "consejo": 61
+    },
+    "health": 60,
+    "xp": 435,
+    "level": 2,
+    "relations": {
+     "ramiro": 42,
+     "carla": 61,
+     "lucia": 72,
+     "hector": 43,
+     "mariana": 55,
+     "javier": 50,
+     "diego": 64,
+     "ana": 74,
+     "paty": 50,
+     "roberto": 37,
+     "sofia": 42
+    },
+    "progress": {
+     "done": 6,
+     "total": 13
+    },
+    "statuses": {
+     "d1-bienvenida": "decidido",
+     "d1-hector": "decidido",
+     "d2-supernorte": "decidido",
+     "d2-ana": "decidido",
+     "d3-planta": "decidido",
+     "d3-diego": "decidido",
+     "d4-objetivos": "pendiente",
+     "d4-sindicato": "futuro",
+     "c-supernorte-castigo": "futuro",
+     "d5-credito": "futuro",
+     "d5-consejo": "futuro",
+     "c-ana-brilla": "futuro",
+     "c-planta-accidente": "futuro",
+     "d6-gastos": "futuro",
+     "d6-clima": "futuro",
+     "c-piloto": "futuro",
+     "d7-sucesion": "futuro"
+    },
+    "timing": {
+     "d1-bienvenida": [
+      15,
+      86400
+     ],
+     "d1-hector": [
+      1735,
+      43200
+     ],
+     "d2-supernorte": [
+      84463,
+      86400
+     ],
+     "d2-ana": [
+      98190,
+      86400
+     ],
+     "d3-planta": [
+      171544,
+      28800
+     ],
+     "d3-diego": [
+      189173,
+      86400
+     ],
+     "d4-objetivos": [
+      267388,
+      86400
+     ],
+     "d4-sindicato": [
+      274855,
+      36000
+     ],
+     "c-supernorte-castigo": [
+      290067,
+      86400
+     ],
+     "d5-credito": [
+      347020,
+      86400
+     ],
+     "d5-consejo": [
+      355710,
+      86400
+     ],
+     "c-ana-brilla": [
+      364221,
+      43200
+     ],
+     "c-planta-accidente": [
+      380070,
+      21600
+     ],
+     "d6-gastos": [
+      438507,
+      86400
+     ],
+     "d6-clima": [
+      450220,
+      86400
+     ],
+     "c-piloto": [
+      519742,
+      86400
+     ],
+     "d7-sucesion": [
+      551224,
+      86400
+     ]
+    },
+    "decisions": {
+     "d1-bienvenida": "a",
+     "d1-hector": "b",
+     "d2-supernorte": "c",
+     "d2-ana": "b",
+     "d3-planta": "b",
+     "d3-diego": "b"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 3,
+     "best": 3
+    },
+    "profile": {
+     "archetype": "Constructor visionario",
+     "axes": {
+      "horizonte": 50,
+      "riesgo": 38,
+      "foco": 10,
+      "estilo": 20,
+      "conflicto": 100
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "puntual"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "a2": 1,
+     "d5": 1
+    },
+    "lessons": [
+     "equipos",
+     "mentalidad",
+     "personas"
+    ],
+    "career": []
+   }
+  },
+  {
+   "after": 18,
+   "at": 1791559421092,
+   "snapshot": {
+    "company": "cumbre",
+    "tier": 0,
+    "legendary": false,
+    "seasonDay": 5,
+    "kpis": {
+     "caja": 61,
+     "margen": 57,
+     "equipo": 68,
+     "clientes": 57,
+     "consejo": 61
+    },
+    "health": 61,
+    "xp": 615,
+    "level": 2,
+    "relations": {
+     "ramiro": 44,
+     "carla": 59,
+     "lucia": 74,
+     "hector": 48,
+     "mariana": 50,
+     "javier": 64,
+     "diego": 64,
+     "ana": 74,
+     "paty": 50,
+     "roberto": 56,
+     "sofia": 37
+    },
+    "progress": {
+     "done": 8,
+     "total": 13
+    },
+    "statuses": {
+     "d1-bienvenida": "decidido",
+     "d1-hector": "decidido",
+     "d2-supernorte": "decidido",
+     "d2-ana": "decidido",
+     "d3-planta": "decidido",
+     "d3-diego": "decidido",
+     "d4-objetivos": "decidido",
+     "d4-sindicato": "decidido",
+     "c-supernorte-castigo": "decidido",
+     "d5-credito": "pendiente",
+     "d5-consejo": "futuro",
+     "c-ana-brilla": "futuro",
+     "c-planta-accidente": "futuro",
+     "d6-gastos": "futuro",
+     "d6-clima": "futuro",
+     "c-piloto": "futuro",
+     "d7-sucesion": "futuro"
+    },
+    "timing": {
+     "d1-bienvenida": [
+      15,
+      86400
+     ],
+     "d1-hector": [
+      1735,
+      43200
+     ],
+     "d2-supernorte": [
+      84463,
+      86400
+     ],
+     "d2-ana": [
+      98190,
+      86400
+     ],
+     "d3-planta": [
+      171544,
+      28800
+     ],
+     "d3-diego": [
+      189173,
+      86400
+     ],
+     "d4-objetivos": [
+      267388,
+      86400
+     ],
+     "d4-sindicato": [
+      274855,
+      36000
+     ],
+     "c-supernorte-castigo": [
+      290067,
+      86400
+     ],
+     "d5-credito": [
+      347020,
+      86400
+     ],
+     "d5-consejo": [
+      355710,
+      86400
+     ],
+     "c-ana-brilla": [
+      364221,
+      43200
+     ],
+     "c-planta-accidente": [
+      380070,
+      21600
+     ],
+     "d6-gastos": [
+      438507,
+      86400
+     ],
+     "d6-clima": [
+      450220,
+      86400
+     ],
+     "c-piloto": [
+      519742,
+      86400
+     ],
+     "d7-sucesion": [
+      551224,
+      86400
+     ]
+    },
+    "decisions": {
+     "d1-bienvenida": "a",
+     "d1-hector": "b",
+     "d2-supernorte": "c",
+     "d2-ana": "b",
+     "d3-planta": "b",
+     "d3-diego": "b",
+     "d4-objetivos": "a",
+     "d4-sindicato": "b",
+     "c-supernorte-castigo": "b"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 4,
+     "best": 4
+    },
+    "profile": {
+     "archetype": "Constructor visionario",
+     "axes": {
+      "horizonte": 60,
+      "riesgo": 50,
+      "foco": 25,
+      "estilo": 33,
+      "conflicto": 40
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "puntual"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "a2": 1,
+     "d5": 1,
+     "e3": 1
+    },
+    "lessons": [
+     "alineacion",
+     "equipos",
+     "mentalidad",
+     "personas"
+    ],
+    "career": []
+   }
+  },
+  {
+   "after": 24,
+   "at": 1791650907870,
+   "snapshot": {
+    "company": "cumbre",
+    "tier": 0,
+    "legendary": false,
+    "seasonDay": 6,
+    "kpis": {
+     "caja": 59,
+     "margen": 56,
+     "equipo": 66,
+     "clientes": 57,
+     "consejo": 70
+    },
+    "health": 62,
+    "xp": 860,
+    "level": 3,
+    "relations": {
+     "ramiro": 50,
+     "carla": 83,
+     "lucia": 98,
+     "hector": 35,
+     "mariana": 60,
+     "javier": 45,
+     "diego": 74,
+     "ana": 90,
+     "paty": 50,
+     "roberto": 32,
+     "sofia": 34
+    },
+    "progress": {
+     "done": 10,
+     "total": 13
+    },
+    "statuses": {
+     "d1-bienvenida": "decidido",
+     "d1-hector": "decidido",
+     "d2-supernorte": "decidido",
+     "d2-ana": "decidido",
+     "d3-planta": "decidido",
+     "d3-diego": "decidido",
+     "d4-objetivos": "decidido",
+     "d4-sindicato": "decidido",
+     "c-supernorte-castigo": "decidido",
+     "d5-credito": "decidido",
+     "d5-consejo": "decidido",
+     "c-ana-brilla": "decidido",
+     "c-planta-accidente": "decidido",
+     "d6-gastos": "pendiente",
+     "d6-clima": "futuro",
+     "c-piloto": "futuro",
+     "d7-sucesion": "futuro"
+    },
+    "timing": {
+     "d1-bienvenida": [
+      15,
+      86400
+     ],
+     "d1-hector": [
+      1735,
+      43200
+     ],
+     "d2-supernorte": [
+      84463,
+      86400
+     ],
+     "d2-ana": [
+      98190,
+      86400
+     ],
+     "d3-planta": [
+      171544,
+      28800
+     ],
+     "d3-diego": [
+      189173,
+      86400
+     ],
+     "d4-objetivos": [
+      267388,
+      86400
+     ],
+     "d4-sindicato": [
+      274855,
+      36000
+     ],
+     "c-supernorte-castigo": [
+      290067,
+      86400
+     ],
+     "d5-credito": [
+      347020,
+      86400
+     ],
+     "d5-consejo": [
+      355710,
+      86400
+     ],
+     "c-ana-brilla": [
+      364221,
+      43200
+     ],
+     "c-planta-accidente": [
+      380070,
+      21600
+     ],
+     "d6-gastos": [
+      438507,
+      86400
+     ],
+     "d6-clima": [
+      450220,
+      86400
+     ],
+     "c-piloto": [
+      519742,
+      86400
+     ],
+     "d7-sucesion": [
+      551224,
+      86400
+     ]
+    },
+    "decisions": {
+     "d1-bienvenida": "a",
+     "d1-hector": "b",
+     "d2-supernorte": "c",
+     "d2-ana": "b",
+     "d3-planta": "b",
+     "d3-diego": "b",
+     "d4-objetivos": "a",
+     "d4-sindicato": "b",
+     "c-supernorte-castigo": "b",
+     "d5-credito": "b",
+     "d5-consejo": "a",
+     "c-ana-brilla": "a",
+     "c-planta-accidente": "b"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 5,
+     "best": 5
+    },
+    "profile": {
+     "archetype": "Arquitecto social",
+     "axes": {
+      "horizonte": 75,
+      "riesgo": 38,
+      "foco": 28,
+      "estilo": 33,
+      "conflicto": 21
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "puntual",
+     "lector"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "a2": 1,
+     "d5": 1,
+     "e3": 1,
+     "v4": 1
+    },
+    "lessons": [
+     "alineacion",
+     "equipos",
+     "mentalidad",
+     "negociacion",
+     "personas"
+    ],
+    "career": []
+   }
+  },
+  {
+   "after": 28,
+   "at": 1791732143397,
+   "snapshot": {
+    "company": "cumbre",
+    "tier": 0,
+    "legendary": false,
+    "seasonDay": 7,
+    "kpis": {
+     "caja": 59,
+     "margen": 58,
+     "equipo": 63,
+     "clientes": 58,
+     "consejo": 65
+    },
+    "health": 61,
+    "xp": 985,
+    "level": 3,
+    "relations": {
+     "ramiro": 34,
+     "carla": 91,
+     "lucia": 99,
+     "hector": 43,
+     "mariana": 52,
+     "javier": 45,
+     "diego": 64,
+     "ana": 90,
+     "paty": 50,
+     "roberto": 35,
+     "sofia": 37
+    },
+    "progress": {
+     "done": 12,
+     "total": 13
+    },
+    "statuses": {
+     "d1-bienvenida": "decidido",
+     "d1-hector": "decidido",
+     "d2-supernorte": "decidido",
+     "d2-ana": "decidido",
+     "d3-planta": "decidido",
+     "d3-diego": "decidido",
+     "d4-objetivos": "decidido",
+     "d4-sindicato": "decidido",
+     "c-supernorte-castigo": "decidido",
+     "d5-credito": "decidido",
+     "d5-consejo": "decidido",
+     "c-ana-brilla": "decidido",
+     "c-planta-accidente": "decidido",
+     "d6-gastos": "decidido",
+     "d6-clima": "decidido",
+     "c-piloto": "pendiente",
+     "d7-sucesion": "futuro"
+    },
+    "timing": {
+     "d1-bienvenida": [
+      15,
+      86400
+     ],
+     "d1-hector": [
+      1735,
+      43200
+     ],
+     "d2-supernorte": [
+      84463,
+      86400
+     ],
+     "d2-ana": [
+      98190,
+      86400
+     ],
+     "d3-planta": [
+      171544,
+      28800
+     ],
+     "d3-diego": [
+      189173,
+      86400
+     ],
+     "d4-objetivos": [
+      267388,
+      86400
+     ],
+     "d4-sindicato": [
+      274855,
+      36000
+     ],
+     "c-supernorte-castigo": [
+      290067,
+      86400
+     ],
+     "d5-credito": [
+      347020,
+      86400
+     ],
+     "d5-consejo": [
+      355710,
+      86400
+     ],
+     "c-ana-brilla": [
+      364221,
+      43200
+     ],
+     "c-planta-accidente": [
+      380070,
+      21600
+     ],
+     "d6-gastos": [
+      438507,
+      86400
+     ],
+     "d6-clima": [
+      450220,
+      86400
+     ],
+     "c-piloto": [
+      519742,
+      86400
+     ],
+     "d7-sucesion": [
+      551224,
+      86400
+     ]
+    },
+    "decisions": {
+     "d1-bienvenida": "a",
+     "d1-hector": "b",
+     "d2-supernorte": "c",
+     "d2-ana": "b",
+     "d3-planta": "b",
+     "d3-diego": "b",
+     "d4-objetivos": "a",
+     "d4-sindicato": "b",
+     "c-supernorte-castigo": "b",
+     "d5-credito": "b",
+     "d5-consejo": "a",
+     "c-ana-brilla": "a",
+     "c-planta-accidente": "b",
+     "d6-gastos": "b",
+     "d6-clima": "c"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 6,
+     "best": 6
+    },
+    "profile": {
+     "archetype": "Constructor visionario",
+     "axes": {
+      "horizonte": 56,
+      "riesgo": 39,
+      "foco": 20,
+      "estilo": 33,
+      "conflicto": 17
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "puntual",
+     "lector"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "a2": 1,
+     "d5": 1,
+     "e3": 1,
+     "v4": 1,
+     "c2": 1
+    },
+    "lessons": [
+     "alineacion",
+     "comunicacion",
+     "equipos",
+     "mentalidad",
+     "negociacion",
+     "personas"
+    ],
+    "career": []
+   }
+  },
+  {
+   "after": 32,
+   "at": 1791763684763,
+   "snapshot": {
+    "company": "cumbre",
+    "tier": 0,
+    "legendary": false,
+    "seasonDay": 7,
+    "kpis": {
+     "caja": 57,
+     "margen": 59,
+     "equipo": 68,
+     "clientes": 58,
+     "consejo": 70
+    },
+    "health": 62,
+    "xp": 1130,
+    "level": 4,
+    "relations": {
+     "ramiro": 42,
+     "carla": 93,
+     "lucia": 86,
+     "hector": 33,
+     "mariana": 52,
+     "javier": 45,
+     "diego": 88,
+     "ana": 99,
+     "paty": 50,
+     "roberto": 35,
+     "sofia": 34
+    },
+    "progress": {
+     "done": 13,
+     "total": 13
+    },
+    "statuses": {
+     "d1-bienvenida": "decidido",
+     "d1-hector": "decidido",
+     "d2-supernorte": "decidido",
+     "d2-ana": "decidido",
+     "d3-planta": "decidido",
+     "d3-diego": "decidido",
+     "d4-objetivos": "decidido",
+     "d4-sindicato": "decidido",
+     "c-supernorte-castigo": "decidido",
+     "d5-credito": "decidido",
+     "d5-consejo": "decidido",
+     "c-ana-brilla": "decidido",
+     "c-planta-accidente": "decidido",
+     "d6-gastos": "decidido",
+     "d6-clima": "decidido",
+     "c-piloto": "decidido",
+     "d7-sucesion": "decidido"
+    },
+    "timing": {
+     "d1-bienvenida": [
+      15,
+      86400
+     ],
+     "d1-hector": [
+      1735,
+      43200
+     ],
+     "d2-supernorte": [
+      84463,
+      86400
+     ],
+     "d2-ana": [
+      98190,
+      86400
+     ],
+     "d3-planta": [
+      171544,
+      28800
+     ],
+     "d3-diego": [
+      189173,
+      86400
+     ],
+     "d4-objetivos": [
+      267388,
+      86400
+     ],
+     "d4-sindicato": [
+      274855,
+      36000
+     ],
+     "c-supernorte-castigo": [
+      290067,
+      86400
+     ],
+     "d5-credito": [
+      347020,
+      86400
+     ],
+     "d5-consejo": [
+      355710,
+      86400
+     ],
+     "c-ana-brilla": [
+      364221,
+      43200
+     ],
+     "c-planta-accidente": [
+      380070,
+      21600
+     ],
+     "d6-gastos": [
+      438507,
+      86400
+     ],
+     "d6-clima": [
+      450220,
+      86400
+     ],
+     "c-piloto": [
+      519742,
+      86400
+     ],
+     "d7-sucesion": [
+      551224,
+      86400
+     ]
+    },
+    "decisions": {
+     "d1-bienvenida": "a",
+     "d1-hector": "b",
+     "d2-supernorte": "c",
+     "d2-ana": "b",
+     "d3-planta": "b",
+     "d3-diego": "b",
+     "d4-objetivos": "a",
+     "d4-sindicato": "b",
+     "c-supernorte-castigo": "b",
+     "d5-credito": "b",
+     "d5-consejo": "a",
+     "c-ana-brilla": "a",
+     "c-planta-accidente": "b",
+     "d6-gastos": "b",
+     "d6-clima": "c",
+     "c-piloto": "b",
+     "d7-sucesion": "a"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 7,
+     "best": 7
+    },
+    "profile": {
+     "archetype": "Constructor visionario",
+     "axes": {
+      "horizonte": 60,
+      "riesgo": 45,
+      "foco": 20,
+      "estilo": 43,
+      "conflicto": 25
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "racha7",
+     "puntual",
+     "lector"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "a2": 1,
+     "d5": 1,
+     "e3": 1,
+     "v4": 1,
+     "c2": 1,
+     "s1": 1
+    },
+    "lessons": [
+     "alineacion",
+     "comunicacion",
+     "cultura",
+     "equipos",
+     "mentalidad",
+     "negociacion",
+     "personas"
+    ],
+    "career": []
+   }
+  },
+  {
+   "after": 47,
+   "at": 1791764194763,
+   "snapshot": {
+    "company": "cumbre",
+    "tier": 0,
+    "legendary": false,
+    "seasonDay": 7,
+    "kpis": {
+     "caja": 55,
+     "margen": 59,
+     "equipo": 74,
+     "clientes": 58,
+     "consejo": 75
+    },
+    "health": 64,
+    "xp": 1130,
+    "level": 4,
+    "relations": {
+     "ramiro": 42,
+     "carla": 93,
+     "lucia": 86,
+     "hector": 33,
+     "mariana": 52,
+     "javier": 45,
+     "diego": 88,
+     "ana": 99,
+     "paty": 50,
+     "roberto": 35,
+     "sofia": 34
+    },
+    "progress": {
+     "done": 13,
+     "total": 13
+    },
+    "statuses": {
+     "d1-bienvenida": "decidido",
+     "d1-hector": "decidido",
+     "d2-supernorte": "decidido",
+     "d2-ana": "decidido",
+     "d3-planta": "decidido",
+     "d3-diego": "decidido",
+     "d4-objetivos": "decidido",
+     "d4-sindicato": "decidido",
+     "c-supernorte-castigo": "decidido",
+     "d5-credito": "decidido",
+     "d5-consejo": "decidido",
+     "c-ana-brilla": "decidido",
+     "c-planta-accidente": "decidido",
+     "d6-gastos": "decidido",
+     "d6-clima": "decidido",
+     "c-piloto": "decidido",
+     "d7-sucesion": "decidido"
+    },
+    "timing": {
+     "d1-bienvenida": [
+      15,
+      86400
+     ],
+     "d1-hector": [
+      1735,
+      43200
+     ],
+     "d2-supernorte": [
+      84463,
+      86400
+     ],
+     "d2-ana": [
+      98190,
+      86400
+     ],
+     "d3-planta": [
+      171544,
+      28800
+     ],
+     "d3-diego": [
+      189173,
+      86400
+     ],
+     "d4-objetivos": [
+      267388,
+      86400
+     ],
+     "d4-sindicato": [
+      274855,
+      36000
+     ],
+     "c-supernorte-castigo": [
+      290067,
+      86400
+     ],
+     "d5-credito": [
+      347020,
+      86400
+     ],
+     "d5-consejo": [
+      355710,
+      86400
+     ],
+     "c-ana-brilla": [
+      364221,
+      43200
+     ],
+     "c-planta-accidente": [
+      380070,
+      21600
+     ],
+     "d6-gastos": [
+      438507,
+      86400
+     ],
+     "d6-clima": [
+      450220,
+      86400
+     ],
+     "c-piloto": [
+      519742,
+      86400
+     ],
+     "d7-sucesion": [
+      551224,
+      86400
+     ]
+    },
+    "decisions": {
+     "d1-bienvenida": "a",
+     "d1-hector": "b",
+     "d2-supernorte": "c",
+     "d2-ana": "b",
+     "d3-planta": "b",
+     "d3-diego": "b",
+     "d4-objetivos": "a",
+     "d4-sindicato": "b",
+     "c-supernorte-castigo": "b",
+     "d5-credito": "b",
+     "d5-consejo": "a",
+     "c-ana-brilla": "a",
+     "c-planta-accidente": "b",
+     "d6-gastos": "b",
+     "d6-clima": "c",
+     "c-piloto": "b",
+     "d7-sucesion": "a"
+    },
+    "change": {
+     "adopted": 8,
+     "share": 0.8,
+     "weeksUsed": 24,
+     "credibility": 95,
+     "done": true,
+     "ok": true
+    },
+    "verdict": {
+     "passed": true,
+     "passLine": 50,
+     "answered": 1,
+     "approved": {
+      "caja": true,
+      "margen": true,
+      "equipo": true,
+      "clientes": true,
+      "consejo": true
+     }
+    },
+    "streak": {
+     "days": 7,
+     "best": 7
+    },
+    "profile": {
+     "archetype": "Constructor visionario",
+     "axes": {
+      "horizonte": 60,
+      "riesgo": 45,
+      "foco": 20,
+      "estilo": 43,
+      "conflicto": 25
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "racha7",
+     "puntual",
+     "gente",
+     "lector"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "a2": 1,
+     "d5": 1,
+     "e3": 1,
+     "v4": 1,
+     "c2": 1,
+     "s1": 1
+    },
+    "lessons": [
+     "alineacion",
+     "comunicacion",
+     "cultura",
+     "equipos",
+     "mentalidad",
+     "negociacion",
+     "personas"
+    ],
+    "career": []
+   }
+  },
+  {
+   "after": 48,
+   "at": 1791764254763,
+   "snapshot": {
+    "company": "forja",
+    "tier": 1,
+    "legendary": false,
+    "seasonDay": 1,
+    "kpis": {
+     "caja": 64,
+     "margen": 60,
+     "equipo": 64,
+     "clientes": 66,
+     "consejo": 70
+    },
+    "health": 65,
+    "xp": 1130,
+    "level": 4,
+    "relations": {
+     "zertuche": 50,
+     "regina": 50,
+     "marcos": 50,
+     "ramon": 50,
+     "laura": 50,
+     "daniela": 50,
+     "teresa": 50,
+     "chuy": 50,
+     "karla": 50,
+     "paty": 50,
+     "greg": 50,
+     "fermin": 50
+    },
+    "progress": {
+     "done": 0,
+     "total": 13
+    },
+    "statuses": {
+     "fn-d1-carta": "futuro",
+     "fn-d1-andon": "futuro",
+     "fn-d2-precio": "futuro",
+     "fn-d2-soldadores": "futuro",
+     "fn-d3-ppap": "futuro",
+     "fn-d4-recap": "futuro",
+     "fn-d4-pleito": "futuro",
+     "fn-d5-ciber": "futuro",
+     "fn-d5-plataforma": "futuro",
+     "fn-d6-proveedor": "futuro",
+     "fn-d6-denuncia": "futuro",
+     "fn-d7-consejo": "futuro",
+     "fn-d7-sindicato": "futuro"
+    },
+    "timing": {
+     "fn-d1-carta": [
+      15,
+      79200
+     ],
+     "fn-d1-andon": [
+      3201,
+      39600
+     ],
+     "fn-d2-precio": [
+      60923,
+      79200
+     ],
+     "fn-d2-soldadores": [
+      79419,
+      79200
+     ],
+     "fn-d3-ppap": [
+      160480,
+      32400
+     ],
+     "fn-d4-recap": [
+      244468,
+      79200
+     ],
+     "fn-d4-pleito": [
+      251331,
+      39600
+     ],
+     "fn-d5-ciber": [
+      312326,
+      18000
+     ],
+     "fn-d5-plataforma": [
+      325521,
+      79200
+     ],
+     "fn-d6-proveedor": [
+      401069,
+      50400
+     ],
+     "fn-d6-denuncia": [
+      413407,
+      39600
+     ],
+     "fn-d7-consejo": [
+      487532,
+      79200
+     ],
+     "fn-d7-sindicato": [
+      518074,
+      18000
+     ]
+    },
+    "decisions": {},
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 7,
+     "best": 7
+    },
+    "profile": {
+     "archetype": "Constructor visionario",
+     "axes": {
+      "horizonte": 60,
+      "riesgo": 45,
+      "foco": 20,
+      "estilo": 43,
+      "conflicto": 25
+     }
+    },
+    "badges": [
+     "racha3",
+     "racha7",
+     "lector",
+     "ascenso"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "a2": 1,
+     "d5": 1,
+     "e3": 1,
+     "v4": 1,
+     "c2": 1,
+     "s1": 1
+    },
+    "lessons": [
+     "alineacion",
+     "comunicacion",
+     "cultura",
+     "equipos",
+     "mentalidad",
+     "negociacion",
+     "personas"
+    ],
+    "career": [
+     {
+      "company": "cumbre",
+      "tier": 0,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 745,
+      "kpis": {
+       "caja": 55,
+       "margen": 59,
+       "equipo": 74,
+       "clientes": 58,
+       "consejo": 75
+      },
+      "change": {
+       "adopted": 8,
+       "weeks": 24,
+       "ok": true
+      }
+     }
+    ]
+   }
+  },
+  {
+   "after": 51,
+   "at": 1791825178456,
+   "snapshot": {
+    "company": "forja",
+    "tier": 1,
+    "legendary": false,
+    "seasonDay": 2,
+    "kpis": {
+     "caja": 64,
+     "margen": 63,
+     "equipo": 67,
+     "clientes": 67,
+     "consejo": 66
+    },
+    "health": 65,
+    "xp": 1250,
+    "level": 4,
+    "relations": {
+     "zertuche": 47,
+     "regina": 42,
+     "marcos": 50,
+     "ramon": 82,
+     "laura": 37,
+     "daniela": 52,
+     "teresa": 50,
+     "chuy": 50,
+     "karla": 46,
+     "paty": 50,
+     "greg": 50,
+     "fermin": 62
+    },
+    "progress": {
+     "done": 2,
+     "total": 13
+    },
+    "statuses": {
+     "fn-d1-carta": "decidido",
+     "fn-d1-andon": "decidido",
+     "fn-d2-precio": "pendiente",
+     "fn-d2-soldadores": "futuro",
+     "fn-c-escape": "futuro",
+     "fn-d3-ppap": "futuro",
+     "fn-d4-recap": "futuro",
+     "fn-d4-pleito": "futuro",
+     "fn-d5-ciber": "futuro",
+     "fn-d5-plataforma": "futuro",
+     "fn-d6-proveedor": "futuro",
+     "fn-d6-denuncia": "futuro",
+     "fn-d7-consejo": "futuro",
+     "fn-d7-sindicato": "futuro"
+    },
+    "timing": {
+     "fn-d1-carta": [
+      15,
+      79200
+     ],
+     "fn-d1-andon": [
+      3201,
+      39600
+     ],
+     "fn-d2-precio": [
+      60923,
+      79200
+     ],
+     "fn-d2-soldadores": [
+      79419,
+      79200
+     ],
+     "fn-c-escape": [
+      148960,
+      25200
+     ],
+     "fn-d3-ppap": [
+      160480,
+      32400
+     ],
+     "fn-d4-recap": [
+      244468,
+      79200
+     ],
+     "fn-d4-pleito": [
+      251331,
+      39600
+     ],
+     "fn-d5-ciber": [
+      312326,
+      18000
+     ],
+     "fn-d5-plataforma": [
+      325521,
+      79200
+     ],
+     "fn-d6-proveedor": [
+      401069,
+      50400
+     ],
+     "fn-d6-denuncia": [
+      413407,
+      39600
+     ],
+     "fn-d7-consejo": [
+      487532,
+      79200
+     ],
+     "fn-d7-sindicato": [
+      518074,
+      18000
+     ]
+    },
+    "decisions": {
+     "fn-d1-carta": "a",
+     "fn-d1-andon": "b"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 7,
+     "best": 7
+    },
+    "profile": {
+     "archetype": "Constructor visionario",
+     "axes": {
+      "horizonte": 64,
+      "riesgo": 36,
+      "foco": 17,
+      "estilo": 50,
+      "conflicto": 14
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "racha7",
+     "lector",
+     "ascenso"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "a2": 1,
+     "d5": 1,
+     "e3": 1,
+     "v4": 1,
+     "c2": 1,
+     "s1": 1
+    },
+    "lessons": [
+     "alineacion",
+     "comunicacion",
+     "cultura",
+     "equipos",
+     "finanzas",
+     "mentalidad",
+     "negociacion",
+     "personas"
+    ],
+    "career": [
+     {
+      "company": "cumbre",
+      "tier": 0,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 745,
+      "kpis": {
+       "caja": 55,
+       "margen": 59,
+       "equipo": 74,
+       "clientes": 58,
+       "consejo": 75
+      },
+      "change": {
+       "adopted": 8,
+       "weeks": 24,
+       "ok": true
+      }
+     }
+    ]
+   }
+  },
+  {
+   "after": 55,
+   "at": 1791913215362,
+   "snapshot": {
+    "company": "forja",
+    "tier": 1,
+    "legendary": false,
+    "seasonDay": 3,
+    "kpis": {
+     "caja": 63,
+     "margen": 69,
+     "equipo": 62,
+     "clientes": 62,
+     "consejo": 71
+    },
+    "health": 65,
+    "xp": 1395,
+    "level": 4,
+    "relations": {
+     "zertuche": 42,
+     "regina": 54,
+     "marcos": 58,
+     "ramon": 76,
+     "laura": 37,
+     "daniela": 46,
+     "teresa": 42,
+     "chuy": 50,
+     "karla": 46,
+     "paty": 50,
+     "greg": 34,
+     "fermin": 46
+    },
+    "progress": {
+     "done": 4,
+     "total": 13
+    },
+    "statuses": {
+     "fn-d1-carta": "decidido",
+     "fn-d1-andon": "decidido",
+     "fn-d2-precio": "decidido",
+     "fn-d2-soldadores": "decidido",
+     "fn-c-escape": "pendiente",
+     "fn-d3-ppap": "futuro",
+     "fn-d4-recap": "futuro",
+     "fn-d4-pleito": "futuro",
+     "fn-d5-ciber": "futuro",
+     "fn-d5-plataforma": "futuro",
+     "fn-d6-proveedor": "futuro",
+     "fn-d6-denuncia": "futuro",
+     "fn-d7-consejo": "futuro",
+     "fn-d7-sindicato": "futuro"
+    },
+    "timing": {
+     "fn-d1-carta": [
+      15,
+      79200
+     ],
+     "fn-d1-andon": [
+      3201,
+      39600
+     ],
+     "fn-d2-precio": [
+      60923,
+      79200
+     ],
+     "fn-d2-soldadores": [
+      79419,
+      79200
+     ],
+     "fn-c-escape": [
+      148960,
+      25200
+     ],
+     "fn-d3-ppap": [
+      160480,
+      32400
+     ],
+     "fn-d4-recap": [
+      244468,
+      79200
+     ],
+     "fn-d4-pleito": [
+      251331,
+      39600
+     ],
+     "fn-d5-ciber": [
+      312326,
+      18000
+     ],
+     "fn-d5-plataforma": [
+      325521,
+      79200
+     ],
+     "fn-d6-proveedor": [
+      401069,
+      50400
+     ],
+     "fn-d6-denuncia": [
+      413407,
+      39600
+     ],
+     "fn-d7-consejo": [
+      487532,
+      79200
+     ],
+     "fn-d7-sindicato": [
+      518074,
+      18000
+     ]
+    },
+    "decisions": {
+     "fn-d1-carta": "a",
+     "fn-d1-andon": "b",
+     "fn-d2-precio": "b",
+     "fn-d2-soldadores": "c"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 8,
+     "best": 8
+    },
+    "profile": {
+     "archetype": "Constructor visionario",
+     "axes": {
+      "horizonte": 63,
+      "riesgo": 38,
+      "foco": 0,
+      "estilo": 50,
+      "conflicto": 21
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "racha7",
+     "lector",
+     "ascenso"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "a2": 1,
+     "d5": 1,
+     "e3": 1,
+     "v4": 1,
+     "c2": 1,
+     "s1": 1,
+     "g1": 1
+    },
+    "lessons": [
+     "alineacion",
+     "comunicacion",
+     "cultura",
+     "equipos",
+     "finanzas",
+     "innovacion",
+     "mentalidad",
+     "negociacion",
+     "personas"
+    ],
+    "career": [
+     {
+      "company": "cumbre",
+      "tier": 0,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 745,
+      "kpis": {
+       "caja": 55,
+       "margen": 59,
+       "equipo": 74,
+       "clientes": 58,
+       "consejo": 75
+      },
+      "change": {
+       "adopted": 8,
+       "weeks": 24,
+       "ok": true
+      }
+     }
+    ]
+   }
+  },
+  {
+   "after": 59,
+   "at": 1792008723678,
+   "snapshot": {
+    "company": "forja",
+    "tier": 1,
+    "legendary": false,
+    "seasonDay": 4,
+    "kpis": {
+     "caja": 60,
+     "margen": 66,
+     "equipo": 68,
+     "clientes": 61,
+     "consejo": 69
+    },
+    "health": 65,
+    "xp": 1550,
+    "level": 4,
+    "relations": {
+     "zertuche": 42,
+     "regina": 54,
+     "marcos": 58,
+     "ramon": 63,
+     "laura": 69,
+     "daniela": 33,
+     "teresa": 42,
+     "chuy": 46,
+     "karla": 62,
+     "paty": 50,
+     "greg": 34,
+     "fermin": 43
+    },
+    "progress": {
+     "done": 5,
+     "total": 13
+    },
+    "statuses": {
+     "fn-d1-carta": "decidido",
+     "fn-d1-andon": "decidido",
+     "fn-d2-precio": "decidido",
+     "fn-d2-soldadores": "decidido",
+     "fn-c-escape": "decidido",
+     "fn-d3-ppap": "decidido",
+     "fn-d4-recap": "pendiente",
+     "fn-d4-pleito": "futuro",
+     "fn-d5-ciber": "futuro",
+     "fn-d5-plataforma": "futuro",
+     "fn-d6-proveedor": "futuro",
+     "fn-d6-denuncia": "futuro",
+     "fn-d7-consejo": "futuro",
+     "fn-d7-sindicato": "futuro"
+    },
+    "timing": {
+     "fn-d1-carta": [
+      15,
+      79200
+     ],
+     "fn-d1-andon": [
+      3201,
+      39600
+     ],
+     "fn-d2-precio": [
+      60923,
+      79200
+     ],
+     "fn-d2-soldadores": [
+      79419,
+      79200
+     ],
+     "fn-c-escape": [
+      148960,
+      25200
+     ],
+     "fn-d3-ppap": [
+      160480,
+      32400
+     ],
+     "fn-d4-recap": [
+      244468,
+      79200
+     ],
+     "fn-d4-pleito": [
+      251331,
+      39600
+     ],
+     "fn-d5-ciber": [
+      312326,
+      18000
+     ],
+     "fn-d5-plataforma": [
+      325521,
+      79200
+     ],
+     "fn-d6-proveedor": [
+      401069,
+      50400
+     ],
+     "fn-d6-denuncia": [
+      413407,
+      39600
+     ],
+     "fn-d7-consejo": [
+      487532,
+      79200
+     ],
+     "fn-d7-sindicato": [
+      518074,
+      18000
+     ]
+    },
+    "decisions": {
+     "fn-d1-carta": "a",
+     "fn-d1-andon": "b",
+     "fn-d2-precio": "b",
+     "fn-d2-soldadores": "c",
+     "fn-c-escape": "a",
+     "fn-d3-ppap": "a"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 9,
+     "best": 9
+    },
+    "profile": {
+     "archetype": "Constructor visionario",
+     "axes": {
+      "horizonte": 68,
+      "riesgo": 39,
+      "foco": 3,
+      "estilo": 50,
+      "conflicto": 29
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "racha7",
+     "puntual",
+     "lector",
+     "ascenso"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "a2": 1,
+     "d5": 1,
+     "e3": 1,
+     "v4": 1,
+     "c2": 1,
+     "s1": 1,
+     "g1": 1,
+     "q2": 1
+    },
+    "lessons": [
+     "alineacion",
+     "comunicacion",
+     "cultura",
+     "equipos",
+     "estrategia",
+     "finanzas",
+     "innovacion",
+     "mentalidad",
+     "negociacion",
+     "personas"
+    ],
+    "career": [
+     {
+      "company": "cumbre",
+      "tier": 0,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 745,
+      "kpis": {
+       "caja": 55,
+       "margen": 59,
+       "equipo": 74,
+       "clientes": 58,
+       "consejo": 75
+      },
+      "change": {
+       "adopted": 8,
+       "weeks": 24,
+       "ok": true
+      }
+     }
+    ]
+   }
+  },
+  {
+   "after": 63,
+   "at": 1792076581902,
+   "snapshot": {
+    "company": "forja",
+    "tier": 1,
+    "legendary": false,
+    "seasonDay": 5,
+    "kpis": {
+     "caja": 61,
+     "margen": 65,
+     "equipo": 73,
+     "clientes": 64,
+     "consejo": 62
+    },
+    "health": 65,
+    "xp": 1705,
+    "level": 4,
+    "relations": {
+     "zertuche": 34,
+     "regina": 38,
+     "marcos": 66,
+     "ramon": 71,
+     "laura": 77,
+     "daniela": 31,
+     "teresa": 42,
+     "chuy": 50,
+     "karla": 66,
+     "paty": 50,
+     "greg": 34,
+     "fermin": 46
+    },
+    "progress": {
+     "done": 7,
+     "total": 13
+    },
+    "statuses": {
+     "fn-d1-carta": "decidido",
+     "fn-d1-andon": "decidido",
+     "fn-d2-precio": "decidido",
+     "fn-d2-soldadores": "decidido",
+     "fn-c-escape": "decidido",
+     "fn-d3-ppap": "decidido",
+     "fn-d4-recap": "decidido",
+     "fn-d4-pleito": "decidido",
+     "fn-d5-ciber": "pendiente",
+     "fn-d5-plataforma": "futuro",
+     "fn-d6-proveedor": "futuro",
+     "fn-d6-denuncia": "futuro",
+     "fn-d7-consejo": "futuro",
+     "fn-d7-sindicato": "futuro"
+    },
+    "timing": {
+     "fn-d1-carta": [
+      15,
+      79200
+     ],
+     "fn-d1-andon": [
+      3201,
+      39600
+     ],
+     "fn-d2-precio": [
+      60923,
+      79200
+     ],
+     "fn-d2-soldadores": [
+      79419,
+      79200
+     ],
+     "fn-c-escape": [
+      148960,
+      25200
+     ],
+     "fn-d3-ppap": [
+      160480,
+      32400
+     ],
+     "fn-d4-recap": [
+      244468,
+      79200
+     ],
+     "fn-d4-pleito": [
+      251331,
+      39600
+     ],
+     "fn-d5-ciber": [
+      312326,
+      18000
+     ],
+     "fn-d5-plataforma": [
+      325521,
+      79200
+     ],
+     "fn-d6-proveedor": [
+      401069,
+      50400
+     ],
+     "fn-d6-denuncia": [
+      413407,
+      39600
+     ],
+     "fn-d7-consejo": [
+      487532,
+      79200
+     ],
+     "fn-d7-sindicato": [
+      518074,
+      18000
+     ]
+    },
+    "decisions": {
+     "fn-d1-carta": "a",
+     "fn-d1-andon": "b",
+     "fn-d2-precio": "b",
+     "fn-d2-soldadores": "c",
+     "fn-c-escape": "a",
+     "fn-d3-ppap": "a",
+     "fn-d4-recap": "c",
+     "fn-d4-pleito": "a"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 10,
+     "best": 10
+    },
+    "profile": {
+     "archetype": "Constructor visionario",
+     "axes": {
+      "horizonte": 72,
+      "riesgo": 30,
+      "foco": 3,
+      "estilo": 55,
+      "conflicto": 38
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "racha7",
+     "puntual",
+     "gente",
+     "lector",
+     "ascenso"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "a2": 1,
+     "d5": 1,
+     "e3": 1,
+     "v4": 1,
+     "c2": 1,
+     "s1": 1,
+     "g1": 1,
+     "q2": 1,
+     "k1": 1
+    },
+    "lessons": [
+     "alineacion",
+     "comunicacion",
+     "cultura",
+     "equipos",
+     "estrategia",
+     "finanzas",
+     "innovacion",
+     "mentalidad",
+     "mentalidad-2",
+     "negociacion",
+     "personas"
+    ],
+    "career": [
+     {
+      "company": "cumbre",
+      "tier": 0,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 745,
+      "kpis": {
+       "caja": 55,
+       "margen": 59,
+       "equipo": 74,
+       "clientes": 58,
+       "consejo": 75
+      },
+      "change": {
+       "adopted": 8,
+       "weeks": 24,
+       "ok": true
+      }
+     }
+    ]
+   }
+  },
+  {
+   "after": 67,
+   "at": 1792165324322,
+   "snapshot": {
+    "company": "forja",
+    "tier": 1,
+    "legendary": false,
+    "seasonDay": 6,
+    "kpis": {
+     "caja": 58,
+     "margen": 66,
+     "equipo": 71,
+     "clientes": 63,
+     "consejo": 62
+    },
+    "health": 64,
+    "xp": 1860,
+    "level": 4,
+    "relations": {
+     "zertuche": 34,
+     "regina": 45,
+     "marcos": 74,
+     "ramon": 63,
+     "laura": 79,
+     "daniela": 31,
+     "teresa": 42,
+     "chuy": 46,
+     "karla": 66,
+     "paty": 50,
+     "greg": 34,
+     "fermin": 43
+    },
+    "progress": {
+     "done": 9,
+     "total": 13
+    },
+    "statuses": {
+     "fn-d1-carta": "decidido",
+     "fn-d1-andon": "decidido",
+     "fn-d2-precio": "decidido",
+     "fn-d2-soldadores": "decidido",
+     "fn-c-escape": "decidido",
+     "fn-d3-ppap": "decidido",
+     "fn-d4-recap": "decidido",
+     "fn-d4-pleito": "decidido",
+     "fn-d5-ciber": "decidido",
+     "fn-d5-plataforma": "decidido",
+     "fn-d6-proveedor": "pendiente",
+     "fn-d6-denuncia": "futuro",
+     "fn-d7-consejo": "futuro",
+     "fn-d7-sindicato": "futuro"
+    },
+    "timing": {
+     "fn-d1-carta": [
+      15,
+      79200
+     ],
+     "fn-d1-andon": [
+      3201,
+      39600
+     ],
+     "fn-d2-precio": [
+      60923,
+      79200
+     ],
+     "fn-d2-soldadores": [
+      79419,
+      79200
+     ],
+     "fn-c-escape": [
+      148960,
+      25200
+     ],
+     "fn-d3-ppap": [
+      160480,
+      32400
+     ],
+     "fn-d4-recap": [
+      244468,
+      79200
+     ],
+     "fn-d4-pleito": [
+      251331,
+      39600
+     ],
+     "fn-d5-ciber": [
+      312326,
+      18000
+     ],
+     "fn-d5-plataforma": [
+      325521,
+      79200
+     ],
+     "fn-d6-proveedor": [
+      401069,
+      50400
+     ],
+     "fn-d6-denuncia": [
+      413407,
+      39600
+     ],
+     "fn-d7-consejo": [
+      487532,
+      79200
+     ],
+     "fn-d7-sindicato": [
+      518074,
+      18000
+     ]
+    },
+    "decisions": {
+     "fn-d1-carta": "a",
+     "fn-d1-andon": "b",
+     "fn-d2-precio": "b",
+     "fn-d2-soldadores": "c",
+     "fn-c-escape": "a",
+     "fn-d3-ppap": "a",
+     "fn-d4-recap": "c",
+     "fn-d4-pleito": "a",
+     "fn-d5-ciber": "a",
+     "fn-d5-plataforma": "c"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 11,
+     "best": 11
+    },
+    "profile": {
+     "archetype": "Integrador",
+     "axes": {
+      "horizonte": 75,
+      "riesgo": 24,
+      "foco": 3,
+      "estilo": 55,
+      "conflicto": 41
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "racha7",
+     "puntual",
+     "gente",
+     "lector",
+     "ascenso"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "a2": 1,
+     "d5": 1,
+     "e3": 1,
+     "v4": 1,
+     "c2": 1,
+     "s1": 1,
+     "g1": 1,
+     "q2": 1,
+     "k1": 1,
+     "p3": 1
+    },
+    "lessons": [
+     "alineacion",
+     "comunicacion",
+     "cultura",
+     "equipos",
+     "estrategia",
+     "finanzas",
+     "innovacion",
+     "mentalidad",
+     "mentalidad-2",
+     "negociacion",
+     "personas",
+     "personas-2"
+    ],
+    "career": [
+     {
+      "company": "cumbre",
+      "tier": 0,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 745,
+      "kpis": {
+       "caja": 55,
+       "margen": 59,
+       "equipo": 74,
+       "clientes": 58,
+       "consejo": 75
+      },
+      "change": {
+       "adopted": 8,
+       "weeks": 24,
+       "ok": true
+      }
+     }
+    ]
+   }
+  },
+  {
+   "after": 71,
+   "at": 1792251788104,
+   "snapshot": {
+    "company": "forja",
+    "tier": 1,
+    "legendary": false,
+    "seasonDay": 7,
+    "kpis": {
+     "caja": 59,
+     "margen": 59,
+     "equipo": 75,
+     "clientes": 61,
+     "consejo": 64
+    },
+    "health": 64,
+    "xp": 2005,
+    "level": 4,
+    "relations": {
+     "zertuche": 30,
+     "regina": 49,
+     "marcos": 82,
+     "ramon": 55,
+     "laura": 81,
+     "daniela": 28,
+     "teresa": 58,
+     "chuy": 42,
+     "karla": 58,
+     "paty": 50,
+     "greg": 26,
+     "fermin": 38
+    },
+    "progress": {
+     "done": 11,
+     "total": 13
+    },
+    "statuses": {
+     "fn-d1-carta": "decidido",
+     "fn-d1-andon": "decidido",
+     "fn-d2-precio": "decidido",
+     "fn-d2-soldadores": "decidido",
+     "fn-c-escape": "decidido",
+     "fn-d3-ppap": "decidido",
+     "fn-d4-recap": "decidido",
+     "fn-d4-pleito": "decidido",
+     "fn-d5-ciber": "decidido",
+     "fn-d5-plataforma": "decidido",
+     "fn-d6-proveedor": "decidido",
+     "fn-d6-denuncia": "decidido",
+     "fn-d7-consejo": "pendiente",
+     "fn-d7-sindicato": "futuro"
+    },
+    "timing": {
+     "fn-d1-carta": [
+      15,
+      79200
+     ],
+     "fn-d1-andon": [
+      3201,
+      39600
+     ],
+     "fn-d2-precio": [
+      60923,
+      79200
+     ],
+     "fn-d2-soldadores": [
+      79419,
+      79200
+     ],
+     "fn-c-escape": [
+      148960,
+      25200
+     ],
+     "fn-d3-ppap": [
+      160480,
+      32400
+     ],
+     "fn-d4-recap": [
+      244468,
+      79200
+     ],
+     "fn-d4-pleito": [
+      251331,
+      39600
+     ],
+     "fn-d5-ciber": [
+      312326,
+      18000
+     ],
+     "fn-d5-plataforma": [
+      325521,
+      79200
+     ],
+     "fn-d6-proveedor": [
+      401069,
+      50400
+     ],
+     "fn-d6-denuncia": [
+      413407,
+      39600
+     ],
+     "fn-d7-consejo": [
+      487532,
+      79200
+     ],
+     "fn-d7-sindicato": [
+      518074,
+      18000
+     ]
+    },
+    "decisions": {
+     "fn-d1-carta": "a",
+     "fn-d1-andon": "b",
+     "fn-d2-precio": "b",
+     "fn-d2-soldadores": "c",
+     "fn-c-escape": "a",
+     "fn-d3-ppap": "a",
+     "fn-d4-recap": "c",
+     "fn-d4-pleito": "a",
+     "fn-d5-ciber": "a",
+     "fn-d5-plataforma": "c",
+     "fn-d6-proveedor": "b",
+     "fn-d6-denuncia": "a"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 12,
+     "best": 12
+    },
+    "profile": {
+     "archetype": "Integrador",
+     "axes": {
+      "horizonte": 74,
+      "riesgo": 19,
+      "foco": 3,
+      "estilo": 55,
+      "conflicto": 44
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "racha7",
+     "puntual",
+     "gente",
+     "lector",
+     "ascenso"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "a2": 1,
+     "d5": 1,
+     "e3": 1,
+     "v4": 1,
+     "c2": 1,
+     "s1": 1,
+     "g1": 1,
+     "q2": 1,
+     "k1": 1,
+     "p3": 1,
+     "r3": 1
+    },
+    "lessons": [
+     "alineacion",
+     "comunicacion",
+     "cultura",
+     "equipos",
+     "estrategia",
+     "finanzas",
+     "innovacion",
+     "mentalidad",
+     "mentalidad-2",
+     "negociacion",
+     "personas",
+     "personas-2",
+     "personas-3"
+    ],
+    "career": [
+     {
+      "company": "cumbre",
+      "tier": 0,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 745,
+      "kpis": {
+       "caja": 55,
+       "margen": 59,
+       "equipo": 74,
+       "clientes": 58,
+       "consejo": 75
+      },
+      "change": {
+       "adopted": 8,
+       "weeks": 24,
+       "ok": true
+      }
+     }
+    ]
+   }
+  },
+  {
+   "after": 75,
+   "at": 1792282390000,
+   "snapshot": {
+    "company": "forja",
+    "tier": 1,
+    "legendary": false,
+    "seasonDay": 7,
+    "kpis": {
+     "caja": 59,
+     "margen": 60,
+     "equipo": 83,
+     "clientes": 61,
+     "consejo": 61
+    },
+    "health": 65,
+    "xp": 2170,
+    "level": 4,
+    "relations": {
+     "zertuche": 27,
+     "regina": 41,
+     "marcos": 82,
+     "ramon": 71,
+     "laura": 77,
+     "daniela": 28,
+     "teresa": 64,
+     "chuy": 50,
+     "karla": 58,
+     "paty": 50,
+     "greg": 26,
+     "fermin": 54
+    },
+    "progress": {
+     "done": 13,
+     "total": 13
+    },
+    "statuses": {
+     "fn-d1-carta": "decidido",
+     "fn-d1-andon": "decidido",
+     "fn-d2-precio": "decidido",
+     "fn-d2-soldadores": "decidido",
+     "fn-c-escape": "decidido",
+     "fn-d3-ppap": "decidido",
+     "fn-d4-recap": "decidido",
+     "fn-d4-pleito": "decidido",
+     "fn-d5-ciber": "decidido",
+     "fn-d5-plataforma": "decidido",
+     "fn-d6-proveedor": "decidido",
+     "fn-d6-denuncia": "decidido",
+     "fn-d7-consejo": "decidido",
+     "fn-d7-sindicato": "decidido"
+    },
+    "timing": {
+     "fn-d1-carta": [
+      15,
+      79200
+     ],
+     "fn-d1-andon": [
+      3201,
+      39600
+     ],
+     "fn-d2-precio": [
+      60923,
+      79200
+     ],
+     "fn-d2-soldadores": [
+      79419,
+      79200
+     ],
+     "fn-c-escape": [
+      148960,
+      25200
+     ],
+     "fn-d3-ppap": [
+      160480,
+      32400
+     ],
+     "fn-d4-recap": [
+      244468,
+      79200
+     ],
+     "fn-d4-pleito": [
+      251331,
+      39600
+     ],
+     "fn-d5-ciber": [
+      312326,
+      18000
+     ],
+     "fn-d5-plataforma": [
+      325521,
+      79200
+     ],
+     "fn-d6-proveedor": [
+      401069,
+      50400
+     ],
+     "fn-d6-denuncia": [
+      413407,
+      39600
+     ],
+     "fn-d7-consejo": [
+      487532,
+      79200
+     ],
+     "fn-d7-sindicato": [
+      518074,
+      18000
+     ]
+    },
+    "decisions": {
+     "fn-d1-carta": "a",
+     "fn-d1-andon": "b",
+     "fn-d2-precio": "b",
+     "fn-d2-soldadores": "c",
+     "fn-c-escape": "a",
+     "fn-d3-ppap": "a",
+     "fn-d4-recap": "c",
+     "fn-d4-pleito": "a",
+     "fn-d5-ciber": "a",
+     "fn-d5-plataforma": "c",
+     "fn-d6-proveedor": "b",
+     "fn-d6-denuncia": "a",
+     "fn-d7-consejo": "a",
+     "fn-d7-sindicato": "a"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 13,
+     "best": 13
+    },
+    "profile": {
+     "archetype": "Integrador",
+     "axes": {
+      "horizonte": 75,
+      "riesgo": 21,
+      "foco": 8,
+      "estilo": 54,
+      "conflicto": 48
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "racha7",
+     "puntual",
+     "gente",
+     "lector",
+     "ascenso"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "a2": 1,
+     "d5": 1,
+     "e3": 1,
+     "v4": 1,
+     "c2": 1,
+     "s1": 1,
+     "g1": 1,
+     "q2": 1,
+     "k1": 1,
+     "p3": 1,
+     "r3": 1,
+     "d3": 1
+    },
+    "lessons": [
+     "alineacion",
+     "comunicacion",
+     "conversaciones",
+     "cultura",
+     "equipos",
+     "estrategia",
+     "finanzas",
+     "innovacion",
+     "mentalidad",
+     "mentalidad-2",
+     "negociacion",
+     "personas",
+     "personas-2",
+     "personas-3"
+    ],
+    "career": [
+     {
+      "company": "cumbre",
+      "tier": 0,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 745,
+      "kpis": {
+       "caja": 55,
+       "margen": 59,
+       "equipo": 74,
+       "clientes": 58,
+       "consejo": 75
+      },
+      "change": {
+       "adopted": 8,
+       "weeks": 24,
+       "ok": true
+      }
+     }
+    ]
+   }
+  },
+  {
+   "after": 87,
+   "at": 1792282810000,
+   "snapshot": {
+    "company": "forja",
+    "tier": 1,
+    "legendary": false,
+    "seasonDay": 7,
+    "kpis": {
+     "caja": 57,
+     "margen": 60,
+     "equipo": 84,
+     "clientes": 61,
+     "consejo": 59
+    },
+    "health": 64,
+    "xp": 2170,
+    "level": 4,
+    "relations": {
+     "zertuche": 27,
+     "regina": 41,
+     "marcos": 82,
+     "ramon": 71,
+     "laura": 77,
+     "daniela": 28,
+     "teresa": 64,
+     "chuy": 50,
+     "karla": 58,
+     "paty": 50,
+     "greg": 26,
+     "fermin": 54
+    },
+    "progress": {
+     "done": 13,
+     "total": 13
+    },
+    "statuses": {
+     "fn-d1-carta": "decidido",
+     "fn-d1-andon": "decidido",
+     "fn-d2-precio": "decidido",
+     "fn-d2-soldadores": "decidido",
+     "fn-c-escape": "decidido",
+     "fn-d3-ppap": "decidido",
+     "fn-d4-recap": "decidido",
+     "fn-d4-pleito": "decidido",
+     "fn-d5-ciber": "decidido",
+     "fn-d5-plataforma": "decidido",
+     "fn-d6-proveedor": "decidido",
+     "fn-d6-denuncia": "decidido",
+     "fn-d7-consejo": "decidido",
+     "fn-d7-sindicato": "decidido"
+    },
+    "timing": {
+     "fn-d1-carta": [
+      15,
+      79200
+     ],
+     "fn-d1-andon": [
+      3201,
+      39600
+     ],
+     "fn-d2-precio": [
+      60923,
+      79200
+     ],
+     "fn-d2-soldadores": [
+      79419,
+      79200
+     ],
+     "fn-c-escape": [
+      148960,
+      25200
+     ],
+     "fn-d3-ppap": [
+      160480,
+      32400
+     ],
+     "fn-d4-recap": [
+      244468,
+      79200
+     ],
+     "fn-d4-pleito": [
+      251331,
+      39600
+     ],
+     "fn-d5-ciber": [
+      312326,
+      18000
+     ],
+     "fn-d5-plataforma": [
+      325521,
+      79200
+     ],
+     "fn-d6-proveedor": [
+      401069,
+      50400
+     ],
+     "fn-d6-denuncia": [
+      413407,
+      39600
+     ],
+     "fn-d7-consejo": [
+      487532,
+      79200
+     ],
+     "fn-d7-sindicato": [
+      518074,
+      18000
+     ]
+    },
+    "decisions": {
+     "fn-d1-carta": "a",
+     "fn-d1-andon": "b",
+     "fn-d2-precio": "b",
+     "fn-d2-soldadores": "c",
+     "fn-c-escape": "a",
+     "fn-d3-ppap": "a",
+     "fn-d4-recap": "c",
+     "fn-d4-pleito": "a",
+     "fn-d5-ciber": "a",
+     "fn-d5-plataforma": "c",
+     "fn-d6-proveedor": "b",
+     "fn-d6-denuncia": "a",
+     "fn-d7-consejo": "a",
+     "fn-d7-sindicato": "a"
+    },
+    "change": {
+     "adopted": 6,
+     "share": 0.6,
+     "weeksUsed": 22,
+     "credibility": 60,
+     "done": true,
+     "ok": false
+    },
+    "verdict": {
+     "passed": true,
+     "passLine": 52,
+     "answered": 1,
+     "approved": {
+      "caja": true,
+      "margen": true,
+      "equipo": true,
+      "clientes": true,
+      "consejo": true
+     }
+    },
+    "streak": {
+     "days": 13,
+     "best": 13
+    },
+    "profile": {
+     "archetype": "Integrador",
+     "axes": {
+      "horizonte": 75,
+      "riesgo": 21,
+      "foco": 8,
+      "estilo": 54,
+      "conflicto": 48
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "racha7",
+     "puntual",
+     "gente",
+     "lector",
+     "ascenso"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "a2": 1,
+     "d5": 1,
+     "e3": 1,
+     "v4": 1,
+     "c2": 1,
+     "s1": 1,
+     "g1": 1,
+     "q2": 1,
+     "k1": 1,
+     "p3": 1,
+     "r3": 1,
+     "d3": 1
+    },
+    "lessons": [
+     "alineacion",
+     "comunicacion",
+     "conversaciones",
+     "cultura",
+     "equipos",
+     "estrategia",
+     "finanzas",
+     "innovacion",
+     "mentalidad",
+     "mentalidad-2",
+     "negociacion",
+     "personas",
+     "personas-2",
+     "personas-3"
+    ],
+    "career": [
+     {
+      "company": "cumbre",
+      "tier": 0,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 745,
+      "kpis": {
+       "caja": 55,
+       "margen": 59,
+       "equipo": 74,
+       "clientes": 58,
+       "consejo": 75
+      },
+      "change": {
+       "adopted": 8,
+       "weeks": 24,
+       "ok": true
+      }
+     }
+    ]
+   }
+  },
+  {
+   "after": 88,
+   "at": 1792282870000,
+   "snapshot": {
+    "company": "brasa",
+    "tier": 2,
+    "legendary": false,
+    "seasonDay": 1,
+    "kpis": {
+     "caja": 61,
+     "margen": 56,
+     "equipo": 56,
+     "clientes": 66,
+     "consejo": 64
+    },
+    "health": 61,
+    "xp": 2170,
+    "level": 4,
+    "relations": {
+     "ignacio": 50,
+     "lourdes": 50,
+     "beatriz": 50,
+     "fer": 50,
+     "andres": 50,
+     "sara": 50,
+     "vero": 50,
+     "maru": 50,
+     "paty": 50,
+     "nico": 50
+    },
+    "progress": {
+     "done": 0,
+     "total": 12
+    },
+    "statuses": {
+     "gb-d1-carta": "futuro",
+     "gb-d1-app": "futuro",
+     "gb-d2-menu": "futuro",
+     "gb-d2-propinas": "futuro",
+     "gb-d3-brote": "futuro",
+     "gb-d3-franquicia": "futuro",
+     "gb-d4-carne": "futuro",
+     "gb-d4-gerente": "futuro",
+     "gb-d5-cdmx": "futuro",
+     "gb-d6-dark": "futuro",
+     "gb-d6-sucesion": "futuro",
+     "gb-d7-consejo": "futuro"
+    },
+    "timing": {
+     "gb-d1-carta": [
+      15,
+      68400
+     ],
+     "gb-d1-app": [
+      1259,
+      68400
+     ],
+     "gb-d2-menu": [
+      55634,
+      68400
+     ],
+     "gb-d2-propinas": [
+      72563,
+      28800
+     ],
+     "gb-d3-brote": [
+      137518,
+      18000
+     ],
+     "gb-d3-franquicia": [
+      152284,
+      68400
+     ],
+     "gb-d4-carne": [
+      236185,
+      68400
+     ],
+     "gb-d4-gerente": [
+      258435,
+      46800
+     ],
+     "gb-d5-cdmx": [
+      319653,
+      68400
+     ],
+     "gb-d6-dark": [
+      409820,
+      68400
+     ],
+     "gb-d6-sucesion": [
+      416942,
+      36000
+     ],
+     "gb-d7-consejo": [
+      488437,
+      68400
+     ]
+    },
+    "decisions": {},
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 13,
+     "best": 13
+    },
+    "profile": {
+     "archetype": "Integrador",
+     "axes": {
+      "horizonte": 75,
+      "riesgo": 21,
+      "foco": 8,
+      "estilo": 54,
+      "conflicto": 48
+     }
+    },
+    "badges": [
+     "racha3",
+     "racha7",
+     "lector",
+     "ascenso"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "a2": 1,
+     "d5": 1,
+     "e3": 1,
+     "v4": 1,
+     "c2": 1,
+     "s1": 1,
+     "g1": 1,
+     "q2": 1,
+     "k1": 1,
+     "p3": 1,
+     "r3": 1,
+     "d3": 1
+    },
+    "lessons": [
+     "alineacion",
+     "comunicacion",
+     "conversaciones",
+     "cultura",
+     "equipos",
+     "estrategia",
+     "finanzas",
+     "innovacion",
+     "mentalidad",
+     "mentalidad-2",
+     "negociacion",
+     "personas",
+     "personas-2",
+     "personas-3"
+    ],
+    "career": [
+     {
+      "company": "cumbre",
+      "tier": 0,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 745,
+      "kpis": {
+       "caja": 55,
+       "margen": 59,
+       "equipo": 74,
+       "clientes": 58,
+       "consejo": 75
+      },
+      "change": {
+       "adopted": 8,
+       "weeks": 24,
+       "ok": true
+      }
+     },
+     {
+      "company": "forja",
+      "tier": 1,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 680,
+      "kpis": {
+       "caja": 57,
+       "margen": 60,
+       "equipo": 84,
+       "clientes": 61,
+       "consejo": 59
+      },
+      "change": {
+       "adopted": 6,
+       "weeks": 22,
+       "ok": false
+      }
+     }
+    ]
+   }
+  },
+  {
+   "after": 91,
+   "at": 1792338504693,
+   "snapshot": {
+    "company": "brasa",
+    "tier": 2,
+    "legendary": false,
+    "seasonDay": 2,
+    "kpis": {
+     "caja": 61,
+     "margen": 59,
+     "equipo": 62,
+     "clientes": 64,
+     "consejo": 59
+    },
+    "health": 61,
+    "xp": 2300,
+    "level": 4,
+    "relations": {
+     "ignacio": 56,
+     "lourdes": 42,
+     "beatriz": 53,
+     "fer": 53,
+     "andres": 64,
+     "sara": 47,
+     "vero": 50,
+     "maru": 50,
+     "paty": 50,
+     "nico": 42
+    },
+    "progress": {
+     "done": 2,
+     "total": 12
+    },
+    "statuses": {
+     "gb-d1-carta": "decidido",
+     "gb-d1-app": "decidido",
+     "gb-d2-menu": "pendiente",
+     "gb-d2-propinas": "futuro",
+     "gb-d3-brote": "futuro",
+     "gb-d3-franquicia": "futuro",
+     "gb-d4-carne": "futuro",
+     "gb-d4-gerente": "futuro",
+     "gb-d5-cdmx": "futuro",
+     "gb-d6-dark": "futuro",
+     "gb-d6-sucesion": "futuro",
+     "gb-d7-consejo": "futuro"
+    },
+    "timing": {
+     "gb-d1-carta": [
+      15,
+      68400
+     ],
+     "gb-d1-app": [
+      1259,
+      68400
+     ],
+     "gb-d2-menu": [
+      55634,
+      68400
+     ],
+     "gb-d2-propinas": [
+      72563,
+      28800
+     ],
+     "gb-d3-brote": [
+      137518,
+      18000
+     ],
+     "gb-d3-franquicia": [
+      152284,
+      68400
+     ],
+     "gb-d4-carne": [
+      236185,
+      68400
+     ],
+     "gb-d4-gerente": [
+      258435,
+      46800
+     ],
+     "gb-d5-cdmx": [
+      319653,
+      68400
+     ],
+     "gb-d6-dark": [
+      409820,
+      68400
+     ],
+     "gb-d6-sucesion": [
+      416942,
+      36000
+     ],
+     "gb-d7-consejo": [
+      488437,
+      68400
+     ]
+    },
+    "decisions": {
+     "gb-d1-carta": "a",
+     "gb-d1-app": "c"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 13,
+     "best": 13
+    },
+    "profile": {
+     "archetype": "Integrador",
+     "axes": {
+      "horizonte": 76,
+      "riesgo": 21,
+      "foco": 10,
+      "estilo": 54,
+      "conflicto": 48
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "racha7",
+     "lector",
+     "ascenso"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "a2": 1,
+     "d5": 1,
+     "e3": 1,
+     "v4": 1,
+     "c2": 1,
+     "s1": 1,
+     "g1": 1,
+     "q2": 1,
+     "k1": 1,
+     "p3": 1,
+     "r3": 1,
+     "d3": 1
+    },
+    "lessons": [
+     "alineacion",
+     "comunicacion",
+     "conversaciones",
+     "conversaciones-2",
+     "cultura",
+     "equipos",
+     "estrategia",
+     "finanzas",
+     "innovacion",
+     "mentalidad",
+     "mentalidad-2",
+     "negociacion",
+     "personas",
+     "personas-2",
+     "personas-3"
+    ],
+    "career": [
+     {
+      "company": "cumbre",
+      "tier": 0,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 745,
+      "kpis": {
+       "caja": 55,
+       "margen": 59,
+       "equipo": 74,
+       "clientes": 58,
+       "consejo": 75
+      },
+      "change": {
+       "adopted": 8,
+       "weeks": 24,
+       "ok": true
+      }
+     },
+     {
+      "company": "forja",
+      "tier": 1,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 680,
+      "kpis": {
+       "caja": 57,
+       "margen": 60,
+       "equipo": 84,
+       "clientes": 61,
+       "consejo": 59
+      },
+      "change": {
+       "adopted": 6,
+       "weeks": 22,
+       "ok": false
+      }
+     }
+    ]
+   }
+  },
+  {
+   "after": 95,
+   "at": 1792420389237,
+   "snapshot": {
+    "company": "brasa",
+    "tier": 2,
+    "legendary": false,
+    "seasonDay": 3,
+    "kpis": {
+     "caja": 61,
+     "margen": 60,
+     "equipo": 67,
+     "clientes": 62,
+     "consejo": 60
+    },
+    "health": 62,
+    "xp": 2445,
+    "level": 4,
+    "relations": {
+     "ignacio": 70,
+     "lourdes": 40,
+     "beatriz": 50,
+     "fer": 40,
+     "andres": 83,
+     "sara": 47,
+     "vero": 58,
+     "maru": 42,
+     "paty": 50,
+     "nico": 42
+    },
+    "progress": {
+     "done": 4,
+     "total": 12
+    },
+    "statuses": {
+     "gb-d1-carta": "decidido",
+     "gb-d1-app": "decidido",
+     "gb-d2-menu": "decidido",
+     "gb-d2-propinas": "decidido",
+     "gb-d3-brote": "pendiente",
+     "gb-d3-franquicia": "futuro",
+     "gb-c-cocinas": "futuro",
+     "gb-d4-carne": "futuro",
+     "gb-d4-gerente": "futuro",
+     "gb-d5-cdmx": "futuro",
+     "gb-d6-dark": "futuro",
+     "gb-d6-sucesion": "futuro",
+     "gb-d7-consejo": "futuro"
+    },
+    "timing": {
+     "gb-d1-carta": [
+      15,
+      68400
+     ],
+     "gb-d1-app": [
+      1259,
+      68400
+     ],
+     "gb-d2-menu": [
+      55634,
+      68400
+     ],
+     "gb-d2-propinas": [
+      72563,
+      28800
+     ],
+     "gb-d3-brote": [
+      137518,
+      18000
+     ],
+     "gb-d3-franquicia": [
+      152284,
+      68400
+     ],
+     "gb-c-cocinas": [
+      170268,
+      36000
+     ],
+     "gb-d4-carne": [
+      236185,
+      68400
+     ],
+     "gb-d4-gerente": [
+      258435,
+      46800
+     ],
+     "gb-d5-cdmx": [
+      319653,
+      68400
+     ],
+     "gb-d6-dark": [
+      409820,
+      68400
+     ],
+     "gb-d6-sucesion": [
+      416942,
+      36000
+     ],
+     "gb-d7-consejo": [
+      488437,
+      68400
+     ]
+    },
+    "decisions": {
+     "gb-d1-carta": "a",
+     "gb-d1-app": "c",
+     "gb-d2-menu": "b",
+     "gb-d2-propinas": "a"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 14,
+     "best": 14
+    },
+    "profile": {
+     "archetype": "Integrador",
+     "axes": {
+      "horizonte": 76,
+      "riesgo": 18,
+      "foco": 14,
+      "estilo": 46,
+      "conflicto": 46
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "racha7",
+     "lector",
+     "ascenso"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "a2": 1,
+     "d5": 1,
+     "e3": 1,
+     "v4": 1,
+     "c2": 1,
+     "s1": 1,
+     "g1": 1,
+     "q2": 1,
+     "k1": 1,
+     "p3": 1,
+     "r3": 1,
+     "d3": 1,
+     "q3": 0
+    },
+    "lessons": [
+     "alineacion",
+     "comunicacion",
+     "conversaciones",
+     "conversaciones-2",
+     "cultura",
+     "equipos",
+     "equipos-2",
+     "estrategia",
+     "finanzas",
+     "innovacion",
+     "mentalidad",
+     "mentalidad-2",
+     "negociacion",
+     "personas",
+     "personas-2",
+     "personas-3"
+    ],
+    "career": [
+     {
+      "company": "cumbre",
+      "tier": 0,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 745,
+      "kpis": {
+       "caja": 55,
+       "margen": 59,
+       "equipo": 74,
+       "clientes": 58,
+       "consejo": 75
+      },
+      "change": {
+       "adopted": 8,
+       "weeks": 24,
+       "ok": true
+      }
+     },
+     {
+      "company": "forja",
+      "tier": 1,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 680,
+      "kpis": {
+       "caja": 57,
+       "margen": 60,
+       "equipo": 84,
+       "clientes": 61,
+       "consejo": 59
+      },
+      "change": {
+       "adopted": 6,
+       "weeks": 22,
+       "ok": false
+      }
+     }
+    ]
+   }
+  },
+  {
+   "after": 100,
+   "at": 1792519056366,
+   "snapshot": {
+    "company": "brasa",
+    "tier": 2,
+    "legendary": false,
+    "seasonDay": 4,
+    "kpis": {
+     "caja": 57,
+     "margen": 59,
+     "equipo": 67,
+     "clientes": 63,
+     "consejo": 64
+    },
+    "health": 62,
+    "xp": 2655,
+    "level": 4,
+    "relations": {
+     "ignacio": 89,
+     "lourdes": 32,
+     "beatriz": 50,
+     "fer": 38,
+     "andres": 97,
+     "sara": 44,
+     "vero": 58,
+     "maru": 42,
+     "paty": 50,
+     "nico": 42
+    },
+    "progress": {
+     "done": 6,
+     "total": 12
+    },
+    "statuses": {
+     "gb-d1-carta": "decidido",
+     "gb-d1-app": "decidido",
+     "gb-d2-menu": "decidido",
+     "gb-d2-propinas": "decidido",
+     "gb-d3-brote": "decidido",
+     "gb-d3-franquicia": "decidido",
+     "gb-c-cocinas": "decidido",
+     "gb-d4-carne": "pendiente",
+     "gb-d4-gerente": "futuro",
+     "gb-d5-cdmx": "futuro",
+     "gb-d6-dark": "futuro",
+     "gb-d6-sucesion": "futuro",
+     "gb-d7-consejo": "futuro"
+    },
+    "timing": {
+     "gb-d1-carta": [
+      15,
+      68400
+     ],
+     "gb-d1-app": [
+      1259,
+      68400
+     ],
+     "gb-d2-menu": [
+      55634,
+      68400
+     ],
+     "gb-d2-propinas": [
+      72563,
+      28800
+     ],
+     "gb-d3-brote": [
+      137518,
+      18000
+     ],
+     "gb-d3-franquicia": [
+      152284,
+      68400
+     ],
+     "gb-c-cocinas": [
+      170268,
+      36000
+     ],
+     "gb-d4-carne": [
+      236185,
+      68400
+     ],
+     "gb-d4-gerente": [
+      258435,
+      46800
+     ],
+     "gb-d5-cdmx": [
+      319653,
+      68400
+     ],
+     "gb-d6-dark": [
+      409820,
+      68400
+     ],
+     "gb-d6-sucesion": [
+      416942,
+      36000
+     ],
+     "gb-d7-consejo": [
+      488437,
+      68400
+     ]
+    },
+    "decisions": {
+     "gb-d1-carta": "a",
+     "gb-d1-app": "c",
+     "gb-d2-menu": "b",
+     "gb-d2-propinas": "a",
+     "gb-d3-brote": "c",
+     "gb-d3-franquicia": "b",
+     "gb-c-cocinas": "a"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 15,
+     "best": 15
+    },
+    "profile": {
+     "archetype": "Integrador",
+     "axes": {
+      "horizonte": 76,
+      "riesgo": 9,
+      "foco": 16,
+      "estilo": 47,
+      "conflicto": 42
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "racha7",
+     "puntual",
+     "lector",
+     "ascenso"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "a2": 1,
+     "d5": 1,
+     "e3": 1,
+     "v4": 1,
+     "c2": 1,
+     "s1": 1,
+     "g1": 1,
+     "q2": 1,
+     "k1": 1,
+     "p3": 1,
+     "r3": 1,
+     "d3": 1,
+     "q3": 0,
+     "r2": 1
+    },
+    "lessons": [
+     "alineacion",
+     "alineacion-2",
+     "comunicacion",
+     "conversaciones",
+     "conversaciones-2",
+     "cultura",
+     "equipos",
+     "equipos-2",
+     "estrategia",
+     "finanzas",
+     "innovacion",
+     "mentalidad",
+     "mentalidad-2",
+     "negociacion",
+     "personas",
+     "personas-2",
+     "personas-3"
+    ],
+    "career": [
+     {
+      "company": "cumbre",
+      "tier": 0,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 745,
+      "kpis": {
+       "caja": 55,
+       "margen": 59,
+       "equipo": 74,
+       "clientes": 58,
+       "consejo": 75
+      },
+      "change": {
+       "adopted": 8,
+       "weeks": 24,
+       "ok": true
+      }
+     },
+     {
+      "company": "forja",
+      "tier": 1,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 680,
+      "kpis": {
+       "caja": 57,
+       "margen": 60,
+       "equipo": 84,
+       "clientes": 61,
+       "consejo": 59
+      },
+      "change": {
+       "adopted": 6,
+       "weeks": 22,
+       "ok": false
+      }
+     }
+    ]
+   }
+  },
+  {
+   "after": 104,
+   "at": 1792602523749,
+   "snapshot": {
+    "company": "brasa",
+    "tier": 2,
+    "legendary": false,
+    "seasonDay": 5,
+    "kpis": {
+     "caja": 57,
+     "margen": 62,
+     "equipo": 71,
+     "clientes": 58,
+     "consejo": 65
+    },
+    "health": 63,
+    "xp": 2810,
+    "level": 4,
+    "relations": {
+     "ignacio": 89,
+     "lourdes": 26,
+     "beatriz": 53,
+     "fer": 46,
+     "andres": 95,
+     "sara": 28,
+     "vero": 74,
+     "maru": 50,
+     "paty": 50,
+     "nico": 34
+    },
+    "progress": {
+     "done": 8,
+     "total": 12
+    },
+    "statuses": {
+     "gb-d1-carta": "decidido",
+     "gb-d1-app": "decidido",
+     "gb-d2-menu": "decidido",
+     "gb-d2-propinas": "decidido",
+     "gb-d3-brote": "decidido",
+     "gb-d3-franquicia": "decidido",
+     "gb-c-cocinas": "decidido",
+     "gb-d4-carne": "decidido",
+     "gb-d4-gerente": "decidido",
+     "gb-d5-cdmx": "pendiente",
+     "gb-d6-dark": "futuro",
+     "gb-d6-sucesion": "futuro",
+     "gb-d7-consejo": "futuro"
+    },
+    "timing": {
+     "gb-d1-carta": [
+      15,
+      68400
+     ],
+     "gb-d1-app": [
+      1259,
+      68400
+     ],
+     "gb-d2-menu": [
+      55634,
+      68400
+     ],
+     "gb-d2-propinas": [
+      72563,
+      28800
+     ],
+     "gb-d3-brote": [
+      137518,
+      18000
+     ],
+     "gb-d3-franquicia": [
+      152284,
+      68400
+     ],
+     "gb-c-cocinas": [
+      170268,
+      36000
+     ],
+     "gb-d4-carne": [
+      236185,
+      68400
+     ],
+     "gb-d4-gerente": [
+      258435,
+      46800
+     ],
+     "gb-d5-cdmx": [
+      319653,
+      68400
+     ],
+     "gb-d6-dark": [
+      409820,
+      68400
+     ],
+     "gb-d6-sucesion": [
+      416942,
+      36000
+     ],
+     "gb-d7-consejo": [
+      488437,
+      68400
+     ]
+    },
+    "decisions": {
+     "gb-d1-carta": "a",
+     "gb-d1-app": "c",
+     "gb-d2-menu": "b",
+     "gb-d2-propinas": "a",
+     "gb-d3-brote": "c",
+     "gb-d3-franquicia": "b",
+     "gb-c-cocinas": "a",
+     "gb-d4-carne": "a",
+     "gb-d4-gerente": "a"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 16,
+     "best": 16
+    },
+    "profile": {
+     "archetype": "Integrador",
+     "axes": {
+      "horizonte": 77,
+      "riesgo": 9,
+      "foco": 17,
+      "estilo": 47,
+      "conflicto": 42
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "racha7",
+     "puntual",
+     "gente",
+     "lector",
+     "ascenso"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "a2": 1,
+     "d5": 1,
+     "e3": 1,
+     "v4": 1,
+     "c2": 1,
+     "s1": 1,
+     "g1": 1,
+     "q2": 1,
+     "k1": 1,
+     "p3": 1,
+     "r3": 1,
+     "d3": 1,
+     "q3": 0,
+     "r2": 1,
+     "s3": 1
+    },
+    "lessons": [
+     "alineacion",
+     "alineacion-2",
+     "comunicacion",
+     "conversaciones",
+     "conversaciones-2",
+     "cultura",
+     "equipos",
+     "equipos-2",
+     "estrategia",
+     "finanzas",
+     "innovacion",
+     "mentalidad",
+     "mentalidad-2",
+     "negociacion",
+     "negociacion-2",
+     "personas",
+     "personas-2",
+     "personas-3"
+    ],
+    "career": [
+     {
+      "company": "cumbre",
+      "tier": 0,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 745,
+      "kpis": {
+       "caja": 55,
+       "margen": 59,
+       "equipo": 74,
+       "clientes": 58,
+       "consejo": 75
+      },
+      "change": {
+       "adopted": 8,
+       "weeks": 24,
+       "ok": true
+      }
+     },
+     {
+      "company": "forja",
+      "tier": 1,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 680,
+      "kpis": {
+       "caja": 57,
+       "margen": 60,
+       "equipo": 84,
+       "clientes": 61,
+       "consejo": 59
+      },
+      "change": {
+       "adopted": 6,
+       "weeks": 22,
+       "ok": false
+      }
+     }
+    ]
+   }
+  },
+  {
+   "after": 107,
+   "at": 1792692691293,
+   "snapshot": {
+    "company": "brasa",
+    "tier": 2,
+    "legendary": false,
+    "seasonDay": 6,
+    "kpis": {
+     "caja": 52,
+     "margen": 62,
+     "equipo": 73,
+     "clientes": 58,
+     "consejo": 63
+    },
+    "health": 62,
+    "xp": 2910,
+    "level": 4,
+    "relations": {
+     "ignacio": 100,
+     "lourdes": 21,
+     "beatriz": 47,
+     "fer": 30,
+     "andres": 100,
+     "sara": 28,
+     "vero": 74,
+     "maru": 50,
+     "paty": 50,
+     "nico": 34
+    },
+    "progress": {
+     "done": 9,
+     "total": 12
+    },
+    "statuses": {
+     "gb-d1-carta": "decidido",
+     "gb-d1-app": "decidido",
+     "gb-d2-menu": "decidido",
+     "gb-d2-propinas": "decidido",
+     "gb-d3-brote": "decidido",
+     "gb-d3-franquicia": "decidido",
+     "gb-c-cocinas": "decidido",
+     "gb-d4-carne": "decidido",
+     "gb-d4-gerente": "decidido",
+     "gb-d5-cdmx": "decidido",
+     "gb-d6-dark": "pendiente",
+     "gb-d6-sucesion": "futuro",
+     "gb-d7-consejo": "futuro"
+    },
+    "timing": {
+     "gb-d1-carta": [
+      15,
+      68400
+     ],
+     "gb-d1-app": [
+      1259,
+      68400
+     ],
+     "gb-d2-menu": [
+      55634,
+      68400
+     ],
+     "gb-d2-propinas": [
+      72563,
+      28800
+     ],
+     "gb-d3-brote": [
+      137518,
+      18000
+     ],
+     "gb-d3-franquicia": [
+      152284,
+      68400
+     ],
+     "gb-c-cocinas": [
+      170268,
+      36000
+     ],
+     "gb-d4-carne": [
+      236185,
+      68400
+     ],
+     "gb-d4-gerente": [
+      258435,
+      46800
+     ],
+     "gb-d5-cdmx": [
+      319653,
+      68400
+     ],
+     "gb-d6-dark": [
+      409820,
+      68400
+     ],
+     "gb-d6-sucesion": [
+      416942,
+      36000
+     ],
+     "gb-d7-consejo": [
+      488437,
+      68400
+     ]
+    },
+    "decisions": {
+     "gb-d1-carta": "a",
+     "gb-d1-app": "c",
+     "gb-d2-menu": "b",
+     "gb-d2-propinas": "a",
+     "gb-d3-brote": "c",
+     "gb-d3-franquicia": "b",
+     "gb-c-cocinas": "a",
+     "gb-d4-carne": "a",
+     "gb-d4-gerente": "a",
+     "gb-d5-cdmx": "b"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 17,
+     "best": 17
+    },
+    "profile": {
+     "archetype": "Integrador",
+     "axes": {
+      "horizonte": 77,
+      "riesgo": 13,
+      "foco": 18,
+      "estilo": 47,
+      "conflicto": 42
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "racha7",
+     "puntual",
+     "gente",
+     "lector",
+     "ascenso"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "a2": 1,
+     "d5": 1,
+     "e3": 1,
+     "v4": 1,
+     "c2": 1,
+     "s1": 1,
+     "g1": 1,
+     "q2": 1,
+     "k1": 1,
+     "p3": 1,
+     "r3": 1,
+     "d3": 1,
+     "q3": 0,
+     "r2": 1,
+     "s3": 1,
+     "v2": 1
+    },
+    "lessons": [
+     "alineacion",
+     "alineacion-2",
+     "comunicacion",
+     "comunicacion-2",
+     "conversaciones",
+     "conversaciones-2",
+     "cultura",
+     "equipos",
+     "equipos-2",
+     "estrategia",
+     "finanzas",
+     "innovacion",
+     "mentalidad",
+     "mentalidad-2",
+     "negociacion",
+     "negociacion-2",
+     "personas",
+     "personas-2",
+     "personas-3"
+    ],
+    "career": [
+     {
+      "company": "cumbre",
+      "tier": 0,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 745,
+      "kpis": {
+       "caja": 55,
+       "margen": 59,
+       "equipo": 74,
+       "clientes": 58,
+       "consejo": 75
+      },
+      "change": {
+       "adopted": 8,
+       "weeks": 24,
+       "ok": true
+      }
+     },
+     {
+      "company": "forja",
+      "tier": 1,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 680,
+      "kpis": {
+       "caja": 57,
+       "margen": 60,
+       "equipo": 84,
+       "clientes": 61,
+       "consejo": 59
+      },
+      "change": {
+       "adopted": 6,
+       "weeks": 22,
+       "ok": false
+      }
+     }
+    ]
+   }
+  },
+  {
+   "after": 111,
+   "at": 1792771307992,
+   "snapshot": {
+    "company": "brasa",
+    "tier": 2,
+    "legendary": false,
+    "seasonDay": 7,
+    "kpis": {
+     "caja": 54,
+     "margen": 62,
+     "equipo": 74,
+     "clientes": 58,
+     "consejo": 59
+    },
+    "health": 61,
+    "xp": 3035,
+    "level": 4,
+    "relations": {
+     "ignacio": 84,
+     "lourdes": 31,
+     "beatriz": 47,
+     "fer": 28,
+     "andres": 94,
+     "sara": 18,
+     "vero": 74,
+     "maru": 50,
+     "paty": 50,
+     "nico": 26
+    },
+    "progress": {
+     "done": 11,
+     "total": 12
+    },
+    "statuses": {
+     "gb-d1-carta": "decidido",
+     "gb-d1-app": "decidido",
+     "gb-d2-menu": "decidido",
+     "gb-d2-propinas": "decidido",
+     "gb-d3-brote": "decidido",
+     "gb-d3-franquicia": "decidido",
+     "gb-c-cocinas": "decidido",
+     "gb-d4-carne": "decidido",
+     "gb-d4-gerente": "decidido",
+     "gb-d5-cdmx": "decidido",
+     "gb-d6-dark": "decidido",
+     "gb-d6-sucesion": "decidido",
+     "gb-d7-consejo": "pendiente"
+    },
+    "timing": {
+     "gb-d1-carta": [
+      15,
+      68400
+     ],
+     "gb-d1-app": [
+      1259,
+      68400
+     ],
+     "gb-d2-menu": [
+      55634,
+      68400
+     ],
+     "gb-d2-propinas": [
+      72563,
+      28800
+     ],
+     "gb-d3-brote": [
+      137518,
+      18000
+     ],
+     "gb-d3-franquicia": [
+      152284,
+      68400
+     ],
+     "gb-c-cocinas": [
+      170268,
+      36000
+     ],
+     "gb-d4-carne": [
+      236185,
+      68400
+     ],
+     "gb-d4-gerente": [
+      258435,
+      46800
+     ],
+     "gb-d5-cdmx": [
+      319653,
+      68400
+     ],
+     "gb-d6-dark": [
+      409820,
+      68400
+     ],
+     "gb-d6-sucesion": [
+      416942,
+      36000
+     ],
+     "gb-d7-consejo": [
+      488437,
+      68400
+     ]
+    },
+    "decisions": {
+     "gb-d1-carta": "a",
+     "gb-d1-app": "c",
+     "gb-d2-menu": "b",
+     "gb-d2-propinas": "a",
+     "gb-d3-brote": "c",
+     "gb-d3-franquicia": "b",
+     "gb-c-cocinas": "a",
+     "gb-d4-carne": "a",
+     "gb-d4-gerente": "a",
+     "gb-d5-cdmx": "b",
+     "gb-d6-dark": "c",
+     "gb-d6-sucesion": "b"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 18,
+     "best": 18
+    },
+    "profile": {
+     "archetype": "Integrador",
+     "axes": {
+      "horizonte": 77,
+      "riesgo": 12,
+      "foco": 18,
+      "estilo": 47,
+      "conflicto": 44
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "racha7",
+     "puntual",
+     "gente",
+     "lector",
+     "ascenso"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "a2": 1,
+     "d5": 1,
+     "e3": 1,
+     "v4": 1,
+     "c2": 1,
+     "s1": 1,
+     "g1": 1,
+     "q2": 1,
+     "k1": 1,
+     "p3": 1,
+     "r3": 1,
+     "d3": 1,
+     "q3": 0,
+     "r2": 1,
+     "s3": 1,
+     "v2": 1,
+     "e5": 1
+    },
+    "lessons": [
+     "alineacion",
+     "alineacion-2",
+     "comunicacion",
+     "comunicacion-2",
+     "conversaciones",
+     "conversaciones-2",
+     "cultura",
+     "cultura-2",
+     "equipos",
+     "equipos-2",
+     "estrategia",
+     "finanzas",
+     "innovacion",
+     "mentalidad",
+     "mentalidad-2",
+     "negociacion",
+     "negociacion-2",
+     "personas",
+     "personas-2",
+     "personas-3"
+    ],
+    "career": [
+     {
+      "company": "cumbre",
+      "tier": 0,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 745,
+      "kpis": {
+       "caja": 55,
+       "margen": 59,
+       "equipo": 74,
+       "clientes": 58,
+       "consejo": 75
+      },
+      "change": {
+       "adopted": 8,
+       "weeks": 24,
+       "ok": true
+      }
+     },
+     {
+      "company": "forja",
+      "tier": 1,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 680,
+      "kpis": {
+       "caja": 57,
+       "margen": 60,
+       "equipo": 84,
+       "clientes": 61,
+       "consejo": 59
+      },
+      "change": {
+       "adopted": 6,
+       "weeks": 22,
+       "ok": false
+      }
+     }
+    ]
+   }
+  },
+  {
+   "after": 114,
+   "at": 1792771407992,
+   "snapshot": {
+    "company": "brasa",
+    "tier": 2,
+    "legendary": false,
+    "seasonDay": 7,
+    "kpis": {
+     "caja": 55,
+     "margen": 62,
+     "equipo": 72,
+     "clientes": 58,
+     "consejo": 61
+    },
+    "health": 62,
+    "xp": 3135,
+    "level": 4,
+    "relations": {
+     "ignacio": 79,
+     "lourdes": 47,
+     "beatriz": 39,
+     "fer": 25,
+     "andres": 94,
+     "sara": 24,
+     "vero": 74,
+     "maru": 50,
+     "paty": 50,
+     "nico": 26
+    },
+    "progress": {
+     "done": 12,
+     "total": 12
+    },
+    "statuses": {
+     "gb-d1-carta": "decidido",
+     "gb-d1-app": "decidido",
+     "gb-d2-menu": "decidido",
+     "gb-d2-propinas": "decidido",
+     "gb-d3-brote": "decidido",
+     "gb-d3-franquicia": "decidido",
+     "gb-c-cocinas": "decidido",
+     "gb-d4-carne": "decidido",
+     "gb-d4-gerente": "decidido",
+     "gb-d5-cdmx": "decidido",
+     "gb-d6-dark": "decidido",
+     "gb-d6-sucesion": "decidido",
+     "gb-d7-consejo": "decidido"
+    },
+    "timing": {
+     "gb-d1-carta": [
+      15,
+      68400
+     ],
+     "gb-d1-app": [
+      1259,
+      68400
+     ],
+     "gb-d2-menu": [
+      55634,
+      68400
+     ],
+     "gb-d2-propinas": [
+      72563,
+      28800
+     ],
+     "gb-d3-brote": [
+      137518,
+      18000
+     ],
+     "gb-d3-franquicia": [
+      152284,
+      68400
+     ],
+     "gb-c-cocinas": [
+      170268,
+      36000
+     ],
+     "gb-d4-carne": [
+      236185,
+      68400
+     ],
+     "gb-d4-gerente": [
+      258435,
+      46800
+     ],
+     "gb-d5-cdmx": [
+      319653,
+      68400
+     ],
+     "gb-d6-dark": [
+      409820,
+      68400
+     ],
+     "gb-d6-sucesion": [
+      416942,
+      36000
+     ],
+     "gb-d7-consejo": [
+      488437,
+      68400
+     ]
+    },
+    "decisions": {
+     "gb-d1-carta": "a",
+     "gb-d1-app": "c",
+     "gb-d2-menu": "b",
+     "gb-d2-propinas": "a",
+     "gb-d3-brote": "c",
+     "gb-d3-franquicia": "b",
+     "gb-c-cocinas": "a",
+     "gb-d4-carne": "a",
+     "gb-d4-gerente": "a",
+     "gb-d5-cdmx": "b",
+     "gb-d6-dark": "c",
+     "gb-d6-sucesion": "b",
+     "gb-d7-consejo": "b"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 19,
+     "best": 19
+    },
+    "profile": {
+     "archetype": "Integrador",
+     "axes": {
+      "horizonte": 76,
+      "riesgo": 15,
+      "foco": 18,
+      "estilo": 47,
+      "conflicto": 44
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "racha7",
+     "puntual",
+     "gente",
+     "lector",
+     "ascenso"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "a2": 1,
+     "d5": 1,
+     "e3": 1,
+     "v4": 1,
+     "c2": 1,
+     "s1": 1,
+     "g1": 1,
+     "q2": 1,
+     "k1": 1,
+     "p3": 1,
+     "r3": 1,
+     "d3": 1,
+     "q3": 0,
+     "r2": 1,
+     "s3": 1,
+     "v2": 1,
+     "e5": 1,
+     "p2": 1
+    },
+    "lessons": [
+     "alineacion",
+     "alineacion-2",
+     "comunicacion",
+     "comunicacion-2",
+     "conversaciones",
+     "conversaciones-2",
+     "cultura",
+     "cultura-2",
+     "equipos",
+     "equipos-2",
+     "estrategia",
+     "finanzas",
+     "finanzas-2",
+     "innovacion",
+     "mentalidad",
+     "mentalidad-2",
+     "negociacion",
+     "negociacion-2",
+     "personas",
+     "personas-2",
+     "personas-3"
+    ],
+    "career": [
+     {
+      "company": "cumbre",
+      "tier": 0,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 745,
+      "kpis": {
+       "caja": 55,
+       "margen": 59,
+       "equipo": 74,
+       "clientes": 58,
+       "consejo": 75
+      },
+      "change": {
+       "adopted": 8,
+       "weeks": 24,
+       "ok": true
+      }
+     },
+     {
+      "company": "forja",
+      "tier": 1,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 680,
+      "kpis": {
+       "caja": 57,
+       "margen": 60,
+       "equipo": 84,
+       "clientes": 61,
+       "consejo": 59
+      },
+      "change": {
+       "adopted": 6,
+       "weeks": 22,
+       "ok": false
+      }
+     }
+    ]
+   }
+  },
+  {
+   "after": 128,
+   "at": 1792771887992,
+   "snapshot": {
+    "company": "brasa",
+    "tier": 2,
+    "legendary": false,
+    "seasonDay": 7,
+    "kpis": {
+     "caja": 53,
+     "margen": 62,
+     "equipo": 73,
+     "clientes": 58,
+     "consejo": 59
+    },
+    "health": 61,
+    "xp": 3135,
+    "level": 4,
+    "relations": {
+     "ignacio": 79,
+     "lourdes": 47,
+     "beatriz": 39,
+     "fer": 25,
+     "andres": 94,
+     "sara": 24,
+     "vero": 74,
+     "maru": 50,
+     "paty": 50,
+     "nico": 26
+    },
+    "progress": {
+     "done": 12,
+     "total": 12
+    },
+    "statuses": {
+     "gb-d1-carta": "decidido",
+     "gb-d1-app": "decidido",
+     "gb-d2-menu": "decidido",
+     "gb-d2-propinas": "decidido",
+     "gb-d3-brote": "decidido",
+     "gb-d3-franquicia": "decidido",
+     "gb-c-cocinas": "decidido",
+     "gb-d4-carne": "decidido",
+     "gb-d4-gerente": "decidido",
+     "gb-d5-cdmx": "decidido",
+     "gb-d6-dark": "decidido",
+     "gb-d6-sucesion": "decidido",
+     "gb-d7-consejo": "decidido"
+    },
+    "timing": {
+     "gb-d1-carta": [
+      15,
+      68400
+     ],
+     "gb-d1-app": [
+      1259,
+      68400
+     ],
+     "gb-d2-menu": [
+      55634,
+      68400
+     ],
+     "gb-d2-propinas": [
+      72563,
+      28800
+     ],
+     "gb-d3-brote": [
+      137518,
+      18000
+     ],
+     "gb-d3-franquicia": [
+      152284,
+      68400
+     ],
+     "gb-c-cocinas": [
+      170268,
+      36000
+     ],
+     "gb-d4-carne": [
+      236185,
+      68400
+     ],
+     "gb-d4-gerente": [
+      258435,
+      46800
+     ],
+     "gb-d5-cdmx": [
+      319653,
+      68400
+     ],
+     "gb-d6-dark": [
+      409820,
+      68400
+     ],
+     "gb-d6-sucesion": [
+      416942,
+      36000
+     ],
+     "gb-d7-consejo": [
+      488437,
+      68400
+     ]
+    },
+    "decisions": {
+     "gb-d1-carta": "a",
+     "gb-d1-app": "c",
+     "gb-d2-menu": "b",
+     "gb-d2-propinas": "a",
+     "gb-d3-brote": "c",
+     "gb-d3-franquicia": "b",
+     "gb-c-cocinas": "a",
+     "gb-d4-carne": "a",
+     "gb-d4-gerente": "a",
+     "gb-d5-cdmx": "b",
+     "gb-d6-dark": "c",
+     "gb-d6-sucesion": "b",
+     "gb-d7-consejo": "b"
+    },
+    "change": {
+     "adopted": 5,
+     "share": 0.5,
+     "weeksUsed": 20,
+     "credibility": 74,
+     "done": true,
+     "ok": false
+    },
+    "verdict": {
+     "passed": false,
+     "passLine": 54,
+     "answered": 1,
+     "approved": {
+      "caja": false,
+      "margen": true,
+      "equipo": true,
+      "clientes": true,
+      "consejo": true
+     }
+    },
+    "streak": {
+     "days": 19,
+     "best": 19
+    },
+    "profile": {
+     "archetype": "Integrador",
+     "axes": {
+      "horizonte": 76,
+      "riesgo": 15,
+      "foco": 18,
+      "estilo": 47,
+      "conflicto": 44
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "racha7",
+     "puntual",
+     "gente",
+     "lector",
+     "ascenso"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "a2": 1,
+     "d5": 1,
+     "e3": 1,
+     "v4": 1,
+     "c2": 1,
+     "s1": 1,
+     "g1": 1,
+     "q2": 1,
+     "k1": 1,
+     "p3": 1,
+     "r3": 1,
+     "d3": 1,
+     "q3": 0,
+     "r2": 1,
+     "s3": 1,
+     "v2": 1,
+     "e5": 1,
+     "p2": 1
+    },
+    "lessons": [
+     "alineacion",
+     "alineacion-2",
+     "comunicacion",
+     "comunicacion-2",
+     "conversaciones",
+     "conversaciones-2",
+     "cultura",
+     "cultura-2",
+     "equipos",
+     "equipos-2",
+     "estrategia",
+     "finanzas",
+     "finanzas-2",
+     "innovacion",
+     "mentalidad",
+     "mentalidad-2",
+     "negociacion",
+     "negociacion-2",
+     "personas",
+     "personas-2",
+     "personas-3"
+    ],
+    "career": [
+     {
+      "company": "cumbre",
+      "tier": 0,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 745,
+      "kpis": {
+       "caja": 55,
+       "margen": 59,
+       "equipo": 74,
+       "clientes": 58,
+       "consejo": 75
+      },
+      "change": {
+       "adopted": 8,
+       "weeks": 24,
+       "ok": true
+      }
+     },
+     {
+      "company": "forja",
+      "tier": 1,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 680,
+      "kpis": {
+       "caja": 57,
+       "margen": 60,
+       "equipo": 84,
+       "clientes": 61,
+       "consejo": 59
+      },
+      "change": {
+       "adopted": 6,
+       "weeks": 22,
+       "ok": false
+      }
+     }
+    ]
+   }
+  },
+  {
+   "after": 129,
+   "at": 1792771947992,
+   "snapshot": {
+    "company": "brasa",
+    "tier": 2,
+    "legendary": false,
+    "seasonDay": 1,
+    "kpis": {
+     "caja": 61,
+     "margen": 56,
+     "equipo": 56,
+     "clientes": 66,
+     "consejo": 64
+    },
+    "health": 61,
+    "xp": 3135,
+    "level": 4,
+    "relations": {
+     "ignacio": 50,
+     "lourdes": 50,
+     "beatriz": 50,
+     "fer": 50,
+     "andres": 50,
+     "sara": 50,
+     "vero": 50,
+     "maru": 50,
+     "paty": 50,
+     "nico": 50
+    },
+    "progress": {
+     "done": 0,
+     "total": 12
+    },
+    "statuses": {
+     "gb-d1-carta": "futuro",
+     "gb-d1-app": "futuro",
+     "gb-d2-menu": "futuro",
+     "gb-d2-propinas": "futuro",
+     "gb-d3-brote": "futuro",
+     "gb-d3-franquicia": "futuro",
+     "gb-d4-carne": "futuro",
+     "gb-d4-gerente": "futuro",
+     "gb-d5-cdmx": "futuro",
+     "gb-d6-dark": "futuro",
+     "gb-d6-sucesion": "futuro",
+     "gb-d7-consejo": "futuro"
+    },
+    "timing": {
+     "gb-d1-carta": [
+      15,
+      68400
+     ],
+     "gb-d1-app": [
+      2638,
+      68400
+     ],
+     "gb-d2-menu": [
+      82196,
+      68400
+     ],
+     "gb-d2-propinas": [
+      93286,
+      28800
+     ],
+     "gb-d3-brote": [
+      166289,
+      18000
+     ],
+     "gb-d3-franquicia": [
+      179965,
+      68400
+     ],
+     "gb-d4-carne": [
+      264681,
+      68400
+     ],
+     "gb-d4-gerente": [
+      278788,
+      46800
+     ],
+     "gb-d5-cdmx": [
+      339958,
+      68400
+     ],
+     "gb-d6-dark": [
+      433892,
+      68400
+     ],
+     "gb-d6-sucesion": [
+      448836,
+      36000
+     ],
+     "gb-d7-consejo": [
+      541778,
+      68400
+     ]
+    },
+    "decisions": {},
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 19,
+     "best": 19
+    },
+    "profile": {
+     "archetype": "Integrador",
+     "axes": {
+      "horizonte": 76,
+      "riesgo": 15,
+      "foco": 18,
+      "estilo": 47,
+      "conflicto": 44
+     }
+    },
+    "badges": [
+     "racha3",
+     "racha7",
+     "lector",
+     "ascenso"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "a2": 1,
+     "d5": 1,
+     "e3": 1,
+     "v4": 1,
+     "c2": 1,
+     "s1": 1,
+     "g1": 1,
+     "q2": 1,
+     "k1": 1,
+     "p3": 1,
+     "r3": 1,
+     "d3": 1,
+     "q3": 0,
+     "r2": 1,
+     "s3": 1,
+     "v2": 1,
+     "e5": 1,
+     "p2": 1
+    },
+    "lessons": [
+     "alineacion",
+     "alineacion-2",
+     "comunicacion",
+     "comunicacion-2",
+     "conversaciones",
+     "conversaciones-2",
+     "cultura",
+     "cultura-2",
+     "equipos",
+     "equipos-2",
+     "estrategia",
+     "finanzas",
+     "finanzas-2",
+     "innovacion",
+     "mentalidad",
+     "mentalidad-2",
+     "negociacion",
+     "negociacion-2",
+     "personas",
+     "personas-2",
+     "personas-3"
+    ],
+    "career": [
+     {
+      "company": "cumbre",
+      "tier": 0,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 745,
+      "kpis": {
+       "caja": 55,
+       "margen": 59,
+       "equipo": 74,
+       "clientes": 58,
+       "consejo": 75
+      },
+      "change": {
+       "adopted": 8,
+       "weeks": 24,
+       "ok": true
+      }
+     },
+     {
+      "company": "forja",
+      "tier": 1,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 680,
+      "kpis": {
+       "caja": 57,
+       "margen": 60,
+       "equipo": 84,
+       "clientes": 61,
+       "consejo": 59
+      },
+      "change": {
+       "adopted": 6,
+       "weeks": 22,
+       "ok": false
+      }
+     },
+     {
+      "company": "brasa",
+      "tier": 2,
+      "passed": false,
+      "health": 61,
+      "answered": 100,
+      "xp": 605,
+      "kpis": {
+       "caja": 53,
+       "margen": 62,
+       "equipo": 73,
+       "clientes": 58,
+       "consejo": 59
+      },
+      "change": {
+       "adopted": 5,
+       "weeks": 20,
+       "ok": false
+      }
+     }
+    ]
+   }
+  },
+  {
+   "after": 131,
+   "at": 1792854145365,
+   "snapshot": {
+    "company": "brasa",
+    "tier": 2,
+    "legendary": false,
+    "seasonDay": 2,
+    "kpis": {
+     "caja": 61,
+     "margen": 59,
+     "equipo": 62,
+     "clientes": 64,
+     "consejo": 59
+    },
+    "health": 61,
+    "xp": 3235,
+    "level": 4,
+    "relations": {
+     "ignacio": 56,
+     "lourdes": 42,
+     "beatriz": 53,
+     "fer": 53,
+     "andres": 64,
+     "sara": 47,
+     "vero": 50,
+     "maru": 50,
+     "paty": 50,
+     "nico": 42
+    },
+    "progress": {
+     "done": 2,
+     "total": 12
+    },
+    "statuses": {
+     "gb-d1-carta": "decidido",
+     "gb-d1-app": "decidido",
+     "gb-d2-menu": "pendiente",
+     "gb-d2-propinas": "futuro",
+     "gb-d3-brote": "futuro",
+     "gb-d3-franquicia": "futuro",
+     "gb-d4-carne": "futuro",
+     "gb-d4-gerente": "futuro",
+     "gb-d5-cdmx": "futuro",
+     "gb-d6-dark": "futuro",
+     "gb-d6-sucesion": "futuro",
+     "gb-d7-consejo": "futuro"
+    },
+    "timing": {
+     "gb-d1-carta": [
+      15,
+      68400
+     ],
+     "gb-d1-app": [
+      2638,
+      68400
+     ],
+     "gb-d2-menu": [
+      82196,
+      68400
+     ],
+     "gb-d2-propinas": [
+      93286,
+      28800
+     ],
+     "gb-d3-brote": [
+      166289,
+      18000
+     ],
+     "gb-d3-franquicia": [
+      179965,
+      68400
+     ],
+     "gb-d4-carne": [
+      264681,
+      68400
+     ],
+     "gb-d4-gerente": [
+      278788,
+      46800
+     ],
+     "gb-d5-cdmx": [
+      339958,
+      68400
+     ],
+     "gb-d6-dark": [
+      433892,
+      68400
+     ],
+     "gb-d6-sucesion": [
+      448836,
+      36000
+     ],
+     "gb-d7-consejo": [
+      541778,
+      68400
+     ]
+    },
+    "decisions": {
+     "gb-d1-carta": "a",
+     "gb-d1-app": "c"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 19,
+     "best": 19
+    },
+    "profile": {
+     "archetype": "Integrador",
+     "axes": {
+      "horizonte": 77,
+      "riesgo": 15,
+      "foco": 19,
+      "estilo": 47,
+      "conflicto": 45
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "racha7",
+     "lector",
+     "ascenso"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "a2": 1,
+     "d5": 1,
+     "e3": 1,
+     "v4": 1,
+     "c2": 1,
+     "s1": 1,
+     "g1": 1,
+     "q2": 1,
+     "k1": 1,
+     "p3": 1,
+     "r3": 1,
+     "d3": 1,
+     "q3": 0,
+     "r2": 1,
+     "s3": 1,
+     "v2": 1,
+     "e5": 1,
+     "p2": 1
+    },
+    "lessons": [
+     "alineacion",
+     "alineacion-2",
+     "comunicacion",
+     "comunicacion-2",
+     "conversaciones",
+     "conversaciones-2",
+     "cultura",
+     "cultura-2",
+     "equipos",
+     "equipos-2",
+     "estrategia",
+     "finanzas",
+     "finanzas-2",
+     "innovacion",
+     "mentalidad",
+     "mentalidad-2",
+     "negociacion",
+     "negociacion-2",
+     "personas",
+     "personas-2",
+     "personas-3"
+    ],
+    "career": [
+     {
+      "company": "cumbre",
+      "tier": 0,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 745,
+      "kpis": {
+       "caja": 55,
+       "margen": 59,
+       "equipo": 74,
+       "clientes": 58,
+       "consejo": 75
+      },
+      "change": {
+       "adopted": 8,
+       "weeks": 24,
+       "ok": true
+      }
+     },
+     {
+      "company": "forja",
+      "tier": 1,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 680,
+      "kpis": {
+       "caja": 57,
+       "margen": 60,
+       "equipo": 84,
+       "clientes": 61,
+       "consejo": 59
+      },
+      "change": {
+       "adopted": 6,
+       "weeks": 22,
+       "ok": false
+      }
+     },
+     {
+      "company": "brasa",
+      "tier": 2,
+      "passed": false,
+      "health": 61,
+      "answered": 100,
+      "xp": 605,
+      "kpis": {
+       "caja": 53,
+       "margen": 62,
+       "equipo": 73,
+       "clientes": 58,
+       "consejo": 59
+      },
+      "change": {
+       "adopted": 5,
+       "weeks": 20,
+       "ok": false
+      }
+     }
+    ]
+   }
+  },
+  {
+   "after": 134,
+   "at": 1792938238216,
+   "snapshot": {
+    "company": "brasa",
+    "tier": 2,
+    "legendary": false,
+    "seasonDay": 3,
+    "kpis": {
+     "caja": 61,
+     "margen": 60,
+     "equipo": 67,
+     "clientes": 62,
+     "consejo": 60
+    },
+    "health": 62,
+    "xp": 3350,
+    "level": 4,
+    "relations": {
+     "ignacio": 70,
+     "lourdes": 40,
+     "beatriz": 50,
+     "fer": 40,
+     "andres": 83,
+     "sara": 47,
+     "vero": 58,
+     "maru": 42,
+     "paty": 50,
+     "nico": 42
+    },
+    "progress": {
+     "done": 4,
+     "total": 12
+    },
+    "statuses": {
+     "gb-d1-carta": "decidido",
+     "gb-d1-app": "decidido",
+     "gb-d2-menu": "decidido",
+     "gb-d2-propinas": "decidido",
+     "gb-d3-brote": "pendiente",
+     "gb-d3-franquicia": "futuro",
+     "gb-c-cocinas": "futuro",
+     "gb-d4-carne": "futuro",
+     "gb-d4-gerente": "futuro",
+     "gb-d5-cdmx": "futuro",
+     "gb-d6-dark": "futuro",
+     "gb-d6-sucesion": "futuro",
+     "gb-d7-consejo": "futuro"
+    },
+    "timing": {
+     "gb-d1-carta": [
+      15,
+      68400
+     ],
+     "gb-d1-app": [
+      2638,
+      68400
+     ],
+     "gb-d2-menu": [
+      82196,
+      68400
+     ],
+     "gb-d2-propinas": [
+      93286,
+      28800
+     ],
+     "gb-d3-brote": [
+      166289,
+      18000
+     ],
+     "gb-d3-franquicia": [
+      179965,
+      68400
+     ],
+     "gb-c-cocinas": [
+      198913,
+      36000
+     ],
+     "gb-d4-carne": [
+      264681,
+      68400
+     ],
+     "gb-d4-gerente": [
+      278788,
+      46800
+     ],
+     "gb-d5-cdmx": [
+      339958,
+      68400
+     ],
+     "gb-d6-dark": [
+      433892,
+      68400
+     ],
+     "gb-d6-sucesion": [
+      448836,
+      36000
+     ],
+     "gb-d7-consejo": [
+      541778,
+      68400
+     ]
+    },
+    "decisions": {
+     "gb-d1-carta": "a",
+     "gb-d1-app": "c",
+     "gb-d2-menu": "b",
+     "gb-d2-propinas": "a"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 20,
+     "best": 20
+    },
+    "profile": {
+     "archetype": "Integrador",
+     "axes": {
+      "horizonte": 77,
+      "riesgo": 13,
+      "foco": 21,
+      "estilo": 41,
+      "conflicto": 43
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "racha7",
+     "lector",
+     "ascenso"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "a2": 1,
+     "d5": 1,
+     "e3": 1,
+     "v4": 1,
+     "c2": 1,
+     "s1": 1,
+     "g1": 1,
+     "q2": 1,
+     "k1": 1,
+     "p3": 1,
+     "r3": 1,
+     "d3": 1,
+     "q3": 0,
+     "r2": 1,
+     "s3": 1,
+     "v2": 1,
+     "e5": 1,
+     "p2": 1,
+     "n4": 1
+    },
+    "lessons": [
+     "alineacion",
+     "alineacion-2",
+     "comunicacion",
+     "comunicacion-2",
+     "conversaciones",
+     "conversaciones-2",
+     "cultura",
+     "cultura-2",
+     "equipos",
+     "equipos-2",
+     "estrategia",
+     "finanzas",
+     "finanzas-2",
+     "innovacion",
+     "mentalidad",
+     "mentalidad-2",
+     "negociacion",
+     "negociacion-2",
+     "personas",
+     "personas-2",
+     "personas-3"
+    ],
+    "career": [
+     {
+      "company": "cumbre",
+      "tier": 0,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 745,
+      "kpis": {
+       "caja": 55,
+       "margen": 59,
+       "equipo": 74,
+       "clientes": 58,
+       "consejo": 75
+      },
+      "change": {
+       "adopted": 8,
+       "weeks": 24,
+       "ok": true
+      }
+     },
+     {
+      "company": "forja",
+      "tier": 1,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 680,
+      "kpis": {
+       "caja": 57,
+       "margen": 60,
+       "equipo": 84,
+       "clientes": 61,
+       "consejo": 59
+      },
+      "change": {
+       "adopted": 6,
+       "weeks": 22,
+       "ok": false
+      }
+     },
+     {
+      "company": "brasa",
+      "tier": 2,
+      "passed": false,
+      "health": 61,
+      "answered": 100,
+      "xp": 605,
+      "kpis": {
+       "caja": 53,
+       "margen": 62,
+       "equipo": 73,
+       "clientes": 58,
+       "consejo": 59
+      },
+      "change": {
+       "adopted": 5,
+       "weeks": 20,
+       "ok": false
+      }
+     }
+    ]
+   }
+  },
+  {
+   "after": 138,
+   "at": 1793036629835,
+   "snapshot": {
+    "company": "brasa",
+    "tier": 2,
+    "legendary": false,
+    "seasonDay": 4,
+    "kpis": {
+     "caja": 57,
+     "margen": 59,
+     "equipo": 67,
+     "clientes": 63,
+     "consejo": 64
+    },
+    "health": 62,
+    "xp": 3530,
+    "level": 4,
+    "relations": {
+     "ignacio": 89,
+     "lourdes": 32,
+     "beatriz": 50,
+     "fer": 38,
+     "andres": 97,
+     "sara": 44,
+     "vero": 58,
+     "maru": 42,
+     "paty": 50,
+     "nico": 42
+    },
+    "progress": {
+     "done": 6,
+     "total": 12
+    },
+    "statuses": {
+     "gb-d1-carta": "decidido",
+     "gb-d1-app": "decidido",
+     "gb-d2-menu": "decidido",
+     "gb-d2-propinas": "decidido",
+     "gb-d3-brote": "decidido",
+     "gb-d3-franquicia": "decidido",
+     "gb-c-cocinas": "decidido",
+     "gb-d4-carne": "pendiente",
+     "gb-d4-gerente": "futuro",
+     "gb-d5-cdmx": "futuro",
+     "gb-d6-dark": "futuro",
+     "gb-d6-sucesion": "futuro",
+     "gb-d7-consejo": "futuro"
+    },
+    "timing": {
+     "gb-d1-carta": [
+      15,
+      68400
+     ],
+     "gb-d1-app": [
+      2638,
+      68400
+     ],
+     "gb-d2-menu": [
+      82196,
+      68400
+     ],
+     "gb-d2-propinas": [
+      93286,
+      28800
+     ],
+     "gb-d3-brote": [
+      166289,
+      18000
+     ],
+     "gb-d3-franquicia": [
+      179965,
+      68400
+     ],
+     "gb-c-cocinas": [
+      198913,
+      36000
+     ],
+     "gb-d4-carne": [
+      264681,
+      68400
+     ],
+     "gb-d4-gerente": [
+      278788,
+      46800
+     ],
+     "gb-d5-cdmx": [
+      339958,
+      68400
+     ],
+     "gb-d6-dark": [
+      433892,
+      68400
+     ],
+     "gb-d6-sucesion": [
+      448836,
+      36000
+     ],
+     "gb-d7-consejo": [
+      541778,
+      68400
+     ]
+    },
+    "decisions": {
+     "gb-d1-carta": "a",
+     "gb-d1-app": "c",
+     "gb-d2-menu": "b",
+     "gb-d2-propinas": "a",
+     "gb-d3-brote": "c",
+     "gb-d3-franquicia": "b",
+     "gb-c-cocinas": "a"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 21,
+     "best": 21
+    },
+    "profile": {
+     "archetype": "Integrador",
+     "axes": {
+      "horizonte": 77,
+      "riesgo": 7,
+      "foco": 22,
+      "estilo": 42,
+      "conflicto": 40
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "racha7",
+     "puntual",
+     "lector",
+     "ascenso"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "a2": 1,
+     "d5": 1,
+     "e3": 1,
+     "v4": 1,
+     "c2": 1,
+     "s1": 1,
+     "g1": 1,
+     "q2": 1,
+     "k1": 1,
+     "p3": 1,
+     "r3": 1,
+     "d3": 1,
+     "q3": 0,
+     "r2": 1,
+     "s3": 1,
+     "v2": 1,
+     "e5": 1,
+     "p2": 1,
+     "n4": 1,
+     "g4": 0
+    },
+    "lessons": [
+     "alineacion",
+     "alineacion-2",
+     "comunicacion",
+     "comunicacion-2",
+     "conversaciones",
+     "conversaciones-2",
+     "cultura",
+     "cultura-2",
+     "equipos",
+     "equipos-2",
+     "estrategia",
+     "finanzas",
+     "finanzas-2",
+     "innovacion",
+     "mentalidad",
+     "mentalidad-2",
+     "negociacion",
+     "negociacion-2",
+     "personas",
+     "personas-2",
+     "personas-3"
+    ],
+    "career": [
+     {
+      "company": "cumbre",
+      "tier": 0,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 745,
+      "kpis": {
+       "caja": 55,
+       "margen": 59,
+       "equipo": 74,
+       "clientes": 58,
+       "consejo": 75
+      },
+      "change": {
+       "adopted": 8,
+       "weeks": 24,
+       "ok": true
+      }
+     },
+     {
+      "company": "forja",
+      "tier": 1,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 680,
+      "kpis": {
+       "caja": 57,
+       "margen": 60,
+       "equipo": 84,
+       "clientes": 61,
+       "consejo": 59
+      },
+      "change": {
+       "adopted": 6,
+       "weeks": 22,
+       "ok": false
+      }
+     },
+     {
+      "company": "brasa",
+      "tier": 2,
+      "passed": false,
+      "health": 61,
+      "answered": 100,
+      "xp": 605,
+      "kpis": {
+       "caja": 53,
+       "margen": 62,
+       "equipo": 73,
+       "clientes": 58,
+       "consejo": 59
+      },
+      "change": {
+       "adopted": 5,
+       "weeks": 20,
+       "ok": false
+      }
+     }
+    ]
+   }
+  },
+  {
+   "after": 141,
+   "at": 1793111906670,
+   "snapshot": {
+    "company": "brasa",
+    "tier": 2,
+    "legendary": false,
+    "seasonDay": 5,
+    "kpis": {
+     "caja": 57,
+     "margen": 62,
+     "equipo": 71,
+     "clientes": 58,
+     "consejo": 65
+    },
+    "health": 63,
+    "xp": 3655,
+    "level": 4,
+    "relations": {
+     "ignacio": 89,
+     "lourdes": 26,
+     "beatriz": 53,
+     "fer": 46,
+     "andres": 95,
+     "sara": 28,
+     "vero": 74,
+     "maru": 50,
+     "paty": 50,
+     "nico": 34
+    },
+    "progress": {
+     "done": 8,
+     "total": 12
+    },
+    "statuses": {
+     "gb-d1-carta": "decidido",
+     "gb-d1-app": "decidido",
+     "gb-d2-menu": "decidido",
+     "gb-d2-propinas": "decidido",
+     "gb-d3-brote": "decidido",
+     "gb-d3-franquicia": "decidido",
+     "gb-c-cocinas": "decidido",
+     "gb-d4-carne": "decidido",
+     "gb-d4-gerente": "decidido",
+     "gb-d5-cdmx": "pendiente",
+     "gb-d6-dark": "futuro",
+     "gb-d6-sucesion": "futuro",
+     "gb-d7-consejo": "futuro"
+    },
+    "timing": {
+     "gb-d1-carta": [
+      15,
+      68400
+     ],
+     "gb-d1-app": [
+      2638,
+      68400
+     ],
+     "gb-d2-menu": [
+      82196,
+      68400
+     ],
+     "gb-d2-propinas": [
+      93286,
+      28800
+     ],
+     "gb-d3-brote": [
+      166289,
+      18000
+     ],
+     "gb-d3-franquicia": [
+      179965,
+      68400
+     ],
+     "gb-c-cocinas": [
+      198913,
+      36000
+     ],
+     "gb-d4-carne": [
+      264681,
+      68400
+     ],
+     "gb-d4-gerente": [
+      278788,
+      46800
+     ],
+     "gb-d5-cdmx": [
+      339958,
+      68400
+     ],
+     "gb-d6-dark": [
+      433892,
+      68400
+     ],
+     "gb-d6-sucesion": [
+      448836,
+      36000
+     ],
+     "gb-d7-consejo": [
+      541778,
+      68400
+     ]
+    },
+    "decisions": {
+     "gb-d1-carta": "a",
+     "gb-d1-app": "c",
+     "gb-d2-menu": "b",
+     "gb-d2-propinas": "a",
+     "gb-d3-brote": "c",
+     "gb-d3-franquicia": "b",
+     "gb-c-cocinas": "a",
+     "gb-d4-carne": "a",
+     "gb-d4-gerente": "a"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 22,
+     "best": 22
+    },
+    "profile": {
+     "archetype": "Integrador",
+     "axes": {
+      "horizonte": 78,
+      "riesgo": 7,
+      "foco": 23,
+      "estilo": 42,
+      "conflicto": 41
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "racha7",
+     "puntual",
+     "gente",
+     "lector",
+     "ascenso"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "a2": 1,
+     "d5": 1,
+     "e3": 1,
+     "v4": 1,
+     "c2": 1,
+     "s1": 1,
+     "g1": 1,
+     "q2": 1,
+     "k1": 1,
+     "p3": 1,
+     "r3": 1,
+     "d3": 1,
+     "q3": 0,
+     "r2": 1,
+     "s3": 1,
+     "v2": 1,
+     "e5": 1,
+     "p2": 1,
+     "n4": 1,
+     "g4": 0,
+     "k2": 0
+    },
+    "lessons": [
+     "alineacion",
+     "alineacion-2",
+     "comunicacion",
+     "comunicacion-2",
+     "conversaciones",
+     "conversaciones-2",
+     "cultura",
+     "cultura-2",
+     "equipos",
+     "equipos-2",
+     "estrategia",
+     "finanzas",
+     "finanzas-2",
+     "innovacion",
+     "mentalidad",
+     "mentalidad-2",
+     "negociacion",
+     "negociacion-2",
+     "personas",
+     "personas-2",
+     "personas-3"
+    ],
+    "career": [
+     {
+      "company": "cumbre",
+      "tier": 0,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 745,
+      "kpis": {
+       "caja": 55,
+       "margen": 59,
+       "equipo": 74,
+       "clientes": 58,
+       "consejo": 75
+      },
+      "change": {
+       "adopted": 8,
+       "weeks": 24,
+       "ok": true
+      }
+     },
+     {
+      "company": "forja",
+      "tier": 1,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 680,
+      "kpis": {
+       "caja": 57,
+       "margen": 60,
+       "equipo": 84,
+       "clientes": 61,
+       "consejo": 59
+      },
+      "change": {
+       "adopted": 6,
+       "weeks": 22,
+       "ok": false
+      }
+     },
+     {
+      "company": "brasa",
+      "tier": 2,
+      "passed": false,
+      "health": 61,
+      "answered": 100,
+      "xp": 605,
+      "kpis": {
+       "caja": 53,
+       "margen": 62,
+       "equipo": 73,
+       "clientes": 58,
+       "consejo": 59
+      },
+      "change": {
+       "adopted": 5,
+       "weeks": 20,
+       "ok": false
+      }
+     }
+    ]
+   }
+  },
+  {
+   "after": 143,
+   "at": 1793205840966,
+   "snapshot": {
+    "company": "brasa",
+    "tier": 2,
+    "legendary": false,
+    "seasonDay": 6,
+    "kpis": {
+     "caja": 52,
+     "margen": 62,
+     "equipo": 73,
+     "clientes": 58,
+     "consejo": 63
+    },
+    "health": 62,
+    "xp": 3725,
+    "level": 4,
+    "relations": {
+     "ignacio": 100,
+     "lourdes": 21,
+     "beatriz": 47,
+     "fer": 30,
+     "andres": 100,
+     "sara": 28,
+     "vero": 74,
+     "maru": 50,
+     "paty": 50,
+     "nico": 34
+    },
+    "progress": {
+     "done": 9,
+     "total": 12
+    },
+    "statuses": {
+     "gb-d1-carta": "decidido",
+     "gb-d1-app": "decidido",
+     "gb-d2-menu": "decidido",
+     "gb-d2-propinas": "decidido",
+     "gb-d3-brote": "decidido",
+     "gb-d3-franquicia": "decidido",
+     "gb-c-cocinas": "decidido",
+     "gb-d4-carne": "decidido",
+     "gb-d4-gerente": "decidido",
+     "gb-d5-cdmx": "decidido",
+     "gb-d6-dark": "pendiente",
+     "gb-d6-sucesion": "futuro",
+     "gb-d7-consejo": "futuro"
+    },
+    "timing": {
+     "gb-d1-carta": [
+      15,
+      68400
+     ],
+     "gb-d1-app": [
+      2638,
+      68400
+     ],
+     "gb-d2-menu": [
+      82196,
+      68400
+     ],
+     "gb-d2-propinas": [
+      93286,
+      28800
+     ],
+     "gb-d3-brote": [
+      166289,
+      18000
+     ],
+     "gb-d3-franquicia": [
+      179965,
+      68400
+     ],
+     "gb-c-cocinas": [
+      198913,
+      36000
+     ],
+     "gb-d4-carne": [
+      264681,
+      68400
+     ],
+     "gb-d4-gerente": [
+      278788,
+      46800
+     ],
+     "gb-d5-cdmx": [
+      339958,
+      68400
+     ],
+     "gb-d6-dark": [
+      433892,
+      68400
+     ],
+     "gb-d6-sucesion": [
+      448836,
+      36000
+     ],
+     "gb-d7-consejo": [
+      541778,
+      68400
+     ]
+    },
+    "decisions": {
+     "gb-d1-carta": "a",
+     "gb-d1-app": "c",
+     "gb-d2-menu": "b",
+     "gb-d2-propinas": "a",
+     "gb-d3-brote": "c",
+     "gb-d3-franquicia": "b",
+     "gb-c-cocinas": "a",
+     "gb-d4-carne": "a",
+     "gb-d4-gerente": "a",
+     "gb-d5-cdmx": "b"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 23,
+     "best": 23
+    },
+    "profile": {
+     "archetype": "Integrador",
+     "axes": {
+      "horizonte": 78,
+      "riesgo": 10,
+      "foco": 23,
+      "estilo": 42,
+      "conflicto": 41
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "racha7",
+     "puntual",
+     "gente",
+     "lector",
+     "ascenso"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "a2": 1,
+     "d5": 1,
+     "e3": 1,
+     "v4": 1,
+     "c2": 1,
+     "s1": 1,
+     "g1": 1,
+     "q2": 1,
+     "k1": 1,
+     "p3": 1,
+     "r3": 1,
+     "d3": 1,
+     "q3": 0,
+     "r2": 1,
+     "s3": 1,
+     "v2": 1,
+     "e5": 1,
+     "p2": 1,
+     "n4": 1,
+     "g4": 0,
+     "k2": 0,
+     "c4": 1
+    },
+    "lessons": [
+     "alineacion",
+     "alineacion-2",
+     "comunicacion",
+     "comunicacion-2",
+     "conversaciones",
+     "conversaciones-2",
+     "cultura",
+     "cultura-2",
+     "equipos",
+     "equipos-2",
+     "estrategia",
+     "finanzas",
+     "finanzas-2",
+     "innovacion",
+     "mentalidad",
+     "mentalidad-2",
+     "negociacion",
+     "negociacion-2",
+     "personas",
+     "personas-2",
+     "personas-3"
+    ],
+    "career": [
+     {
+      "company": "cumbre",
+      "tier": 0,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 745,
+      "kpis": {
+       "caja": 55,
+       "margen": 59,
+       "equipo": 74,
+       "clientes": 58,
+       "consejo": 75
+      },
+      "change": {
+       "adopted": 8,
+       "weeks": 24,
+       "ok": true
+      }
+     },
+     {
+      "company": "forja",
+      "tier": 1,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 680,
+      "kpis": {
+       "caja": 57,
+       "margen": 60,
+       "equipo": 84,
+       "clientes": 61,
+       "consejo": 59
+      },
+      "change": {
+       "adopted": 6,
+       "weeks": 22,
+       "ok": false
+      }
+     },
+     {
+      "company": "brasa",
+      "tier": 2,
+      "passed": false,
+      "health": 61,
+      "answered": 100,
+      "xp": 605,
+      "kpis": {
+       "caja": 53,
+       "margen": 62,
+       "equipo": 73,
+       "clientes": 58,
+       "consejo": 59
+      },
+      "change": {
+       "adopted": 5,
+       "weeks": 20,
+       "ok": false
+      }
+     }
+    ]
+   }
+  },
+  {
+   "after": 146,
+   "at": 1793313727134,
+   "snapshot": {
+    "company": "brasa",
+    "tier": 2,
+    "legendary": false,
+    "seasonDay": 7,
+    "kpis": {
+     "caja": 54,
+     "margen": 62,
+     "equipo": 74,
+     "clientes": 58,
+     "consejo": 59
+    },
+    "health": 61,
+    "xp": 3820,
+    "level": 4,
+    "relations": {
+     "ignacio": 84,
+     "lourdes": 31,
+     "beatriz": 47,
+     "fer": 28,
+     "andres": 94,
+     "sara": 18,
+     "vero": 74,
+     "maru": 50,
+     "paty": 50,
+     "nico": 26
+    },
+    "progress": {
+     "done": 11,
+     "total": 12
+    },
+    "statuses": {
+     "gb-d1-carta": "decidido",
+     "gb-d1-app": "decidido",
+     "gb-d2-menu": "decidido",
+     "gb-d2-propinas": "decidido",
+     "gb-d3-brote": "decidido",
+     "gb-d3-franquicia": "decidido",
+     "gb-c-cocinas": "decidido",
+     "gb-d4-carne": "decidido",
+     "gb-d4-gerente": "decidido",
+     "gb-d5-cdmx": "decidido",
+     "gb-d6-dark": "decidido",
+     "gb-d6-sucesion": "decidido",
+     "gb-d7-consejo": "pendiente"
+    },
+    "timing": {
+     "gb-d1-carta": [
+      15,
+      68400
+     ],
+     "gb-d1-app": [
+      2638,
+      68400
+     ],
+     "gb-d2-menu": [
+      82196,
+      68400
+     ],
+     "gb-d2-propinas": [
+      93286,
+      28800
+     ],
+     "gb-d3-brote": [
+      166289,
+      18000
+     ],
+     "gb-d3-franquicia": [
+      179965,
+      68400
+     ],
+     "gb-c-cocinas": [
+      198913,
+      36000
+     ],
+     "gb-d4-carne": [
+      264681,
+      68400
+     ],
+     "gb-d4-gerente": [
+      278788,
+      46800
+     ],
+     "gb-d5-cdmx": [
+      339958,
+      68400
+     ],
+     "gb-d6-dark": [
+      433892,
+      68400
+     ],
+     "gb-d6-sucesion": [
+      448836,
+      36000
+     ],
+     "gb-d7-consejo": [
+      541778,
+      68400
+     ]
+    },
+    "decisions": {
+     "gb-d1-carta": "a",
+     "gb-d1-app": "c",
+     "gb-d2-menu": "b",
+     "gb-d2-propinas": "a",
+     "gb-d3-brote": "c",
+     "gb-d3-franquicia": "b",
+     "gb-c-cocinas": "a",
+     "gb-d4-carne": "a",
+     "gb-d4-gerente": "a",
+     "gb-d5-cdmx": "b",
+     "gb-d6-dark": "c",
+     "gb-d6-sucesion": "b"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 24,
+     "best": 24
+    },
+    "profile": {
+     "archetype": "Integrador",
+     "axes": {
+      "horizonte": 78,
+      "riesgo": 9,
+      "foco": 23,
+      "estilo": 42,
+      "conflicto": 43
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "racha7",
+     "puntual",
+     "gente",
+     "lector",
+     "ascenso"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "a2": 1,
+     "d5": 1,
+     "e3": 1,
+     "v4": 1,
+     "c2": 1,
+     "s1": 1,
+     "g1": 1,
+     "q2": 1,
+     "k1": 1,
+     "p3": 1,
+     "r3": 1,
+     "d3": 1,
+     "q3": 0,
+     "r2": 1,
+     "s3": 1,
+     "v2": 1,
+     "e5": 1,
+     "p2": 1,
+     "n4": 1,
+     "g4": 0,
+     "k2": 0,
+     "c4": 1,
+     "a3": 1
+    },
+    "lessons": [
+     "alineacion",
+     "alineacion-2",
+     "comunicacion",
+     "comunicacion-2",
+     "conversaciones",
+     "conversaciones-2",
+     "cultura",
+     "cultura-2",
+     "equipos",
+     "equipos-2",
+     "estrategia",
+     "finanzas",
+     "finanzas-2",
+     "innovacion",
+     "mentalidad",
+     "mentalidad-2",
+     "negociacion",
+     "negociacion-2",
+     "personas",
+     "personas-2",
+     "personas-3"
+    ],
+    "career": [
+     {
+      "company": "cumbre",
+      "tier": 0,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 745,
+      "kpis": {
+       "caja": 55,
+       "margen": 59,
+       "equipo": 74,
+       "clientes": 58,
+       "consejo": 75
+      },
+      "change": {
+       "adopted": 8,
+       "weeks": 24,
+       "ok": true
+      }
+     },
+     {
+      "company": "forja",
+      "tier": 1,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 680,
+      "kpis": {
+       "caja": 57,
+       "margen": 60,
+       "equipo": 84,
+       "clientes": 61,
+       "consejo": 59
+      },
+      "change": {
+       "adopted": 6,
+       "weeks": 22,
+       "ok": false
+      }
+     },
+     {
+      "company": "brasa",
+      "tier": 2,
+      "passed": false,
+      "health": 61,
+      "answered": 100,
+      "xp": 605,
+      "kpis": {
+       "caja": 53,
+       "margen": 62,
+       "equipo": 73,
+       "clientes": 58,
+       "consejo": 59
+      },
+      "change": {
+       "adopted": 5,
+       "weeks": 20,
+       "ok": false
+      }
+     }
+    ]
+   }
+  },
+  {
+   "after": 148,
+   "at": 1793313807134,
+   "snapshot": {
+    "company": "brasa",
+    "tier": 2,
+    "legendary": false,
+    "seasonDay": 7,
+    "kpis": {
+     "caja": 55,
+     "margen": 62,
+     "equipo": 72,
+     "clientes": 58,
+     "consejo": 61
+    },
+    "health": 62,
+    "xp": 3890,
+    "level": 4,
+    "relations": {
+     "ignacio": 79,
+     "lourdes": 47,
+     "beatriz": 39,
+     "fer": 25,
+     "andres": 94,
+     "sara": 24,
+     "vero": 74,
+     "maru": 50,
+     "paty": 50,
+     "nico": 26
+    },
+    "progress": {
+     "done": 12,
+     "total": 12
+    },
+    "statuses": {
+     "gb-d1-carta": "decidido",
+     "gb-d1-app": "decidido",
+     "gb-d2-menu": "decidido",
+     "gb-d2-propinas": "decidido",
+     "gb-d3-brote": "decidido",
+     "gb-d3-franquicia": "decidido",
+     "gb-c-cocinas": "decidido",
+     "gb-d4-carne": "decidido",
+     "gb-d4-gerente": "decidido",
+     "gb-d5-cdmx": "decidido",
+     "gb-d6-dark": "decidido",
+     "gb-d6-sucesion": "decidido",
+     "gb-d7-consejo": "decidido"
+    },
+    "timing": {
+     "gb-d1-carta": [
+      15,
+      68400
+     ],
+     "gb-d1-app": [
+      2638,
+      68400
+     ],
+     "gb-d2-menu": [
+      82196,
+      68400
+     ],
+     "gb-d2-propinas": [
+      93286,
+      28800
+     ],
+     "gb-d3-brote": [
+      166289,
+      18000
+     ],
+     "gb-d3-franquicia": [
+      179965,
+      68400
+     ],
+     "gb-c-cocinas": [
+      198913,
+      36000
+     ],
+     "gb-d4-carne": [
+      264681,
+      68400
+     ],
+     "gb-d4-gerente": [
+      278788,
+      46800
+     ],
+     "gb-d5-cdmx": [
+      339958,
+      68400
+     ],
+     "gb-d6-dark": [
+      433892,
+      68400
+     ],
+     "gb-d6-sucesion": [
+      448836,
+      36000
+     ],
+     "gb-d7-consejo": [
+      541778,
+      68400
+     ]
+    },
+    "decisions": {
+     "gb-d1-carta": "a",
+     "gb-d1-app": "c",
+     "gb-d2-menu": "b",
+     "gb-d2-propinas": "a",
+     "gb-d3-brote": "c",
+     "gb-d3-franquicia": "b",
+     "gb-c-cocinas": "a",
+     "gb-d4-carne": "a",
+     "gb-d4-gerente": "a",
+     "gb-d5-cdmx": "b",
+     "gb-d6-dark": "c",
+     "gb-d6-sucesion": "b",
+     "gb-d7-consejo": "b"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 25,
+     "best": 25
+    },
+    "profile": {
+     "archetype": "Integrador",
+     "axes": {
+      "horizonte": 77,
+      "riesgo": 12,
+      "foco": 23,
+      "estilo": 42,
+      "conflicto": 43
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "racha7",
+     "puntual",
+     "gente",
+     "lector",
+     "ascenso"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "a2": 1,
+     "d5": 1,
+     "e3": 1,
+     "v4": 1,
+     "c2": 1,
+     "s1": 1,
+     "g1": 1,
+     "q2": 1,
+     "k1": 1,
+     "p3": 1,
+     "r3": 1,
+     "d3": 1,
+     "q3": 0,
+     "r2": 1,
+     "s3": 1,
+     "v2": 1,
+     "e5": 1,
+     "p2": 1,
+     "n4": 1,
+     "g4": 0,
+     "k2": 0,
+     "c4": 1,
+     "a3": 1,
+     "n5": 1
+    },
+    "lessons": [
+     "alineacion",
+     "alineacion-2",
+     "comunicacion",
+     "comunicacion-2",
+     "conversaciones",
+     "conversaciones-2",
+     "cultura",
+     "cultura-2",
+     "equipos",
+     "equipos-2",
+     "estrategia",
+     "finanzas",
+     "finanzas-2",
+     "innovacion",
+     "mentalidad",
+     "mentalidad-2",
+     "negociacion",
+     "negociacion-2",
+     "personas",
+     "personas-2",
+     "personas-3"
+    ],
+    "career": [
+     {
+      "company": "cumbre",
+      "tier": 0,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 745,
+      "kpis": {
+       "caja": 55,
+       "margen": 59,
+       "equipo": 74,
+       "clientes": 58,
+       "consejo": 75
+      },
+      "change": {
+       "adopted": 8,
+       "weeks": 24,
+       "ok": true
+      }
+     },
+     {
+      "company": "forja",
+      "tier": 1,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 680,
+      "kpis": {
+       "caja": 57,
+       "margen": 60,
+       "equipo": 84,
+       "clientes": 61,
+       "consejo": 59
+      },
+      "change": {
+       "adopted": 6,
+       "weeks": 22,
+       "ok": false
+      }
+     },
+     {
+      "company": "brasa",
+      "tier": 2,
+      "passed": false,
+      "health": 61,
+      "answered": 100,
+      "xp": 605,
+      "kpis": {
+       "caja": 53,
+       "margen": 62,
+       "equipo": 73,
+       "clientes": 58,
+       "consejo": 59
+      },
+      "change": {
+       "adopted": 5,
+       "weeks": 20,
+       "ok": false
+      }
+     }
+    ]
+   }
+  },
+  {
+   "after": 162,
+   "at": 1793314287134,
+   "snapshot": {
+    "company": "brasa",
+    "tier": 2,
+    "legendary": false,
+    "seasonDay": 7,
+    "kpis": {
+     "caja": 53,
+     "margen": 62,
+     "equipo": 73,
+     "clientes": 58,
+     "consejo": 59
+    },
+    "health": 61,
+    "xp": 3890,
+    "level": 4,
+    "relations": {
+     "ignacio": 79,
+     "lourdes": 47,
+     "beatriz": 39,
+     "fer": 25,
+     "andres": 94,
+     "sara": 24,
+     "vero": 74,
+     "maru": 50,
+     "paty": 50,
+     "nico": 26
+    },
+    "progress": {
+     "done": 12,
+     "total": 12
+    },
+    "statuses": {
+     "gb-d1-carta": "decidido",
+     "gb-d1-app": "decidido",
+     "gb-d2-menu": "decidido",
+     "gb-d2-propinas": "decidido",
+     "gb-d3-brote": "decidido",
+     "gb-d3-franquicia": "decidido",
+     "gb-c-cocinas": "decidido",
+     "gb-d4-carne": "decidido",
+     "gb-d4-gerente": "decidido",
+     "gb-d5-cdmx": "decidido",
+     "gb-d6-dark": "decidido",
+     "gb-d6-sucesion": "decidido",
+     "gb-d7-consejo": "decidido"
+    },
+    "timing": {
+     "gb-d1-carta": [
+      15,
+      68400
+     ],
+     "gb-d1-app": [
+      2638,
+      68400
+     ],
+     "gb-d2-menu": [
+      82196,
+      68400
+     ],
+     "gb-d2-propinas": [
+      93286,
+      28800
+     ],
+     "gb-d3-brote": [
+      166289,
+      18000
+     ],
+     "gb-d3-franquicia": [
+      179965,
+      68400
+     ],
+     "gb-c-cocinas": [
+      198913,
+      36000
+     ],
+     "gb-d4-carne": [
+      264681,
+      68400
+     ],
+     "gb-d4-gerente": [
+      278788,
+      46800
+     ],
+     "gb-d5-cdmx": [
+      339958,
+      68400
+     ],
+     "gb-d6-dark": [
+      433892,
+      68400
+     ],
+     "gb-d6-sucesion": [
+      448836,
+      36000
+     ],
+     "gb-d7-consejo": [
+      541778,
+      68400
+     ]
+    },
+    "decisions": {
+     "gb-d1-carta": "a",
+     "gb-d1-app": "c",
+     "gb-d2-menu": "b",
+     "gb-d2-propinas": "a",
+     "gb-d3-brote": "c",
+     "gb-d3-franquicia": "b",
+     "gb-c-cocinas": "a",
+     "gb-d4-carne": "a",
+     "gb-d4-gerente": "a",
+     "gb-d5-cdmx": "b",
+     "gb-d6-dark": "c",
+     "gb-d6-sucesion": "b",
+     "gb-d7-consejo": "b"
+    },
+    "change": {
+     "adopted": 5,
+     "share": 0.5,
+     "weeksUsed": 20,
+     "credibility": 74,
+     "done": true,
+     "ok": false
+    },
+    "verdict": {
+     "passed": false,
+     "passLine": 54,
+     "answered": 1,
+     "approved": {
+      "caja": false,
+      "margen": true,
+      "equipo": true,
+      "clientes": true,
+      "consejo": true
+     }
+    },
+    "streak": {
+     "days": 25,
+     "best": 25
+    },
+    "profile": {
+     "archetype": "Integrador",
+     "axes": {
+      "horizonte": 77,
+      "riesgo": 12,
+      "foco": 23,
+      "estilo": 42,
+      "conflicto": 43
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "racha7",
+     "puntual",
+     "gente",
+     "lector",
+     "ascenso"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "a2": 1,
+     "d5": 1,
+     "e3": 1,
+     "v4": 1,
+     "c2": 1,
+     "s1": 1,
+     "g1": 1,
+     "q2": 1,
+     "k1": 1,
+     "p3": 1,
+     "r3": 1,
+     "d3": 1,
+     "q3": 0,
+     "r2": 1,
+     "s3": 1,
+     "v2": 1,
+     "e5": 1,
+     "p2": 1,
+     "n4": 1,
+     "g4": 0,
+     "k2": 0,
+     "c4": 1,
+     "a3": 1,
+     "n5": 1
+    },
+    "lessons": [
+     "alineacion",
+     "alineacion-2",
+     "comunicacion",
+     "comunicacion-2",
+     "conversaciones",
+     "conversaciones-2",
+     "cultura",
+     "cultura-2",
+     "equipos",
+     "equipos-2",
+     "estrategia",
+     "finanzas",
+     "finanzas-2",
+     "innovacion",
+     "mentalidad",
+     "mentalidad-2",
+     "negociacion",
+     "negociacion-2",
+     "personas",
+     "personas-2",
+     "personas-3"
+    ],
+    "career": [
+     {
+      "company": "cumbre",
+      "tier": 0,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 745,
+      "kpis": {
+       "caja": 55,
+       "margen": 59,
+       "equipo": 74,
+       "clientes": 58,
+       "consejo": 75
+      },
+      "change": {
+       "adopted": 8,
+       "weeks": 24,
+       "ok": true
+      }
+     },
+     {
+      "company": "forja",
+      "tier": 1,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 680,
+      "kpis": {
+       "caja": 57,
+       "margen": 60,
+       "equipo": 84,
+       "clientes": 61,
+       "consejo": 59
+      },
+      "change": {
+       "adopted": 6,
+       "weeks": 22,
+       "ok": false
+      }
+     },
+     {
+      "company": "brasa",
+      "tier": 2,
+      "passed": false,
+      "health": 61,
+      "answered": 100,
+      "xp": 605,
+      "kpis": {
+       "caja": 53,
+       "margen": 62,
+       "equipo": 73,
+       "clientes": 58,
+       "consejo": 59
+      },
+      "change": {
+       "adopted": 5,
+       "weeks": 20,
+       "ok": false
+      }
+     }
+    ]
+   }
+  },
+  {
+   "after": 163,
+   "at": 1793314347134,
+   "snapshot": {
+    "company": "brasa",
+    "tier": 2,
+    "legendary": false,
+    "seasonDay": 1,
+    "kpis": {
+     "caja": 61,
+     "margen": 56,
+     "equipo": 56,
+     "clientes": 66,
+     "consejo": 64
+    },
+    "health": 61,
+    "xp": 3890,
+    "level": 4,
+    "relations": {
+     "ignacio": 50,
+     "lourdes": 50,
+     "beatriz": 50,
+     "fer": 50,
+     "andres": 50,
+     "sara": 50,
+     "vero": 50,
+     "maru": 50,
+     "paty": 50,
+     "nico": 50
+    },
+    "progress": {
+     "done": 0,
+     "total": 12
+    },
+    "statuses": {
+     "gb-d1-carta": "futuro",
+     "gb-d1-app": "futuro",
+     "gb-d2-menu": "futuro",
+     "gb-d2-propinas": "futuro",
+     "gb-d3-brote": "futuro",
+     "gb-d3-franquicia": "futuro",
+     "gb-d4-carne": "futuro",
+     "gb-d4-gerente": "futuro",
+     "gb-d5-cdmx": "futuro",
+     "gb-d6-dark": "futuro",
+     "gb-d6-sucesion": "futuro",
+     "gb-d7-consejo": "futuro"
+    },
+    "timing": {
+     "gb-d1-carta": [
+      15,
+      68400
+     ],
+     "gb-d1-app": [
+      2848,
+      68400
+     ],
+     "gb-d2-menu": [
+      57605,
+      68400
+     ],
+     "gb-d2-propinas": [
+      77731,
+      28800
+     ],
+     "gb-d3-brote": [
+      143923,
+      18000
+     ],
+     "gb-d3-franquicia": [
+      155414,
+      68400
+     ],
+     "gb-d4-carne": [
+      243131,
+      68400
+     ],
+     "gb-d4-gerente": [
+      252277,
+      46800
+     ],
+     "gb-d5-cdmx": [
+      324429,
+      68400
+     ],
+     "gb-d6-dark": [
+      409743,
+      68400
+     ],
+     "gb-d6-sucesion": [
+      437555,
+      36000
+     ],
+     "gb-d7-consejo": [
+      498476,
+      68400
+     ]
+    },
+    "decisions": {},
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 25,
+     "best": 25
+    },
+    "profile": {
+     "archetype": "Integrador",
+     "axes": {
+      "horizonte": 77,
+      "riesgo": 12,
+      "foco": 23,
+      "estilo": 42,
+      "conflicto": 43
+     }
+    },
+    "badges": [
+     "racha3",
+     "racha7",
+     "lector",
+     "ascenso"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "a2": 1,
+     "d5": 1,
+     "e3": 1,
+     "v4": 1,
+     "c2": 1,
+     "s1": 1,
+     "g1": 1,
+     "q2": 1,
+     "k1": 1,
+     "p3": 1,
+     "r3": 1,
+     "d3": 1,
+     "q3": 0,
+     "r2": 1,
+     "s3": 1,
+     "v2": 1,
+     "e5": 1,
+     "p2": 1,
+     "n4": 1,
+     "g4": 0,
+     "k2": 0,
+     "c4": 1,
+     "a3": 1,
+     "n5": 1
+    },
+    "lessons": [
+     "alineacion",
+     "alineacion-2",
+     "comunicacion",
+     "comunicacion-2",
+     "conversaciones",
+     "conversaciones-2",
+     "cultura",
+     "cultura-2",
+     "equipos",
+     "equipos-2",
+     "estrategia",
+     "finanzas",
+     "finanzas-2",
+     "innovacion",
+     "mentalidad",
+     "mentalidad-2",
+     "negociacion",
+     "negociacion-2",
+     "personas",
+     "personas-2",
+     "personas-3"
+    ],
+    "career": [
+     {
+      "company": "cumbre",
+      "tier": 0,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 745,
+      "kpis": {
+       "caja": 55,
+       "margen": 59,
+       "equipo": 74,
+       "clientes": 58,
+       "consejo": 75
+      },
+      "change": {
+       "adopted": 8,
+       "weeks": 24,
+       "ok": true
+      }
+     },
+     {
+      "company": "forja",
+      "tier": 1,
+      "passed": true,
+      "health": 64,
+      "answered": 100,
+      "xp": 680,
+      "kpis": {
+       "caja": 57,
+       "margen": 60,
+       "equipo": 84,
+       "clientes": 61,
+       "consejo": 59
+      },
+      "change": {
+       "adopted": 6,
+       "weeks": 22,
+       "ok": false
+      }
+     },
+     {
+      "company": "brasa",
+      "tier": 2,
+      "passed": false,
+      "health": 61,
+      "answered": 100,
+      "xp": 605,
+      "kpis": {
+       "caja": 53,
+       "margen": 62,
+       "equipo": 73,
+       "clientes": 58,
+       "consejo": 59
+      },
+      "change": {
+       "adopted": 5,
+       "weeks": 20,
+       "ok": false
+      }
+     },
+     {
+      "company": "brasa",
+      "tier": 2,
+      "passed": false,
+      "health": 61,
+      "answered": 100,
+      "xp": 605,
+      "kpis": {
+       "caja": 53,
+       "margen": 62,
+       "equipo": 73,
+       "clientes": 58,
+       "consejo": 59
+      },
+      "change": {
+       "adopted": 5,
+       "weeks": 20,
+       "ok": false
+      }
+     }
+    ]
+   }
+  }
+ ]
+}

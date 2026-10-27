@@ -1,0 +1,26 @@
+# PLANTILLA: para activarla, cópiala a .github/workflows/pruebas.yml (GitHub → Add file → Create new file).
+# El asistente no tiene permiso «workflows» para crear este archivo directamente.
+# Corre en cada PR y en cada cambio a main: pruebas (incluidas las partidas doradas) y revisión de tipos.
+# No usa secretos ni toca Supabase, Vercel u OpenAI.
+name: Pruebas
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - run: npm ci
+      - run: npx tsc --noEmit -p .
+      - run: npm test

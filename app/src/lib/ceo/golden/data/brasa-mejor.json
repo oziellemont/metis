@@ -1,0 +1,1594 @@
+{
+ "id": "brasa-mejor",
+ "description": "Brasa jugando con cuidado y modo intensivo (todo el día llega de golpe).",
+ "actions": [
+  {
+   "type": "start",
+   "at": 1791212400000,
+   "name": "Fer",
+   "company": "brasa",
+   "settings": {
+    "tz": "America/Monterrey",
+    "intensivo": true
+   }
+  },
+  {
+   "type": "dilemma",
+   "at": 1791212420000,
+   "id": "n2",
+   "option": 1
+  },
+  {
+   "type": "decide",
+   "at": 1791212420000,
+   "item": "gb-d1-carta",
+   "option": "a"
+  },
+  {
+   "type": "decide",
+   "at": 1791214710952,
+   "item": "gb-d1-app",
+   "option": "c"
+  },
+  {
+   "type": "dilemma",
+   "at": 1791295221000,
+   "id": "g1",
+   "option": 1
+  },
+  {
+   "type": "decide",
+   "at": 1791295221000,
+   "item": "gb-d2-menu",
+   "option": "b"
+  },
+  {
+   "type": "decide",
+   "at": 1791295501000,
+   "item": "gb-d2-propinas",
+   "option": "a"
+  },
+  {
+   "type": "dilemma",
+   "at": 1791381621000,
+   "id": "d4",
+   "option": 1
+  },
+  {
+   "type": "decide",
+   "at": 1791381621000,
+   "item": "gb-d3-brote",
+   "option": "c"
+  },
+  {
+   "type": "decide",
+   "at": 1791381901000,
+   "item": "gb-d3-franquicia",
+   "option": "b"
+  },
+  {
+   "type": "decide",
+   "at": 1791382201000,
+   "item": "gb-c-cocinas",
+   "option": "a"
+  },
+  {
+   "type": "dilemma",
+   "at": 1791468021000,
+   "id": "e2",
+   "option": 1
+  },
+  {
+   "type": "decide",
+   "at": 1791468021000,
+   "item": "gb-d4-carne",
+   "option": "a"
+  },
+  {
+   "type": "decide",
+   "at": 1791468301000,
+   "item": "gb-d4-gerente",
+   "option": "a"
+  },
+  {
+   "type": "dilemma",
+   "at": 1791554421000,
+   "id": "v4",
+   "option": 1
+  },
+  {
+   "type": "decide",
+   "at": 1791554421000,
+   "item": "gb-d5-cdmx",
+   "option": "b"
+  },
+  {
+   "type": "dilemma",
+   "at": 1791640821000,
+   "id": "c1",
+   "option": 1
+  },
+  {
+   "type": "decide",
+   "at": 1791640821000,
+   "item": "gb-d6-dark",
+   "option": "c"
+  },
+  {
+   "type": "decide",
+   "at": 1791641101000,
+   "item": "gb-d6-sucesion",
+   "option": "b"
+  },
+  {
+   "type": "dilemma",
+   "at": 1791727221000,
+   "id": "p3",
+   "option": 1
+  },
+  {
+   "type": "decide",
+   "at": 1791727221000,
+   "item": "gb-d7-consejo",
+   "option": "b"
+  },
+  {
+   "type": "changeStart",
+   "at": 1791727341000
+  },
+  {
+   "type": "lever",
+   "at": 1791727371000,
+   "lever": "ejemplo",
+   "targets": []
+  },
+  {
+   "type": "lever",
+   "at": 1791727401000,
+   "lever": "capacitacion",
+   "targets": [
+    "ignacio",
+    "andres",
+    "vero"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1791727431000,
+   "lever": "entrevista",
+   "targets": [
+    "ignacio"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1791727461000,
+   "lever": "entrevista",
+   "targets": [
+    "andres"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1791727491000,
+   "lever": "capacitacion",
+   "targets": [
+    "ignacio",
+    "andres",
+    "vero"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1791727521000,
+   "lever": "avance",
+   "targets": []
+  },
+  {
+   "type": "lever",
+   "at": 1791727551000,
+   "lever": "piloto",
+   "targets": [
+    "lourdes",
+    "paty"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1791727581000,
+   "lever": "entrevista",
+   "targets": [
+    "lourdes"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1791727611000,
+   "lever": "avance",
+   "targets": []
+  },
+  {
+   "type": "lever",
+   "at": 1791727641000,
+   "lever": "piloto",
+   "targets": [
+    "beatriz",
+    "paty"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1791727671000,
+   "lever": "reconocer",
+   "targets": [
+    "beatriz",
+    "paty"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1791727701000,
+   "lever": "reconocer",
+   "targets": [
+    "lourdes",
+    "beatriz"
+   ]
+  },
+  {
+   "type": "lever",
+   "at": 1791727731000,
+   "lever": "reconocer",
+   "targets": [
+    "lourdes",
+    "beatriz"
+   ]
+  },
+  {
+   "type": "changeClose",
+   "at": 1791727791000
+  },
+  {
+   "type": "advance",
+   "at": 1791727851000
+  }
+ ],
+ "checkpoints": [
+  {
+   "after": 4,
+   "at": 1791295201000,
+   "snapshot": {
+    "company": "brasa",
+    "tier": 0,
+    "legendary": false,
+    "seasonDay": 2,
+    "kpis": {
+     "caja": 61,
+     "margen": 59,
+     "equipo": 62,
+     "clientes": 64,
+     "consejo": 60
+    },
+    "health": 61,
+    "xp": 125,
+    "level": 0,
+    "relations": {
+     "ignacio": 56,
+     "lourdes": 42,
+     "beatriz": 53,
+     "fer": 53,
+     "andres": 64,
+     "sara": 47,
+     "vero": 50,
+     "maru": 50,
+     "paty": 50,
+     "nico": 42
+    },
+    "progress": {
+     "done": 2,
+     "total": 12
+    },
+    "statuses": {
+     "gb-d1-carta": "decidido",
+     "gb-d1-app": "decidido",
+     "gb-d2-menu": "pendiente",
+     "gb-d2-propinas": "futuro",
+     "gb-d3-brote": "futuro",
+     "gb-d3-franquicia": "futuro",
+     "gb-d4-carne": "futuro",
+     "gb-d4-gerente": "futuro",
+     "gb-d5-cdmx": "futuro",
+     "gb-d6-dark": "futuro",
+     "gb-d6-sucesion": "futuro",
+     "gb-d7-consejo": "futuro"
+    },
+    "timing": {
+     "gb-d1-carta": [
+      15,
+      86400
+     ],
+     "gb-d1-app": [
+      2310,
+      86400
+     ],
+     "gb-d2-menu": [
+      82800,
+      86400
+     ],
+     "gb-d2-propinas": [
+      83100,
+      36000
+     ],
+     "gb-d3-brote": [
+      169200,
+      21600
+     ],
+     "gb-d3-franquicia": [
+      169500,
+      86400
+     ],
+     "gb-d4-carne": [
+      255600,
+      86400
+     ],
+     "gb-d4-gerente": [
+      255900,
+      57600
+     ],
+     "gb-d5-cdmx": [
+      342000,
+      86400
+     ],
+     "gb-d6-dark": [
+      428400,
+      86400
+     ],
+     "gb-d6-sucesion": [
+      428700,
+      43200
+     ],
+     "gb-d7-consejo": [
+      514800,
+      86400
+     ]
+    },
+    "decisions": {
+     "gb-d1-carta": "a",
+     "gb-d1-app": "c"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 1,
+     "best": 1
+    },
+    "profile": {
+     "archetype": "Integrador",
+     "axes": {
+      "horizonte": 100,
+      "riesgo": 0,
+      "foco": 25,
+      "estilo": 50,
+      "conflicto": 50
+     }
+    },
+    "badges": [
+     "primera"
+    ],
+    "dilemmas": {
+     "n2": 1
+    },
+    "lessons": [],
+    "career": []
+   }
+  },
+  {
+   "after": 7,
+   "at": 1791381601000,
+   "snapshot": {
+    "company": "brasa",
+    "tier": 0,
+    "legendary": false,
+    "seasonDay": 3,
+    "kpis": {
+     "caja": 61,
+     "margen": 60,
+     "equipo": 67,
+     "clientes": 62,
+     "consejo": 61
+    },
+    "health": 62,
+    "xp": 240,
+    "level": 1,
+    "relations": {
+     "ignacio": 70,
+     "lourdes": 40,
+     "beatriz": 50,
+     "fer": 40,
+     "andres": 83,
+     "sara": 47,
+     "vero": 58,
+     "maru": 42,
+     "paty": 50,
+     "nico": 42
+    },
+    "progress": {
+     "done": 4,
+     "total": 12
+    },
+    "statuses": {
+     "gb-d1-carta": "decidido",
+     "gb-d1-app": "decidido",
+     "gb-d2-menu": "decidido",
+     "gb-d2-propinas": "decidido",
+     "gb-d3-brote": "pendiente",
+     "gb-d3-franquicia": "futuro",
+     "gb-c-cocinas": "futuro",
+     "gb-d4-carne": "futuro",
+     "gb-d4-gerente": "futuro",
+     "gb-d5-cdmx": "futuro",
+     "gb-d6-dark": "futuro",
+     "gb-d6-sucesion": "futuro",
+     "gb-d7-consejo": "futuro"
+    },
+    "timing": {
+     "gb-d1-carta": [
+      15,
+      86400
+     ],
+     "gb-d1-app": [
+      2310,
+      86400
+     ],
+     "gb-d2-menu": [
+      82800,
+      86400
+     ],
+     "gb-d2-propinas": [
+      83100,
+      36000
+     ],
+     "gb-d3-brote": [
+      169200,
+      21600
+     ],
+     "gb-d3-franquicia": [
+      169500,
+      86400
+     ],
+     "gb-c-cocinas": [
+      169800,
+      43200
+     ],
+     "gb-d4-carne": [
+      255600,
+      86400
+     ],
+     "gb-d4-gerente": [
+      255900,
+      57600
+     ],
+     "gb-d5-cdmx": [
+      342000,
+      86400
+     ],
+     "gb-d6-dark": [
+      428400,
+      86400
+     ],
+     "gb-d6-sucesion": [
+      428700,
+      43200
+     ],
+     "gb-d7-consejo": [
+      514800,
+      86400
+     ]
+    },
+    "decisions": {
+     "gb-d1-carta": "a",
+     "gb-d1-app": "c",
+     "gb-d2-menu": "b",
+     "gb-d2-propinas": "a"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 2,
+     "best": 2
+    },
+    "profile": {
+     "archetype": "Estratega equilibrado",
+     "axes": {
+      "horizonte": 100,
+      "riesgo": -50,
+      "foco": 50,
+      "estilo": 0,
+      "conflicto": 33
+     }
+    },
+    "badges": [
+     "primera"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "g1": 1
+    },
+    "lessons": [],
+    "career": []
+   }
+  },
+  {
+   "after": 11,
+   "at": 1791468001000,
+   "snapshot": {
+    "company": "brasa",
+    "tier": 0,
+    "legendary": false,
+    "seasonDay": 4,
+    "kpis": {
+     "caja": 57,
+     "margen": 59,
+     "equipo": 67,
+     "clientes": 63,
+     "consejo": 65
+    },
+    "health": 62,
+    "xp": 420,
+    "level": 2,
+    "relations": {
+     "ignacio": 89,
+     "lourdes": 32,
+     "beatriz": 50,
+     "fer": 38,
+     "andres": 97,
+     "sara": 44,
+     "vero": 58,
+     "maru": 42,
+     "paty": 50,
+     "nico": 42
+    },
+    "progress": {
+     "done": 6,
+     "total": 12
+    },
+    "statuses": {
+     "gb-d1-carta": "decidido",
+     "gb-d1-app": "decidido",
+     "gb-d2-menu": "decidido",
+     "gb-d2-propinas": "decidido",
+     "gb-d3-brote": "decidido",
+     "gb-d3-franquicia": "decidido",
+     "gb-c-cocinas": "decidido",
+     "gb-d4-carne": "pendiente",
+     "gb-d4-gerente": "futuro",
+     "gb-d5-cdmx": "futuro",
+     "gb-d6-dark": "futuro",
+     "gb-d6-sucesion": "futuro",
+     "gb-d7-consejo": "futuro"
+    },
+    "timing": {
+     "gb-d1-carta": [
+      15,
+      86400
+     ],
+     "gb-d1-app": [
+      2310,
+      86400
+     ],
+     "gb-d2-menu": [
+      82800,
+      86400
+     ],
+     "gb-d2-propinas": [
+      83100,
+      36000
+     ],
+     "gb-d3-brote": [
+      169200,
+      21600
+     ],
+     "gb-d3-franquicia": [
+      169500,
+      86400
+     ],
+     "gb-c-cocinas": [
+      169800,
+      43200
+     ],
+     "gb-d4-carne": [
+      255600,
+      86400
+     ],
+     "gb-d4-gerente": [
+      255900,
+      57600
+     ],
+     "gb-d5-cdmx": [
+      342000,
+      86400
+     ],
+     "gb-d6-dark": [
+      428400,
+      86400
+     ],
+     "gb-d6-sucesion": [
+      428700,
+      43200
+     ],
+     "gb-d7-consejo": [
+      514800,
+      86400
+     ]
+    },
+    "decisions": {
+     "gb-d1-carta": "a",
+     "gb-d1-app": "c",
+     "gb-d2-menu": "b",
+     "gb-d2-propinas": "a",
+     "gb-d3-brote": "c",
+     "gb-d3-franquicia": "b",
+     "gb-c-cocinas": "a"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 3,
+     "best": 3
+    },
+    "profile": {
+     "archetype": "Estratega equilibrado",
+     "axes": {
+      "horizonte": 83,
+      "riesgo": -67,
+      "foco": 50,
+      "estilo": 17,
+      "conflicto": 13
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "puntual"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "g1": 1,
+     "d4": 1
+    },
+    "lessons": [],
+    "career": []
+   }
+  },
+  {
+   "after": 14,
+   "at": 1791554401000,
+   "snapshot": {
+    "company": "brasa",
+    "tier": 0,
+    "legendary": false,
+    "seasonDay": 5,
+    "kpis": {
+     "caja": 57,
+     "margen": 62,
+     "equipo": 71,
+     "clientes": 59,
+     "consejo": 66
+    },
+    "health": 63,
+    "xp": 545,
+    "level": 2,
+    "relations": {
+     "ignacio": 89,
+     "lourdes": 26,
+     "beatriz": 53,
+     "fer": 46,
+     "andres": 95,
+     "sara": 28,
+     "vero": 74,
+     "maru": 50,
+     "paty": 50,
+     "nico": 34
+    },
+    "progress": {
+     "done": 8,
+     "total": 12
+    },
+    "statuses": {
+     "gb-d1-carta": "decidido",
+     "gb-d1-app": "decidido",
+     "gb-d2-menu": "decidido",
+     "gb-d2-propinas": "decidido",
+     "gb-d3-brote": "decidido",
+     "gb-d3-franquicia": "decidido",
+     "gb-c-cocinas": "decidido",
+     "gb-d4-carne": "decidido",
+     "gb-d4-gerente": "decidido",
+     "gb-d5-cdmx": "pendiente",
+     "gb-d6-dark": "futuro",
+     "gb-d6-sucesion": "futuro",
+     "gb-d7-consejo": "futuro"
+    },
+    "timing": {
+     "gb-d1-carta": [
+      15,
+      86400
+     ],
+     "gb-d1-app": [
+      2310,
+      86400
+     ],
+     "gb-d2-menu": [
+      82800,
+      86400
+     ],
+     "gb-d2-propinas": [
+      83100,
+      36000
+     ],
+     "gb-d3-brote": [
+      169200,
+      21600
+     ],
+     "gb-d3-franquicia": [
+      169500,
+      86400
+     ],
+     "gb-c-cocinas": [
+      169800,
+      43200
+     ],
+     "gb-d4-carne": [
+      255600,
+      86400
+     ],
+     "gb-d4-gerente": [
+      255900,
+      57600
+     ],
+     "gb-d5-cdmx": [
+      342000,
+      86400
+     ],
+     "gb-d6-dark": [
+      428400,
+      86400
+     ],
+     "gb-d6-sucesion": [
+      428700,
+      43200
+     ],
+     "gb-d7-consejo": [
+      514800,
+      86400
+     ]
+    },
+    "decisions": {
+     "gb-d1-carta": "a",
+     "gb-d1-app": "c",
+     "gb-d2-menu": "b",
+     "gb-d2-propinas": "a",
+     "gb-d3-brote": "c",
+     "gb-d3-franquicia": "b",
+     "gb-c-cocinas": "a",
+     "gb-d4-carne": "a",
+     "gb-d4-gerente": "a"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 4,
+     "best": 4
+    },
+    "profile": {
+     "archetype": "Estratega equilibrado",
+     "axes": {
+      "horizonte": 88,
+      "riesgo": -67,
+      "foco": 42,
+      "estilo": 17,
+      "conflicto": 25
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "puntual",
+     "gente"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "g1": 1,
+     "d4": 1,
+     "e2": 1
+    },
+    "lessons": [],
+    "career": []
+   }
+  },
+  {
+   "after": 16,
+   "at": 1791640801000,
+   "snapshot": {
+    "company": "brasa",
+    "tier": 0,
+    "legendary": false,
+    "seasonDay": 6,
+    "kpis": {
+     "caja": 53,
+     "margen": 62,
+     "equipo": 73,
+     "clientes": 59,
+     "consejo": 64
+    },
+    "health": 62,
+    "xp": 615,
+    "level": 2,
+    "relations": {
+     "ignacio": 100,
+     "lourdes": 21,
+     "beatriz": 47,
+     "fer": 30,
+     "andres": 100,
+     "sara": 28,
+     "vero": 74,
+     "maru": 50,
+     "paty": 50,
+     "nico": 34
+    },
+    "progress": {
+     "done": 9,
+     "total": 12
+    },
+    "statuses": {
+     "gb-d1-carta": "decidido",
+     "gb-d1-app": "decidido",
+     "gb-d2-menu": "decidido",
+     "gb-d2-propinas": "decidido",
+     "gb-d3-brote": "decidido",
+     "gb-d3-franquicia": "decidido",
+     "gb-c-cocinas": "decidido",
+     "gb-d4-carne": "decidido",
+     "gb-d4-gerente": "decidido",
+     "gb-d5-cdmx": "decidido",
+     "gb-d6-dark": "pendiente",
+     "gb-d6-sucesion": "futuro",
+     "gb-d7-consejo": "futuro"
+    },
+    "timing": {
+     "gb-d1-carta": [
+      15,
+      86400
+     ],
+     "gb-d1-app": [
+      2310,
+      86400
+     ],
+     "gb-d2-menu": [
+      82800,
+      86400
+     ],
+     "gb-d2-propinas": [
+      83100,
+      36000
+     ],
+     "gb-d3-brote": [
+      169200,
+      21600
+     ],
+     "gb-d3-franquicia": [
+      169500,
+      86400
+     ],
+     "gb-c-cocinas": [
+      169800,
+      43200
+     ],
+     "gb-d4-carne": [
+      255600,
+      86400
+     ],
+     "gb-d4-gerente": [
+      255900,
+      57600
+     ],
+     "gb-d5-cdmx": [
+      342000,
+      86400
+     ],
+     "gb-d6-dark": [
+      428400,
+      86400
+     ],
+     "gb-d6-sucesion": [
+      428700,
+      43200
+     ],
+     "gb-d7-consejo": [
+      514800,
+      86400
+     ]
+    },
+    "decisions": {
+     "gb-d1-carta": "a",
+     "gb-d1-app": "c",
+     "gb-d2-menu": "b",
+     "gb-d2-propinas": "a",
+     "gb-d3-brote": "c",
+     "gb-d3-franquicia": "b",
+     "gb-c-cocinas": "a",
+     "gb-d4-carne": "a",
+     "gb-d4-gerente": "a",
+     "gb-d5-cdmx": "b"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 5,
+     "best": 5
+    },
+    "profile": {
+     "archetype": "Estratega equilibrado",
+     "axes": {
+      "horizonte": 88,
+      "riesgo": -25,
+      "foco": 43,
+      "estilo": 17,
+      "conflicto": 25
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "puntual",
+     "gente"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "g1": 1,
+     "d4": 1,
+     "e2": 1,
+     "v4": 1
+    },
+    "lessons": [],
+    "career": []
+   }
+  },
+  {
+   "after": 19,
+   "at": 1791727201000,
+   "snapshot": {
+    "company": "brasa",
+    "tier": 0,
+    "legendary": false,
+    "seasonDay": 7,
+    "kpis": {
+     "caja": 55,
+     "margen": 62,
+     "equipo": 74,
+     "clientes": 59,
+     "consejo": 60
+    },
+    "health": 62,
+    "xp": 710,
+    "level": 2,
+    "relations": {
+     "ignacio": 84,
+     "lourdes": 31,
+     "beatriz": 47,
+     "fer": 28,
+     "andres": 94,
+     "sara": 18,
+     "vero": 74,
+     "maru": 50,
+     "paty": 50,
+     "nico": 26
+    },
+    "progress": {
+     "done": 11,
+     "total": 12
+    },
+    "statuses": {
+     "gb-d1-carta": "decidido",
+     "gb-d1-app": "decidido",
+     "gb-d2-menu": "decidido",
+     "gb-d2-propinas": "decidido",
+     "gb-d3-brote": "decidido",
+     "gb-d3-franquicia": "decidido",
+     "gb-c-cocinas": "decidido",
+     "gb-d4-carne": "decidido",
+     "gb-d4-gerente": "decidido",
+     "gb-d5-cdmx": "decidido",
+     "gb-d6-dark": "decidido",
+     "gb-d6-sucesion": "decidido",
+     "gb-d7-consejo": "pendiente"
+    },
+    "timing": {
+     "gb-d1-carta": [
+      15,
+      86400
+     ],
+     "gb-d1-app": [
+      2310,
+      86400
+     ],
+     "gb-d2-menu": [
+      82800,
+      86400
+     ],
+     "gb-d2-propinas": [
+      83100,
+      36000
+     ],
+     "gb-d3-brote": [
+      169200,
+      21600
+     ],
+     "gb-d3-franquicia": [
+      169500,
+      86400
+     ],
+     "gb-c-cocinas": [
+      169800,
+      43200
+     ],
+     "gb-d4-carne": [
+      255600,
+      86400
+     ],
+     "gb-d4-gerente": [
+      255900,
+      57600
+     ],
+     "gb-d5-cdmx": [
+      342000,
+      86400
+     ],
+     "gb-d6-dark": [
+      428400,
+      86400
+     ],
+     "gb-d6-sucesion": [
+      428700,
+      43200
+     ],
+     "gb-d7-consejo": [
+      514800,
+      86400
+     ]
+    },
+    "decisions": {
+     "gb-d1-carta": "a",
+     "gb-d1-app": "c",
+     "gb-d2-menu": "b",
+     "gb-d2-propinas": "a",
+     "gb-d3-brote": "c",
+     "gb-d3-franquicia": "b",
+     "gb-c-cocinas": "a",
+     "gb-d4-carne": "a",
+     "gb-d4-gerente": "a",
+     "gb-d5-cdmx": "b",
+     "gb-d6-dark": "c",
+     "gb-d6-sucesion": "b"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 6,
+     "best": 6
+    },
+    "profile": {
+     "archetype": "Estratega equilibrado",
+     "axes": {
+      "horizonte": 88,
+      "riesgo": -17,
+      "foco": 43,
+      "estilo": 17,
+      "conflicto": 36
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "puntual",
+     "gente"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "g1": 1,
+     "d4": 1,
+     "e2": 1,
+     "v4": 1,
+     "c1": 1
+    },
+    "lessons": [],
+    "career": []
+   }
+  },
+  {
+   "after": 21,
+   "at": 1791727281000,
+   "snapshot": {
+    "company": "brasa",
+    "tier": 0,
+    "legendary": false,
+    "seasonDay": 7,
+    "kpis": {
+     "caja": 56,
+     "margen": 62,
+     "equipo": 72,
+     "clientes": 59,
+     "consejo": 62
+    },
+    "health": 62,
+    "xp": 780,
+    "level": 3,
+    "relations": {
+     "ignacio": 79,
+     "lourdes": 47,
+     "beatriz": 39,
+     "fer": 25,
+     "andres": 94,
+     "sara": 24,
+     "vero": 74,
+     "maru": 50,
+     "paty": 50,
+     "nico": 26
+    },
+    "progress": {
+     "done": 12,
+     "total": 12
+    },
+    "statuses": {
+     "gb-d1-carta": "decidido",
+     "gb-d1-app": "decidido",
+     "gb-d2-menu": "decidido",
+     "gb-d2-propinas": "decidido",
+     "gb-d3-brote": "decidido",
+     "gb-d3-franquicia": "decidido",
+     "gb-c-cocinas": "decidido",
+     "gb-d4-carne": "decidido",
+     "gb-d4-gerente": "decidido",
+     "gb-d5-cdmx": "decidido",
+     "gb-d6-dark": "decidido",
+     "gb-d6-sucesion": "decidido",
+     "gb-d7-consejo": "decidido"
+    },
+    "timing": {
+     "gb-d1-carta": [
+      15,
+      86400
+     ],
+     "gb-d1-app": [
+      2310,
+      86400
+     ],
+     "gb-d2-menu": [
+      82800,
+      86400
+     ],
+     "gb-d2-propinas": [
+      83100,
+      36000
+     ],
+     "gb-d3-brote": [
+      169200,
+      21600
+     ],
+     "gb-d3-franquicia": [
+      169500,
+      86400
+     ],
+     "gb-c-cocinas": [
+      169800,
+      43200
+     ],
+     "gb-d4-carne": [
+      255600,
+      86400
+     ],
+     "gb-d4-gerente": [
+      255900,
+      57600
+     ],
+     "gb-d5-cdmx": [
+      342000,
+      86400
+     ],
+     "gb-d6-dark": [
+      428400,
+      86400
+     ],
+     "gb-d6-sucesion": [
+      428700,
+      43200
+     ],
+     "gb-d7-consejo": [
+      514800,
+      86400
+     ]
+    },
+    "decisions": {
+     "gb-d1-carta": "a",
+     "gb-d1-app": "c",
+     "gb-d2-menu": "b",
+     "gb-d2-propinas": "a",
+     "gb-d3-brote": "c",
+     "gb-d3-franquicia": "b",
+     "gb-c-cocinas": "a",
+     "gb-d4-carne": "a",
+     "gb-d4-gerente": "a",
+     "gb-d5-cdmx": "b",
+     "gb-d6-dark": "c",
+     "gb-d6-sucesion": "b",
+     "gb-d7-consejo": "b"
+    },
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 7,
+     "best": 7
+    },
+    "profile": {
+     "archetype": "Estratega equilibrado",
+     "axes": {
+      "horizonte": 80,
+      "riesgo": 0,
+      "foco": 43,
+      "estilo": 17,
+      "conflicto": 36
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "racha7",
+     "puntual",
+     "gente"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "g1": 1,
+     "d4": 1,
+     "e2": 1,
+     "v4": 1,
+     "c1": 1,
+     "p3": 1
+    },
+    "lessons": [],
+    "career": []
+   }
+  },
+  {
+   "after": 36,
+   "at": 1791727791000,
+   "snapshot": {
+    "company": "brasa",
+    "tier": 0,
+    "legendary": false,
+    "seasonDay": 7,
+    "kpis": {
+     "caja": 54,
+     "margen": 62,
+     "equipo": 73,
+     "clientes": 59,
+     "consejo": 60
+    },
+    "health": 62,
+    "xp": 780,
+    "level": 3,
+    "relations": {
+     "ignacio": 79,
+     "lourdes": 47,
+     "beatriz": 39,
+     "fer": 25,
+     "andres": 94,
+     "sara": 24,
+     "vero": 74,
+     "maru": 50,
+     "paty": 50,
+     "nico": 26
+    },
+    "progress": {
+     "done": 12,
+     "total": 12
+    },
+    "statuses": {
+     "gb-d1-carta": "decidido",
+     "gb-d1-app": "decidido",
+     "gb-d2-menu": "decidido",
+     "gb-d2-propinas": "decidido",
+     "gb-d3-brote": "decidido",
+     "gb-d3-franquicia": "decidido",
+     "gb-c-cocinas": "decidido",
+     "gb-d4-carne": "decidido",
+     "gb-d4-gerente": "decidido",
+     "gb-d5-cdmx": "decidido",
+     "gb-d6-dark": "decidido",
+     "gb-d6-sucesion": "decidido",
+     "gb-d7-consejo": "decidido"
+    },
+    "timing": {
+     "gb-d1-carta": [
+      15,
+      86400
+     ],
+     "gb-d1-app": [
+      2310,
+      86400
+     ],
+     "gb-d2-menu": [
+      82800,
+      86400
+     ],
+     "gb-d2-propinas": [
+      83100,
+      36000
+     ],
+     "gb-d3-brote": [
+      169200,
+      21600
+     ],
+     "gb-d3-franquicia": [
+      169500,
+      86400
+     ],
+     "gb-c-cocinas": [
+      169800,
+      43200
+     ],
+     "gb-d4-carne": [
+      255600,
+      86400
+     ],
+     "gb-d4-gerente": [
+      255900,
+      57600
+     ],
+     "gb-d5-cdmx": [
+      342000,
+      86400
+     ],
+     "gb-d6-dark": [
+      428400,
+      86400
+     ],
+     "gb-d6-sucesion": [
+      428700,
+      43200
+     ],
+     "gb-d7-consejo": [
+      514800,
+      86400
+     ]
+    },
+    "decisions": {
+     "gb-d1-carta": "a",
+     "gb-d1-app": "c",
+     "gb-d2-menu": "b",
+     "gb-d2-propinas": "a",
+     "gb-d3-brote": "c",
+     "gb-d3-franquicia": "b",
+     "gb-c-cocinas": "a",
+     "gb-d4-carne": "a",
+     "gb-d4-gerente": "a",
+     "gb-d5-cdmx": "b",
+     "gb-d6-dark": "c",
+     "gb-d6-sucesion": "b",
+     "gb-d7-consejo": "b"
+    },
+    "change": {
+     "adopted": 6,
+     "share": 0.6,
+     "weeksUsed": 24,
+     "credibility": 78,
+     "done": true,
+     "ok": false
+    },
+    "verdict": {
+     "passed": true,
+     "passLine": 50,
+     "answered": 1,
+     "approved": {
+      "caja": true,
+      "margen": true,
+      "equipo": true,
+      "clientes": true,
+      "consejo": true
+     }
+    },
+    "streak": {
+     "days": 7,
+     "best": 7
+    },
+    "profile": {
+     "archetype": "Estratega equilibrado",
+     "axes": {
+      "horizonte": 80,
+      "riesgo": 0,
+      "foco": 43,
+      "estilo": 17,
+      "conflicto": 36
+     }
+    },
+    "badges": [
+     "primera",
+     "racha3",
+     "racha7",
+     "puntual",
+     "gente"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "g1": 1,
+     "d4": 1,
+     "e2": 1,
+     "v4": 1,
+     "c1": 1,
+     "p3": 1
+    },
+    "lessons": [],
+    "career": []
+   }
+  },
+  {
+   "after": 37,
+   "at": 1791727851000,
+   "snapshot": {
+    "company": "cumbre",
+    "tier": 1,
+    "legendary": false,
+    "seasonDay": 1,
+    "kpis": {
+     "caja": 60,
+     "margen": 54,
+     "equipo": 57,
+     "clientes": 64,
+     "consejo": 62
+    },
+    "health": 59,
+    "xp": 780,
+    "level": 3,
+    "relations": {
+     "ramiro": 50,
+     "carla": 50,
+     "lucia": 50,
+     "hector": 50,
+     "mariana": 50,
+     "javier": 50,
+     "diego": 50,
+     "ana": 50,
+     "paty": 50,
+     "roberto": 50,
+     "sofia": 50
+    },
+    "progress": {
+     "done": 0,
+     "total": 13
+    },
+    "statuses": {
+     "d1-bienvenida": "futuro",
+     "d1-hector": "futuro",
+     "d2-supernorte": "futuro",
+     "d2-ana": "futuro",
+     "d3-planta": "futuro",
+     "d3-diego": "futuro",
+     "d4-objetivos": "futuro",
+     "d4-sindicato": "futuro",
+     "d5-credito": "futuro",
+     "d5-consejo": "futuro",
+     "d6-gastos": "futuro",
+     "d6-clima": "futuro",
+     "d7-sucesion": "futuro"
+    },
+    "timing": {
+     "d1-bienvenida": [
+      15,
+      79200
+     ],
+     "d1-hector": [
+      2274,
+      39600
+     ],
+     "d2-supernorte": [
+      85749,
+      79200
+     ],
+     "d2-ana": [
+      86049,
+      79200
+     ],
+     "d3-planta": [
+      172149,
+      25200
+     ],
+     "d3-diego": [
+      172449,
+      79200
+     ],
+     "d4-objetivos": [
+      258549,
+      79200
+     ],
+     "d4-sindicato": [
+      258849,
+      32400
+     ],
+     "d5-credito": [
+      344949,
+      79200
+     ],
+     "d5-consejo": [
+      345249,
+      79200
+     ],
+     "d6-gastos": [
+      431349,
+      79200
+     ],
+     "d6-clima": [
+      431649,
+      79200
+     ],
+     "d7-sucesion": [
+      518049,
+      79200
+     ]
+    },
+    "decisions": {},
+    "change": null,
+    "verdict": null,
+    "streak": {
+     "days": 7,
+     "best": 7
+    },
+    "profile": {
+     "archetype": "Estratega equilibrado",
+     "axes": {
+      "horizonte": 80,
+      "riesgo": 0,
+      "foco": 43,
+      "estilo": 17,
+      "conflicto": 36
+     }
+    },
+    "badges": [
+     "racha3",
+     "racha7",
+     "ascenso"
+    ],
+    "dilemmas": {
+     "n2": 1,
+     "g1": 1,
+     "d4": 1,
+     "e2": 1,
+     "v4": 1,
+     "c1": 1,
+     "p3": 1
+    },
+    "lessons": [],
+    "career": [
+     {
+      "company": "brasa",
+      "tier": 0,
+      "passed": true,
+      "health": 62,
+      "answered": 100,
+      "xp": 605,
+      "kpis": {
+       "caja": 54,
+       "margen": 62,
+       "equipo": 73,
+       "clientes": 59,
+       "consejo": 60
+      },
+      "change": {
+       "adopted": 6,
+       "weeks": 24,
+       "ok": false
+      }
+     }
+    ]
+   }
+  }
+ ]
+}

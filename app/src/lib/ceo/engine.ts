@@ -59,6 +59,12 @@ export function newState(): CeoState {
   return { v: 2, name: "", alias: "", company: FIRST_COMPANY, tier: 0, career: [], startedAt: null, settings: { ...DEFAULT_SETTINGS }, decisions: {}, pinned: {}, read: {}, lessons: {}, lastActiveAt: 0, clockOffset: 0, savedAt: 0 };
 }
 
+/** Alias público a partir del nombre («Oziel Leal» → «Oziel L.»). Forma parte de la semilla de llegadas. */
+export const aliasOf = (name: string) => {
+  const p = name.trim().split(/\s+/);
+  return p.length > 1 ? `${p[0]} ${p[p.length - 1][0]}.` : p[0] || "CEO";
+};
+
 /** Lee un estado guardado (v1 o v2) sin perder avance: v1 = Botanas Cumbre, nivel 0. */
 export function migrate(raw: unknown): CeoState {
   const base = newState();
