@@ -70,9 +70,11 @@ export function CeoSettings() {
       </section>
 
       <section className="card p-5 sm:p-6 space-y-3">
-        <h2 className="font-semibold text-ink">Modo prueba</h2>
+        <h2 className="font-semibold text-ink">{c.testTools ? "Modo prueba" : "Reiniciar"}</h2>
+        {c.testTools && (<>
         <p className="text-sm text-slate-500">Para recorrer la temporada sin esperar: adelanta el reloj hasta el siguiente mensaje.</p>
         <button type="button" onClick={c.skipNext} disabled={!c.nextArrival} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-ink hover:bg-slate-50 disabled:opacity-40"><FastForward size={15} /> Adelantar el reloj</button>
+        </>)}
         <div className="pt-3 border-t border-slate-100">
           {!confirm ? (
             <button type="button" onClick={() => setConfirm(true)} className="inline-flex items-center gap-2 text-sm text-coral font-medium"><RotateCcw size={15} /> Reiniciar mi temporada</button>

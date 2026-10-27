@@ -92,3 +92,9 @@ El perfil es uno por persona (`metis.profiles`) y puede pertenecer a varias empr
 - Todos los interruptores arrancan APAGADOS. Solo el servidor (service_role) escribe en las tablas nuevas; cada jugador puede leer únicamente sus propias jugadas.
 - Probada en un Postgres local: se aplica dos veces sin error, el tope bloquea, los permisos se respetan y se puede revertir y volver a aplicar. Reversa: `docs/sql/0015_revertir.sql`.
 - Se aplica primero en metis-pruebas (`docs/sql/pruebas_instalar_ceo.sql`, que junta 0013+0014+0015). En producción, solo con aprobación.
+
+## 2026-10-27 · F0-2 (parte 2): interruptores y modo de prueba
+- `lib/ceo/flags.ts` (lógica pura con pruebas) y `flags-server.ts` (lee de Supabase con caché de 60 s). Cualquier falla deja todo APAGADO.
+- La IA lleva triple candado: interruptor en la base, `CEO_AI_ENABLED=1` en Vercel y consentimiento del jugador. El modo sombra no requiere consentimiento porque el jugador no ve el resultado.
+- Herramientas de prueba («Adelantar el reloj»): siempre visibles en las versiones de prueba. En producción NO cambia nada mientras no se configure `NEXT_PUBLIC_CEO_TEST_TOOLS=oculto`; con eso se esconden y solo aparecen al abrir con `?prueba=1`.
+- `/api/ceo/estado`: diagnóstico de solo lectura (entorno, proyecto de Supabase y si la llave está presente sin mostrarla). En producción exige el token del cron.
