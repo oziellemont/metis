@@ -8,7 +8,7 @@ import { join } from "node:path";
  *  - No se promete nada a futuro: sin «próximamente», «en preparación», «llega en una próxima versión», Arena, etc.
  * Se revisan los textos de la app CEO, la landing y los correos. Los comentarios de código no cuentan.
  */
-const ROOTS = ["src/lib/ceo", "src/components/ceo", "src/components/site/ceo-landing", "src/app/simulador", "src/app/ceo"];
+const ROOTS = ["src/lib/ceo", "src/components/ceo", "src/components/site/ceo-landing", "src/app/simulador", "src/app/ceo", "src/app/legal"];
 const BOOK = /de cero a ceo|\blibro\b/i;
 const FUTURE = /pr[oó]ximamente|en preparaci[oó]n|pr[oó]xima versi[oó]n|llegan? pronto|m[aá]s adelante:|todav[ií]a no est[aá] disponible|executive arena|coming soon/i;
 

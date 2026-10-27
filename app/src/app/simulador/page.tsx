@@ -16,8 +16,8 @@ export const metadata: Metadata = {
   title: { absolute: SEO.title },
   description: SEO.description,
   alternates: { canonical: CEO_URL },
-  openGraph: { title: SEO.title, description: SEO.description, siteName: "MÊTIS CEO", locale: "es_MX", type: "website", url: CEO_URL },
-  twitter: { card: "summary_large_image", title: SEO.title, description: SEO.description },
+  openGraph: { title: SEO.title, description: SEO.description, siteName: "MÊTIS CEO", locale: "es_MX", type: "website", url: CEO_URL, images: [{ url: `${CEO_URL}/brand/ceo-og.jpg`, width: 1200, height: 630, alt: "MÊTIS CEO. Dirigir se aprende decidiendo." }] },
+  twitter: { card: "summary_large_image", title: SEO.title, description: SEO.description, images: [`${CEO_URL}/brand/ceo-og.jpg`] },
 };
 
 export default function CeoLanding() {

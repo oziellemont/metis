@@ -314,6 +314,7 @@ export function Footer() {
           <a href={`mailto:${CEO_CONTACT_EMAIL}`} className="hover:text-ink">{CEO_CONTACT_EMAIL}</a>
           <p className="text-slate-500">{FOOTER.place}</p>
           <p className="text-slate-500">© 2026 mêtis</p>
+          <p className="flex gap-4"><Link href="/legal/privacidad" className="hover:text-ink">Aviso de privacidad</Link><Link href="/legal/terminos" className="hover:text-ink">Términos</Link></p>
         </div>
       </div>
     </footer>
