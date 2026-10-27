@@ -2,12 +2,12 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import clsx from "clsx";
-import { ArrowRight, Bell, Building2, Check, Clock, Mail, MessageCircle, Shuffle, Sparkles, Zap } from "lucide-react";
+import { ArrowRight, Bell, Building2, Check, Clock, Mail, MessageCircle, Shuffle, Zap } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { personOf } from "@/lib/ceo/cast";
 import { COMPANIES, FIRST_COMPANY, companyById } from "@/lib/ceo/companies";
 import { useCeo } from "./CeoProvider";
-import { Avatar } from "./ui";
+import { Avatar, CompanyMark } from "./ui";
 
 /** Cuatro pasos: tu nombre → eliges industria → tu empresa → cómo te contactamos. Sin videos ni tutoriales largos. */
 export function Onboarding() {
@@ -46,7 +46,7 @@ export function Onboarding() {
 
         {step === 0 && (
           <section key="s0" className="academy-in mt-10">
-            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-medium"><Sparkles size={13} /> Tu carrera como CEO empieza hoy</div>
+            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-medium">Tu carrera como CEO empieza hoy</div>
             <h1 className="mt-5 text-3xl sm:text-4xl font-semibold leading-tight">Felicidades. A partir de mañana eres Director General.</h1>
             <p className="mt-4 text-white/70 text-[15px] leading-relaxed">Aquí no vas a tomar un curso. Vas a dirigir una empresa. Durante el día te van a llegar correos, WhatsApps, reportes y juntas de tu equipo, de tus clientes y de tu consejo. Lo que decidas (y lo que dejes sin responder) tiene consecuencias. Si apruebas todos los rubros, te llaman de otra empresa, de otro giro, y más exigente.</p>
             <div className="mt-8 rounded-2xl bg-white text-ink p-5 sm:p-6 shadow-2xl">
@@ -67,7 +67,7 @@ export function Onboarding() {
             <div className="mt-6 space-y-3">
               {COMPANIES.map((co) => (
                 <button key={co.id} onClick={() => setCompany(co.id)} className={clsx("w-full text-left rounded-2xl p-4 sm:p-5 flex gap-4 items-start transition-all border-2", company === co.id ? "bg-white text-ink border-white shadow-2xl" : "bg-white/5 border-white/10 hover:bg-white/10")}>
-                  <span className={clsx("h-12 w-12 rounded-2xl grid place-items-center text-2xl shrink-0", company === co.id ? "bg-indigo-soft" : "bg-white/10")}>{co.emoji}</span>
+                  <CompanyMark name={co.name} size={48} tone={company === co.id ? "soft" : "glass"} />
                   <span className="flex-1 min-w-0">
                     <span className="flex flex-wrap items-center gap-2"><span className="font-semibold">{co.name}</span><span className={clsx("chip text-[10px]", company === co.id ? "bg-indigo-soft text-indigo" : "bg-white/10 text-white/70")}>{co.industry}</span></span>
                     <span className={clsx("block text-sm mt-1", company === co.id ? "text-slate-600" : "text-white/60")}>{co.tagline}</span>
@@ -84,7 +84,7 @@ export function Onboarding() {
 
         {step === 2 && (
           <section key="s2" className="academy-in mt-10">
-            <div className="text-xs font-semibold uppercase tracking-wider text-mint">{pk.emoji} {pk.industry} · {pk.city}</div>
+            <div className="text-xs font-semibold uppercase tracking-wider text-mint">{pk.industry} · {pk.city}</div>
             <h1 className="mt-2 text-3xl font-semibold leading-tight">{pk.name}</h1>
             <p className="mt-3 text-white/70 text-[15px] leading-relaxed">{pk.pitch}</p>
             <div className="mt-6 rounded-2xl bg-white text-ink p-5">

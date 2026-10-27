@@ -64,7 +64,7 @@ export function CeoSettings() {
         )}
         <div className="flex items-center gap-3">
           <button type="button" onClick={save} className="btn-primary inline-flex items-center gap-2"><Save size={15} /> Guardar</button>
-          {saved && <span className="text-sm text-sob">Guardado ✓</span>}
+          {saved && <span className="text-sm text-sob">Guardado.</span>}
           {c.synced && <span className="text-xs text-slate-400">Sincronizado con tu cuenta</span>}
         </div>
       </section>
@@ -98,7 +98,7 @@ function AccountCard() {
   const [st, setSt] = useState<"idle" | "sending" | "sent" | "error">("idle");
   if (!hasSupabase) return null;
   if (c.user) return (
-    <section className="card p-5 flex items-center gap-3 text-sm"><Cloud size={18} className="text-mint" /><span>Tu avance se guarda en tu cuenta <b>{c.user.email}</b>{c.synced ? " ✓" : "…"}</span></section>
+    <section className="card p-5 flex items-center gap-3 text-sm"><Cloud size={18} className="text-mint" /><span>Tu avance se guarda en tu cuenta <b>{c.user.email}</b>{c.synced ? "." : "…"}</span></section>
   );
   const send = async () => {
     const sb = supabaseBrowser();

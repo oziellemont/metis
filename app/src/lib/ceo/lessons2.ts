@@ -50,7 +50,7 @@ export const MORE_LESSONS: Lesson[] = [
     subtitle: "Desempeño contra potencial, y por qué tu mejor técnico no siempre es tu mejor líder.",
     blocks: [
       { kind: "reveal", eyebrow: "Desempeño × potencial", title: "No todos los buenos son iguales", intro: "Toca cada perfil.", items: [
-        { tag: "★", label: "Alto desempeño, alto potencial", body: "Tus futuros líderes. Dales retos más grandes de lo que creen poder.", details: [{ label: "Riesgo", text: "Si no crecen contigo, crecen en otra empresa." }] },
+        { tag: "■", label: "Alto desempeño, alto potencial", body: "Tus futuros líderes. Dales retos más grandes de lo que creen poder.", details: [{ label: "Riesgo", text: "Si no crecen contigo, crecen en otra empresa." }] },
         { tag: "◆", label: "Alto desempeño, potencial limitado", body: "Expertos valiosísimos. Reconócelos sin forzarlos a ser jefes.", details: [{ label: "Riesgo", text: "Ascenderlos a líder y perder al experto y ganar un mal jefe." }] },
         { tag: "▲", label: "Desempeño medio, alto potencial", body: "Puede ser el puesto equivocado o un jefe que no lo desarrolla.", details: [{ label: "Pregunta", text: "¿Qué le falta: claridad, habilidad o motivación?" }] },
         { tag: "●", label: "Bajo desempeño sostenido", body: "Después de claridad, apoyo y tiempo, la decisión justa es otra posición o salir.", details: [{ label: "Riesgo", text: "Tolerarlo castiga a los que sí cumplen." }] },

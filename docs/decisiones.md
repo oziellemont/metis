@@ -108,3 +108,10 @@ El perfil es uno por persona (`metis.profiles`) y puede pertenecer a varias empr
 - `CeoState.journey` es opcional; `migrate` descarta un journey dañado. Las 10 partidas doradas no cambian.
 - Calibración inicial con las partidas doradas: un jugador cuidadoso cumple Functional Manager al aprobar su primera empresa; uno que decide mal, no. Los umbrales se ajustarán con jugadores reales.
 - `LEVELS`, `rankFor` y `levelOf` siguen igual por compatibilidad; la interfaz los reemplaza en J-2.
+
+## J-2 · Pantallas del Executive Journey y cero emojis
+- Carrera: hero del Journey (etapa, siguiente nombramiento, requisitos con avance y pista), pista de 6 etapas + The Executive Arena, camino de empresas con iniciales y nodo «Junta de nombramiento», botón «Recibir nombramiento» y carta del Consejo (Ramiro Garza).
+- Perfil: tarjeta Executive Journey, Constancia (XP y racha, «no define tu etapa») y 8 competencias con marca en 40.
+- Barra lateral: etapa y «x de y requisitos». Academy: tarjeta de enfoque con la competencia que frena el siguiente nombramiento.
+- Ranking, resumen diario y correo de temporada muestran la etapa. El bloqueo de dilemas y lecciones sigue por XP (constancia).
+- Se quitaron todos los emojis y símbolos tipo IA del juego, incluido el texto de los personajes. Prueba `no-emoji.test.ts` lo vigila.

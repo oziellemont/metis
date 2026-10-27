@@ -5,7 +5,7 @@
  */
 import { useEffect, useState } from "react";
 import clsx from "clsx";
-import { Check, Crown, Lock, Sparkles, Lightbulb, Mail, MessageCircle, FileText, Users, Inbox, Scale, TrendingUp } from "lucide-react";
+import { Check, Crown, Lock, Lightbulb, Mail, MessageCircle, FileText, Users, Inbox, Scale, TrendingUp } from "lucide-react";
 import { Flame } from "@/components/ceo/ui";
 import { useInView } from "./useInView";
 
@@ -65,7 +65,7 @@ export function StreakVisual() {
       <div className="mt-3 grid grid-cols-7 gap-1.5">
         {days.map((d, i) => { const a = anim("tree-pop", 250 + i * 90); return (
           <div key={i} className={"flex flex-col items-center gap-1 " + a.className} style={a.style}>
-            <span className={clsx("h-8 w-8 rounded-full grid place-items-center text-[11px] font-semibold", i < 5 ? "bg-gradient-to-br from-amber to-coral text-white" : i === 5 ? "bg-indigo-soft text-indigo ring-2 ring-indigo/30" : "bg-slate-100 text-slate-300")}>{i < 5 ? "✓" : ""}</span>
+            <span className={clsx("h-8 w-8 rounded-full grid place-items-center text-[11px] font-semibold", i < 5 ? "bg-gradient-to-br from-amber to-coral text-white" : i === 5 ? "bg-indigo-soft text-indigo ring-2 ring-indigo/30" : "bg-slate-100 text-slate-300")}>{i < 5 ? <Check size={13} strokeWidth={3} /> : ""}</span>
             <span className="text-[10px] text-slate-400">{d}</span>
           </div>
         ); })}
@@ -166,20 +166,21 @@ export function LessonVisual() {
 }
 
 /* ---------- 4 · El camino: de gerente a CEO ---------- */
-export function PathVisual({ companies }: { companies: { name: string; emoji: string; industry: string }[] }) {
+export function PathVisual({ companies }: { companies: { name: string; industry: string }[] }) {
   const { ref, anim } = useInView(0.2);
   const steps = [
-    { t: "Gerente", d: companies[0]?.name, e: companies[0]?.emoji, s: "done" },
-    { t: "Director de área", d: companies[0]?.name, e: companies[0]?.emoji, s: "done" },
-    { t: "Director General", d: companies[1]?.name, e: companies[1]?.emoji, s: "now" },
-    { t: "CEO", d: companies[2]?.name, e: companies[2]?.emoji, s: "next" },
-    { t: "CEO de consejo", d: "Los mejores, en el ranking", e: "🏆", s: "next" },
+    { t: "Emerging Leader", d: "Tus primeras decisiones", s: "done" },
+    { t: "Functional Manager", d: companies[0]?.name, s: "done" },
+    { t: "Business Unit Director", d: companies[1]?.name, s: "now" },
+    { t: "Chief Operating Officer", d: companies[2]?.name, s: "next" },
+    { t: "Chief Executive Officer", d: "Junta de nombramiento", s: "next" },
+    { t: "Global CEO", d: "Operación internacional", s: "next" },
   ] as const;
   return (
     <div ref={ref} className={CARD + " p-7 lg:p-8"}>
       <div className={"flex items-baseline justify-between " + anim("tree-drop", 0).className}>
         <h3 className="font-semibold text-ink">Tu carrera</h3>
-        <span className="text-xs font-medium text-slate-400">5 niveles</span>
+        <span className="text-xs font-medium text-slate-400">6 etapas</span>
       </div>
       <ol className="mt-7">
         {steps.map((st, i) => {
@@ -190,11 +191,10 @@ export function PathVisual({ companies }: { companies: { name: string; emoji: st
             <li key={st.t} className={"relative pl-12 " + (last ? "" : "pb-6")}>
               {!last && <span aria-hidden className={"absolute left-[17px] top-9 bottom-0 w-0.5 rounded-full " + (st.s === "done" ? "bg-mint/50 " : "bg-slate-100 ") + line.className} style={line.style} />}
               <span className={clsx("absolute left-0 top-0 h-9 w-9 rounded-full grid place-items-center", st.s === "done" ? "bg-mint text-white" : st.s === "now" ? "bg-indigo text-white ring-4 ring-indigo/15" : "bg-slate-100 text-slate-400", dot.className)} style={dot.style}>
-                {st.s === "done" ? <Check size={16} strokeWidth={3} /> : st.s === "now" ? <Sparkles size={15} /> : <Lock size={14} />}
+                {st.s === "done" ? <Check size={16} strokeWidth={3} /> : st.s === "now" ? <span className="h-2.5 w-2.5 rounded-full bg-white" /> : <Lock size={14} />}
               </span>
               <div className={clsx("rounded-2xl border px-4 py-2.5 flex items-center gap-3", st.s === "now" ? "border-indigo bg-indigo-soft/50" : "border-slate-100", text.className)} style={text.style}>
                 <div className="flex-1"><div className="font-medium text-ink leading-tight">{st.t}</div><div className="text-[12px] text-slate-500">{st.d}</div></div>
-                <span className="text-lg">{st.e}</span>
                 {st.s === "now" && <span className="chip bg-indigo text-white !text-[10px]">Vas aquí</span>}
               </div>
             </li>

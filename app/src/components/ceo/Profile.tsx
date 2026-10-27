@@ -1,18 +1,21 @@
 "use client";
 import Link from "next/link";
 import clsx from "clsx";
-import { Award, Lock, Sparkles } from "lucide-react";
-import { LEVELS, badgesOf, profileOf } from "@/lib/ceo/engine";
+import { Award, Lock } from "lucide-react";
+import { badgesOf, profileOf } from "@/lib/ceo/engine";
+import { STAGES } from "@/lib/ceo/journey";
+import { countAtLeast } from "@/lib/ceo/mastery";
 import { firstName } from "@/lib/ceo/cast";
 import { useCeo } from "./CeoProvider";
 import { Avatar, Flame, rel } from "./ui";
+import { CompetencyBars, StageTrack } from "./Journey";
 
 export function Profile() {
   const c = useCeo();
   const p = profileOf(c.s, c.now);
   const badges = badgesOf(c.s, c.now);
   const history = c.entries.filter((e) => e.status === "decidido" || e.status === "vencido").sort((a, b) => (b.decision?.at ?? b.deadline) - (a.decision?.at ?? a.deadline));
-  const lvlIdx = LEVELS.findIndex((l) => l.name === c.level.name);
+  const j = c.journey;
 
   return (
     <div className="space-y-5">
@@ -20,29 +23,42 @@ export function Profile() {
         <div aria-hidden className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-indigo-light/30 blur-3xl" />
         <div className="relative grid gap-6 md:grid-cols-[1.3fr_1fr]">
           <div>
-            <div className="text-xs text-white/60">{c.s.name} · {c.level.name}</div>
+            <div className="text-xs text-white/60">{c.s.name} · {j.name}</div>
             <div className="mt-2 text-sm text-white/70">Tu estilo de dirección</div>
             <h1 className="text-3xl font-semibold">{p.archetype.name}</h1>
             <p className="mt-2 text-sm text-white/80 max-w-md">{p.archetype.text}</p>
             <div className="mt-5 flex flex-wrap gap-2 text-xs">
-              <span className="rounded-full bg-white/10 px-3 py-1.5"><Sparkles size={12} className="inline -mt-0.5" /> {c.xp} XP</span>
-              <span className="rounded-full bg-white/10 px-3 py-1.5 inline-flex items-center gap-1"><Flame on={c.streak.days > 0} size={13} /> Racha {c.streak.days} · mejor {c.streak.best}</span>
-              <span className="rounded-full bg-white/10 px-3 py-1.5">{p.decisions} decisiones</span>
+                            <span className="rounded-full bg-white/10 px-3 py-1.5">{p.decisions} decisiones</span>
               <span className="rounded-full bg-white/10 px-3 py-1.5">{Object.keys(c.s.lessons).length} lecciones</span>
             </div>
           </div>
           <div className="rounded-2xl bg-white/10 p-5">
-            <div className="text-xs text-white/60 mb-3">Tu carrera</div>
-            <ol className="space-y-2">
-              {LEVELS.map((l, i) => (
-                <li key={l.name} className={clsx("flex items-center gap-3 text-sm", i > lvlIdx && "text-white/40")}>
-                  <span className={clsx("h-6 w-6 rounded-full grid place-items-center text-[11px] font-semibold", i < lvlIdx ? "bg-mint text-ink" : i === lvlIdx ? "bg-white text-ink" : "bg-white/10")}>{i + 1}</span>
-                  <span className="flex-1">{l.name}</span><span className="tabular-nums text-xs">{l.min} XP</span>
-                </li>
-              ))}
-            </ol>
+            <div className="text-xs text-white/60">Constancia · no define tu etapa</div>
+            <div className="mt-2 flex items-end gap-6">
+              <div><div className="text-2xl font-semibold tabular-nums">{c.xp}</div><div className="text-[11px] text-white/50">XP</div></div>
+              <div><div className="text-2xl font-semibold tabular-nums inline-flex items-center gap-1.5"><Flame on={c.streak.days > 0} size={18} white /> {c.streak.days}</div><div className="text-[11px] text-white/50">días de racha · mejor {c.streak.best}</div></div>
+            </div>
+            {j.founder && <div className="mt-4 rounded-xl bg-white/10 px-3 py-2 text-[11px] text-white/70">Distinción fundadora: <b className="text-white">{j.founder.name}</b></div>}
           </div>
         </div>
+      </section>
+
+      <section className="card p-5 sm:p-6">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <h2 className="font-semibold text-ink">Executive Journey</h2>
+          <Link href="/ceo/carrera" className="text-xs font-medium text-indigo">Stage {j.stage + 1} de {STAGES.length} · {j.name}</Link>
+        </div>
+        <div className="mt-6"><StageTrack stage={j.stage} /></div>
+        {j.next && <p className="mt-5 text-xs text-slate-500">Siguiente nombramiento: <b className="text-ink">{j.next.name}</b> · {j.met} de {j.total} requisitos.</p>}
+      </section>
+
+      <section className="card p-5 sm:p-6">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <h2 className="font-semibold text-ink">Competencias</h2>
+          <span className="text-xs text-slate-400">{countAtLeast(c.mastery, 40)} de 8 en Competent o más</span>
+        </div>
+        <p className="text-xs text-slate-400 mt-1">Salen de la calidad de tus decisiones, tus retos y la Academy. La línea marca Competent (40).</p>
+        <div className="mt-5"><CompetencyBars m={c.mastery} focus={j.focus} /></div>
       </section>
 
       <section className="card p-5 sm:p-6">

@@ -7,6 +7,7 @@ import { Home, Inbox, GraduationCap, Trophy, UserRound, Settings, X, Building2, 
 import { Logo } from "@/components/ui/Logo";
 import { useCeo } from "./CeoProvider";
 import { Flame } from "./ui";
+import { JourneyMini } from "./Journey";
 
 const NAV = [
   { href: "/ceo", label: "Hoy", Icon: Home },
@@ -43,9 +44,7 @@ export function CeoShell({ children }: { children: React.ReactNode }) {
         <div className="mt-6 rounded-2xl bg-gradient-to-br from-[#141735] to-[#2B1F8A] p-4 text-white">
           <div className="flex items-center justify-between text-xs text-white/60"><span className="inline-flex items-center gap-1 min-w-0"><Building2 size={12} className="shrink-0" /> <span className="truncate">{c.pack.name}</span></span><span>Día {c.day}</span></div>
           <div className="mt-2 text-sm font-semibold truncate">{c.s.name || "CEO"}</div>
-          <div className="text-xs text-white/60">{c.level.name}</div>
-          <div className="mt-2 h-1.5 rounded-full bg-white/15 overflow-hidden"><div className="h-full bg-gradient-to-r from-indigo-light to-white" style={{ width: `${c.level.pct}%` }} /></div>
-          <div className="mt-1 text-[11px] text-white/50 tabular-nums">{c.xp} XP{c.level.next ? ` · ${c.level.next.min - c.xp} para ${c.level.next.short}` : ""}</div>
+          <div className="mt-3"><JourneyMini j={c.journey} /></div>
         </div>
         <nav className="mt-5 space-y-1">
           {NAV.map(({ href, label, Icon, badge }) => (

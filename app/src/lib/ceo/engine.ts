@@ -277,7 +277,7 @@ export const LEVELS = [
   { min: 150, name: "Director de área", short: "Director" },
   { min: 400, name: "Director General", short: "Dir. General" },
   { min: 750, name: "CEO", short: "CEO" },
-  { min: 1050, name: "CEO de consejo", short: "CEO ★" },
+  { min: 1050, name: "CEO de consejo", short: "CEO+" },
 ];
 export function levelOf(xp: number) {
   let i = 0;

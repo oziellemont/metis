@@ -32,19 +32,19 @@ export interface Dilemma {
   lesson?: string;
 }
 
-export const THEMES: Record<DilemmaTheme, { label: string; emoji: string; hint: string }> = {
-  nuevo: { label: "Alguien que acaba de llegar", emoji: "🌱", hint: "Claridad, contexto y primeras victorias." },
-  veterano: { label: "Alguien con muchos años", emoji: "🌳", hint: "Respeto por la historia sin quedarse en ella." },
-  estrella: { label: "Tu mejor elemento", emoji: "⭐", hint: "Retos, reconocimiento y las mismas reglas." },
-  desempeno: { label: "Bajo desempeño", emoji: "📉", hint: "Hechos, apoyo y fecha." },
-  quejas: { label: "Su equipo se queja", emoji: "📣", hint: "Escuchar a ambos lados antes de concluir." },
-  conducta: { label: "Conducta y denuncias", emoji: "⚠️", hint: "Proteger a las personas y seguir el proceso." },
-  delegar: { label: "No sabe delegar", emoji: "🧩", hint: "Del control a la confianza, escalón por escalón." },
-  ascenso: { label: "Ascensos y rechazos", emoji: "🪜", hint: "Potencial, no solo desempeño pasado." },
-  conflicto: { label: "Conflicto entre dos", emoji: "⚔️", hint: "Intereses, no posiciones." },
-  retener: { label: "Quiere irse", emoji: "🚪", hint: "Lo que de verdad le falta casi nunca es dinero." },
-  personal: { label: "Algo personal", emoji: "🤝", hint: "Humanidad con límites claros." },
-  salida: { label: "Despedir bien", emoji: "🔚", hint: "Dignidad, claridad y el mensaje al equipo." },
+export const THEMES: Record<DilemmaTheme, { label: string; hint: string }> = {
+  nuevo: { label: "Alguien que acaba de llegar", hint: "Claridad, contexto y primeras victorias." },
+  veterano: { label: "Alguien con muchos años", hint: "Respeto por la historia sin quedarse en ella." },
+  estrella: { label: "Tu mejor elemento", hint: "Retos, reconocimiento y las mismas reglas." },
+  desempeno: { label: "Bajo desempeño", hint: "Hechos, apoyo y fecha." },
+  quejas: { label: "Su equipo se queja", hint: "Escuchar a ambos lados antes de concluir." },
+  conducta: { label: "Conducta y denuncias", hint: "Proteger a las personas y seguir el proceso." },
+  delegar: { label: "No sabe delegar", hint: "Del control a la confianza, escalón por escalón." },
+  ascenso: { label: "Ascensos y rechazos", hint: "Potencial, no solo desempeño pasado." },
+  conflicto: { label: "Conflicto entre dos", hint: "Intereses, no posiciones." },
+  retener: { label: "Quiere irse", hint: "Lo que de verdad le falta casi nunca es dinero." },
+  personal: { label: "Algo personal", hint: "Humanidad con límites claros." },
+  salida: { label: "Despedir bien", hint: "Dignidad, claridad y el mensaje al equipo." },
 };
 
 export const STAGE_LABEL: Record<Stage, string> = { dirige: "Necesita dirección", entrena: "Necesita entrenamiento", apoya: "Necesita apoyo", delega: "Necesita autonomía" };

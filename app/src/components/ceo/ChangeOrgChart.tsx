@@ -5,7 +5,7 @@
  * estructura, los actores externos que también pesan. Cada tarjeta muestra en qué fase va esa persona.
  */
 import clsx from "clsx";
-import { Sparkles, Check } from "lucide-react";
+import { Megaphone, Check } from "lucide-react";
 import { ADOPT, phaseOf } from "@/lib/ceo/change";
 import { firstName, personOf } from "@/lib/ceo/cast";
 import type { CastId, CompanyPack, Stakeholder, Tie } from "@/lib/ceo/types";
@@ -139,7 +139,7 @@ function Node({ st, size, tie, pack, values, selected, focus, gains, gainKey, on
           <circle cx={box / 2} cy={box / 2} r={R} fill="none" stroke={adopted ? "#4F3FE0" : "#8B7FF0"} strokeWidth={3} strokeLinecap="round" strokeDasharray={`${(C * Math.min(100, v)) / 100} ${C}`} className="transition-all duration-700" />
         </svg>
         <span className="absolute inset-0 grid place-items-center"><Avatar id={st.id} size={av} pack={pack} /></span>
-        {st.leader && <span title="Formador de opinión" className="absolute -right-0.5 -bottom-0.5 h-4 w-4 rounded-full bg-white shadow grid place-items-center"><Sparkles size={10} className="text-indigo" /></span>}
+        {st.leader && <span title="Formador de opinión" className="absolute -right-0.5 -bottom-0.5 h-4 w-4 rounded-full bg-white shadow grid place-items-center"><Megaphone size={9} className="text-indigo" /></span>}
       </span>
       <span className={clsx("mt-1.5 block font-semibold text-ink leading-tight truncate", size === "md" ? "text-[13px]" : "text-[12px]")}>{firstName(pack, st.id)}</span>
       <span className="block text-[10px] text-slate-400 leading-tight truncate" title={person.role}>{role}</span>
