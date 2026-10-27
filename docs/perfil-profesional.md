@@ -1,6 +1,6 @@
 # Professional Profiling & Initial Assessment (requisito V33 · Fase 1)
 
-Estado: **propuesta, pendiente de aprobación**. Propuesta visual: `propuesta-perfil/Perfil-Profesional-Propuesta.pdf` (fuera del repo).
+Estado: **aprobada y construida** (F1-P1 a F1-P4). Propuesta visual: `propuesta-perfil/Perfil-Profesional-Propuesta.pdf` (fuera del repo).
 
 ## 1. Principio
 

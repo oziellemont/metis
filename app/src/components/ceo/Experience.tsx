@@ -9,6 +9,7 @@ import { Logo } from "@/components/ui/Logo";
 import { profileOf } from "@/lib/ceo/engine";
 import { diagnosticOffered, type InitialDiagnostic, type ProfessionalProfile } from "@/lib/ceo/profile";
 import { useCeo } from "./CeoProvider";
+import { track } from "@/lib/ceo/events";
 import { DiagnosticCases, DiagnosticOffer, ProfileQuestions, Segments, StartingPoint } from "./ProfileFlow";
 
 export function Experience() {
@@ -22,7 +23,7 @@ export function Experience() {
   const [p, setP] = useState<ProfessionalProfile | undefined>(c.s.profile);
   const [d, setD] = useState<InitialDiagnostic | undefined>(c.s.diagnostic);
   const exit = () => router.replace("/ceo/perfil#experiencia");
-  const saved = (np: ProfessionalProfile) => { c.saveProfile(np); setP(np); setPhase(canDiag ? "offer" : "start"); };
+  const saved = (np: ProfessionalProfile) => { track(c.s.profile?.answeredAt ? "perfil_editado" : "perfil_respondido", { secs: np.secs ?? 0, omitidas: np.skipped.length, fuente: np.source }); c.saveProfile(np); setP(np); setPhase(canDiag ? "offer" : "start"); };
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-[#0F1130] via-[#1A1650] to-[#2B1F8A] text-white">
@@ -34,7 +35,7 @@ export function Experience() {
         <div key={phase}>
           {phase === "q" && <ProfileQuestions initial={p} source={c.s.profile?.source ?? "aviso"} step={q} setStep={setQ} onBackFirst={exit} onLater={exit} onDone={saved} />}
           {phase === "offer" && <DiagnosticOffer onStart={() => setPhase("diag")} onLater={exit} later="Ahora no" />}
-          {phase === "diag" && <DiagnosticCases onDone={(nd) => { c.saveDiagnostic(nd); setD(nd); setPhase("start"); }} onSkip={() => { c.saveDiagnostic({ v: 1, set: "d1", answers: [], skippedAt: Date.now() }); exit(); }} />}
+          {phase === "diag" && <DiagnosticCases onDone={(nd) => { track("diagnostico_hecho", { respuestas: nd.answers.length, fuente: "perfil" }); c.saveDiagnostic(nd); setD(nd); setPhase("start"); }} onSkip={() => { track("diagnostico_saltado", { fuente: "perfil" }); c.saveDiagnostic({ v: 1, set: "d1", answers: [], skippedAt: Date.now() }); exit(); }} />}
           {phase === "start" && <StartingPoint name={c.s.name} p={p} d={d} m={c.mastery} stage={c.journey.name} fresh={false} cta="Volver a mi empresa" onCta={() => router.replace("/ceo")} onEdit={() => { setQ(0); setPhase("q"); }} />}
         </div>
       </div>

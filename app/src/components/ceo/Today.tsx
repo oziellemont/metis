@@ -1,14 +1,17 @@
 "use client";
 import Link from "next/link";
+import { useEffect } from "react";
 import clsx from "clsx";
-import { ArrowRight, BookOpen, Check, Clock, FastForward, Flag, Hourglass, Info, Lock, Trophy } from "lucide-react";
+import { ArrowRight, BookOpen, Briefcase, Check, Clock, FastForward, Flag, Hourglass, Info, Lock, Trophy } from "lucide-react";
 import { KPI_KEYS } from "@/lib/ceo/engine";
 import { firstName, personOf } from "@/lib/ceo/cast";
 import { LESSONS } from "@/lib/ceo/lessons";
 import { useCeo } from "./CeoProvider";
+import { track } from "@/lib/ceo/events";
 import { DilemmaCard } from "./DilemmaCard";
 import { rankOf } from "@/lib/ceo/lessons";
 import { rankFor } from "@/lib/ceo/engine";
+import { nudgeQuiet, shouldNudge } from "@/lib/ceo/profile";
 import { Avatar, Bar, ChannelChip, Delta, Flame, clock, rel, until } from "./ui";
 
 export function Today() {
@@ -21,6 +24,8 @@ export function Today() {
   const lastDecided = [...c.entries].filter((e) => e.status === "decidido").sort((a, b) => b.decision!.at - a.decision!.at).slice(0, 3);
   const rank = rankFor(c.s, c.now);
   const open = LESSONS.filter((l) => rankOf(l) <= rank);
+  const nudge = shouldNudge(c.s, c.now) && !nudgeQuiet(c.pending, c.now) && !c.seasonDone;
+  useEffect(() => { if (nudge) track("aviso_perfil_visto"); }, [nudge]);
   const nextLesson = open.find((l) => !c.s.lessons[l.id] && c.entries.some((e) => e.item.lesson === l.id && e.status !== "futuro")) ?? open.find((l) => !c.s.lessons[l.id]);
 
   return (
@@ -57,6 +62,20 @@ export function Today() {
           </div>
         </div>
       </section>
+
+      {nudge && (
+        <section className="card p-5 flex flex-col sm:flex-row sm:items-center gap-4 academy-in">
+          <span className="h-10 w-10 shrink-0 rounded-xl bg-indigo-soft text-indigo grid place-items-center"><Briefcase size={18} /></span>
+          <div className="flex-1 min-w-0">
+            <div className="font-semibold text-ink">Cuéntanos tu experiencia</div>
+            <p className="mt-0.5 text-sm text-slate-500">Cinco preguntas, cerca de un minuto. Ajustamos por dónde sigues y cuánta ayuda ves. No cambia tu avance.</p>
+          </div>
+          <div className="flex gap-2 shrink-0">
+            <button type="button" onClick={() => { track("aviso_perfil_pospuesto", { veces: (c.s.profileNudge?.dismissed ?? 0) + 1 }); c.snoozeProfile(); }} className="btn-ghost text-sm">Ahora no</button>
+            <Link href="/ceo/experiencia" className="btn-primary text-sm">Completar perfil</Link>
+          </div>
+        </section>
+      )}
 
       {/* indicadores */}
       <section className="card p-5 sm:p-6">

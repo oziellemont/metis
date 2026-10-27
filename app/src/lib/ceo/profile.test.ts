@@ -2,13 +2,15 @@ import { describe, expect, it } from "vitest";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { migrate, newState, rand01, xpOf } from "./engine";
-import { masteryOf, COMPETENCY_IDS, type Mastery } from "./mastery";
+import { masteryOf, COMPETENCY_IDS, TRACK_TO, type Mastery } from "./mastery";
+import { TRACKS } from "./lessons";
+import { EVENT_NAMES, sanitizeEvent } from "./events";
 import { careerFacts, journeyOf } from "./journey";
 import { replay } from "./replay";
 import { snapshotOf, type Golden } from "./golden/play";
 import {
   DIAGNOSTIC, EXP_AREAS, EXPLORE_EVERY, GOALS, INDUSTRIES, NUDGE_AFTER_MS, NUDGE_SNOOZE_MS, QUESTIONS, READING_FADE_N, ROLES, YEARS,
-  OFFERED_TIER, aiContext, companyForIndustry, declaredCompetencies, finalizeProfile, diagnosticOffered, helpBand, initialReading, recommendOrder, sanitizeDiagnostic, sanitizeProfile,
+  NUDGE_QUIET_MS, OFFERED_TIER, nudgeQuiet, personalized, trackHints, aiContext, companyForIndustry, declaredCompetencies, finalizeProfile, diagnosticOffered, helpBand, initialReading, recommendOrder, sanitizeDiagnostic, sanitizeProfile,
   shouldNudge, snoozeNudge, suggestTier, type InitialDiagnostic, type ProfessionalProfile,
 } from "./profile";
 import { buildMessages, writtenEligible } from "./written";
@@ -258,5 +260,52 @@ describe("F1-P3 · diagnóstico y punto de partida", () => {
       const senior = p.years === "11-15" || p.years === "15+" || p.role === "director" || p.role === "direccion";
       expect(t > 0).toBe(senior);
     }
+  });
+});
+
+describe("F1-P4 · Academy, ayuda, aviso y eventos", () => {
+  const IDS = TRACKS.map((t) => t.id);
+  it("trackHints nunca quita ni duplica rutas", () => {
+    for (let i = 0; i < 60; i++) {
+      const h = trackHints(randomProfile("h" + i), emptyMastery(), i % 2 ? randomDiagnostic("h" + i) : undefined, TRACK_TO, IDS);
+      expect(h.map((x) => x.track).sort()).toEqual([...IDS].sort());
+    }
+  });
+  it("en las 3 primeras rutas recomendadas hay al menos una fuera de lo declarado", () => {
+    for (let i = 0; i < 100; i++) {
+      const p = randomProfile("x" + i);
+      if (!p.areas?.length) continue;
+      const declared = declaredCompetencies(p);
+      if (COMPETENCY_IDS.every((c) => declared.has(c))) continue;
+      const top = trackHints(p, emptyMastery(), undefined, TRACK_TO, IDS).slice(0, 3);
+      expect(top.some((h) => h.outside)).toBe(true);
+    }
+  });
+  it("el veterano en operaciones ve Crisis (ejecución) como repaso opcional; el egresado no", () => {
+    const vet = trackHints(VETERANO, emptyMastery(), undefined, TRACK_TO, IDS);
+    expect(vet.find((h) => h.track === "crisis")!.review).toBe(false); // crisis también entrena comunicación (no declarada)
+    expect(vet.find((h) => h.track === "personas")!.review).toBe(true);
+    const egr = trackHints(EGRESADO, emptyMastery(), undefined, TRACK_TO, IDS);
+    expect(egr.find((h) => h.track === "personas")!.review).toBe(false);
+  });
+  it("sin perfil ni diagnóstico no hay personalización visible", () => {
+    expect(personalized(newState())).toBe(false);
+    expect(personalized({ profile: VETERANO })).toBe(true);
+    expect(personalized({ diagnostic: { v: 1, set: "d1", answers: [], skippedAt: 1 } })).toBe(false);
+  });
+  it("el aviso no compite con un asunto por vencer", () => {
+    const now = 1_000_000_000;
+    expect(nudgeQuiet([], now)).toBe(false);
+    expect(nudgeQuiet([{ deadline: now + NUDGE_QUIET_MS + 1 }], now)).toBe(false);
+    expect(nudgeQuiet([{ deadline: now + 60_000 }], now)).toBe(true);
+  });
+  it("eventos: solo nombres y propiedades de la lista; sin texto libre ni datos personales", () => {
+    const id = "123e4567-e89b-42d3-a456-426614174000";
+    expect(sanitizeEvent({ event_id: id, name: "hackeo" })).toBeNull();
+    expect(sanitizeEvent({ event_id: "x", name: "perfil_respondido" })).toBeNull();
+    const ev = sanitizeEvent({ event_id: id, name: "perfil_respondido", props: { secs: 41.4, omitidas: 1, fuente: "onboarding", email: "a@b.com", nombre: "Oziel", fuente2: "x" }, client_at: "2026-01-01T00:00:00Z" })!;
+    expect(ev.props).toEqual({ secs: 41, omitidas: 1, fuente: "onboarding" });
+    expect(sanitizeEvent({ event_id: id, name: "perfil_editado", props: { fuente: "Hola Mundo con espacios" } })!.props).toEqual({});
+    expect(EVENT_NAMES.length).toBe(new Set(EVENT_NAMES).size);
   });
 });

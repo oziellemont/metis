@@ -345,3 +345,30 @@ export function finalizeProfile(p: ProfessionalProfile, source: ProfessionalProf
   if (!out.areas?.length) delete out.areas;
   return out;
 }
+
+// ───────────────────────────────────────────── Academy: rutas recomendadas
+export interface TrackHint { track: string; rank: number; competency: Competency; outside: boolean; review: boolean }
+/**
+ * Ordena las rutas de la Academy según `recommendOrder`: cada ruta toma la mejor posición de sus competencias.
+ * `review` = todas sus competencias son repaso opcional (área declarada, sin evidencia en contra).
+ * Nunca quita rutas: solo devuelve un orden y etiquetas.
+ */
+export function trackHints(p: ProfessionalProfile | undefined, m: Mastery, d: InitialDiagnostic | undefined, trackTo: Record<string, Competency[]>, tracks: readonly string[]): TrackHint[] {
+  const rec = recommendOrder(p, m, d);
+  const pos = new Map(rec.map((r, i) => [r.competency, i]));
+  return tracks
+    .map((t, i) => {
+      const cs = trackTo[t] ?? [];
+      const best = cs.slice().sort((a, b) => (pos.get(a) ?? 99) - (pos.get(b) ?? 99))[0];
+      const r = best ? rec[pos.get(best)!] : undefined;
+      return { track: t, rank: best ? pos.get(best)! : 99, competency: best ?? ("estrategia" as Competency), outside: !!r?.outside, review: cs.length > 0 && cs.every((c) => rec[pos.get(c)!]?.review), i };
+    })
+    .sort((a, b) => a.rank - b.rank || a.i - b.i)
+    .map(({ i: _i, ...h }) => { void _i; return h; });
+}
+/** Personalización visible: solo cuando el jugador nos contó algo o hizo el diagnóstico. */
+export const personalized = (s: Pick<CeoState, "profile" | "diagnostic">) => profileAnswered(s) || !!s.diagnostic?.finishedAt;
+
+/** Un asunto que vence en menos de esto se considera «caso abierto»: el aviso del perfil no compite con él. */
+export const NUDGE_QUIET_MS = 3 * 3_600_000;
+export const nudgeQuiet = (pending: { deadline: number }[], now: number) => pending.some((e) => e.deadline - now < NUDGE_QUIET_MS);
