@@ -15,6 +15,7 @@ export const AVAILABILITY: { item: string; state: Availability; note: string }[]
   { item: "Bitácora y Nota CEO", state: "hoy", note: "Explicación al cerrar cada caso" },
   { item: "mêtis Academy", state: "hoy", note: "Lecciones breves" },
   { item: "Ruta de seis etapas", state: "hoy", note: "Cambia solo con un nombramiento" },
+  { item: "The Executive Arena", state: "hoy", note: "Después de Global CEO: empresas con exigencia Legendaria (engine tier + legendary)" },
   { item: "Ranking", state: "hoy", note: "Con alias" },
   { item: "Perfil profesional y orden «Para ti»", state: "hoy", note: "V33" },
   { item: "Avisos por correo", state: "hoy", note: "Si conectas tu correo y lo activas" },
@@ -65,8 +66,8 @@ export const STORY = {
   ] as const,
   caso: {
     from: "Héctor Salinas", role: "Director Comercial", channel: "WhatsApp",
-    msg: "SuperNorte nos pide otro 12% de descuento y quiere respuesta hoy. ¿Cómo lo manejamos?",
-    facts: [["Ventas con SuperNorte", "24% del total"], ["Responde en", "3 h 40 min"]] as [string, string][],
+    msg: "SuperNorte nos pide 4 puntos más de descuento y pagar a 90 días. ¿Cómo lo manejamos?",
+    facts: [["Ventas con SuperNorte", "31% del total"], ["Responde en", "3 h 40 min"]] as [string, string][],
     foot: "Llega a tu celular, como en una empresa de verdad.",
   },
   decide: {
@@ -121,15 +122,15 @@ export const DEMO = {
   from: { name: "Héctor Salinas", initials: "HS", role: "Director Comercial · Botanas Cumbre", channel: "WhatsApp", time: "9:14" },
   message: [
     "Necesito que revisemos algo urgente.",
-    "SuperNorte nos está pidiendo otro 12% de descuento. Dicen que tienen una oferta de la competencia y quieren respuesta hoy.",
-    "Es casi una cuarta parte de nuestras ventas.",
+    "Sofía Leal, la compradora de SuperNorte, nos pide 4 puntos más de descuento y pagar a 90 días. Dice que una marca regional les ofreció mejores condiciones.",
+    "Es casi un tercio de nuestras ventas.",
     "¿Cómo lo manejamos?",
   ],
   facts: [
-    ["Ventas con SuperNorte", "24% del total"],
-    ["Margen de la cuenta hoy", "11%"],
-    ["Si das el 12%", "La cuenta queda sin margen"],
-    ["Si se va", "La planta queda al 76% de su capacidad"],
+    ["Ventas con SuperNorte", "31% del total"],
+    ["Margen de la cuenta hoy", "7.1%"],
+    ["Si das los 4 puntos", "Margen 3.1%"],
+    ["Si se va", "La planta pierde casi un tercio de su volumen"],
   ] as [string, string][],
   ask: "¿Qué le respondes a Héctor?",
   picked: "Tu decisión",
@@ -140,14 +141,14 @@ export const DEMO = {
     {
       id: "aceptar",
       label: "Aceptar el descuento",
-      detail: "Conservas una cuarta parte de las ventas y la planta sigue llena. Ese volumen ayuda a pagar los costos fijos.",
+      detail: "Conservas casi un tercio de las ventas y la planta sigue llena. Ese volumen ayuda a pagar los costos fijos.",
       now: {
         text: "Firmas hoy. Héctor respira, los turnos de la planta no se tocan y nadie tiene que explicar por qué se fue el cliente más grande.",
         effects: { finanzas: -1, personas: 1, clientes: 1, operacion: 1, confianza: 0 },
-        words: { finanzas: "Margen en cero", personas: "Alivio", clientes: "Cuenta asegurada", operacion: "Planta llena", confianza: "Sin cambios" },
+        words: { finanzas: "Margen a 3.1%", personas: "Alivio", clientes: "Cuenta asegurada", operacion: "Planta llena", confianza: "Sin cambios" },
       },
       later: {
-        text: "La cuenta ya no deja margen y Finanzas te pide recortar en otra parte. SuperNorte aprendió que presionar funciona.",
+        text: "La cuenta casi no deja margen y Finanzas te pide recortar en otra parte. SuperNorte aprendió que presionar funciona.",
         effects: { finanzas: -2, personas: 1, clientes: 1, operacion: 1, confianza: -1 },
         words: { finanzas: "Recortes en otra parte", personas: "Turnos intactos", clientes: "Cuenta conservada", operacion: "Capacidad usada", confianza: "Precedente débil" },
       },
@@ -156,14 +157,14 @@ export const DEMO = {
     {
       id: "negociar",
       label: "Negociar condiciones",
-      detail: "Ofreces 5% a cambio de un año de volumen mínimo. Proteges parte del margen y ganas tiempo, no certeza.",
+      detail: "Llevas datos: tus papas rotan 1.4 veces más que las de la marca regional. Ofreces 1.5 puntos en promociones atadas a volumen. Ganas tiempo, no certeza.",
       now: {
         text: "SuperNorte no firma hoy: pide una semana. Héctor tiene que volver con una contrapropuesta y sostenerla frente a su compradora.",
         effects: { finanzas: 0, personas: -1, clientes: -1, operacion: 0, confianza: 1 },
         words: { finanzas: "Estable", personas: "Héctor presionado", clientes: "En negociación", operacion: "Sin cambios", confianza: "Postura clara" },
       },
       later: {
-        text: "SuperNorte acepta el 5% con volumen mínimo por un año, pero retira dos productos del anaquel. Proteges margen; Héctor quedó desgastado.",
+        text: "SuperNorte acepta las promociones con metas por tienda, pero retira dos productos del anaquel. Proteges margen; Héctor quedó desgastado.",
         effects: { finanzas: 1, personas: -1, clientes: -1, operacion: 0, confianza: 1 },
         words: { finanzas: "Margen protegido", personas: "Héctor desgastado", clientes: "Menos anaquel", operacion: "Sin cambios", confianza: "Acuerdo cumplido" },
       },
@@ -208,28 +209,52 @@ export const HOW = {
   ],
 };
 
-/* ---------------- Diferenciación (fragmentos reales de Botanas Cumbre) ---------------- */
+/* ---------------- La experiencia: una empresa que recuerda (casos reales de Botanas Cumbre) ---------------- */
+/** Una decisión de un día y lo que regresa días después. Todo sale de Botanas Cumbre (lib/ceo/companies/cumbre-items.ts). */
+export interface Echo {
+  t: string;
+  context: string;
+  decide: { day: string; text: string };
+  back: { day: string; who: string; initials: string; text: string };
+  tone: "riesgo" | "bien";
+}
 export const DIFF = {
+  eyebrow: "Una empresa que recuerda tus decisiones",
   title: "No estás respondiendo un examen. Estás dirigiendo.",
-  body: "En MÊTIS no todas las decisiones tienen una respuesta perfecta. Lo importante es aprender a evaluar riesgos, anticipar consecuencias y entender a las personas.",
-  source: "Fragmentos de Botanas Cumbre, la primera empresa del simulador.",
+  body: "En MÊTIS las personas recuerdan cómo las trataste, la confianza se gana o se pierde y algunos problemas de hoy se sembraron hace días. Tu empresa está viva.",
+  decideLabel: "Decides",
+  backLabel: "Regresa",
   items: [
     {
-      t: "Decisiones con contexto",
-      d: "El problema casi nunca viene acompañado de toda la información.",
-      frag: { kind: "data" as const, title: "Lucía (Finanzas) te armó esto en 20 minutos", rows: [["Ventas a SuperNorte", "$127 M al año"], ["Margen de la cuenta hoy", "7.1%"], ["Si damos 4 pts", "Margen 3.1%"], ["Si pasamos a 90 días", "≈ $10 M más de capital de trabajo"]] as [string, string][] },
+      t: "Alguien recuerda lo que hiciste",
+      context: "Héctor, Director Comercial con 22 años en la empresa, esperaba tu puesto. El primer día te escribe preocupado por las comisiones de su equipo.",
+      decide: { day: "Día 1", text: "No le contestas y le pides a Personas que lo atienda." },
+      back: { day: "Día 3", who: "Mariana · Personas", initials: "MV", text: "Héctor presentó su renuncia. En la salida me dijo: «El nuevo ni me contestó»." },
+      tone: "riesgo",
     },
     {
-      t: "Consecuencias que continúan",
-      d: "Algunas decisiones resuelven el día. Otras cambian lo que ocurre después.",
-      frag: { kind: "outcome" as const, title: "Lo que pasó", text: "Conservas el anaquel, pero pierdes $5 M de margen al año y necesitas $10 M de caja. Y SuperNorte aprendió que contigo basta con apretar." },
+      t: "Un colaborador deja de confiar en ti",
+      context: "Ana, analista de planeación, se desveló para entregarte un pronóstico de 22 láminas. La idea clave está enterrada en la lámina 19.",
+      decide: { day: "Día 2", text: "Le respondes: «Esto no sirve para un consejo. Para mañana»." },
+      back: { day: "Día 6", who: "Mariana · Personas", initials: "MV", text: "Ana aceptó otra oferta. Dijo: «Nunca supe si mi trabajo servía. Allá me ofrecen un mentor»." },
+      tone: "riesgo",
     },
     {
-      t: "Personas que recuerdan",
-      d: "Cómo respondes a tu equipo influye en la confianza que construyes.",
-      frag: { kind: "message" as const, title: "Héctor Salinas", text: "Me enteré de lo de SuperNorte. A Sofía la conozco desde que era practicante…" },
+      t: "Una crisis que empezó antes",
+      context: "Javier, gerente de planta, te avisa que el tostador de la línea 2 falla y que casi lastima a un operador.",
+      decide: { day: "Día 3", text: "Decides seguir operando hasta el lunes para no retrasar un pedido." },
+      back: { day: "Día 5", who: "Javier · Planta", initials: "JO", text: "Jefe, pasó lo que temíamos en la línea 2. Toño está en el Seguro y mañana viene un inspector." },
+      tone: "riesgo",
     },
-  ],
+    {
+      t: "Y la empresa crece contigo",
+      context: "Con la misma Ana, otra decisión cambia la historia.",
+      decide: { day: "Día 2", text: "Te sientas 20 minutos con ella y le enseñas a empezar por la recomendación." },
+      back: { day: "Día 5", who: "Carla · Consejo", initials: "CM", text: "Después de su presentación: «¿Quién es Ana? Esa muchacha tiene futuro»." },
+      tone: "bien",
+    },
+  ] as Echo[],
+  source: "Situaciones de Botanas Cumbre, la primera empresa del simulador. Lo que regresa depende de lo que decidas.",
   after: {
     title: "Al cerrar cada caso",
     items: [
@@ -237,8 +262,23 @@ export const DIFF = {
       "Una Nota CEO y lecciones breves en mêtis Academy",
       "Los siguientes casos se ordenan según lo que te conviene reforzar",
     ],
-    note: "La mejor forma de negociar con fuerza no es sonar fuerte; es construir alternativas antes de necesitarlas.",
   },
+};
+
+/* ---------------- Tu desarrollo ejecutivo (ejemplo conceptual: cifras ilustrativas) ---------------- */
+export const GROWTH = {
+  eyebrow: "Tu desarrollo ejecutivo",
+  title: "Tu criterio está evolucionando",
+  tag: "Ejemplo conceptual",
+  bars: [
+    { name: "Pensamiento estratégico", pct: 76 },
+    { name: "Gestión financiera", pct: 59 },
+    { name: "Liderazgo de personas", pct: 84 },
+    { name: "Manejo de crisis", pct: 38 },
+  ],
+  nextLabel: "Próximo reto",
+  next: "Practicar decisiones financieras bajo presión.",
+  disclaimer: "Porcentajes ilustrativos. En el simulador, tu perfil se construye con tus propias decisiones.",
 };
 
 /* ---------------- Camino profesional (ruta visual) ---------------- */
@@ -256,7 +296,7 @@ export const PATH = {
     { n: "06", name: "Global CEO", learn: "Mercados y gobernanza", state: "bloqueada" },
   ] as { n: string; name: string; learn: string; state: StageState }[],
   how: "Cada ascenso es un nombramiento: lo ganas aprobando empresas, demostrando dominio en tus competencias y manteniendo la constancia. En la simulación diriges una empresa desde el primer día; tu etapa refleja el criterio que has demostrado.",
-  beyond: { t: "Después de Global CEO", d: "La meta no es terminar. Sigues dirigiendo empresas en modo Legendario, con golpes más duros y una línea de aprobación más alta." },
+  beyond: { t: "Después de Global CEO: The Executive Arena", d: "La meta no es terminar. En The Executive Arena sigues dirigiendo empresas, con golpes más duros y una línea de aprobación más alta." },
 };
 
 /* ---------------- Filosofía ---------------- */
@@ -264,20 +304,19 @@ export const PHILOSOPHY = {
   title: "Dirigir es una responsabilidad. Y vale la pena prepararse para ella.",
   body: "Detrás de cada decisión hay personas, recursos y consecuencias. MÊTIS nace de una idea sencilla: el criterio de un líder puede desarrollarse antes de que llegue el momento de ponerlo a prueba.",
   eyebrow: "Por qué creamos MÊTIS",
-  story: "Trabajando en estrategia, operaciones y dirección de proyectos vi lo mismo una y otra vez: el criterio para decidir casi siempre se aprende tarde, con una decisión real y a un costo alto. Construí MÊTIS para que ese aprendizaje pueda empezar antes.",
+  quote: "Las personas no son el problema. Las personas son la solución.",
+  story: "El trabajo de un director general no es tener todas las respuestas. Es cuidar cómo se relacionan las personas para que cada colaborador llegue a su máximo potencial. Por eso en MÊTIS casi todas las decisiones pasan por alguien: un vendedor que esperaba tu puesto, una analista que quiere crecer, un operador que necesita que lo escuches. Aquí practicas ese criterio antes de que tu equipo dependa de él.",
   author: "Oziel Leal Montemayor",
   authorRole: "Creador de MÊTIS",
 };
 
 /* ---------------- FAQ ---------------- */
 export const FAQ: { q: string; a: string }[] = [
-  { q: "¿Necesito experiencia en dirección para usar MÊTIS?", a: "No. Al empezar te preguntamos por tu experiencia para ajustar la ayuda y el orden de los casos. Puedes saltarte esas preguntas." },
+  { q: "¿Necesito experiencia en dirección?", a: "No. Al empezar te preguntamos por tu experiencia para ajustar la ayuda y el orden de los casos. Si ya diriges, puedes empezar con más exigencia." },
   { q: "¿Cuánto tiempo necesito al día?", a: "Unos minutos. Cada asunto se lee y se decide en poco tiempo, y tú eliges el horario en que llegan." },
-  { q: "¿Qué tipo de decisiones voy a tomar?", a: "De personas, clientes, finanzas, operación, estrategia y ética. Casi ninguna tiene una respuesta perfecta: cada opción tiene un costo." },
-  { q: "¿Las decisiones afectan lo que sucede después?", a: "Sí. Mueven los indicadores de tu empresa y cambian cómo te responde cada persona en los casos siguientes." },
-  { q: "¿Necesito crear una cuenta?", a: "No para empezar. Tu avance se guarda en este navegador; si conectas tu correo, lo llevas a cualquier dispositivo y apareces en el ranking." },
-  { q: "¿Puedo usar MÊTIS desde mi celular?", a: "Sí, desde el navegador. No necesitas instalar nada. Si conectas tu correo, continúas en cualquier dispositivo." },
-  { q: "¿Tiene costo?", a: "Puedes empezar hoy sin tarjeta." },
+  { q: "¿En qué se diferencia de un curso?", a: "No hay respuestas correctas que memorizar. Decides, la empresa responde y después entiendes por qué. Las lecciones llegan cuando ya viviste el caso." },
+  { q: "¿Tengo que crear una cuenta o instalar algo?", a: "No. Funciona en el navegador del celular o la computadora. Si conectas tu correo, tu avance te sigue a cualquier dispositivo." },
+  { q: "¿Tiene costo?", a: "Puedes empezar hoy, sin tarjeta." },
 ];
 
 /* ---------------- Cierre y pie ---------------- */

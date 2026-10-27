@@ -104,3 +104,12 @@ La página pasó de 12 bloques a 8, unos 22 a 24% más corta (13,754 → 10,763 
 - El hero vuelve a mostrar el cuadro de cuatro escenas (El caso, Decides, Aprendes, Avanzas) con el anillo «Tu camino a CEO». Componente `Story.tsx`; se pausa al pasar el mouse o al enfocar y no avanza solo con «reducir movimiento».
 - La decisión de Héctor baja a su propio bloque, «Una decisión nunca afecta una sola cosa». Integra la antigua sección «Efectos cruzados»: después de elegir se ve «Hoy» y «Un mes después» en cinco dimensiones, con una frase concreta en cada una (por ejemplo, «En negociación», «Margen protegido»).
 - Se eliminó `Ripple.tsx` y el bloque `RIPPLE`: eran una segunda demostración de lo mismo.
+
+## Versión 3.2 · Una empresa que recuerda
+
+- **La experiencia** ahora se llama «Una empresa que recuerda tus decisiones» y conserva el titular «No estás respondiendo un examen. Estás dirigiendo.». Ya no repite el caso SuperNorte: muestra cuatro ecos reales de Botanas Cumbre (decisión de un día → lo que regresa días después): la renuncia de Héctor (día 1 → 3), la salida de Ana (día 2 → 6), el accidente de la línea 2 (día 3 → 5) y, en positivo, Ana ante el consejo (día 2 → 5). Las pruebas verifican días, frases e iniciales contra `cumbre-items.ts`.
+- **Tu desarrollo ejecutivo**: tarjeta discreta «Tu criterio está evolucionando», marcada como «Ejemplo conceptual», con porcentajes ilustrativos y un próximo reto. Sustituye la Nota CEO de negociación (repetía el hero).
+- **Cifras coherentes**: el hero y la demo usan las mismas cifras que el juego (4 puntos y 90 días, margen 7.1%, 31% de las ventas). Sofía Leal se presenta como compradora de SuperNorte antes de mencionarla.
+- **Tu camino**: «Después de Global CEO: The Executive Arena» (lo que la app llama exigencia Legendaria). Se permite el nombre en `no-futuro.test.ts`; no se prometen fechas.
+- **Por qué creamos MÊTIS**: «Las personas no son el problema. Las personas son la solución.» y el papel del director general: cuidar cómo se relacionan las personas para que cada colaborador llegue a su máximo potencial.
+- **FAQ** de 7 a 5 preguntas: experiencia, tiempo, diferencia con un curso, cuenta/instalación y costo.

@@ -79,8 +79,10 @@ describe("landing de MÊTIS CEO", () => {
     expect(st[1]).toBe("siguiente");
     expect(st.slice(2).every((x) => x === "bloqueada")).toBe(true);
     expect(C.PATH.stages.map((s) => s.n)).toEqual(["01", "02", "03", "04", "05", "06"]);
-    // Después de la última etapa solo se menciona lo que ya existe (modo Legendario).
-    expect(C.PATH.beyond.d).toContain("Legendario");
+    // Después de Global CEO sigue The Executive Arena (lo que la app llama exigencia Legendaria), sin fechas.
+    expect(C.PATH.beyond.t).toBe("Después de Global CEO: The Executive Arena");
+    expect(C.PATH.beyond.d).not.toMatch(/legendario|pronto|20\d\d/i);
+    expect(C.AVAILABILITY.find((a) => a.item === "The Executive Arena")!.state).toBe("hoy");
   });
 
   it("el mensaje de Héctor suena a una persona y la decisión tiene argumentos en las tres opciones", () => {
@@ -109,11 +111,11 @@ describe("landing de MÊTIS CEO", () => {
 
   it("lo que no existe se marca como próximo o futuro, nunca como disponible", () => {
     const hoy = C.AVAILABILITY.filter((a) => a.state === "hoy").map((a) => a.item.toLowerCase()).join(" ");
-    for (const w of ["arena", "conversaciones", "generados", "respuestas escritas"]) expect(hoy).not.toContain(w);
+    for (const w of ["conversaciones", "generados", "respuestas escritas", "retos entre"]) expect(hoy).not.toContain(w);
     // La junta ya existe (lib/ceo/board.ts): se marca como disponible.
     expect(C.AVAILABILITY.find((a) => a.item === "Junta ante el Consejo")!.state).toBe("hoy");
-    // Lo que no existe no se menciona: nada de «próximamente» ni de Arena en el copy visible.
-    expect(JSON.stringify({ ...C, AVAILABILITY: [], BANNED: [] }).toLowerCase()).not.toMatch(/arena|respuestas escritas/);
+    // Lo que no existe no se menciona: nada de «próximamente», respuestas escritas ni retos entre jugadores.
+    expect(JSON.stringify({ ...C, AVAILABILITY: [], BANNED: [] }).toLowerCase()).not.toMatch(/respuestas escritas|retos entre jugadores/);
   });
 
   it("el tono evita frases genéricas y exceso de admiraciones", () => {
@@ -123,8 +125,9 @@ describe("landing de MÊTIS CEO", () => {
   });
 
   it("FAQ breve y CTA a rutas reales", () => {
-    expect(C.FAQ.length).toBeGreaterThanOrEqual(6);
-    expect(C.FAQ.length).toBeLessThanOrEqual(7);
+    expect(C.FAQ.length).toBeGreaterThanOrEqual(4);
+    expect(C.FAQ.length).toBeLessThanOrEqual(5);
+    expect(C.FAQ.map((f) => f.q).join(" ")).toMatch(/experiencia[\s\S]*tiempo[\s\S]*cuenta[\s\S]*costo/i);
     expect(C.START_HREF).toBe("/ceo/empezar");
     expect(C.LOGIN_HREF.startsWith("/login")).toBe(true);
     expect(COMPANIES.length).toBe(3); // el copy dice «Tres empresas»
@@ -133,5 +136,77 @@ describe("landing de MÊTIS CEO", () => {
   it("SEO con el título acordado y una sola h1", () => {
     expect(C.SEO.title).toBe("MÊTIS CEO | Aprende a dirigir tomando decisiones");
     expect((sources().match(/<h1\b/g) ?? []).length).toBe(1);
+  });
+});
+
+describe("landing: una empresa que recuerda y cifras coherentes", () => {
+  const txt = (o: unknown) => JSON.stringify(o);
+
+  it("la experiencia no repite el caso SuperNorte: muestra personas que recuerdan y crisis sembradas antes", () => {
+    expect(txt(C.DIFF)).not.toMatch(/SuperNorte|Sofía|descuento|margen/i);
+    expect(C.DIFF.title).toBe("No estás respondiendo un examen. Estás dirigiendo.");
+    expect(C.DIFF.eyebrow).toBe("Una empresa que recuerda tus decisiones");
+    expect(C.DIFF.items.length).toBe(4);
+    for (const e of C.DIFF.items) {
+      // lo que regresa ocurre después de la decisión
+      const d = (s: string) => Number(s.replace(/\D/g, ""));
+      expect(d(e.back.day), e.t).toBeGreaterThan(d(e.decide.day));
+    }
+  });
+
+  it("los ecos salen de Botanas Cumbre: mismos personajes, días y consecuencias que el juego", () => {
+    const cumbre = COMPANIES.find((c) => c.id === "cumbre")!;
+    const items = cumbre.items;
+    const byId = (id: string) => items.find((i) => i.id === id)!;
+    const body = (id: string) => byId(id).body.join(" ");
+    const [hector, ana, planta, brilla] = C.DIFF.items;
+    expect(body("c-hector-renuncia")).toContain("El nuevo ni me contestó");
+    expect(hector.back.text).toContain("El nuevo ni me contestó");
+    expect(hector.decide.day).toBe(`Día ${byId("d1-hector").day}`);
+    expect(hector.back.day).toBe(`Día ${byId("c-hector-renuncia").day}`);
+    expect(body("c-ana-renuncia")).toContain("nunca supe si mi trabajo servía");
+    expect(ana.back.day).toBe(`Día ${byId("c-ana-renuncia").day}`);
+    expect(ana.decide.day).toBe(`Día ${byId("d2-ana").day}`);
+    expect(planta.decide.day).toBe(`Día ${byId("d3-planta").day}`);
+    expect(planta.back.day).toBe(`Día ${byId("c-planta-accidente").day}`);
+    expect(body("c-planta-accidente")).toContain("Toño");
+    expect(brilla.back.day).toBe(`Día ${byId("c-ana-brilla").day}`);
+    // iniciales del reparto real
+    const initials = new Set(Object.values(cumbre.cast).map((p) => p.initials));
+    for (const e of C.DIFF.items) expect(initials.has(e.back.initials), e.back.who).toBe(true);
+  });
+
+  it("las cifras del caso SuperNorte coinciden con el juego en toda la landing", () => {
+    const sn = COMPANIES.find((c) => c.id === "cumbre")!.items.find((i) => i.id === "d2-supernorte")!;
+    const rows = Object.fromEntries(sn.data!.rows);
+    expect(rows["Margen de la cuenta hoy"]).toBe("7.1%");
+    const facts = Object.fromEntries(C.DEMO.facts);
+    expect(facts["Margen de la cuenta hoy"]).toBe("7.1%");
+    expect(facts["Ventas con SuperNorte"]).toBe("31% del total");
+    expect(Object.fromEntries(C.STORY.caso.facts)["Ventas con SuperNorte"]).toBe("31% del total");
+    expect(sn.preview + sn.body.join(" ")).toContain("4 puntos");
+    expect(C.STORY.caso.msg).toContain("4 puntos");
+    expect(C.DEMO.message.join(" ")).toContain("4 puntos");
+    // nada de las cifras viejas
+    expect(txt({ ...C, AVAILABILITY: [], BANNED: [] })).not.toMatch(/12%|11%|24%|cuarta parte/);
+    // Sofía se presenta antes de que se hable de ella
+    expect(C.DEMO.message.join(" ")).toContain("Sofía Leal, la compradora de SuperNorte");
+  });
+
+  it("el desarrollo ejecutivo se marca como ejemplo conceptual con cifras ilustrativas", () => {
+    expect(C.GROWTH.title).toBe("Tu criterio está evolucionando");
+    expect(C.GROWTH.tag).toBe("Ejemplo conceptual");
+    expect(C.GROWTH.disclaimer.toLowerCase()).toContain("ilustrativ");
+    expect(C.GROWTH.bars.map((b) => [b.name, b.pct])).toEqual([["Pensamiento estratégico", 76], ["Gestión financiera", 59], ["Liderazgo de personas", 84], ["Manejo de crisis", 38]]);
+    expect(C.GROWTH.next).toBe("Practicar decisiones financieras bajo presión.");
+    const src = readFileSync(join(DIR, "Sections.tsx"), "utf8");
+    expect(src).toContain("GROWTH.tag");
+    expect(src).toContain("GROWTH.disclaimer");
+  });
+
+  it("la filosofía habla de personas como solución, sin historia de fundador", () => {
+    expect(C.PHILOSOPHY.quote).toBe("Las personas no son el problema. Las personas son la solución.");
+    expect(C.PHILOSOPHY.story).toContain("máximo potencial");
+    expect(C.PHILOSOPHY.story).not.toMatch(/\bvi\b|construí/i);
   });
 });
