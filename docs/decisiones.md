@@ -129,8 +129,15 @@ El perfil es uno por persona (`metis.profiles`) y puede pertenecer a varias empr
 - Costo estimado: ≈ USD 0.0003 a 0.0006 por respuesta (menos de 0.1 centavo). Si algo falla o se llega al tope, el jugador elige la opción a mano.
 - Requiere la migración 0015 en producción (hoy solo está en metis-pruebas). Sin ella, todo queda apagado.
 
-## V33 · Professional Profiling & Initial Assessment (propuesta, por aprobar)
+## V33 · Professional Profiling & Initial Assessment (aprobada, construida en F1-P1 a F1-P4)
 - Cinco preguntas opcionales en el onboarding (rol, áreas, años, industria, objetivo) y un diagnóstico opcional de 3 decisiones. Detalle en `docs/perfil-profesional.md`.
 - Regla central: la experiencia declarada cambia recomendaciones, ayuda en casos, exigencia ofrecida y contexto de la IA; **nunca** dominio, etapa, XP, ranking ni nombramientos. La lectura inicial del diagnóstico es aparte del dominio y desaparece a las 5 decisiones reales por competencia.
 - Se guarda dentro de la partida (`CeoState.profile?`, `CeoState.diagnostic?`), sin migración de base de datos. Usuarios actuales: perfil vacío válido, aviso pospuesto y nada se recalcula.
 - Plan: F1-P1 a F1-P4, criterios P-01 a P-11.
+- Construido:
+  - F1-P2: preguntas en el onboarding (después del nombre), «Omitir» por pregunta y «Completar después» por bloque; la industria declarada preselecciona la empresa de esa industria; sección «Experiencia declarada» en Perfil con editor.
+  - F1-P3: diagnóstico de 3 decisiones (opcional, solo con menos de 10 decisiones), pantalla «Tu punto de partida» y oferta de exigencia «Director con oficio» para 11+ años o cargo de dirección. Ruta `/ceo/experiencia` para usuarios actuales.
+  - F1-P4: Academy con «Para ti / Orden original» y etiquetas «Recomendada», «Fuera de tu especialidad» y «Repaso opcional»; ayuda antes de decidir según `helpBand` (completa, media o ninguna); aviso «Cuéntanos tu experiencia» en Hoy (no aparece si hay un asunto por vencer en menos de 3 h); eventos de producto en `/api/ceo/eventos`.
+- Exigencia elegida al empezar: se guarda en `CeoState.startTier` y no cuenta como modo Legendario en el Journey.
+- Un área declarada deja de ser «repaso opcional» si el diagnóstico la marca «por reforzar»: lo demostrado gana a lo declarado.
+- Eventos: lista cerrada de nombres y propiedades (sin texto libre ni datos personales). Solo se guardan si el interruptor `events` está prendido; hoy está apagado.

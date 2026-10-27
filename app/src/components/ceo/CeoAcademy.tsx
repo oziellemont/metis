@@ -11,6 +11,7 @@ import { LEVELS, rankFor } from "@/lib/ceo/engine";
 import { TRACK_TO } from "@/lib/ceo/mastery";
 import { celebrate } from "@/lib/ceo/celebrate";
 import { useCeo } from "./CeoProvider";
+import { personalized, trackHints } from "@/lib/ceo/profile";
 
 const ICON = { compass: Compass, users: Users, flag: Flag, message: MessagesSquare, handshake: Handshake, coins: Coins, flame: FlameIcon, rocket: Rocket, target: Target, layers: Layers };
 
@@ -24,6 +25,11 @@ export function CeoAcademyHome() {
   const unlockNext = nextRank ? LESSONS.filter((l) => rankOf(l) === rank + 1).length : 0;
   const focus = c.journey.focus;
   const fm = focus ? c.mastery[focus] : null;
+  const forYou = personalized(c.s);
+  const [order, setOrder] = useState<"ti" | "todas">("ti");
+  const hints = forYou ? trackHints(c.s.profile, c.mastery, c.s.diagnostic, TRACK_TO, TRACKS.map((t) => t.id)) : [];
+  const hintOf = new Map(hints.map((h, i) => [h.track, { ...h, top: i < 3 }]));
+  const tracks = forYou && order === "ti" ? hints.map((h) => TRACKS.find((t) => t.id === h.track)!) : TRACKS;
   const focusLesson = focus ? LESSONS.find((l) => rankOf(l) <= rank && !c.s.lessons[l.id] && (TRACK_TO[trackOf(l).track] ?? []).includes(focus)) : undefined;
   return (
     <div>
@@ -55,8 +61,18 @@ export function CeoAcademyHome() {
         </section>
       )}
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2">
-        {TRACKS.map((t) => {
+      {forYou && (
+        <div className="mt-6 flex flex-wrap items-center gap-3">
+          <p className="flex-1 min-w-0 text-xs text-slate-500">{order === "ti" ? "Ordenadas según lo que has demostrado y lo que nos contaste. Al menos 1 de cada 3 es de un área que no elegiste." : "Todas las rutas en su orden original."} <Link href="/ceo/perfil#experiencia" className="text-indigo font-medium">Tu experiencia</Link></p>
+          <div className="inline-flex rounded-xl bg-slate-100 p-1 text-xs">
+            {(["ti", "todas"] as const).map((o) => <button key={o} type="button" onClick={() => setOrder(o)} aria-pressed={order === o} className={clsx("rounded-lg px-3 py-1.5 font-medium", order === o ? "bg-white text-ink shadow-sm" : "text-slate-500")}>{o === "ti" ? "Para ti" : "Orden original"}</button>)}
+          </div>
+        </div>
+      )}
+
+      <div className={clsx("grid gap-4 sm:grid-cols-2", forYou ? "mt-3" : "mt-6")}>
+        {tracks.map((t) => {
+          const h = hintOf.get(t.id);
           const Icon = ICON[t.icon];
           const ls = lessonsOfTrack(t.id);
           if (!ls.length) return null;
@@ -69,7 +85,10 @@ export function CeoAcademyHome() {
             <div key={t.id} className={clsx("card h-full p-6 flex flex-col", nextL && lived && "ring-2 ring-indigo/30")}>
               <div className="flex items-start justify-between">
                 <span className={clsx("h-11 w-11 rounded-2xl grid place-items-center", doneN === ls.length ? "bg-mint-soft text-sob" : "bg-indigo-soft text-indigo")}><Icon size={20} /></span>
-                <span className="text-xs text-slate-400 tabular-nums">Nivel {doneN} de {MAX_TRACK_LEVEL}</span>
+                <span className="flex flex-col items-end gap-1.5">
+                  <span className="text-xs text-slate-400 tabular-nums">Nivel {doneN} de {MAX_TRACK_LEVEL}</span>
+                  {h && order === "ti" && (h.review ? <span className="chip bg-slate-100 text-slate-500 text-[10.5px]">Repaso opcional</span> : h.top ? <span className="chip bg-indigo-soft text-indigo text-[10.5px]">{h.outside ? "Fuera de tu especialidad" : "Recomendada"}</span> : null)}
+                </span>
               </div>
               <h3 className="mt-4 font-semibold text-ink leading-snug">{t.title}</h3>
               <p className="mt-1 text-sm text-slate-500">{t.blurb}</p>

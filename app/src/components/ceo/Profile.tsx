@@ -8,6 +8,7 @@ import { STAGES } from "@/lib/ceo/journey";
 import { countAtLeast } from "@/lib/ceo/mastery";
 import { firstName } from "@/lib/ceo/cast";
 import { useCeo } from "./CeoProvider";
+import { track } from "@/lib/ceo/events";
 import { Avatar, Flame, rel } from "./ui";
 import { CompetencyBars, StageTrack } from "./Journey";
 import { ProfileEditor } from "./ProfileFlow";
@@ -82,7 +83,7 @@ export function Profile() {
             : <Link href="/ceo/experiencia" className="btn-primary text-sm">Completar</Link>)}
         </div>
         {editing ? (
-          <div className="mt-4"><ProfileEditor initial={pf} onCancel={() => setEditing(false)} onSave={(np) => { c.saveProfile(np); setEditing(false); }} /></div>
+          <div className="mt-4"><ProfileEditor initial={pf} onCancel={() => setEditing(false)} onSave={(np) => { track("perfil_editado", { omitidas: np.skipped.length, fuente: "perfil" }); c.saveProfile(np); setEditing(false); }} /></div>
         ) : (
           <>
             <dl className="mt-4 grid sm:grid-cols-2 gap-x-6">

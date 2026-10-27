@@ -7,6 +7,7 @@ import { Logo } from "@/components/ui/Logo";
 import { personOf } from "@/lib/ceo/cast";
 import { COMPANIES, FIRST_COMPANY, companyById } from "@/lib/ceo/companies";
 import { useCeo } from "./CeoProvider";
+import { track } from "@/lib/ceo/events";
 import { Avatar, CompanyMark } from "./ui";
 import { DiagnosticCases, DiagnosticOffer, ProfileQuestions, StartingPoint, TierChoice } from "./ProfileFlow";
 import { companyForIndustry, suggestTier, type InitialDiagnostic, type ProfessionalProfile } from "@/lib/ceo/profile";
@@ -47,6 +48,7 @@ export function Onboarding() {
   };
   const afterProfile = (pf: ProfessionalProfile) => {
     setProfile(pf);
+    track("perfil_respondido", { secs: pf.secs ?? 0, omitidas: pf.skipped.length, fuente: "onboarding" });
     setPhase(diagnostic?.finishedAt ? "start" : "offer");
   };
 
@@ -54,6 +56,7 @@ export function Onboarding() {
   useEffect(() => { if (c.user?.email) setEmail((e) => e || c.user!.email); }, [c.user]);
 
   const go = () => {
+    if (offered) track("exigencia_elegida", { tier: tier ? offered : 0 });
     c.start({ name, email, phone, company, profile, diagnostic, tier: offered ? tier : 0, settings: { windowStart: ws, windowEnd: we, notifyEmail: !!email, notifyWhatsapp: wa && !!phone, intensivo } });
     try { if (typeof Notification !== "undefined" && Notification.permission === "default") Notification.requestPermission(); } catch { /* ignore */ }
     router.replace("/ceo");
@@ -88,7 +91,7 @@ export function Onboarding() {
           <div key={`p-${phase}`}>
             {phase === "q" && <ProfileQuestions initial={profile} source="onboarding" step={q} setStep={setQ} onBackFirst={() => setStep(0)} onLater={() => toCompany(profile)} onDone={afterProfile} />}
             {phase === "offer" && <DiagnosticOffer onStart={() => setPhase("diag")} onLater={() => toCompany(profile)} later="Ahora no, elegir mi empresa" />}
-            {phase === "diag" && <DiagnosticCases onDone={(d) => { setDiagnostic(d); setPhase("start"); }} onSkip={() => { setDiagnostic({ v: 1, set: "d1", answers: [], skippedAt: Date.now() }); toCompany(profile); }} />}
+            {phase === "diag" && <DiagnosticCases onDone={(d) => { setDiagnostic(d); setPhase("start"); track("diagnostico_hecho", { respuestas: d.answers.length, fuente: "onboarding" }); }} onSkip={() => { track("diagnostico_saltado", { fuente: "onboarding" }); setDiagnostic({ v: 1, set: "d1", answers: [], skippedAt: Date.now() }); toCompany(profile); }} />}
             {phase === "start" && <StartingPoint name={name} p={profile} d={diagnostic} m={zero} cta="Elegir mi empresa" onCta={() => toCompany(profile)} onEdit={() => { setQ(0); setPhase("q"); }} />}
           </div>
         )}

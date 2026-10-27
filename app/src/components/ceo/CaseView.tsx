@@ -11,6 +11,8 @@ import { lessonById } from "@/lib/ceo/lessons";
 import type { Entry, Item, KpiKey, Option, Written } from "@/lib/ceo/types";
 import { MAX_CHARS, MIN_CHARS, textProblem, writtenEligible } from "@/lib/ceo/written";
 import { useCeo } from "./CeoProvider";
+import { competenciesOfItem } from "@/lib/ceo/mastery";
+import { competencyNames, helpBand } from "@/lib/ceo/profile";
 import { Avatar, ChannelChip, clock, until } from "./ui";
 
 export function CaseView({ id }: { id: string }) {
@@ -88,6 +90,7 @@ export function CaseView({ id }: { id: string }) {
             <span className={clsx("chip gap-1", e.deadline - c.now < 3 * 3_600_000 ? "bg-coral-soft text-coral" : "bg-amber-soft text-amber")}><Clock size={11} /> Vence en {until(e.deadline, c.now)}</span>
           </div>
           <h2 className="mt-2 text-lg sm:text-xl font-semibold text-ink leading-snug">{it.ask}</h2>
+          <CaseHelp it={it} />
           {canWrite && (
             <div className="mt-4 inline-flex rounded-xl bg-slate-100 p-1 text-sm">
               <button onClick={() => setMode("options")} className={clsx("inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-medium", mode === "options" ? "bg-white text-ink shadow-sm" : "text-slate-500")}><ListChecks size={14} /> Elegir opción</button>
@@ -402,6 +405,28 @@ function Outcome({ e, fresh }: { e: Entry; fresh: boolean }) {
         )}
       </div>
     </section>
+  );
+}
+
+/**
+ * Ayuda antes de decidir según la experiencia declarada (V33): completa / media / breve.
+ * Solo cambia cuánta explicación se ve; nunca opciones, puntajes ni efectos.
+ */
+function CaseHelp({ it }: { it: Item }) {
+  const c = useCeo();
+  const band = helpBand(c.s.profile);
+  if (band === "breve") return null;
+  const names = competencyNames(competenciesOfItem(it));
+  if (!names.length) return null;
+  const lesson = it.lesson ? lessonById(it.lesson) : undefined;
+  return (
+    <div className="mt-3 flex gap-2.5 rounded-xl bg-canvas px-3.5 py-2.5 text-[12.5px] text-slate-600 leading-relaxed">
+      <Lightbulb size={14} className="text-indigo shrink-0 mt-0.5" />
+      <span>
+        <b className="font-medium text-ink">Este caso entrena:</b> {names.join(", ")}.
+        {band === "completa" && <> Piensa a quién afecta tu decisión hoy y a quién en tres meses. {lesson && <>La lección «{lesson.title}» lo explica a fondo; está disponible al cerrar el caso.</>}</>}
+      </span>
+    </div>
   );
 }
 
