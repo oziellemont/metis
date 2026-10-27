@@ -86,3 +86,9 @@ El perfil es uno por persona (`metis.profiles`) y puede pertenecer a varias empr
 
 **Decisión.** Diez partidas completas grabadas (`app/src/lib/ceo/golden/data`) cubren las 3 empresas, aprobar, reprobar, asuntos vencidos, cambio de horario, modo intensivo, otra zona horaria, repetir y ascender hasta nivel 2. Cada cambio de código debe reproducirlas con resultados idénticos. Se agrega `replay.ts` (reproductor de acciones, base de la validación en servidor de F0-9) y una plantilla de revisión automática en GitHub (`docs/ci/pruebas.yml`, pendiente de activar por el fundador).
 **Hallazgo de balance (sin cambio).** El jugador automático «cuidadoso» aprueba Cumbre (nivel 0) y Forja (nivel 1), pero reprueba Brasa en nivel 2 por un punto de Caja (53 frente a 54). Queda registrado; se revisará con datos reales y con el Mastery Engine, no se modifica el balance en este PR.
+
+## 2026-10-27 · F0-2 (parte 1): migración 0015 (cimientos de Fase 0)
+- Solo agrega cosas en el esquema `ceo`: columnas `flags`/`ai_consent` en players y las tablas `flags`, `product_events`, `ai_calls`, `ai_quota` y `game_events`. Además, las funciones `ai_reservar`/`ai_ajustar`, que imponen un tope atómico de gasto en IA.
+- Todos los interruptores arrancan APAGADOS. Solo el servidor (service_role) escribe en las tablas nuevas; cada jugador puede leer únicamente sus propias jugadas.
+- Probada en un Postgres local: se aplica dos veces sin error, el tope bloquea, los permisos se respetan y se puede revertir y volver a aplicar. Reversa: `docs/sql/0015_revertir.sql`.
+- Se aplica primero en metis-pruebas (`docs/sql/pruebas_instalar_ceo.sql`, que junta 0013+0014+0015). En producción, solo con aprobación.
