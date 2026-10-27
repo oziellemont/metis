@@ -128,3 +128,9 @@ El perfil es uno por persona (`metis.profiles`) y puede pertenecer a varias empr
 - Gasto: reserva atómica antes de llamar (`ai_reservar`), ajuste al costo real (`ai_ajustar`) y bitácora en `ai_calls`. Topes: USD 50/mes, USD 3/día, USD 0.05 y 30 respuestas por jugador por día (cambiables por variables de entorno).
 - Costo estimado: ≈ USD 0.0003 a 0.0006 por respuesta (menos de 0.1 centavo). Si algo falla o se llega al tope, el jugador elige la opción a mano.
 - Requiere la migración 0015 en producción (hoy solo está en metis-pruebas). Sin ella, todo queda apagado.
+
+## V33 · Professional Profiling & Initial Assessment (propuesta, por aprobar)
+- Cinco preguntas opcionales en el onboarding (rol, áreas, años, industria, objetivo) y un diagnóstico opcional de 3 decisiones. Detalle en `docs/perfil-profesional.md`.
+- Regla central: la experiencia declarada cambia recomendaciones, ayuda en casos, exigencia ofrecida y contexto de la IA; **nunca** dominio, etapa, XP, ranking ni nombramientos. La lectura inicial del diagnóstico es aparte del dominio y desaparece a las 5 decisiones reales por competencia.
+- Se guarda dentro de la partida (`CeoState.profile?`, `CeoState.diagnostic?`), sin migración de base de datos. Usuarios actuales: perfil vacío válido, aviso pospuesto y nada se recalcula.
+- Plan: F1-P1 a F1-P4, criterios P-01 a P-11.
