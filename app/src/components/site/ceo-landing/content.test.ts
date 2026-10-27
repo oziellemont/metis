@@ -53,7 +53,9 @@ describe("landing de MÊTIS CEO", () => {
 
   it("lo que no existe se marca como próximo o futuro, nunca como disponible", () => {
     const hoy = C.AVAILABILITY.filter((a) => a.state === "hoy").map((a) => a.item.toLowerCase()).join(" ");
-    for (const w of ["arena", "conversaciones", "generados", "respuestas escritas", "junta"]) expect(hoy).not.toContain(w);
+    for (const w of ["arena", "conversaciones", "generados", "respuestas escritas"]) expect(hoy).not.toContain(w);
+    // La junta ya existe (lib/ceo/board.ts): se marca como disponible.
+    expect(C.AVAILABILITY.find((a) => a.item === "Junta ante el Consejo")!.state).toBe("hoy");
     expect(C.LEARN.soonNote.toLowerCase()).toContain("preparación");
     expect(C.PATH.arena.toLowerCase()).toContain("todavía no está disponible");
   });

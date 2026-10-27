@@ -19,7 +19,7 @@ export const AVAILABILITY: { item: string; state: Availability; note: string }[]
   { item: "Perfil profesional y orden «Para ti»", state: "hoy", note: "V33" },
   { item: "Avisos por correo", state: "hoy", note: "Si conectas tu correo y lo activas" },
   { item: "Respuestas escritas con retroalimentación", state: "preparacion", note: "Vista previa apagada por defecto" },
-  { item: "Junta ante el Consejo", state: "preparacion", note: "Requisito marcado como próximamente" },
+  { item: "Junta ante el Consejo", state: "hoy", note: "Tres momentos encadenados; requisito para Chief Executive Officer (/ceo/junta)" },
   { item: "Conversaciones abiertas con personajes", state: "futuro", note: "No construido" },
   { item: "Escenarios generados", state: "futuro", note: "No construido" },
   { item: "The Executive Arena", state: "futuro", note: "No construido" },

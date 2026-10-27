@@ -27,10 +27,10 @@ La landing anterior tenía hero animado, 3 pasos, 3 razones con visuales, precio
 - ranking
 - perfil profesional y orden «Para ti»
 - avisos por correo
+- Junta ante el Consejo (`/ceo/junta`, desde la etapa Chief Operating Officer)
 
 **En preparación:**
 - respuestas escritas con retroalimentación (vista previa apagada)
-- Junta ante el Consejo
 
 **Futuro (no construido):**
 - conversaciones abiertas

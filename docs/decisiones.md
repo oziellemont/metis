@@ -141,3 +141,10 @@ El perfil es uno por persona (`metis.profiles`) y puede pertenecer a varias empr
 - Exigencia elegida al empezar: se guarda en `CeoState.startTier` y no cuenta como modo Legendario en el Journey.
 - Un área declarada deja de ser «repaso opcional» si el diagnóstico la marca «por reforzar»: lo demostrado gana a lo declarado.
 - Eventos: lista cerrada de nombres y propiedades (sin texto libre ni datos personales). Solo se guardan si el interruptor `events` está prendido; hoy está apagado.
+
+## Junta ante el Consejo (requisito para Chief Executive Officer)
+- Ruta `/ceo/junta`. Se abre en la etapa Chief Operating Officer; antes muestra «Todavía no te toca», y después del nombramiento ya no se pide.
+- Tres momentos encadenados ante el presidente y la consejera independiente de la empresa actual (`roles.chair` y `roles.board`): los números del trimestre, la pregunta incómoda sobre controles y la apuesta de tres años del presidente. Algunas respuestas cambian lo que pasa en el siguiente momento (`CHAINS`).
+- Califica cuatro criterios (rendición de cuentas, criterio, gobierno, visión) más la confianza del consejo. La confianza inicial sale de tu relación con ambos durante la temporada (50 ± 15). Para superarla: confianza de 60 o más y ningún criterio debajo de 55. De 27 caminos, 2 la superan.
+- Si no la superas, el consejo vuelve a sesionar en un día de juego. Superada, queda superada.
+- Lógica pura en `lib/ceo/board.ts`. Solo guarda `journey.board` con `recordBoard`: no toca KPI, decisiones ni partidas doradas. Sin migración de base de datos (vive dentro de la partida).
