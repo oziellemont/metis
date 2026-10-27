@@ -13,7 +13,9 @@ const APP_PREFIXES = ["/inicio", "/scorecard", "/carga", "/mapa", "/equipo", "/i
 const CEO_HOSTS = ["metis.ceo", "www.metis.ceo"];
 /** Dominio anterior de mêtis CEO: todo se manda a metis.ceo (vía /mudanza, que se lleva la partida guardada). */
 const OLD_CEO_HOSTS = ["metisalign.app", "www.metisalign.app"];
-const CEO_PASSTHROUGH = ["/ceo", "/api", "/auth", "/login", "/_next", "/brand", "/mudanza", "/simulador"];
+const CEO_PASSTHROUGH = ["/ceo", "/api", "/auth", "/login", "/_next", "/brand", "/mudanza", "/simulador", "/legal"];
+/** Páginas legales de metis.ceo: «/privacidad» → «/legal/privacidad». */
+const CEO_LEGAL: Record<string, string> = { "/privacidad": "/legal/privacidad", "/terminos": "/legal/terminos" };
 
 /** Ruta pública de CEO («/caso/x») → ruta interna («/ceo/caso/x»). */
 const toCeoPath = (p: string) => (p === "/" ? "/ceo" : p === "/ceo" || p.startsWith("/ceo/") ? p : "/ceo" + p);
@@ -37,6 +39,7 @@ export async function middleware(req: NextRequest) {
   // metis.ceo → mêtis CEO. «/» es la landing; lo demás se reescribe hacia /ceo. Misma app, mismo código.
   if (CEO_HOSTS.includes(host) || (!moved && OLD_CEO_HOSTS.includes(host))) {
     if (p === "/") { const u = req.nextUrl.clone(); u.pathname = "/simulador"; return NextResponse.rewrite(u); }
+    if (CEO_LEGAL[p]) { const u = req.nextUrl.clone(); u.pathname = CEO_LEGAL[p]; return NextResponse.rewrite(u); }
     if (!CEO_PASSTHROUGH.some((x) => p === x || p.startsWith(x + "/"))) {
       const u = req.nextUrl.clone();
       u.pathname = toCeoPath(p);

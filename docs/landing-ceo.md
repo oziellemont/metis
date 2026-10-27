@@ -51,9 +51,13 @@ La landing anterior tenía hero animado, 3 pasos, 3 razones con visuales, precio
 
 ## Pendiente
 
-- Páginas de privacidad y términos.
 - Precio, cuando exista checkout.
-- Imagen OG propia de CEO.
+- Revisión legal del aviso de privacidad y los términos antes de cobrar.
+
+## Legal e imagen para compartir
+
+- `metis.ceo/privacidad` y `metis.ceo/terminos` (el middleware las reescribe a `/legal/*`). Texto en `components/site/ceo-landing/legal-content.ts`. Describe solo lo que la app hace hoy y nombra a los proveedores (Supabase, Vercel, Resend, Twilio, OpenAI). Contacto: hola@metis.ceo. Pendiente de revisión por un abogado.
+- Imagen para redes: `public/brand/ceo-og.jpg` (1200×630), usada por la landing y por /ceo.
 
 
 ## Regla de copy (decisión del fundador)

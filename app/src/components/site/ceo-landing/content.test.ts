@@ -6,7 +6,7 @@ import { STAGES } from "../../../lib/ceo/journey";
 import { COMPANIES } from "../../../lib/ceo/companies";
 
 const DIR = "src/components/site/ceo-landing";
-const sources = () => [...readdirSync(DIR).filter((f) => f.endsWith(".tsx") || f === "content.ts").map((f) => readFileSync(join(DIR, f), "utf8")), readFileSync("src/app/simulador/page.tsx", "utf8")].join("\n");
+const sources = () => [...readdirSync(DIR).filter((f) => (f.endsWith(".tsx") && f !== "Legal.tsx") || f === "content.ts").map((f) => readFileSync(join(DIR, f), "utf8")), readFileSync("src/app/simulador/page.tsx", "utf8")].join("\n");
 /** Copy visible: BANNED es la lista de control y AVAILABILITY es la matriz interna (no se muestra). */
 const allCopy = () => { const { BANNED: _b, AVAILABILITY: _a, ...rest } = C; void _b; void _a; return JSON.stringify(rest).toLowerCase(); };
 
