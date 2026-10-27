@@ -135,7 +135,7 @@ describe("Executive Journey", () => {
   });
 
   it("nombramiento: con todos los requisitos se asciende UNA etapa, y queda registrado", () => {
-    const g = golden("cumbre-mejor");
+    const g = golden("forja-mejor");
     const s = freshWith(g.state);
     const v = journeyOf(s, g.at);
     expect(v.ready).toBe(true);

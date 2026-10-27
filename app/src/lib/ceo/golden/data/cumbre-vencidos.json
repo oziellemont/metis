@@ -274,10 +274,10 @@
     "seasonDay": 3,
     "kpis": {
      "caja": 60,
-     "margen": 55,
+     "margen": 54,
      "equipo": 52,
      "clientes": 67,
-     "consejo": 61
+     "consejo": 62
     },
     "health": 59,
     "xp": 120,
@@ -419,10 +419,10 @@
     "seasonDay": 4,
     "kpis": {
      "caja": 40,
-     "margen": 46,
+     "margen": 45,
      "equipo": 56,
      "clientes": 55,
-     "consejo": 60
+     "consejo": 61
     },
     "health": 51,
     "xp": 225,
@@ -568,10 +568,10 @@
     "seasonDay": 5,
     "kpis": {
      "caja": 40,
-     "margen": 51,
+     "margen": 50,
      "equipo": 45,
      "clientes": 55,
-     "consejo": 61
+     "consejo": 62
     },
     "health": 50,
     "xp": 295,
@@ -719,10 +719,10 @@
     "seasonDay": 6,
     "kpis": {
      "caja": 40,
-     "margen": 49,
+     "margen": 48,
      "equipo": 43,
      "clientes": 55,
-     "consejo": 65
+     "consejo": 66
     },
     "health": 50,
     "xp": 370,
@@ -872,10 +872,10 @@
     "seasonDay": 7,
     "kpis": {
      "caja": 40,
-     "margen": 49,
+     "margen": 48,
      "equipo": 38,
      "clientes": 55,
-     "consejo": 65
+     "consejo": 66
     },
     "health": 49,
     "xp": 385,
@@ -1026,10 +1026,10 @@
     "seasonDay": 7,
     "kpis": {
      "caja": 40,
-     "margen": 49,
+     "margen": 48,
      "equipo": 30,
      "clientes": 55,
-     "consejo": 59
+     "consejo": 60
     },
     "health": 47,
     "xp": 400,
@@ -1182,10 +1182,10 @@
     "seasonDay": 7,
     "kpis": {
      "caja": 38,
-     "margen": 49,
+     "margen": 48,
      "equipo": 27,
      "clientes": 55,
-     "consejo": 54
+     "consejo": 55
     },
     "health": 45,
     "xp": 400,
@@ -1491,10 +1491,10 @@
       "xp": 290,
       "kpis": {
        "caja": 38,
-       "margen": 49,
+       "margen": 48,
        "equipo": 27,
        "clientes": 55,
-       "consejo": 54
+       "consejo": 55
       },
       "change": {
        "adopted": 2,

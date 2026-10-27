@@ -268,10 +268,10 @@
     "seasonDay": 3,
     "kpis": {
      "caja": 56,
-     "margen": 52,
+     "margen": 51,
      "equipo": 45,
      "clientes": 66,
-     "consejo": 64
+     "consejo": 65
     },
     "health": 57,
     "xp": 120,
@@ -412,10 +412,10 @@
     "seasonDay": 4,
     "kpis": {
      "caja": 58,
-     "margen": 54,
+     "margen": 51,
      "equipo": 33,
      "clientes": 62,
-     "consejo": 59
+     "consejo": 61
     },
     "health": 53,
     "xp": 205,
@@ -566,10 +566,10 @@
     "seasonDay": 5,
     "kpis": {
      "caja": 59,
-     "margen": 53,
+     "margen": 50,
      "equipo": 28,
      "clientes": 62,
-     "consejo": 57
+     "consejo": 59
     },
     "health": 52,
     "xp": 255,
@@ -722,12 +722,12 @@
     "seasonDay": 6,
     "kpis": {
      "caja": 59,
-     "margen": 59,
+     "margen": 56,
      "equipo": 16,
      "clientes": 62,
-     "consejo": 47
+     "consejo": 49
     },
-    "health": 49,
+    "health": 48,
     "xp": 340,
     "level": 1,
     "relations": {
@@ -880,11 +880,11 @@
     "legendary": false,
     "seasonDay": 7,
     "kpis": {
-     "caja": 60,
-     "margen": 63,
+     "caja": 58,
+     "margen": 58,
      "equipo": 5,
      "clientes": 63,
-     "consejo": 45
+     "consejo": 49
     },
     "health": 47,
     "xp": 425,
@@ -1042,13 +1042,13 @@
     "legendary": false,
     "seasonDay": 7,
     "kpis": {
-     "caja": 60,
-     "margen": 63,
+     "caja": 58,
+     "margen": 58,
      "equipo": 0,
      "clientes": 63,
-     "consejo": 47
+     "consejo": 51
     },
-    "health": 47,
+    "health": 46,
     "xp": 450,
     "level": 2,
     "relations": {
@@ -1206,11 +1206,11 @@
     "legendary": false,
     "seasonDay": 7,
     "kpis": {
-     "caja": 58,
-     "margen": 63,
+     "caja": 56,
+     "margen": 58,
      "equipo": 0,
      "clientes": 63,
-     "consejo": 42
+     "consejo": 46
     },
     "health": 45,
     "xp": 450,
@@ -1515,11 +1515,11 @@
       "answered": 100,
       "xp": 450,
       "kpis": {
-       "caja": 58,
-       "margen": 63,
+       "caja": 56,
+       "margen": 58,
        "equipo": 0,
        "clientes": 63,
-       "consejo": 42
+       "consejo": 46
       },
       "change": {
        "adopted": 0,

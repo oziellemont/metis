@@ -941,8 +941,8 @@
     "seasonDay": 7,
     "kpis": {
      "caja": 46,
-     "margen": 74,
-     "equipo": 34,
+     "margen": 73,
+     "equipo": 35,
      "clientes": 50,
      "consejo": 48
     },
@@ -1086,8 +1086,8 @@
     "seasonDay": 7,
     "kpis": {
      "caja": 44,
-     "margen": 74,
-     "equipo": 31,
+     "margen": 73,
+     "equipo": 32,
      "clientes": 50,
      "consejo": 43
     },
@@ -1370,8 +1370,8 @@
       "xp": 455,
       "kpis": {
        "caja": 44,
-       "margen": 74,
-       "equipo": 31,
+       "margen": 73,
+       "equipo": 32,
        "clientes": 50,
        "consejo": 43
       },

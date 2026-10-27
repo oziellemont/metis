@@ -55,7 +55,7 @@
    "type": "decide",
    "at": 1791318767224,
    "item": "d2-ana",
-   "option": "b"
+   "option": "c"
   },
   {
    "type": "dilemma",
@@ -72,7 +72,7 @@
    "type": "decide",
    "at": 1791383763771,
    "item": "d3-planta",
-   "option": "b"
+   "option": "c"
   },
   {
    "type": "decide",
@@ -95,19 +95,19 @@
    "type": "decide",
    "at": 1791473900955,
    "item": "d4-objetivos",
-   "option": "a"
+   "option": "c"
   },
   {
    "type": "decide",
    "at": 1791493005918,
    "item": "d4-sindicato",
-   "option": "b"
+   "option": "a"
   },
   {
    "type": "decide",
    "at": 1791499336322,
    "item": "c-supernorte-castigo",
-   "option": "b"
+   "option": "a"
   },
   {
    "type": "dilemma",
@@ -124,25 +124,13 @@
    "type": "decide",
    "at": 1791560180466,
    "item": "d5-credito",
-   "option": "b"
+   "option": "c"
   },
   {
    "type": "decide",
    "at": 1791570305706,
    "item": "d5-consejo",
    "option": "a"
-  },
-  {
-   "type": "decide",
-   "at": 1791578301580,
-   "item": "c-ana-brilla",
-   "option": "a"
-  },
-  {
-   "type": "decide",
-   "at": 1791588755188,
-   "item": "c-planta-accidente",
-   "option": "b"
   },
   {
    "type": "dilemma",
@@ -159,13 +147,19 @@
    "type": "decide",
    "at": 1791643991048,
    "item": "d6-gastos",
-   "option": "b"
+   "option": "c"
   },
   {
    "type": "decide",
    "at": 1791659949976,
    "item": "d6-clima",
    "option": "c"
+  },
+  {
+   "type": "decide",
+   "at": 1791674991323,
+   "item": "c-ana-renuncia",
+   "option": "a"
   },
   {
    "type": "dilemma",
@@ -188,7 +182,7 @@
    "type": "decide",
    "at": 1791759845181,
    "item": "d7-sucesion",
-   "option": "a"
+   "option": "c"
   },
   {
    "type": "changeStart",
@@ -197,87 +191,78 @@
   {
    "type": "lever",
    "at": 1791759995181,
-   "lever": "piloto",
+   "lever": "coalicion",
    "targets": [
+    "ramiro",
     "carla",
-    "diego"
+    "lucia"
    ]
   },
   {
    "type": "lever",
    "at": 1791760025181,
-   "lever": "coalicion",
+   "lever": "capacitacion",
    "targets": [
+    "carla",
     "lucia",
-    "diego",
     "ana"
    ]
   },
   {
    "type": "lever",
    "at": 1791760055181,
-   "lever": "avance",
-   "targets": []
+   "lever": "entrevista",
+   "targets": [
+    "ana"
+   ]
   },
   {
    "type": "lever",
    "at": 1791760085181,
-   "lever": "ejemplo",
+   "lever": "avance",
    "targets": []
   },
   {
    "type": "lever",
    "at": 1791760115181,
-   "lever": "capacitacion",
+   "lever": "ejemplo",
+   "targets": []
+  },
+  {
+   "type": "lever",
+   "at": 1791760145181,
+   "lever": "piloto",
    "targets": [
-    "mariana",
     "ana",
     "paty"
    ]
   },
   {
    "type": "lever",
-   "at": 1791760145181,
-   "lever": "avance",
-   "targets": []
-  },
-  {
-   "type": "lever",
    "at": 1791760175181,
-   "lever": "entrevista",
+   "lever": "piloto",
    "targets": [
-    "hector"
+    "diego",
+    "paty"
    ]
   },
   {
    "type": "lever",
    "at": 1791760205181,
-   "lever": "entrevista",
-   "targets": [
-    "roberto"
-   ]
+   "lever": "avance",
+   "targets": []
   },
   {
    "type": "lever",
    "at": 1791760235181,
-   "lever": "reconocer",
+   "lever": "entrevista",
    "targets": [
-    "mariana",
-    "paty"
+    "hector"
    ]
   },
   {
    "type": "lever",
    "at": 1791760265181,
-   "lever": "piloto",
-   "targets": [
-    "ramiro",
-    "mariana"
-   ]
-  },
-  {
-   "type": "lever",
-   "at": 1791760295181,
    "lever": "reconocer",
    "targets": [
     "ana",
@@ -286,27 +271,21 @@
   },
   {
    "type": "lever",
-   "at": 1791760325181,
-   "lever": "entrevista",
+   "at": 1791760295181,
+   "lever": "capacitacion",
    "targets": [
-    "hector"
-   ]
-  },
-  {
-   "type": "lever",
-   "at": 1791760355181,
-   "lever": "entrevista",
-   "targets": [
-    "hector"
+    "ramiro",
+    "hector",
+    "mariana"
    ]
   },
   {
    "type": "changeClose",
-   "at": 1791760415181
+   "at": 1791760355181
   },
   {
    "type": "advance",
-   "at": 1791760475181
+   "at": 1791760415181
   }
  ],
  "checkpoints": [
@@ -456,13 +435,13 @@
     "seasonDay": 3,
     "kpis": {
      "caja": 60,
-     "margen": 59,
-     "equipo": 65,
+     "margen": 60,
+     "equipo": 59,
      "clientes": 59,
      "consejo": 60
     },
-    "health": 61,
-    "xp": 300,
+    "health": 60,
+    "xp": 280,
     "level": 1,
     "relations": {
      "ramiro": 42,
@@ -471,8 +450,8 @@
      "hector": 42,
      "mariana": 50,
      "javier": 58,
-     "diego": 56,
-     "ana": 66,
+     "diego": 47,
+     "ana": 42,
      "paty": 50,
      "roberto": 53,
      "sofia": 34
@@ -493,9 +472,9 @@
      "c-supernorte-castigo": "futuro",
      "d5-credito": "futuro",
      "d5-consejo": "futuro",
-     "c-ana-brilla": "futuro",
      "d6-gastos": "futuro",
      "d6-clima": "futuro",
+     "c-ana-renuncia": "futuro",
      "d7-sucesion": "futuro"
     },
     "timing": {
@@ -543,16 +522,16 @@
       357905,
       86400
      ],
-     "c-ana-brilla": [
-      365901,
-      43200
-     ],
      "d6-gastos": [
       431550,
       86400
      ],
      "d6-clima": [
       447549,
+      86400
+     ],
+     "c-ana-renuncia": [
+      462590,
       86400
      ],
      "d7-sucesion": [
@@ -564,7 +543,7 @@
      "d1-bienvenida": "a",
      "d1-hector": "b",
      "d2-supernorte": "c",
-     "d2-ana": "b"
+     "d2-ana": "c"
     },
     "change": null,
     "verdict": null,
@@ -573,13 +552,13 @@
      "best": 2
     },
     "profile": {
-     "archetype": "Estratega equilibrado",
+     "archetype": "Ejecutor directo",
      "axes": {
-      "horizonte": 100,
+      "horizonte": 0,
       "riesgo": 25,
-      "foco": 33,
-      "estilo": 13,
-      "conflicto": 100
+      "foco": 0,
+      "estilo": -25,
+      "conflicto": 50
      }
     },
     "badges": [
@@ -605,27 +584,27 @@
     "legendary": false,
     "seasonDay": 4,
     "kpis": {
-     "caja": 59,
-     "margen": 59,
-     "equipo": 62,
-     "clientes": 61,
-     "consejo": 61
+     "caja": 56,
+     "margen": 60,
+     "equipo": 65,
+     "clientes": 58,
+     "consejo": 60
     },
     "health": 60,
-    "xp": 435,
+    "xp": 425,
     "level": 2,
     "relations": {
      "ramiro": 42,
      "carla": 61,
      "lucia": 72,
-     "hector": 43,
-     "mariana": 55,
+     "hector": 40,
+     "mariana": 50,
      "javier": 50,
-     "diego": 64,
-     "ana": 74,
+     "diego": 55,
+     "ana": 50,
      "paty": 50,
-     "roberto": 37,
-     "sofia": 42
+     "roberto": 50,
+     "sofia": 34
     },
     "progress": {
      "done": 6,
@@ -643,10 +622,9 @@
      "c-supernorte-castigo": "futuro",
      "d5-credito": "futuro",
      "d5-consejo": "futuro",
-     "c-ana-brilla": "futuro",
-     "c-planta-accidente": "futuro",
      "d6-gastos": "futuro",
      "d6-clima": "futuro",
+     "c-ana-renuncia": "futuro",
      "c-piloto": "futuro",
      "d7-sucesion": "futuro"
     },
@@ -695,20 +673,16 @@
       357905,
       86400
      ],
-     "c-ana-brilla": [
-      365901,
-      43200
-     ],
-     "c-planta-accidente": [
-      376354,
-      21600
-     ],
      "d6-gastos": [
       431550,
       86400
      ],
      "d6-clima": [
       447549,
+      86400
+     ],
+     "c-ana-renuncia": [
+      462590,
       86400
      ],
      "c-piloto": [
@@ -724,8 +698,8 @@
      "d1-bienvenida": "a",
      "d1-hector": "b",
      "d2-supernorte": "c",
-     "d2-ana": "b",
-     "d3-planta": "b",
+     "d2-ana": "c",
+     "d3-planta": "c",
      "d3-diego": "b"
     },
     "change": null,
@@ -735,13 +709,13 @@
      "best": 3
     },
     "profile": {
-     "archetype": "Constructor visionario",
+     "archetype": "Estratega equilibrado",
      "axes": {
-      "horizonte": 50,
-      "riesgo": 38,
-      "foco": 10,
-      "estilo": 20,
-      "conflicto": 100
+      "horizonte": 33,
+      "riesgo": 17,
+      "foco": 17,
+      "estilo": 0,
+      "conflicto": 13
      }
     },
     "badges": [
@@ -771,27 +745,27 @@
     "legendary": false,
     "seasonDay": 5,
     "kpis": {
-     "caja": 61,
-     "margen": 57,
-     "equipo": 68,
-     "clientes": 57,
+     "caja": 55,
+     "margen": 62,
+     "equipo": 66,
+     "clientes": 61,
      "consejo": 61
     },
     "health": 61,
-    "xp": 615,
+    "xp": 625,
     "level": 2,
     "relations": {
-     "ramiro": 44,
-     "carla": 59,
-     "lucia": 74,
-     "hector": 48,
-     "mariana": 50,
-     "javier": 64,
-     "diego": 64,
-     "ana": 74,
+     "ramiro": 42,
+     "carla": 67,
+     "lucia": 86,
+     "hector": 38,
+     "mariana": 48,
+     "javier": 50,
+     "diego": 45,
+     "ana": 47,
      "paty": 50,
-     "roberto": 56,
-     "sofia": 37
+     "roberto": 55,
+     "sofia": 47
     },
     "progress": {
      "done": 8,
@@ -809,10 +783,9 @@
      "c-supernorte-castigo": "decidido",
      "d5-credito": "pendiente",
      "d5-consejo": "futuro",
-     "c-ana-brilla": "futuro",
-     "c-planta-accidente": "futuro",
      "d6-gastos": "futuro",
      "d6-clima": "futuro",
+     "c-ana-renuncia": "futuro",
      "c-piloto": "futuro",
      "d7-sucesion": "futuro"
     },
@@ -861,20 +834,16 @@
       357905,
       86400
      ],
-     "c-ana-brilla": [
-      365901,
-      43200
-     ],
-     "c-planta-accidente": [
-      376354,
-      21600
-     ],
      "d6-gastos": [
       431550,
       86400
      ],
      "d6-clima": [
       447549,
+      86400
+     ],
+     "c-ana-renuncia": [
+      462590,
       86400
      ],
      "c-piloto": [
@@ -890,12 +859,12 @@
      "d1-bienvenida": "a",
      "d1-hector": "b",
      "d2-supernorte": "c",
-     "d2-ana": "b",
-     "d3-planta": "b",
+     "d2-ana": "c",
+     "d3-planta": "c",
      "d3-diego": "b",
-     "d4-objetivos": "a",
-     "d4-sindicato": "b",
-     "c-supernorte-castigo": "b"
+     "d4-objetivos": "c",
+     "d4-sindicato": "a",
+     "c-supernorte-castigo": "a"
     },
     "change": null,
     "verdict": null,
@@ -904,13 +873,13 @@
      "best": 4
     },
     "profile": {
-     "archetype": "Constructor visionario",
+     "archetype": "Estratega equilibrado",
      "axes": {
-      "horizonte": 60,
-      "riesgo": 50,
+      "horizonte": 58,
+      "riesgo": 25,
       "foco": 25,
-      "estilo": 33,
-      "conflicto": 40
+      "estilo": 0,
+      "conflicto": 25
      }
     },
     "badges": [
@@ -934,7 +903,7 @@
    }
   },
   {
-   "after": 24,
+   "after": 22,
    "at": 1791643951048,
    "snapshot": {
     "company": "cumbre",
@@ -943,26 +912,26 @@
     "seasonDay": 6,
     "kpis": {
      "caja": 59,
-     "margen": 56,
-     "equipo": 66,
-     "clientes": 57,
-     "consejo": 70
+     "margen": 60,
+     "equipo": 62,
+     "clientes": 61,
+     "consejo": 67
     },
     "health": 62,
-    "xp": 860,
+    "xp": 770,
     "level": 3,
     "relations": {
-     "ramiro": 50,
-     "carla": 83,
-     "lucia": 98,
-     "hector": 35,
-     "mariana": 60,
-     "javier": 45,
-     "diego": 74,
-     "ana": 90,
+     "ramiro": 52,
+     "carla": 75,
+     "lucia": 89,
+     "hector": 38,
+     "mariana": 48,
+     "javier": 34,
+     "diego": 49,
+     "ana": 47,
      "paty": 50,
-     "roberto": 32,
-     "sofia": 34
+     "roberto": 49,
+     "sofia": 47
     },
     "progress": {
      "done": 10,
@@ -980,10 +949,9 @@
      "c-supernorte-castigo": "decidido",
      "d5-credito": "decidido",
      "d5-consejo": "decidido",
-     "c-ana-brilla": "decidido",
-     "c-planta-accidente": "decidido",
      "d6-gastos": "pendiente",
      "d6-clima": "futuro",
+     "c-ana-renuncia": "futuro",
      "c-piloto": "futuro",
      "d7-sucesion": "futuro"
     },
@@ -1032,20 +1000,16 @@
       357905,
       86400
      ],
-     "c-ana-brilla": [
-      365901,
-      43200
-     ],
-     "c-planta-accidente": [
-      376354,
-      21600
-     ],
      "d6-gastos": [
       431550,
       86400
      ],
      "d6-clima": [
       447549,
+      86400
+     ],
+     "c-ana-renuncia": [
+      462590,
       86400
      ],
      "c-piloto": [
@@ -1061,16 +1025,14 @@
      "d1-bienvenida": "a",
      "d1-hector": "b",
      "d2-supernorte": "c",
-     "d2-ana": "b",
-     "d3-planta": "b",
+     "d2-ana": "c",
+     "d3-planta": "c",
      "d3-diego": "b",
-     "d4-objetivos": "a",
-     "d4-sindicato": "b",
-     "c-supernorte-castigo": "b",
-     "d5-credito": "b",
-     "d5-consejo": "a",
-     "c-ana-brilla": "a",
-     "c-planta-accidente": "b"
+     "d4-objetivos": "c",
+     "d4-sindicato": "a",
+     "c-supernorte-castigo": "a",
+     "d5-credito": "c",
+     "d5-consejo": "a"
     },
     "change": null,
     "verdict": null,
@@ -1079,13 +1041,13 @@
      "best": 5
     },
     "profile": {
-     "archetype": "Arquitecto social",
+     "archetype": "Estratega equilibrado",
      "axes": {
-      "horizonte": 75,
-      "riesgo": 38,
-      "foco": 28,
-      "estilo": 33,
-      "conflicto": 21
+      "horizonte": 50,
+      "riesgo": 0,
+      "foco": 25,
+      "estilo": 0,
+      "conflicto": 29
      }
     },
     "badges": [
@@ -1112,7 +1074,7 @@
    }
   },
   {
-   "after": 28,
+   "after": 27,
    "at": 1791738885059,
    "snapshot": {
     "company": "cumbre",
@@ -1121,26 +1083,26 @@
     "seasonDay": 7,
     "kpis": {
      "caja": 59,
-     "margen": 58,
-     "equipo": 63,
-     "clientes": 58,
-     "consejo": 65
+     "margen": 60,
+     "equipo": 64,
+     "clientes": 63,
+     "consejo": 62
     },
-    "health": 61,
-    "xp": 985,
+    "health": 62,
+    "xp": 960,
     "level": 3,
     "relations": {
-     "ramiro": 34,
-     "carla": 91,
-     "lucia": 99,
-     "hector": 43,
-     "mariana": 52,
-     "javier": 45,
-     "diego": 64,
-     "ana": 90,
+     "ramiro": 36,
+     "carla": 83,
+     "lucia": 90,
+     "hector": 46,
+     "mariana": 48,
+     "javier": 34,
+     "diego": 45,
+     "ana": 63,
      "paty": 50,
-     "roberto": 35,
-     "sofia": 37
+     "roberto": 49,
+     "sofia": 50
     },
     "progress": {
      "done": 12,
@@ -1158,10 +1120,9 @@
      "c-supernorte-castigo": "decidido",
      "d5-credito": "decidido",
      "d5-consejo": "decidido",
-     "c-ana-brilla": "decidido",
-     "c-planta-accidente": "decidido",
      "d6-gastos": "decidido",
      "d6-clima": "decidido",
+     "c-ana-renuncia": "decidido",
      "c-piloto": "pendiente",
      "d7-sucesion": "futuro"
     },
@@ -1210,20 +1171,16 @@
       357905,
       86400
      ],
-     "c-ana-brilla": [
-      365901,
-      43200
-     ],
-     "c-planta-accidente": [
-      376354,
-      21600
-     ],
      "d6-gastos": [
       431550,
       86400
      ],
      "d6-clima": [
       447549,
+      86400
+     ],
+     "c-ana-renuncia": [
+      462590,
       86400
      ],
      "c-piloto": [
@@ -1239,18 +1196,17 @@
      "d1-bienvenida": "a",
      "d1-hector": "b",
      "d2-supernorte": "c",
-     "d2-ana": "b",
-     "d3-planta": "b",
+     "d2-ana": "c",
+     "d3-planta": "c",
      "d3-diego": "b",
-     "d4-objetivos": "a",
-     "d4-sindicato": "b",
-     "c-supernorte-castigo": "b",
-     "d5-credito": "b",
+     "d4-objetivos": "c",
+     "d4-sindicato": "a",
+     "c-supernorte-castigo": "a",
+     "d5-credito": "c",
      "d5-consejo": "a",
-     "c-ana-brilla": "a",
-     "c-planta-accidente": "b",
-     "d6-gastos": "b",
-     "d6-clima": "c"
+     "d6-gastos": "c",
+     "d6-clima": "c",
+     "c-ana-renuncia": "a"
     },
     "change": null,
     "verdict": null,
@@ -1259,13 +1215,13 @@
      "best": 6
     },
     "profile": {
-     "archetype": "Constructor visionario",
+     "archetype": "Estratega equilibrado",
      "axes": {
-      "horizonte": 56,
-      "riesgo": 39,
-      "foco": 20,
-      "estilo": 33,
-      "conflicto": 17
+      "horizonte": 50,
+      "riesgo": 8,
+      "foco": 40,
+      "estilo": 6,
+      "conflicto": 25
      }
     },
     "badges": [
@@ -1294,7 +1250,7 @@
    }
   },
   {
-   "after": 32,
+   "after": 31,
    "at": 1791759905181,
    "snapshot": {
     "company": "cumbre",
@@ -1303,26 +1259,26 @@
     "seasonDay": 7,
     "kpis": {
      "caja": 57,
-     "margen": 59,
-     "equipo": 68,
-     "clientes": 58,
-     "consejo": 70
+     "margen": 62,
+     "equipo": 67,
+     "clientes": 63,
+     "consejo": 59
     },
     "health": 62,
-    "xp": 1130,
+    "xp": 1085,
     "level": 4,
     "relations": {
-     "ramiro": 42,
-     "carla": 93,
-     "lucia": 86,
-     "hector": 33,
-     "mariana": 52,
-     "javier": 45,
-     "diego": 88,
-     "ana": 99,
+     "ramiro": 20,
+     "carla": 85,
+     "lucia": 77,
+     "hector": 43,
+     "mariana": 48,
+     "javier": 34,
+     "diego": 45,
+     "ana": 63,
      "paty": 50,
-     "roberto": 35,
-     "sofia": 34
+     "roberto": 49,
+     "sofia": 47
     },
     "progress": {
      "done": 13,
@@ -1340,10 +1296,9 @@
      "c-supernorte-castigo": "decidido",
      "d5-credito": "decidido",
      "d5-consejo": "decidido",
-     "c-ana-brilla": "decidido",
-     "c-planta-accidente": "decidido",
      "d6-gastos": "decidido",
      "d6-clima": "decidido",
+     "c-ana-renuncia": "decidido",
      "c-piloto": "decidido",
      "d7-sucesion": "decidido"
     },
@@ -1392,20 +1347,16 @@
       357905,
       86400
      ],
-     "c-ana-brilla": [
-      365901,
-      43200
-     ],
-     "c-planta-accidente": [
-      376354,
-      21600
-     ],
      "d6-gastos": [
       431550,
       86400
      ],
      "d6-clima": [
       447549,
+      86400
+     ],
+     "c-ana-renuncia": [
+      462590,
       86400
      ],
      "c-piloto": [
@@ -1421,20 +1372,19 @@
      "d1-bienvenida": "a",
      "d1-hector": "b",
      "d2-supernorte": "c",
-     "d2-ana": "b",
-     "d3-planta": "b",
+     "d2-ana": "c",
+     "d3-planta": "c",
      "d3-diego": "b",
-     "d4-objetivos": "a",
-     "d4-sindicato": "b",
-     "c-supernorte-castigo": "b",
-     "d5-credito": "b",
+     "d4-objetivos": "c",
+     "d4-sindicato": "a",
+     "c-supernorte-castigo": "a",
+     "d5-credito": "c",
      "d5-consejo": "a",
-     "c-ana-brilla": "a",
-     "c-planta-accidente": "b",
-     "d6-gastos": "b",
+     "d6-gastos": "c",
      "d6-clima": "c",
+     "c-ana-renuncia": "a",
      "c-piloto": "b",
-     "d7-sucesion": "a"
+     "d7-sucesion": "c"
     },
     "change": null,
     "verdict": null,
@@ -1443,13 +1393,13 @@
      "best": 7
     },
     "profile": {
-     "archetype": "Constructor visionario",
+     "archetype": "Estratega equilibrado",
      "axes": {
-      "horizonte": 60,
-      "riesgo": 45,
-      "foco": 20,
-      "estilo": 43,
-      "conflicto": 25
+      "horizonte": 50,
+      "riesgo": 21,
+      "foco": 40,
+      "estilo": 0,
+      "conflicto": 32
      }
     },
     "badges": [
@@ -1481,8 +1431,8 @@
    }
   },
   {
-   "after": 47,
-   "at": 1791760415181,
+   "after": 44,
+   "at": 1791760355181,
    "snapshot": {
     "company": "cumbre",
     "tier": 0,
@@ -1490,26 +1440,26 @@
     "seasonDay": 7,
     "kpis": {
      "caja": 55,
-     "margen": 59,
-     "equipo": 74,
-     "clientes": 58,
-     "consejo": 75
+     "margen": 62,
+     "equipo": 68,
+     "clientes": 63,
+     "consejo": 57
     },
-    "health": 64,
-    "xp": 1130,
+    "health": 61,
+    "xp": 1085,
     "level": 4,
     "relations": {
-     "ramiro": 42,
-     "carla": 93,
-     "lucia": 86,
-     "hector": 33,
-     "mariana": 52,
-     "javier": 45,
-     "diego": 88,
-     "ana": 99,
+     "ramiro": 20,
+     "carla": 85,
+     "lucia": 77,
+     "hector": 43,
+     "mariana": 48,
+     "javier": 34,
+     "diego": 45,
+     "ana": 63,
      "paty": 50,
-     "roberto": 35,
-     "sofia": 34
+     "roberto": 49,
+     "sofia": 47
     },
     "progress": {
      "done": 13,
@@ -1527,10 +1477,9 @@
      "c-supernorte-castigo": "decidido",
      "d5-credito": "decidido",
      "d5-consejo": "decidido",
-     "c-ana-brilla": "decidido",
-     "c-planta-accidente": "decidido",
      "d6-gastos": "decidido",
      "d6-clima": "decidido",
+     "c-ana-renuncia": "decidido",
      "c-piloto": "decidido",
      "d7-sucesion": "decidido"
     },
@@ -1579,20 +1528,16 @@
       357905,
       86400
      ],
-     "c-ana-brilla": [
-      365901,
-      43200
-     ],
-     "c-planta-accidente": [
-      376354,
-      21600
-     ],
      "d6-gastos": [
       431550,
       86400
      ],
      "d6-clima": [
       447549,
+      86400
+     ],
+     "c-ana-renuncia": [
+      462590,
       86400
      ],
      "c-piloto": [
@@ -1608,28 +1553,27 @@
      "d1-bienvenida": "a",
      "d1-hector": "b",
      "d2-supernorte": "c",
-     "d2-ana": "b",
-     "d3-planta": "b",
+     "d2-ana": "c",
+     "d3-planta": "c",
      "d3-diego": "b",
-     "d4-objetivos": "a",
-     "d4-sindicato": "b",
-     "c-supernorte-castigo": "b",
-     "d5-credito": "b",
+     "d4-objetivos": "c",
+     "d4-sindicato": "a",
+     "c-supernorte-castigo": "a",
+     "d5-credito": "c",
      "d5-consejo": "a",
-     "c-ana-brilla": "a",
-     "c-planta-accidente": "b",
-     "d6-gastos": "b",
+     "d6-gastos": "c",
      "d6-clima": "c",
+     "c-ana-renuncia": "a",
      "c-piloto": "b",
-     "d7-sucesion": "a"
+     "d7-sucesion": "c"
     },
     "change": {
-     "adopted": 8,
-     "share": 0.8,
+     "adopted": 5,
+     "share": 0.5,
      "weeksUsed": 24,
-     "credibility": 95,
+     "credibility": 86,
      "done": true,
-     "ok": true
+     "ok": false
     },
     "verdict": {
      "passed": true,
@@ -1648,13 +1592,13 @@
      "best": 7
     },
     "profile": {
-     "archetype": "Constructor visionario",
+     "archetype": "Estratega equilibrado",
      "axes": {
-      "horizonte": 60,
-      "riesgo": 45,
-      "foco": 20,
-      "estilo": 43,
-      "conflicto": 25
+      "horizonte": 50,
+      "riesgo": 21,
+      "foco": 40,
+      "estilo": 0,
+      "conflicto": 32
      }
     },
     "badges": [
@@ -1662,7 +1606,6 @@
      "racha3",
      "racha7",
      "puntual",
-     "gente",
      "lector"
     ],
     "dilemmas": {
@@ -1687,8 +1630,8 @@
    }
   },
   {
-   "after": 48,
-   "at": 1791760475181,
+   "after": 45,
+   "at": 1791760415181,
    "snapshot": {
     "company": "brasa",
     "tier": 1,
@@ -1702,7 +1645,7 @@
      "consejo": 64
     },
     "health": 61,
-    "xp": 1130,
+    "xp": 1085,
     "level": 4,
     "relations": {
      "ignacio": 50,
@@ -1740,47 +1683,47 @@
       79200
      ],
      "gb-d1-app": [
-      2073,
+      1550,
       79200
      ],
      "gb-d2-menu": [
-      64040,
+      54746,
       79200
      ],
      "gb-d2-propinas": [
-      74856,
+      70272,
       32400
      ],
      "gb-d3-brote": [
-      141399,
+      142855,
       18000
      ],
      "gb-d3-franquicia": [
-      160702,
+      160632,
       79200
      ],
      "gb-d4-carne": [
-      229210,
+      241099,
       79200
      ],
      "gb-d4-gerente": [
-      250037,
+      248506,
       50400
      ],
      "gb-d5-cdmx": [
-      315045,
+      317704,
       79200
      ],
      "gb-d6-dark": [
-      412875,
+      406165,
       79200
      ],
      "gb-d6-sucesion": [
-      427638,
+      431500,
       39600
      ],
      "gb-d7-consejo": [
-      491777,
+      493208,
       79200
      ]
     },
@@ -1792,13 +1735,13 @@
      "best": 7
     },
     "profile": {
-     "archetype": "Constructor visionario",
+     "archetype": "Estratega equilibrado",
      "axes": {
-      "horizonte": 60,
-      "riesgo": 45,
-      "foco": 20,
-      "estilo": 43,
-      "conflicto": 25
+      "horizonte": 50,
+      "riesgo": 21,
+      "foco": 40,
+      "estilo": 0,
+      "conflicto": 32
      }
     },
     "badges": [
@@ -1830,20 +1773,20 @@
       "company": "cumbre",
       "tier": 0,
       "passed": true,
-      "health": 64,
+      "health": 61,
       "answered": 100,
-      "xp": 745,
+      "xp": 700,
       "kpis": {
        "caja": 55,
-       "margen": 59,
-       "equipo": 74,
-       "clientes": 58,
-       "consejo": 75
+       "margen": 62,
+       "equipo": 68,
+       "clientes": 63,
+       "consejo": 57
       },
       "change": {
-       "adopted": 8,
+       "adopted": 5,
        "weeks": 24,
-       "ok": true
+       "ok": false
       }
      }
     ]
