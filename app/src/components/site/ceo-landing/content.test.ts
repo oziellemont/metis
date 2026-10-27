@@ -44,6 +44,35 @@ describe("landing de MÊTIS CEO", () => {
 
   it("las etapas coinciden con las del producto", () => {
     expect(C.PATH.stages.map((s) => s.name)).toEqual(STAGES.map((s) => s.name));
+    expect(C.PATH.stages.map((s) => s.es)).toEqual(STAGES.map((s) => s.es));
+  });
+
+  it("la carrera es una ruta: un punto de partida, un siguiente objetivo y el resto por desbloquear", () => {
+    const st = C.PATH.stages.map((s) => s.state);
+    expect(st[0]).toBe("inicio");
+    expect(st[1]).toBe("siguiente");
+    expect(st.slice(2).every((x) => x === "bloqueada")).toBe(true);
+    expect(C.PATH.stages.map((s) => s.n)).toEqual(["01", "02", "03", "04", "05", "06"]);
+    // Después de la última etapa solo se menciona lo que ya existe (modo Legendario).
+    expect(C.PATH.beyond.d).toContain("Legendario");
+  });
+
+  it("el mensaje de Héctor suena a una persona y la decisión tiene argumentos en las tres opciones", () => {
+    expect(C.DEMO.message.join(" ")).toContain("SuperNorte");
+    expect(C.DEMO.message.at(-1)).toBe("¿Cómo lo manejamos?");
+    // Aceptar ya no es obviamente malo: mejora algo más que una sola dimensión.
+    const ok = (id: string) => Object.values(C.DEMO.options.find((o) => o.id === id)!.effects).filter((n) => n > 0).length;
+    for (const id of ["aceptar", "negociar", "mantener"]) expect(ok(id)).toBeGreaterThanOrEqual(2);
+    const total = (id: string) => Object.values(C.DEMO.options.find((o) => o.id === id)!.effects).reduce((a: number, b) => a + b, 0);
+    const sums = ["aceptar", "negociar", "mantener"].map(total);
+    expect(Math.max(...sums) - Math.min(...sums)).toBeLessThanOrEqual(1);
+  });
+
+  it("la landing es más corta: ocho bloques y sin secciones repetidas", () => {
+    const page = readFileSync("src/app/simulador/page.tsx", "utf8");
+    expect((page.match(/<[A-Z]\w+Section \/>/g) ?? []).length).toBe(7);
+    expect(page).not.toMatch(/LearnSection|RhythmSection|WhoSection|AccessSection/);
+    expect(C.HERO.who).toContain("aspiran a dirigir");
   });
 
   it("no publica precio, prueba gratuita ni cancelación mientras no exista cobro", () => {
