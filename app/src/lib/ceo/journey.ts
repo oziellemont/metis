@@ -101,6 +101,8 @@ export interface Requirement {
   missing?: Competency[];
   /** La mecánica todavía no existe en la app (se construye en una fase posterior). */
   soon?: boolean;
+  /** Dónde se cumple este requisito dentro de la app. */
+  href?: string;
 }
 
 export function requirementsFor(target: number, s: CeoState, now = nowOf(s), m: Mastery = masteryOf(s, now)): Requirement[] {
@@ -111,7 +113,7 @@ export function requirementsFor(target: number, s: CeoState, now = nowOf(s), m: 
   if (rule.passed) out.push({ id: "passed", group: "empresas", label: "Empresas aprobadas", have: f.passed, need: rule.passed, ok: f.passed >= rule.passed });
   if (rule.changeOk) out.push({ id: "change", group: "retos", label: "Reto de cambio logrado", have: f.changeOk, need: rule.changeOk, ok: f.changeOk >= rule.changeOk });
   if (rule.highTier) out.push({ id: "highTier", group: "retos", label: "Empresa aprobada con exigencia alta", have: f.highTier, need: rule.highTier, ok: f.highTier >= rule.highTier });
-  if (rule.board) out.push({ id: "board", group: "retos", label: "Junta ante el Consejo", have: f.board ? 1 : 0, need: 1, ok: f.board, soon: true });
+  if (rule.board) out.push({ id: "board", group: "retos", label: "Junta ante el Consejo", have: f.board ? 1 : 0, need: 1, ok: f.board, href: "/ceo/junta" });
   if (rule.legendary) out.push({ id: "legendary", group: "retos", label: "Empresa internacional o modo Legendario", have: Math.min(1, f.legendary), need: 1, ok: f.legendary >= 1 });
   for (const a of rule.atLeast ?? []) {
     const have = countAtLeast(m, a.min);
@@ -192,7 +194,7 @@ export function appoint(s: CeoState, now = nowOf(s)): CeoState {
   return { ...e, journey: { ...j, stage: v.next.stage, appointments: [...j.appointments, { stage: v.next.stage, at: now }] } };
 }
 
-/** Resultado de la junta ante el Consejo (la mecánica de la junta llega en una fase posterior). */
+/** Resultado de la Junta ante el Consejo (ver board.ts). Una vez superada, queda superada. */
 export function recordBoard(s: CeoState, passed: boolean, now = nowOf(s)): CeoState {
   const e = enrollJourney(s, now);
   if (e.journey!.board?.passed) return e;

@@ -10,7 +10,7 @@ import { advance as advanceFn, decide as decideFn, entries as entriesFn, healthO
 import { aliasOf, answerDilemma as answerDilemmaFn, casesProgress, changeOpen, changeSimOf, dilemmaOfDay } from "@/lib/ceo/engine";
 import type { Dilemma } from "@/lib/ceo/dilemmas";
 import { OFFERED_TIER, sanitizeDiagnostic, sanitizeProfile, snoozeNudge, type InitialDiagnostic, type ProfessionalProfile } from "@/lib/ceo/profile";
-import { appoint as appointFn, enrollJourney, journeyOf, STAGES, type JourneyView } from "@/lib/ceo/journey";
+import { appoint as appointFn, recordBoard as recordBoardFn, enrollJourney, journeyOf, STAGES, type JourneyView } from "@/lib/ceo/journey";
 import { masteryOf, type Mastery } from "@/lib/ceo/mastery";
 import { appEnvOf, testToolsVisible } from "@/lib/ceo/flags";
 import { closeChange as closeChangeFn, playLever as playLeverFn, relationsOf, startChange as startChangeFn } from "@/lib/ceo/relations";
@@ -77,6 +77,8 @@ interface Ctx {
   mastery: Mastery;
   /** Recibe el nombramiento si ya cumples todo. Devuelve el nombre de la nueva etapa (o null). */
   appoint: () => string | null;
+  /** Guarda el resultado de la Junta ante el Consejo (no toca KPI ni la partida). */
+  recordBoard: (passed: boolean) => void;
   /** Mostrar herramientas de prueba (adelantar reloj). Ver lib/ceo/flags.ts. */
   testTools: boolean;
   reset: () => void;
@@ -236,6 +238,7 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
     setS({ ...n, savedAt: Date.now() });
     return STAGES[n.journey!.stage].name;
   }, [s]);
+  const recordBoard = useCallback((passed: boolean) => setS((p) => { const n = recordBoardFn(p, passed, nowOf(p)); return n === p ? p : { ...n, savedAt: Date.now() }; }), []);
   const saveProfile = useCallback((pf: ProfessionalProfile) => setS((p) => { const v = sanitizeProfile(pf); return v ? { ...p, profile: v, savedAt: Date.now() } : p; }), []);
   const saveDiagnostic = useCallback((d: InitialDiagnostic) => setS((p) => { const v = sanitizeDiagnostic(d); return v ? { ...p, diagnostic: v, savedAt: Date.now() } : p; }), []);
   const snoozeProfile = useCallback(() => setS((p) => ({ ...p, profileNudge: snoozeNudge(p.profileNudge, Date.now()), savedAt: Date.now() })), []);
@@ -244,7 +247,7 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
   const value: Ctx = {
     ready, s, now, pack, rules: rulesOf(s.tier), verdict, entries, inbox, pending, kpis: k, health: healthOf(k), xp, level: levelOf(xp), streak, day: seasonDay(s, now), seasonDone, nextArrival,
     relations, changeOpen: changeOpen(s, now), cases: casesProgress(s, now, entries), change, startChange, playLever, closeChange,
-    user, synced, toast, dismissToast: () => setToast(null), start, advance, switchCompany, decide, markRead, completeLesson, dilemma, answerDilemma, updateSettings, skipNext, testTools, reset, journey, mastery, appoint, saveProfile, saveDiagnostic, snoozeProfile,
+    user, synced, toast, dismissToast: () => setToast(null), start, advance, switchCompany, decide, markRead, completeLesson, dilemma, answerDilemma, updateSettings, skipNext, testTools, reset, journey, mastery, appoint, recordBoard, saveProfile, saveDiagnostic, snoozeProfile,
   };
   return <C.Provider value={value}>{children}</C.Provider>;
 }

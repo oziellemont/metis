@@ -1,6 +1,7 @@
 "use client";
 import clsx from "clsx";
-import { Check, Lock } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, Check, Lock } from "lucide-react";
 import { ARENA, STAGES, type JourneyView, type Requirement } from "@/lib/ceo/journey";
 import { COMPETENCY_IDS, competencyById, type Mastery } from "@/lib/ceo/mastery";
 
@@ -31,7 +32,7 @@ export function StageTrack({ stage, dark, compact }: { stage: number; dark?: boo
 /** Tarjeta de un requisito del siguiente nombramiento. */
 export function RequirementTile({ r, m, dark }: { r: Requirement; m: Mastery; dark?: boolean }) {
   const pct = Math.max(0, Math.min(100, Math.round((r.have / Math.max(1, r.need)) * 100)));
-  const hint = r.soon ? "Llega en una próxima versión." : r.ok ? "Cumplido." : r.missing?.length ? `Practica ${r.missing.map((c) => m[c].name.toLowerCase()).join(", ")}.` : r.group === "constancia" ? "Juega y estudia cada día." : "Sigue dirigiendo.";
+  const hint = r.soon ? "Llega en una próxima versión." : r.ok ? "Cumplido." : r.id === "board" ? "Tres momentos ante el consejo, unos 10 minutos." : r.missing?.length ? `Practica ${r.missing.map((c) => m[c].name.toLowerCase()).join(", ")}.` : r.group === "constancia" ? "Juega y estudia cada día." : "Sigue dirigiendo.";
   return (
     <div className={clsx("rounded-2xl p-3.5", dark ? "bg-white/10" : "border border-slate-100")}>
       <div className={clsx("flex items-center justify-between gap-2 text-[11px]", dark ? "text-white/60" : "text-slate-500")}>
@@ -43,6 +44,9 @@ export function RequirementTile({ r, m, dark }: { r: Requirement; m: Mastery; da
         <div className={clsx("h-full rounded-full transition-all duration-700", r.ok ? "bg-mint" : dark ? "bg-white/80" : "bg-gradient-to-r from-indigo-light to-indigo")} style={{ width: `${pct}%` }} />
       </div>
       <div className={clsx("mt-2 text-[11px]", dark ? "text-white/50" : "text-slate-400")}>{hint}</div>
+      {r.href && !r.ok && !r.soon && (
+        <Link href={r.href} className={clsx("mt-2 inline-flex items-center gap-1 text-xs font-semibold", dark ? "text-white hover:text-white/80" : "text-indigo hover:text-indigo/80")}>Ir a la junta <ArrowRight size={13} /></Link>
+      )}
     </div>
   );
 }
