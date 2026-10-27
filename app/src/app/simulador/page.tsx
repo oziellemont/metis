@@ -1,6 +1,6 @@
 /**
  * Landing de MÊTIS CEO (www.metis.ceo; el middleware reescribe «/» hacia aquí).
- * Narrativa: entiendo qué es → pruebo una decisión → veo por qué es distinto → mi camino → empiezo.
+ * Narrativa: entiendo qué es → pruebo una decisión → cómo se vive → por qué es distinto → mi camino → empiezo.
  * Aislada del simulador: la demo vive en memoria y no usa el motor, la partida ni la cuenta.
  * Copy y estado real de cada función en components/site/ceo-landing/content.ts.
  */
@@ -8,7 +8,8 @@ import type { Metadata } from "next";
 import { ArrowDown } from "lucide-react";
 import { Header } from "@/components/site/ceo-landing/Header";
 import { FirstDecision } from "@/components/site/ceo-landing/FirstDecision";
-import { AccessSection, CloseSection, DiffSection, FaqSection, Footer, HowSection, LearnSection, PathSection, PhilosophySection, RhythmSection, RippleSection, WhoSection } from "@/components/site/ceo-landing/Sections";
+import { TryButton } from "@/components/site/ceo-landing/TryButton";
+import { CloseSection, DiffSection, FaqSection, Footer, HowSection, PathSection, PhilosophySection, RippleSection } from "@/components/site/ceo-landing/Sections";
 import { HERO, SEO } from "@/components/site/ceo-landing/content";
 import { CEO_URL } from "@/lib/site";
 
@@ -33,10 +34,11 @@ export default function CeoLanding() {
               <h1 id="hero-title" className="mt-4 text-[40px] leading-[1.06] sm:text-6xl sm:leading-[1.04] font-semibold tracking-tight">{HERO.title}</h1>
               <p className="mt-5 text-[17px] sm:text-lg leading-relaxed text-white/75 max-w-xl">{HERO.body}</p>
               <div className="mt-8 flex flex-wrap items-center gap-3">
-                <a href="#decision" className="btn bg-mint text-white hover:bg-mint-light !px-5 !py-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">{HERO.primary} <ArrowDown size={16} aria-hidden /></a>
+                <TryButton className="btn bg-mint text-white hover:bg-mint-light !px-5 !py-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">{HERO.primary} <ArrowDown size={16} aria-hidden /></TryButton>
                 <a href="#como" className="btn bg-white/10 text-white hover:bg-white/20 !px-5 !py-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">{HERO.secondary}</a>
               </div>
               <p className="mt-4 text-[13px] text-white/50">{HERO.note}</p>
+              <p className="mt-10 max-w-md border-l-2 border-mint/60 pl-4 text-[15px] leading-relaxed text-white/70">{HERO.who}</p>
             </div>
             <FirstDecision />
           </section>
@@ -44,12 +46,8 @@ export default function CeoLanding() {
         <RippleSection />
         <HowSection />
         <DiffSection />
-        <LearnSection />
         <PathSection />
-        <RhythmSection />
-        <WhoSection />
         <PhilosophySection />
-        <AccessSection />
         <FaqSection />
         <CloseSection />
       </main>

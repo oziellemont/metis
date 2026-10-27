@@ -50,6 +50,7 @@ export const HERO = {
   primary: "Probar una decisión",
   secondary: "Cómo funciona",
   note: "Sin registro. Tarda un minuto.",
+  who: "Para quienes aspiran a dirigir, para quienes ya lideran y para quienes creen que siempre hay algo más que aprender.",
 };
 
 /* ---------------- Demo «Tu primera decisión» ---------------- */
@@ -78,43 +79,45 @@ export const DEMO = {
   label: "Tu primera decisión",
   from: { name: "Héctor Salinas", initials: "HS", role: "Director Comercial · Botanas Cumbre", channel: "WhatsApp", time: "9:14" },
   message: [
-    "Nuestro cliente más grande está pidiendo otro 12% de descuento.",
-    "Dice que, si no aceptamos hoy, cambia de proveedor. Representa casi una cuarta parte de las ventas.",
+    "Necesito que revisemos algo urgente.",
+    "SuperNorte nos está pidiendo otro 12% de descuento. Dicen que tienen una oferta de la competencia y quieren respuesta hoy.",
+    "Es casi una cuarta parte de nuestras ventas.",
+    "¿Cómo lo manejamos?",
   ],
   facts: [
-    ["Ventas con este cliente", "24% del total"],
+    ["Ventas con SuperNorte", "24% del total"],
     ["Margen de la cuenta hoy", "11%"],
-    ["Con 12% de descuento", "La cuenta deja de ganar (≈ −1%)"],
-    ["Lo que también sabes", "Otra cadena pidió cotización la semana pasada"],
+    ["Si das el 12%", "La cuenta queda sin margen"],
+    ["Si se va", "La planta queda al 76% de su capacidad"],
   ] as [string, string][],
-  ask: "¿Qué harías?",
+  ask: "¿Qué le respondes a Héctor?",
   options: [
     {
       id: "aceptar",
       label: "Aceptar el descuento",
-      detail: "Proteges la cuenta y el volumen de la planta.",
-      now: "Firmas hoy. El cliente se queda y la planta mantiene su ritmo.",
-      later: "La cuenta deja de ser rentable. Finanzas te pide recortar en otra parte, y el cliente aprendió que presionar funciona.",
-      tradeoff: "Compraste tranquilidad con margen. La próxima negociación empieza desde un precio más bajo.",
-      effects: { finanzas: -2, personas: 0, clientes: 1, operacion: 1, confianza: -1 },
+      detail: "Conservas una cuarta parte de las ventas y la planta sigue llena. Ese volumen ayuda a pagar los costos fijos.",
+      now: "Firmas hoy. Héctor respira, los turnos de la planta no se tocan y nadie tiene que explicar por qué se fue el cliente más grande.",
+      later: "La cuenta ya no deja margen y Finanzas te pide recortar en otra parte. SuperNorte aprendió que presionar funciona.",
+      tradeoff: "Compraste estabilidad para la planta y el equipo con margen. La próxima negociación empieza desde un precio más bajo.",
+      effects: { finanzas: -2, personas: 1, clientes: 1, operacion: 1, confianza: -1 },
     },
     {
       id: "negociar",
       label: "Negociar condiciones",
-      detail: "Ofreces menos descuento a cambio de volumen y plazo.",
-      now: "Propones 5% atado a un año de volumen mínimo. El cliente no firma hoy: pide una semana.",
-      later: "Héctor queda en medio y necesita tu respaldo. Si el acuerdo sale, proteges margen y planeas producción con más certeza.",
+      detail: "Ofreces 5% a cambio de un año de volumen mínimo. Proteges parte del margen y ganas tiempo, no certeza.",
+      now: "SuperNorte no firma hoy: pide una semana. Héctor tiene que volver con una contrapropuesta y sostenerla frente a su compradora.",
+      later: "Si el acuerdo sale, proteges margen y planeas producción con más certeza. Si no, perdiste una semana y Héctor quedó expuesto.",
       tradeoff: "Cambiaste la certeza de hoy por un mejor acuerdo, con el riesgo de que no llegue.",
-      effects: { finanzas: 1, personas: -1, clientes: -1, operacion: 1, confianza: 1 },
+      effects: { finanzas: 1, personas: -1, clientes: -1, operacion: 0, confianza: 1 },
     },
     {
       id: "mantener",
       label: "Mantener el precio",
-      detail: "Defiendes el valor de tu producto y aceptas el riesgo.",
-      now: "Proteges el margen y das una señal clara: el precio no se mueve por presión.",
-      later: "El cliente reduce pedidos el próximo mes mientras prueba a otro proveedor. La planta queda con capacidad ociosa y Héctor siente que lo dejaste solo.",
-      tradeoff: "Apostaste a que tu producto vale más para ellos de lo que dicen. Si te equivocas, el costo llega en volumen.",
-      effects: { finanzas: 1, personas: -1, clientes: -2, operacion: -1, confianza: 1 },
+      detail: "Otra cadena pidió cotización la semana pasada. Apuestas a que tu producto vale lo que cobras.",
+      now: "Proteges el margen completo y das una señal clara: el precio no se mueve por presión.",
+      later: "SuperNorte reduce pedidos el próximo mes mientras prueba a otro proveedor. La planta queda con capacidad ociosa y Héctor siente que lo dejaste solo.",
+      tradeoff: "Apostaste a que tu producto vale más para ellos de lo que dicen. Si te equivocas, el costo llega en volumen y en tu equipo.",
+      effects: { finanzas: 2, personas: -1, clientes: -2, operacion: -1, confianza: 1 },
     },
   ] as DemoOption[],
   disclaimer: "Ejemplo ilustrativo, no conectado a tu cuenta. En el simulador, el resultado también depende de lo que decidiste antes y de cómo está tu empresa.",
@@ -158,16 +161,20 @@ export const RIPPLE = {
   ] as RippleOption[],
 };
 
-/* ---------------- Cómo funciona ---------------- */
+/* ---------------- Cómo funciona (incluye el ritmo diario) ---------------- */
 export const HOW = {
   title: "Tu siguiente reto puede llegar en cualquier momento.",
-  body: "Como en una empresa real, las decisiones no siempre esperan a que estés listo.",
+  body: "Como en una empresa real, las decisiones no siempre esperan a que estés listo. Unos minutos al día bastan.",
   steps: [
-    { n: "01", t: "Recibes una situación", d: "Un cliente reclama. Tu equipo necesita una respuesta. El presupuesto no alcanza. Algo está pasando en tu empresa." },
+    { n: "01", t: "Recibes una situación", d: "Un cliente reclama, tu equipo necesita una respuesta o el presupuesto no alcanza." },
     { n: "02", t: "Tomas una decisión", d: "Revisas el contexto, eliges un camino y asumes sus consecuencias. No siempre tendrás toda la información." },
     { n: "03", t: "Aprendes de lo que ocurre", d: "Ves cómo reaccionan las personas, qué cambia en el negocio y qué podrías considerar la próxima vez." },
   ],
-  footnote: "Los asuntos llegan dentro del horario que tú eliges. Si prefieres, puedes recibir todo el día de una vez.",
+  rhythm: [
+    { t: "Tu horario", d: "Eliges desde qué hora y hasta qué hora te escribe tu equipo. Si prefieres, recibes todo el día de una vez." },
+    { t: "En el celular o la computadora", d: "Funciona en el navegador. Si conectas tu correo, tu avance te sigue." },
+    { t: "Una racha que ayuda", d: "Sirve para crear el hábito, no para presionarte. Si un día no entras, algunos asuntos vencen, como en cualquier empresa." },
+  ],
 };
 
 /* ---------------- Diferenciación (fragmentos reales de Botanas Cumbre) ---------------- */
@@ -192,77 +199,43 @@ export const DIFF = {
       frag: { kind: "message" as const, title: "Héctor Salinas", text: "Me enteré de lo de SuperNorte. A Sofía la conozco desde que era practicante…" },
     },
   ],
+  after: {
+    title: "Al cerrar cada caso",
+    items: [
+      "Ves qué pasó, por qué y qué otra lectura era posible",
+      "Una Nota CEO y lecciones breves en mêtis Academy",
+      "Los siguientes casos se ordenan según lo que te conviene reforzar",
+    ],
+    note: "La mejor forma de negociar con fuerza no es sonar fuerte; es construir alternativas antes de necesitarlas.",
+  },
 };
 
-/* ---------------- Aprendizaje continuo ---------------- */
-export const LEARN = {
-  title: "Cada decisión te enseña algo. La siguiente te exige un poco más.",
-  body: "A medida que avanzas, los retos cambian. Pasas de resolver problemas de equipo a tomar decisiones que afectan operaciones, resultados, estrategia y crecimiento.",
-  pillars: [
-    { t: "Práctica", d: "Decisiones aplicadas dentro de empresas simuladas, con personas, números y tiempos que importan." },
-    { t: "Reflexión", d: "Al cerrar cada caso ves qué pasó, por qué y qué otra lectura era posible. Sin una sola respuesta correcta." },
-    { t: "Progresión", d: "Los casos se ordenan según tu experiencia y lo que te conviene reforzar. Las empresas siguientes exigen más." },
-  ],
-  today: [
-    "Explicación al cerrar cada caso, con una Nota CEO",
-    "Lecciones breves en mêtis Academy",
-    "Orden de casos ajustado a tu perfil, si lo completas",
-  ],
-};
-
-/* ---------------- Camino profesional ---------------- */
+/* ---------------- Camino profesional (ruta visual) ---------------- */
+export type StageState = "inicio" | "siguiente" | "bloqueada";
 export const PATH = {
   title: "Una carrera que crece contigo.",
-  body: "No empiezas tomando decisiones sobre adquisiciones internacionales. Primero aprendes a dirigir personas, recursos y resultados. Después, el alcance de tus decisiones crece.",
-  roleNote: "En la simulación diriges una empresa desde el primer día. Tu etapa es otra cosa: refleja el criterio que has demostrado, empieza en Emerging Leader y solo cambia con un nombramiento.",
+  body: "No empiezas decidiendo adquisiciones internacionales. Primero aprendes a dirigir personas, recursos y resultados. Después, el alcance de tus decisiones crece.",
+  stateLabel: { inicio: "Aquí empiezas", siguiente: "Siguiente objetivo", bloqueada: "Por desbloquear" } as Record<StageState, string>,
   stages: [
-    { n: "I", name: "Emerging Leader", es: "Líder emergente", learn: "Equipos, prioridades y comunicación" },
-    { n: "II", name: "Functional Manager", es: "Gerente funcional", learn: "Presupuestos, indicadores y ejecución" },
-    { n: "III", name: "Business Unit Director", es: "Director de unidad de negocio", learn: "Rentabilidad, estrategia y talento" },
-    { n: "IV", name: "Chief Operating Officer", es: "Director de operaciones", learn: "Integración de operaciones y áreas" },
-    { n: "V", name: "Chief Executive Officer", es: "Director General", learn: "Capital, cultura, crecimiento y riesgo" },
-    { n: "VI", name: "Global CEO", es: "CEO global", learn: "Mercados internacionales, adquisiciones y gobierno corporativo" },
-  ],
-  beyond: "La meta no es terminar las lecciones. Es seguir desarrollando criterio.",
-  beyondNote: "Cada etapa trae empresas más exigentes, juntas de consejo y crisis que ponen a prueba lo que aprendiste.",
-};
-
-/* ---------------- Ritmo ---------------- */
-export const RHYTHM = {
-  title: "Unos minutos al día pueden cambiar cómo piensas.",
-  body: "No necesitas apartar una hora para estudiar. Entra, revisa qué está pasando en tu empresa y toma una decisión. Lo importante es volver, reflexionar y seguir practicando.",
-  items: [
-    { t: "Tu horario", d: "Eliges desde qué hora y hasta qué hora te escribe tu equipo." },
-    { t: "En el celular o la computadora", d: "Funciona en el navegador. Si conectas tu correo, tu avance te sigue." },
-    { t: "Una racha que ayuda", d: "Sirve para crear el hábito, no para presionarte. Si un día no entras, algunos asuntos vencen, como en cualquier empresa, y mañana sigues." },
-  ],
-};
-
-/* ---------------- Para quién ---------------- */
-export const WHO = {
-  title: "No necesitas ser CEO para empezar.",
-  body: "Solo necesitas curiosidad por entender cómo se toman las decisiones que mueven una empresa.",
-  profiles: [
-    { t: "Si estás construyendo tu carrera", d: "Empieza a desarrollar una perspectiva más amplia que la de tu puesto actual." },
-    { t: "Si ya diriges un equipo o un área", d: "Practica decisiones que conectan personas, operación y resultados." },
-    { t: "Si emprendes o diriges un negocio", d: "Enfrenta situaciones que te ayuden a cuestionar cómo decides." },
-  ],
+    { n: "01", name: "Emerging Leader", es: "Líder emergente", learn: "Equipos y prioridades", state: "inicio" },
+    { n: "02", name: "Functional Manager", es: "Gerente funcional", learn: "Presupuestos y ejecución", state: "siguiente" },
+    { n: "03", name: "Business Unit Director", es: "Director de unidad de negocio", learn: "Estrategia y rentabilidad", state: "bloqueada" },
+    { n: "04", name: "Chief Operating Officer", es: "Director de operaciones", learn: "Operaciones y organización", state: "bloqueada" },
+    { n: "05", name: "Chief Executive Officer", es: "Director General", learn: "Crecimiento y riesgo", state: "bloqueada" },
+    { n: "06", name: "Global CEO", es: "CEO global", learn: "Mercados y gobernanza", state: "bloqueada" },
+  ] as { n: string; name: string; es: string; learn: string; state: StageState }[],
+  how: "Cada ascenso es un nombramiento: lo ganas aprobando empresas, demostrando dominio en tus competencias y manteniendo la constancia. En la simulación diriges una empresa desde el primer día; tu etapa refleja el criterio que has demostrado.",
+  beyond: { t: "Después de Global CEO", d: "La meta no es terminar. Sigues dirigiendo empresas en modo Legendario, con golpes más duros y una línea de aprobación más alta." },
 };
 
 /* ---------------- Filosofía ---------------- */
 export const PHILOSOPHY = {
   title: "Dirigir es una responsabilidad. Y vale la pena prepararse para ella.",
   body: "Detrás de cada decisión hay personas, recursos y consecuencias. MÊTIS nace de una idea sencilla: el criterio de un líder puede desarrollarse antes de que llegue el momento de ponerlo a prueba.",
+  eyebrow: "Por qué creamos MÊTIS",
+  story: "Trabajando en estrategia, operaciones y dirección de proyectos vi lo mismo una y otra vez: el criterio para decidir casi siempre se aprende tarde, con una decisión real y a un costo alto. Construí MÊTIS para que ese aprendizaje pueda empezar antes.",
   author: "Oziel Leal Montemayor",
   authorRole: "Creador de MÊTIS",
-};
-
-/* ---------------- Acceso (no hay cobro operativo: no se publica precio) ---------------- */
-export const ACCESS = {
-  title: "Empieza hoy, sin tarjeta.",
-  body: "No necesitas cuenta para empezar. Tu avance se guarda en este navegador; si conectas tu correo, lo llevas a cualquier dispositivo y apareces en el ranking.",
-  points: ["Sin tarjeta y sin formulario largo", "Tres empresas, que se abren conforme avanzas", "Lecciones de mêtis Academy", "Avisos por correo, si los activas"],
-  cta: "Comenzar en MÊTIS",
 };
 
 /* ---------------- FAQ ---------------- */
@@ -271,13 +244,20 @@ export const FAQ: { q: string; a: string }[] = [
   { q: "¿Cuánto tiempo necesito al día?", a: "Unos minutos. Cada asunto se lee y se decide en poco tiempo, y tú eliges el horario en que llegan." },
   { q: "¿Qué tipo de decisiones voy a tomar?", a: "De personas, clientes, finanzas, operación, estrategia y ética. Casi ninguna tiene una respuesta perfecta: cada opción tiene un costo." },
   { q: "¿Las decisiones afectan lo que sucede después?", a: "Sí. Mueven los indicadores de tu empresa y cambian cómo te responde cada persona en los casos siguientes." },
+  { q: "¿Necesito crear una cuenta?", a: "No para empezar. Tu avance se guarda en este navegador; si conectas tu correo, lo llevas a cualquier dispositivo y apareces en el ranking." },
   { q: "¿Puedo usar MÊTIS desde mi celular?", a: "Sí, desde el navegador. No necesitas instalar nada. Si conectas tu correo, continúas en cualquier dispositivo." },
   { q: "¿Tiene costo?", a: "Puedes empezar hoy sin tarjeta." },
 ];
 
 /* ---------------- Cierre y pie ---------------- */
-export const CLOSE = { title: "La próxima decisión es tuya.", body: "Empieza a desarrollar el criterio para enfrentarla.", cta: "Comenzar en MÊTIS" };
+/* Cierre con el acceso (no hay cobro operativo: no se publica precio). */
+export const CLOSE = {
+  title: "La próxima decisión es tuya.",
+  body: "Empieza hoy, sin tarjeta, y desarrolla el criterio para enfrentarla.",
+  points: ["Sin tarjeta ni formulario largo", "Tres empresas que se abren conforme avanzas", "Lecciones de mêtis Academy", "Avisos por correo, si los activas"],
+  cta: "Comenzar en MÊTIS",
+};
 export const FOOTER = { tagline: "Simulador de decisiones ejecutivas. Dirigir se aprende decidiendo.", place: "Monterrey, N.L., México" };
 
 /** Frases que no queremos en la landing (tono). Se revisan en las pruebas. */
-export const BANNED = ["revoluciona", "desbloquea", "transforma tu", "potencia tus", "siguiente nivel", "definitiva", "disruptiv", "game changer", "vanguardia", "powered by", "cancela cuando quieras", "prueba gratis", "próximamente", "en preparación", "más adelante", "muy pronto"];
+export const BANNED = ["revoluciona", "desbloquea tu", "transforma tu", "potencia tus", "siguiente nivel", "definitiva", "disruptiv", "game changer", "vanguardia", "powered by", "cancela cuando quieras", "prueba gratis", "próximamente", "en preparación", "más adelante", "muy pronto"];

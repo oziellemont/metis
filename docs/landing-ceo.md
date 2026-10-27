@@ -68,3 +68,33 @@ Nada de «próximamente», «en preparación» ni promesas a futuro en la app ni
 
 - **Hoy:** sin tarjetas propias. La Boardroom Crisis, el reto final y la Junta aparecen como un asunto más en «Esperando tu decisión» (`lib/ceo/today.ts`). El dilema del día sale en ventana hasta que se contesta; «Recordar más tarde» lo pospone 2 horas.
 - **Boardroom Crisis** (`/ceo/crisis`, `lib/ceo/crisis.ts`): sesión extraordinaria del consejo, una por empresa, desde el día 3 de la temporada. Tres decisiones encadenadas con 90 segundos cada una; si se acaba el tiempo, decide el consejo. Parte de los indicadores del día y el golpe crece con la exigencia. Resultado: contenida (60 XP), con daños (30) o rebasado (10). No toca los indicadores de la temporada ni las partidas doradas; se guarda en `s.crises`.
+
+## Versión 3 (evaluación del fundador)
+
+La página pasó de 12 bloques a 8, unos 22 a 24% más corta (13,754 → 10,763 px en móvil y 9,028 → 6,833 px en escritorio). El orden ahora es: Hero con la primera decisión, Efectos cruzados, Cómo funciona, La experiencia, Tu camino, Filosofía, Preguntas y Cierre.
+
+**Secciones que se fusionaron**
+- «A tu ritmo» quedó dentro de «Cómo funciona», que muestra la pantalla Hoy real.
+- «Aprendizaje continuo» quedó dentro de «La experiencia», como el bloque «Al cerrar cada caso».
+- «Para quién es» se volvió una frase en el hero.
+- «Acceso» se unió al cierre (`#acceso`).
+- La pregunta «¿Necesito crear una cuenta?» pasó al FAQ.
+
+**Primera decisión**
+- Héctor ahora escribe con su propia voz, como un mensaje real.
+- Las tres opciones tienen argumentos creíbles. Aceptar protege el volumen, la planta y al equipo; ninguna opción queda más de un punto por encima de otra en el total.
+- «Probar una decisión» resalta el caso y deja el foco en la primera opción. Solo desplaza la página si el caso no está a la vista.
+- Al elegir, el resultado se lleva a la vista.
+
+**Tu camino**
+- Es una ruta visual: vertical en móvil y horizontal en escritorio.
+- Tiene un punto de partida (01), un siguiente objetivo (02) y las demás etapas por desbloquear.
+- Después de Global CEO solo se menciona el modo Legendario, que ya existe. No se menciona Arena.
+
+**Filosofía**
+- Se agregó «Por qué creamos MÊTIS», contado de forma sobria y sin credenciales.
+
+**Lo que no se tomó de la evaluación**
+- No se muestra «Disponible hoy / Próximamente».
+- La fila «∞ The Executive Arena» se sustituyó por el modo Legendario.
+- Las dos cosas siguen la regla de no anunciar nada que no exista.
