@@ -115,3 +115,8 @@ El perfil es uno por persona (`metis.profiles`) y puede pertenecer a varias empr
 - Barra lateral: etapa y «x de y requisitos». Academy: tarjeta de enfoque con la competencia que frena el siguiente nombramiento.
 - Ranking, resumen diario y correo de temporada muestran la etapa. El bloqueo de dilemas y lecciones sigue por XP (constancia).
 - Se quitaron todos los emojis y símbolos tipo IA del juego, incluido el texto de los personajes. Prueba `no-emoji.test.ts` lo vigila.
+
+## J-3 · Celebración (confeti y tono)
+- `lib/ceo/celebrate.ts`, sin dependencias: confeti en canvas con los 5 colores de la marca (34 a 90 piezas, menos de 2.5 s) y un tono de dos notas (Mi 6 → Si 6, onda senoidal y caída rápida, menos de 1 s, volumen bajo) con Web Audio.
+- Se dispara al recibir un nombramiento (el más grande), al aprobar una empresa, al lograr el reto de cambio y al terminar una lección por primera vez (el más discreto). Empresa y cambio, una sola vez por logro.
+- Respeta «reducir movimiento» del sistema. El sonido se apaga en Ajustes y la preferencia se guarda en el dispositivo.

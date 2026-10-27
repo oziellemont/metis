@@ -9,6 +9,7 @@ import { BlockView } from "@/components/academy/Blocks";
 import { LESSONS, MAX_TRACK_LEVEL, TRACKS, lessonsOfTrack, rankOf, trackOf, type Lesson } from "@/lib/ceo/lessons";
 import { LEVELS, rankFor } from "@/lib/ceo/engine";
 import { TRACK_TO } from "@/lib/ceo/mastery";
+import { celebrate } from "@/lib/ceo/celebrate";
 import { useCeo } from "./CeoProvider";
 
 const ICON = { compass: Compass, users: Users, flag: Flag, message: MessagesSquare, handshake: Handshake, coins: Coins, flame: FlameIcon, rocket: Rocket, target: Target, layers: Layers };
@@ -129,7 +130,7 @@ export function LessonPlayer({ lesson }: { lesson: Lesson }) {
   const advance = () => {
     setReady(false);
     if (i < lesson.blocks.length - 1) setI(i + 1);
-    else { c.completeLesson(lesson.id); setDone(true); }
+    else { if (!c.s.lessons[lesson.id]) celebrate("lesson"); c.completeLesson(lesson.id); setDone(true); }
   };
 
   if (locked) return (
