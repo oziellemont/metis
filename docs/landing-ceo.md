@@ -59,3 +59,8 @@ La landing anterior tenía hero animado, 3 pasos, 3 razones con visuales, precio
 ## Regla de copy (decisión del fundador)
 
 Nada de «próximamente», «en preparación» ni promesas a futuro en la app ni en la landing. Lo que no existe, no se menciona. Lo vigila `src/lib/ceo/no-futuro.test.ts`.
+
+## Hoy y Boardroom Crisis (app)
+
+- **Hoy:** sin tarjetas propias. La Boardroom Crisis, el reto final y la Junta aparecen como un asunto más en «Esperando tu decisión» (`lib/ceo/today.ts`). El dilema del día sale en ventana hasta que se contesta; «Recordar más tarde» lo pospone 2 horas.
+- **Boardroom Crisis** (`/ceo/crisis`, `lib/ceo/crisis.ts`): sesión extraordinaria del consejo, una por empresa, desde el día 3 de la temporada. Tres decisiones encadenadas con 90 segundos cada una; si se acaba el tiempo, decide el consejo. Parte de los indicadores del día y el golpe crece con la exigencia. Resultado: contenida (60 XP), con daños (30) o rebasado (10). No toca los indicadores de la temporada ni las partidas doradas; se guarda en `s.crises`.

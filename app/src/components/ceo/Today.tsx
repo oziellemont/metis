@@ -10,6 +10,7 @@ import { useCeo } from "./CeoProvider";
 import { track } from "@/lib/ceo/events";
 import { DilemmaPrompt } from "./DilemmaPrompt";
 import { boardAccess } from "@/lib/ceo/board";
+import { crisisAccess } from "@/lib/ceo/crisis";
 import { specialTasks } from "@/lib/ceo/today";
 import { rankOf } from "@/lib/ceo/lessons";
 import { rankFor } from "@/lib/ceo/engine";
@@ -28,7 +29,7 @@ export function Today() {
   const open = LESSONS.filter((l) => rankOf(l) <= rank);
   const nudge = shouldNudge(c.s, c.now) && !nudgeQuiet(c.pending, c.now) && !c.seasonDone;
   useEffect(() => { if (nudge) track("aviso_perfil_visto"); }, [nudge]);
-  const specials = specialTasks({ changeOpen: c.changeOpen && !c.seasonDone, changeStarted: !!c.change, changeDone: !!c.change?.done, changeTitle: pk.change.title, boardOpen: boardAccess(c.s, c.now).open });
+  const specials = specialTasks({ changeOpen: c.changeOpen && !c.seasonDone, changeStarted: !!c.change, changeDone: !!c.change?.done, changeTitle: pk.change.title, boardOpen: boardAccess(c.s, c.now).open, crisisOpen: crisisAccess(c.s, c.now).open });
   const waiting = c.pending.length + specials.length;
   const nextLesson = open.find((l) => !c.s.lessons[l.id] && c.entries.some((e) => e.item.lesson === l.id && e.status !== "futuro")) ?? open.find((l) => !c.s.lessons[l.id]);
 
@@ -106,7 +107,7 @@ export function Today() {
             <ul className="mt-3 divide-y divide-slate-100">
               {specials.map((t) => (
                 <li key={t.id}><Link href={t.href} className="flex gap-3 py-3 group">
-                  <span className="h-[38px] w-[38px] shrink-0 rounded-full bg-indigo-soft text-indigo grid place-items-center"><Flag size={16} /></span>
+                  <span className={clsx("h-[38px] w-[38px] shrink-0 rounded-full grid place-items-center", t.id === "crisis" ? "bg-coral/10 text-coral" : "bg-indigo-soft text-indigo")}><Flag size={16} /></span>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2"><span className="text-sm font-semibold text-ink truncate">Consejo de {pk.short}</span></div>
                     <div className="text-sm text-slate-600 truncate">{t.subject}</div>

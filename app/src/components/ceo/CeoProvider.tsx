@@ -10,6 +10,8 @@ import { advance as advanceFn, decide as decideFn, entries as entriesFn, healthO
 import { aliasOf, answerDilemma as answerDilemmaFn, casesProgress, changeOpen, changeSimOf, dilemmaOfDay } from "@/lib/ceo/engine";
 import type { Dilemma } from "@/lib/ceo/dilemmas";
 import { OFFERED_TIER, sanitizeDiagnostic, sanitizeProfile, snoozeNudge, type InitialDiagnostic, type ProfessionalProfile } from "@/lib/ceo/profile";
+import { recordCrisis as recordCrisisFn, type CrisisPicks } from "@/lib/ceo/crisis";
+import type { CrisisRating } from "@/lib/ceo/types";
 import { appoint as appointFn, recordBoard as recordBoardFn, enrollJourney, journeyOf, STAGES, type JourneyView } from "@/lib/ceo/journey";
 import { masteryOf, type Mastery } from "@/lib/ceo/mastery";
 import { appEnvOf, testToolsVisible } from "@/lib/ceo/flags";
@@ -79,6 +81,7 @@ interface Ctx {
   appoint: () => string | null;
   /** Guarda el resultado de la Junta ante el Consejo (no toca KPI ni la partida). */
   recordBoard: (passed: boolean) => void;
+  recordCrisis: (r: { rating: CrisisRating; picks: CrisisPicks }) => void;
   /** Mostrar herramientas de prueba (adelantar reloj). Ver lib/ceo/flags.ts. */
   testTools: boolean;
   reset: () => void;
@@ -238,6 +241,7 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
     setS({ ...n, savedAt: Date.now() });
     return STAGES[n.journey!.stage].name;
   }, [s]);
+  const recordCrisis = useCallback((r: { rating: CrisisRating; picks: CrisisPicks }) => setS((p) => { const n = recordCrisisFn(p, r, nowOf(p)); return n === p ? p : { ...n, savedAt: Date.now() }; }), []);
   const recordBoard = useCallback((passed: boolean) => setS((p) => { const n = recordBoardFn(p, passed, nowOf(p)); return n === p ? p : { ...n, savedAt: Date.now() }; }), []);
   const saveProfile = useCallback((pf: ProfessionalProfile) => setS((p) => { const v = sanitizeProfile(pf); return v ? { ...p, profile: v, savedAt: Date.now() } : p; }), []);
   const saveDiagnostic = useCallback((d: InitialDiagnostic) => setS((p) => { const v = sanitizeDiagnostic(d); return v ? { ...p, diagnostic: v, savedAt: Date.now() } : p; }), []);
@@ -247,7 +251,7 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
   const value: Ctx = {
     ready, s, now, pack, rules: rulesOf(s.tier), verdict, entries, inbox, pending, kpis: k, health: healthOf(k), xp, level: levelOf(xp), streak, day: seasonDay(s, now), seasonDone, nextArrival,
     relations, changeOpen: changeOpen(s, now), cases: casesProgress(s, now, entries), change, startChange, playLever, closeChange,
-    user, synced, toast, dismissToast: () => setToast(null), start, advance, switchCompany, decide, markRead, completeLesson, dilemma, answerDilemma, updateSettings, skipNext, testTools, reset, journey, mastery, appoint, recordBoard, saveProfile, saveDiagnostic, snoozeProfile,
+    user, synced, toast, dismissToast: () => setToast(null), start, advance, switchCompany, decide, markRead, completeLesson, dilemma, answerDilemma, updateSettings, skipNext, testTools, reset, journey, mastery, appoint, recordBoard, recordCrisis, saveProfile, saveDiagnostic, snoozeProfile,
   };
   return <C.Provider value={value}>{children}</C.Provider>;
 }

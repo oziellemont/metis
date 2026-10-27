@@ -2,7 +2,7 @@
  * mêtis CEO · motor del simulador. Lógica pura (sin React ni navegador) para usarla
  * igual en la app, en el cron que agenda correos/WhatsApp y en las pruebas.
  */
-import type { Axis, CareerRun, CeoState, CompanyPack, Decision, Entry, Item, KpiKey, Kpis, Option, Settings, Written } from "./types";
+import type { Axis, CareerRun, CeoState, CrisisRating, CompanyPack, Decision, Entry, Item, KpiKey, Kpis, Option, Settings, Written } from "./types";
 import { COMPANIES, FIRST_COMPANY, companyById } from "./companies";
 import { DILEMMAS, dilemmaById, type Dilemma } from "./dilemmas";
 import { changeEffect, simulate, type ChangeSim } from "./change";
@@ -83,6 +83,7 @@ export function migrate(raw: unknown): CeoState {
   if (out.profile !== undefined) { const p = sanitizeProfile(out.profile); if (p) out.profile = p; else delete out.profile; }
   if (out.diagnostic !== undefined) { const d = sanitizeDiagnostic(out.diagnostic); if (d) out.diagnostic = d; else delete out.diagnostic; }
   if (out.startTier !== undefined && (typeof out.startTier !== "number" || out.startTier < 0 || out.startTier > 1)) delete out.startTier;
+  if (out.crises !== undefined && (!Array.isArray(out.crises) || out.crises.some((c) => !c || typeof c.company !== "string" || typeof c.startedAt !== "number" || !(c.rating in CRISIS_XP)))) delete out.crises;
   if (out.profileNudge !== undefined) { const n = out.profileNudge as unknown as Record<string, unknown>; if (!n || typeof n.dismissed !== "number" || typeof n.until !== "number") delete out.profileNudge; }
   return out;
 }
@@ -224,6 +225,11 @@ export function changeKpiEffect(s: CeoState): Partial<Kpis> {
 export const healthOf = (k: Kpis) => Math.round((k.caja + k.margen + k.equipo + k.clientes + k.consejo) / 5);
 
 export const XP = { decision: 20, perPoint: 10, onTime: 5, lesson: 30, dilemma: 10, dilemmaPoint: 5 };
+/** XP de cada Boardroom Crisis según cómo terminó (ver crisis.ts). */
+export const CRISIS_XP: Record<CrisisRating, number> = { contenida: 60, danos: 30, rebaso: 10 };
+export function crisisXp(s: CeoState): number {
+  return (s.crises ?? []).reduce((a, c) => a + (CRISIS_XP[c.rating] ?? 0), 0);
+}
 /** XP de los dilemas de personas (viajan entre empresas). */
 export function dilemmaXp(s: CeoState): number {
   let xp = 0;
@@ -275,7 +281,7 @@ export function runXp(s: CeoState, now = nowOf(s)): number {
 /** XP total de la carrera: empresas anteriores + la actual + lecciones. */
 export function xpOf(s: CeoState, now = nowOf(s)): number {
   const past = (s.career ?? []).reduce((a, r) => a + (r.xp || 0), 0);
-  return past + runXp(s, now) + Object.keys(s.lessons).length * XP.lesson + dilemmaXp(s);
+  return past + runXp(s, now) + Object.keys(s.lessons).length * XP.lesson + dilemmaXp(s) + crisisXp(s);
 }
 
 export const LEVELS = [

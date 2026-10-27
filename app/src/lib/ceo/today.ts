@@ -2,7 +2,7 @@
  * Página «Hoy»: reglas simples y puras de lo que aparece.
  *  - El dilema del día sale como ventana cada vez que entras a Hoy, hasta que lo contestes.
  *    «Recordar más tarde» lo pospone DILEMMA_SNOOZE (reloj de juego).
- *  - El reto final y la junta no tienen tarjeta propia: aparecen como un asunto más en «Esperando tu decisión».
+ *  - La crisis, el reto final y la junta no tienen tarjeta propia: aparecen como un asunto más en «Esperando tu decisión».
  */
 export const DILEMMA_SNOOZE = 2 * 60 * 60 * 1000;
 
@@ -16,9 +16,10 @@ export function dilemmaPromptDue(answered: boolean, snoozedUntil: number | null 
 export const snoozeKey = (dilemmaId: string) => `metis-ceo-v1:dilema-luego:${dilemmaId}`;
 
 /** Asuntos especiales que se listan junto a los demás en «Esperando tu decisión». */
-export interface SpecialTask { id: "cambio" | "junta"; href: string; subject: string; label: string }
-export function specialTasks(x: { changeOpen: boolean; changeStarted: boolean; changeDone: boolean; changeTitle: string; boardOpen: boolean }): SpecialTask[] {
+export interface SpecialTask { id: "crisis" | "cambio" | "junta"; href: string; subject: string; label: string }
+export function specialTasks(x: { changeOpen: boolean; changeStarted: boolean; changeDone: boolean; changeTitle: string; boardOpen: boolean; crisisOpen?: boolean }): SpecialTask[] {
   const out: SpecialTask[] = [];
+  if (x.crisisOpen) out.push({ id: "crisis", href: "/ceo/crisis", subject: "Sesión extraordinaria · Boardroom Crisis", label: "Urgente: el consejo te cita hoy" });
   if (x.changeOpen && !x.changeDone) out.push({ id: "cambio", href: "/ceo/cambio", subject: `Reto final · ${x.changeTitle}`, label: x.changeStarted ? "En curso" : "El consejo espera tu plan" });
   if (x.boardOpen) out.push({ id: "junta", href: "/ceo/junta", subject: "Junta ante el Consejo", label: "Requisito para tu nombramiento" });
   return out;
