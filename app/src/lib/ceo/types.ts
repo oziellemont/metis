@@ -78,7 +78,9 @@ export interface Settings {
   intensivo: boolean;
 }
 
-export interface Decision { option: string; at: number }
+/** Respuesta escrita (evaluada con IA): tu texto, la calidad 0–3 y la nota del mentor. */
+export interface Written { text: string; quality: 0 | 1 | 2 | 3; feedback: string }
+export interface Decision { option: string; at: number; written?: Written }
 
 /** Una empresa ya jugada (queda en tu carrera). */
 export interface CareerRun {

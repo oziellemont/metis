@@ -2,13 +2,14 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
-import { ArrowLeft, ArrowRight, BookOpen, CheckCheck, ChevronDown, Clock, Globe2, Lightbulb, Network, PhoneMissed, Play, Quote, XCircle } from "lucide-react";
+import { ArrowLeft, ArrowRight, BookOpen, CheckCheck, PenLine, ListChecks, ChevronDown, Clock, Globe2, Lightbulb, Network, PhoneMissed, Play, Quote, XCircle } from "lucide-react";
 import { firstName, personOf } from "@/lib/ceo/cast";
 import { XP, scaled } from "@/lib/ceo/engine";
 import { OrgMap } from "./OrgMap";
 import { entryRipples, moodOf, REL_START } from "@/lib/ceo/relations";
 import { lessonById } from "@/lib/ceo/lessons";
-import type { Entry, Item, KpiKey, Option } from "@/lib/ceo/types";
+import type { Entry, Item, KpiKey, Option, Written } from "@/lib/ceo/types";
+import { MAX_CHARS, MIN_CHARS, textProblem, writtenEligible } from "@/lib/ceo/written";
 import { useCeo } from "./CeoProvider";
 import { Avatar, ChannelChip, clock, until } from "./ui";
 
@@ -17,6 +18,17 @@ export function CaseView({ id }: { id: string }) {
   const e = c.entries.find((x) => x.item.id === id);
   const [picked, setPicked] = useState<string | null>(null);
   const [justDecided, setJustDecided] = useState(false);
+  const [mode, setMode] = useState<"options" | "write">("options");
+  const [ai, setAi] = useState<{ available: boolean; consent: boolean; enabled: boolean } | null>(null);
+  const [draft, setDraft] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const [ev, setEv] = useState<{ option: string; quality: Written["quality"]; feedback: string } | null>(null);
+  const eligible = !!e && e.status === "pendiente" && writtenEligible(e.item) && !!c.user;
+  useEffect(() => {
+    if (!eligible || ai) return;
+    fetch("/api/ceo/responder").then((r) => r.json()).then((j) => setAi({ available: !!j.available, consent: !!j.consent, enabled: !!j.enabled })).catch(() => setAi({ available: false, consent: false, enabled: false }));
+  }, [eligible, ai]);
 
   useEffect(() => { if (e && e.status !== "futuro") c.markRead(id); }, [e?.status, id]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { window.scrollTo({ top: 0 }); }, [id]);
@@ -33,6 +45,27 @@ export function CaseView({ id }: { id: string }) {
 
   const it = e.item;
   const confirm = () => { if (!picked) return; c.decide(it.id, picked); setJustDecided(true); window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" }); };
+  const consent = async () => {
+    setBusy(true);
+    const r = await fetch("/api/ceo/responder", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ consent: true }) }).then((x) => x.json()).catch(() => null);
+    setBusy(false);
+    if (r?.ok) { setAi((a) => (a ? { ...a, consent: true, enabled: a.available } : a)); setMode("write"); }
+  };
+  const send = async () => {
+    const p = textProblem(draft);
+    if (p) { setErr(p); return; }
+    setBusy(true); setErr(null);
+    const r = await fetch("/api/ceo/responder", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ itemId: it.id, company: c.pack.id, text: draft }) }).then((x) => x.json()).catch(() => null);
+    setBusy(false);
+    if (r?.ok) setEv({ option: r.option, quality: r.quality, feedback: r.feedback });
+    else { setErr(r?.error ?? "No pudimos leer tu respuesta. Elige una opción."); if (r?.fallback) setMode("options"); }
+  };
+  const confirmWritten = () => {
+    if (!ev) return;
+    c.decide(it.id, ev.option, { text: draft, quality: ev.quality, feedback: ev.feedback });
+    setJustDecided(true); window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+  };
+  const canWrite = eligible && ai?.enabled;
   const nextPending = c.pending.find((p) => p.item.id !== it.id);
 
   return (
@@ -55,6 +88,47 @@ export function CaseView({ id }: { id: string }) {
             <span className={clsx("chip gap-1", e.deadline - c.now < 3 * 3_600_000 ? "bg-coral-soft text-coral" : "bg-amber-soft text-amber")}><Clock size={11} /> Vence en {until(e.deadline, c.now)}</span>
           </div>
           <h2 className="mt-2 text-lg sm:text-xl font-semibold text-ink leading-snug">{it.ask}</h2>
+          {canWrite && (
+            <div className="mt-4 inline-flex rounded-xl bg-slate-100 p-1 text-sm">
+              <button onClick={() => setMode("options")} className={clsx("inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-medium", mode === "options" ? "bg-white text-ink shadow-sm" : "text-slate-500")}><ListChecks size={14} /> Elegir opción</button>
+              <button onClick={() => setMode("write")} className={clsx("inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-medium", mode === "write" ? "bg-white text-ink shadow-sm" : "text-slate-500")}><PenLine size={14} /> Escribir respuesta</button>
+            </div>
+          )}
+          {eligible && ai?.available && !ai.consent && (
+            <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-3 rounded-2xl bg-canvas px-4 py-3 text-sm">
+              <PenLine size={16} className="text-indigo shrink-0" />
+              <span className="flex-1 text-slate-600">También puedes contestar con tus palabras. Una IA lee tu texto, lo relaciona con la opción más cercana y te da una nota de mentor. Tu texto no se usa para nada más.</span>
+              <button disabled={busy} onClick={consent} className="rounded-xl bg-indigo px-4 py-2 text-xs font-semibold text-white hover:bg-indigo/90 shrink-0">Activar</button>
+            </div>
+          )}
+          {err && <p className="mt-3 rounded-xl bg-coral-soft px-3 py-2 text-sm text-coral">{err}</p>}
+          {canWrite && mode === "write" ? (
+            <div className="mt-4">
+              {!ev ? (
+                <>
+                  <textarea value={draft} onChange={(x) => { setDraft(x.target.value.slice(0, MAX_CHARS)); setErr(null); }} rows={6} placeholder={it.channel === "whatsapp" ? `Contesta a ${firstName(c.pack, it.from)} como lo harías por WhatsApp…` : `Escribe tu respuesta a ${firstName(c.pack, it.from)}…`} className="w-full rounded-2xl border-2 border-slate-100 px-4 py-3 text-[15px] leading-relaxed text-ink focus:border-indigo focus:outline-none" />
+                  <div className="mt-1 flex justify-between text-[11px] text-slate-400"><span>Mínimo {MIN_CHARS} caracteres. Sé claro y propone un siguiente paso.</span><span className="tabular-nums">{draft.length}/{MAX_CHARS}</span></div>
+                  <button disabled={busy || draft.trim().length < MIN_CHARS} onClick={send} className="btn-primary w-full justify-center mt-4 py-3 text-base">{busy ? "Leyendo tu respuesta…" : <>Enviar respuesta <ArrowRight size={16} /></>}</button>
+                </>
+              ) : (
+                <div className="space-y-3">
+                  <div className="rounded-2xl border border-slate-100 p-4">
+                    <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Tu respuesta se acerca a</div>
+                    <p className="mt-1.5 text-[15px] text-ink font-medium leading-relaxed">{String.fromCharCode(65 + it.options.findIndex((o) => o.id === ev.option))}. {it.options.find((o) => o.id === ev.option)?.text}</p>
+                  </div>
+                  <div className="rounded-2xl bg-canvas p-4">
+                    <div className="flex items-center justify-between text-[11px] font-semibold uppercase tracking-wider text-slate-400"><span>Nota del mentor</span><QualityDots q={ev.quality} /></div>
+                    <p className="mt-1.5 text-sm text-ink leading-relaxed">{ev.feedback}</p>
+                  </div>
+                  <button onClick={confirmWritten} className="btn-primary w-full justify-center py-3 text-base">Enviar y decidir <ArrowRight size={16} /></button>
+                  <div className="flex justify-center gap-4 text-xs">
+                    <button onClick={() => setEv(null)} className="text-indigo font-medium">Corregir mi texto</button>
+                    <button onClick={() => { setEv(null); setMode("options"); }} className="text-slate-500">Prefiero elegir yo</button>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (<>
           <div className="mt-4 space-y-2.5">
             {it.options.map((o, i) => (
               <button key={o.id} onClick={() => setPicked(o.id)} className={clsx("w-full text-left rounded-2xl border-2 p-4 flex gap-3 transition-all", picked === o.id ? "border-indigo bg-indigo-soft/50 shadow-[0_10px_30px_-18px_rgba(79,63,224,.6)]" : "border-slate-100 hover:border-indigo/30 hover:bg-slate-50")}>
@@ -64,6 +138,7 @@ export function CaseView({ id }: { id: string }) {
             ))}
           </div>
           <button disabled={!picked} onClick={confirm} className="btn-primary w-full justify-center mt-5 py-3 text-base">Tomar la decisión <ArrowRight size={16} /></button>
+          </>)}
           <p className="mt-2 text-center text-[11px] text-slate-400">No hay vuelta atrás. Como en la vida real.</p>
         </section>
       )}
@@ -137,7 +212,7 @@ function WhatsApp({ e }: { e: Entry }) {
         {shown < e.item.body.length && <div className="w-14 rounded-2xl bg-white px-3 py-2.5 flex gap-1"><span className="h-1.5 w-1.5 rounded-full bg-slate-400 animate-bounce" /><span className="h-1.5 w-1.5 rounded-full bg-slate-400 animate-bounce [animation-delay:.15s]" /><span className="h-1.5 w-1.5 rounded-full bg-slate-400 animate-bounce [animation-delay:.3s]" /></div>}
         {e.option && (
           <>
-            <div className="flex justify-end"><div className="max-w-[85%] rounded-2xl rounded-tr-md bg-[#DCF8C6] px-3.5 py-2 text-[15px] text-ink shadow-sm">{e.option.text.replace(/^«|»$/g, "")}<span className="ml-2 inline-flex text-[#34B7F1] align-bottom"><CheckCheck size={14} /></span></div></div>
+            <div className="flex justify-end"><div className="max-w-[85%] rounded-2xl rounded-tr-md bg-[#DCF8C6] px-3.5 py-2 text-[15px] text-ink shadow-sm"><span className="whitespace-pre-line">{e.decision?.written?.text ?? e.option.text.replace(/^«|»$/g, "")}</span><span className="ml-2 inline-flex text-[#34B7F1] align-bottom"><CheckCheck size={14} /></span></div></div>
             {e.option.reply.map((m, i) => <div key={`r${i}`} className="max-w-[85%] rounded-2xl rounded-tl-md bg-white px-3.5 py-2 text-[15px] text-ink shadow-sm">{m}</div>)}
           </>
         )}
@@ -258,16 +333,24 @@ function Outcome({ e, fresh }: { e: Entry; fresh: boolean }) {
   const lesson = it.lesson ? lessonById(it.lesson) : undefined;
   const xp = o ? XP.decision + o.score * XP.perPoint + (e.decision && e.decision.at - e.arrivesAt <= (e.deadline - e.arrivesAt) / 2 ? XP.onTime : 0) : 0;
   const myIdx = o ? it.options.findIndex((x) => x.id === o.id) : -1;
+  const w = e.decision?.written;
 
   return (
     <section className={clsx("mt-5 space-y-4", fresh && "academy-in")}>
       {o && it.channel !== "whatsapp" && (
         <div className="card p-5 sm:p-6">
-          <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Decidiste</div>
-          <p className="mt-1.5 text-[15px] text-ink font-medium leading-relaxed">{String.fromCharCode(65 + myIdx)}. {o.text}</p>
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">{w ? "Respondiste" : "Decidiste"}</div>
+          {w ? <p className="mt-1.5 text-[15px] text-ink leading-relaxed whitespace-pre-line">{w.text}</p> : <p className="mt-1.5 text-[15px] text-ink font-medium leading-relaxed">{String.fromCharCode(65 + myIdx)}. {o.text}</p>}
+          {w && <p className="mt-2 text-xs text-slate-400">Se tomó como: {String.fromCharCode(65 + myIdx)}. {o.text}</p>}
           <div className="mt-4 space-y-2">
             {reply.map((r, i) => <div key={i} className="flex gap-2.5"><Avatar id={it.from} size={26} /><p className="text-[15px] text-slate-700 leading-relaxed">{r}</p></div>)}
           </div>
+        </div>
+      )}
+      {w && w.feedback && (
+        <div className="card p-5 sm:p-6">
+          <div className="flex items-center justify-between text-[11px] font-semibold uppercase tracking-wider text-slate-400"><span>Nota del mentor sobre tu respuesta</span><QualityDots q={w.quality} /></div>
+          <p className="mt-1.5 text-sm text-ink leading-relaxed">{w.feedback}</p>
         </div>
       )}
       {expired && (
@@ -367,4 +450,9 @@ function Ripples({ e, fresh }: { e: Entry; fresh: boolean }) {
       <p className="mt-3 text-[11px] text-slate-400">Estas relaciones pesan en tu proyecto de cambio: quien confía en ti arranca más cerca de adoptarlo.</p>
     </div>
   );
+}
+
+/** Calidad de una respuesta escrita (0–3) en puntos sobrios. */
+function QualityDots({ q }: { q: number }) {
+  return <span className="inline-flex items-center gap-1" title={`Calidad ${q} de 3`} aria-label={`Calidad ${q} de 3`}>{[1, 2, 3].map((i) => <span key={i} className={clsx("h-1.5 w-4 rounded-full", i <= q ? "bg-indigo" : "bg-slate-200")} />)}</span>;
 }
