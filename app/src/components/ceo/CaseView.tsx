@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
-import { ArrowLeft, ArrowRight, BookOpen, CheckCheck, ChevronDown, Clock, Globe2, Lightbulb, Network, PhoneMissed, Play, Quote, Sparkles, XCircle } from "lucide-react";
+import { ArrowLeft, ArrowRight, BookOpen, CheckCheck, ChevronDown, Clock, Globe2, Lightbulb, Network, PhoneMissed, Play, Quote, XCircle } from "lucide-react";
 import { firstName, personOf } from "@/lib/ceo/cast";
 import { XP, scaled } from "@/lib/ceo/engine";
 import { OrgMap } from "./OrgMap";
@@ -280,7 +280,7 @@ function Outcome({ e, fresh }: { e: Entry; fresh: boolean }) {
       <div className="card p-5 sm:p-6">
         <div className="flex items-center justify-between">
           <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Qué pasó en {c.pack.name}</div>
-          {xp > 0 && <span className={clsx("chip bg-indigo text-white gap-1", fresh && "ceo-pop")}><Sparkles size={11} /> +{xp} XP</span>}
+          {xp > 0 && <span className={clsx("chip bg-indigo text-white gap-1", fresh && "ceo-pop")}>+{xp} XP</span>}
         </div>
         <p className="mt-2 text-[15px] text-ink leading-relaxed">{outcome}</p>
         <div className="mt-4 flex flex-wrap gap-2">

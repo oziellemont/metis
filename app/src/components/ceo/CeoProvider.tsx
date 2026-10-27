@@ -9,6 +9,8 @@ import { supabaseBrowser } from "@/lib/supabase/client";
 import { advance as advanceFn, decide as decideFn, entries as entriesFn, healthOf, kpis as kpisFn, levelOf, migrate, newState, nowOf, packOf, pinArrived, rulesOf, seasonDay, seasonDoneOf, skipToNext, streakOf, switchCompany as switchFn, verdictOf, xpOf, type Verdict } from "@/lib/ceo/engine";
 import { aliasOf, answerDilemma as answerDilemmaFn, casesProgress, changeOpen, changeSimOf, dilemmaOfDay } from "@/lib/ceo/engine";
 import type { Dilemma } from "@/lib/ceo/dilemmas";
+import { appoint as appointFn, enrollJourney, journeyOf, STAGES, type JourneyView } from "@/lib/ceo/journey";
+import { masteryOf, type Mastery } from "@/lib/ceo/mastery";
 import { appEnvOf, testToolsVisible } from "@/lib/ceo/flags";
 import { closeChange as closeChangeFn, playLever as playLeverFn, relationsOf, startChange as startChangeFn } from "@/lib/ceo/relations";
 import type { ChangeSim } from "@/lib/ceo/change";
@@ -63,6 +65,12 @@ interface Ctx {
   answerDilemma: (id: string, option: number) => void;
   updateSettings: (p: Partial<Settings> & { name?: string; alias?: string }) => void;
   skipNext: () => void;
+  /** Executive Journey: etapa, siguiente nombramiento y requisitos. */
+  journey: JourneyView;
+  /** Mastery Engine: dominio de las 8 competencias. */
+  mastery: Mastery;
+  /** Recibe el nombramiento si ya cumples todo. Devuelve el nombre de la nueva etapa (o null). */
+  appoint: () => string | null;
   /** Mostrar herramientas de prueba (adelantar reloj). Ver lib/ceo/flags.ts. */
   testTools: boolean;
   reset: () => void;
@@ -105,6 +113,12 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
     return () => { clearInterval(t); document.removeEventListener("visibilitychange", vis); };
   }, []);
 
+  // Executive Journey: inscribir una sola vez (los jugadores de antes conservan su rango como piso fundador).
+  useEffect(() => {
+    if (!ready || !s.startedAt || s.journey) return;
+    setS((p) => (p.journey || !p.startedAt ? p : enrollJourney(p, nowOf(p))));
+  }, [ready, s.startedAt, s.journey]);
+
   // sesión + nube (si existe)
   useEffect(() => {
     const sb = supabaseBrowser();
@@ -140,7 +154,7 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
       const xp = xpOf(s, nowOf(s, real));
       await sb.schema("ceo").from("players").upsert({
         user_id: user.id, alias: s.alias || aliasOf(s.name), name: s.name, state: s,
-        xp, level: levelOf(xp).name, streak: st.days, best_streak: st.best, health: healthOf(kpisFn(s, nowOf(s, real))),
+        xp, level: STAGES[s.journey?.stage ?? 0].name, streak: st.days, best_streak: st.best, health: healthOf(kpisFn(s, nowOf(s, real))),
         decisions: Object.keys(s.decisions).length, email: s.settings.email || user.email, phone: s.settings.phone,
         notify_email: s.settings.notifyEmail, notify_whatsapp: s.settings.notifyWhatsapp, tz: s.settings.tz,
         updated_at: new Date().toISOString(),
@@ -189,7 +203,7 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
 
   const start: Ctx["start"] = useCallback(({ name, email, phone, company, settings }) => {
     const t = Date.now();
-    setS((p) => ({ ...newState(), company: company || newState().company, name: name.trim(), alias: aliasOf(name), startedAt: t, lastActiveAt: t, savedAt: t, settings: { ...p.settings, ...settings, email, phone, tz: Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Monterrey" } }));
+    setS((p) => ({ ...newState(), journey: { stage: 0, enrolledAt: t, appointments: [] }, company: company || newState().company, name: name.trim(), alias: aliasOf(name), startedAt: t, lastActiveAt: t, savedAt: t, settings: { ...p.settings, ...settings, email, phone, tz: Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Monterrey" } }));
     seen.current = null;
   }, []);
   const decide = useCallback((itemId: string, optionId: string) => setS((p) => { const n = decideFn(p, itemId, optionId, nowOf(p)); return n === p ? p : { ...n, savedAt: Date.now() }; }), []);
@@ -207,12 +221,20 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
   const startChange = useCallback(() => setS((p) => { const n = startChangeFn(p, nowOf(p)); return n === p ? p : { ...n, savedAt: Date.now() }; }), []);
   const playLever = useCallback((lever: LeverId, targets: CastId[]) => setS((p) => { const n = playLeverFn(p, lever, targets, nowOf(p)); return n === p ? p : { ...n, savedAt: Date.now() }; }), []);
   const closeChange = useCallback(() => setS((p) => { const n = closeChangeFn(p, nowOf(p)); return n === p ? p : { ...n, savedAt: Date.now() }; }), []);
+  const mastery = useMemo(() => masteryOf(s, now), [s, now]);
+  const journey = useMemo(() => journeyOf(s, now, mastery), [s, now, mastery]);
+  const appoint = useCallback((): string | null => {
+    const n = appointFn(s, nowOf(s));
+    if (n === s) return null;
+    setS({ ...n, savedAt: Date.now() });
+    return STAGES[n.journey!.stage].name;
+  }, [s]);
   const reset = useCallback(() => { localStorage.removeItem(KEY); seen.current = null; setS(newState()); }, []);
 
   const value: Ctx = {
     ready, s, now, pack, rules: rulesOf(s.tier), verdict, entries, inbox, pending, kpis: k, health: healthOf(k), xp, level: levelOf(xp), streak, day: seasonDay(s, now), seasonDone, nextArrival,
     relations, changeOpen: changeOpen(s, now), cases: casesProgress(s, now, entries), change, startChange, playLever, closeChange,
-    user, synced, toast, dismissToast: () => setToast(null), start, advance, switchCompany, decide, markRead, completeLesson, dilemma, answerDilemma, updateSettings, skipNext, testTools, reset,
+    user, synced, toast, dismissToast: () => setToast(null), start, advance, switchCompany, decide, markRead, completeLesson, dilemma, answerDilemma, updateSettings, skipNext, testTools, reset, journey, mastery, appoint,
   };
   return <C.Provider value={value}>{children}</C.Provider>;
 }

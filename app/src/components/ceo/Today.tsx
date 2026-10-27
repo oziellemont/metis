@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import clsx from "clsx";
-import { ArrowRight, BookOpen, Clock, FastForward, Flag, Hourglass, Info, Lock, Trophy } from "lucide-react";
+import { ArrowRight, BookOpen, Check, Clock, FastForward, Flag, Hourglass, Info, Lock, Trophy } from "lucide-react";
 import { KPI_KEYS } from "@/lib/ceo/engine";
 import { firstName, personOf } from "@/lib/ceo/cast";
 import { LESSONS } from "@/lib/ceo/lessons";
@@ -31,7 +31,7 @@ export function Today() {
         <div aria-hidden className="absolute right-24 bottom-[-80px] h-48 w-48 rounded-full bg-mint/20 blur-3xl" />
         <div className="relative grid gap-6 md:grid-cols-[1.5fr_1fr] items-center">
           <div>
-            <div className="text-xs text-white/60">{pk.emoji} {pk.name} · {pk.industry} · Día {c.day} de {pk.season.days}{c.s.tier > 0 ? ` · Exigencia ${c.rules.name}` : ""}</div>
+            <div className="text-xs text-white/60">{pk.name} · {pk.industry} · Día {c.day} de {pk.season.days}{c.s.tier > 0 ? ` · Exigencia ${c.rules.name}` : ""}</div>
             <h1 className="mt-2 text-2xl sm:text-3xl font-semibold leading-tight">
               {c.seasonDone ? (v.passed ? `Aprobaste ${pk.short}, ${first}. Te espera otra empresa.` : `Cerraste la temporada en ${pk.short}, ${first}. El consejo pide otra vuelta.`) : c.changeOpen ? `${first}, cerraste los asuntos. Falta el reto final: lograr que tu gente adopte el cambio.` : c.pending.length ? `${hello}, ${first}. Tienes ${c.pending.length} ${c.pending.length === 1 ? "asunto" : "asuntos"} esperando tu decisión.` : `${hello}, ${first}. Todo al día.`}
             </h1>
@@ -51,9 +51,9 @@ export function Today() {
               <div><div className="text-2xl font-semibold tabular-nums leading-none">{c.streak.days}</div><div className="text-xs text-white/60 mt-1">{c.streak.days === 1 ? "día de racha" : "días de racha"}</div></div>
             </div>
             <div className="mt-4 flex justify-between">
-              {c.streak.week.map((d) => <div key={d.key} className="flex flex-col items-center gap-1"><span className={clsx("h-7 w-7 rounded-full grid place-items-center text-[11px] font-semibold", d.on ? "bg-gradient-to-br from-amber to-coral text-white" : d.today ? "bg-white/20 text-white ring-2 ring-white/40" : "bg-white/10 text-white/40")}>{d.on ? "✓" : ""}</span><span className="text-[10px] text-white/50">{d.label}</span></div>)}
+              {c.streak.week.map((d) => <div key={d.key} className="flex flex-col items-center gap-1"><span className={clsx("h-7 w-7 rounded-full grid place-items-center text-[11px] font-semibold", d.on ? "bg-gradient-to-br from-amber to-coral text-white" : d.today ? "bg-white/20 text-white ring-2 ring-white/40" : "bg-white/10 text-white/40")}>{d.on ? <Check size={12} strokeWidth={3} /> : ""}</span><span className="text-[10px] text-white/50">{d.label}</span></div>)}
             </div>
-            <p className="mt-3 text-[11px] text-white/60">{c.streak.doneToday ? "Hoy ya cumpliste. ¡Vuelve mañana!" : c.streak.atRisk ? "⚠️ Toma una decisión o termina una lección hoy para no perder tu racha." : "Toma una decisión o termina una lección para encender tu racha."}</p>
+            <p className="mt-3 text-[11px] text-white/60">{c.streak.doneToday ? "Hoy ya cumpliste. Vuelve mañana." : c.streak.atRisk ? "Toma una decisión o termina una lección hoy para no perder tu racha." : "Toma una decisión o termina una lección para encender tu racha."}</p>
           </div>
         </div>
       </section>

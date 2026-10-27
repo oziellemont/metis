@@ -10,7 +10,6 @@ export const CUMBRE: CompanyPack = {
   name: "Botanas Cumbre",
   short: "Cumbre",
   industry: "Consumo masivo",
-  emoji: "🥜",
   city: "Monterrey, N.L.",
   tagline: "Empresa familiar de botanas. El fundador te deja su silla.",
   pitch: "Empresa familiar regiomontana de botanas y cacahuates. 38 años, 240 colaboradores, una planta en Apodaca y $410 millones de ventas al año. El fundador acaba de dejar la dirección y te eligió a ti: el primer Director General que no es de la familia.",

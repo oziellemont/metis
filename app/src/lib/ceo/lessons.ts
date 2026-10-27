@@ -28,9 +28,9 @@ const BASE_LESSONS: Lesson[] = [
       { kind: "compare", eyebrow: "Dos razones para liderar", title: "¿Quieres el puesto o la responsabilidad?", left: { label: "Centrado en la recompensa", points: ["Busca el estatus, el sueldo y la visibilidad", "Quiere brillar", "La organización le sirve a él"] }, right: { label: "Centrado en la responsabilidad", points: ["Busca servir, construir y desarrollar talento", "Quiere que otros brillen", "Él sirve a la organización"] }, note: "Paradójicamente, cuando un líder deja brillar a los demás, termina brillando más." },
       { kind: "text", eyebrow: "Las personas no son el problema", title: "Antes de culpar a la gente, revisa el contexto que creaste.", body: ["¿La visión es clara? ¿Los procesos ayudan o estorban? ¿La cultura permite cuestionar? ¿La organización premia la iniciativa o castiga el error?", "Convertir empleados en emprendedores internos significa pasar de personas que esperan instrucciones a personas que proponen, resuelven y mejoran."], callout: { label: "Nota CEO", text: "La gente no se activa con control; se activa con claridad, confianza y responsabilidad.", source: SRC } },
       { kind: "reveal", eyebrow: "Heart, head and hands", title: "Tres niveles de liderazgo", items: [
-        { tag: "❤", label: "Corazón · el porqué", body: "Propósito, valores, intención y servicio. Le da sentido al trabajo." },
-        { tag: "🧠", label: "Cabeza · el qué", body: "Visión, estrategia, prioridades y metas. Le da dirección." },
-        { tag: "✋", label: "Manos · el cómo", body: "Ejecución, procesos, mejora continua y desarrollo de personas. Lo vuelve realidad." },
+        { tag: "1", label: "Corazón · el porqué", body: "Propósito, valores, intención y servicio. Le da sentido al trabajo." },
+        { tag: "2", label: "Cabeza · el qué", body: "Visión, estrategia, prioridades y metas. Le da dirección." },
+        { tag: "3", label: "Manos · el cómo", body: "Ejecución, procesos, mejora continua y desarrollo de personas. Lo vuelve realidad." },
       ], note: "El CEO debe liderar con corazón para dar sentido, con cabeza para dar dirección y con manos para convertirlo en realidad." },
       { kind: "check", eyebrow: "Aplícalo", title: "Tu primera semana", question: "Llegas como director nuevo a una empresa con gente de muchos años. ¿Qué construye más confianza?", options: [
         { text: "Anunciar tus 5 prioridades el primer lunes para mostrar rumbo.", why: "Rumbo hace falta, pero llegar con la receta hecha manda el mensaje de que no te interesa entender." },

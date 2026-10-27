@@ -70,3 +70,12 @@ export function Flame({ on, size = 18, white }: { on: boolean; size?: number; wh
     </svg>
   );
 }
+
+/** Iniciales de una empresa («Botanas Cumbre» → «BC»). Sustituye a los íconos de giro. */
+export const initialsOf = (name: string) => name.replace(/[^\p{L}\s]/gu, "").split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]!.toUpperCase()).join("");
+
+/** Círculo con las iniciales de la empresa. */
+export function CompanyMark({ name, size = 40, tone = "soft", className }: { name: string; size?: number; tone?: "soft" | "solid" | "glass" | "muted"; className?: string }) {
+  const cls = { soft: "bg-indigo-soft text-indigo", solid: "bg-gradient-to-br from-indigo-light to-indigo text-white", glass: "bg-white/10 text-white", muted: "bg-slate-100 text-slate-400" }[tone];
+  return <span aria-hidden className={clsx("shrink-0 rounded-full grid place-items-center font-semibold tracking-wide", cls, className)} style={{ width: size, height: size, fontSize: Math.round(size * 0.34) }}>{initialsOf(name)}</span>;
+}

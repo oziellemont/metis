@@ -3,11 +3,12 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import clsx from "clsx";
-import { ArrowLeft, ArrowRight, Check, Clock, Coins, Compass, Flag, Flame as FlameIcon, GraduationCap, Handshake, Layers, Lock, MessagesSquare, Rocket, Sparkles, Target, Users, Zap } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Clock, Coins, Compass, Flag, Flame as FlameIcon, GraduationCap, Handshake, Layers, Lock, MessagesSquare, Rocket, Target, Users, Zap } from "lucide-react";
 import { BlockView } from "@/components/academy/Blocks";
 
 import { LESSONS, MAX_TRACK_LEVEL, TRACKS, lessonsOfTrack, rankOf, trackOf, type Lesson } from "@/lib/ceo/lessons";
 import { LEVELS, rankFor } from "@/lib/ceo/engine";
+import { TRACK_TO } from "@/lib/ceo/mastery";
 import { useCeo } from "./CeoProvider";
 
 const ICON = { compass: Compass, users: Users, flag: Flag, message: MessagesSquare, handshake: Handshake, coins: Coins, flame: FlameIcon, rocket: Rocket, target: Target, layers: Layers };
@@ -20,6 +21,9 @@ export function CeoAcademyHome() {
   const pct = Math.round((done / Math.max(1, open.length)) * 100);
   const nextRank = LEVELS[rank + 1];
   const unlockNext = nextRank ? LESSONS.filter((l) => rankOf(l) === rank + 1).length : 0;
+  const focus = c.journey.focus;
+  const fm = focus ? c.mastery[focus] : null;
+  const focusLesson = focus ? LESSONS.find((l) => rankOf(l) <= rank && !c.s.lessons[l.id] && (TRACK_TO[trackOf(l).track] ?? []).includes(focus)) : undefined;
   return (
     <div>
       <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#141735] via-[#1E1A5E] to-[#2B1F8A] p-6 sm:p-9 text-white">
@@ -28,15 +32,27 @@ export function CeoAcademyHome() {
           <div>
             <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-medium"><GraduationCap size={14} /> mêtis Academy · Ruta CEO</div>
             <h1 className="mt-4 text-2xl sm:text-3xl font-semibold leading-tight">Aprender a dirigir no se termina.</h1>
-            <p className="mt-3 text-white/70 max-w-lg text-[15px] leading-relaxed">Cada tema tiene niveles. Empiezas por lo esencial y, conforme subes de rango en tu carrera, se abren lecciones más profundas. Primero decides con tu instinto; luego entiendes por qué.</p>
+            <p className="mt-3 text-white/70 max-w-lg text-[15px] leading-relaxed">Cada tema es una ruta de habilidad con niveles. Empiezas por lo esencial y, con tu constancia, se abren lecciones más profundas. Primero decides con tu instinto; luego entiendes por qué.</p>
           </div>
           <div className="rounded-2xl bg-white/10 backdrop-blur p-5">
-            <div className="flex items-baseline justify-between"><span className="text-xs text-white/60">Abiertas para {LEVELS[rank].name}</span><span className="text-sm font-semibold tabular-nums">{done} de {open.length}</span></div>
+            <div className="flex items-baseline justify-between"><span className="text-xs text-white/60">Lecciones abiertas</span><span className="text-sm font-semibold tabular-nums">{done} de {open.length}</span></div>
             <div className="mt-2 h-2 rounded-full bg-white/15 overflow-hidden"><div className="h-full rounded-full bg-gradient-to-r from-indigo-light to-white transition-all duration-700" style={{ width: `${Math.min(100, pct)}%` }} /></div>
-            <p className="mt-3 text-[11px] text-white/60">{nextRank ? `Al llegar a ${nextRank.name} se abren ${unlockNext} lecciones nuevas.` : "Tienes todo abierto. Cada temporada llegan niveles nuevos."} +30 XP por lección.</p>
+            <p className="mt-3 text-[11px] text-white/60">{nextRank ? `Al reunir ${nextRank.min} XP de constancia se abren ${unlockNext} lecciones nuevas.` : "Tienes todo abierto. Cada temporada llegan niveles nuevos."} +30 XP por lección.</p>
           </div>
         </div>
       </section>
+
+      {focus && fm && c.journey.next && (
+        <section className="mt-6 card p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4">
+          <span className="h-11 w-11 shrink-0 rounded-2xl bg-indigo-soft text-indigo grid place-items-center"><Target size={20} /></span>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs text-slate-400">Tu enfoque para {c.journey.next.name}</div>
+            <div className="mt-0.5 font-semibold text-ink">{fm.name} · {fm.value} · {fm.level.name}</div>
+            <p className="mt-1 text-sm text-slate-500">Es la competencia que más te frena para tu siguiente nombramiento. Súbela con decisiones de esa área y con estas lecciones.</p>
+          </div>
+          {focusLesson && <Link href={`/ceo/academy/${focusLesson.id}`} className="btn-primary inline-flex items-center gap-2 shrink-0">{focusLesson.title} <ArrowRight size={15} /></Link>}
+        </section>
+      )}
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
         {TRACKS.map((t) => {
@@ -65,7 +81,7 @@ export function CeoAcademyHome() {
                   return (
                     <div key={k} className="flex items-center gap-1.5">
                       {k > 0 && <span className={clsx("h-0.5 w-3 sm:w-5 rounded-full", ok ? "bg-indigo" : "bg-slate-200")} />}
-                      {l && avail ? <Link href={`/ceo/academy/${l.id}`} title={l.title}>{inner}</Link> : <span title={l ? `${l.title} · se abre en ${LEVELS[rankOf(l)]?.name}` : "Próximamente"}>{inner}</span>}
+                      {l && avail ? <Link href={`/ceo/academy/${l.id}`} title={l.title}>{inner}</Link> : <span title={l ? `${l.title} · se abre con ${LEVELS[rankOf(l)]?.min} XP de constancia` : "Próximamente"}>{inner}</span>}
                     </div>
                   );
                 })}
@@ -78,7 +94,7 @@ export function CeoAcademyHome() {
                     <span className="inline-flex items-center gap-1 font-medium text-indigo whitespace-nowrap">Empezar <ArrowRight size={13} /></span>
                   </Link>
                 ) : lockedL ? (
-                  <span className="flex items-center gap-1.5 text-slate-400"><Lock size={12} /> Nivel {trackOf(lockedL).level} «{lockedL.title}» se abre en {LEVELS[rankOf(lockedL)]?.name}</span>
+                  <span className="flex items-center gap-1.5 text-slate-400"><Lock size={12} /> Nivel {trackOf(lockedL).level} «{lockedL.title}» se abre con {LEVELS[rankOf(lockedL)]?.min} XP</span>
                 ) : (
                   <span className="flex items-center gap-1.5 text-slate-400"><Clock size={12} /> Al día. Los siguientes niveles llegan pronto.</span>
                 )}
@@ -120,7 +136,7 @@ export function LessonPlayer({ lesson }: { lesson: Lesson }) {
     <div className="max-w-xl mx-auto card p-8 text-center">
       <span className="mx-auto h-14 w-14 rounded-2xl bg-slate-100 text-slate-400 grid place-items-center"><Lock size={24} /></span>
       <h1 className="mt-4 text-xl font-semibold">{lesson.title}</h1>
-      <p className="mt-2 text-sm text-slate-500">Esta lección se abre cuando llegues a <b className="text-ink">{LEVELS[rankOf(lesson)]?.name}</b>. Sigue decidiendo en tu empresa y resolviendo tus dilemas del día.</p>
+      <p className="mt-2 text-sm text-slate-500">Esta lección se abre al reunir <b className="text-ink">{LEVELS[rankOf(lesson)]?.min} XP de constancia</b>. Sigue decidiendo en tu empresa y resolviendo tus dilemas del día.</p>
       <Link href="/ceo/academy" className="btn-primary mt-6 inline-flex">Volver a Academy</Link>
     </div>
   );
@@ -146,9 +162,9 @@ export function LessonPlayer({ lesson }: { lesson: Lesson }) {
           </>
         ) : (
           <div className="academy-in flex-1 flex flex-col items-center justify-center text-center">
-            <span className="h-16 w-16 rounded-2xl bg-gradient-to-br from-indigo to-indigo-light text-white grid place-items-center ceo-pop"><Sparkles size={28} /></span>
+            <span className="h-16 w-16 rounded-2xl bg-gradient-to-br from-indigo to-indigo-light text-white grid place-items-center ceo-pop"><Check size={28} strokeWidth={2.6} /></span>
             <h2 className="mt-5 text-2xl font-semibold">Lección completada</h2>
-            <p className="mt-2 text-slate-500 max-w-md">{already ? "Repaso hecho. La teoría se vuelve criterio cuando la aplicas." : "+30 XP y tu racha de hoy está encendida 🔥"}</p>
+            <p className="mt-2 text-slate-500 max-w-md">{already ? "Repaso hecho. La teoría se vuelve criterio cuando la aplicas." : "+30 XP de constancia. Tu racha de hoy está encendida."}</p>
             <div className="mt-7 flex flex-wrap justify-center gap-2">
               {from && <button onClick={() => router.push(`/ceo/caso/${from}`)} className="btn-primary">Volver al caso <ArrowRight size={14} /></button>}
               {c.pending[0] && <button onClick={() => router.push(`/ceo/caso/${c.pending[0].item.id}`)} className={from ? "btn-ghost" : "btn-primary"}>Atender pendiente <ArrowRight size={14} /></button>}

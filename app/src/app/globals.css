@@ -73,4 +73,6 @@ body { font-feature-settings: "tnum" 1; }
 .ceo-pop { animation: ceo-pop .55s cubic-bezier(.2,.7,.2,1) both; }
 @keyframes ceo-ring { 0%,100% { opacity: .9; } 50% { opacity: .35; } }
 .ceo-ring { animation: ceo-ring 1.8s ease-in-out infinite; }
-@media (prefers-reduced-motion: reduce) { .ceo-flame, .ceo-pop, .ceo-ring { animation: none; } }
+@keyframes ceo-rise { from { transform: translateY(12px) scale(.98); opacity: 0; } to { transform: none; opacity: 1; } }
+.ceo-rise { animation: ceo-rise .45s cubic-bezier(.2,.7,.2,1) both; }
+@media (prefers-reduced-motion: reduce) { .ceo-flame, .ceo-pop, .ceo-ring, .ceo-rise { animation: none; } }

@@ -90,11 +90,11 @@ export function welcomeEmail(i: { pack?: CompanyPack; name: string; appUrl: stri
   const subject = `${first}, tu nombramiento como Director General de ${pk.name}`;
   const preheader = "A partir de mañana la silla es tuya. Esto es lo que sigue.";
   const steps = [
-    ["📬", "Tu equipo te escribe", `Entre las ${i.windowStart}:00 y las ${i.windowEnd}:00 te llegan de 2 a 4 asuntos al día: correos, WhatsApps, reportes y juntas.`],
-    ["⏳", "Todo tiene plazo", "Si no respondes a tiempo, alguien decide por ti. Y lo que decides regresa días después."],
-    ["🏆", "Aprueba todos los rubros", "Si al cierre todos tus indicadores pasan la línea, asciendes a otra empresa de otro giro (y más exigente)."],
-    ["📚", "Aprende en el camino", "Cada asunto se conecta con una lección corta de mêtis Academy, basada en «De CERO a CEO»."],
-  ].map(([ic, t, d]) => `<tr><td width="34" valign="top" style="padding:8px 0;font-size:18px">${ic}</td><td style="padding:8px 0;font-family:${FONT}"><div style="font-size:14px;font-weight:600;color:${INK}">${t}</div><div style="font-size:13px;line-height:20px;color:${SLATE}">${d}</div></td></tr>`).join("");
+    ["1", "Tu equipo te escribe", `Entre las ${i.windowStart}:00 y las ${i.windowEnd}:00 te llegan de 2 a 4 asuntos al día: correos, WhatsApps, reportes y juntas.`],
+    ["2", "Todo tiene plazo", "Si no respondes a tiempo, alguien decide por ti. Y lo que decides regresa días después."],
+    ["3", "Aprueba todos los rubros", "Si al cierre todos tus indicadores pasan la línea, asciendes a otra empresa de otro giro (y más exigente)."],
+    ["4", "Aprende en el camino", "Cada asunto se conecta con una lección corta de mêtis Academy, basada en «De CERO a CEO»."],
+  ].map(([ic, t, d]) => `<tr><td width="34" valign="top" style="padding:8px 0"><div style="width:22px;height:22px;border-radius:11px;background:#EEEBFD;color:${INDIGO};font-family:${FONT};font-size:12px;font-weight:700;line-height:22px;text-align:center">${ic}</div></td><td style="padding:8px 0;font-family:${FONT}"><div style="font-size:14px;font-weight:600;color:${INK}">${t}</div><div style="font-size:13px;line-height:20px;color:${SLATE}">${d}</div></td></tr>`).join("");
   const chair = pk.roles.chair;
   const letter = pk.welcome.split(/\n+/).filter(Boolean);
   const body = `
@@ -125,12 +125,12 @@ export function caseEmail(i: { pack?: CompanyPack; name: string; appUrl: string;
   const hrs = item.deadlineH ?? 24;
   const subject =
     item.channel === "email" ? item.subject
-    : item.channel === "whatsapp" ? `💬 ${who}: ${plain(item.preview).slice(0, 70)}${item.preview.length > 70 ? "…" : ""}`
-    : item.channel === "llamada" ? `📞 Llamada perdida de ${who} · te dejó un mensaje de voz`
-    : item.channel === "junta" ? `📅 Junta: ${item.subject}`
-    : `📊 ${item.subject}`;
+    : item.channel === "whatsapp" ? `WhatsApp · ${who}: ${plain(item.preview).slice(0, 70)}${item.preview.length > 70 ? "…" : ""}`
+    : item.channel === "llamada" ? `Llamada perdida de ${who} · te dejó un mensaje de voz`
+    : item.channel === "junta" ? `Junta:  ${item.subject}`
+    : `Reporte: ${item.subject}`;
   const preheader = plain(item.preview);
-  const deadline = `<div style="margin:18px 0 0">${chip(`⏳ Responde en las próximas ${hrs} h`, "#FEF3DF", "#9A6408")}</div>`;
+  const deadline = `<div style="margin:18px 0 0">${chip(`Responde en las próximas ${hrs} h`, "#FEF3DF", "#9A6408")}</div>`;
   let content = "";
   if (item.channel === "email") {
     content = `
@@ -142,14 +142,14 @@ export function caseEmail(i: { pack?: CompanyPack; name: string; appUrl: string;
     content = `
       <div style="height:16px"></div>
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-radius:16px;overflow:hidden">
-        <tr><td bgcolor="${WA}" style="padding:10px 14px;font-family:${FONT};font-size:13px;font-weight:600;color:#fff">💬 WhatsApp · ${esc(personOf(pk, item.from).name)}</td></tr>
+        <tr><td bgcolor="${WA}" style="padding:10px 14px;font-family:${FONT};font-size:13px;font-weight:600;color:#fff">WhatsApp · ${esc(personOf(pk, item.from).name)}</td></tr>
         <tr><td bgcolor="#ECE5DD" style="padding:14px 12px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">${bubbles}</table></td></tr>
       </table>`;
   } else if (item.channel === "llamada") {
     content = `
       <div style="height:16px"></div>
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#FDE7E8;border-radius:14px"><tr><td style="padding:14px 16px;font-family:${FONT}">
-        <div style="font-size:13px;font-weight:600;color:${CORAL}">📞 Llamada perdida · mensaje de voz</div>
+        <div style="font-size:13px;font-weight:600;color:${CORAL}">Llamada perdida · mensaje de voz</div>
         <div style="font-size:15px;line-height:23px;color:${INK};margin-top:8px;font-style:italic">«${rich(item.body.slice(0, 2).join(" "))}${item.body.length > 2 ? " …" : ""}»</div>
       </td></tr></table>`;
   } else if (item.channel === "junta") {
@@ -177,7 +177,7 @@ export function caseEmail(i: { pack?: CompanyPack; name: string; appUrl: string;
       ${button(item.channel === "email" ? "Responder" : "Abrir y decidir", link)}
     </td></tr></table>
     ${deadline}`;
-  const footer = i.streak > 0 ? `🔥 Llevas ${i.streak} ${i.streak === 1 ? "día" : "días"} de racha.` : "";
+  const footer = i.streak > 0 ? `Llevas ${i.streak} ${i.streak === 1 ? "día" : "días"} de racha.` : "";
   const html = shell({ pack: pk, preheader, title: subject, body, appUrl: i.appUrl, footer });
   const text = `${personOf(pk, item.from).name} (${personOf(pk, item.from).role}) · ${CH_LABEL[item.channel]}\n\n${item.body.map(plain).join("\n\n")}\n\n${plain(item.ask)}\nResponder: ${link}\n\nTienes ${hrs} h para responder.`;
   return { subject, html, text, fromName: senderName(pk, item.from), preheader };
@@ -190,7 +190,7 @@ export function reminderEmail(i: { pack?: CompanyPack; name: string; appUrl: str
   const who = personOf(pk, item.from).name;
   const first = firstOf(i.name);
   const left = i.hoursLeft <= 1 ? "menos de una hora" : `${Math.round(i.hoursLeft)} horas`;
-  const subject = `⏳ ${firstOfCast(pk, item.from)} sigue esperando tu respuesta`;
+  const subject = `${firstOfCast(pk, item.from)} sigue esperando tu respuesta`;
   const preheader = `Te quedan ${left}. Si no respondes, se decide sin ti.`;
   const body = `
     ${senderRow(pk, pk.roles.assistant)}
@@ -222,9 +222,9 @@ export function digestEmail(i: DigestInput): Mailable {
   const pk = packIn(i);
   const first = firstOf(i.name) || "Director";
   const subject = i.pending.length
-    ? `☀️ Día ${i.day}: tienes ${i.pending.length} ${i.pending.length === 1 ? "asunto pendiente" : "asuntos pendientes"} en ${pk.short}`
-    : `☀️ Día ${i.day} en ${pk.short}: hoy te esperan ${i.todayCount} ${i.todayCount === 1 ? "asunto" : "asuntos"}`;
-  const preheader = `Salud de tu empresa: ${i.health}/100 · ${i.streak > 0 ? `🔥 ${i.streak} días de racha` : "Enciende tu racha hoy"}`;
+    ? `Día ${i.day}: tienes ${i.pending.length} ${i.pending.length === 1 ? "asunto pendiente" : "asuntos pendientes"} en ${pk.short}`
+    : `Día ${i.day} en ${pk.short}: hoy te esperan ${i.todayCount} ${i.todayCount === 1 ? "asunto" : "asuntos"}`;
+  const preheader = `Salud de tu empresa: ${i.health}/100 · ${i.streak > 0 ? `${i.streak} días de racha` : "Enciende tu racha hoy"}`;
   const line = i.passLine ?? 60;
   const kpiRows = KPI_ORDER.map((k) => {
     const label = esc(pk.kpiLabel[k]);
@@ -242,7 +242,7 @@ export function digestEmail(i: DigestInput): Mailable {
       <td style="font-family:${FONT}"><a href="${base(i.appUrl)}/caso/${e.item.id}" style="font-size:14px;font-weight:600;color:${INK};text-decoration:none">${esc(e.item.subject)}</a><div style="font-size:12px;color:${MUTED}">${esc(personOf(pk, e.item.from).name)}</div></td>
     </tr></table></td></tr>`).join("");
   const expired = i.expiredYesterday.length
-    ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 18px;background:#FDE7E8;border-radius:12px"><tr><td style="padding:12px 14px;font-family:${FONT};font-size:13px;line-height:20px;color:${INK}">⚠️ Ayer se ${i.expiredYesterday.length === 1 ? "venció un asunto" : `vencieron ${i.expiredYesterday.length} asuntos`} sin tu respuesta: <b>${i.expiredYesterday.map((e) => esc(e.item.subject)).join("</b>, <b>")}</b>. Alguien decidió por ti.</td></tr></table>`
+    ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 18px;background:#FDE7E8;border-radius:12px"><tr><td style="padding:12px 14px;font-family:${FONT};font-size:13px;line-height:20px;color:${INK}">Ayer se ${i.expiredYesterday.length === 1 ? "venció un asunto" : `vencieron ${i.expiredYesterday.length} asuntos`} sin tu respuesta: <b>${i.expiredYesterday.map((e) => esc(e.item.subject)).join("</b>, <b>")}</b>. Alguien decidió por ti.</td></tr></table>`
     : "";
   const body = `
     <div style="font-family:${FONT};font-size:11px;font-weight:700;letter-spacing:1px;color:${INDIGO}">${esc(pk.name.toUpperCase())} · DÍA ${i.day} DE ${i.seasonDays}</div>
@@ -250,7 +250,7 @@ export function digestEmail(i: DigestInput): Mailable {
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 18px"><tr>
       <td width="33%" align="center" style="padding:12px 4px;background:${CANVAS};border-radius:12px;font-family:${FONT}"><div style="font-size:22px;font-weight:700;color:${INK}">${i.health}</div><div style="font-size:11px;color:${MUTED}">Salud /100</div></td>
       <td width="8"></td>
-      <td width="33%" align="center" style="padding:12px 4px;background:${i.streak > 0 ? "#FEF3DF" : CANVAS};border-radius:12px;font-family:${FONT}"><div style="font-size:22px;font-weight:700;color:${INK}">🔥 ${i.streak}</div><div style="font-size:11px;color:${MUTED}">días de racha</div></td>
+      <td width="33%" align="center" style="padding:12px 4px;background:${i.streak > 0 ? "#FEF3DF" : CANVAS};border-radius:12px;font-family:${FONT}"><div style="font-size:22px;font-weight:700;color:${INK}">${i.streak}</div><div style="font-size:11px;color:${MUTED}">días de racha</div></td>
       <td width="8"></td>
       <td width="33%" align="center" style="padding:12px 4px;background:${CANVAS};border-radius:12px;font-family:${FONT}"><div style="font-size:22px;font-weight:700;color:${INK}">${i.xp}</div><div style="font-size:11px;color:${MUTED}">XP · ${esc(i.level)}</div></td>
     </tr></table>
@@ -270,11 +270,10 @@ export function digestEmail(i: DigestInput): Mailable {
 export function streakEmail(i: { pack?: CompanyPack; name: string; appUrl: string; streak: number; pending: number; lessonTitle?: string; lessonId?: string }): Mailable {
   const pk = packIn(i);
   const first = firstOf(i.name) || "Director";
-  const subject = `🔥 ${first}, tu racha de ${i.streak} ${i.streak === 1 ? "día" : "días"} se apaga hoy`;
+  const subject = `${first}, tu racha de ${i.streak} ${i.streak === 1 ? "día" : "días"} se apaga hoy`;
   const preheader = "Con una sola decisión o una lección de 4 minutos la mantienes viva.";
   const body = `
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td align="center" style="padding:6px 0 14px">
-      <div style="font-size:52px;line-height:60px">🔥</div>
       <div style="font-family:${FONT};font-size:40px;line-height:44px;font-weight:700;color:${INK}">${i.streak}</div>
       <div style="font-family:${FONT};font-size:13px;color:${MUTED}">${i.streak === 1 ? "día de racha" : "días de racha"}</div>
     </td></tr></table>
@@ -301,7 +300,7 @@ export function nudgeEmail(i: { pack?: CompanyPack; name: string; appUrl: string
     <div style="height:18px"></div>
     ${p(`${first ? esc(first) + ", " : ""}llevas ${i.days} días sin pasar por la oficina y ya empiezan los rumores.`)}
     ${i.pending.length ? p(`Tienes <b style="color:${INK}">${i.pending.length} ${i.pending.length === 1 ? "asunto" : "asuntos"}</b> en tu escritorio${names.length ? `: ${names.map((n) => `<b style="color:${INK}">${esc(n)}</b>`).join(", ")} ${names.length === 1 ? "espera" : "esperan"} tu respuesta` : ""}.`) : ""}
-    ${p(`${esc(personOf(pk, pk.roles.chair).name)} me preguntó ayer si todo estaba bien. Le dije que sí. No me hagas quedar mal 🙂`)}
+    ${p(`${esc(personOf(pk, pk.roles.chair).name)} me preguntó ayer si todo estaba bien. Le dije que sí. No me hagas quedar mal.`)}
     ${button("Volver a la oficina", base(i.appUrl))}
     ${p(`— ${esc(firstOfCast(pk, pk.roles.assistant))}`, "font-style:italic;margin:16px 0 0")}`;
   const html = shell({ pack: pk, preheader, title: subject, body, appUrl: i.appUrl });
@@ -313,7 +312,7 @@ export function nudgeEmail(i: { pack?: CompanyPack; name: string; appUrl: string
 export function seasonEmail(i: { pack?: CompanyPack; name: string; appUrl: string; health: number; xp: number; level: string; archetype: string; archetypeText: string; decisions: number; bestStreak: number; passed?: boolean; passLine?: number; kpis?: Kpis }): Mailable {
   const pk = packIn(i);
   const first = firstOf(i.name) || "Director";
-  const subject = i.passed === undefined ? `🏁 ${first}, cerraste tu temporada en ${pk.short}` : i.passed ? `🏆 ${first}, aprobaste ${pk.short}: te espera otra empresa` : `🏁 ${first}, el consejo de ${pk.short} pide otra vuelta`;
+  const subject = i.passed === undefined ? `${first}, cerraste tu temporada en ${pk.short}` : i.passed ? `${first}, aprobaste ${pk.short}: te espera otra empresa` : `${first}, el consejo de ${pk.short} pide otra vuelta`;
   const preheader = `Tu estilo de dirección: ${i.archetype}. Mira cómo quedó tu empresa.`;
   const stat = (v: string, l: string) => `<td width="25%" align="center" style="padding:12px 4px;background:${CANVAS};border-radius:12px;font-family:${FONT}"><div style="font-size:20px;font-weight:700;color:${INK}">${v}</div><div style="font-size:11px;color:${MUTED}">${l}</div></td>`;
   const body = `
@@ -321,14 +320,14 @@ export function seasonEmail(i: { pack?: CompanyPack; name: string; appUrl: strin
     <div style="height:18px"></div>
     <div style="font-family:${FONT};font-size:22px;line-height:30px;font-weight:600;color:${INK};margin:0 0 12px">${esc(first)}, el consejo revisó tu gestión.</div>
     ${p(i.passed ? `Aprobaste todos los rubros. Hay otra empresa, de otro giro, que necesita a alguien como tú. Va a ser más exigente.` : i.passed === false ? `Algunos rubros quedaron por debajo de ${i.passLine ?? 60}. Puedes volver a dirigir ${esc(pk.name)} y probar otros caminos.` : "No todo salió como querías. Así es esto. Lo importante es que ahora sabes cómo decides cuando la presión es real.")}
-    ${i.kpis ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 16px">${KPI_ORDER.map((k) => { const v = i.kpis![k]; const ok = v >= (i.passLine ?? 60); return `<tr><td style="padding:4px 0;font-family:${FONT};font-size:13px;color:${SLATE}">${esc(pk.kpiLabel[k])}</td><td align="right" style="padding:4px 0;font-family:${FONT};font-size:13px;font-weight:600;color:${ok ? INDIGO : CORAL}">${v} ${ok ? "✓" : "✗"}</td></tr>`; }).join("")}</table>` : ""}
+    ${i.kpis ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 16px">${KPI_ORDER.map((k) => { const v = i.kpis![k]; const ok = v >= (i.passLine ?? 60); return `<tr><td style="padding:4px 0;font-family:${FONT};font-size:13px;color:${SLATE}">${esc(pk.kpiLabel[k])}</td><td align="right" style="padding:4px 0;font-family:${FONT};font-size:13px;font-weight:600;color:${ok ? INDIGO : CORAL}">${v} · ${ok ? "en línea" : "bajo línea"}</td></tr>`; }).join("")}</table>` : ""}
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:6px 0 18px;background:${INK};border-radius:16px"><tr><td style="padding:18px 20px;font-family:${FONT}">
       <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:#A9A3F7">TU ESTILO DE DIRECCIÓN</div>
       <div style="font-size:24px;font-weight:700;color:#fff;margin:4px 0 6px">${esc(i.archetype)}</div>
       <div style="font-size:14px;line-height:21px;color:#D6D8EC">${esc(i.archetypeText)}</div>
     </td></tr></table>
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 20px"><tr>
-      ${stat(`${i.health}`, "Salud /100")}<td width="6"></td>${stat(`${i.decisions}`, "decisiones")}<td width="6"></td>${stat(`🔥 ${i.bestStreak}`, "mejor racha")}<td width="6"></td>${stat(`${i.xp}`, esc(i.level))}
+      ${stat(`${i.health}`, "Salud /100")}<td width="6"></td>${stat(`${i.decisions}`, "decisiones")}<td width="6"></td>${stat(`${i.bestStreak}`, "mejor racha")}<td width="6"></td>${stat(`${i.xp}`, esc(i.level))}
     </tr></table>
     ${button(i.passed === undefined ? "Ver mi perfil completo" : "Ver mi carrera", `${base(i.appUrl)}/${i.passed === undefined ? "perfil" : "carrera"}`)}
     ${p(`— ${esc(personOf(pk, pk.roles.board).name)}, ${esc(personOf(pk, pk.roles.board).role.toLowerCase())}`, "font-style:italic;margin:16px 0 0")}`;

@@ -7,7 +7,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import clsx from "clsx";
-import { ArrowRight, Check, Ear, Flag, Lightbulb, Lock, Megaphone, MessagesSquare, Award, FlaskConical, GraduationCap, Hourglass, LineChart, Coins, Users2, Footprints, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, Check, Ear, Flag, Lightbulb, Lock, Megaphone, MessagesSquare, Award, FlaskConical, GraduationCap, Hourglass, LineChart, Coins, Users2, Footprints, ShieldCheck } from "lucide-react";
 import { ADOPT, GOAL, LEVERS, canUse, changeEffect, leverById, startValue, weeksFor, type ChangeSim } from "@/lib/ceo/change";
 import { firstName, personOf } from "@/lib/ceo/cast";
 import { scaled } from "@/lib/ceo/engine";
@@ -98,7 +98,7 @@ function Intro() {
         <div className="mt-5 grid gap-3 sm:grid-cols-3 text-sm text-slate-600">
           <div className="rounded-2xl bg-canvas p-4"><b className="text-ink block">1. Conoce a cada quien</b>Cada persona pasa por resiste, escucha, prueba y adopta. Una entrevista te revela qué le mueve.</div>
           <div className="rounded-2xl bg-canvas p-4"><b className="text-ink block">2. Usa las palancas</b>Cada palanca cuesta semanas. En el momento justo mueve a la gente; a destiempo, te cuesta credibilidad.</div>
-          <div className="rounded-2xl bg-canvas p-4"><b className="text-ink block">3. Aprovecha la red</b>Lo que pasa con un jefe baja a su equipo. Los formadores de opinión <Sparkles size={11} className="inline text-indigo -mt-0.5" /> pesan doble.</div>
+          <div className="rounded-2xl bg-canvas p-4"><b className="text-ink block">3. Aprovecha la red</b>Lo que pasa con un jefe baja a su equipo. Los formadores de opinión <Megaphone size={11} className="inline text-indigo -mt-0.5" /> pesan doble.</div>
         </div>
         <button onClick={c.startChange} className="btn-primary mt-5 w-full sm:w-auto">Arrancar el cambio <ArrowRight size={16} /></button>
       </section>
@@ -257,7 +257,7 @@ function PersonPanel({ st, known, onClose }: { st: Stakeholder; known: boolean; 
       <div className="flex items-start gap-3">
         <Avatar id={st.id} size={38} />
         <div className="min-w-0 flex-1">
-          <div className="font-semibold text-ink">{p.name}{st.leader && <span className="ml-2 chip bg-indigo-soft text-indigo text-[10px] gap-1"><Sparkles size={10} /> Formador de opinión</span>}</div>
+          <div className="font-semibold text-ink">{p.name}{st.leader && <span className="ml-2 chip bg-indigo-soft text-indigo text-[10px] gap-1"><Megaphone size={10} /> Formador de opinión</span>}</div>
           <div className="text-xs text-slate-500">{p.role}{p.reportsTo && p.reportsTo !== "ceo" ? ` · reporta a ${firstName(c.pack, p.reportsTo)}` : p.reportsTo === "ceo" ? " · te reporta a ti" : ""}</div>
         </div>
         <button onClick={onClose} className="text-xs text-slate-400 hover:text-ink">Cerrar</button>

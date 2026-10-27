@@ -50,7 +50,6 @@ export function PeopleView() {
             return (
               <div key={t} className="py-3">
                 <button onClick={() => setOpen(isOpen ? null : t)} className="w-full flex items-center gap-3 text-left">
-                  <span className="text-xl w-8 text-center">{th.emoji}</span>
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-semibold text-ink">{th.label}</div>
                     <div className="text-xs text-slate-500">{th.hint}</div>
@@ -60,10 +59,10 @@ export function PeopleView() {
                   <ChevronDown size={16} className={clsx("text-slate-300 transition-transform", isOpen && "rotate-180")} />
                 </button>
                 {isOpen && (
-                  <div className="mt-3 pl-11 space-y-4 academy-in">
+                  <div className="mt-3 space-y-4 academy-in">
                     {mine.length === 0 && <p className="text-sm text-slate-500">Todavía no te ha tocado ninguno de este tema. Llegan en tu dilema del día.</p>}
                     {mine.map((d) => <div key={d.id} className="rounded-2xl border border-slate-100 p-4"><DilemmaView d={d} picked={answered[d.id].option} compact /></div>)}
-                    {locked.length > 0 && <p className="text-xs text-slate-400 inline-flex items-center gap-1.5"><Lock size={12} /> {locked.length} {locked.length === 1 ? "caso más delicado se abre" : "casos más delicados se abren"} al llegar a {LEVELS[Math.min(...locked.map((d) => d.min))].name}.</p>}
+                    {locked.length > 0 && <p className="text-xs text-slate-400 inline-flex items-center gap-1.5"><Lock size={12} /> {locked.length} {locked.length === 1 ? "caso más delicado se abre" : "casos más delicados se abren"} al reunir {LEVELS[Math.min(...locked.map((d) => d.min))].min} XP de constancia.</p>}
                   </div>
                 )}
               </div>

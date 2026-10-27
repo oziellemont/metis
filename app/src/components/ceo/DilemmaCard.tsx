@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import clsx from "clsx";
-import { ArrowRight, BookOpen, Check, Sparkles, Users } from "lucide-react";
+import { ArrowRight, BookOpen, Check, Lightbulb, Users } from "lucide-react";
 import { STAGE_LABEL, THEMES, bestOf, type Dilemma } from "@/lib/ceo/dilemmas";
 import { XP, rand01 } from "@/lib/ceo/engine";
 import { lessonById } from "@/lib/ceo/lessons";
@@ -24,7 +24,7 @@ export function DilemmaView({ d, picked, onPick, compact }: { d: Dilemma; picked
   const done = picked !== null;
   return (
     <div>
-      <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-indigo"><span>{th.emoji} {th.label}</span></div>
+      <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-indigo"><span>{th.label}</span></div>
       <div className="mt-2 text-sm font-semibold text-ink">{d.who}</div>
       <p className={clsx("mt-1.5 text-slate-600 leading-relaxed", compact ? "text-sm" : "text-[15px]")}>{d.text}</p>
       <div className="mt-4 font-semibold text-ink">{d.ask}</div>
@@ -40,7 +40,7 @@ export function DilemmaView({ d, picked, onPick, compact }: { d: Dilemma; picked
                   <div className="text-sm text-ink">{o.text}</div>
                   {done && (
                     <div className="mt-2 academy-in">
-                      <span className={clsx("chip text-[10px]", VERDICT_CLS[o.score])}>{o.score === best ? "★ " : ""}{VERDICT[o.score]}</span>
+                      <span className={clsx("chip text-[10px]", VERDICT_CLS[o.score])}>{VERDICT[o.score]}</span>
                       <p className="mt-1.5 text-xs text-slate-500 leading-relaxed">{o.why}</p>
                     </div>
                   )}
@@ -52,7 +52,7 @@ export function DilemmaView({ d, picked, onPick, compact }: { d: Dilemma; picked
       </div>
       {done && (
         <div className="mt-4 rounded-xl bg-indigo-soft/60 px-4 py-3 text-sm text-ink academy-in">
-          <div className="flex items-start gap-2"><Sparkles size={15} className="text-indigo mt-0.5 shrink-0" /><span>{d.stage ? <><b>{STAGE_LABEL[d.stage]}.</b> </> : null}{th.hint}</span></div>
+          <div className="flex items-start gap-2"><Lightbulb size={15} className="text-indigo mt-0.5 shrink-0" /><span>{d.stage ? <><b>{STAGE_LABEL[d.stage]}.</b> </> : null}{th.hint}</span></div>
           {lesson && <Link href={`/ceo/academy/${lesson.id}`} className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-indigo"><BookOpen size={13} /> La teoría: {lesson.title} <ArrowRight size={12} /></Link>}
         </div>
       )}

@@ -6,6 +6,7 @@ import { KPI_KEYS } from "@/lib/ceo/engine";
 import { COMPANIES } from "@/lib/ceo/companies";
 import { useCeo } from "./CeoProvider";
 import { OrgMap } from "./OrgMap";
+import { CompanyMark } from "./ui";
 
 /** Tu empresa: ficha, mapa de relaciones, cómo se mide y glosario de la industria. */
 export function CompanyView() {
@@ -19,7 +20,7 @@ export function CompanyView() {
     <div className="space-y-5">
       <section className="card p-5 sm:p-6">
         <div className="flex items-start gap-4">
-          <span className="h-14 w-14 rounded-2xl bg-indigo-soft grid place-items-center text-3xl shrink-0">{pk.emoji}</span>
+          <CompanyMark name={pk.name} size={56} />
           <div className="min-w-0">
             <div className="text-[11px] font-semibold uppercase tracking-wider text-indigo">{pk.industry} · {pk.city}</div>
             <h1 className="text-2xl font-semibold text-ink">{pk.name}</h1>
@@ -34,7 +35,7 @@ export function CompanyView() {
             <div className="text-xs font-semibold text-slate-500">¿Prefieres empezar en otra industria? Puedes cambiar mientras no tomes tu primera decisión.</div>
             <div className="mt-3 flex flex-wrap gap-2">
               {COMPANIES.filter((co) => co.id !== pk.id).map((co) => (
-                <button key={co.id} onClick={() => window.confirm(`¿Cambiar a ${co.name}? Tu día 1 empieza de nuevo.`) && c.switchCompany(co.id)} className="chip bg-white border border-slate-200 text-ink px-3 py-1.5 text-xs hover:border-indigo/40">{co.emoji} {co.name}</button>
+                <button key={co.id} onClick={() => window.confirm(`¿Cambiar a ${co.name}? Tu día 1 empieza de nuevo.`) && c.switchCompany(co.id)} className="chip bg-white border border-slate-200 text-ink px-3 py-1.5 text-xs hover:border-indigo/40">{co.name}</button>
               ))}
             </div>
           </div>

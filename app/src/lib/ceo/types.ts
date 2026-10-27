@@ -219,8 +219,6 @@ export interface CompanyPack {
   /** Nombre corto para textos («en Cumbre»). */
   short: string;
   industry: string;
-  /** Emoji o icono corto del giro. */
-  emoji: string;
   city: string;
   tagline: string;
   pitch: string;

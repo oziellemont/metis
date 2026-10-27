@@ -85,7 +85,7 @@ const ITEMS: Item[] = [
       "Director, buenas tardes. Soy Maru, gerente de Brasa Andares.",
       "Tengo un problema grande. La cocina dice que si no reparten propinas con ellos, el sábado no entran. Y el sábado es el día más fuerte.",
       "Los meseros dicen que la propina es suya porque ellos atienden. Los de cocina dicen que sin ellos no hay plato.",
-      "Cada sucursal lo maneja diferente. ¿Qué hago? 😟",
+      "Cada sucursal lo maneja diferente. ¿Qué hago?",
     ],
     data: { title: "Contexto", rows: [["Propinas en Andares", "≈ $95 mil a la semana"], ["Sueldo base de un cocinero", "$2,400 a la semana"], ["Meseros con propina", "≈ $4,800 a la semana"], ["Rotación de cocina", "68% anual"]] },
     ask: "¿Qué decides?",
@@ -126,7 +126,7 @@ const ITEMS: Item[] = [
     id: "gb-d3-brote", day: 3, slot: 1, channel: "llamada", from: "maru",
     subject: "Llamada perdida · Maru (Brasa Andares)", preview: "Director, 14 clientes con intoxicación después de comer en Andares el sábado. Ya hay un video en redes…",
     body: [
-      "🔴 Mensaje de voz · 0:47",
+      " Mensaje de voz · 0:47",
       "«Director, es urgente. Catorce clientes reportan intoxicación después de comer el sábado en Andares. Dos están en el hospital, estables. Ya hay un video en redes con 400 mil vistas.»",
       "«Creemos que fue la salsa de la casa: el refrigerador de la cocina fría falló el viernes en la noche y nadie lo reportó. Sanidad viene mañana. ¿Qué hago con el restaurante hoy?»",
     ],
@@ -171,7 +171,7 @@ const ITEMS: Item[] = [
     subject: "Chef Andrés", preview: "Ya quitamos los platillos. La cocina de Chapultepec bajó tiempos 20%. Pero…",
     trigger: { item: "gb-d2-menu", options: ["a", "b"] },
     body: [
-      "Director, primera semana con el menú corto 👨‍🍳",
+      "Director, primera semana con el menú corto",
       "La cocina de Chapultepec bajó tiempos de salida 20% y la merma bajó a 5.8%.",
       "Pero algunos clientes de años preguntan por los platillos que quitamos. ¿Hacemos algo?",
     ],
@@ -310,7 +310,7 @@ const ITEMS: Item[] = [
     ask: "Los dos fundadores esperan tu respuesta.",
     involves: ["lourdes", "beatriz"],
     options: [
-      { id: "a", stance: {beatriz: 2, ignacio: -1, lourdes: -1}, text: "«Antes de decidir quién vende qué, necesitamos un protocolo familiar y un consejo con dos independientes. Les propongo hacerlo en 90 días y después decidir con información.»", reply: ["(Lourdes) Es lo que la familia necesitaba desde hace años.", "(Ignacio) Está bien. Pero que la arrachera no se toque sin mí 😅"], outcome: "Pasas la discusión de «tú contra mí» a «cómo decidimos». Ninguno gana hoy.", effects: { consejo: 5, equipo: 1, caja: -1 }, style: { horizonte: 2, estilo: 2 }, score: 3 },
+      { id: "a", stance: {beatriz: 2, ignacio: -1, lourdes: -1}, text: "«Antes de decidir quién vende qué, necesitamos un protocolo familiar y un consejo con dos independientes. Les propongo hacerlo en 90 días y después decidir con información.»", reply: ["(Lourdes) Es lo que la familia necesitaba desde hace años.", "(Ignacio) Está bien. Pero que la arrachera no se toque sin mí"], outcome: "Pasas la discusión de «tú contra mí» a «cómo decidimos». Ninguno gana hoy.", effects: { consejo: 5, equipo: 1, caja: -1 }, style: { horizonte: 2, estilo: 2 }, score: 3 },
       { id: "b", stance: {lourdes: 2, ignacio: -2}, text: "«Recomiendo buscar al fondo. Brasa necesita capital y profesionalización, y el tiempo corre.»", reply: ["(Lourdes) Gracias.", "(Ignacio se levanta de la mesa.)"], outcome: "Tienes un argumento sólido. Acabas de elegir un hermano.", effects: { consejo: -3, caja: 2 }, style: { riesgo: 2, conflicto: 2 }, score: 1 },
       { id: "c", stance: {ignacio: 2, lourdes: -2}, text: "«Recomiendo crecer con recursos propios. La marca es su mayor activo y un fondo la puede presionar.»", reply: ["(Ignacio) Gracias.", "(Lourdes) Entonces esto lo voy a resolver de otra forma."], outcome: "Respaldas al fundador. Lourdes empieza a buscar comprador para su parte.", effects: { consejo: -3, equipo: 1 }, style: { riesgo: -2, conflicto: 1 }, score: 1 },
     ],
@@ -349,7 +349,6 @@ export const BRASA: CompanyPack = {
   name: "Grupo Brasa",
   short: "Brasa",
   industry: "Restaurantes",
-  emoji: "🔥",
   city: "Guadalajara, Jal.",
   tagline: "34 restaurantes, dos hermanos fundadores y las apps comiéndose el margen.",
   pitch: "Cadena de restaurantes de cortes y cocina mexicana a la brasa. 34 sucursales en Jalisco, Bajío y CDMX, 1,450 colaboradores y $980 millones de ventas. Los dos hermanos fundadores no se ponen de acuerdo sobre el futuro y te contrataron para decidir el rumbo.",
