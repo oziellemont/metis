@@ -1,11 +1,12 @@
 "use client";
 import Link from "next/link";
 import clsx from "clsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowRight, Award, Check, Crown, Lock, RotateCcw, X } from "lucide-react";
 import { KPI_KEYS, nextCompanyOf, profileOf, rulesOf } from "@/lib/ceo/engine";
 import { COMPANIES, UPCOMING, companyById } from "@/lib/ceo/companies";
 import { STAGES } from "@/lib/ceo/journey";
+import { celebrate, celebrateOnce } from "@/lib/ceo/celebrate";
 import { COMPETENCY_IDS, countAtLeast } from "@/lib/ceo/mastery";
 import { useCeo } from "./CeoProvider";
 import { Bar, CompanyMark } from "./ui";
@@ -27,6 +28,7 @@ export function Career() {
   const receive = () => {
     const name = c.appoint();
     if (!name) return;
+    celebrate("appointment");
     const best = COMPETENCY_IDS.slice().sort((a, b) => m[b].value - m[a].value)[0];
     setAppointed({
       stage: name,
@@ -38,6 +40,8 @@ export function Career() {
       ],
     });
   };
+  const passedNow = c.seasonDone && v.passed;
+  useEffect(() => { if (passedNow) celebrateOnce(`company:${pk.id}:${c.s.startedAt}:${career.length}`, "company"); }, [passedNow, pk.id, c.s.startedAt, career.length]);
   const confirmAdvance = () => {
     const msg = v.passed ? `¿Listo para dejar ${pk.name}? Tu siguiente empresa será una sorpresa.` : `¿Volver a empezar ${pk.name}? Conservas tu XP, tu racha y lo aprendido.`;
     if (window.confirm(msg)) c.advance();

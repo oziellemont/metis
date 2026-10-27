@@ -1,7 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Bell, Cloud, Clock, FastForward, Mail, MessageCircle, RotateCcw, Save, Zap } from "lucide-react";
+import { Bell, Cloud, Clock, FastForward, Mail, MessageCircle, RotateCcw, Save, Volume2, Zap } from "lucide-react";
+import { playChime, setSoundOn, soundOn } from "@/lib/ceo/celebrate";
 import { hasSupabase, supabaseBrowser } from "@/lib/supabase/client";
 import { useCeo } from "./CeoProvider";
 
@@ -15,6 +16,9 @@ export function CeoSettings() {
   const [saved, setSaved] = useState(false);
   const [confirm, setConfirm] = useState(false);
   const [perm, setPerm] = useState<string>("default");
+  const [sound, setSound] = useState(true);
+  useEffect(() => { setSound(soundOn()); }, []);
+  const toggleSound = (on: boolean) => { setSound(on); setSoundOn(on); if (on) playChime("company"); };
   useEffect(() => { if (typeof Notification !== "undefined") setPerm(Notification.permission); }, []);
   useEffect(() => { setF({ name: c.s.name, alias: c.s.alias, ...c.s.settings }); }, [c.ready]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -58,6 +62,10 @@ export function CeoSettings() {
         <label className="flex items-start gap-3 rounded-2xl bg-slate-50 p-4 text-sm">
           <input type="checkbox" checked={f.intensivo} onChange={(e) => set("intensivo", e.target.checked)} className="accent-indigo h-4 w-4 mt-0.5" />
           <span><b className="inline-flex items-center gap-1 text-ink"><Zap size={14} /> Modo intensivo</b><br /><span className="text-slate-500">Todo lo del día te llega junto al inicio de tu horario, con 5 minutos entre mensaje y mensaje.</span></span>
+        </label>
+        <label className="flex items-start gap-3 rounded-2xl bg-slate-50 p-4 text-sm">
+          <input type="checkbox" checked={sound} onChange={(e) => toggleSound(e.target.checked)} className="accent-indigo h-4 w-4 mt-0.5" />
+          <span><b className="inline-flex items-center gap-1 text-ink"><Volume2 size={14} /> Sonido al lograr algo</b><br /><span className="text-slate-500">Un tono breve cuando recibes un nombramiento, apruebas una empresa, logras un cambio o terminas una lección. Se guarda en este dispositivo.</span></span>
         </label>
         {perm !== "granted" && typeof Notification !== "undefined" && (
           <button type="button" onClick={() => Notification.requestPermission().then(setPerm)} className="inline-flex items-center gap-2 text-sm text-indigo font-medium"><Bell size={15} /> Activar avisos en este navegador</button>
