@@ -87,7 +87,7 @@ La página pasó de 12 bloques a 8, unos 22 a 24% más corta (13,754 → 10,763 
 - Al elegir, el resultado se lleva a la vista.
 
 **Tu camino**
-- Es una ruta visual: vertical en móvil y horizontal en escritorio.
+- Es una ruta visual: vertical en móvil y horizontal en escritorio. Las etapas aparecen una a una al entrar en pantalla (`Stagger.tsx`, sin animación con movimiento reducido) y solo llevan el nombre en inglés.
 - Tiene un punto de partida (01), un siguiente objetivo (02) y las demás etapas por desbloquear.
 - Después de Global CEO solo se menciona el modo Legendario, que ya existe. No se menciona Arena.
 
