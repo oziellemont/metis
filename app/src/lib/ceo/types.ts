@@ -163,6 +163,21 @@ export interface CeoState {
   /** Adelanto de reloj del modo prueba (ms). */
   clockOffset: number;
   savedAt: number;
+  /** Executive Journey (opcional: si falta, el jugador aún no se inscribe; ver journey.ts). */
+  journey?: JourneyState;
+}
+
+/** Executive Journey: tu cargo. Cambia solo con nombramientos (ver journey.ts). */
+export interface JourneyState {
+  /** Etapa obtenida por nombramiento (0 = Emerging Leader … 5 = Global CEO). */
+  stage: number;
+  enrolledAt: number;
+  /** Historial de nombramientos. `legacy` = reconocido al inscribirse por su rango anterior. */
+  appointments: { stage: number; at: number; legacy?: boolean }[];
+  /** Rango que tenía antes del Journey (distinción de la temporada fundadora). */
+  founder?: { rank: number; name: string; xp: number; at: number };
+  /** Junta ante el Consejo (requisito para Chief Executive Officer). */
+  board?: { passed: boolean; at: number };
 }
 
 export type EntryStatus = "futuro" | "pendiente" | "decidido" | "vencido";
@@ -215,6 +230,8 @@ export interface CompanyPack {
   season: { name: string; days: number };
   /** 1 = la más accesible … 3 = la más exigente. */
   difficulty: 1 | 2 | 3;
+  /** Empresa internacional (cuenta para Global CEO). */
+  international?: boolean;
   kpiStart: Kpis;
   /** Cómo se llaman los 5 indicadores en esta industria (internamente siempre son los mismos). */
   kpiLabel: Record<KpiKey, string>;
