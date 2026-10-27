@@ -42,6 +42,11 @@ describe("asuntos especiales en Esperando tu decisión", () => {
   it("el reto terminado desaparece", () => {
     expect(specialTasks({ ...base, changeOpen: true, changeStarted: true, changeDone: true })).toEqual([]);
   });
+  it("la crisis aparece primero, como asunto urgente", () => {
+    const list = specialTasks({ ...base, changeOpen: true, crisisOpen: true });
+    expect(list.map((t) => t.id)).toEqual(["crisis", "cambio"]);
+    expect(list[0].href).toBe("/ceo/crisis");
+  });
   it("la junta aparece cuando está abierta", () => {
     const list = specialTasks({ ...base, changeOpen: true, boardOpen: true });
     expect(list.map((t) => t.id)).toEqual(["cambio", "junta"]);

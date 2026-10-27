@@ -20,6 +20,7 @@ export const AVAILABILITY: { item: string; state: Availability; note: string }[]
   { item: "Avisos por correo", state: "hoy", note: "Si conectas tu correo y lo activas" },
   { item: "Respuestas escritas con retroalimentación", state: "preparacion", note: "Vista previa apagada por defecto" },
   { item: "Junta ante el Consejo", state: "hoy", note: "Tres momentos encadenados; requisito para Chief Executive Officer (/ceo/junta)" },
+  { item: "Boardroom Crisis", state: "hoy", note: "Sesión extraordinaria con 3 decisiones con reloj, una por empresa desde el día 3 (/ceo/crisis)" },
   { item: "Conversaciones abiertas con personajes", state: "futuro", note: "No construido" },
   { item: "Escenarios generados", state: "futuro", note: "No construido" },
   { item: "Retos entre jugadores", state: "futuro", note: "No construido; no se menciona" },

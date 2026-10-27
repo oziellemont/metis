@@ -176,7 +176,12 @@ export interface CeoState {
   profileNudge?: ProfileNudge;
   /** Exigencia extra que el jugador ELIGIÓ para su primera empresa (0 o 1). No cuenta como Legendario. */
   startTier?: number;
+  /** Boardroom Crisis jugadas (una por empresa; ver crisis.ts). No tocan los KPI de la temporada. */
+  crises?: CrisisRun[];
 }
+
+export type CrisisRating = "contenida" | "danos" | "rebaso";
+export interface CrisisRun { company: string; startedAt: number; tier: number; at: number; rating: CrisisRating; picks: Record<string, string> }
 
 /** Executive Journey: tu cargo. Cambia solo con nombramientos (ver journey.ts). */
 export interface JourneyState {
