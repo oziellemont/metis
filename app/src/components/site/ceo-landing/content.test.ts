@@ -1,0 +1,79 @@
+import { describe, expect, it } from "vitest";
+import { readFileSync, readdirSync } from "node:fs";
+import { join } from "node:path";
+import * as C from "./content";
+import { STAGES } from "../../../lib/ceo/journey";
+import { COMPANIES } from "../../../lib/ceo/companies";
+
+const DIR = "src/components/site/ceo-landing";
+const sources = () => [...readdirSync(DIR).filter((f) => f.endsWith(".tsx") || f === "content.ts").map((f) => readFileSync(join(DIR, f), "utf8")), readFileSync("src/app/simulador/page.tsx", "utf8")].join("\n");
+const allCopy = () => { const { BANNED: _b, ...rest } = C; void _b; return JSON.stringify(rest).toLowerCase(); };
+
+describe("landing de MÊTIS CEO", () => {
+  it("la demo tiene tres opciones con consecuencias, intercambios y efectos distintos", () => {
+    const o = C.DEMO.options;
+    expect(o.map((x) => x.label)).toEqual(["Aceptar el descuento", "Negociar condiciones", "Mantener el precio"]);
+    for (const k of ["now", "later", "tradeoff"] as const) expect(new Set(o.map((x) => x[k])).size).toBe(3);
+    expect(new Set(o.map((x) => JSON.stringify(x.effects))).size).toBe(3);
+    // ninguna opción gana en todo ni pierde en todo
+    for (const x of o) {
+      const v = Object.values(x.effects);
+      expect(v.some((n) => n > 0)).toBe(true);
+      expect(v.some((n) => n < 0)).toBe(true);
+    }
+  });
+
+  it("la demo se declara ilustrativa y cierra con la invitación pedida", () => {
+    expect(C.DEMO.disclaimer.toLowerCase()).toContain("ilustrativo");
+    expect(C.DEMO.close).toBe("Eso fue una decisión. Imagina dirigir la empresa durante semanas.");
+    expect(C.DEMO.cta).toBe("Empezar mi historia");
+    expect(C.DEMO.retry).toBe("Volver a decidir");
+    expect(C.DEMO.from.name).toBe("Héctor Salinas");
+  });
+
+  it("la demo está aislada: no importa el motor, el proveedor ni toca almacenamiento", () => {
+    const src = readFileSync(join(DIR, "FirstDecision.tsx"), "utf8") + readFileSync(join(DIR, "Ripple.tsx"), "utf8");
+    expect(src).not.toMatch(/lib\/ceo|CeoProvider|localStorage|supabase|fetch\(|track\(/);
+  });
+
+  it("efectos cruzados: cada decisión cambia entre la semana y el mes", () => {
+    for (const o of C.RIPPLE.options) expect(JSON.stringify(o.now)).not.toBe(JSON.stringify(o.later));
+    expect(C.RIPPLE.note.toLowerCase()).toContain("ejemplo");
+  });
+
+  it("las etapas coinciden con las del producto", () => {
+    expect(C.PATH.stages.map((s) => s.name)).toEqual(STAGES.map((s) => s.name));
+  });
+
+  it("no publica precio, prueba gratuita ni cancelación mientras no exista cobro", () => {
+    const txt = sources();
+    expect(txt).not.toMatch(/CEO_PRICE_MXN|\$59|59 MXN/);
+    expect(C.AVAILABILITY.find((a) => a.item.startsWith("Suscripción"))!.state).toBe("futuro");
+  });
+
+  it("lo que no existe se marca como próximo o futuro, nunca como disponible", () => {
+    const hoy = C.AVAILABILITY.filter((a) => a.state === "hoy").map((a) => a.item.toLowerCase()).join(" ");
+    for (const w of ["arena", "conversaciones", "generados", "respuestas escritas", "junta"]) expect(hoy).not.toContain(w);
+    expect(C.LEARN.soonNote.toLowerCase()).toContain("preparación");
+    expect(C.PATH.arena.toLowerCase()).toContain("todavía no está disponible");
+  });
+
+  it("el tono evita frases genéricas y exceso de admiraciones", () => {
+    const t = allCopy();
+    for (const b of C.BANNED) expect(t).not.toContain(b);
+    expect((t.match(/!/g) ?? []).length).toBe(0);
+  });
+
+  it("FAQ breve y CTA a rutas reales", () => {
+    expect(C.FAQ.length).toBeGreaterThanOrEqual(6);
+    expect(C.FAQ.length).toBeLessThanOrEqual(7);
+    expect(C.START_HREF).toBe("/ceo/empezar");
+    expect(C.LOGIN_HREF.startsWith("/login")).toBe(true);
+    expect(COMPANIES.length).toBe(3); // el copy dice «Tres empresas»
+  });
+
+  it("SEO con el título acordado y una sola h1", () => {
+    expect(C.SEO.title).toBe("MÊTIS CEO | Aprende a dirigir tomando decisiones");
+    expect((sources().match(/<h1\b/g) ?? []).length).toBe(1);
+  });
+});
