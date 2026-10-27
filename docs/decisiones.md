@@ -76,3 +76,13 @@ El perfil es uno por persona (`metis.profiles`) y puede pertenecer a varias empr
 
 
 **Actualización · Owner / Contributor.** Se reemplazan las siglas DR / CV por **Owner** (dueño del resultado, captura el dato) y **Contributor** (participa sin capturar; su scorecard se actualiza solo). Son palabras que la gente ya entiende sin explicación. Valores internos sin cambio (`owner` / `contributor`); las etiquetas viven en `lib/labels.ts`.
+
+## 2026-10-27 · Roadmap v2.1 aprobado e inicio de la Fase 0
+
+**Decisión.** Se aprueba la visión completa (Master Blueprint v2.0, 6 fases, 32 requisitos) y el roadmap v2.1. Proveedor de IA: OpenAI (proyecto «metis-ceo»), con **tope de USD 50 al mes** fijado por el fundador; ninguna llamada de pago se activa sin confirmar el monto con él. Aprobadas N3 (validación en servidor, primero en modo sombra), N4 (no perjuicio de casos generados), N5 (demo de IA sin registro, con controles), N7 (memo opcional para jugar, necesario para nivel ≥ 3, con alternativas sin texto largo), N6 y N9 (el fundador revisa escenarios y calibra evaluaciones). Precio y monetización se deciden después con datos reales.
+**Reglas de trabajo.** Pruebas y migraciones nuevas en el proyecto Supabase «metis-pruebas»; credenciales y datos separados de producción; el esquema `metis` (Align) no se toca; nada nuevo se activa en producción ni se contrata sin aprobación.
+
+## 2026-10-27 · F0-1 · Partidas doradas
+
+**Decisión.** Diez partidas completas grabadas (`app/src/lib/ceo/golden/data`) cubren las 3 empresas, aprobar, reprobar, asuntos vencidos, cambio de horario, modo intensivo, otra zona horaria, repetir y ascender hasta nivel 2. Cada cambio de código debe reproducirlas con resultados idénticos. Se agrega `replay.ts` (reproductor de acciones, base de la validación en servidor de F0-9) y una plantilla de revisión automática en GitHub (`docs/ci/pruebas.yml`, pendiente de activar por el fundador).
+**Hallazgo de balance (sin cambio).** El jugador automático «cuidadoso» aprueba Cumbre (nivel 0) y Forja (nivel 1), pero reprueba Brasa en nivel 2 por un punto de Caja (53 frente a 54). Queda registrado; se revisará con datos reales y con el Mastery Engine, no se modifica el balance en este PR.
