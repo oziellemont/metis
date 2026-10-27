@@ -2,6 +2,7 @@
  * Secciones estáticas de la landing de MÊTIS CEO (componentes de servidor, sin JS en el cliente).
  * El copy vive en ./content.
  */
+import type React from "react";
 import Link from "next/link";
 import { Check, ChevronDown, Flag, Lightbulb, Lock, MessageCircle } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
@@ -9,6 +10,7 @@ import { CeoCta } from "@/components/site/CeoCta";
 import { CEO_CONTACT_EMAIL } from "@/lib/site";
 import { CLOSE, DIFF, FAQ, FOOTER, HOW, LOGIN_HREF, PATH, PHILOSOPHY, RIPPLE, type StageState } from "./content";
 import { Ripple } from "./Ripple";
+import { Stagger } from "./Stagger";
 
 const WRAP = "mx-auto max-w-6xl px-5 sm:px-6";
 const EYEBROW = "text-[11px] font-semibold uppercase tracking-[0.14em] text-indigo";
@@ -172,25 +174,24 @@ export function PathSection() {
       <div className={WRAP + " " + PAD}>
         <Head id="camino-title" eyebrow="Tu camino" title={PATH.title} body={PATH.body} />
         <div className="mt-12 rounded-3xl bg-white border border-slate-100 p-5 sm:p-8 shadow-card">
-          <ol className="relative grid gap-0 lg:grid-cols-6 lg:gap-4" aria-label="Etapas de la carrera">
+          <Stagger className="relative grid gap-0 lg:grid-cols-6 lg:gap-4" label="Etapas de la carrera">
             {/* vía: vertical en móvil, horizontal en escritorio; el tramo inicial se marca como avance */}
             <span aria-hidden className="absolute left-[19px] top-5 bottom-5 w-0.5 bg-slate-200 lg:left-5 lg:right-5 lg:top-[19px] lg:bottom-auto lg:h-0.5 lg:w-auto" />
-            <span aria-hidden className="absolute left-[19px] top-5 h-[calc((100%-2.5rem)/5*0.5)] w-0.5 bg-gradient-to-b from-mint to-indigo lg:left-5 lg:top-[19px] lg:h-0.5 lg:w-[calc((100%-2.5rem)/5*0.5)] lg:bg-gradient-to-r" />
-            {PATH.stages.map((s) => (
-              <li key={s.name} className="relative grid grid-cols-[40px_1fr] gap-4 pb-7 last:pb-0 lg:block lg:pb-0" aria-current={s.state === "inicio" ? "step" : undefined}>
+            <span aria-hidden className="ceo-step-fill absolute left-[19px] top-5 h-[calc((100%-2.5rem)/5*0.5)] w-0.5 bg-gradient-to-b from-mint to-indigo lg:left-5 lg:top-[19px] lg:h-0.5 lg:w-[calc((100%-2.5rem)/5*0.5)] lg:bg-gradient-to-r" />
+            {PATH.stages.map((s, i) => (
+              <li key={s.name} style={{ "--i": i } as React.CSSProperties} className="ceo-step relative grid grid-cols-[40px_1fr] gap-4 pb-7 last:pb-0 lg:block lg:pb-0" aria-current={s.state === "inicio" ? "step" : undefined}>
                 <span className={"relative z-10 h-10 w-10 rounded-full grid place-items-center text-[13px] font-semibold tabular-nums " + NODE[s.state]}>
                   {s.state === "inicio" ? <Check size={17} aria-hidden /> : s.state === "bloqueada" ? <Lock size={14} aria-hidden /> : s.n}
                 </span>
                 <div className="min-w-0 lg:mt-5">
                   <span className="text-[12px] font-semibold tabular-nums text-slate-500">Etapa {s.n}</span>
                   <h3 className={"mt-0.5 text-[16px] leading-snug font-semibold " + (s.state === "bloqueada" ? "text-ink/80" : "text-ink")}>{s.name}</h3>
-                  <p className="text-[12.5px] text-slate-500">{s.es}</p>
                   <p className="mt-2 text-[14px] text-ink">{s.learn}</p>
                   <span className={"chip mt-3 " + BADGE[s.state]}>{PATH.stateLabel[s.state]}</span>
                 </div>
               </li>
             ))}
-          </ol>
+          </Stagger>
         </div>
         <div className="mt-4 grid md:grid-cols-[1.4fr_1fr] gap-4 [&>*]:min-w-0">
           <p className="rounded-3xl bg-white border border-slate-100 p-6 text-[15px] leading-relaxed text-slate-600"><b className="text-ink">Cómo avanzas.</b> {PATH.how}</p>

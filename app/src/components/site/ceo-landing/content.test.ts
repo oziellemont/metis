@@ -44,7 +44,8 @@ describe("landing de MÊTIS CEO", () => {
 
   it("las etapas coinciden con las del producto", () => {
     expect(C.PATH.stages.map((s) => s.name)).toEqual(STAGES.map((s) => s.name));
-    expect(C.PATH.stages.map((s) => s.es)).toEqual(STAGES.map((s) => s.es));
+    // Sin subtítulo en español: el nombre de la etapa va solo en inglés.
+    expect(C.PATH.stages.every((s) => !("es" in s))).toBe(true);
   });
 
   it("la carrera es una ruta: un punto de partida, un siguiente objetivo y el resto por desbloquear", () => {
