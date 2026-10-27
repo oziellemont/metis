@@ -6,6 +6,7 @@ import type { Axis, CareerRun, CeoState, CompanyPack, Decision, Entry, Item, Kpi
 import { COMPANIES, FIRST_COMPANY, companyById } from "./companies";
 import { DILEMMAS, dilemmaById, type Dilemma } from "./dilemmas";
 import { changeEffect, simulate, type ChangeSim } from "./change";
+import { sanitizeDiagnostic, sanitizeProfile } from "./profile";
 
 export const H = 3_600_000;
 export const DAY = 24 * H;
@@ -78,6 +79,10 @@ export function migrate(raw: unknown): CeoState {
   // Executive Journey: si viene dañado, se descarta (se vuelve a inscribir sin perder el piso fundador).
   const j = out.journey as unknown;
   if (j !== undefined && (!j || typeof j !== "object" || typeof (j as { stage?: unknown }).stage !== "number" || !Array.isArray((j as { appointments?: unknown }).appointments))) delete out.journey;
+  // Perfil profesional (V33): opcional. Si falta, todo funciona igual; si viene dañado, se limpia o se descarta.
+  if (out.profile !== undefined) { const p = sanitizeProfile(out.profile); if (p) out.profile = p; else delete out.profile; }
+  if (out.diagnostic !== undefined) { const d = sanitizeDiagnostic(out.diagnostic); if (d) out.diagnostic = d; else delete out.diagnostic; }
+  if (out.profileNudge !== undefined) { const n = out.profileNudge as unknown as Record<string, unknown>; if (!n || typeof n.dismissed !== "number" || typeof n.until !== "number") delete out.profileNudge; }
   return out;
 }
 
