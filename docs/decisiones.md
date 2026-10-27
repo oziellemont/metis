@@ -120,3 +120,11 @@ El perfil es uno por persona (`metis.profiles`) y puede pertenecer a varias empr
 - `lib/ceo/celebrate.ts`, sin dependencias: confeti en canvas con los 5 colores de la marca (34 a 90 piezas, menos de 2.5 s) y un tono de dos notas (Mi 6 → Si 6, onda senoidal y caída rápida, menos de 1 s, volumen bajo) con Web Audio.
 - Se dispara al recibir un nombramiento (el más grande), al aprobar una empresa, al lograr el reto de cambio y al terminar una lección por primera vez (el más discreto). Empresa y cambio, una sola vez por logro.
 - Respeta «reducir movimiento» del sistema. El sonido se apaga en Ajustes y la preferencia se guarda en el dispositivo.
+
+## J-4 · Respuestas escritas con IA (apagadas hasta aprobación)
+- En correos y WhatsApp el jugador puede «Escribir respuesta» además de «Elegir opción». La IA (gpt-4o-mini) relaciona el texto con la opción más cercana del caso (sus efectos ya diseñados), califica calidad 0–3 y da una nota de mentor. La IA no inventa consecuencias: el juego sigue siendo justo y las partidas doradas no cambian.
+- El texto se guarda en la decisión (`Decision.written`) y se muestra en el desenlace (en WhatsApp como tu burbuja).
+- Tres candados: interruptor `ai` en la base + `CEO_AI_ENABLED=1` (y llave de OpenAI) en Vercel + consentimiento del jugador (botón «Activar», se guarda en `players.ai_consent`).
+- Gasto: reserva atómica antes de llamar (`ai_reservar`), ajuste al costo real (`ai_ajustar`) y bitácora en `ai_calls`. Topes: USD 50/mes, USD 3/día, USD 0.05 y 30 respuestas por jugador por día (cambiables por variables de entorno).
+- Costo estimado: ≈ USD 0.0003 a 0.0006 por respuesta (menos de 0.1 centavo). Si algo falla o se llega al tope, el jugador elige la opción a mano.
+- Requiere la migración 0015 en producción (hoy solo está en metis-pruebas). Sin ella, todo queda apagado.

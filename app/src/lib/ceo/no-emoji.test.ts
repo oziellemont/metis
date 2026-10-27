@@ -16,7 +16,7 @@ describe("sin emojis en mêtis CEO", () => {
   it("ningún archivo de contenido o pantalla trae emojis", () => {
     const bad: string[] = [];
     for (const f of ROOTS.flatMap(files)) {
-      if (f.endsWith("no-emoji.test.ts")) continue;
+      if (f.endsWith(".test.ts")) continue; // las pruebas pueden traer emojis a propósito (para comprobar que se quitan)
       readFileSync(f, "utf8").split("\n").forEach((line, i) => {
         // © ® ™ y flechas tipográficas sí se permiten
         const clean = line.replace(/[\u00A9\u00AE\u2122\u2190-\u21FF]/g, "");

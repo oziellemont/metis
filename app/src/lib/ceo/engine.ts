@@ -2,7 +2,7 @@
  * mêtis CEO · motor del simulador. Lógica pura (sin React ni navegador) para usarla
  * igual en la app, en el cron que agenda correos/WhatsApp y en las pruebas.
  */
-import type { Axis, CareerRun, CeoState, CompanyPack, Decision, Entry, Item, KpiKey, Kpis, Option, Settings } from "./types";
+import type { Axis, CareerRun, CeoState, CompanyPack, Decision, Entry, Item, KpiKey, Kpis, Option, Settings, Written } from "./types";
 import { COMPANIES, FIRST_COMPANY, companyById } from "./companies";
 import { DILEMMAS, dilemmaById, type Dilemma } from "./dilemmas";
 import { changeEffect, simulate, type ChangeSim } from "./change";
@@ -386,11 +386,12 @@ export function badgesOf(s: CeoState, now = nowOf(s)): Badge[] {
 }
 
 // ───────────────────────────────────────────── acciones
-export function decide(s: CeoState, itemId: string, optionId: string, now = nowOf(s)): CeoState {
+export function decide(s: CeoState, itemId: string, optionId: string, now = nowOf(s), written?: Written): CeoState {
   const e = entries(s, now).find((x) => x.item.id === itemId);
   if (!e || e.status !== "pendiente") return s;
   if (!e.item.options.some((o: Option) => o.id === optionId)) return s;
-  return { ...s, decisions: { ...s.decisions, [itemId]: { option: optionId, at: now } }, lastActiveAt: now };
+  const w = written && typeof written.text === "string" && written.text.trim() ? { written: { text: written.text.trim().slice(0, 1200), quality: Math.max(0, Math.min(3, Math.round(written.quality))) as Written["quality"], feedback: String(written.feedback ?? "").slice(0, 280) } } : {};
+  return { ...s, decisions: { ...s.decisions, [itemId]: { option: optionId, at: now, ...w } }, lastActiveAt: now };
 }
 
 /** Congela la hora de llegada de lo que ya llegó (para que cambiar el horario no mueva el pasado). */

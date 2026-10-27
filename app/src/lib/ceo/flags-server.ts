@@ -35,3 +35,24 @@ export async function flagsFor(userId?: string | null): Promise<Flags> {
     return { ...ALL_OFF };
   }
 }
+
+/**
+ * Estado de la IA para un jugador:
+ *  - available: la base (interruptor «ai») y Vercel (CEO_AI_ENABLED=1) la permiten.
+ *  - consent: el jugador aceptó usarla.
+ *  - enabled: los tres candados abiertos (available && consent).
+ */
+export async function aiStatusFor(userId?: string | null): Promise<{ available: boolean; consent: boolean; enabled: boolean }> {
+  try {
+    const global = await globalFlagRows();
+    if (!global || !userId) return { available: false, consent: false, enabled: false };
+    const sb = supabaseCeoAdmin();
+    const { data } = (await sb?.from("players").select("flags, ai_consent").eq("user_id", userId).maybeSingle()) ?? { data: null };
+    const env = process.env.CEO_AI_ENABLED === "1" && Boolean((process.env.OPENAI_API_KEY ?? "").trim());
+    const available = resolveFlags({ global, player: data?.flags ?? {}, aiConsent: true, aiEnvEnabled: env }).ai;
+    const consent = data?.ai_consent === true;
+    return { available, consent, enabled: available && consent };
+  } catch {
+    return { available: false, consent: false, enabled: false };
+  }
+}

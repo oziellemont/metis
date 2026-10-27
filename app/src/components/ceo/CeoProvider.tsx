@@ -14,7 +14,7 @@ import { masteryOf, type Mastery } from "@/lib/ceo/mastery";
 import { appEnvOf, testToolsVisible } from "@/lib/ceo/flags";
 import { closeChange as closeChangeFn, playLever as playLeverFn, relationsOf, startChange as startChangeFn } from "@/lib/ceo/relations";
 import type { ChangeSim } from "@/lib/ceo/change";
-import type { CastId, CeoState, CompanyPack, Entry, Kpis, LeverId, Settings } from "@/lib/ceo/types";
+import type { CastId, CeoState, CompanyPack, Entry, Kpis, LeverId, Settings, Written } from "@/lib/ceo/types";
 
 const KEY = "metis-ceo-v1";
 
@@ -57,7 +57,7 @@ interface Ctx {
   advance: () => void;
   /** Cambiar de empresa antes de la primera decisión. */
   switchCompany: (id: string) => void;
-  decide: (itemId: string, optionId: string) => void;
+  decide: (itemId: string, optionId: string, written?: Written) => void;
   markRead: (itemId: string) => void;
   completeLesson: (id: string) => void;
   /** Dilema de personas del día (o el que ya respondiste hoy). */
@@ -206,7 +206,7 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
     setS((p) => ({ ...newState(), journey: { stage: 0, enrolledAt: t, appointments: [] }, company: company || newState().company, name: name.trim(), alias: aliasOf(name), startedAt: t, lastActiveAt: t, savedAt: t, settings: { ...p.settings, ...settings, email, phone, tz: Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Monterrey" } }));
     seen.current = null;
   }, []);
-  const decide = useCallback((itemId: string, optionId: string) => setS((p) => { const n = decideFn(p, itemId, optionId, nowOf(p)); return n === p ? p : { ...n, savedAt: Date.now() }; }), []);
+  const decide = useCallback((itemId: string, optionId: string, written?: Written) => setS((p) => { const n = decideFn(p, itemId, optionId, nowOf(p), written); return n === p ? p : { ...n, savedAt: Date.now() }; }), []);
   const markRead = useCallback((itemId: string) => setS((p) => (p.read[itemId] ? p : { ...p, read: { ...p.read, [itemId]: Date.now() }, savedAt: Date.now() })), []);
   const answerDilemma = useCallback((id: string, option: number) => setS((p) => { const n = answerDilemmaFn(p, id, option); return n === p ? p : { ...n, savedAt: Date.now() }; }), []);
   const dilemma = useMemo(() => (s.startedAt ? dilemmaOfDay(s, now) : null), [s, now]);
