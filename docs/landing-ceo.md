@@ -98,3 +98,9 @@ La página pasó de 12 bloques a 8, unos 22 a 24% más corta (13,754 → 10,763 
 - No se muestra «Disponible hoy / Próximamente».
 - La fila «∞ The Executive Arena» se sustituyó por el modo Legendario.
 - Las dos cosas siguen la regla de no anunciar nada que no exista.
+
+## Versión 3.1 · hero más limpio y una sola demo
+
+- El hero vuelve a mostrar el cuadro de cuatro escenas (El caso, Decides, Aprendes, Avanzas) con el anillo «Tu camino a CEO». Componente `Story.tsx`; se pausa al pasar el mouse o al enfocar y no avanza solo con «reducir movimiento».
+- La decisión de Héctor baja a su propio bloque, «Una decisión nunca afecta una sola cosa». Integra la antigua sección «Efectos cruzados»: después de elegir se ve «Hoy» y «Un mes después» en cinco dimensiones, con una frase concreta en cada una (por ejemplo, «En negociación», «Margen protegido»).
+- Se eliminó `Ripple.tsx` y el bloque `RIPPLE`: eran una segunda demostración de lo mismo.

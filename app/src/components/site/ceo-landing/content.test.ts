@@ -14,14 +14,44 @@ describe("landing de MÊTIS CEO", () => {
   it("la demo tiene tres opciones con consecuencias, intercambios y efectos distintos", () => {
     const o = C.DEMO.options;
     expect(o.map((x) => x.label)).toEqual(["Aceptar el descuento", "Negociar condiciones", "Mantener el precio"]);
-    for (const k of ["now", "later", "tradeoff"] as const) expect(new Set(o.map((x) => x[k])).size).toBe(3);
-    expect(new Set(o.map((x) => JSON.stringify(x.effects))).size).toBe(3);
-    // ninguna opción gana en todo ni pierde en todo
+    for (const k of ["now", "later"] as const) expect(new Set(o.map((x) => x[k].text)).size).toBe(3);
+    expect(new Set(o.map((x) => x.tradeoff)).size).toBe(3);
+    expect(new Set(o.map((x) => JSON.stringify(x.later.effects))).size).toBe(3);
+    // un mes después, ninguna opción gana en todo ni pierde en todo
     for (const x of o) {
-      const v = Object.values(x.effects);
+      const v = Object.values(x.later.effects);
       expect(v.some((n) => n > 0)).toBe(true);
       expect(v.some((n) => n < 0)).toBe(true);
     }
+  });
+
+  it("una sola experiencia: tras decidir se ve hoy y un mes después, con palabras en cada dimensión", () => {
+    expect(C.DEMO.phases).toEqual(["Hoy", "Un mes después"]);
+    expect(C.DEMO.title).toBe("Una decisión nunca afecta una sola cosa.");
+    for (const x of C.DEMO.options) {
+      expect(JSON.stringify(x.now.effects), x.id).not.toBe(JSON.stringify(x.later.effects));
+      for (const ph of [x.now, x.later]) {
+        for (const d of C.DIMS) {
+          const w = ph.words[d.key];
+          expect(w, `${x.id}/${d.key}`).toBeTruthy();
+          // la palabra no contradice la dirección: «Sin cambios» solo con 0
+          if (w === "Sin cambios") expect(ph.effects[d.key], `${x.id}/${d.key}`).toBe(0);
+        }
+      }
+    }
+    // ya no hay una segunda sección de efectos cruzados
+    expect("RIPPLE" in C).toBe(false);
+    expect(readdirSync(DIR)).not.toContain("Ripple.tsx");
+  });
+
+  it("el hero vuelve a mostrar el ciclo en cuatro escenas", () => {
+    expect(C.STORY.scenes.map((s) => s.tab)).toEqual(["El caso", "Decides", "Aprendes", "Avanzas"]);
+    const p = C.STORY.scenes.map((s) => s.pct);
+    expect([...p].sort((a, b) => a - b)).toEqual(p);
+    expect(C.PATH.stages.map((s) => s.name)).toContain(C.STORY.sube.stage);
+    expect(C.PATH.stages.map((s) => s.name)).toContain(C.STORY.sube.next);
+    const page = readFileSync("src/app/simulador/page.tsx", "utf8");
+    expect(page.indexOf("<Story />")).toBeLessThan(page.indexOf("<FirstDecision />"));
   });
 
   it("la demo se declara ilustrativa y cierra con la invitación pedida", () => {
@@ -33,13 +63,8 @@ describe("landing de MÊTIS CEO", () => {
   });
 
   it("la demo está aislada: no importa el motor, el proveedor ni toca almacenamiento", () => {
-    const src = readFileSync(join(DIR, "FirstDecision.tsx"), "utf8") + readFileSync(join(DIR, "Ripple.tsx"), "utf8");
+    const src = readFileSync(join(DIR, "FirstDecision.tsx"), "utf8") + readFileSync(join(DIR, "Story.tsx"), "utf8");
     expect(src).not.toMatch(/lib\/ceo|CeoProvider|localStorage|supabase|fetch\(|track\(/);
-  });
-
-  it("efectos cruzados: cada decisión cambia entre la semana y el mes", () => {
-    for (const o of C.RIPPLE.options) expect(JSON.stringify(o.now)).not.toBe(JSON.stringify(o.later));
-    expect(C.RIPPLE.note.toLowerCase()).toContain("ejemplo");
   });
 
   it("las etapas coinciden con las del producto", () => {
@@ -62,17 +87,17 @@ describe("landing de MÊTIS CEO", () => {
     expect(C.DEMO.message.join(" ")).toContain("SuperNorte");
     expect(C.DEMO.message.at(-1)).toBe("¿Cómo lo manejamos?");
     // Aceptar ya no es obviamente malo: mejora algo más que una sola dimensión.
-    const ok = (id: string) => Object.values(C.DEMO.options.find((o) => o.id === id)!.effects).filter((n) => n > 0).length;
+    const ok = (id: string) => Object.values(C.DEMO.options.find((o) => o.id === id)!.later.effects).filter((n) => n > 0).length;
     for (const id of ["aceptar", "negociar", "mantener"]) expect(ok(id)).toBeGreaterThanOrEqual(2);
-    const total = (id: string) => Object.values(C.DEMO.options.find((o) => o.id === id)!.effects).reduce((a: number, b) => a + b, 0);
+    const total = (id: string) => Object.values(C.DEMO.options.find((o) => o.id === id)!.later.effects).reduce((a: number, b) => a + b, 0);
     const sums = ["aceptar", "negociar", "mantener"].map(total);
     expect(Math.max(...sums) - Math.min(...sums)).toBeLessThanOrEqual(1);
   });
 
-  it("la landing es más corta: ocho bloques y sin secciones repetidas", () => {
+  it("la landing es más corta: hero, decisión y seis bloques, sin secciones repetidas", () => {
     const page = readFileSync("src/app/simulador/page.tsx", "utf8");
-    expect((page.match(/<[A-Z]\w+Section \/>/g) ?? []).length).toBe(7);
-    expect(page).not.toMatch(/LearnSection|RhythmSection|WhoSection|AccessSection/);
+    expect((page.match(/<[A-Z]\w+Section \/>/g) ?? []).length).toBe(6);
+    expect(page).not.toMatch(/LearnSection|RhythmSection|WhoSection|AccessSection|RippleSection/);
     expect(C.HERO.who).toContain("aspiran a dirigir");
   });
 

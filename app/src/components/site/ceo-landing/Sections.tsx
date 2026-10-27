@@ -8,8 +8,7 @@ import { Check, ChevronDown, Flag, Lightbulb, Lock, MessageCircle } from "lucide
 import { Logo } from "@/components/ui/Logo";
 import { CeoCta } from "@/components/site/CeoCta";
 import { CEO_CONTACT_EMAIL } from "@/lib/site";
-import { CLOSE, DIFF, FAQ, FOOTER, HOW, LOGIN_HREF, PATH, PHILOSOPHY, RIPPLE, type StageState } from "./content";
-import { Ripple } from "./Ripple";
+import { CLOSE, DIFF, FAQ, FOOTER, HOW, LOGIN_HREF, PATH, PHILOSOPHY, type StageState } from "./content";
 import { Stagger } from "./Stagger";
 
 const WRAP = "mx-auto max-w-6xl px-5 sm:px-6";
@@ -25,17 +24,6 @@ function Head({ eyebrow, title, body, id, center = false }: { eyebrow?: string; 
       <h2 id={id} className={(eyebrow ? "mt-3 " : "") + H2}>{title}</h2>
       {body && <p className={LEAD}>{body}</p>}
     </div>
-  );
-}
-
-export function RippleSection() {
-  return (
-    <section aria-labelledby="ripple-title" className="bg-canvas">
-      <div className={WRAP + " " + PAD}>
-        <Head id="ripple-title" eyebrow="Efectos cruzados" title={RIPPLE.title} body={RIPPLE.body} />
-        <div className="mt-10"><Ripple /></div>
-      </div>
-    </section>
   );
 }
 
