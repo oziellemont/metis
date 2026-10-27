@@ -53,6 +53,43 @@ export const HERO = {
   who: "Para quienes aspiran a dirigir, para quienes ya lideran y para quienes creen que siempre hay algo más que aprender.",
 };
 
+/* ---------------- Cuadro del hero: el ciclo en 4 escenas ---------------- */
+export const STORY = {
+  label: "Así se vive MÊTIS, en cuatro escenas",
+  ring: "Tu camino a CEO",
+  scenes: [
+    { key: "caso", tab: "El caso", title: "Cada día te llega un problema real", pct: 24 },
+    { key: "decide", tab: "Decides", title: "Tú decides. La empresa responde.", pct: 41 },
+    { key: "aprende", tab: "Aprendes", title: "Entiendes por qué, en un minuto", pct: 63 },
+    { key: "sube", tab: "Avanzas", title: "Día a día, tu carrera avanza", pct: 86 },
+  ] as const,
+  caso: {
+    from: "Héctor Salinas", role: "Director Comercial", channel: "WhatsApp",
+    msg: "SuperNorte nos pide otro 12% de descuento y quiere respuesta hoy. ¿Cómo lo manejamos?",
+    facts: [["Ventas con SuperNorte", "24% del total"], ["Responde en", "3 h 40 min"]] as [string, string][],
+    foot: "Llega a tu celular, como en una empresa de verdad.",
+  },
+  decide: {
+    options: ["Aceptar el descuento", "Negociar condiciones", "Mantener el precio"],
+    pick: 1,
+    kpis: [["Margen", 54, 60], ["Clientes", 64, 59], ["Equipo", 57, 55]] as [string, number, number][],
+    foot: "Héctor esperaba otra cosa. Lo vas a notar la próxima semana.",
+  },
+  aprende: {
+    eyebrow: "Nota CEO",
+    note: "Cuando un cliente pesa tanto, no regales precio: ofrece algo que también le sirva a él.",
+    source: "Bitácora · Negociación",
+    ask: "¿Qué protegiste con tu decisión?",
+    chips: ["El margen", "La relación", "Las ventas"],
+    xp: "+30 XP", xpNote: "Buen criterio",
+  },
+  sube: {
+    streak: "días de racha",
+    stage: "Emerging Leader", next: "Functional Manager",
+    appoint: "Nombramiento: Functional Manager", appointNote: "Más alcance, decisiones más grandes.",
+  },
+};
+
 /* ---------------- Demo «Tu primera decisión» ---------------- */
 export type Dim = "finanzas" | "personas" | "clientes" | "operacion" | "confianza";
 export const DIMS: { key: Dim; label: string }[] = [
@@ -65,18 +102,22 @@ export const DIMS: { key: Dim; label: string }[] = [
 /** −2 … +2: dirección y fuerza del efecto. 0 = sin cambio visible. */
 export type Effects = Record<Dim, -2 | -1 | 0 | 1 | 2>;
 
+/** Un momento de la consecuencia: qué se mueve y con qué palabras se describe cada dimensión. */
+export interface DemoPhase { text: string; effects: Effects; words: Record<Dim, string> }
 export interface DemoOption {
   id: string;
   label: string;
   detail: string;
-  now: string;
-  later: string;
+  now: DemoPhase;
+  later: DemoPhase;
   tradeoff: string;
-  effects: Effects;
 }
 
 export const DEMO = {
   label: "Tu primera decisión",
+  title: "Una decisión nunca afecta una sola cosa.",
+  body: "Lo que hoy protege tus ventas puede presionar tus márgenes. Lo que cuida el presupuesto puede afectar a tu equipo. Pruébalo con el primer caso del simulador.",
+  steps: ["Recibes el problema", "Tomas una decisión", "Ves qué cambia hoy y un mes después"],
   from: { name: "Héctor Salinas", initials: "HS", role: "Director Comercial · Botanas Cumbre", channel: "WhatsApp", time: "9:14" },
   message: [
     "Necesito que revisemos algo urgente.",
@@ -91,74 +132,64 @@ export const DEMO = {
     ["Si se va", "La planta queda al 76% de su capacidad"],
   ] as [string, string][],
   ask: "¿Qué le respondes a Héctor?",
+  picked: "Tu decisión",
+  watch: "Observa cómo cambia tu empresa.",
+  phases: ["Hoy", "Un mes después"] as const,
+  seeLater: "Ver un mes después",
   options: [
     {
       id: "aceptar",
       label: "Aceptar el descuento",
       detail: "Conservas una cuarta parte de las ventas y la planta sigue llena. Ese volumen ayuda a pagar los costos fijos.",
-      now: "Firmas hoy. Héctor respira, los turnos de la planta no se tocan y nadie tiene que explicar por qué se fue el cliente más grande.",
-      later: "La cuenta ya no deja margen y Finanzas te pide recortar en otra parte. SuperNorte aprendió que presionar funciona.",
+      now: {
+        text: "Firmas hoy. Héctor respira, los turnos de la planta no se tocan y nadie tiene que explicar por qué se fue el cliente más grande.",
+        effects: { finanzas: -1, personas: 1, clientes: 1, operacion: 1, confianza: 0 },
+        words: { finanzas: "Margen en cero", personas: "Alivio", clientes: "Cuenta asegurada", operacion: "Planta llena", confianza: "Sin cambios" },
+      },
+      later: {
+        text: "La cuenta ya no deja margen y Finanzas te pide recortar en otra parte. SuperNorte aprendió que presionar funciona.",
+        effects: { finanzas: -2, personas: 1, clientes: 1, operacion: 1, confianza: -1 },
+        words: { finanzas: "Recortes en otra parte", personas: "Turnos intactos", clientes: "Cuenta conservada", operacion: "Capacidad usada", confianza: "Precedente débil" },
+      },
       tradeoff: "Compraste estabilidad para la planta y el equipo con margen. La próxima negociación empieza desde un precio más bajo.",
-      effects: { finanzas: -2, personas: 1, clientes: 1, operacion: 1, confianza: -1 },
     },
     {
       id: "negociar",
       label: "Negociar condiciones",
       detail: "Ofreces 5% a cambio de un año de volumen mínimo. Proteges parte del margen y ganas tiempo, no certeza.",
-      now: "SuperNorte no firma hoy: pide una semana. Héctor tiene que volver con una contrapropuesta y sostenerla frente a su compradora.",
-      later: "Si el acuerdo sale, proteges margen y planeas producción con más certeza. Si no, perdiste una semana y Héctor quedó expuesto.",
-      tradeoff: "Cambiaste la certeza de hoy por un mejor acuerdo, con el riesgo de que no llegue.",
-      effects: { finanzas: 1, personas: -1, clientes: -1, operacion: 0, confianza: 1 },
+      now: {
+        text: "SuperNorte no firma hoy: pide una semana. Héctor tiene que volver con una contrapropuesta y sostenerla frente a su compradora.",
+        effects: { finanzas: 0, personas: -1, clientes: -1, operacion: 0, confianza: 1 },
+        words: { finanzas: "Estable", personas: "Héctor presionado", clientes: "En negociación", operacion: "Sin cambios", confianza: "Postura clara" },
+      },
+      later: {
+        text: "SuperNorte acepta el 5% con volumen mínimo por un año, pero retira dos productos del anaquel. Proteges margen; Héctor quedó desgastado.",
+        effects: { finanzas: 1, personas: -1, clientes: -1, operacion: 0, confianza: 1 },
+        words: { finanzas: "Margen protegido", personas: "Héctor desgastado", clientes: "Menos anaquel", operacion: "Sin cambios", confianza: "Acuerdo cumplido" },
+      },
+      tradeoff: "Cambiaste la certeza de hoy por un mejor acuerdo. Esta vez salió; en el simulador, no siempre sale.",
     },
     {
       id: "mantener",
       label: "Mantener el precio",
       detail: "Otra cadena pidió cotización la semana pasada. Apuestas a que tu producto vale lo que cobras.",
-      now: "Proteges el margen completo y das una señal clara: el precio no se mueve por presión.",
-      later: "SuperNorte reduce pedidos el próximo mes mientras prueba a otro proveedor. La planta queda con capacidad ociosa y Héctor siente que lo dejaste solo.",
+      now: {
+        text: "Proteges el margen completo y das una señal clara: el precio no se mueve por presión.",
+        effects: { finanzas: 2, personas: -1, clientes: -1, operacion: 0, confianza: 1 },
+        words: { finanzas: "Margen intacto", personas: "Héctor inquieto", clientes: "Relación tensa", operacion: "Sin cambios", confianza: "Señal firme" },
+      },
+      later: {
+        text: "SuperNorte reduce pedidos mientras prueba a otro proveedor. La planta queda con capacidad ociosa y Héctor siente que lo dejaste solo.",
+        effects: { finanzas: 2, personas: -1, clientes: -2, operacion: -1, confianza: 1 },
+        words: { finanzas: "Margen intacto", personas: "Héctor se siente solo", clientes: "Pedidos a la baja", operacion: "Capacidad ociosa", confianza: "Precio respetado" },
+      },
       tradeoff: "Apostaste a que tu producto vale más para ellos de lo que dicen. Si te equivocas, el costo llega en volumen y en tu equipo.",
-      effects: { finanzas: 2, personas: -1, clientes: -2, operacion: -1, confianza: 1 },
     },
   ] as DemoOption[],
   disclaimer: "Ejemplo ilustrativo, no conectado a tu cuenta. En el simulador, el resultado también depende de lo que decidiste antes y de cómo está tu empresa.",
   close: "Eso fue una decisión. Imagina dirigir la empresa durante semanas.",
   cta: "Empezar mi historia",
   retry: "Volver a decidir",
-};
-
-/* ---------------- Efectos cruzados ---------------- */
-export interface RippleOption { id: string; label: string; now: Effects; later: Effects; nowText: string; laterText: string }
-export const RIPPLE = {
-  title: "Una decisión nunca afecta una sola cosa.",
-  body: "Lo que hoy mejora tus ventas puede presionar tus márgenes. Lo que protege el presupuesto puede afectar a tu equipo. Aprender a dirigir es entender esas conexiones.",
-  note: "Simulación de ejemplo. Los efectos muestran dirección, no cifras reales.",
-  phases: ["Esta semana", "Un mes después"] as const,
-  options: [
-    {
-      id: "promo",
-      label: "Lanzar una promoción 2x1",
-      now: { finanzas: 0, personas: 0, clientes: 2, operacion: -1, confianza: 0 },
-      later: { finanzas: -2, personas: -1, clientes: 0, operacion: -1, confianza: -1 },
-      nowText: "Las ventas suben y los clientes responden. La planta trabaja con más presión.",
-      laterText: "El margen se comió la promoción y los clientes ya esperan la siguiente. Ventas creció; la utilidad no.",
-    },
-    {
-      id: "congelar",
-      label: "Congelar contrataciones",
-      now: { finanzas: 2, personas: -1, clientes: 0, operacion: 0, confianza: 1 },
-      later: { finanzas: 1, personas: -2, clientes: -1, operacion: -2, confianza: 0 },
-      nowText: "El presupuesto respira y el consejo lo nota. El equipo absorbe el trabajo pendiente.",
-      laterText: "Las horas extra se acumulan, se va alguien clave y los tiempos de entrega empiezan a fallar.",
-    },
-    {
-      id: "pedido",
-      label: "Aceptar un pedido urgente con horas extra",
-      now: { finanzas: 1, personas: -1, clientes: 2, operacion: -1, confianza: 0 },
-      later: { finanzas: 1, personas: 0, clientes: 2, operacion: 1, confianza: 1 },
-      nowText: "Cumples a un cliente importante. El turno de noche se carga y mantenimiento se pospone.",
-      laterText: "El cliente amplía su contrato y el equipo ya sabe trabajar con picos. Funcionó porque fue una excepción.",
-    },
-  ] as RippleOption[],
 };
 
 /* ---------------- Cómo funciona (incluye el ritmo diario) ---------------- */

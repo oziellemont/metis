@@ -1,6 +1,6 @@
 /**
  * Landing de MÊTIS CEO (www.metis.ceo; el middleware reescribe «/» hacia aquí).
- * Narrativa: entiendo qué es → pruebo una decisión → cómo se vive → por qué es distinto → mi camino → empiezo.
+ * Narrativa: entiendo qué es (hero con el ciclo en 4 escenas) → pruebo una decisión y veo hoy y un mes después → cómo se vive → por qué es distinto → mi camino → empiezo.
  * Aislada del simulador: la demo vive en memoria y no usa el motor, la partida ni la cuenta.
  * Copy y estado real de cada función en components/site/ceo-landing/content.ts.
  */
@@ -9,7 +9,8 @@ import { ArrowDown } from "lucide-react";
 import { Header } from "@/components/site/ceo-landing/Header";
 import { FirstDecision } from "@/components/site/ceo-landing/FirstDecision";
 import { TryButton } from "@/components/site/ceo-landing/TryButton";
-import { CloseSection, DiffSection, FaqSection, Footer, HowSection, PathSection, PhilosophySection, RippleSection } from "@/components/site/ceo-landing/Sections";
+import { Story } from "@/components/site/ceo-landing/Story";
+import { CloseSection, DiffSection, FaqSection, Footer, HowSection, PathSection, PhilosophySection } from "@/components/site/ceo-landing/Sections";
 import { HERO, SEO } from "@/components/site/ceo-landing/content";
 import { CEO_URL } from "@/lib/site";
 
@@ -28,8 +29,8 @@ export default function CeoLanding() {
       <Header />
       <main id="contenido">
         <div className="bg-gradient-to-br from-[#141735] via-[#1E1A5E] to-[#2B1F8A] text-white">
-          <section aria-labelledby="hero-title" className="mx-auto max-w-6xl px-5 sm:px-6 pt-28 sm:pt-32 pb-16 sm:pb-24 grid lg:grid-cols-[1fr_1.05fr] gap-10 lg:gap-14 items-start [&>*]:min-w-0">
-            <div className="lg:pt-20">
+          <section aria-labelledby="hero-title" className="mx-auto max-w-6xl px-5 sm:px-6 pt-28 sm:pt-32 pb-16 sm:pb-24 grid lg:grid-cols-[1fr_1.05fr] gap-10 lg:gap-14 items-center [&>*]:min-w-0">
+            <div>
               <p className="text-[11px] sm:text-[12px] font-semibold uppercase tracking-[0.16em] text-white/60">{HERO.eyebrow}</p>
               <h1 id="hero-title" className="mt-4 text-[40px] leading-[1.06] sm:text-6xl sm:leading-[1.04] font-semibold tracking-tight">{HERO.title}</h1>
               <p className="mt-5 text-[17px] sm:text-lg leading-relaxed text-white/75 max-w-xl">{HERO.body}</p>
@@ -40,10 +41,10 @@ export default function CeoLanding() {
               <p className="mt-4 text-[13px] text-white/50">{HERO.note}</p>
               <p className="mt-10 max-w-md border-l-2 border-mint/60 pl-4 text-[15px] leading-relaxed text-white/70">{HERO.who}</p>
             </div>
-            <FirstDecision />
+            <Story />
           </section>
         </div>
-        <RippleSection />
+        <FirstDecision />
         <HowSection />
         <DiffSection />
         <PathSection />
