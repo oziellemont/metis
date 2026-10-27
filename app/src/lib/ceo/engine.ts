@@ -75,6 +75,9 @@ export function migrate(raw: unknown): CeoState {
   if (!COMPANIES.some((c) => c.id === out.company)) out.company = FIRST_COMPANY;
   out.career = Array.isArray(out.career) ? out.career : [];
   out.tier = typeof out.tier === "number" ? out.tier : 0;
+  // Executive Journey: si viene dañado, se descarta (se vuelve a inscribir sin perder el piso fundador).
+  const j = out.journey as unknown;
+  if (j !== undefined && (!j || typeof j !== "object" || typeof (j as { stage?: unknown }).stage !== "number" || !Array.isArray((j as { appointments?: unknown }).appointments))) delete out.journey;
   return out;
 }
 

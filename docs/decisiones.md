@@ -98,3 +98,13 @@ El perfil es uno por persona (`metis.profiles`) y puede pertenecer a varias empr
 - La IA lleva triple candado: interruptor en la base, `CEO_AI_ENABLED=1` en Vercel y consentimiento del jugador. El modo sombra no requiere consentimiento porque el jugador no ve el resultado.
 - Herramientas de prueba («Adelantar el reloj»): siempre visibles en las versiones de prueba. En producción NO cambia nada mientras no se configure `NEXT_PUBLIC_CEO_TEST_TOOLS=oculto`; con eso se esconden y solo aparecen al abrir con `?prueba=1`.
 - `/api/ceo/estado`: diagnóstico de solo lectura (entorno, proyecto de Supabase y si la llave está presente sin mostrarla). En producción exige el token del cron.
+
+## J-1 · Executive Journey: motor de etapas y Mastery Engine (sin cambios visibles)
+
+- Se agregan `lib/ceo/mastery.ts` (8 competencias, niveles Novice→Expert) y `lib/ceo/journey.ts` (6 etapas + The Executive Arena, requisitos, nombramientos).
+- Mastery = decisiones (hasta 70, ponderadas por exigencia y por cantidad de evidencia; vencidos cuentan 0; dilemas valen media decisión) + consistencia entre empresas (10) + retos (10) + Academy con tope (10) + espacio para evidencia futura (IA en modo sombra), siempre ≤ 100.
+- El XP queda como constancia: es un mínimo por etapa, nunca asciende solo (hay prueba que lo garantiza).
+- Usuarios actuales: al inscribirse se congela su rango anterior → piso de etapa (Gerente → Emerging Leader, Director de área → Functional Manager, Director General → Business Unit Director, CEO y CEO de consejo → Chief Executive Officer) y distinción «temporada fundadora». XP, racha, historial y empresas no se tocan.
+- `CeoState.journey` es opcional; `migrate` descarta un journey dañado. Las 10 partidas doradas no cambian.
+- Calibración inicial con las partidas doradas: un jugador cuidadoso cumple Functional Manager al aprobar su primera empresa; uno que decide mal, no. Los umbrales se ajustarán con jugadores reales.
+- `LEVELS`, `rankFor` y `levelOf` siguen igual por compatibilidad; la interfaz los reemplaza en J-2.
