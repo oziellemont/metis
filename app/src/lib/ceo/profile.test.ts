@@ -1,0 +1,185 @@
+import { describe, expect, it } from "vitest";
+import { readdirSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+import { migrate, newState, rand01, xpOf } from "./engine";
+import { masteryOf, COMPETENCY_IDS, type Mastery } from "./mastery";
+import { journeyOf } from "./journey";
+import { replay } from "./replay";
+import { snapshotOf, type Golden } from "./golden/play";
+import {
+  DIAGNOSTIC, EXP_AREAS, EXPLORE_EVERY, GOALS, INDUSTRIES, NUDGE_AFTER_MS, NUDGE_SNOOZE_MS, QUESTIONS, READING_FADE_N, ROLES, YEARS,
+  aiContext, declaredCompetencies, diagnosticOffered, helpBand, initialReading, recommendOrder, sanitizeDiagnostic, sanitizeProfile,
+  shouldNudge, snoozeNudge, suggestTier, type InitialDiagnostic, type ProfessionalProfile,
+} from "./profile";
+import { buildMessages, writtenEligible } from "./written";
+import { companyById } from "./companies";
+
+const DIR = join(__dirname, "golden", "data");
+const GOLDENS: Golden[] = readdirSync(DIR).filter((f) => f.endsWith(".json")).sort().map((f) => JSON.parse(readFileSync(join(DIR, f), "utf8")));
+
+const pick = <T,>(list: readonly T[], r: number) => list[Math.floor(r * list.length) % list.length];
+function randomProfile(seed: string): ProfessionalProfile {
+  const r = (k: string) => rand01(seed + k);
+  const areas = EXP_AREAS.filter((_, i) => r("a" + i) < 0.3).map((a) => a.id);
+  return { v: 1, role: pick(ROLES, r("r")).id, areas, years: pick(YEARS, r("y")).id, industry: pick(INDUSTRIES, r("i")).id, goal: pick(GOALS, r("g")).id, skipped: [], source: "onboarding", answeredAt: 1, updatedAt: 1 };
+}
+function randomDiagnostic(seed: string): InitialDiagnostic {
+  return { v: 1, set: "d1", answers: DIAGNOSTIC.map((d, i) => ({ id: d.id, option: pick(d.options, rand01(seed + i)).id, at: 1 })), finishedAt: 1 };
+}
+const emptyMastery = (): Mastery => masteryOf(newState());
+
+const VETERANO: ProfessionalProfile = { v: 1, role: "director", areas: ["operaciones", "suministro", "personas"], years: "15+", industry: "manufactura", goal: "ascenso", skipped: [], source: "onboarding", answeredAt: 1, updatedAt: 1 };
+const EGRESADO: ProfessionalProfile = { v: 1, role: "estudiante", areas: ["finanzas"], years: "<2", industry: "financieros", goal: "negocio", skipped: [], source: "onboarding", answeredAt: 1, updatedAt: 1 };
+
+describe("perfil profesional · catálogos", () => {
+  it("5 preguntas y catálogos con ids únicos", () => {
+    expect(QUESTIONS).toHaveLength(5);
+    for (const list of [ROLES, EXP_AREAS, YEARS, INDUSTRIES, GOALS]) expect(new Set(list.map((x) => x.id)).size).toBe(list.length);
+  });
+  it("cada área declarada apunta a competencias reales", () => {
+    for (const a of EXP_AREAS) for (const c of a.to) expect(COMPETENCY_IDS).toContain(c);
+  });
+  it("el diagnóstico tiene 3 decisiones, cada una con una mejor opción clara y sin empates arriba", () => {
+    expect(DIAGNOSTIC).toHaveLength(3);
+    for (const d of DIAGNOSTIC) expect(d.options.filter((o) => o.score === 3)).toHaveLength(1);
+    expect(new Set(DIAGNOSTIC.flatMap((d) => d.competencies)).size).toBe(6);
+  });
+});
+
+describe("P-04 / P-05 · lo declarado y el diagnóstico nunca cambian dominio, etapa, XP ni la partida", () => {
+  it.each(GOLDENS.map((g) => [g.id, g] as const))("%s con 6 perfiles y diagnósticos al azar", (_id, g) => {
+    const { state } = replay(g.actions);
+    const t = g.checkpoints[g.checkpoints.length - 1].at;
+    const base = { m: masteryOf(state, t), j: journeyOf(state, t), xp: xpOf(state, t), snap: snapshotOf(state, t) };
+    for (let k = 0; k < 6; k++) {
+      const s2 = { ...state, profile: randomProfile(g.id + k), diagnostic: k % 2 ? randomDiagnostic(g.id + k) : undefined };
+      expect(masteryOf(s2, t)).toEqual(base.m);
+      expect(journeyOf(s2, t)).toEqual(base.j);
+      expect(xpOf(s2, t)).toBe(base.xp);
+      expect(snapshotOf(s2, t)).toEqual(base.snap);
+    }
+  });
+});
+
+describe("P-06 · lectura inicial", () => {
+  it("se separa del dominio y desaparece con 5 decisiones reales", () => {
+    const d: InitialDiagnostic = { v: 1, set: "d1", answers: [{ id: "d1-politica", option: "b", at: 1 }, { id: "d1-credito", option: "a", at: 1 }], finishedAt: 1 };
+    const m = emptyMastery();
+    const r0 = initialReading(d, m);
+    expect(r0.personas).toEqual({ signal: "alta", weight: 1 });
+    expect(r0.finanzas.signal).toBe("reforzar");
+    expect(r0.estrategia.signal).toBe("sin");
+    for (const n of [1, 2, 3, 4]) {
+      const mm = { ...m, personas: { ...m.personas, n } };
+      expect(initialReading(d, mm).personas.weight).toBeCloseTo(1 - n / READING_FADE_N, 3);
+    }
+    const done = { ...m, personas: { ...m.personas, n: 5 } };
+    expect(initialReading(d, done).personas).toEqual({ signal: "sin", weight: 0 });
+  });
+  it("solo se ofrece con menos de 10 decisiones y si no se ha hecho", () => {
+    expect(diagnosticOffered(0)).toBe(true);
+    expect(diagnosticOffered(9)).toBe(true);
+    expect(diagnosticOffered(10)).toBe(false);
+    expect(diagnosticOffered(0, { v: 1, set: "d1", answers: [], finishedAt: 5 })).toBe(false);
+  });
+});
+
+describe("P-07 / P-08 · recomendaciones", () => {
+  it("al menos 1 de cada 3 recomendaciones queda fuera de lo declarado (100 perfiles al azar)", () => {
+    const m = emptyMastery();
+    for (let i = 0; i < 100; i++) {
+      const p = randomProfile("x" + i);
+      const rec = recommendOrder(p, m, i % 3 ? randomDiagnostic("d" + i) : undefined);
+      expect(rec).toHaveLength(8);
+      expect(new Set(rec.map((r) => r.competency)).size).toBe(8); // nunca oculta nada
+      const declared = declaredCompetencies(p);
+      if (!declared.size || declared.size === 8) continue;
+      const outsideTotal = 8 - declared.size;
+      for (let b = 0; b + EXPLORE_EVERY <= 8; b += EXPLORE_EVERY) {
+        const block = rec.slice(b, b + EXPLORE_EVERY);
+        const usedOutside = rec.slice(0, b).filter((r) => r.outside).length;
+        if (usedOutside < outsideTotal) expect(block.some((r) => r.outside), `perfil ${i}, bloque ${b}`).toBe(true);
+      }
+    }
+  });
+  it("veterano de operaciones y recién egresado de Finanzas reciben orden, ayuda y exigencia distintos", () => {
+    const m = emptyMastery();
+    const a = recommendOrder(VETERANO, m), b = recommendOrder(EGRESADO, m);
+    expect(a.map((x) => x.competency)).not.toEqual(b.map((x) => x.competency));
+    expect(a[0].competency).not.toBe("ejecucion");
+    expect(b[0].competency).not.toBe("finanzas");
+    expect(a.find((x) => x.competency === "ejecucion")!.review).toBe(true);
+    expect(helpBand(VETERANO)).toBe("breve");
+    expect(helpBand(EGRESADO)).toBe("completa");
+    expect(suggestTier(VETERANO)).toBeGreaterThan(0);
+    expect(suggestTier(EGRESADO)).toBe(0);
+  });
+  it("la evidencia real manda sobre lo declarado", () => {
+    const m = emptyMastery();
+    const weakOps = { ...m, ejecucion: { ...m.ejecucion, n: 8, value: 5 } };
+    for (const c of COMPETENCY_IDS) if (c !== "ejecucion") weakOps[c] = { ...m[c], n: 8, value: 60 };
+    expect(recommendOrder(VETERANO, weakOps)[0].competency).toBe("ejecucion");
+  });
+  it("sin perfil: orden por dominio, ayuda completa, exigencia normal", () => {
+    const rec = recommendOrder(undefined, emptyMastery());
+    expect(rec.map((r) => r.competency)).toEqual(COMPETENCY_IDS);
+    expect(helpBand(undefined)).toBe("completa");
+    expect(suggestTier(undefined)).toBe(0);
+  });
+});
+
+describe("P-09 · usuarios actuales y datos", () => {
+  it("migrate acepta partidas sin perfil y no cambia nada", () => {
+    for (const g of GOLDENS) {
+      const { state } = replay(g.actions);
+      const t = g.checkpoints[g.checkpoints.length - 1].at;
+      const m = migrate(JSON.parse(JSON.stringify(state)));
+      expect(m.profile).toBeUndefined();
+      expect(snapshotOf(m, t)).toEqual(snapshotOf(state, t));
+    }
+  });
+  it("migrate limpia perfiles dañados sin romper la partida", () => {
+    const s = migrate({ ...newState(), profile: { role: "rey", areas: ["finanzas", "hackeo", "finanzas"], years: 30, industry: "manufactura", skipped: ["goal", "x"], answeredAt: 5 }, diagnostic: { answers: [{ id: "d1-credito", option: "c", at: 1 }, { id: "nada", option: "a" }] }, profileNudge: "x" });
+    expect(s.profile).toEqual({ v: 1, areas: ["finanzas"], industry: "manufactura", skipped: ["goal"], source: "onboarding", answeredAt: 5, updatedAt: 0 });
+    expect(s.diagnostic!.answers).toEqual([{ id: "d1-credito", option: "c", at: 1 }]);
+    expect(s.profileNudge).toBeUndefined();
+    expect(migrate({ ...newState(), profile: "basura" }).profile).toBeUndefined();
+  });
+  it("sanitize es idempotente", () => {
+    const p = sanitizeProfile(VETERANO)!;
+    expect(sanitizeProfile(p)).toEqual(p);
+    const d = sanitizeDiagnostic(randomDiagnostic("z"))!;
+    expect(sanitizeDiagnostic(d)).toEqual(d);
+  });
+  it("aviso: desde el segundo día, se pospone 7 días y se rinde tras 2 veces", () => {
+    const t0 = 1_800_000_000_000;
+    const s = { startedAt: t0, journey: undefined, profile: undefined, profileNudge: undefined };
+    expect(shouldNudge(s, t0 + 1000)).toBe(false);
+    expect(shouldNudge(s, t0 + NUDGE_AFTER_MS)).toBe(true);
+    const n1 = snoozeNudge(undefined, t0 + NUDGE_AFTER_MS);
+    expect(shouldNudge({ ...s, profileNudge: n1 }, t0 + NUDGE_AFTER_MS + 1000)).toBe(false);
+    expect(shouldNudge({ ...s, profileNudge: n1 }, t0 + NUDGE_AFTER_MS + NUDGE_SNOOZE_MS)).toBe(true);
+    const n2 = snoozeNudge(n1, t0 + NUDGE_AFTER_MS + NUDGE_SNOOZE_MS);
+    expect(shouldNudge({ ...s, profileNudge: n2 }, t0 + 100 * NUDGE_SNOOZE_MS)).toBe(false);
+    expect(shouldNudge({ ...s, profile: VETERANO }, t0 + 10 * NUDGE_AFTER_MS)).toBe(false);
+  });
+});
+
+describe("P-10 · contexto para la IA", () => {
+  it("una línea solo con catálogo, sin datos personales", () => {
+    const line = aiContext({ ...VETERANO, name: "Oziel", email: "o@x.com" } as unknown as ProfessionalProfile)!;
+    expect(line).toBe("Director; experiencia en operaciones, cadena de suministro, personas y rh; más de 15 años de experiencia; industria: manufactura; objetivo: prepararme para un ascenso");
+    expect(line).not.toMatch(/Oziel|@/);
+    expect(aiContext(undefined)).toBeNull();
+    expect(aiContext({ v: 1, skipped: [...QUESTIONS], source: "onboarding", answeredAt: 1, updatedAt: 1 })).toBeNull();
+  });
+  it("el mensaje a la IA incluye el contexto solo si se pasa, y pide evaluar la respuesta, no el currículum", () => {
+    const item = companyById("cumbre").items.find((i) => writtenEligible(i))!;
+    const base = { item, fromName: "X", fromRole: "Y", company: "Z", text: "Respuesta de prueba suficientemente larga para el caso." };
+    const sin = buildMessages(base);
+    expect(sin[1].content).not.toContain("Experiencia declarada");
+    const con = buildMessages({ ...base, profile: aiContext(VETERANO)! });
+    expect(con[1].content).toContain("Experiencia declarada del jugador: Director");
+    expect(con[0].content).toContain("no por su experiencia declarada");
+  });
+});

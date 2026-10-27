@@ -15,6 +15,7 @@ import { supabaseCeoAdmin, supabaseServer } from "@/lib/supabase/server";
 import { aiStatusFor } from "@/lib/ceo/flags-server";
 import { companyById } from "@/lib/ceo/companies";
 import { personOf } from "@/lib/ceo/cast";
+import { aiContext, sanitizeProfile } from "@/lib/ceo/profile";
 import { CAPS, DEFAULT_MODEL, MAX_OUTPUT_TOKENS, approxTokens, buildMessages, costOf, parseEvaluation, periodsOf, textProblem, writtenEligible } from "@/lib/ceo/written";
 
 export const dynamic = "force-dynamic";
@@ -55,7 +56,7 @@ export async function POST(req: Request) {
   const key = (process.env.OPENAI_API_KEY ?? "").trim();
   if (!admin || !key) return fallback("Servicio no configurado.", 503);
 
-  const body = (await req.json().catch(() => ({}))) as { itemId?: string; company?: string; text?: string };
+  const body = (await req.json().catch(() => ({}))) as { itemId?: string; company?: string; text?: string; profile?: unknown };
   const text = String(body.text ?? "");
   const problem = textProblem(text);
   if (problem) return NextResponse.json({ ok: false, error: problem }, { status: 400 });
@@ -65,7 +66,7 @@ export async function POST(req: Request) {
 
   const model = process.env.CEO_AI_MODEL?.trim() || DEFAULT_MODEL;
   const p = personOf(pack, item.from);
-  const messages = buildMessages({ item, fromName: p.name, fromRole: p.role, company: pack.name, text });
+  const messages = buildMessages({ item, fromName: p.name, fromRole: p.role, company: pack.name, text, profile: aiContext(sanitizeProfile(body.profile)) });
   const estIn = approxTokens(messages.map((m) => m.content).join("\n")) + 20;
   const est = costOf(model, estIn, MAX_OUTPUT_TOKENS);
 

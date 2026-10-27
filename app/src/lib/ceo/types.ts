@@ -1,3 +1,4 @@
+import type { InitialDiagnostic, ProfessionalProfile, ProfileNudge } from "./profile";
 /**
  * mêtis CEO · tipos del simulador (metisalign.app).
  * Todo lo de esta carpeta es independiente de mêtis (alineación): no importa nada de store/academy.
@@ -167,6 +168,12 @@ export interface CeoState {
   savedAt: number;
   /** Executive Journey (opcional: si falta, el jugador aún no se inscribe; ver journey.ts). */
   journey?: JourneyState;
+  /** Experiencia declarada (V33). Opcional; NUNCA entra a dominio, etapa, XP ni ranking (ver profile.ts). */
+  profile?: ProfessionalProfile;
+  /** Diagnóstico inicial opcional de 3 decisiones (lectura de confianza baja, separada del dominio). */
+  diagnostic?: InitialDiagnostic;
+  /** Aviso «Cuéntanos tu experiencia» para jugadores que empezaron antes del perfil. */
+  profileNudge?: ProfileNudge;
 }
 
 /** Executive Journey: tu cargo. Cambia solo con nombramientos (ver journey.ts). */
