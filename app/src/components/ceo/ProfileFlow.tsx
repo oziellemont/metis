@@ -252,13 +252,13 @@ export function adaptationOf(p: ProfessionalProfile | undefined, m: Mastery, d?:
   ];
 }
 
-export function StartingPoint({ name, p, d, m, cta, onCta, onEdit }: { name: string; p?: ProfessionalProfile; d?: InitialDiagnostic; m: Mastery; cta: string; onCta: () => void; onEdit?: () => void }) {
+export function StartingPoint({ name, p, d, m, cta, onCta, onEdit, stage = "Emerging Leader", fresh = true }: { name: string; p?: ProfessionalProfile; d?: InitialDiagnostic; m: Mastery; cta: string; onCta: () => void; onEdit?: () => void; stage?: string; fresh?: boolean }) {
   const plan = useMemo(() => adaptationOf(p, m, d), [p, m, d]);
   return (
     <section className="academy-in mt-8">
       <div className="inline-flex rounded-full bg-white/10 px-3 py-1 text-xs">Tu punto de partida</div>
-      <h1 className="mt-4 text-3xl sm:text-[34px] font-semibold leading-tight">{name ? `${name.split(" ")[0]}, empiezas` : "Empiezas"} como Emerging Leader.</h1>
-      <p className="mt-3 text-white/70 text-[14.5px] leading-relaxed">Tu experiencia cambia por dónde empiezas y cómo te acompañamos. Tu etapa y tu dominio solo suben con lo que demuestres en el simulador.</p>
+      <h1 className="mt-4 text-3xl sm:text-[34px] font-semibold leading-tight">{fresh ? <>{name ? `${name.split(" ")[0]}, empiezas` : "Empiezas"} como {stage}.</> : <>{name ? `${name.split(" ")[0]}, sigues` : "Sigues"} como {stage}.</>}</h1>
+      <p className="mt-3 text-white/70 text-[14.5px] leading-relaxed">Tu experiencia cambia por dónde {fresh ? "empiezas" : "sigues"} y cómo te acompañamos. Tu etapa y tu dominio solo suben con lo que demuestres en el simulador.</p>
       <div className="mt-6 grid gap-4 md:grid-cols-2">
         <DeclaredCard p={p} onEdit={onEdit} />
         <DemonstratedCard m={m} d={d} />
@@ -303,6 +303,21 @@ export function ProfileEditor({ initial, onSave, onCancel }: { initial?: Profess
         <div className="rounded-xl bg-slate-100 px-3.5 py-3"><b className="block text-ink font-semibold mb-0.5">Qué no cambia</b><span className="text-slate-600">Tu dominio, tu etapa, tu XP, el ranking y los nombramientos. Eso solo sube con tus decisiones.</span></div>
       </div>
       <div className="mt-4 flex justify-end gap-2"><button type="button" onClick={onCancel} className="btn-ghost">Cancelar</button><button type="button" onClick={save} className="btn-primary">Guardar</button></div>
+    </div>
+  );
+}
+
+/** Oferta de exigencia en la primera empresa (solo perfiles con 11+ años o cargo de dirección). El jugador decide. */
+export function TierChoice({ tier, setTier, offered, names }: { tier: number; setTier: (t: number) => void; offered: number; names: [string, string] }) {
+  const opts: [number, string, string][] = [
+    [0, names[0], "La exigencia de siempre. Recomendada si es tu primera vez en el simulador."],
+    [offered, names[1], "Plazos más cortos, golpes más fuertes y una línea de aprobación más alta."],
+  ];
+  return (
+    <div className="mt-6 rounded-2xl bg-white/[.06] border border-white/[.12] p-4">
+      <div className="text-[11px] font-semibold uppercase tracking-wider text-white/55">Exigencia de tu primera empresa</div>
+      <p className="mt-1 text-xs text-white/60">Por tu experiencia te ofrecemos empezar con más exigencia. No cambia tu etapa ni cuenta como modo Legendario.</p>
+      <div className="mt-3 grid gap-2.5 sm:grid-cols-2">{opts.map(([t, n, sub]) => <Choice key={t} on={tier === t} onClick={() => setTier(t)} sub={sub}>{n}</Choice>)}</div>
     </div>
   );
 }

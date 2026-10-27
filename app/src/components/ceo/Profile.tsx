@@ -11,7 +11,7 @@ import { useCeo } from "./CeoProvider";
 import { Avatar, Flame, rel } from "./ui";
 import { CompetencyBars, StageTrack } from "./Journey";
 import { ProfileEditor } from "./ProfileFlow";
-import { EXP_AREAS, GOALS, INDUSTRIES, ROLES, YEARS, labelOf, profileAnswered } from "@/lib/ceo/profile";
+import { EXP_AREAS, GOALS, INDUSTRIES, ROLES, YEARS, diagnosticOffered, labelOf, profileAnswered } from "@/lib/ceo/profile";
 
 export function Profile() {
   const c = useCeo();
@@ -77,7 +77,9 @@ export function Profile() {
         <div className="flex flex-wrap items-center gap-3">
           <span className="h-9 w-9 rounded-xl bg-indigo-soft text-indigo grid place-items-center"><Briefcase size={16} /></span>
           <div className="flex-1 min-w-0"><h2 className="font-semibold text-ink">Experiencia declarada</h2><p className="text-xs text-slate-400">Ajusta por dónde empiezas y cuánta ayuda ves. No suma dominio, puntos ni nombramientos.</p></div>
-          {!editing && <button type="button" onClick={() => setEditing(true)} className={profileAnswered(c.s) ? "inline-flex items-center gap-1 text-xs font-medium text-indigo" : "btn-primary text-sm"}>{profileAnswered(c.s) ? <><Pencil size={12} /> Editar</> : "Completar"}</button>}
+          {!editing && (profileAnswered(c.s)
+            ? <button type="button" onClick={() => setEditing(true)} className="inline-flex items-center gap-1 text-xs font-medium text-indigo"><Pencil size={12} /> Editar</button>
+            : <Link href="/ceo/experiencia" className="btn-primary text-sm">Completar</Link>)}
         </div>
         {editing ? (
           <div className="mt-4"><ProfileEditor initial={pf} onCancel={() => setEditing(false)} onSave={(np) => { c.saveProfile(np); setEditing(false); }} /></div>
@@ -86,6 +88,12 @@ export function Profile() {
             <dl className="mt-4 grid sm:grid-cols-2 gap-x-6">
               {declared.map(([k, v]) => <div key={k} className="flex justify-between gap-4 py-2.5 border-t border-slate-100 text-[13px]"><dt className="text-slate-500">{k}</dt><dd className={clsx("font-medium text-right text-ink", !v && "text-slate-400 font-normal")}>{v || "Sin responder"}</dd></div>)}
             </dl>
+            {diagnosticOffered(p.decisions, c.s.diagnostic) && profileAnswered(c.s) && (
+              <div className="mt-4 flex flex-wrap items-center gap-3 rounded-xl bg-indigo-soft/50 px-4 py-3">
+                <span className="flex-1 min-w-0 text-[12.5px] text-slate-600"><b className="text-ink font-semibold">Diagnóstico inicial · opcional.</b> Tres decisiones, cerca de 3 minutos. Ajusta por dónde sigues; no suma puntos.</span>
+                <Link href="/ceo/experiencia?diagnostico=1" className="text-xs font-medium text-indigo">Hacer el diagnóstico</Link>
+              </div>
+            )}
             <p className="mt-3 flex gap-2 text-[11.5px] text-slate-400"><ShieldCheck size={13} className="shrink-0 mt-0.5" /> Solo vive en tu partida. Si activas el coach con IA, se le comparte en una línea sin datos personales.</p>
           </>
         )}

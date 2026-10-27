@@ -31,6 +31,8 @@ export function CeoShell({ children }: { children: React.ReactNode }) {
   }, [c.ready, c.s.startedAt, onboarding, router]);
 
   if (onboarding) return <>{children}</>;
+  // Flujo de experiencia para usuarios actuales: pantalla completa, sin menú.
+  if (path === "/ceo/experiencia" && c.ready && c.s.startedAt) return <>{children}</>;
   if (!c.ready || !c.s.startedAt) return <div className="min-h-screen grid place-items-center bg-canvas"><span className="h-8 w-8 rounded-full border-2 border-indigo border-t-transparent animate-spin" /></div>;
 
   const active = (h: string) => (h === "/ceo" ? path === "/ceo" : path.startsWith(h));
