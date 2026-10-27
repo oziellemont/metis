@@ -3,7 +3,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import clsx from "clsx";
-import { Home, Inbox, GraduationCap, Trophy, UserRound, Settings, X, Building2, Network, Route, Users } from "lucide-react";
+import { Home, Inbox, GraduationCap, Trophy, UserRound, Settings, X, Building2, Network, Route } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { useCeo } from "./CeoProvider";
 import { Flame } from "./ui";
@@ -13,7 +13,8 @@ const NAV = [
   { href: "/ceo", label: "Hoy", Icon: Home },
   { href: "/ceo/bandeja", label: "Bandeja", Icon: Inbox, badge: true },
   { href: "/ceo/empresa", label: "Empresa", Icon: Network },
-  { href: "/ceo/personas", label: "Personas", Icon: Users, desktop: true },
+  // «Personas» (/ceo/personas) se ocultó del menú: el dilema del día ya llega en Hoy y ahí se guarda.
+  // La página y su contenido siguen existiendo; para volver a mostrarla basta con regresar esta línea.
   { href: "/ceo/carrera", label: "Carrera", Icon: Route },
   { href: "/ceo/academy", label: "Academy", Icon: GraduationCap },
   { href: "/ceo/ranking", label: "Ranking", Icon: Trophy, desktop: true },
