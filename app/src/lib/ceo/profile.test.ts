@@ -3,12 +3,12 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { migrate, newState, rand01, xpOf } from "./engine";
 import { masteryOf, COMPETENCY_IDS, type Mastery } from "./mastery";
-import { journeyOf } from "./journey";
+import { careerFacts, journeyOf } from "./journey";
 import { replay } from "./replay";
 import { snapshotOf, type Golden } from "./golden/play";
 import {
   DIAGNOSTIC, EXP_AREAS, EXPLORE_EVERY, GOALS, INDUSTRIES, NUDGE_AFTER_MS, NUDGE_SNOOZE_MS, QUESTIONS, READING_FADE_N, ROLES, YEARS,
-  aiContext, declaredCompetencies, diagnosticOffered, helpBand, initialReading, recommendOrder, sanitizeDiagnostic, sanitizeProfile,
+  OFFERED_TIER, aiContext, companyForIndustry, declaredCompetencies, finalizeProfile, diagnosticOffered, helpBand, initialReading, recommendOrder, sanitizeDiagnostic, sanitizeProfile,
   shouldNudge, snoozeNudge, suggestTier, type InitialDiagnostic, type ProfessionalProfile,
 } from "./profile";
 import { buildMessages, writtenEligible } from "./written";
@@ -181,5 +181,48 @@ describe("P-10 · contexto para la IA", () => {
     const con = buildMessages({ ...base, profile: aiContext(VETERANO)! });
     expect(con[1].content).toContain("Experiencia declarada del jugador: Director");
     expect(con[0].content).toContain("no por su experiencia declarada");
+  });
+});
+
+describe("F1-P2 · onboarding y edición en Perfil", () => {
+  const IDS = ["cumbre", "forja", "brasa"];
+  it("preselecciona la empresa de la misma industria y nada si no hay", () => {
+    expect(companyForIndustry("manufactura", IDS)).toBe("forja");
+    expect(companyForIndustry("consumo", IDS)).toBe("cumbre");
+    expect(companyForIndustry("restaurantes", IDS)).toBe("brasa");
+    expect(companyForIndustry("salud", IDS)).toBeUndefined();
+    expect(companyForIndustry(undefined, IDS)).toBeUndefined();
+    expect(companyForIndustry("manufactura", ["cumbre"])).toBeUndefined();
+  });
+  it("toda empresa sugerida por industria existe en el simulador", () => {
+    for (const i of INDUSTRIES) if ("company" in i) expect(companyById(i.company).id).toBe(i.company);
+  });
+  it("finalizeProfile recalcula lo omitido, conserva la primera fecha y queda válido", () => {
+    const edited = finalizeProfile({ ...VETERANO, areas: [], goal: undefined, answeredAt: 5 }, "perfil", 99);
+    expect(edited.skipped.sort()).toEqual(["areas", "goal"]);
+    expect(edited.areas).toBeUndefined();
+    expect(edited.answeredAt).toBe(5);
+    expect(edited.updatedAt).toBe(99);
+    expect(sanitizeProfile(edited)).toEqual(sanitizeProfile(JSON.parse(JSON.stringify(edited))));
+    const blank = finalizeProfile({ v: 1, skipped: [], source: "onboarding", answeredAt: 0, updatedAt: 0 }, "perfil", 7);
+    expect(blank.skipped).toEqual([...QUESTIONS]);
+    expect(blank.answeredAt).toBe(7);
+  });
+  it("P-03 · lo editado sobrevive a guardar y recargar (migrate)", () => {
+    const s = { ...newState(), startedAt: 1, profile: finalizeProfile({ ...EGRESADO, role: "gerente" }, "perfil", 50) };
+    const back = migrate(JSON.parse(JSON.stringify(s)));
+    expect(back.profile?.role).toBe("gerente");
+    expect(back.profile?.updatedAt).toBe(50);
+  });
+  it("empezar con exigencia elegida no cuenta como Legendario; un ascenso posterior a mayor exigencia sí", () => {
+    const run = (tier: number, passed = true) => ({ company: "cumbre", tier, startedAt: 0, endedAt: 1, kpis: {} as never, health: 80, answered: 100, passed, xp: 0, decisions: {} });
+    const base = { ...newState(), startedAt: 1, career: [run(OFFERED_TIER)] };
+    expect(careerFacts({ ...base, startTier: OFFERED_TIER }).legendary).toBe(0);
+    expect(careerFacts(base).legendary).toBe(1);
+    expect(careerFacts({ ...base, startTier: OFFERED_TIER, career: [run(OFFERED_TIER), run(3)] }).legendary).toBe(1);
+  });
+  it("migrate descarta un startTier fuera de rango", () => {
+    expect(migrate({ ...newState(), startTier: 7 } as never).startTier).toBeUndefined();
+    expect(migrate({ ...newState(), startTier: 1 }).startTier).toBe(1);
   });
 });

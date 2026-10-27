@@ -1,7 +1,8 @@
 "use client";
+import { useState } from "react";
 import Link from "next/link";
 import clsx from "clsx";
-import { Award, Lock } from "lucide-react";
+import { Award, Briefcase, Lock, Pencil, ShieldCheck } from "lucide-react";
 import { badgesOf, profileOf } from "@/lib/ceo/engine";
 import { STAGES } from "@/lib/ceo/journey";
 import { countAtLeast } from "@/lib/ceo/mastery";
@@ -9,6 +10,8 @@ import { firstName } from "@/lib/ceo/cast";
 import { useCeo } from "./CeoProvider";
 import { Avatar, Flame, rel } from "./ui";
 import { CompetencyBars, StageTrack } from "./Journey";
+import { ProfileEditor } from "./ProfileFlow";
+import { EXP_AREAS, GOALS, INDUSTRIES, ROLES, YEARS, labelOf, profileAnswered } from "@/lib/ceo/profile";
 
 export function Profile() {
   const c = useCeo();
@@ -16,6 +19,15 @@ export function Profile() {
   const badges = badgesOf(c.s, c.now);
   const history = c.entries.filter((e) => e.status === "decidido" || e.status === "vencido").sort((a, b) => (b.decision?.at ?? b.deadline) - (a.decision?.at ?? a.deadline));
   const j = c.journey;
+  const [editing, setEditing] = useState(false);
+  const pf = c.s.profile;
+  const declared: [string, string | undefined][] = [
+    ["Responsabilidad", labelOf(ROLES, pf?.role)],
+    ["Áreas", pf?.areas?.map((a) => labelOf(EXP_AREAS, a)).join(", ")],
+    ["Experiencia", pf?.years ? `${labelOf(YEARS, pf.years)} años` : undefined],
+    ["Industria", labelOf(INDUSTRIES, pf?.industry)],
+    ["Objetivo", labelOf(GOALS, pf?.goal)],
+  ];
 
   return (
     <div className="space-y-5">
@@ -59,6 +71,24 @@ export function Profile() {
         </div>
         <p className="text-xs text-slate-400 mt-1">Salen de la calidad de tus decisiones, tus retos y la Academy. La línea marca Competent (40).</p>
         <div className="mt-5"><CompetencyBars m={c.mastery} focus={j.focus} /></div>
+      </section>
+
+      <section id="experiencia" className="card p-5 sm:p-6">
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="h-9 w-9 rounded-xl bg-indigo-soft text-indigo grid place-items-center"><Briefcase size={16} /></span>
+          <div className="flex-1 min-w-0"><h2 className="font-semibold text-ink">Experiencia declarada</h2><p className="text-xs text-slate-400">Ajusta por dónde empiezas y cuánta ayuda ves. No suma dominio, puntos ni nombramientos.</p></div>
+          {!editing && <button type="button" onClick={() => setEditing(true)} className={profileAnswered(c.s) ? "inline-flex items-center gap-1 text-xs font-medium text-indigo" : "btn-primary text-sm"}>{profileAnswered(c.s) ? <><Pencil size={12} /> Editar</> : "Completar"}</button>}
+        </div>
+        {editing ? (
+          <div className="mt-4"><ProfileEditor initial={pf} onCancel={() => setEditing(false)} onSave={(np) => { c.saveProfile(np); setEditing(false); }} /></div>
+        ) : (
+          <>
+            <dl className="mt-4 grid sm:grid-cols-2 gap-x-6">
+              {declared.map(([k, v]) => <div key={k} className="flex justify-between gap-4 py-2.5 border-t border-slate-100 text-[13px]"><dt className="text-slate-500">{k}</dt><dd className={clsx("font-medium text-right text-ink", !v && "text-slate-400 font-normal")}>{v || "Sin responder"}</dd></div>)}
+            </dl>
+            <p className="mt-3 flex gap-2 text-[11.5px] text-slate-400"><ShieldCheck size={13} className="shrink-0 mt-0.5" /> Solo vive en tu partida. Si activas el coach con IA, se le comparte en una línea sin datos personales.</p>
+          </>
+        )}
       </section>
 
       <section className="card p-5 sm:p-6">

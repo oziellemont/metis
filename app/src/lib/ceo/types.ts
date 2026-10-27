@@ -174,6 +174,8 @@ export interface CeoState {
   diagnostic?: InitialDiagnostic;
   /** Aviso «Cuéntanos tu experiencia» para jugadores que empezaron antes del perfil. */
   profileNudge?: ProfileNudge;
+  /** Exigencia extra que el jugador ELIGIÓ para su primera empresa (0 o 1). No cuenta como Legendario. */
+  startTier?: number;
 }
 
 /** Executive Journey: tu cargo. Cambia solo con nombramientos (ver journey.ts). */
