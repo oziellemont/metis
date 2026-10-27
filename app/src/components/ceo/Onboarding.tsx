@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import clsx from "clsx";
 import { ArrowRight, Bell, Building2, Check, Clock, Mail, MessageCircle, Shuffle, Zap } from "lucide-react";
@@ -8,8 +8,10 @@ import { personOf } from "@/lib/ceo/cast";
 import { COMPANIES, FIRST_COMPANY, companyById } from "@/lib/ceo/companies";
 import { useCeo } from "./CeoProvider";
 import { Avatar, CompanyMark } from "./ui";
-import { ProfileQuestions } from "./ProfileFlow";
-import { companyForIndustry, type ProfessionalProfile } from "@/lib/ceo/profile";
+import { DiagnosticCases, DiagnosticOffer, ProfileQuestions, StartingPoint, TierChoice } from "./ProfileFlow";
+import { companyForIndustry, suggestTier, type InitialDiagnostic, type ProfessionalProfile } from "@/lib/ceo/profile";
+import { newState, rulesOf } from "@/lib/ceo/engine";
+import { masteryOf } from "@/lib/ceo/mastery";
 
 /**
  * Pasos: tu nombre → tu experiencia (5 preguntas, todas omitibles) → eliges industria → tu empresa → cómo te contactamos.
@@ -31,19 +33,28 @@ export function Onboarding() {
   const [intensivo, setIntensivo] = useState(false);
   const [profile, setProfile] = useState<ProfessionalProfile | undefined>();
   const [q, setQ] = useState(0);
+  /** Dentro del paso «Tu experiencia»: preguntas → oferta del diagnóstico → 3 decisiones → tu punto de partida. */
+  const [phase, setPhase] = useState<"q" | "offer" | "diag" | "start">("q");
+  const [diagnostic, setDiagnostic] = useState<InitialDiagnostic | undefined>();
+  const [tier, setTier] = useState(0);
+  const offered = suggestTier(profile);
+  const zero = useMemo(() => masteryOf(newState()), []);
   const STEPS = 5;
-  const afterProfile = (pf?: ProfessionalProfile) => {
-    setProfile(pf);
+  const toCompany = (pf?: ProfessionalProfile) => {
     const co = companyForIndustry(pf?.industry, COMPANIES.map((x) => x.id));
     if (co) setCompany(co);
     setStep(2);
+  };
+  const afterProfile = (pf: ProfessionalProfile) => {
+    setProfile(pf);
+    setPhase(diagnostic?.finishedAt ? "start" : "offer");
   };
 
   useEffect(() => { if (c.ready && c.s.startedAt) router.replace("/ceo"); }, [c.ready, c.s.startedAt, router]);
   useEffect(() => { if (c.user?.email) setEmail((e) => e || c.user!.email); }, [c.user]);
 
   const go = () => {
-    c.start({ name, email, phone, company, profile, settings: { windowStart: ws, windowEnd: we, notifyEmail: !!email, notifyWhatsapp: wa && !!phone, intensivo } });
+    c.start({ name, email, phone, company, profile, diagnostic, tier: offered ? tier : 0, settings: { windowStart: ws, windowEnd: we, notifyEmail: !!email, notifyWhatsapp: wa && !!phone, intensivo } });
     try { if (typeof Notification !== "undefined" && Notification.permission === "default") Notification.requestPermission(); } catch { /* ignore */ }
     router.replace("/ceo");
   };
@@ -52,7 +63,7 @@ export function Onboarding() {
     <main className="min-h-screen bg-gradient-to-br from-[#0F1130] via-[#1A1650] to-[#2B1F8A] text-white">
       <div aria-hidden className="pointer-events-none fixed -right-24 -top-24 h-80 w-80 rounded-full bg-indigo-light/30 blur-3xl" />
       <div aria-hidden className="pointer-events-none fixed -left-24 bottom-0 h-72 w-72 rounded-full bg-mint/15 blur-3xl" />
-      <div className="relative max-w-2xl mx-auto px-5 py-8 sm:py-14">
+      <div className={clsx("relative mx-auto px-5 py-8 sm:py-14", step === 1 && phase === "start" ? "max-w-4xl" : "max-w-2xl")}>
         <div className="flex items-center justify-between">
           <span className="flex items-center gap-2"><Logo variant="light" height={26} /><span className="chip bg-white text-ink text-[10px] tracking-wider">CEO</span></span>
           <div className="flex gap-1.5">{Array.from({ length: STEPS }, (_, i) => i).map((i) => <span key={i} className={clsx("h-1.5 rounded-full transition-all", i === step ? "w-6 bg-mint" : i < step ? "w-3 bg-white/60" : "w-3 bg-white/20")} />)}</div>
@@ -74,7 +85,12 @@ export function Onboarding() {
         )}
 
         {step === 1 && (
-          <ProfileQuestions initial={profile} source="onboarding" step={q} setStep={setQ} onBackFirst={() => setStep(0)} onLater={() => afterProfile(profile)} onDone={afterProfile} />
+          <div key={`p-${phase}`}>
+            {phase === "q" && <ProfileQuestions initial={profile} source="onboarding" step={q} setStep={setQ} onBackFirst={() => setStep(0)} onLater={() => toCompany(profile)} onDone={afterProfile} />}
+            {phase === "offer" && <DiagnosticOffer onStart={() => setPhase("diag")} onLater={() => toCompany(profile)} later="Ahora no, elegir mi empresa" />}
+            {phase === "diag" && <DiagnosticCases onDone={(d) => { setDiagnostic(d); setPhase("start"); }} onSkip={() => { setDiagnostic({ v: 1, set: "d1", answers: [], skippedAt: Date.now() }); toCompany(profile); }} />}
+            {phase === "start" && <StartingPoint name={name} p={profile} d={diagnostic} m={zero} cta="Elegir mi empresa" onCta={() => toCompany(profile)} onEdit={() => { setQ(0); setPhase("q"); }} />}
+          </div>
         )}
 
         {step === 2 && (
@@ -96,7 +112,8 @@ export function Onboarding() {
               ))}
             </div>
             <button onClick={() => setCompany(COMPANIES[Math.floor(Math.random() * COMPANIES.length)].id)} className="mt-3 inline-flex items-center gap-1.5 text-sm text-white/60 hover:text-white"><Shuffle size={14} /> Que me toque al azar</button>
-            <div className="mt-6 flex gap-3"><button onClick={() => setStep(1)} className="btn text-white/70 hover:text-white">Atrás</button><button onClick={() => setStep(3)} className="btn bg-white text-ink hover:bg-white/90 flex-1 justify-center py-3 text-base font-semibold">Dirigir {pk.short} <ArrowRight size={16} /></button></div>
+            {offered > 0 && <TierChoice tier={tier} setTier={setTier} offered={offered} names={[rulesOf(0).name, rulesOf(offered).name]} />}
+            <div className="mt-6 flex gap-3"><button onClick={() => { setPhase(diagnostic ? "start" : "q"); setStep(1); }} className="btn text-white/70 hover:text-white">Atrás</button><button onClick={() => setStep(3)} className="btn bg-white text-ink hover:bg-white/90 flex-1 justify-center py-3 text-base font-semibold">Dirigir {pk.short} <ArrowRight size={16} /></button></div>
           </section>
         )}
 

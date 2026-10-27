@@ -226,3 +226,37 @@ describe("F1-P2 · onboarding y edición en Perfil", () => {
     expect(migrate({ ...newState(), startTier: 1 }).startTier).toBe(1);
   });
 });
+
+describe("F1-P3 · diagnóstico y punto de partida", () => {
+  const conDiag = (opt: (d: (typeof DIAGNOSTIC)[number]) => string): InitialDiagnostic => ({ v: 1, set: "d1", answers: DIAGNOSTIC.map((d) => ({ id: d.id, option: opt(d), at: 1 })), finishedAt: 1 });
+  const worst = conDiag((d) => d.options.slice().sort((a, b) => a.score - b.score)[0].id);
+  it("un área declarada que el diagnóstico marca «por reforzar» no se ofrece como repaso opcional", () => {
+    const m = emptyMastery();
+    const rec = recommendOrder(VETERANO, m, worst);
+    const ej = rec.find((r) => r.competency === "ejecucion")!;
+    expect(initialReading(worst, m).ejecucion.signal).toBe("reforzar");
+    expect(ej.review).toBe(false);
+    expect(rec.find((r) => r.competency === "personas")!.review).toBe(false);
+    const sinDiag = recommendOrder(VETERANO, m);
+    expect(sinDiag.find((r) => r.competency === "ejecucion")!.review).toBe(true);
+  });
+  it("diagnóstico omitido: se guarda, no vuelve a ofrecerse como pendiente de lectura y no da señales", () => {
+    const skipped = sanitizeDiagnostic({ v: 1, set: "d1", answers: [], skippedAt: 9 })!;
+    expect(skipped.skippedAt).toBe(9);
+    expect(Object.values(initialReading(skipped, emptyMastery())).every((r) => r.signal === "sin")).toBe(true);
+  });
+  it("diagnóstico terminado ya no se ofrece; con 10 decisiones o más tampoco", () => {
+    expect(diagnosticOffered(0, worst)).toBe(false);
+    expect(diagnosticOffered(9)).toBe(true);
+    expect(diagnosticOffered(10)).toBe(false);
+  });
+  it("la exigencia solo se ofrece a 11+ años o cargo de dirección y nunca pasa de OFFERED_TIER", () => {
+    for (let i = 0; i < 200; i++) {
+      const p = randomProfile("t" + i);
+      const t = suggestTier(p);
+      expect([0, OFFERED_TIER]).toContain(t);
+      const senior = p.years === "11-15" || p.years === "15+" || p.role === "director" || p.role === "direccion";
+      expect(t > 0).toBe(senior);
+    }
+  });
+});

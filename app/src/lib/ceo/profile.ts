@@ -262,6 +262,7 @@ export interface Recommendation { competency: Competency; reason: "demostrada" |
  *  1) la necesidad demostrada manda (dominio bajo con evidencia real);
  *  2) sin evidencia, pesa la lectura inicial («por reforzar» sube, «señal alta» baja);
  *  3) las áreas declaradas bajan (repaso opcional) mientras no haya evidencia; las no declaradas suben un poco;
+ *  Un área declarada solo es «repaso opcional» si el diagnóstico no la marcó «por reforzar» (lo demostrado gana).
  *  4) regla de exploración: en cada bloque de 3, al menos una fuera de lo declarado (si existe).
  * Nunca oculta nada: solo ordena.
  */
@@ -291,7 +292,7 @@ export function recommendOrder(p: ProfessionalProfile | undefined, m: Mastery, d
     }
     const [x] = pool.splice(k, 1);
     const outside = declared.size > 0 && !declared.has(x.c);
-    out.push({ competency: x.c, reason: k > 0 ? "explorar" : x.reason, outside, review: declared.has(x.c) && x.reason !== "demostrada" && m[x.c].n < READING_FADE_N });
+    out.push({ competency: x.c, reason: k > 0 ? "explorar" : x.reason, outside, review: declared.has(x.c) && x.reason !== "demostrada" && m[x.c].n < READING_FADE_N && reading[x.c].signal !== "reforzar" });
   }
   return out;
 }
