@@ -162,7 +162,6 @@ describe("Executive Journey", () => {
     const req = () => requirementsFor(4, s2, g.at).find((r) => r.id === "board")!;
     let s2 = s;
     expect(req().ok).toBe(false);
-    expect(req().soon).toBeUndefined();
     expect(req().href).toBe("/ceo/junta");
     s2 = recordBoard(s, true, g.at);
     expect(req().ok).toBe(true);

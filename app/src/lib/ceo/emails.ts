@@ -93,7 +93,7 @@ export function welcomeEmail(i: { pack?: CompanyPack; name: string; appUrl: stri
     ["1", "Tu equipo te escribe", `Entre las ${i.windowStart}:00 y las ${i.windowEnd}:00 te llegan de 2 a 4 asuntos al día: correos, WhatsApps, reportes y juntas.`],
     ["2", "Todo tiene plazo", "Si no respondes a tiempo, alguien decide por ti. Y lo que decides regresa días después."],
     ["3", "Aprueba todos los rubros", "Si al cierre todos tus indicadores pasan la línea, asciendes a otra empresa de otro giro (y más exigente)."],
-    ["4", "Aprende en el camino", "Cada asunto se conecta con una lección corta de mêtis Academy, basada en «De CERO a CEO»."],
+    ["4", "Aprende en el camino", "Cada asunto se conecta con una lección corta de mêtis Academy."],
   ].map(([ic, t, d]) => `<tr><td width="34" valign="top" style="padding:8px 0"><div style="width:22px;height:22px;border-radius:11px;background:#EEEBFD;color:${INDIGO};font-family:${FONT};font-size:12px;font-weight:700;line-height:22px;text-align:center">${ic}</div></td><td style="padding:8px 0;font-family:${FONT}"><div style="font-size:14px;font-weight:600;color:${INK}">${t}</div><div style="font-size:13px;line-height:20px;color:${SLATE}">${d}</div></td></tr>`).join("");
   const chair = pk.roles.chair;
   const letter = pk.welcome.split(/\n+/).filter(Boolean);

@@ -7,7 +7,8 @@ import { COMPANIES } from "../../../lib/ceo/companies";
 
 const DIR = "src/components/site/ceo-landing";
 const sources = () => [...readdirSync(DIR).filter((f) => f.endsWith(".tsx") || f === "content.ts").map((f) => readFileSync(join(DIR, f), "utf8")), readFileSync("src/app/simulador/page.tsx", "utf8")].join("\n");
-const allCopy = () => { const { BANNED: _b, ...rest } = C; void _b; return JSON.stringify(rest).toLowerCase(); };
+/** Copy visible: BANNED es la lista de control y AVAILABILITY es la matriz interna (no se muestra). */
+const allCopy = () => { const { BANNED: _b, AVAILABILITY: _a, ...rest } = C; void _b; void _a; return JSON.stringify(rest).toLowerCase(); };
 
 describe("landing de MÊTIS CEO", () => {
   it("la demo tiene tres opciones con consecuencias, intercambios y efectos distintos", () => {
@@ -56,8 +57,8 @@ describe("landing de MÊTIS CEO", () => {
     for (const w of ["arena", "conversaciones", "generados", "respuestas escritas"]) expect(hoy).not.toContain(w);
     // La junta ya existe (lib/ceo/board.ts): se marca como disponible.
     expect(C.AVAILABILITY.find((a) => a.item === "Junta ante el Consejo")!.state).toBe("hoy");
-    expect(C.LEARN.soonNote.toLowerCase()).toContain("preparación");
-    expect(C.PATH.arena.toLowerCase()).toContain("todavía no está disponible");
+    // Lo que no existe no se menciona: nada de «próximamente» ni de Arena en el copy visible.
+    expect(JSON.stringify({ ...C, AVAILABILITY: [], BANNED: [] }).toLowerCase()).not.toMatch(/arena|respuestas escritas/);
   });
 
   it("el tono evita frases genéricas y exceso de admiraciones", () => {

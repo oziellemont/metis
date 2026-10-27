@@ -101,7 +101,7 @@ export function CeoAcademyHome() {
                   return (
                     <div key={k} className="flex items-center gap-1.5">
                       {k > 0 && <span className={clsx("h-0.5 w-3 sm:w-5 rounded-full", ok ? "bg-indigo" : "bg-slate-200")} />}
-                      {l && avail ? <Link href={`/ceo/academy/${l.id}`} title={l.title}>{inner}</Link> : <span title={l ? `${l.title} · se abre con ${LEVELS[rankOf(l)]?.min} XP de constancia` : "Próximamente"}>{inner}</span>}
+                      {l && avail ? <Link href={`/ceo/academy/${l.id}`} title={l.title}>{inner}</Link> : <span title={l ? `${l.title} · se abre con ${LEVELS[rankOf(l)]?.min} XP de constancia` : undefined}>{inner}</span>}
                     </div>
                   );
                 })}
@@ -116,7 +116,7 @@ export function CeoAcademyHome() {
                 ) : lockedL ? (
                   <span className="flex items-center gap-1.5 text-slate-400"><Lock size={12} /> Nivel {trackOf(lockedL).level} «{lockedL.title}» se abre con {LEVELS[rankOf(lockedL)]?.min} XP</span>
                 ) : (
-                  <span className="flex items-center gap-1.5 text-slate-400"><Clock size={12} /> Al día. Los siguientes niveles llegan pronto.</span>
+                  <span className="flex items-center gap-1.5 text-slate-400"><Clock size={12} /> Al día con todas las lecciones.</span>
                 )}
               </div>
             </div>

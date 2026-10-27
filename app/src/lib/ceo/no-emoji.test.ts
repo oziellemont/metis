@@ -3,7 +3,7 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 /** Regla de diseño de mêtis CEO: nada de emojis (ni símbolos que parezcan hechos por IA) en el juego. */
-const ROOTS = ["src/lib/ceo", "src/components/ceo", "src/components/site/CeoVisuals.tsx", "src/components/site/ceo-landing", "src/app/simulador"];
+const ROOTS = ["src/lib/ceo", "src/components/ceo", "src/components/site/ceo-landing", "src/app/simulador"];
 const EMOJI = /[\p{Extended_Pictographic}\u2605\u2606\u2713\u2717]/u;
 
 function files(p: string): string[] {

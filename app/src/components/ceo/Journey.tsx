@@ -1,13 +1,13 @@
 "use client";
 import clsx from "clsx";
 import Link from "next/link";
-import { ArrowRight, Check, Lock } from "lucide-react";
-import { ARENA, STAGES, type JourneyView, type Requirement } from "@/lib/ceo/journey";
+import { ArrowRight, Check } from "lucide-react";
+import { STAGES, type JourneyView, type Requirement } from "@/lib/ceo/journey";
 import { COMPETENCY_IDS, competencyById, type Mastery } from "@/lib/ceo/mastery";
 
-/** Pista de las 6 etapas del Executive Journey + The Executive Arena. */
+/** Pista de las 6 etapas del Executive Journey. */
 export function StageTrack({ stage, dark, compact }: { stage: number; dark?: boolean; compact?: boolean }) {
-  const nodes = [...STAGES.map((s) => s.name), ARENA.name];
+  const nodes = STAGES.map((s) => s.name);
   return (
     <ol className="flex items-start" aria-label="Etapas del Executive Journey">
       {nodes.map((name, i) => {
@@ -19,7 +19,7 @@ export function StageTrack({ stage, dark, compact }: { stage: number; dark?: boo
               done ? (dark ? "bg-white text-ink" : "bg-indigo text-white")
                 : now ? (dark ? "bg-white text-ink ring-4 ring-white/20" : "bg-indigo text-white ring-4 ring-indigo-soft")
                   : dark ? "bg-white/10 text-white/50" : "bg-slate-100 text-slate-400")}>
-              {done ? <Check size={12} strokeWidth={3} /> : last ? <Lock size={10} /> : i + 1}
+              {done ? <Check size={12} strokeWidth={3} /> : i + 1}
             </span>
             {!compact && <span className={clsx("mt-2 px-1 text-[10px] leading-tight", now ? (dark ? "text-white font-semibold" : "text-ink font-semibold") : dark ? "text-white/50" : "text-slate-400")}>{name}</span>}
           </li>
@@ -32,7 +32,7 @@ export function StageTrack({ stage, dark, compact }: { stage: number; dark?: boo
 /** Tarjeta de un requisito del siguiente nombramiento. */
 export function RequirementTile({ r, m, dark }: { r: Requirement; m: Mastery; dark?: boolean }) {
   const pct = Math.max(0, Math.min(100, Math.round((r.have / Math.max(1, r.need)) * 100)));
-  const hint = r.soon ? "Llega en una próxima versión." : r.ok ? "Cumplido." : r.id === "board" ? "Tres momentos ante el consejo, unos 10 minutos." : r.missing?.length ? `Practica ${r.missing.map((c) => m[c].name.toLowerCase()).join(", ")}.` : r.group === "constancia" ? "Juega y estudia cada día." : "Sigue dirigiendo.";
+  const hint = r.ok ? "Cumplido." : r.id === "board" ? "Tres momentos ante el consejo, unos 10 minutos." : r.missing?.length ? `Practica ${r.missing.map((c) => m[c].name.toLowerCase()).join(", ")}.` : r.group === "constancia" ? "Juega y estudia cada día." : "Sigue dirigiendo.";
   return (
     <div className={clsx("rounded-2xl p-3.5", dark ? "bg-white/10" : "border border-slate-100")}>
       <div className={clsx("flex items-center justify-between gap-2 text-[11px]", dark ? "text-white/60" : "text-slate-500")}>
@@ -44,7 +44,7 @@ export function RequirementTile({ r, m, dark }: { r: Requirement; m: Mastery; da
         <div className={clsx("h-full rounded-full transition-all duration-700", r.ok ? "bg-mint" : dark ? "bg-white/80" : "bg-gradient-to-r from-indigo-light to-indigo")} style={{ width: `${pct}%` }} />
       </div>
       <div className={clsx("mt-2 text-[11px]", dark ? "text-white/50" : "text-slate-400")}>{hint}</div>
-      {r.href && !r.ok && !r.soon && (
+      {r.href && !r.ok && (
         <Link href={r.href} className={clsx("mt-2 inline-flex items-center gap-1 text-xs font-semibold", dark ? "text-white hover:text-white/80" : "text-indigo hover:text-indigo/80")}>Ir a la junta <ArrowRight size={13} /></Link>
       )}
     </div>
@@ -82,7 +82,7 @@ export function JourneyMini({ j }: { j: JourneyView }) {
       <div className="text-xs text-white/60">Executive Journey · Stage {j.stage + 1} de {STAGES.length}</div>
       <div className="mt-0.5 text-sm font-semibold text-white">{j.name}</div>
       <div className="mt-2 h-1.5 rounded-full bg-white/15 overflow-hidden"><div className="h-full bg-gradient-to-r from-indigo-light to-white" style={{ width: `${pct}%` }} /></div>
-      <div className="mt-1 text-[11px] text-white/50 tabular-nums">{j.next ? (j.ready ? "Listo para tu nombramiento" : `Siguiente nombramiento: ${j.met} de ${j.total} requisitos`) : ARENA.name}</div>
+      <div className="mt-1 text-[11px] text-white/50 tabular-nums">{j.next ? (j.ready ? "Listo para tu nombramiento" : `Siguiente nombramiento: ${j.met} de ${j.total} requisitos`) : "Última etapa"}</div>
     </>
   );
 }

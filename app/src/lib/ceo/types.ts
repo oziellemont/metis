@@ -26,7 +26,7 @@ export interface Option {
   outcome: string;
   effects: Partial<Kpis>;
   style: Partial<Record<Axis, number>>;
-  /** Qué tan alineada está con los principios del libro (0–3). Sólo se traduce en XP, nunca en «correcto». */
+  /** Qué tan alineada está con los principios de dirección de mêtis (0–3). Sólo se traduce en XP, nunca en «correcto». */
   score: 0 | 1 | 2 | 3;
   /** Cómo le cae a cada persona del caso (−2 … +2). Se propaga por el mapa: aliados, rivales e influidos. */
   stance?: Record<CastId, number>;
@@ -102,7 +102,7 @@ export interface CareerRun {
 }
 
 // ───────────────────────────── proyecto de cambio
-/** Palancas de cambio (De CERO a CEO, Parte IX). */
+/** Palancas de cambio. */
 export type LeverId = "ejemplo" | "entrevista" | "townhall" | "capacitacion" | "piloto" | "avance" | "coalicion" | "reconocer" | "incentivos";
 
 export interface ChangeMove { lever: LeverId; targets: CastId[]; at: number }
