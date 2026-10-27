@@ -155,6 +155,8 @@ export interface CeoState {
   pinned: Record<string, number>;
   read: Record<string, number>;
   lessons: Record<string, number>;
+  /** Dilemas de personas respondidos (id → opción elegida y cuándo). Viajan contigo entre empresas. */
+  dilemmas?: Record<string, { option: number; at: number }>;
   lastActiveAt: number;
   /** Proyecto de cambio de la empresa actual. */
   change?: ChangeState;

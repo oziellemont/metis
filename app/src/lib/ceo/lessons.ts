@@ -4,6 +4,7 @@
  * Usa los mismos bloques interactivos de mêtis Academy (components/academy/Blocks).
  */
 import type { Block } from "@/lib/academy/content";
+import { MORE_LESSONS } from "./lessons2";
 
 export interface Lesson {
   id: string;
@@ -13,11 +14,13 @@ export interface Lesson {
   minutes: number;
   icon: "compass" | "users" | "flag" | "message" | "handshake" | "coins" | "flame" | "rocket" | "target" | "layers";
   blocks: Block[];
+  /** Rango de carrera con el que se abre (0 = Gerente). Por defecto: nivel − 1. */
+  rank?: number;
 }
 
 const SRC = "De CERO a CEO · Oziel Leal Montemayor";
 
-export const LESSONS: Lesson[] = [
+const BASE_LESSONS: Lesson[] = [
   {
     id: "mentalidad", title: "La mentalidad del CEO", part: "Parte I", minutes: 4, icon: "flag",
     subtitle: "Liderar no es tener poder: es cargar responsabilidad. Por qué los primeros 30 días definen cómo te van a seguir.",
@@ -211,4 +214,37 @@ export const LESSONS: Lesson[] = [
   },
 ];
 
+export const LESSONS: Lesson[] = [...BASE_LESSONS, ...MORE_LESSONS];
 export const lessonById = (id: string) => LESSONS.find((l) => l.id === id);
+
+/** Temas de Academy. Cada tema tiene niveles que se abren conforme avanzas en tu carrera. */
+export const TRACKS: { id: string; title: string; icon: Lesson["icon"]; blurb: string }[] = [
+  { id: "mentalidad", title: "Mentalidad del CEO", icon: "flag", blurb: "Cómo piensa quien carga la responsabilidad." },
+  { id: "personas", title: "Liderar personas", icon: "users", blurb: "Cada persona necesita algo distinto de ti." },
+  { id: "conversaciones", title: "Conversaciones", icon: "message", blurb: "Decir lo difícil para que se escuche." },
+  { id: "equipos", title: "Equipos", icon: "layers", blurb: "Confianza, conflicto útil y compromiso." },
+  { id: "alineacion", title: "Alineación", icon: "compass", blurb: "De la estrategia a lo que cada quien hace el lunes." },
+  { id: "negociacion", title: "Negociación", icon: "handshake", blurb: "Intereses, alternativas y relaciones que duran." },
+  { id: "comunicacion", title: "Comunicación", icon: "message", blurb: "Empezar por el final y dar malas noticias." },
+  { id: "cultura", title: "Cultura y ética", icon: "flame", blurb: "Lo que toleras es tu verdadero código." },
+  { id: "finanzas", title: "Finanzas", icon: "coins", blurb: "Asignar capital y no quedarte sin caja." },
+  { id: "innovacion", title: "Innovación", icon: "rocket", blurb: "Apostar barato, aprender rápido, cerrar a tiempo." },
+  { id: "estrategia", title: "Estrategia", icon: "target", blurb: "Elegir, y tener el carácter de decir que no." },
+  { id: "crisis", title: "Crisis", icon: "flame", blurb: "Personas primero, hechos después, una sola voz." },
+  { id: "consejo", title: "Gobierno y consejo", icon: "compass", blurb: "Sin sorpresas, con opciones." },
+];
+/** Tema y nivel de una lección a partir de su id («personas-2» → personas, nivel 2). */
+export function trackOf(l: Lesson) {
+  const m = /^(.*?)-(\d+)$/.exec(l.id);
+  return { track: m ? m[1] : l.id, level: m ? Number(m[2]) : 1 };
+}
+const EXTRA_RANK: Record<string, number> = { crisis: 1, consejo: 2 };
+/** Rango de carrera necesario para abrir la lección. */
+export function rankOf(l: Lesson) {
+  if (typeof l.rank === "number") return l.rank;
+  const { track, level } = trackOf(l);
+  return (EXTRA_RANK[track] ?? 0) + level - 1;
+}
+export const lessonsOfTrack = (track: string) => LESSONS.filter((l) => trackOf(l).track === track).sort((a, b) => trackOf(a).level - trackOf(b).level);
+/** Niveles que aún no están escritos pero que ya se anuncian (para que se sienta que el camino sigue). */
+export const MAX_TRACK_LEVEL = 5;

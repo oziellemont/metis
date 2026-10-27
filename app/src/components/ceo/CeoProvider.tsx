@@ -7,7 +7,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { advance as advanceFn, decide as decideFn, entries as entriesFn, healthOf, kpis as kpisFn, levelOf, migrate, newState, nowOf, packOf, pinArrived, rulesOf, seasonDay, seasonDoneOf, skipToNext, streakOf, switchCompany as switchFn, verdictOf, xpOf, type Verdict } from "@/lib/ceo/engine";
-import { casesProgress, changeOpen, changeSimOf } from "@/lib/ceo/engine";
+import { answerDilemma as answerDilemmaFn, casesProgress, changeOpen, changeSimOf, dilemmaOfDay } from "@/lib/ceo/engine";
+import type { Dilemma } from "@/lib/ceo/dilemmas";
 import { closeChange as closeChangeFn, playLever as playLeverFn, relationsOf, startChange as startChangeFn } from "@/lib/ceo/relations";
 import type { ChangeSim } from "@/lib/ceo/change";
 import type { CastId, CeoState, CompanyPack, Entry, Kpis, LeverId, Settings } from "@/lib/ceo/types";
@@ -56,6 +57,9 @@ interface Ctx {
   decide: (itemId: string, optionId: string) => void;
   markRead: (itemId: string) => void;
   completeLesson: (id: string) => void;
+  /** Dilema de personas del día (o el que ya respondiste hoy). */
+  dilemma: { d: Dilemma; done: boolean } | null;
+  answerDilemma: (id: string, option: number) => void;
   updateSettings: (p: Partial<Settings> & { name?: string; alias?: string }) => void;
   skipNext: () => void;
   reset: () => void;
@@ -184,6 +188,8 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
   }, []);
   const decide = useCallback((itemId: string, optionId: string) => setS((p) => { const n = decideFn(p, itemId, optionId, nowOf(p)); return n === p ? p : { ...n, savedAt: Date.now() }; }), []);
   const markRead = useCallback((itemId: string) => setS((p) => (p.read[itemId] ? p : { ...p, read: { ...p.read, [itemId]: Date.now() }, savedAt: Date.now() })), []);
+  const answerDilemma = useCallback((id: string, option: number) => setS((p) => { const n = answerDilemmaFn(p, id, option); return n === p ? p : { ...n, savedAt: Date.now() }; }), []);
+  const dilemma = useMemo(() => (s.startedAt ? dilemmaOfDay(s, now) : null), [s, now]);
   const completeLesson = useCallback((id: string) => setS((p) => (p.lessons[id] ? p : { ...p, lessons: { ...p.lessons, [id]: nowOf(p) }, lastActiveAt: nowOf(p), savedAt: Date.now() })), []);
   const updateSettings: Ctx["updateSettings"] = useCallback(({ name, alias, ...rest }) => setS((p) => {
     const q = pinArrived(p, nowOf(p));
@@ -200,7 +206,7 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
   const value: Ctx = {
     ready, s, now, pack, rules: rulesOf(s.tier), verdict, entries, inbox, pending, kpis: k, health: healthOf(k), xp, level: levelOf(xp), streak, day: seasonDay(s, now), seasonDone, nextArrival,
     relations, changeOpen: changeOpen(s, now), cases: casesProgress(s, now, entries), change, startChange, playLever, closeChange,
-    user, synced, toast, dismissToast: () => setToast(null), start, advance, switchCompany, decide, markRead, completeLesson, updateSettings, skipNext, reset,
+    user, synced, toast, dismissToast: () => setToast(null), start, advance, switchCompany, decide, markRead, completeLesson, dilemma, answerDilemma, updateSettings, skipNext, reset,
   };
   return <C.Provider value={value}>{children}</C.Provider>;
 }

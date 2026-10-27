@@ -4,6 +4,7 @@
  */
 import type { Axis, CareerRun, CeoState, CompanyPack, Decision, Entry, Item, KpiKey, Kpis, Option, Settings } from "./types";
 import { COMPANIES, FIRST_COMPANY, companyById } from "./companies";
+import { DILEMMAS, dilemmaById, type Dilemma } from "./dilemmas";
 import { changeEffect, simulate, type ChangeSim } from "./change";
 
 export const H = 3_600_000;
@@ -207,7 +208,45 @@ export function changeKpiEffect(s: CeoState): Partial<Kpis> {
 }
 export const healthOf = (k: Kpis) => Math.round((k.caja + k.margen + k.equipo + k.clientes + k.consejo) / 5);
 
-export const XP = { decision: 20, perPoint: 10, onTime: 5, lesson: 30 };
+export const XP = { decision: 20, perPoint: 10, onTime: 5, lesson: 30, dilemma: 10, dilemmaPoint: 5 };
+/** XP de los dilemas de personas (viajan entre empresas). */
+export function dilemmaXp(s: CeoState): number {
+  let xp = 0;
+  for (const [id, d] of Object.entries(s.dilemmas ?? {})) {
+    const o = dilemmaById(id)?.options[d.option];
+    if (o) xp += XP.dilemma + o.score * XP.dilemmaPoint;
+  }
+  return xp;
+}
+/** Rango de carrera (0 = Gerente) según tu XP. */
+export const rankFor = (s: CeoState, now = nowOf(s)) => levelOf(xpOf(s, now)).i;
+/** Dilemas que ya se abrieron para tu rango. */
+export function dilemmasOpen(s: CeoState, now = nowOf(s)): Dilemma[] {
+  const r = rankFor(s, now);
+  return DILEMMAS.filter((d) => d.min <= r);
+}
+/** El dilema del día: uno que no has respondido, elegido igual para todo el día (o el que respondiste hoy). */
+export function dilemmaOfDay(s: CeoState, now = nowOf(s)): { d: Dilemma; done: boolean } | null {
+  const tz = s.settings.tz;
+  const today = dayKey(now, tz);
+  const answered = s.dilemmas ?? {};
+  const todays = Object.entries(answered).find(([, v]) => dayKey(v.at, tz) === today);
+  if (todays) { const d = dilemmaById(todays[0]); if (d) return { d, done: true }; }
+  const pool = dilemmasOpen(s, now).filter((d) => !answered[d.id]);
+  if (!pool.length) return null;
+  // Variedad: prioriza temas que has visto menos.
+  const seen: Record<string, number> = {};
+  Object.keys(answered).forEach((id) => { const t = dilemmaById(id)?.theme; if (t) seen[t] = (seen[t] ?? 0) + 1; });
+  const minSeen = Math.min(...pool.map((d) => seen[d.theme] ?? 0));
+  const fresh = pool.filter((d) => (seen[d.theme] ?? 0) === minSeen);
+  return { d: fresh[Math.floor(rand01(`${today}:${s.startedAt ?? 0}`) * fresh.length)], done: false };
+}
+export function answerDilemma(s: CeoState, id: string, option: number, now = nowOf(s)): CeoState {
+  const d = dilemmaById(id);
+  if (!d || !d.options[option] || s.dilemmas?.[id]) return s;
+  if (d.min > rankFor(s, now)) return s;
+  return { ...s, dilemmas: { ...(s.dilemmas ?? {}), [id]: { option, at: now } }, lastActiveAt: now };
+}
 /** XP de las decisiones de la empresa actual (sin lecciones). */
 export function runXp(s: CeoState, now = nowOf(s)): number {
   let xp = 0;
@@ -221,7 +260,7 @@ export function runXp(s: CeoState, now = nowOf(s)): number {
 /** XP total de la carrera: empresas anteriores + la actual + lecciones. */
 export function xpOf(s: CeoState, now = nowOf(s)): number {
   const past = (s.career ?? []).reduce((a, r) => a + (r.xp || 0), 0);
-  return past + runXp(s, now) + Object.keys(s.lessons).length * XP.lesson;
+  return past + runXp(s, now) + Object.keys(s.lessons).length * XP.lesson + dilemmaXp(s);
 }
 
 export const LEVELS = [
@@ -245,6 +284,7 @@ export function streakOf(s: CeoState, now = nowOf(s)) {
   Object.values(s.decisions).forEach((d) => days.add(dayKey(d.at, tz)));
   (s.career ?? []).forEach((r) => Object.values(r.decisions ?? {}).forEach((d) => days.add(dayKey(d.at, tz))));
   Object.values(s.lessons).forEach((t) => days.add(dayKey(t, tz)));
+  Object.values(s.dilemmas ?? {}).forEach((d) => days.add(dayKey(d.at, tz)));
   const today = dayKey(now, tz);
   const doneToday = days.has(today);
   let n = 0;
