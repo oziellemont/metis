@@ -9,6 +9,7 @@ import { supabaseBrowser } from "@/lib/supabase/client";
 import { advance as advanceFn, decide as decideFn, entries as entriesFn, healthOf, kpis as kpisFn, levelOf, migrate, newState, nowOf, packOf, pinArrived, rulesOf, seasonDay, seasonDoneOf, skipToNext, streakOf, switchCompany as switchFn, verdictOf, xpOf, type Verdict } from "@/lib/ceo/engine";
 import { aliasOf, answerDilemma as answerDilemmaFn, casesProgress, changeOpen, changeSimOf, dilemmaOfDay } from "@/lib/ceo/engine";
 import type { Dilemma } from "@/lib/ceo/dilemmas";
+import { OFFERED_TIER, sanitizeDiagnostic, sanitizeProfile, snoozeNudge, type InitialDiagnostic, type ProfessionalProfile } from "@/lib/ceo/profile";
 import { appoint as appointFn, enrollJourney, journeyOf, STAGES, type JourneyView } from "@/lib/ceo/journey";
 import { masteryOf, type Mastery } from "@/lib/ceo/mastery";
 import { appEnvOf, testToolsVisible } from "@/lib/ceo/flags";
@@ -52,7 +53,12 @@ interface Ctx {
   synced: boolean;
   toast: Toast | null;
   dismissToast: () => void;
-  start: (p: { name: string; email: string; phone: string; company?: string; settings?: Partial<Settings> }) => void;
+  start: (p: { name: string; email: string; phone: string; company?: string; settings?: Partial<Settings>; profile?: ProfessionalProfile; diagnostic?: InitialDiagnostic; tier?: number }) => void;
+  /** Guarda la experiencia declarada (V33). Nunca toca dominio, etapa, XP ni la partida. */
+  saveProfile: (p: ProfessionalProfile) => void;
+  saveDiagnostic: (d: InitialDiagnostic) => void;
+  /** «Ahora no» en el aviso para completar el perfil. */
+  snoozeProfile: () => void;
   /** Cierra la empresa: asciende (si aprobaste) o la repite. */
   advance: () => void;
   /** Cambiar de empresa antes de la primera decisión. */
@@ -201,9 +207,10 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
   const change = useMemo(() => changeSimOf(s), [s]);
   const nextArrival = entries.find((e) => e.status === "futuro")?.arrivesAt ?? null;
 
-  const start: Ctx["start"] = useCallback(({ name, email, phone, company, settings }) => {
+  const start: Ctx["start"] = useCallback(({ name, email, phone, company, settings, profile, diagnostic, tier }) => {
     const t = Date.now();
-    setS((p) => ({ ...newState(), journey: { stage: 0, enrolledAt: t, appointments: [] }, company: company || newState().company, name: name.trim(), alias: aliasOf(name), startedAt: t, lastActiveAt: t, savedAt: t, settings: { ...p.settings, ...settings, email, phone, tz: Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Monterrey" } }));
+    const pf = sanitizeProfile(profile), dg = sanitizeDiagnostic(diagnostic);
+    setS((p) => ({ ...newState(), ...(pf ? { profile: pf } : {}), ...(dg ? { diagnostic: dg } : {}), tier: Math.max(0, Math.min(OFFERED_TIER, tier ?? 0)), startTier: Math.max(0, Math.min(OFFERED_TIER, tier ?? 0)), journey: { stage: 0, enrolledAt: t, appointments: [] }, company: company || newState().company, name: name.trim(), alias: aliasOf(name), startedAt: t, lastActiveAt: t, savedAt: t, settings: { ...p.settings, ...settings, email, phone, tz: Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Monterrey" } }));
     seen.current = null;
   }, []);
   const decide = useCallback((itemId: string, optionId: string, written?: Written) => setS((p) => { const n = decideFn(p, itemId, optionId, nowOf(p), written); return n === p ? p : { ...n, savedAt: Date.now() }; }), []);
@@ -229,12 +236,15 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
     setS({ ...n, savedAt: Date.now() });
     return STAGES[n.journey!.stage].name;
   }, [s]);
+  const saveProfile = useCallback((pf: ProfessionalProfile) => setS((p) => { const v = sanitizeProfile(pf); return v ? { ...p, profile: v, savedAt: Date.now() } : p; }), []);
+  const saveDiagnostic = useCallback((d: InitialDiagnostic) => setS((p) => { const v = sanitizeDiagnostic(d); return v ? { ...p, diagnostic: v, savedAt: Date.now() } : p; }), []);
+  const snoozeProfile = useCallback(() => setS((p) => ({ ...p, profileNudge: snoozeNudge(p.profileNudge, Date.now()), savedAt: Date.now() })), []);
   const reset = useCallback(() => { localStorage.removeItem(KEY); seen.current = null; setS(newState()); }, []);
 
   const value: Ctx = {
     ready, s, now, pack, rules: rulesOf(s.tier), verdict, entries, inbox, pending, kpis: k, health: healthOf(k), xp, level: levelOf(xp), streak, day: seasonDay(s, now), seasonDone, nextArrival,
     relations, changeOpen: changeOpen(s, now), cases: casesProgress(s, now, entries), change, startChange, playLever, closeChange,
-    user, synced, toast, dismissToast: () => setToast(null), start, advance, switchCompany, decide, markRead, completeLesson, dilemma, answerDilemma, updateSettings, skipNext, testTools, reset, journey, mastery, appoint,
+    user, synced, toast, dismissToast: () => setToast(null), start, advance, switchCompany, decide, markRead, completeLesson, dilemma, answerDilemma, updateSettings, skipNext, testTools, reset, journey, mastery, appoint, saveProfile, saveDiagnostic, snoozeProfile,
   };
   return <C.Provider value={value}>{children}</C.Provider>;
 }

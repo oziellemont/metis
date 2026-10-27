@@ -8,8 +8,13 @@ import { personOf } from "@/lib/ceo/cast";
 import { COMPANIES, FIRST_COMPANY, companyById } from "@/lib/ceo/companies";
 import { useCeo } from "./CeoProvider";
 import { Avatar, CompanyMark } from "./ui";
+import { ProfileQuestions } from "./ProfileFlow";
+import { companyForIndustry, type ProfessionalProfile } from "@/lib/ceo/profile";
 
-/** Cuatro pasos: tu nombre → eliges industria → tu empresa → cómo te contactamos. Sin videos ni tutoriales largos. */
+/**
+ * Pasos: tu nombre → tu experiencia (5 preguntas, todas omitibles) → eliges industria → tu empresa → cómo te contactamos.
+ * La experiencia declarada solo ajusta recomendaciones y ayuda; nunca dominio, etapa, XP ni nombramientos (V33).
+ */
 export function Onboarding() {
   const c = useCeo();
   const router = useRouter();
@@ -24,12 +29,21 @@ export function Onboarding() {
   const [we, setWe] = useState(19);
   const [wa, setWa] = useState(true);
   const [intensivo, setIntensivo] = useState(false);
+  const [profile, setProfile] = useState<ProfessionalProfile | undefined>();
+  const [q, setQ] = useState(0);
+  const STEPS = 5;
+  const afterProfile = (pf?: ProfessionalProfile) => {
+    setProfile(pf);
+    const co = companyForIndustry(pf?.industry, COMPANIES.map((x) => x.id));
+    if (co) setCompany(co);
+    setStep(2);
+  };
 
   useEffect(() => { if (c.ready && c.s.startedAt) router.replace("/ceo"); }, [c.ready, c.s.startedAt, router]);
   useEffect(() => { if (c.user?.email) setEmail((e) => e || c.user!.email); }, [c.user]);
 
   const go = () => {
-    c.start({ name, email, phone, company, settings: { windowStart: ws, windowEnd: we, notifyEmail: !!email, notifyWhatsapp: wa && !!phone, intensivo } });
+    c.start({ name, email, phone, company, profile, settings: { windowStart: ws, windowEnd: we, notifyEmail: !!email, notifyWhatsapp: wa && !!phone, intensivo } });
     try { if (typeof Notification !== "undefined" && Notification.permission === "default") Notification.requestPermission(); } catch { /* ignore */ }
     router.replace("/ceo");
   };
@@ -41,7 +55,7 @@ export function Onboarding() {
       <div className="relative max-w-2xl mx-auto px-5 py-8 sm:py-14">
         <div className="flex items-center justify-between">
           <span className="flex items-center gap-2"><Logo variant="light" height={26} /><span className="chip bg-white text-ink text-[10px] tracking-wider">CEO</span></span>
-          <div className="flex gap-1.5">{[0, 1, 2, 3].map((i) => <span key={i} className={clsx("h-1.5 rounded-full transition-all", i === step ? "w-6 bg-mint" : i < step ? "w-3 bg-white/60" : "w-3 bg-white/20")} />)}</div>
+          <div className="flex gap-1.5">{Array.from({ length: STEPS }, (_, i) => i).map((i) => <span key={i} className={clsx("h-1.5 rounded-full transition-all", i === step ? "w-6 bg-mint" : i < step ? "w-3 bg-white/60" : "w-3 bg-white/20")} />)}</div>
         </div>
 
         {step === 0 && (
@@ -60,7 +74,11 @@ export function Onboarding() {
         )}
 
         {step === 1 && (
-          <section key="s1" className="academy-in mt-10">
+          <ProfileQuestions initial={profile} source="onboarding" step={q} setStep={setQ} onBackFirst={() => setStep(0)} onLater={() => afterProfile(profile)} onDone={afterProfile} />
+        )}
+
+        {step === 2 && (
+          <section key="s2" className="academy-in mt-10">
             <div className="text-xs font-semibold uppercase tracking-wider text-mint">Elige dónde empiezas</div>
             <h1 className="mt-2 text-3xl font-semibold leading-tight">¿En qué industria quieres debutar?</h1>
             <p className="mt-3 text-white/70 text-[15px] leading-relaxed">Cada industria habla su propio idioma y tiene sus propios dilemas. Tú eliges la primera; después, cada vez que apruebes una empresa, el consejo de otra te llamará al azar.</p>
@@ -78,12 +96,12 @@ export function Onboarding() {
               ))}
             </div>
             <button onClick={() => setCompany(COMPANIES[Math.floor(Math.random() * COMPANIES.length)].id)} className="mt-3 inline-flex items-center gap-1.5 text-sm text-white/60 hover:text-white"><Shuffle size={14} /> Que me toque al azar</button>
-            <div className="mt-6 flex gap-3"><button onClick={() => setStep(0)} className="btn text-white/70 hover:text-white">Atrás</button><button onClick={() => setStep(2)} className="btn bg-white text-ink hover:bg-white/90 flex-1 justify-center py-3 text-base font-semibold">Dirigir {pk.short} <ArrowRight size={16} /></button></div>
+            <div className="mt-6 flex gap-3"><button onClick={() => setStep(1)} className="btn text-white/70 hover:text-white">Atrás</button><button onClick={() => setStep(3)} className="btn bg-white text-ink hover:bg-white/90 flex-1 justify-center py-3 text-base font-semibold">Dirigir {pk.short} <ArrowRight size={16} /></button></div>
           </section>
         )}
 
-        {step === 2 && (
-          <section key="s2" className="academy-in mt-10">
+        {step === 3 && (
+          <section key="s3" className="academy-in mt-10">
             <div className="text-xs font-semibold uppercase tracking-wider text-mint">{pk.industry} · {pk.city}</div>
             <h1 className="mt-2 text-3xl font-semibold leading-tight">{pk.name}</h1>
             <p className="mt-3 text-white/70 text-[15px] leading-relaxed">{pk.pitch}</p>
@@ -102,12 +120,12 @@ export function Onboarding() {
                 ))}
               </div>
             </div>
-            <div className="mt-6 flex gap-3"><button onClick={() => setStep(1)} className="btn text-white/70 hover:text-white">Atrás</button><button onClick={() => setStep(3)} className="btn bg-white text-ink hover:bg-white/90 flex-1 justify-center py-3 text-base font-semibold">Entendido <ArrowRight size={16} /></button></div>
+            <div className="mt-6 flex gap-3"><button onClick={() => setStep(2)} className="btn text-white/70 hover:text-white">Atrás</button><button onClick={() => setStep(4)} className="btn bg-white text-ink hover:bg-white/90 flex-1 justify-center py-3 text-base font-semibold">Entendido <ArrowRight size={16} /></button></div>
           </section>
         )}
 
-        {step === 3 && (
-          <section key="s3" className="academy-in mt-10">
+        {step === 4 && (
+          <section key="s4" className="academy-in mt-10">
             <div className="text-xs font-semibold uppercase tracking-wider text-mint">Antes de que suene tu teléfono</div>
             <h1 className="mt-2 text-3xl font-semibold leading-tight">¿Dónde te encuentra tu equipo?</h1>
             <p className="mt-3 text-white/70 text-[15px]">Cada día te llegan de 2 a 4 asuntos a horas distintas. Casi todos tienen tiempo límite: como en la vida real, si no respondes, alguien decide por ti.</p>
@@ -133,7 +151,7 @@ export function Onboarding() {
               <button onClick={go} className="btn-primary w-full justify-center py-3 text-base"><Bell size={16} /> Empezar mi primer día</button>
               <p className="text-[11px] text-slate-400 text-center">Tu primer mensaje llega en unos segundos.</p>
             </div>
-            <button onClick={() => setStep(2)} className="mt-4 btn text-white/70 hover:text-white">Atrás</button>
+            <button onClick={() => setStep(3)} className="mt-4 btn text-white/70 hover:text-white">Atrás</button>
           </section>
         )}
       </div>

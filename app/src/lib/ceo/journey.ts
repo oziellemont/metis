@@ -66,11 +66,13 @@ export const LEGACY_FLOOR = [0, 1, 2, 4, 4] as const;
 
 // ───────────────────────────────────────────── hechos de la carrera
 /** Una empresa aprobada en modo Legendario: su exigencia lleva el +1 extra del modo. */
-function legendaryRuns(career: CareerRun[]): CareerRun[] {
+function legendaryRuns(career: CareerRun[], startTier = 0): CareerRun[] {
   let passedBefore = 0;
   const out: CareerRun[] = [];
   for (const r of career) {
-    if (r.passed && (r.tier > passedBefore || companyById(r.company).international)) out.push(r);
+    // Antes del primer ascenso, la exigencia elegida al empezar (perfil V33) no cuenta como Legendario.
+    const expected = passedBefore === 0 ? passedBefore + startTier : passedBefore;
+    if (r.passed && (r.tier > expected || companyById(r.company).international)) out.push(r);
     if (r.passed) passedBefore++;
   }
   return out;
@@ -82,7 +84,7 @@ export function careerFacts(s: CeoState) {
     passed: passed.length,
     changeOk: career.filter((r) => r.change?.ok).length,
     highTier: passed.filter((r) => r.tier >= HIGH_TIER).length,
-    legendary: legendaryRuns(career).length,
+    legendary: legendaryRuns(career, s.startTier ?? 0).length,
     board: !!s.journey?.board?.passed,
   };
 }

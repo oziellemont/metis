@@ -330,3 +330,17 @@ export function snoozeNudge(n: ProfileNudge | undefined, now: number): ProfileNu
 
 /** Competencias que entrena un asunto, para la ayuda «completa» dentro del caso. */
 export const competencyNames = (cs: Competency[]) => cs.map((c) => competencyById(c).name);
+
+/** Empresa del simulador que se preselecciona según la industria declarada (si existe en el catálogo de empresas). */
+export function companyForIndustry(industry: string | undefined, companies: readonly string[]): string | undefined {
+  const m = INDUSTRIES.find((i) => i.id === industry) as { company?: string } | undefined;
+  return m?.company && companies.includes(m.company) ? m.company : undefined;
+}
+
+/** Cierra una edición del perfil: recalcula qué quedó sin responder y sella fechas. */
+export function finalizeProfile(p: ProfessionalProfile, source: ProfessionalProfile["source"], now: number): ProfessionalProfile {
+  const skipped = QUESTIONS.filter((q) => (q === "areas" ? !p.areas?.length : !p[q]));
+  const out: ProfessionalProfile = { ...p, skipped, source, answeredAt: p.answeredAt || now, updatedAt: now };
+  if (!out.areas?.length) delete out.areas;
+  return out;
+}
