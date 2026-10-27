@@ -4,11 +4,11 @@
  */
 import type React from "react";
 import Link from "next/link";
-import { Check, ChevronDown, Flag, Lightbulb, Lock, MessageCircle } from "lucide-react";
+import { Check, ChevronDown, Flag, Lock } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { CeoCta } from "@/components/site/CeoCta";
 import { CEO_CONTACT_EMAIL } from "@/lib/site";
-import { CLOSE, DIFF, FAQ, FOOTER, HOW, LOGIN_HREF, PATH, PHILOSOPHY, type StageState } from "./content";
+import { CLOSE, DIFF, FAQ, FOOTER, GROWTH, HOW, LOGIN_HREF, PATH, PHILOSOPHY, type Echo, type StageState } from "./content";
 import { Stagger } from "./Stagger";
 
 const WRAP = "mx-auto max-w-6xl px-5 sm:px-6";
@@ -61,7 +61,7 @@ export function HowSection() {
             </div>
             <p className="mt-5 text-[12px] font-semibold text-ink">Esperando tu decisión</p>
             <ul className="mt-2 space-y-2">
-              {[["LM", "Lucía · Finanzas", "Necesito tu visto bueno para el presupuesto.", "9:12"], ["HS", "Héctor · Comercial", "SuperNorte pide más descuento.", "13:40"], ["MR", "Mariana · Personas", "Renunció alguien clave. ¿Hablamos?", "17:05"]].map(([i, w, t, h]) => (
+              {[["LT", "Lucía · Finanzas", "Necesito tu visto bueno para el presupuesto.", "9:12"], ["HS", "Héctor · Comercial", "SuperNorte pide más descuento.", "13:40"], ["MV", "Mariana · Personas", "Renunció alguien clave. ¿Hablamos?", "17:05"]].map(([i, w, t, h]) => (
                 <li key={w} className="flex items-center gap-3 rounded-2xl border border-slate-100 px-3.5 py-2.5">
                   <span aria-hidden className="h-8 w-8 shrink-0 rounded-full bg-indigo-soft text-indigo grid place-items-center text-[10px] font-semibold">{i}</span>
                   <div className="min-w-0 flex-1"><div className="text-[13px] font-semibold text-ink">{w}</div><div className="text-[12.5px] text-slate-500 truncate">{t}</div></div>
@@ -80,30 +80,61 @@ export function HowSection() {
   );
 }
 
-function Fragment({ f }: { f: (typeof DIFF.items)[number]["frag"] }) {
-  if (f.kind === "data") return (
-    <div className="rounded-2xl border border-slate-100 bg-white p-4">
-      <div className="text-[12px] font-semibold text-ink">{f.title}</div>
-      <dl className="mt-2 divide-y divide-slate-100 text-[12.5px]">
-        {f.rows.map(([k, v]) => <div key={k} className="flex justify-between gap-3 py-1.5"><dt className="text-slate-500">{k}</dt><dd className="font-medium text-ink tabular-nums text-right">{v}</dd></div>)}
-      </dl>
-    </div>
-  );
-  if (f.kind === "outcome") return (
-    <div className="rounded-2xl border border-slate-100 bg-white p-4">
-      <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-indigo">{f.title}</div>
-      <p className="mt-1.5 text-[13.5px] leading-relaxed text-ink">{f.text}</p>
-    </div>
-  );
+function EchoCard({ e }: { e: Echo }) {
   return (
-    <div className="rounded-2xl border border-slate-100 bg-white p-4 flex gap-3">
-      <span aria-hidden className="h-8 w-8 shrink-0 rounded-full bg-indigo-soft text-indigo grid place-items-center text-[10px] font-semibold">HS</span>
-      <div className="min-w-0">
-        <div className="text-[12.5px] font-semibold text-ink">{f.title}</div>
-        <p className="mt-1 rounded-xl rounded-tl-md bg-canvas px-3 py-2 text-[13px] text-ink">{f.text}</p>
-        <div className="mt-1 flex items-center gap-1 text-[11px] text-slate-500"><MessageCircle size={11} aria-hidden /> Semanas después</div>
+    <article className="flex flex-col rounded-3xl bg-white/[0.06] p-5 sm:p-6">
+      <h3 className="text-lg font-semibold">{e.t}</h3>
+      <p className="mt-2 text-[14.5px] leading-relaxed text-white/65">{e.context}</p>
+      <ol className="mt-5 relative space-y-4 pl-6">
+        <span aria-hidden className="absolute left-[5px] top-2 bottom-8 w-px bg-white/20" />
+        <li className="relative">
+          <span aria-hidden className="absolute -left-6 top-1.5 h-[11px] w-[11px] rounded-full border-2 border-white/50 bg-[#141735]" />
+          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-white/50">{e.decide.day} · {DIFF.decideLabel}</p>
+          <p className="mt-1 text-[14.5px] text-white">{e.decide.text}</p>
+        </li>
+        <li className="relative">
+          <span aria-hidden className={"absolute -left-6 top-1.5 h-[11px] w-[11px] rounded-full " + (e.tone === "bien" ? "bg-mint" : "bg-amber-400")} />
+          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-white/50">{e.back.day} · {DIFF.backLabel}</p>
+          <div className="mt-2 flex gap-3 rounded-2xl bg-white p-3.5 text-ink">
+            <span aria-hidden className="h-8 w-8 shrink-0 rounded-full bg-indigo-soft text-indigo grid place-items-center text-[10px] font-semibold">{e.back.initials}</span>
+            <div className="min-w-0">
+              <div className="text-[12.5px] font-semibold">{e.back.who}</div>
+              <p className="mt-0.5 text-[13.5px] leading-relaxed">{e.back.text}</p>
+            </div>
+          </div>
+        </li>
+      </ol>
+    </article>
+  );
+}
+
+/** Tarjeta conceptual de desarrollo ejecutivo. Las cifras son ilustrativas y se marcan como tales. */
+function GrowthCard() {
+  return (
+    <figure className="rounded-3xl bg-white p-5 sm:p-6 text-ink" aria-labelledby="growth-title">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-indigo">{GROWTH.eyebrow}</p>
+          <h3 id="growth-title" className="mt-1 text-lg font-semibold">{GROWTH.title}</h3>
+        </div>
+        <span className="chip bg-slate-100 text-slate-600 shrink-0">{GROWTH.tag}</span>
       </div>
-    </div>
+      <ul className="mt-5 space-y-3.5">
+        {GROWTH.bars.map((b) => (
+          <li key={b.name}>
+            <div className="flex justify-between text-[13.5px]"><span>{b.name}</span><span className="tabular-nums text-slate-500">{b.pct}%</span></div>
+            <div className="mt-1.5 h-1.5 rounded-full bg-slate-100" role="presentation">
+              <div className="h-full rounded-full bg-gradient-to-r from-mint to-indigo" style={{ width: b.pct + "%" }} />
+            </div>
+          </li>
+        ))}
+      </ul>
+      <div className="mt-5 rounded-2xl bg-canvas px-4 py-3">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500">{GROWTH.nextLabel}</p>
+        <p className="mt-0.5 text-[14px] font-medium">{GROWTH.next}</p>
+      </div>
+      <figcaption className="mt-3 text-[12px] text-slate-500">{GROWTH.disclaimer}</figcaption>
+    </figure>
   );
 }
 
@@ -112,22 +143,14 @@ export function DiffSection() {
     <section id="experiencia" aria-labelledby="exp-title" className="scroll-mt-20 bg-[#141735] text-white">
       <div className={WRAP + " " + PAD}>
         <div className="max-w-2xl">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-mint-light">La experiencia</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-mint-light">{DIFF.eyebrow}</p>
           <h2 id="exp-title" className="mt-3 text-[28px] leading-[1.15] sm:text-4xl sm:leading-[1.12] font-semibold tracking-tight">{DIFF.title}</h2>
           <p className="mt-4 text-[17px] leading-relaxed text-white/70">{DIFF.body}</p>
         </div>
-        <div className="mt-12 grid md:grid-cols-3 gap-6">
-          {DIFF.items.map((it) => (
-            <article key={it.t} className="flex flex-col">
-              <h3 className="text-lg font-semibold">{it.t}</h3>
-              <p className="mt-2 text-[15px] leading-relaxed text-white/70">{it.d}</p>
-              <div className="mt-5 flex-1 rounded-3xl bg-white/[0.06] p-3 [&>div]:h-full">
-                <Fragment f={it.frag} />
-              </div>
-            </article>
-          ))}
+        <div className="mt-12 grid md:grid-cols-2 gap-5 [&>*]:min-w-0">
+          {DIFF.items.map((e) => <EchoCard key={e.t} e={e} />)}
         </div>
-        <p className="mt-6 text-[12px] text-white/50">{DIFF.source}</p>
+        <p className="mt-5 text-[12px] text-white/50">{DIFF.source}</p>
         <div className="mt-12 grid md:grid-cols-[1fr_1.1fr] gap-6 md:gap-10 items-center border-t border-white/10 pt-10 [&>*]:min-w-0">
           <div>
             <h3 className="text-xl font-semibold">{DIFF.after.title}</h3>
@@ -135,10 +158,7 @@ export function DiffSection() {
               {DIFF.after.items.map((t) => <li key={t} className="flex gap-2.5"><span aria-hidden className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-mint" />{t}</li>)}
             </ul>
           </div>
-          <div className="flex gap-3 rounded-3xl bg-white p-5 text-ink">
-            <Lightbulb size={18} className="text-indigo shrink-0 mt-0.5" aria-hidden />
-            <p className="text-[15px] leading-relaxed"><b>Nota CEO.</b> {DIFF.after.note}</p>
-          </div>
+          <GrowthCard />
         </div>
       </div>
     </section>
@@ -202,7 +222,10 @@ export function PhilosophySection() {
           <p className="mt-6 text-lg sm:text-xl leading-relaxed text-white/75">{PHILOSOPHY.body}</p>
           <div className="mt-12 grid md:grid-cols-[auto_1fr] gap-4 md:gap-8 border-t border-white/15 pt-8 [&>*]:min-w-0">
             <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-mint-light md:pt-1">{PHILOSOPHY.eyebrow}</p>
-            <p className="text-[16px] leading-relaxed text-white/75 max-w-xl">{PHILOSOPHY.story}</p>
+            <div className="max-w-xl">
+              <blockquote className="text-[22px] sm:text-[26px] leading-snug font-semibold text-white">{PHILOSOPHY.quote}</blockquote>
+              <p className="mt-4 text-[16px] leading-relaxed text-white/75">{PHILOSOPHY.story}</p>
+            </div>
           </div>
           <div className="mt-8">
             <p className="font-semibold">{PHILOSOPHY.author}</p>

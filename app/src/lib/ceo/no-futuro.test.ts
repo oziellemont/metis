@@ -5,12 +5,13 @@ import { join } from "node:path";
 /**
  * Reglas de copy de mêtis CEO (app y landing):
  *  - No se menciona el libro de Oziel (las frases se quedan, la referencia no).
- *  - No se promete nada a futuro: sin «próximamente», «en preparación», «llega en una próxima versión», Arena, etc.
+ *  - No se promete nada a futuro: sin «próximamente», «en preparación», «llega en una próxima versión», etc.
+ *  - The Executive Arena sí se nombra: es lo que sigue después de Global CEO (exigencia Legendaria), sin fechas.
  * Se revisan los textos de la app CEO, la landing y los correos. Los comentarios de código no cuentan.
  */
 const ROOTS = ["src/lib/ceo", "src/components/ceo", "src/components/site/ceo-landing", "src/app/simulador", "src/app/ceo", "src/app/legal"];
 const BOOK = /de cero a ceo|\blibro\b/i;
-const FUTURE = /pr[oó]ximamente|en preparaci[oó]n|pr[oó]xima versi[oó]n|llegan? pronto|m[aá]s adelante:|todav[ií]a no est[aá] disponible|executive arena|coming soon/i;
+const FUTURE = /pr[oó]ximamente|en preparaci[oó]n|pr[oó]xima versi[oó]n|llegan? pronto|m[aá]s adelante:|todav[ií]a no est[aá] disponible|coming soon/i;
 
 function files(p: string): string[] {
   const st = statSync(p);
