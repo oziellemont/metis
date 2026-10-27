@@ -6,6 +6,9 @@ import { KPI_KEYS } from "@/lib/ceo/engine";
 import { firstName, personOf } from "@/lib/ceo/cast";
 import { LESSONS } from "@/lib/ceo/lessons";
 import { useCeo } from "./CeoProvider";
+import { DilemmaCard } from "./DilemmaCard";
+import { rankOf } from "@/lib/ceo/lessons";
+import { rankFor } from "@/lib/ceo/engine";
 import { Avatar, Bar, ChannelChip, Delta, Flame, clock, rel, until } from "./ui";
 
 export function Today() {
@@ -16,7 +19,9 @@ export function Today() {
   const hr = new Date(c.now).getHours();
   const hello = hr < 12 ? "Buenos días" : hr < 19 ? "Buenas tardes" : "Buenas noches";
   const lastDecided = [...c.entries].filter((e) => e.status === "decidido").sort((a, b) => b.decision!.at - a.decision!.at).slice(0, 3);
-  const nextLesson = LESSONS.find((l) => !c.s.lessons[l.id] && c.entries.some((e) => e.item.lesson === l.id && e.status !== "futuro")) ?? LESSONS.find((l) => !c.s.lessons[l.id]);
+  const rank = rankFor(c.s, c.now);
+  const open = LESSONS.filter((l) => rankOf(l) <= rank);
+  const nextLesson = open.find((l) => !c.s.lessons[l.id] && c.entries.some((e) => e.item.lesson === l.id && e.status !== "futuro")) ?? open.find((l) => !c.s.lessons[l.id]);
 
   return (
     <div className="space-y-5">
@@ -67,6 +72,7 @@ export function Today() {
       </section>
 
       <div className="grid gap-5 lg:grid-cols-[1.4fr_1fr]">
+        <div className="space-y-5">
         {/* pendientes */}
         <section className="card p-5 sm:p-6">
           <div className="flex items-center justify-between"><h2 className="font-semibold text-ink">Esperando tu decisión</h2><Link href="/ceo/bandeja" className="text-xs font-medium text-indigo">Bandeja →</Link></div>
@@ -92,6 +98,8 @@ export function Today() {
             </div>
           )}
         </section>
+        <DilemmaCard />
+        </div>
 
         <div className="space-y-5">
           <ChangeCard />

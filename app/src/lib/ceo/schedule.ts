@@ -14,7 +14,7 @@
  *  welcome       bienvenida (si no salió al conectar la cuenta)
  */
 import { DAY, H, casesDoneOf, dayKey, entries, healthOf, kpis, levelOf, localMidnight, packOf, profileOf, rulesOf, seasonDay, seasonDoneOf, streakOf, verdictOf, xpOf } from "./engine";
-import { LESSONS } from "./lessons";
+import { LESSONS, rankOf } from "./lessons";
 import type { CeoState, Entry, Kpis } from "./types";
 
 export type Sent = Record<string, number | string>;
@@ -121,7 +121,8 @@ export function jobsFor(s: CeoState, sent: Sent, real: number, opts: { plan?: bo
   const st = streakOf(s, now);
   const streakKey = `streak:${today}`;
   if (!sent[streakKey] && st.atRisk && st.days >= 1 && h >= windowEnd - 1 && h < windowEnd + 1.5) {
-    const lesson = LESSONS.find((l) => !s.lessons[l.id]);
+    const rk = levelOf(xpOf(s, now)).i;
+    const lesson = LESSONS.find((l) => !s.lessons[l.id] && rankOf(l) <= rk);
     jobs.push({ key: streakKey, kind: "streak", streak: st.days, pending: pending.length, lessonId: lesson?.id, lessonTitle: lesson?.title });
   }
 
