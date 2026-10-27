@@ -1,14 +1,14 @@
 /**
  * Landing de MÊTIS CEO (www.metis.ceo) · todo el copy y los datos de las demos en un solo lugar.
  *
- * Regla: aquí solo va lo que el producto hace hoy. Lo que está en preparación se marca como tal
- * (ver AVAILABILITY). La demo es ilustrativa: no toca el motor, la partida ni la cuenta del visitante.
+ * Regla: aquí solo va lo que el producto hace hoy. Nada de «próximamente» ni de promesas a futuro:
+ * lo que no existe, no se menciona (ver AVAILABILITY, solo para auditoría interna). La demo es ilustrativa: no toca el motor, la partida ni la cuenta del visitante.
  */
 
 /* ---------------- Estado real del producto (auditoría jul-2026) ---------------- */
 export type Availability = "hoy" | "preparacion" | "futuro";
 export const AVAILABILITY: { item: string; state: Availability; note: string }[] = [
-  { item: "Empresas simuladas", state: "hoy", note: "Botanas Cumbre, Forja del Norte y Brasa; 5 más anunciadas como próximas" },
+  { item: "Empresas simuladas", state: "hoy", note: "Botanas Cumbre, Forja del Norte y Brasa" },
   { item: "Asuntos diarios", state: "hoy", note: "Llegan dentro del horario que eliges; modo intensivo opcional" },
   { item: "Decisiones que persisten", state: "hoy", note: "Indicadores, relaciones y estilo se acumulan durante la temporada" },
   { item: "Personajes que recuerdan", state: "hoy", note: "Postura de cada persona según lo que decidiste antes" },
@@ -22,7 +22,7 @@ export const AVAILABILITY: { item: string; state: Availability; note: string }[]
   { item: "Junta ante el Consejo", state: "hoy", note: "Tres momentos encadenados; requisito para Chief Executive Officer (/ceo/junta)" },
   { item: "Conversaciones abiertas con personajes", state: "futuro", note: "No construido" },
   { item: "Escenarios generados", state: "futuro", note: "No construido" },
-  { item: "The Executive Arena", state: "futuro", note: "No construido" },
+  { item: "Retos entre jugadores", state: "futuro", note: "No construido; no se menciona" },
   { item: "Suscripción y cobro", state: "futuro", note: "No hay checkout ni cancelación; el precio no se publica" },
 ];
 
@@ -207,10 +207,6 @@ export const LEARN = {
     "Lecciones breves en mêtis Academy",
     "Orden de casos ajustado a tu perfil, si lo completas",
   ],
-  soon: [
-    "Respuestas escritas: redactas tu respuesta y recibes retroalimentación sobre tu razonamiento",
-  ],
-  soonNote: "En preparación. Hoy está en pruebas y no está abierto para todos.",
 };
 
 /* ---------------- Camino profesional ---------------- */
@@ -227,7 +223,7 @@ export const PATH = {
     { n: "VI", name: "Global CEO", es: "CEO global", learn: "Mercados internacionales, adquisiciones y gobierno corporativo" },
   ],
   beyond: "La meta no es terminar las lecciones. Es seguir desarrollando criterio.",
-  arena: "Más adelante: The Executive Arena, con temporadas y retos nuevos para quien ya recorrió las seis etapas. Todavía no está disponible.",
+  beyondNote: "Cada etapa trae empresas más exigentes, juntas de consejo y crisis que ponen a prueba lo que aprendiste.",
 };
 
 /* ---------------- Ritmo ---------------- */
@@ -258,7 +254,6 @@ export const PHILOSOPHY = {
   body: "Detrás de cada decisión hay personas, recursos y consecuencias. MÊTIS nace de una idea sencilla: el criterio de un líder puede desarrollarse antes de que llegue el momento de ponerlo a prueba.",
   author: "Oziel Leal Montemayor",
   authorRole: "Creador de MÊTIS",
-  book: "Las Notas CEO que acompañan cada caso vienen de su libro «De CERO a CEO».",
 };
 
 /* ---------------- Acceso (no hay cobro operativo: no se publica precio) ---------------- */
@@ -276,7 +271,7 @@ export const FAQ: { q: string; a: string }[] = [
   { q: "¿Qué tipo de decisiones voy a tomar?", a: "De personas, clientes, finanzas, operación, estrategia y ética. Casi ninguna tiene una respuesta perfecta: cada opción tiene un costo." },
   { q: "¿Las decisiones afectan lo que sucede después?", a: "Sí. Mueven los indicadores de tu empresa y cambian cómo te responde cada persona en los casos siguientes." },
   { q: "¿Puedo usar MÊTIS desde mi celular?", a: "Sí, desde el navegador. No necesitas instalar nada. Si conectas tu correo, continúas en cualquier dispositivo." },
-  { q: "¿Tiene costo?", a: "Hoy puedes empezar sin tarjeta. Si en algún momento hay un plan de pago, lo verás publicado en esta página." },
+  { q: "¿Tiene costo?", a: "Puedes empezar hoy sin tarjeta." },
 ];
 
 /* ---------------- Cierre y pie ---------------- */
@@ -284,4 +279,4 @@ export const CLOSE = { title: "La próxima decisión es tuya.", body: "Empieza a
 export const FOOTER = { tagline: "Simulador de decisiones ejecutivas. Dirigir se aprende decidiendo.", place: "Monterrey, N.L., México" };
 
 /** Frases que no queremos en la landing (tono). Se revisan en las pruebas. */
-export const BANNED = ["revoluciona", "desbloquea", "transforma tu", "potencia tus", "siguiente nivel", "definitiva", "disruptiv", "game changer", "vanguardia", "powered by", "cancela cuando quieras", "prueba gratis"];
+export const BANNED = ["revoluciona", "desbloquea", "transforma tu", "potencia tus", "siguiente nivel", "definitiva", "disruptiv", "game changer", "vanguardia", "powered by", "cancela cuando quieras", "prueba gratis", "próximamente", "en preparación", "más adelante", "muy pronto"];

@@ -4,7 +4,7 @@ import clsx from "clsx";
 import { useEffect, useState } from "react";
 import { ArrowRight, Award, Check, Crown, Lock, RotateCcw, X } from "lucide-react";
 import { KPI_KEYS, nextCompanyOf, profileOf, rulesOf } from "@/lib/ceo/engine";
-import { COMPANIES, UPCOMING, companyById } from "@/lib/ceo/companies";
+import { COMPANIES, companyById } from "@/lib/ceo/companies";
 import { STAGES } from "@/lib/ceo/journey";
 import { celebrate, celebrateOnce } from "@/lib/ceo/celebrate";
 import { COMPETENCY_IDS, countAtLeast } from "@/lib/ceo/mastery";
@@ -63,7 +63,7 @@ export function Career() {
                 ? `Cumples todo lo que pide el Consejo. Tu nombramiento como ${j.next.name} está listo.`
                 : <>Siguiente nombramiento: <b className="text-white">{j.next.name}</b>. Llevas {j.met} de {j.total} requisitos. Tu etapa sube por lo que demuestras, no por el XP.</>}
             </p>
-          ) : <p className="mt-4 text-sm text-white/80 max-w-xl">Llegaste a la última etapa. Lo que sigue es The Executive Arena: retos entre jugadores y temporadas especiales.</p>}
+          ) : <p className="mt-4 text-sm text-white/80 max-w-xl">Llegaste a la última etapa. Sigue dirigiendo empresas en modo Legendario y mantén tu criterio en forma.</p>}
           {j.requirements.length > 0 && (
             <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {j.requirements.map((q) => <RequirementTile key={q.id} r={q} m={m} dark />)}
@@ -177,12 +177,6 @@ export function Career() {
               </div>
             );
           })}
-          {UPCOMING.map((co) => (
-            <div key={co.id} className="rounded-2xl border border-dashed border-slate-200 p-4 opacity-70">
-              <div className="flex items-center gap-3"><CompanyMark name={co.name} size={36} tone="muted" /><div className="min-w-0"><div className="font-semibold text-sm text-ink truncate">{co.name}</div><div className="text-[11px] text-slate-500">{co.industry}</div></div><span className="ml-auto chip bg-slate-100 text-slate-500 text-[10px]">Próximamente</span></div>
-              <p className="mt-2 text-xs text-slate-500">{co.tagline}</p>
-            </div>
-          ))}
         </div>
       </section>
     </div>

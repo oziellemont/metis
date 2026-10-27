@@ -6,7 +6,7 @@ import Link from "next/link";
 import { ChevronDown, Lightbulb, MessageCircle } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { CeoCta } from "@/components/site/CeoCta";
-import { CONTACT_EMAIL } from "@/lib/site";
+import { CEO_CONTACT_EMAIL } from "@/lib/site";
 import { ACCESS, CLOSE, DIFF, FAQ, FOOTER, HOW, LEARN, LOGIN_HREF, PATH, PHILOSOPHY, RHYTHM, RIPPLE, WHO } from "./content";
 import { Ripple } from "./Ripple";
 
@@ -123,9 +123,9 @@ export function LearnSection() {
             </div>
           ))}
         </div>
-        <div className="mt-14 grid md:grid-cols-2 gap-4">
+        <div className="mt-14 max-w-2xl">
           <div className="rounded-3xl border border-slate-100 bg-white p-6">
-            <h3 className="text-[15px] font-semibold text-ink">Disponible hoy</h3>
+            <h3 className="text-[15px] font-semibold text-ink">Lo que recibes en cada caso</h3>
             <ul className="mt-3 space-y-2 text-[14.5px] text-slate-600">
               {LEARN.today.map((t) => <li key={t} className="flex gap-2.5"><span aria-hidden className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-mint" />{t}</li>)}
             </ul>
@@ -133,13 +133,6 @@ export function LearnSection() {
               <Lightbulb size={16} className="text-indigo shrink-0 mt-0.5" aria-hidden />
               <p className="text-[13px] text-ink"><b>Nota CEO:</b> la mejor forma de negociar con fuerza no es sonar fuerte; es construir alternativas antes de necesitarlas.</p>
             </div>
-          </div>
-          <div className="rounded-3xl border border-dashed border-slate-200 p-6">
-            <h3 className="text-[15px] font-semibold text-ink">Próximamente</h3>
-            <ul className="mt-3 space-y-2 text-[14.5px] text-slate-600">
-              {LEARN.soon.map((t) => <li key={t} className="flex gap-2.5"><span aria-hidden className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full border border-slate-400" />{t}</li>)}
-            </ul>
-            <p className="mt-4 text-[13px] text-slate-500">{LEARN.soonNote}</p>
           </div>
         </div>
       </div>
@@ -170,7 +163,7 @@ export function PathSection() {
           <p className="rounded-3xl bg-white border border-slate-100 p-6 text-[15px] leading-relaxed text-slate-600"><b className="text-ink">Tu rol y tu etapa no son lo mismo.</b> {PATH.roleNote}</p>
           <div className="rounded-3xl bg-ink text-white p-6">
             <p className="text-lg font-semibold leading-snug">{PATH.beyond}</p>
-            <p className="mt-3 text-[13px] text-white/60">{PATH.arena}</p>
+            <p className="mt-3 text-[13px] text-white/60">{PATH.beyondNote}</p>
           </div>
         </div>
       </div>
@@ -245,7 +238,6 @@ export function PhilosophySection() {
           <div className="mt-10 border-t border-white/15 pt-6">
             <p className="font-semibold">{PHILOSOPHY.author}</p>
             <p className="text-[14px] text-white/60">{PHILOSOPHY.authorRole}</p>
-            <p className="mt-3 text-[14px] text-white/60">{PHILOSOPHY.book}</p>
           </div>
         </div>
       </div>
@@ -319,7 +311,7 @@ export function Footer() {
           </ul>
         </nav>
         <div className="space-y-2 text-slate-600">
-          <a href={`mailto:${CONTACT_EMAIL}`} className="hover:text-ink">{CONTACT_EMAIL}</a>
+          <a href={`mailto:${CEO_CONTACT_EMAIL}`} className="hover:text-ink">{CEO_CONTACT_EMAIL}</a>
           <p className="text-slate-500">{FOOTER.place}</p>
           <p className="text-slate-500">© 2026 mêtis</p>
         </div>

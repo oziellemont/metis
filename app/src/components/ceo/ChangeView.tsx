@@ -1,7 +1,7 @@
 "use client";
 /**
  * Reto final de cada nivel · proyecto de cambio: N semanas para que la organización adopte un cambio, moviendo a cada persona
- * con las palancas de cambio de De CERO a CEO (Parte IX). Tus decisiones previas ya pesan: la disposición
+ * con palancas de cambio. Tus decisiones previas ya pesan: la disposición
  * inicial de cada persona depende de cómo está tu relación con ella.
  */
 import Link from "next/link";
@@ -172,7 +172,6 @@ function Board({ sim }: { sim: ChangeSim }) {
         <section className="card p-4 sm:p-5">
           <div className="flex flex-wrap items-baseline justify-between gap-2">
             <h2 className="font-semibold text-ink">1 · Elige una palanca</h2>
-            <span className="text-[11px] text-slate-400">De CERO a CEO · Parte IX</span>
           </div>
           <div className="mt-3 grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 gap-2">
             {LEVERS.map((l) => {
@@ -306,7 +305,7 @@ function Result({ sim, closed }: { sim: ChangeSim; closed: boolean }) {
       <div className="mt-3 flex flex-wrap gap-2">
         {(Object.keys(eff) as KpiKey[]).filter((k) => eff[k]).map((k) => <span key={k} className={clsx("chip px-3 py-1 text-sm gap-1.5", (eff[k] ?? 0) > 0 ? "bg-indigo-soft text-indigo" : "bg-coral-soft text-coral")}>{c.pack.kpiLabel[k]} <b className="tabular-nums">{(eff[k] ?? 0) > 0 ? "+" : ""}{eff[k]}</b></span>)}
       </div>
-      <div className="mt-4 flex gap-2.5 rounded-xl bg-canvas px-4 py-3"><MessagesSquare size={16} className="text-indigo shrink-0 mt-0.5" /><p className="text-sm text-ink"><b>Nota CEO:</b> Una transformación que solo defiende el CEO todavía no es una transformación; es una intención con dueño único.<span className="block text-[11px] text-slate-400 mt-1">De CERO a CEO · Oziel Leal Montemayor</span></p></div>
+      <div className="mt-4 flex gap-2.5 rounded-xl bg-canvas px-4 py-3"><MessagesSquare size={16} className="text-indigo shrink-0 mt-0.5" /><p className="text-sm text-ink"><b>Nota CEO:</b> Una transformación que solo defiende el CEO todavía no es una transformación; es una intención con dueño único.</p></div>
       {c.seasonDone && <Link href="/ceo/carrera" className="btn-primary mt-4 inline-flex">Ver el veredicto del consejo <ArrowRight size={16} /></Link>}
     </section>
   );

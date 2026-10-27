@@ -1,6 +1,6 @@
 /**
  * Proyecto de cambio: tienes N semanas para que la organización adopte un cambio.
- * Mueves a las personas con las palancas de cambio de De CERO a CEO (Parte IX).
+ * Mueves a las personas con palancas de cambio.
  * Inspirado en la mecánica de los simuladores de gestión del cambio (fases de adopción, palancas con costo
  * en semanas, credibilidad y masa crítica). La historia, las personas y los números son de mêtis.
  *
@@ -26,7 +26,7 @@ export interface Lever {
   short: string;
   /** Cuándo conviene (pista visible). */
   when: string;
-  /** Lección del libro. */
+  /** Nota CEO de la palanca. */
   nota: string;
 }
 

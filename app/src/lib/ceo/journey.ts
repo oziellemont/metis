@@ -27,7 +27,6 @@ export const STAGES = [
   { id: "ceo", name: "Chief Executive Officer", es: "Director General" },
   { id: "global", name: "Global CEO", es: "CEO global" },
 ] as const;
-export const ARENA = { id: "arena", name: "The Executive Arena", es: "Retos entre jugadores y temporadas especiales" } as const;
 export const LAST_STAGE = STAGES.length - 1;
 export type StageId = (typeof STAGES)[number]["id"];
 
@@ -99,8 +98,6 @@ export interface Requirement {
   ok: boolean;
   /** Competencia(s) que faltan, para orientar la práctica. */
   missing?: Competency[];
-  /** La mecánica todavía no existe en la app (se construye en una fase posterior). */
-  soon?: boolean;
   /** Dónde se cumple este requisito dentro de la app. */
   href?: string;
 }

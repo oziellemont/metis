@@ -100,7 +100,6 @@ describe("Junta ante el Consejo", () => {
     const s = atStage(3);
     const req = (x: CeoState) => requirementsFor(BOARD_STAGE, x, T0).find((r) => r.id === "board")!;
     expect(req(s).ok).toBe(false);
-    expect(req(s).soon).toBeUndefined();
     expect(req(s).href).toBe("/ceo/junta");
     const after = recordBoard(s, true, T0);
     expect(req(after).ok).toBe(true);

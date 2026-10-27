@@ -4,7 +4,7 @@ import { CeoShell } from "@/components/ceo/CeoShell";
 
 export const metadata: Metadata = {
   title: { absolute: "mêtis CEO · Entrena como CEO", template: "%s · mêtis CEO" },
-  description: "Dirige una empresa simulada. Te llegan correos, WhatsApps y reportes de tu equipo durante el día; decides y ves las consecuencias. Basado en «De CERO a CEO».",
+  description: "Dirige una empresa simulada. Te llegan correos, WhatsApps y reportes de tu equipo durante el día; decides y ves las consecuencias.",
   applicationName: "mêtis CEO",
   openGraph: { title: "mêtis CEO · Entrena como CEO", description: "Tu empresa, tu equipo, tus decisiones. Todos los días.", siteName: "mêtis CEO", locale: "es_MX", type: "website" },
 };

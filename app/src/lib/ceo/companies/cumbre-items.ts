@@ -5,7 +5,7 @@
  * Reglas de redacción:
  *  - Nada de «caso de estudio» en tercera persona: te escriben a TI, con su voz y sus intereses.
  *  - Ninguna opción es tonta: todas tienen algo a favor y un costo.
- *  - `score` sólo da XP (qué tan cerca está de los principios de «De CERO a CEO»); nunca se muestra como «correcta».
+ *  - `score` sólo da XP (qué tan cerca está de los principios de dirección de mêtis); nunca se muestra como «correcta».
  */
 import type { Item } from "../types";
 

@@ -9,8 +9,8 @@ La landing anterior tenía hero animado, 3 pasos, 3 razones con visuales, precio
 
 - **Precio de $59 MXN.** Solo existe como constante (`CEO_PRICE_MXN`). No hay checkout, no hay cobro y no hay cancelación. «Cancela cuando quieras» no era verificable. Decisión: no publicar precio.
 - **«Un caso nuevo cada día».** Es correcto: los asuntos llegan dentro del horario que elige el jugador y hay modo intensivo.
-- **«De CERO a CEO».** Las Notas CEO y la bitácora citan el libro. Ahora se presenta así: «Las Notas CEO que acompañan cada caso vienen de su libro». Falta que el fundador confirme la redacción.
-- **Contacto.** `hola@metisalign.mx` se conserva porque es el único verificado.
+- **Libro.** Decisión del fundador: no se menciona en ninguna parte (app ni landing). Las frases de las Notas CEO se quedan, sin referencia.
+- **Contacto.** `hola@metis.ceo` (`CEO_CONTACT_EMAIL`). Hay que crear el buzón o redirigirlo.
 - **Páginas legales.** No existen páginas de privacidad ni de términos, así que no se enlazan.
 - **Analítica.** `track()` solo acepta una lista cerrada de eventos y solo guarda si hay sesión. No se agregó medición a la landing.
 
@@ -29,13 +29,13 @@ La landing anterior tenía hero animado, 3 pasos, 3 razones con visuales, precio
 - avisos por correo
 - Junta ante el Consejo (`/ceo/junta`, desde la etapa Chief Operating Officer)
 
-**En preparación:**
+**En preparación (no se menciona en la landing):**
 - respuestas escritas con retroalimentación (vista previa apagada)
 
 **Futuro (no construido):**
 - conversaciones abiertas
 - escenarios generados
-- The Executive Arena
+- retos entre jugadores
 - suscripción y cobro
 
 ## Reglas que cuidan las pruebas (`content.test.ts`)
@@ -53,5 +53,9 @@ La landing anterior tenía hero animado, 3 pasos, 3 razones con visuales, precio
 
 - Páginas de privacidad y términos.
 - Precio, cuando exista checkout.
-- Confirmar la redacción sobre el libro.
 - Imagen OG propia de CEO.
+
+
+## Regla de copy (decisión del fundador)
+
+Nada de «próximamente», «en preparación» ni promesas a futuro en la app ni en la landing. Lo que no existe, no se menciona. Lo vigila `src/lib/ceo/no-futuro.test.ts`.

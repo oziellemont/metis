@@ -395,7 +395,7 @@ function Outcome({ e, fresh }: { e: Entry; fresh: boolean }) {
         <div className="text-[11px] font-semibold uppercase tracking-wider text-indigo">Bitácora del CEO</div>
         <h3 className="mt-1.5 font-semibold text-ink">{it.bitacora.title}</h3>
         <p className="mt-2 text-sm text-slate-600 leading-relaxed">{it.bitacora.text}</p>
-        <div className="mt-4 flex gap-2.5 rounded-xl bg-white/80 px-4 py-3"><Lightbulb size={16} className="text-indigo shrink-0 mt-0.5" /><p className="text-sm text-ink"><b>Nota CEO:</b> {it.bitacora.nota}<span className="block text-[11px] text-slate-400 mt-1">De CERO a CEO · Oziel Leal Montemayor</span></p></div>
+        <div className="mt-4 flex gap-2.5 rounded-xl bg-white/80 px-4 py-3"><Lightbulb size={16} className="text-indigo shrink-0 mt-0.5" /><p className="text-sm text-ink"><b>Nota CEO:</b> {it.bitacora.nota}</p></div>
         {lesson && (
           <Link href={`/ceo/academy/${lesson.id}?from=${it.id}`} className="mt-4 flex items-center gap-3 rounded-xl bg-indigo text-white px-4 py-3 hover:bg-indigo-light transition-colors">
             <BookOpen size={18} />

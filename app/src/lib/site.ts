@@ -7,4 +7,6 @@
 export const SITE_URL = (process.env.NEXT_PUBLIC_APP_URL ?? "https://www.metisalign.mx").replace(/\/$/, "");
 export const CONTACT_EMAIL = "hola@metisalign.mx";
 export const DEFAULT_EMAIL_FROM = "mêtis <recordatorios@metisalign.mx>";
+/** Contacto público de mêtis CEO (landing y app de metis.ceo). */
+export const CEO_CONTACT_EMAIL = "hola@metis.ceo";
 export const CEO_URL = (process.env.NEXT_PUBLIC_CEO_URL ?? "https://www.metis.ceo").replace(/\/$/, "");

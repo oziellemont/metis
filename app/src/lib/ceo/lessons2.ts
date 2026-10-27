@@ -4,7 +4,6 @@
  */
 import type { Lesson } from "./lessons";
 
-const SRC = "De CERO a CEO · Oziel Leal Montemayor";
 
 export const MORE_LESSONS: Lesson[] = [
   // ───────────────────────────── Mentalidad · nivel 2
@@ -37,7 +36,7 @@ export const MORE_LESSONS: Lesson[] = [
         { label: "4 · Decide y avísame después", example: "Confianza casi total; revisan resultados." },
         { label: "5 · Es tuyo", example: "Ni te enteras del detalle. Te enteras del resultado." },
       ], note: "El error más común: saltar del 1 al 5 y, cuando sale mal, regresar al 1 para siempre." },
-      { kind: "text", eyebrow: "Delegar resultados, no tareas", title: "Di qué quieres lograr, no cómo hacerlo.", body: ["«Llama a estos 10 clientes» es una tarea. «Recupera a 3 de los clientes que perdimos este trimestre» es un resultado: la persona puede pensar.", "Acuerda tres cosas: qué es éxito, con qué recursos cuenta y cada cuánto lo revisan."], callout: { label: "Nota CEO", text: "Si delegas y luego corriges todo, no delegaste: tercerizaste la captura.", source: SRC } },
+      { kind: "text", eyebrow: "Delegar resultados, no tareas", title: "Di qué quieres lograr, no cómo hacerlo.", body: ["«Llama a estos 10 clientes» es una tarea. «Recupera a 3 de los clientes que perdimos este trimestre» es un resultado: la persona puede pensar.", "Acuerda tres cosas: qué es éxito, con qué recursos cuenta y cada cuánto lo revisan."], callout: { label: "Nota CEO", text: "Si delegas y luego corriges todo, no delegaste: tercerizaste la captura." } },
       { kind: "check", eyebrow: "Aplícalo", title: "El primer error del delegado", question: "Le delegaste a Ana un proyecto en nivel 3 y se equivocó en una decisión menor. ¿Qué haces?", options: [
         { text: "Regresar el proyecto al nivel 1 hasta que demuestre que puede.", why: "Castigas el error y le enseñas a no decidir." },
         { text: "Revisar juntos qué pensó, qué aprendió, y mantener el nivel 3.", correct: true, why: "El error menor es la colegiatura del criterio. Pagarla es parte de desarrollar a alguien." },
@@ -55,7 +54,7 @@ export const MORE_LESSONS: Lesson[] = [
         { tag: "▲", label: "Desempeño medio, alto potencial", body: "Puede ser el puesto equivocado o un jefe que no lo desarrolla.", details: [{ label: "Pregunta", text: "¿Qué le falta: claridad, habilidad o motivación?" }] },
         { tag: "●", label: "Bajo desempeño sostenido", body: "Después de claridad, apoyo y tiempo, la decisión justa es otra posición o salir.", details: [{ label: "Riesgo", text: "Tolerarlo castiga a los que sí cumplen." }] },
       ], note: "Ascender por desempeño pasado es premiar; ascender por potencial es invertir." },
-      { kind: "text", eyebrow: "Sucesión", title: "Si mañana no llegas, ¿quién decide?", body: ["Un líder que no tiene sucesor no es indispensable: es un riesgo para la empresa.", "Nombra 2 o 3 candidatos, dales exposición real (que presenten al consejo, que te cubran en vacaciones) y retroalimentación honesta sobre lo que les falta."], callout: { label: "Nota CEO", text: "Si no tienes 2 o 3 posibles reemplazos, estás protegiendo tu silla.", source: SRC } },
+      { kind: "text", eyebrow: "Sucesión", title: "Si mañana no llegas, ¿quién decide?", body: ["Un líder que no tiene sucesor no es indispensable: es un riesgo para la empresa.", "Nombra 2 o 3 candidatos, dales exposición real (que presenten al consejo, que te cubran en vacaciones) y retroalimentación honesta sobre lo que les falta."], callout: { label: "Nota CEO", text: "Si no tienes 2 o 3 posibles reemplazos, estás protegiendo tu silla." } },
       { kind: "check", eyebrow: "Aplícalo", title: "El ascenso que todos esperan", question: "Tu mejor ingeniero quiere ser gerente. Es brillante, pero se desespera con la gente. ¿Qué haces?", options: [
         { text: "Ascenderlo: se lo ganó.", why: "Premias el pasado y arriesgas al equipo. Ganárselo como técnico no lo prepara como líder." },
         { text: "Decirle que no es para él y seguir igual.", why: "Pierdes su motivación y probablemente a él." },
@@ -110,7 +109,7 @@ export const MORE_LESSONS: Lesson[] = [
     id: "equipos-2", title: "Juntas que deciden", part: "Equipos · Nivel 2", minutes: 4, icon: "layers",
     subtitle: "Pedir el desacuerdo, decidir con quién y cerrar con quién hace qué.",
     blocks: [
-      { kind: "text", eyebrow: "El silencio no es acuerdo", title: "Si nadie objeta, probablemente nadie se atrevió.", body: ["Antes de decidir, pregunta directo: «¿Qué podría salir mal?» o pídele a alguien que defienda la postura contraria.", "Habla al final. Si el CEO opina primero, el resto se acomoda."], callout: { label: "Nota CEO", text: "La confianza no elimina el conflicto. Lo vuelve útil.", source: SRC } },
+      { kind: "text", eyebrow: "El silencio no es acuerdo", title: "Si nadie objeta, probablemente nadie se atrevió.", body: ["Antes de decidir, pregunta directo: «¿Qué podría salir mal?» o pídele a alguien que defienda la postura contraria.", "Habla al final. Si el CEO opina primero, el resto se acomoda."], callout: { label: "Nota CEO", text: "La confianza no elimina el conflicto. Lo vuelve útil." } },
       { kind: "compare", eyebrow: "Desacuerdo y compromiso", title: "Discutir con todo, ejecutar como uno", left: { label: "Durante el debate", points: ["Todos dicen lo que piensan", "Se cuestionan ideas, no personas", "El que decide escucha"] }, right: { label: "Después de decidir", points: ["Nadie dice «yo no estaba de acuerdo» en el pasillo", "Cada quien sabe qué le toca", "Se revisa en una fecha"] }, neutral: true },
       { kind: "check", eyebrow: "Aplícalo", title: "El que calla", question: "Tu directora de finanzas no dice nada en las juntas, pero luego te manda correos con objeciones muy buenas. ¿Qué haces?", options: [
         { text: "Pedirle en privado que sus objeciones las diga en la junta, y abrirle el espacio preguntándole directo.", correct: true, why: "Sus ideas tienen valor para todos; tu trabajo es que el equipo las oiga a tiempo." },
@@ -125,7 +124,7 @@ export const MORE_LESSONS: Lesson[] = [
     subtitle: "Indicadores que adelantan contra indicadores que llegan tarde, y cómo un mal indicador corrompe la conducta.",
     blocks: [
       { kind: "compare", eyebrow: "Dos tipos de indicador", title: "El resultado llega tarde; la causa se ve antes", left: { label: "Resultado (llega tarde)", points: ["Ventas del trimestre", "Rotación anual", "Utilidad"] }, right: { label: "Causa (se ve antes)", points: ["Visitas a clientes nuevos por semana", "1 a 1 hechos este mes", "Pedidos completos a tiempo"] }, neutral: true, note: "Si solo miras resultados, siempre llegas tarde a corregir." },
-      { kind: "text", eyebrow: "Lo que mides, eso obtienes", title: "Un indicador mal diseñado enseña a hacer trampa.", body: ["Si al centro de atención telefónica lo mides por llamadas cortas, colgarán antes de resolver. Si a ventas solo la mides por volumen, venderá con descuento.", "Cada indicador necesita su contrapeso: volumen con margen, velocidad con calidad."], callout: { label: "Nota CEO", text: "Cuando todos cumplen su meta y la empresa pierde, el problema no es la gente: es el sistema de metas.", source: SRC } },
+      { kind: "text", eyebrow: "Lo que mides, eso obtienes", title: "Un indicador mal diseñado enseña a hacer trampa.", body: ["Si al centro de atención telefónica lo mides por llamadas cortas, colgarán antes de resolver. Si a ventas solo la mides por volumen, venderá con descuento.", "Cada indicador necesita su contrapeso: volumen con margen, velocidad con calidad."], callout: { label: "Nota CEO", text: "Cuando todos cumplen su meta y la empresa pierde, el problema no es la gente: es el sistema de metas." } },
       { kind: "check", eyebrow: "Aplícalo", title: "Bono por entregas a tiempo", question: "Pusiste bono por entregas a tiempo y ahora logística manda pedidos incompletos para cumplir la fecha. ¿Qué cambias?", options: [
         { text: "Quitar el bono.", why: "El indicador era bueno; le faltaba contrapeso." },
         { text: "Medir «pedido completo y a tiempo» como un solo indicador.", correct: true, why: "Un indicador con contrapeso cierra la puerta a cumplir de mentiritas." },
@@ -175,7 +174,7 @@ export const MORE_LESSONS: Lesson[] = [
     id: "cultura-2", title: "Cuando el que falla es tu estrella", part: "Cultura · Nivel 2", minutes: 4, icon: "flame",
     subtitle: "La consistencia es la cultura: lo que le perdonas al mejor es lo que todos aprenden.",
     blocks: [
-      { kind: "text", eyebrow: "La prueba real", title: "Los valores se prueban con quien más te cuesta perder.", body: ["Corregir al nuevo es fácil. Corregir a quien vende el 30% es donde el equipo descubre si los valores son reales.", "Cada excepción que haces es una regla nueva que todos leen."], callout: { label: "Nota CEO", text: "La ética de una empresa no se mide por sus valores escritos, sino por lo que decide no tolerar cuando hay dinero en juego.", source: SRC } },
+      { kind: "text", eyebrow: "La prueba real", title: "Los valores se prueban con quien más te cuesta perder.", body: ["Corregir al nuevo es fácil. Corregir a quien vende el 30% es donde el equipo descubre si los valores son reales.", "Cada excepción que haces es una regla nueva que todos leen."], callout: { label: "Nota CEO", text: "La ética de una empresa no se mide por sus valores escritos, sino por lo que decide no tolerar cuando hay dinero en juego." } },
       { kind: "compare", eyebrow: "Dos costos", title: "Lo que pierdes en cada caso", left: { label: "Si lo toleras", points: ["El equipo aprende que hay intocables", "Los buenos se van primero", "Tu palabra pierde valor"] }, right: { label: "Si lo corriges", points: ["Riesgo de perder ventas o al talento", "Conversación incómoda", "Puede irse"] }, neutral: true, note: "El costo de corregir se ve hoy. El de tolerar se paga durante años." },
       { kind: "check", eyebrow: "Aplícalo", title: "La comisión inflada", question: "Tu mejor vendedor reportó una venta en diciembre que en realidad cerró en enero, para cobrar el bono. ¿Qué haces?", options: [
         { text: "Dejarlo pasar; la venta sí existió.", why: "Le enseñas a él y a todos que la regla depende de quién eres." },
@@ -189,7 +188,7 @@ export const MORE_LESSONS: Lesson[] = [
     id: "finanzas-2", title: "La empresa vive de caja", part: "Finanzas · Nivel 2", minutes: 4, icon: "coins",
     subtitle: "Utilidad no es dinero en el banco: capital de trabajo, cobranza e inventario.",
     blocks: [
-      { kind: "text", eyebrow: "La trampa del crecimiento", title: "Muchas empresas quiebran mientras crecen.", body: ["Vendes más, pero cobras a 90 días y pagas a 30. Cada venta nueva te pide adelantar dinero.", "La utilidad dice si el negocio es bueno. La caja dice si llegas al mes que viene."], callout: { label: "Nota CEO", text: "La utilidad es una opinión; la caja es un hecho.", source: SRC } },
+      { kind: "text", eyebrow: "La trampa del crecimiento", title: "Muchas empresas quiebran mientras crecen.", body: ["Vendes más, pero cobras a 90 días y pagas a 30. Cada venta nueva te pide adelantar dinero.", "La utilidad dice si el negocio es bueno. La caja dice si llegas al mes que viene."], callout: { label: "Nota CEO", text: "La utilidad es una opinión; la caja es un hecho." } },
       { kind: "reveal", eyebrow: "Tres palancas de caja", title: "Dónde se esconde el dinero", items: [
         { tag: "1", label: "Cobranza", body: "Cada día que tardas en cobrar es dinero que financias a tu cliente." },
         { tag: "2", label: "Inventario", body: "Producto en el almacén es dinero detenido. Y a veces caduca." },
@@ -225,7 +224,7 @@ export const MORE_LESSONS: Lesson[] = [
     id: "estrategia-2", title: "Decir que no", part: "Estrategia · Nivel 2", minutes: 4, icon: "target",
     subtitle: "Elegir clientes, productos y mercados: la estrategia también es lo que dejas de hacer.",
     blocks: [
-      { kind: "text", eyebrow: "Clientes que cuestan", title: "No todos los clientes te hacen ganar.", body: ["Cuando sumas descuentos, devoluciones, crédito y el tiempo de tu equipo, hay clientes que te cuestan dinero.", "Decirles que no (o cambiar las condiciones) libera recursos para los que sí construyen tu futuro."], callout: { label: "Nota CEO", text: "La estrategia no se demuestra por lo que apruebas, sino por lo que tienes el carácter de rechazar.", source: SRC } },
+      { kind: "text", eyebrow: "Clientes que cuestan", title: "No todos los clientes te hacen ganar.", body: ["Cuando sumas descuentos, devoluciones, crédito y el tiempo de tu equipo, hay clientes que te cuestan dinero.", "Decirles que no (o cambiar las condiciones) libera recursos para los que sí construyen tu futuro."], callout: { label: "Nota CEO", text: "La estrategia no se demuestra por lo que apruebas, sino por lo que tienes el carácter de rechazar." } },
       { kind: "compare", eyebrow: "Foco contra dispersión", title: "Diez prioridades son ninguna", left: { label: "Disperso", points: ["Cada área con su lista", "Todo es urgente", "Nada termina"] }, right: { label: "Enfocado", points: ["3 prioridades de empresa", "Cada área sabe cómo contribuye", "Lo demás espera o se cancela"] } },
       { kind: "check", eyebrow: "Aplícalo", title: "El producto de 20 años", question: "El producto con el que nació la empresa hoy pierde dinero, pero el fundador lo adora. ¿Qué propones?", options: [
         { text: "Mantenerlo por respeto a la historia.", why: "La historia no paga la nómina." },
