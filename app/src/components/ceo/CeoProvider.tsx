@@ -9,6 +9,7 @@ import { supabaseBrowser } from "@/lib/supabase/client";
 import { advance as advanceFn, decide as decideFn, entries as entriesFn, healthOf, kpis as kpisFn, levelOf, migrate, newState, nowOf, packOf, pinArrived, rulesOf, seasonDay, seasonDoneOf, skipToNext, streakOf, switchCompany as switchFn, verdictOf, xpOf, type Verdict } from "@/lib/ceo/engine";
 import { aliasOf, answerDilemma as answerDilemmaFn, casesProgress, changeOpen, changeSimOf, dilemmaOfDay } from "@/lib/ceo/engine";
 import type { Dilemma } from "@/lib/ceo/dilemmas";
+import { appEnvOf, testToolsVisible } from "@/lib/ceo/flags";
 import { closeChange as closeChangeFn, playLever as playLeverFn, relationsOf, startChange as startChangeFn } from "@/lib/ceo/relations";
 import type { ChangeSim } from "@/lib/ceo/change";
 import type { CastId, CeoState, CompanyPack, Entry, Kpis, LeverId, Settings } from "@/lib/ceo/types";
@@ -62,6 +63,8 @@ interface Ctx {
   answerDilemma: (id: string, option: number) => void;
   updateSettings: (p: Partial<Settings> & { name?: string; alias?: string }) => void;
   skipNext: () => void;
+  /** Mostrar herramientas de prueba (adelantar reloj). Ver lib/ceo/flags.ts. */
+  testTools: boolean;
   reset: () => void;
 }
 
@@ -80,12 +83,20 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
   const [synced, setSynced] = useState(false);
   const [toast, setToast] = useState<Toast | null>(null);
   const seen = useRef<Set<string> | null>(null);
+  const [testTools, setTestTools] = useState(true);
 
   // cargar
   useEffect(() => {
     try {
       const raw = localStorage.getItem(KEY);
       if (raw) setS(migrate(JSON.parse(raw)));
+    } catch { /* ignore */ }
+    try {
+      const q = new URLSearchParams(window.location.search).get("prueba");
+      if (q === "1") localStorage.setItem(KEY + ":prueba", "1");
+      if (q === "0") localStorage.removeItem(KEY + ":prueba");
+      const env = appEnvOf(process.env.NEXT_PUBLIC_VERCEL_ENV, process.env.NODE_ENV);
+      setTestTools(testToolsVisible(env, process.env.NEXT_PUBLIC_CEO_TEST_TOOLS, localStorage.getItem(KEY + ":prueba") === "1"));
     } catch { /* ignore */ }
     setReady(true);
     const t = setInterval(() => setTick(Date.now()), 10_000);
@@ -201,7 +212,7 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
   const value: Ctx = {
     ready, s, now, pack, rules: rulesOf(s.tier), verdict, entries, inbox, pending, kpis: k, health: healthOf(k), xp, level: levelOf(xp), streak, day: seasonDay(s, now), seasonDone, nextArrival,
     relations, changeOpen: changeOpen(s, now), cases: casesProgress(s, now, entries), change, startChange, playLever, closeChange,
-    user, synced, toast, dismissToast: () => setToast(null), start, advance, switchCompany, decide, markRead, completeLesson, dilemma, answerDilemma, updateSettings, skipNext, reset,
+    user, synced, toast, dismissToast: () => setToast(null), start, advance, switchCompany, decide, markRead, completeLesson, dilemma, answerDilemma, updateSettings, skipNext, testTools, reset,
   };
   return <C.Provider value={value}>{children}</C.Provider>;
 }

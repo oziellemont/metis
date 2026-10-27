@@ -94,7 +94,7 @@ export function Today() {
           {!c.seasonDone && c.nextArrival && (
             <div className="mt-4 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-dashed border-slate-200 px-4 py-2.5 text-xs text-slate-500">
               <span className="inline-flex items-center gap-1.5"><Hourglass size={12} /> Siguiente asunto: {clock(c.nextArrival)} ({until(c.nextArrival, c.now)})</span>
-              <button onClick={c.skipNext} className="inline-flex items-center gap-1 font-medium text-indigo hover:underline"><FastForward size={12} /> Adelantar el reloj (modo prueba)</button>
+              {c.testTools && <button onClick={c.skipNext} className="inline-flex items-center gap-1 font-medium text-indigo hover:underline"><FastForward size={12} /> Adelantar el reloj (modo prueba)</button>}
             </div>
           )}
         </section>
