@@ -170,11 +170,8 @@ const NODE: Record<StageState, string> = {
   siguiente: "bg-white text-indigo ring-2 ring-indigo",
   bloqueada: "bg-white text-slate-400 ring-1 ring-slate-200",
 };
-const BADGE: Record<StageState, string> = {
-  inicio: "bg-mint-soft text-sob",
-  siguiente: "bg-indigo-soft text-indigo",
-  bloqueada: "bg-slate-100 text-slate-500",
-};
+/** Solo el punto de partida lleva etiqueta visible; el resto se entiende con el número y el candado. */
+const START_BADGE = "bg-mint-soft text-sob";
 
 export function PathSection() {
   return (
@@ -195,7 +192,7 @@ export function PathSection() {
                   <span className="text-[12px] font-semibold tabular-nums text-slate-500">Etapa {s.n}</span>
                   <h3 className={"mt-0.5 text-[16px] leading-snug font-semibold " + (s.state === "bloqueada" ? "text-ink/80" : "text-ink")}>{s.name}</h3>
                   <p className="mt-2 text-[14px] text-ink">{s.learn}</p>
-                  <span className={"chip mt-3 " + BADGE[s.state]}>{PATH.stateLabel[s.state]}</span>
+                  {s.state === "inicio" ? <span className={"chip mt-3 " + START_BADGE}>{PATH.stateLabel.inicio}</span> : <span className="sr-only">{PATH.stateLabel[s.state]}</span>}
                 </div>
               </li>
             ))}

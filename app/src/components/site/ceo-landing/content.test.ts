@@ -79,6 +79,10 @@ describe("landing de MÊTIS CEO", () => {
     expect(st[1]).toBe("siguiente");
     expect(st.slice(2).every((x) => x === "bloqueada")).toBe(true);
     expect(C.PATH.stages.map((s) => s.n)).toEqual(["01", "02", "03", "04", "05", "06"]);
+    // Solo «Aquí empiezas» es visible; «Siguiente objetivo» y «Por desbloquear» quedan para lectores de pantalla.
+    const sec = readFileSync(join(DIR, "Sections.tsx"), "utf8");
+    expect(sec).toContain('<span className="sr-only">{PATH.stateLabel[s.state]}</span>');
+    expect(sec).not.toMatch(/chip mt-3 " \+ BADGE\[/);
     // Después de Global CEO sigue The Executive Arena (lo que la app llama exigencia Legendaria), sin fechas.
     expect(C.PATH.beyond.t).toBe("Después de Global CEO: The Executive Arena");
     expect(C.PATH.beyond.d).not.toMatch(/legendario|pronto|20\d\d/i);
