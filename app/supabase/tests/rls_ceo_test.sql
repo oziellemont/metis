@@ -48,6 +48,41 @@ do $$ begin
   exception when insufficient_privilege then null; end;
 end $$;
 
+-- Bitácora de importaciones (0017): solo el servidor escribe; cada quien lee las suyas.
+reset role; set role service_role;
+insert into ceo.career_imports (import_id, user_id, mode, legacy_company_id, rules_version, catalog_version, replaced_state)
+  values ('11111111-1111-4111-8111-111111111111', '00000000-0000-4000-8000-00000000000a', 'reemplazar', 'cumbre', 1, 1, '{"company":"forja"}');
+do $$ begin
+  begin insert into ceo.career_imports (import_id, user_id, mode, legacy_company_id, rules_version, catalog_version)
+    values ('11111111-1111-4111-8111-111111111111', '00000000-0000-4000-8000-00000000000a', 'vacia', 'cumbre', 1, 1);
+    raise exception 'DUPLICADO: el mismo import_id entró dos veces';
+  exception when unique_violation then null; end;
+  begin insert into ceo.career_imports (import_id, user_id, mode, legacy_company_id, rules_version, catalog_version)
+    values (gen_random_uuid(), '00000000-0000-4000-8000-00000000000a', 'fusionar', 'cumbre', 1, 1);
+    raise exception 'acepto un modo inventado';
+  exception when check_violation then null; end;
+end $$;
+reset role; set role authenticated;
+select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-00000000000b', false);
+do $$ begin
+  if (select count(*) from ceo.career_imports) <> 0 then raise exception 'FUGA: B ve importaciones de A'; end if;
+  begin insert into ceo.career_imports (import_id, user_id, mode, legacy_company_id, rules_version, catalog_version)
+    values (gen_random_uuid(), '00000000-0000-4000-8000-00000000000b', 'vacia', 'cumbre', 1, 1);
+    raise exception 'FUGA: un navegador pudo escribir en la bitácora';
+  exception when insufficient_privilege then null; end;
+end $$;
+select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-00000000000a', false);
+do $$ begin
+  if (select count(*) from ceo.career_imports) <> 1 then raise exception 'A no ve su propia importación'; end if;
+  begin delete from ceo.career_imports; raise exception 'A pudo borrar su respaldo';
+  exception when insufficient_privilege then null; end;
+end $$;
+reset role; set role anon;
+do $$ begin
+  begin perform 1 from ceo.career_imports; raise exception 'FUGA: anon lee importaciones';
+  exception when insufficient_privilege then null; end;
+end $$;
+
 -- A sigue intacto
 reset role; set role authenticated;
 select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-00000000000a', false);

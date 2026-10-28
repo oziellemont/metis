@@ -17,7 +17,7 @@ describe.skipIf(!URL_)("esquema ceo en Postgres (RLS)", () => {
     sql(URL_, `create database ${name}`);
     const db = URL_.replace(/\/[^/?]*(\?|$)/, `/${name}$1`);
     try {
-      for (const f of ["tests/shim_supabase.sql", "migrations/0013_ceo.sql", "migrations/0014_ceo_correos.sql", "migrations/0015_ceo_fase0.sql", "migrations/0016_ceo_perfil_catalogo.sql", "migrations/0016_ceo_perfil_catalogo.sql"]) run(db, join(dir, f));
+      for (const f of ["tests/shim_supabase.sql", "migrations/0013_ceo.sql", "migrations/0014_ceo_correos.sql", "migrations/0015_ceo_fase0.sql", "migrations/0016_ceo_perfil_catalogo.sql", "migrations/0016_ceo_perfil_catalogo.sql", "migrations/0017_ceo_importaciones.sql", "migrations/0017_ceo_importaciones.sql"]) run(db, join(dir, f));
       expect(run(db, join(dir, "tests/rls_ceo_test.sql"))).toContain("RLS OK");
     } finally {
       sql(URL_, `drop database if exists ${name} with (force)`);

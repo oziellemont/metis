@@ -8,6 +8,7 @@ import { Logo } from "@/components/ui/Logo";
 import { useCeo } from "./CeoProvider";
 import { Flame } from "./ui";
 import { JourneyMini } from "./Journey";
+import { ImportPrompt } from "./ImportPrompt";
 
 const NAV = [
   { href: "/ceo", label: "Hoy", Icon: Home },
@@ -28,9 +29,11 @@ export function CeoShell({ children }: { children: React.ReactNode }) {
   const onboarding = path === "/ceo/empezar";
 
   useEffect(() => {
-    if (c.ready && !c.s.startedAt && !onboarding) router.replace("/ceo/empezar");
-  }, [c.ready, c.s.startedAt, onboarding, router]);
+    if (c.ready && !c.s.startedAt && !onboarding && !c.importFlow) router.replace("/ceo/empezar");
+  }, [c.ready, c.s.startedAt, onboarding, router, c.importFlow]);
 
+  // Antes que nada: si hay una carrera del navegador por decidir, se pregunta (adenda v3.2 §3).
+  if (c.ready && c.importFlow) return <ImportPrompt flow={c.importFlow} />;
   if (onboarding) return <>{children}</>;
   // Flujo de experiencia para usuarios actuales: pantalla completa, sin menú.
   if (path === "/ceo/experiencia" && c.ready && c.s.startedAt) return <>{children}</>;
