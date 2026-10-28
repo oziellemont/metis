@@ -87,6 +87,8 @@ export interface Decision { option: string; at: number; written?: Written }
 export interface CareerRun {
   company: string;
   tier: number;
+  /** Versión de reglas con que se jugó esa empresa (sin dato = legacy v1). */
+  rulesVersion?: number;
   startedAt: number;
   endedAt: number;
   kpis: Kpis;
@@ -147,6 +149,8 @@ export interface CeoState {
   company: string;
   /** Exigencia de esta empresa: 0 = primera; sube con cada ascenso (+2 en modo Legendario). */
   tier: number;
+  /** Versión de reglas de la temporada en curso. Se congela al empezar cada empresa; sin dato = legacy v1. */
+  rulesVersion?: number;
   legendary?: boolean;
   /** Empresas que ya cerraste (aprobadas o no). */
   career: CareerRun[];
@@ -198,7 +202,7 @@ export interface CareerOrigin {
 }
 
 export type CrisisRating = "contenida" | "danos" | "rebaso";
-export interface CrisisRun { company: string; startedAt: number; tier: number; at: number; rating: CrisisRating; picks: Record<string, string> }
+export interface CrisisRun { company: string; startedAt: number; tier: number; rulesVersion?: number; at: number; rating: CrisisRating; picks: Record<string, string> }
 
 /** Executive Journey: tu cargo. Cambia solo con nombramientos (ver journey.ts). */
 export interface JourneyState {

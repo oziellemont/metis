@@ -10,7 +10,7 @@
  * Lógica pura y determinista (sin reloj, sin azar). No toca los KPI de la temporada ni las partidas
  * doradas: el resultado se guarda aparte (`s.crises`) y solo suma XP.
  */
-import { CRISIS_XP, KPI_KEYS, seasonDay, seasonDoneOf, nowOf } from "./engine";
+import { CRISIS_XP, KPI_KEYS, rulesVersionOf, seasonDay, seasonDoneOf, nowOf } from "./engine";
 import type { CeoState, CrisisRating, KpiKey, Kpis } from "./types";
 
 /** Día de la temporada a partir del cual el consejo puede convocar. */
@@ -173,7 +173,7 @@ export function recordCrisis(s: CeoState, r: { rating: CrisisRating; picks: Cris
   if (!s.startedAt || crisisOfRun(s)) return s;
   const picks: Record<string, string> = {};
   for (const [k, v] of Object.entries(r.picks)) if (typeof v === "string") picks[k] = v;
-  return { ...s, crises: [...(s.crises ?? []), { company: s.company, startedAt: s.startedAt, tier: s.tier, at: now, rating: r.rating, picks }] };
+  return { ...s, crises: [...(s.crises ?? []), { company: s.company, startedAt: s.startedAt, tier: s.tier, rulesVersion: rulesVersionOf(s), at: now, rating: r.rating, picks }] };
 }
 
 /** Sustituye {chair} y {board}. */

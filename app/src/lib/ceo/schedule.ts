@@ -14,7 +14,7 @@
  *  welcome       bienvenida (si no salió al conectar la cuenta)
  */
 import { STAGES, stageOf } from "./journey";
-import { DAY, H, casesDoneOf, dayKey, entries, healthOf, kpis, levelOf, localMidnight, packOf, profileOf, rulesOf, seasonDay, seasonDoneOf, streakOf, verdictOf, xpOf } from "./engine";
+import { DAY, H, casesDoneOf, dayKey, entries, healthOf, kpis, levelOf, localMidnight, packOf, profileOf, rulesFor, seasonDay, seasonDoneOf, streakOf, verdictOf, xpOf } from "./engine";
 import { LESSONS, rankOf } from "./lessons";
 import type { CeoState, Entry, Kpis } from "./types";
 
@@ -108,7 +108,7 @@ export function jobsFor(s: CeoState, sent: Sent, real: number, opts: { plan?: bo
     jobs.push({
       key: digestKey, kind: "digest", ...(opts.plan && !morning && digestAt > real + 5 * 60_000 ? { at: digestAt } : {}),
       data: {
-        day, seasonDays: pack.season.days, kpis: k, passLine: rulesOf(s.tier).passLine,
+        day, seasonDays: pack.season.days, kpis: k, passLine: rulesFor(s).passLine,
         kpiDelta: Object.fromEntries((Object.keys(k) as (keyof Kpis)[]).map((x) => [x, k[x] - pack.kpiStart[x]])) as unknown as Kpis,
         health: healthOf(k), streak: streakOf(s, now).days, xp, level: STAGES[stageOf(s)].name,
         pending, expiredYesterday: es.filter((e) => e.status === "vencido" && e.deadline >= yStart && e.deadline < yEnd),

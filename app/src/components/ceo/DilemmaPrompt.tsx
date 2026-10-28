@@ -5,7 +5,7 @@
  */
 import { useEffect, useRef, useState } from "react";
 import { Clock, Users, X } from "lucide-react";
-import { XP } from "@/lib/ceo/engine";
+import { careerRulesVersionOf, ruleSet } from "@/lib/ceo/engine";
 import { DILEMMA_SNOOZE, dilemmaPromptDue, snoozeKey } from "@/lib/ceo/today";
 import { DilemmaView } from "./DilemmaCard";
 import { useCeo } from "./CeoProvider";
@@ -39,6 +39,7 @@ export function DilemmaPrompt() {
   if (!open || !today) return null;
   const { d } = today;
   const picked = c.s.dilemmas?.[d.id]?.option ?? justPicked;
+  const XP = ruleSet(careerRulesVersionOf(c.s)).xp;
   const gained = picked !== null ? XP.dilemma + d.options[picked].score * XP.dilemmaPoint : 0;
   const later = () => {
     const until = c.now + DILEMMA_SNOOZE;

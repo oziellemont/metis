@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import clsx from "clsx";
 import { ArrowRight, BookOpen, Check, Lightbulb, Users } from "lucide-react";
 import { STAGE_LABEL, THEMES, bestOf, type Dilemma } from "@/lib/ceo/dilemmas";
-import { XP, rand01 } from "@/lib/ceo/engine";
+import { careerRulesVersionOf, rand01, ruleSet } from "@/lib/ceo/engine";
 import { lessonById } from "@/lib/ceo/lessons";
 import { useCeo } from "./CeoProvider";
 
@@ -68,6 +68,7 @@ export function DilemmaCard() {
   if (!today) return null;
   const { d, done } = today;
   const picked = c.s.dilemmas?.[d.id]?.option ?? justPicked;
+  const XP = ruleSet(careerRulesVersionOf(c.s)).xp;
   const gained = picked !== null ? XP.dilemma + d.options[picked].score * XP.dilemmaPoint : 0;
   return (
     <section className="card p-5 sm:p-6">

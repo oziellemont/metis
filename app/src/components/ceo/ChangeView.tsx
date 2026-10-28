@@ -10,7 +10,7 @@ import clsx from "clsx";
 import { ArrowRight, Check, Ear, Flag, Lightbulb, Lock, Megaphone, MessagesSquare, Award, FlaskConical, GraduationCap, Hourglass, LineChart, Coins, Users2, Footprints, ShieldCheck } from "lucide-react";
 import { ADOPT, GOAL, LEVERS, canUse, changeEffect, leverById, startValue, weeksFor, type ChangeSim } from "@/lib/ceo/change";
 import { firstName, personOf } from "@/lib/ceo/cast";
-import { scaled } from "@/lib/ceo/engine";
+import { rulesVersionOf, scaled } from "@/lib/ceo/engine";
 import { celebrateOnce } from "@/lib/ceo/celebrate";
 import { moodOf } from "@/lib/ceo/relations";
 import type { CastId, KpiKey, LeverId, Stakeholder } from "@/lib/ceo/types";
@@ -296,7 +296,7 @@ function Meter({ label, value, pct, goal, icon }: { label: string; value: string
 function Result({ sim, closed }: { sim: ChangeSim; closed: boolean }) {
   const c = useCeo();
   useEffect(() => { if (sim.ok) celebrateOnce(`change:${c.pack.id}:${c.s.startedAt}:${(c.s.career ?? []).length}`, "change"); }, [sim.ok, c.pack.id, c.s.startedAt, c.s.career]);
-  const eff = scaled(changeEffect(sim), c.s.tier);
+  const eff = scaled(changeEffect(sim), c.s.tier, rulesVersionOf(c.s));
   return (
     <section className={clsx("card p-5 sm:p-6 academy-in", sim.ok ? "border-indigo/30" : "border-coral/20")}>
       <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">{closed ? "Presentaste al consejo" : "Se acabó el tiempo"}</div>
