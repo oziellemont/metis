@@ -40,7 +40,7 @@ export const NAV = [
   { href: "#experiencia", label: "La experiencia" },
   { href: "#camino", label: "Tu camino" },
 ] as const;
-export const LOGIN_HREF = "/login?next=/ceo";
+export const LOGIN_HREF = "/entrar";
 export const START_HREF = "/ceo/empezar";
 
 /* ---------------- Hero ---------------- */
@@ -204,7 +204,7 @@ export const HOW = {
   ],
   rhythm: [
     { t: "Tu horario", d: "Eliges desde qué hora y hasta qué hora te escribe tu equipo. Si prefieres, recibes todo el día de una vez." },
-    { t: "En el celular o la computadora", d: "Funciona en el navegador. Si conectas tu correo, tu avance te sigue." },
+    { t: "En el celular o la computadora", d: "Funciona en el navegador. Con tu cuenta, tu avance te sigue a cualquier dispositivo." },
     { t: "Una racha que ayuda", d: "Sirve para crear el hábito, no para presionarte. Si un día no entras, algunos asuntos vencen, como en cualquier empresa." },
   ],
 };
@@ -315,7 +315,7 @@ export const FAQ: { q: string; a: string }[] = [
   { q: "¿Necesito experiencia en dirección?", a: "No. Al empezar te preguntamos por tu experiencia para ajustar la ayuda y el orden de los casos. Si ya diriges, puedes empezar con más exigencia." },
   { q: "¿Cuánto tiempo necesito al día?", a: "Unos minutos. Cada asunto se lee y se decide en poco tiempo, y tú eliges el horario en que llegan." },
   { q: "¿En qué se diferencia de un curso?", a: "No hay respuestas correctas que memorizar. Decides, la empresa responde y después entiendes por qué. Las lecciones llegan cuando ya viviste el caso." },
-  { q: "¿Tengo que crear una cuenta o instalar algo?", a: "No. Funciona en el navegador del celular o la computadora. Si conectas tu correo, tu avance te sigue a cualquier dispositivo." },
+  { q: "¿Tengo que crear una cuenta o instalar algo?", a: "No instalas nada: funciona en el navegador del celular o la computadora. Para probar una decisión no necesitas cuenta. Para dirigir tu empresa creas una con Google o con tu correo, y tu avance te sigue a cualquier dispositivo." },
   { q: "¿Tiene costo?", a: "Puedes empezar hoy, sin tarjeta." },
 ];
 

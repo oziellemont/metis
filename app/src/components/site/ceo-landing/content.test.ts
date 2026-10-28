@@ -133,7 +133,7 @@ describe("landing de MÊTIS CEO", () => {
     expect(C.FAQ.length).toBeLessThanOrEqual(5);
     expect(C.FAQ.map((f) => f.q).join(" ")).toMatch(/experiencia[\s\S]*tiempo[\s\S]*cuenta[\s\S]*costo/i);
     expect(C.START_HREF).toBe("/ceo/empezar");
-    expect(C.LOGIN_HREF.startsWith("/login")).toBe(true);
+    expect(C.LOGIN_HREF).toBe("/entrar");
     expect(COMPANIES.length).toBe(3); // el copy dice «Tres empresas»
   });
 
