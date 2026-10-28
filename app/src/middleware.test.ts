@@ -45,11 +45,11 @@ describe("metis.ceo sin sesión", () => {
     expect(loc(await call("https://metis.ceo/login?next=/ceo/bandeja"))).toBe("/entrar?next=%2Fceo%2Fbandeja");
     expect(loc(await call("https://metis.ceo/login?next=https://malo.com"))).toBe("/entrar");
   });
-  it("en producción no exige cuenta hasta prender CEO_REQUIRE_LOGIN=1", async () => {
+  it("en producción exige cuenta sin configurar nada", async () => {
     process.env.VERCEL_ENV = "production";
-    expect(loc(await call("https://metis.ceo/bandeja"))).toBeNull();
-    process.env.CEO_REQUIRE_LOGIN = "1";
     expect(loc(await call("https://metis.ceo/bandeja"))).toBe("/entrar?next=%2Fbandeja");
+    expect(loc(await call("https://www.metis.ceo/"))).toBeNull();
+    expect(loc(await call("https://metis.ceo/entrar"))).toBeNull();
   });
   it("interruptor de emergencia CEO_REQUIRE_LOGIN=0 deja jugar sin cuenta", async () => {
     process.env.CEO_REQUIRE_LOGIN = "0";
