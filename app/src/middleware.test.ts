@@ -21,7 +21,7 @@ const call = (url: string) => middleware(new NextRequest(url, { headers: { host:
 const loc = (r: Response) => { const l = r.headers.get("location"); return l ? new URL(l).pathname + new URL(l).search : null; };
 const rewrittenTo = (r: Response) => { const h = r.headers.get("x-middleware-rewrite"); return h ? new URL(h).pathname : null; };
 
-beforeEach(() => { currentUser = null; memberships = []; delete process.env.CEO_REQUIRE_LOGIN; });
+beforeEach(() => { currentUser = null; memberships = []; delete process.env.CEO_REQUIRE_LOGIN; delete process.env.VERCEL_ENV; });
 
 describe("metis.ceo sin sesión", () => {
   it("la landing sigue pública", async () => {
@@ -44,6 +44,12 @@ describe("metis.ceo sin sesión", () => {
     expect(loc(await call("https://metis.ceo/login"))).toBe("/entrar");
     expect(loc(await call("https://metis.ceo/login?next=/ceo/bandeja"))).toBe("/entrar?next=%2Fceo%2Fbandeja");
     expect(loc(await call("https://metis.ceo/login?next=https://malo.com"))).toBe("/entrar");
+  });
+  it("en producción no exige cuenta hasta prender CEO_REQUIRE_LOGIN=1", async () => {
+    process.env.VERCEL_ENV = "production";
+    expect(loc(await call("https://metis.ceo/bandeja"))).toBeNull();
+    process.env.CEO_REQUIRE_LOGIN = "1";
+    expect(loc(await call("https://metis.ceo/bandeja"))).toBe("/entrar?next=%2Fbandeja");
   });
   it("interruptor de emergencia CEO_REQUIRE_LOGIN=0 deja jugar sin cuenta", async () => {
     process.env.CEO_REQUIRE_LOGIN = "0";

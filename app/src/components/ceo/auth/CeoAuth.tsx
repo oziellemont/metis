@@ -10,7 +10,7 @@ import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import clsx from "clsx";
 import { Logo } from "@/components/ui/Logo";
 import { ceoDefaultMode, ceoSafeNext, CEO_FIRST_DAY, isValidEmail, passwordProblem, ceoAuthMessage } from "@/lib/ceo/auth-routes";
-import { ceoSendPasswordReset, ceoSignInWithGoogle, ceoSignInWithPassword, ceoSignUp, ceoUpdatePassword } from "@/lib/ceo/auth-client";
+import { ceoProviders, ceoSendPasswordReset, ceoSignInWithGoogle, ceoSignInWithPassword, ceoSignUp, ceoUpdatePassword } from "@/lib/ceo/auth-client";
 
 type Mode = "entrar" | "crear" | "olvide";
 type Sent = null | { kind: "confirmar" | "recuperar"; email: string };
@@ -68,10 +68,12 @@ function AuthScreen() {
   const [busy, setBusy] = useState<null | "google" | "form">(null);
   const [err, setErr] = useState(() => (sp.get("error") ? ceoAuthMessage(sp.get("error")) : ""));
   const [sent, setSent] = useState<Sent>(null);
+  const [google, setGoogle] = useState(false);
+  useEffect(() => { let on = true; ceoProviders().then((p) => on && setGoogle(p.google)); return () => { on = false; }; }, []);
 
   useEffect(() => { setErr((e) => (sp.get("error") && e ? e : "")); }, [mode, sp]);
 
-  const google = async () => {
+  const withGoogle = async () => {
     setBusy("google"); setErr("");
     const r = await ceoSignInWithGoogle(next);
     if (!r.ok) { setErr(r.error); setBusy(null); }
@@ -137,10 +139,14 @@ function AuthScreen() {
               </button>
             ))}
           </div>
-          <button type="button" onClick={google} disabled={busy !== null} className="btn mt-5 w-full justify-center border border-slate-200 bg-white text-ink hover:bg-slate-50 !py-2.5">
-            <GoogleMark /> {busy === "google" ? "Conectando…" : "Continuar con Google"}
-          </button>
-          <div className="my-5 flex items-center gap-3 text-[12px] text-slate-400"><span className="h-px flex-1 bg-slate-200" />o con tu correo<span className="h-px flex-1 bg-slate-200" /></div>
+          {google ? (
+            <>
+              <button type="button" onClick={withGoogle} disabled={busy !== null} className="btn mt-5 w-full justify-center border border-slate-200 bg-white text-ink hover:bg-slate-50 !py-2.5">
+                <GoogleMark /> {busy === "google" ? "Conectando…" : "Continuar con Google"}
+              </button>
+              <div className="my-5 flex items-center gap-3 text-[12px] text-slate-400"><span className="h-px flex-1 bg-slate-200" />o con tu correo<span className="h-px flex-1 bg-slate-200" /></div>
+            </>
+          ) : <div className="h-5" />}
         </>
       )}
 

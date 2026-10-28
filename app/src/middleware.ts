@@ -92,7 +92,7 @@ export async function middleware(req: NextRequest) {
   const user = await sb.auth.getUser().then((r) => r.data.user, () => null);
 
   // mêtis CEO: todo el simulador exige sesión; quien ya entró no vuelve a ver /entrar.
-  const gate = ceoLoginRequired(process.env.CEO_REQUIRE_LOGIN) ? ceoGate(internal, Boolean(user)) : "allow";
+  const gate = ceoLoginRequired(process.env.CEO_REQUIRE_LOGIN, process.env.VERCEL_ENV) ? ceoGate(internal, Boolean(user)) : "allow";
   const keep = (to: NextResponse) => { res.cookies.getAll().forEach((c) => to.cookies.set(c)); return to; };
   if (gate === "login") {
     const login = req.nextUrl.clone();

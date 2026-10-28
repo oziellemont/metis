@@ -44,10 +44,12 @@ describe("acceso a mêtis CEO", () => {
     expect(isCeoDestination("/unirme")).toBe(false);
   });
 
-  it("interruptor de emergencia: solo CEO_REQUIRE_LOGIN=0 lo apaga", () => {
+  it("interruptor CEO_REQUIRE_LOGIN: en producción se prende a mano", () => {
     expect(ceoLoginRequired(undefined)).toBe(true);
-    expect(ceoLoginRequired("1")).toBe(true);
-    expect(ceoLoginRequired(" 0 ")).toBe(false);
+    expect(ceoLoginRequired(undefined, "preview")).toBe(true);
+    expect(ceoLoginRequired(undefined, "production")).toBe(false);
+    expect(ceoLoginRequired("1", "production")).toBe(true);
+    expect(ceoLoginRequired(" 0 ", "preview")).toBe(false);
   });
 });
 

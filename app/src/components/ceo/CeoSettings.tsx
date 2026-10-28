@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Bell, Cloud, LogOut, Clock, FastForward, Mail, MessageCircle, RotateCcw, Save, Volume2, Zap } from "lucide-react";
 import { playChime, setSoundOn, soundOn } from "@/lib/ceo/celebrate";
@@ -104,7 +105,13 @@ function AccountCard() {
   const c = useCeo();
   const router = useRouter();
   const [busy, setBusy] = useState(false);
-  if (!c.user) return null;
+  if (!c.user) return (
+    <section className="card p-5 flex flex-wrap items-center gap-3 text-sm">
+      <Cloud size={18} className="text-indigo" />
+      <span className="flex-1 min-w-0">Hoy tu empresa vive solo en este navegador. Crea tu cuenta para no perderla y seguirla en cualquier dispositivo.</span>
+      <Link href="/entrar?next=/ceo/ajustes" className="btn-primary">Guardar mi avance</Link>
+    </section>
+  );
   const out = async () => { setBusy(true); await ceoSignOut(); router.replace("/entrar"); router.refresh(); };
   return (
     <section className="card p-5 flex flex-wrap items-center gap-3 text-sm">

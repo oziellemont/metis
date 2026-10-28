@@ -34,9 +34,16 @@ export function ceoSafeNext(next: string | null | undefined, fallback = CEO_HOME
   return n;
 }
 
-/** Interruptor de emergencia: CEO_REQUIRE_LOGIN=0 en Vercel vuelve a dejar jugar sin cuenta. */
-export function ceoLoginRequired(env: string | undefined): boolean {
-  return (env ?? "").trim() !== "0";
+/**
+ * ¿Jugar exige cuenta? Interruptor CEO_REQUIRE_LOGIN en Vercel:
+ * «1» siempre · «0» nunca (emergencia) · sin definir: sí en vistas previas y local, NO en producción
+ * (en producción se prende a mano cuando Google y el correo ya están configurados en Supabase).
+ */
+export function ceoLoginRequired(flag: string | undefined, vercelEnv?: string | undefined): boolean {
+  const f = (flag ?? "").trim();
+  if (f === "1") return true;
+  if (f === "0") return false;
+  return (vercelEnv ?? "").trim() !== "production";
 }
 
 /** ¿El destino pertenece a mêtis CEO? (para que los errores del callback regresen a /entrar y no a Align). */

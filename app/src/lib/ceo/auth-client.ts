@@ -4,7 +4,7 @@
  * (una persona = un usuario), pero con su propia pantalla, textos y destinos.
  * Métodos: Google y correo con contraseña. Recuperación de contraseña por correo.
  */
-import { supabaseBrowser } from "@/lib/supabase/client";
+import { SUPABASE_ANON, SUPABASE_URL, supabaseBrowser } from "@/lib/supabase/client";
 import { CEO_FIRST_DAY, CEO_HOME, CEO_NEW_PASSWORD_PATH, ceoAuthMessage, ceoSafeNext } from "./auth-routes";
 
 export type AuthResult = { ok: true; session: boolean } | { ok: false; error: string };
@@ -71,6 +71,20 @@ export async function ceoHasSession(): Promise<boolean> {
 export async function ceoSignOut(): Promise<void> {
   const sb = supabaseBrowser();
   if (sb) await sb.auth.signOut();
+}
+
+/**
+ * ¿Qué métodos están activos en Supabase? Consulta pública (la misma que usa cualquier navegador con la llave pública).
+ * Así el botón de Google aparece solo cuando ya está configurado.
+ */
+let providersCache: Promise<{ google: boolean; email: boolean }> | null = null;
+export function ceoProviders(): Promise<{ google: boolean; email: boolean }> {
+  if (!SUPABASE_URL || !SUPABASE_ANON) return Promise.resolve({ google: false, email: false });
+  providersCache ??= fetch(`${SUPABASE_URL}/auth/v1/settings`, { headers: { apikey: SUPABASE_ANON } })
+    .then((r) => (r.ok ? r.json() : null))
+    .then((j: { external?: Record<string, boolean> } | null) => ({ google: Boolean(j?.external?.google), email: j ? j.external?.email !== false : true }))
+    .catch(() => ({ google: false, email: true }));
+  return providersCache;
 }
 
 export { CEO_HOME };
