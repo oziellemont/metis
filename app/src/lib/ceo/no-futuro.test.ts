@@ -6,6 +6,8 @@ import { join } from "node:path";
  * Reglas de copy de mêtis CEO (app y landing):
  *  - No se menciona el libro de Oziel (las frases se quedan, la referencia no).
  *  - No se promete nada a futuro: sin «próximamente», «en preparación», «llega en una próxima versión», etc.
+ *    Única excepción (aprobada por Oziel, 28-oct-2026): la etiqueta del selector de industrias,
+ *    definida UNA sola vez en catalog.ts como COMING_SOON_LABEL, sin fechas. Todo lo demás la usa por referencia.
  *  - The Executive Arena sí se nombra: es lo que sigue después de Global CEO (exigencia Legendaria), sin fechas.
  * Se revisan los textos de la app CEO, la landing y los correos. Los comentarios de código no cuentan.
  */
@@ -22,13 +24,17 @@ function files(p: string): string[] {
 const code = (t: string) => t.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:"'`])\/\/.*$/gm, "$1");
 
 describe("copy de mêtis CEO", () => {
+  it("«Próximamente» se define una sola vez (catalog.ts) y nunca con fecha", () => {
+    const hits = ROOTS.flatMap(files).filter((f) => !f.endsWith(".test.ts")).flatMap((f) => code(readFileSync(f, "utf8")).split("\n").filter((l) => /pr[oó]ximamente/i.test(l) && !l.includes("export const BANNED")).map((l) => `${f}: ${l.trim()}`));
+    expect(hits).toEqual(['src/lib/ceo/catalog.ts: export const COMING_SOON_LABEL = "Próximamente";']);
+  });
   const all = ROOTS.flatMap(files).filter((f) => !f.endsWith(".test.ts"));
   it("no menciona el libro", () => {
     const bad = all.filter((f) => BOOK.test(code(readFileSync(f, "utf8"))));
     expect(bad).toEqual([]);
   });
   it("no promete funciones a futuro", () => {
-    const bad = all.flatMap((f) => code(readFileSync(f, "utf8")).split("\n").filter((l) => FUTURE.test(l) && !l.includes("export const BANNED") && !/state: "(futuro|preparacion)"/.test(l)).map((l) => `${f}: ${l.trim().slice(0, 100)}`));
+    const bad = all.flatMap((f) => code(readFileSync(f, "utf8")).split("\n").filter((l) => FUTURE.test(l) && !l.includes("export const BANNED") && !/state: "(futuro|preparacion)"/.test(l) && !(f.endsWith("catalog.ts") && l.includes("export const COMING_SOON_LABEL = \"Próximamente\";"))).map((l) => `${f}: ${l.trim().slice(0, 100)}`));
     expect(bad).toEqual([]);
   });
 });
