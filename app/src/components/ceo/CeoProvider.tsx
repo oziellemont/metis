@@ -1,7 +1,7 @@
 "use client";
 /**
  * Estado del jugador de mêtis CEO.
- * - Siempre se guarda en el navegador (se puede jugar sin cuenta).
+ * - Jugar exige cuenta (el middleware manda a /entrar). También se guarda una copia en el navegador.
  * - Con Supabase + sesión: se sincroniza a ceo.players (ranking, correo/WhatsApp, multi-dispositivo).
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";

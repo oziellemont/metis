@@ -1,6 +1,7 @@
 /**
  * POST /api/ceo/eventos → guarda un evento de producto (lista cerrada) en ceo.product_events.
- * Solo si el interruptor «events» está prendido para el jugador; si no, responde ok y no guarda.
+ * Exige sesión (el usuario lo verifica Supabase en el servidor, nunca se toma del cuerpo).
+ * Solo guarda si el interruptor «events» está prendido para el jugador; si no, responde ok y no guarda.
  */
 import { NextResponse } from "next/server";
 import { supabaseCeoAdmin, supabaseServer } from "@/lib/supabase/server";
@@ -14,7 +15,7 @@ export async function POST(req: Request) {
   if (!ev) return NextResponse.json({ ok: false }, { status: 400 });
   const sb = await supabaseServer();
   const uid = sb ? (await sb.auth.getUser()).data.user?.id ?? null : null;
-  if (!uid) return NextResponse.json({ ok: true, stored: false });
+  if (!uid) return NextResponse.json({ ok: false, error: "sin_sesion" }, { status: 401 });
   const flags = await flagsFor(uid);
   if (!flags.events) return NextResponse.json({ ok: true, stored: false });
   const admin = supabaseCeoAdmin();

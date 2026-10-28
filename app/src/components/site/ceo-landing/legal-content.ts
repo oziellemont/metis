@@ -5,7 +5,7 @@
  */
 import { CEO_CONTACT_EMAIL } from "../../../lib/site";
 
-export const LEGAL_UPDATED = "27 de octubre de 2026";
+export const LEGAL_UPDATED = "28 de octubre de 2026";
 
 export interface LegalSection { title: string; body: string[]; items?: string[] }
 export interface LegalDoc { title: string; description: string; intro: string; sections: LegalSection[] }
@@ -21,7 +21,7 @@ export const PRIVACY: LegalDoc = {
     },
     {
       title: "Datos que recabamos",
-      body: ["Puedes jugar sin crear cuenta. En ese caso tu avance se guarda solo en tu navegador y no recibimos datos que te identifiquen. Si creas una cuenta o activas funciones opcionales, tratamos:"],
+      body: ["Puedes probar la decisión de ejemplo de la página principal sin crear cuenta; esa prueba no se guarda ni nos envía datos que te identifiquen. Para usar el simulador necesitas una cuenta, que creas con Google o con tu correo y una contraseña. Con tu cuenta y las funciones opcionales que actives, tratamos:"],
       items: [
         "Correo electrónico, para iniciar sesión y, si lo activas, para avisarte cuando llegan asuntos nuevos.",
         "Nombre y alias. El alias es lo único que aparece en el ranking.",
@@ -76,7 +76,7 @@ export const TERMS: LegalDoc = {
     },
     {
       title: "Tu cuenta",
-      body: ["Puedes usar el simulador sin cuenta. Si creas una, eres responsable de mantener el acceso a tu correo y de la actividad en tu cuenta. Tu alias aparece en el ranking: elige uno que no ofenda ni se haga pasar por otra persona."],
+      body: ["Para usar el simulador necesitas una cuenta. Eres responsable de mantener el acceso a tu correo, de cuidar tu contraseña y de la actividad en tu cuenta. Tu alias aparece en el ranking: elige uno que no ofenda ni se haga pasar por otra persona."],
     },
     {
       title: "Uso permitido",

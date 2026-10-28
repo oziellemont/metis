@@ -1,9 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Bell, Cloud, Clock, FastForward, Mail, MessageCircle, RotateCcw, Save, Volume2, Zap } from "lucide-react";
+import { Bell, Cloud, LogOut, Clock, FastForward, Mail, MessageCircle, RotateCcw, Save, Volume2, Zap } from "lucide-react";
 import { playChime, setSoundOn, soundOn } from "@/lib/ceo/celebrate";
-import { hasSupabase, supabaseBrowser } from "@/lib/supabase/client";
+import { ceoSignOut } from "@/lib/ceo/auth-client";
 import { useCeo } from "./CeoProvider";
 
 const TZS = ["America/Monterrey", "America/Mexico_City", "America/Cancun", "America/Tijuana", "America/Hermosillo", "America/Bogota", "America/Lima", "America/Santiago", "America/Argentina/Buenos_Aires", "Europe/Madrid"];
@@ -99,33 +99,18 @@ export function CeoSettings() {
   );
 }
 
-/** Conectar cuenta (enlace mágico): guarda el avance en la nube, activa avisos y el ranking real. */
+/** Tu cuenta: con qué correo entraste y salir. (Entrar ya es obligatorio para jugar: ver /entrar.) */
 function AccountCard() {
   const c = useCeo();
-  const [mail, setMail] = useState(c.s.settings.email);
-  const [st, setSt] = useState<"idle" | "sending" | "sent" | "error">("idle");
-  if (!hasSupabase) return null;
-  if (c.user) return (
-    <section className="card p-5 flex items-center gap-3 text-sm"><Cloud size={18} className="text-mint" /><span>Tu avance se guarda en tu cuenta <b>{c.user.email}</b>{c.synced ? "." : "…"}</span></section>
-  );
-  const send = async () => {
-    const sb = supabaseBrowser();
-    if (!sb || !mail) return;
-    setSt("sending");
-    const { error } = await sb.auth.signInWithOtp({ email: mail, options: { emailRedirectTo: `${location.origin}/auth/callback?next=/ceo` } });
-    setSt(error ? "error" : "sent");
-  };
+  const router = useRouter();
+  const [busy, setBusy] = useState(false);
+  if (!c.user) return null;
+  const out = async () => { setBusy(true); await ceoSignOut(); router.replace("/entrar"); router.refresh(); };
   return (
-    <section className="card p-5 sm:p-6 space-y-3 border-indigo/30">
-      <h2 className="font-semibold text-ink inline-flex items-center gap-2"><Cloud size={17} className="text-indigo" /> Guarda tu avance</h2>
-      <p className="text-sm text-slate-500">Hoy tu empresa vive solo en este navegador. Conecta tu correo para no perderla, jugar en el celular y la compu, recibir los mensajes de tu equipo y aparecer en el ranking.</p>
-      {st === "sent" ? <p className="text-sm text-sob">Listo: revisa tu correo y abre el enlace.</p> : (
-        <div className="flex flex-col sm:flex-row gap-2">
-          <input type="email" value={mail} onChange={(e) => setMail(e.target.value)} placeholder="tu@correo.com" className="flex-1 rounded-xl border border-slate-200 px-3 py-2.5 text-sm" />
-          <button type="button" onClick={send} disabled={st === "sending"} className="btn-primary">{st === "sending" ? "Enviando…" : "Enviarme el enlace"}</button>
-        </div>
-      )}
-      {st === "error" && <p className="text-xs text-coral">No se pudo enviar. Intenta de nuevo en un momento.</p>}
+    <section className="card p-5 flex flex-wrap items-center gap-3 text-sm">
+      <Cloud size={18} className="text-mint" />
+      <span className="flex-1 min-w-0">Tu avance se guarda en tu cuenta <b className="break-all">{c.user.email}</b>{c.synced ? "." : "…"}</span>
+      <button type="button" onClick={out} disabled={busy} className="btn border border-slate-200 text-slate-600 hover:text-ink"><LogOut size={15} /> {busy ? "Saliendo…" : "Cerrar sesión"}</button>
     </section>
   );
 }
