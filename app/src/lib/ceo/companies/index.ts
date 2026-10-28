@@ -11,14 +11,7 @@ import { BRASA } from "./brasa";
 export const COMPANIES: CompanyPack[] = [CUMBRE, FORJA, BRASA];
 export const FIRST_COMPANY = CUMBRE.id;
 
-/** Lo que viene (se muestra en el mapa como «próximamente»). */
-export const UPCOMING: { id: string; name: string; industry: string; tagline: string }[] = [
-  { id: "alba", name: "Tiendas Alba", industry: "Tiendas de conveniencia", tagline: "2,000 tiendas, una guerra de esquinas y un franquiciatario furioso." },
-  { id: "sanrafael", name: "Hospital San Rafael", industry: "Salud privada", tagline: "Aseguradoras que aprietan, médicos que son dueños y una inflación médica de dos dígitos." },
-  { id: "kubit", name: "Kúbit", industry: "Startup de software", tagline: "8 meses de runway, un inversionista nervioso y un cliente que vale el 40% del MRR." },
-  { id: "roca", name: "Grupo Roca", industry: "Materiales de construcción", tagline: "Cemento, autoconstrucción y una crisis de demanda en el peor momento." },
-  { id: "verde", name: "Verde Michoacán", industry: "Agroexportación", tagline: "Aguacate de exportación, una inspección en frontera y presiones que no salen en el balance." },
-];
+/** Lo que viene ya no vive aquí: ver el catálogo editorial en ../catalog.ts (estados available / coming_soon / retired). */
 
 const BY_ID: Record<string, CompanyPack> = Object.fromEntries(COMPANIES.map((c) => [c.id, c]));
 export const companyById = (id: string | undefined): CompanyPack => BY_ID[id ?? ""] ?? CUMBRE;
