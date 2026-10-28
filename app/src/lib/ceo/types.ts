@@ -178,6 +178,23 @@ export interface CeoState {
   startTier?: number;
   /** Boardroom Crisis jugadas (una por empresa; ver crisis.ts). No tocan los KPI de la temporada. */
   crises?: CrisisRun[];
+  /** Procedencia: carrera traída del navegador a la cuenta (adenda v3.2 §3). La escribe el servidor al importar. */
+  origin?: CareerOrigin;
+}
+
+/** De dónde viene una carrera importada. No cambia la historia jugada; solo la etiqueta como progreso anterior. */
+export interface CareerOrigin {
+  kind: "importada_navegador";
+  importId: string;
+  importedAt: number;
+  /** savedAt de la copia local que se importó (para no volver a preguntar por la misma). */
+  localSavedAt: number;
+  /** Empresa fundacional en la que se jugó (cumbre, forja o brasa). */
+  legacyCompanyId: string;
+  /** Variante fundacional del catálogo v3.2 a la que corresponde (mismo id en las fundacionales). */
+  companyVariantId: string;
+  rulesVersion: number;
+  catalogMigrationVersion: number;
 }
 
 export type CrisisRating = "contenida" | "danos" | "rebaso";

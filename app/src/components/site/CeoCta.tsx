@@ -7,7 +7,15 @@ import { ArrowRight } from "lucide-react";
 export function CeoCta({ className = "", label = "Empieza tu primer día" }: { className?: string; label?: string }) {
   const [playing, setPlaying] = useState(false);
   useEffect(() => {
-    try { const raw = localStorage.getItem("metis-ceo-v1"); if (raw && JSON.parse(raw)?.startedAt) setPlaying(true); } catch { /* ignore */ }
+    // Partida sin cuenta (metis-ceo-v1) o copia de alguna cuenta (metis-ceo-v2:<usuario>) en este navegador.
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i) ?? "";
+        if (k !== "metis-ceo-v1" && !/^metis-ceo-v2:[^:]+$/.test(k)) continue;
+        const raw = localStorage.getItem(k);
+        if (raw && JSON.parse(raw)?.startedAt) { setPlaying(true); break; }
+      }
+    } catch { /* ignore */ }
   }, []);
   return (
     <Link href={playing ? "/ceo" : "/ceo/empezar"} className={"btn bg-mint text-white hover:bg-mint-light !px-5 !py-3 " + className}>
