@@ -11,7 +11,7 @@
  */
 import { NextResponse } from "next/server";
 import { supabaseCeoAdmin, supabaseServer } from "@/lib/supabase/server";
-import { isImportId, LEGACY_RULES_VERSION, markLegacy, validateImport } from "@/lib/ceo/import";
+import { isImportId, markLegacy, validateImport } from "@/lib/ceo/import";
 import { playerRow } from "@/lib/ceo/player-row";
 import { CATALOG_VERSION } from "@/lib/ceo/catalog";
 import { migrate } from "@/lib/ceo/engine";
@@ -64,7 +64,7 @@ export async function POST(req: Request) {
   if (hasLog) {
     const ins = await admin.from("career_imports").insert({
       import_id: importId, user_id: user.id, mode: cloud ? "reemplazar" : "vacia", legacy_company_id: state.origin!.legacyCompanyId,
-      rules_version: LEGACY_RULES_VERSION, catalog_version: CATALOG_VERSION,
+      rules_version: state.origin!.rulesVersion, catalog_version: CATALOG_VERSION,
       local_saved_at: state.origin!.localSavedAt ? new Date(state.origin!.localSavedAt).toISOString() : null,
       xp: out.xp, decisions: out.decisions, warnings: check.warnings, replaced_state: cloud ?? null,
     });

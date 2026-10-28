@@ -6,14 +6,18 @@
  *  - las «partidas doradas» (pruebas que garantizan que ningún cambio altera resultados), y
  *  - más adelante, que el servidor valide las decisiones que llegan del navegador (F0-9).
  *
+ * Reglas versionadas (0.4): `start` y `advance` pueden decir con qué versión de reglas empieza la
+ * temporada. Si no lo dicen, es una partida legacy y se reproduce con las reglas v1, aunque la app
+ * ya use otra versión para las temporadas nuevas.
+ *
  * Cada acción replica, una a una, lo que hacen las acciones de `CeoProvider`.
  */
 import type { CeoState, CastId, LeverId, Settings } from "./types";
-import { advance, aliasOf, answerDilemma, decide, newState, pinArrived, switchCompany } from "./engine";
+import { LEGACY_RULES_VERSION, advance, aliasOf, answerDilemma, decide, newState, pinArrived, switchCompany } from "./engine";
 import { closeChange, playLever, startChange } from "./relations";
 
 export type GameAction =
-  | { type: "start"; at: number; name: string; company: string; settings?: Partial<Settings> }
+  | { type: "start"; at: number; name: string; company: string; settings?: Partial<Settings>; rulesVersion?: number }
   | { type: "decide"; at: number; item: string; option: string }
   | { type: "dilemma"; at: number; id: string; option: number }
   | { type: "lesson"; at: number; id: string }
@@ -21,7 +25,7 @@ export type GameAction =
   | { type: "changeStart"; at: number }
   | { type: "lever"; at: number; lever: LeverId; targets: CastId[] }
   | { type: "changeClose"; at: number }
-  | { type: "advance"; at: number }
+  | { type: "advance"; at: number; rulesVersion?: number }
   | { type: "switch"; at: number; company: string };
 
 /**
@@ -33,7 +37,7 @@ export function applyAction(s: CeoState, a: GameAction): { state: CeoState; appl
   switch (a.type) {
     case "start": {
       const base = newState();
-      n = { ...base, company: a.company || base.company, name: a.name.trim(), alias: aliasOf(a.name), startedAt: a.at, lastActiveAt: a.at, savedAt: a.at, settings: { ...s.settings, ...a.settings } };
+      n = { ...base, rulesVersion: a.rulesVersion ?? LEGACY_RULES_VERSION, company: a.company || base.company, name: a.name.trim(), alias: aliasOf(a.name), startedAt: a.at, lastActiveAt: a.at, savedAt: a.at, settings: { ...s.settings, ...a.settings } };
       break;
     }
     case "decide": n = decide(s, a.item, a.option, a.at); break;
@@ -43,7 +47,7 @@ export function applyAction(s: CeoState, a: GameAction): { state: CeoState; appl
     case "changeStart": n = startChange(s, a.at); break;
     case "lever": n = playLever(s, a.lever, a.targets, a.at); break;
     case "changeClose": n = closeChange(s, a.at); break;
-    case "advance": n = advance(s, a.at); break;
+    case "advance": n = advance(s, a.at, a.rulesVersion ?? LEGACY_RULES_VERSION); break;
     case "switch": n = switchCompany(s, a.company, a.at); break;
   }
   if (n === s) return { state: s, applied: false };

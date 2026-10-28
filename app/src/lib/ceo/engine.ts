@@ -7,10 +7,13 @@ import { COMPANIES, FIRST_COMPANY, companyById } from "./companies";
 import { DILEMMAS, dilemmaById, type Dilemma } from "./dilemmas";
 import { changeEffect, simulate, type ChangeSim } from "./change";
 import { sanitizeDiagnostic, sanitizeProfile } from "./profile";
+import { LEGACY_RULES_VERSION, RULES_VERSION, isRulesVersion, ruleSet, tierRules } from "./rules";
+
+export { LEGACY_RULES_VERSION, RULES_VERSION, ruleSet };
 
 export const H = 3_600_000;
 export const DAY = 24 * H;
-export const DEFAULT_DEADLINE_H = 24;
+export const DEFAULT_DEADLINE_H = ruleSet(RULES_VERSION).defaultDeadlineH;
 
 export const KPI_KEYS: KpiKey[] = ["caja", "margen", "equipo", "clientes", "consejo"];
 /** Valores de la primera empresa (compatibilidad). Cada empresa trae los suyos en `kpiStart`. */
@@ -27,21 +30,26 @@ export const packOf = (s: Pick<CeoState, "company">): CompanyPack => companyById
  *  - los plazos se acortan,
  *  - la línea de aprobación de cada rubro sube (el consejo exige más).
  */
-export function rulesOf(tier: number) {
-  const t = Math.max(0, Math.min(tier, 6));
-  return {
-    tier: t,
-    hit: 1 + 0.08 * t,
-    gain: Math.max(0.85, 1 - 0.03 * t),
-    deadline: Math.max(0.5, 1 - 0.1 * t),
-    passLine: Math.min(60, 50 + 2 * t),
-    minAnswered: 0.8,
-    name: ["Director debutante", "Director con oficio", "Director probado", "Director de alto riesgo", "Director de crisis", "Legendario", "Legendario+"][t],
-  };
+export function rulesOf(tier: number, version: number = RULES_VERSION) {
+  return tierRules(tier, version);
 }
-export function scaled(eff: Partial<Kpis> | undefined, tier: number): Partial<Kpis> {
+/** Versión de reglas de una temporada guardada (sin versión = legacy, nunca la actual). */
+export const rulesVersionOf = (s: Pick<CeoState, "rulesVersion">): number => (isRulesVersion(s.rulesVersion) ? s.rulesVersion : LEGACY_RULES_VERSION);
+/** Exigencia de la temporada en curso, con las reglas con que empezó. */
+export const rulesFor = (s: Pick<CeoState, "tier" | "rulesVersion">) => tierRules(s.tier, rulesVersionOf(s));
+/**
+ * Versión con que se valúa el XP que viaja entre empresas (lecciones y dilemas): la de la primera
+ * temporada de la carrera. Así subir la versión no cambia en retrospectiva el XP ya ganado.
+ */
+export const careerRulesVersionOf = (s: Pick<CeoState, "career" | "rulesVersion">): number => {
+  const first = (s.career ?? [])[0];
+  return first ? (isRulesVersion(first.rulesVersion) ? first.rulesVersion : LEGACY_RULES_VERSION) : rulesVersionOf(s);
+};
+/** Tabla de XP de la temporada en curso. */
+export const xpTableOf = (s: Pick<CeoState, "rulesVersion">) => ruleSet(rulesVersionOf(s)).xp;
+export function scaled(eff: Partial<Kpis> | undefined, tier: number, version: number = LEGACY_RULES_VERSION): Partial<Kpis> {
   if (!eff) return {};
-  const r = rulesOf(tier);
+  const r = tierRules(tier, version);
   const out: Partial<Kpis> = {};
   for (const k of Object.keys(eff) as KpiKey[]) {
     const v = eff[k] ?? 0;
@@ -49,7 +57,10 @@ export function scaled(eff: Partial<Kpis> | undefined, tier: number): Partial<Kp
   }
   return out;
 }
-const deadlineOf = (s: CeoState, it: Item) => Math.max(3, Math.round((it.deadlineH ?? DEFAULT_DEADLINE_H) * rulesOf(s.tier).deadline));
+const deadlineOf = (s: CeoState, it: Item) => {
+  const R = ruleSet(rulesVersionOf(s));
+  return Math.max(R.minDeadlineH, Math.round((it.deadlineH ?? R.defaultDeadlineH) * rulesFor(s).deadline));
+};
 
 export const DEFAULT_SETTINGS: Settings = {
   tz: "America/Monterrey", windowStart: 8, windowEnd: 19, email: "", phone: "",
@@ -57,7 +68,7 @@ export const DEFAULT_SETTINGS: Settings = {
 };
 
 export function newState(): CeoState {
-  return { v: 2, name: "", alias: "", company: FIRST_COMPANY, tier: 0, career: [], startedAt: null, settings: { ...DEFAULT_SETTINGS }, decisions: {}, pinned: {}, read: {}, lessons: {}, lastActiveAt: 0, clockOffset: 0, savedAt: 0 };
+  return { v: 2, name: "", alias: "", company: FIRST_COMPANY, tier: 0, rulesVersion: RULES_VERSION, career: [], startedAt: null, settings: { ...DEFAULT_SETTINGS }, decisions: {}, pinned: {}, read: {}, lessons: {}, lastActiveAt: 0, clockOffset: 0, savedAt: 0 };
 }
 
 /** Alias público a partir del nombre («Oziel Leal» → «Oziel L.»). Forma parte de la semilla de llegadas. */
@@ -76,6 +87,8 @@ export function migrate(raw: unknown): CeoState {
   if (!COMPANIES.some((c) => c.id === out.company)) out.company = FIRST_COMPANY;
   out.career = Array.isArray(out.career) ? out.career : [];
   out.tier = typeof out.tier === "number" ? out.tier : 0;
+  // Reglas: lo guardado sin versión se jugó con las reglas legacy (v1); nunca se le asignan las actuales.
+  out.rulesVersion = isRulesVersion(r.rulesVersion) ? r.rulesVersion : LEGACY_RULES_VERSION;
   // Executive Journey: si viene dañado, se descarta (se vuelve a inscribir sin perder el piso fundador).
   const j = out.journey as unknown;
   if (j !== undefined && (!j || typeof j !== "object" || typeof (j as { stage?: unknown }).stage !== "number" || !Array.isArray((j as { appointments?: unknown }).appointments))) delete out.journey;
@@ -185,7 +198,7 @@ const clamp = (n: number) => Math.max(0, Math.min(100, Math.round(n)));
 /** Efecto real (ya ajustado a tu nivel de exigencia) de lo que pasó en un asunto. */
 export function effectOf(s: CeoState, e: Entry): Partial<Kpis> {
   const eff = e.status === "decidido" ? e.option?.effects : e.status === "vencido" ? e.item.expired.effects : undefined;
-  return scaled(eff, s.tier);
+  return scaled(eff, s.tier, rulesVersionOf(s));
 }
 export function kpis(s: CeoState, now = nowOf(s)): Kpis {
   const k = { ...packOf(s).kpiStart };
@@ -220,18 +233,22 @@ export function casesProgress(s: CeoState, now = nowOf(s), es = entries(s, now))
 export function changeKpiEffect(s: CeoState): Partial<Kpis> {
   if (!s.startedAt) return {};
   const sim = changeSimOf(s);
-  return sim?.done ? scaled(changeEffect(sim), s.tier) : {};
+  return sim?.done ? scaled(changeEffect(sim), s.tier, rulesVersionOf(s)) : {};
 }
 export const healthOf = (k: Kpis) => Math.round((k.caja + k.margen + k.equipo + k.clientes + k.consejo) / 5);
 
-export const XP = { decision: 20, perPoint: 10, onTime: 5, lesson: 30, dilemma: 10, dilemmaPoint: 5 };
-/** XP de cada Boardroom Crisis según cómo terminó (ver crisis.ts). */
-export const CRISIS_XP: Record<CrisisRating, number> = { contenida: 60, danos: 30, rebaso: 10 };
+/** Tabla de XP de las reglas actuales (para textos; el cálculo usa la versión de cada temporada). */
+export const XP = ruleSet(RULES_VERSION).xp;
+/** XP de cada Boardroom Crisis según cómo terminó (ver crisis.ts), con las reglas actuales. */
+export const CRISIS_XP: Record<CrisisRating, number> = ruleSet(RULES_VERSION).crisisXp;
+/** Cada crisis se valúa con las reglas de la temporada en que se jugó (sin versión = legacy). */
+export const crisisPoints = (rating: CrisisRating, version?: number) => ruleSet(isRulesVersion(version) ? version : LEGACY_RULES_VERSION).crisisXp[rating] ?? 0;
 export function crisisXp(s: CeoState): number {
-  return (s.crises ?? []).reduce((a, c) => a + (CRISIS_XP[c.rating] ?? 0), 0);
+  return (s.crises ?? []).reduce((a, c) => a + crisisPoints(c.rating, c.rulesVersion), 0);
 }
 /** XP de los dilemas de personas (viajan entre empresas). */
 export function dilemmaXp(s: CeoState): number {
+  const XP = ruleSet(careerRulesVersionOf(s)).xp;
   let xp = 0;
   for (const [id, d] of Object.entries(s.dilemmas ?? {})) {
     const o = dilemmaById(id)?.options[d.option];
@@ -270,6 +287,7 @@ export function answerDilemma(s: CeoState, id: string, option: number, now = now
 }
 /** XP de las decisiones de la empresa actual (sin lecciones). */
 export function runXp(s: CeoState, now = nowOf(s)): number {
+  const XP = xpTableOf(s);
   let xp = 0;
   for (const e of entries(s, now)) {
     if (e.status !== "decidido" || !e.option || !e.decision) continue;
@@ -281,7 +299,7 @@ export function runXp(s: CeoState, now = nowOf(s)): number {
 /** XP total de la carrera: empresas anteriores + la actual + lecciones. */
 export function xpOf(s: CeoState, now = nowOf(s)): number {
   const past = (s.career ?? []).reduce((a, r) => a + (r.xp || 0), 0);
-  return past + runXp(s, now) + Object.keys(s.lessons).length * XP.lesson + dilemmaXp(s) + crisisXp(s);
+  return past + runXp(s, now) + Object.keys(s.lessons).length * ruleSet(careerRulesVersionOf(s)).xp.lesson + dilemmaXp(s) + crisisXp(s);
 }
 
 export const LEVELS = [
@@ -461,7 +479,7 @@ export interface Verdict {
 }
 export function verdictOf(s: CeoState, now = nowOf(s)): Verdict {
   const k = kpis(s, now);
-  const r = rulesOf(s.tier);
+  const r = rulesFor(s);
   const es = entries(s, now).filter((e) => e.status === "decidido" || e.status === "vencido");
   const answered = es.length ? es.filter((e) => e.status === "decidido").length / es.length : 0;
   const approved = Object.fromEntries(KPI_KEYS.map((x) => [x, k[x] >= r.passLine])) as Record<KpiKey, boolean>;
@@ -483,32 +501,34 @@ export function nextCompanyOf(s: CeoState): { id: string; legendary: boolean } {
 function closeRun(s: CeoState, now: number): CareerRun {
   const v = verdictOf(s, now);
   return {
-    company: s.company, tier: s.tier, startedAt: s.startedAt ?? now, endedAt: now, kpis: v.kpis, health: v.health,
+    company: s.company, tier: s.tier, rulesVersion: rulesVersionOf(s), startedAt: s.startedAt ?? now, endedAt: now, kpis: v.kpis, health: v.health,
     answered: Math.round(v.answered * 100), passed: v.passed, xp: runXp(s, now), decisions: s.decisions as Record<string, Decision>,
     change: (() => { const sim = changeSimOf(s); return { adopted: sim?.adopted ?? 0, weeks: sim?.weeksUsed ?? 0, ok: !!sim?.ok }; })(),
   };
 }
-const fresh = (s: CeoState, company: string, tier: number, now: number, legendary?: boolean): CeoState => ({
-  ...s, company, tier, legendary: legendary ?? s.legendary, startedAt: now, decisions: {}, pinned: {}, read: {}, change: undefined, lastActiveAt: now, savedAt: now,
+/** Temporada nueva. `rulesVersion` se congela aquí: la nueva temporada usa las reglas vigentes. */
+const fresh = (s: CeoState, company: string, tier: number, now: number, legendary?: boolean, rulesVersion: number = RULES_VERSION): CeoState => ({
+  ...s, company, tier, rulesVersion, legendary: legendary ?? s.legendary, startedAt: now, decisions: {}, pinned: {}, read: {}, change: undefined, lastActiveAt: now, savedAt: now,
 });
 
 /** Cierra la empresa actual y pasa a la siguiente (si aprobaste) o la repite (si no). */
-export function advance(s: CeoState, now = nowOf(s)): CeoState {
+export function advance(s: CeoState, now = nowOf(s), rulesVersion: number = RULES_VERSION): CeoState {
   if (!seasonDoneOf(s, now)) return s;
   const run = closeRun(s, now);
   const career = [...(s.career ?? []), run];
   const after = { ...s, career };
-  if (!run.passed) return fresh(after, s.company, s.tier, now);
+  if (!run.passed) return fresh(after, s.company, s.tier, now, undefined, rulesVersion);
   const next = nextCompanyOf(after);
   const passedCount = career.filter((r) => r.passed).length;
   const legendary = next.legendary || !!s.legendary;
-  return fresh(after, next.id, passedCount + (legendary ? 1 : 0), now, legendary);
+  return fresh(after, next.id, passedCount + (legendary ? 1 : 0), now, legendary, rulesVersion);
 }
 
 /** Cambiar de empresa a media temporada (solo antes de la primera decisión). */
 export function switchCompany(s: CeoState, company: string, now = nowOf(s)): CeoState {
   if (Object.keys(s.decisions).length || !COMPANIES.some((c) => c.id === company)) return s;
-  return fresh(s, company, s.tier, now);
+  // Cambiar antes de decidir es la misma temporada recién iniciada: conserva sus reglas.
+  return fresh(s, company, s.tier, now, undefined, rulesVersionOf(s));
 }
 
 /** Opción A domina a B si es igual o mejor en todos los rubros y mejor en al menos uno. */

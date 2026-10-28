@@ -8,7 +8,7 @@ import { LESSONS } from "../lessons";
 import { canUse, leverById, simulate, LEVERS } from "../change";
 import {
   H, KPI_KEYS, badgesOf, casesDoneOf, casesProgress, changeSimOf, dayKey, decide, dilemmaOfDay, entries, healthOf, kpis,
-  levelOf, newState, packOf, profileOf, rand01, rulesOf, seasonDay, seasonDoneOf, streakOf, verdictOf, xpOf,
+  levelOf, newState, packOf, profileOf, rand01, rulesFor, seasonDay, seasonDoneOf, streakOf, verdictOf, xpOf,
 } from "../engine";
 import { relationsOf } from "../relations";
 import { applyAction, type GameAction } from "../replay";
@@ -64,7 +64,7 @@ export type Snapshot = ReturnType<typeof snapshotOf>;
 
 // ───────────────────────────── estrategias de decisión
 function careful(s: CeoState, t: number, itemId: string, opts: Option[]) {
-  const line = rulesOf(s.tier).passLine;
+  const line = rulesFor(s).passLine;
   let pick = opts[0].id, bv = -1e9;
   for (const o of opts) {
     const k = kpis(decide(s, itemId, o.id, t), t);

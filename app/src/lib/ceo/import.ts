@@ -13,13 +13,13 @@
  * Todo aquí es puro o recibe el almacenamiento como parámetro, para poder probarlo sin navegador.
  */
 import type { CeoState } from "./types";
-import { migrate, nowOf, xpOf } from "./engine";
+import { migrate, nowOf, rulesVersionOf, xpOf } from "./engine";
 import { COMPANIES, companyById, isCompany } from "./companies";
 import { CATALOG_VERSION, catalogCompanyById } from "./catalog";
 import { STAGES } from "./journey";
 
 /** Versión de reglas con la que se jugaron las partidas anteriores a la v3 (ver contracts.ts). */
-export const LEGACY_RULES_VERSION = 1;
+export { LEGACY_RULES_VERSION } from "./rules";
 export const LEGACY_KEY = "metis-ceo-v1";
 export const ownerKey = (uid: string) => `metis-ceo-v2:${uid}`;
 const IMPORT_ID_KEY = `${LEGACY_KEY}:importar-id`;
@@ -242,7 +242,7 @@ export function markLegacy(s: CeoState, importId: string, now: number): CeoState
       localSavedAt: s.savedAt || 0,
       legacyCompanyId: s.company,
       companyVariantId: variant?.foundational ? variant.id : s.company,
-      rulesVersion: LEGACY_RULES_VERSION,
+      rulesVersion: rulesVersionOf(s),
       catalogMigrationVersion: CATALOG_VERSION,
     },
   };

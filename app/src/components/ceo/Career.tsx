@@ -3,7 +3,7 @@ import Link from "next/link";
 import clsx from "clsx";
 import { useEffect, useState } from "react";
 import { ArrowRight, Award, Check, Crown, Lock, RotateCcw, X } from "lucide-react";
-import { KPI_KEYS, nextCompanyOf, profileOf, rulesOf } from "@/lib/ceo/engine";
+import { KPI_KEYS, LEGACY_RULES_VERSION, nextCompanyOf, profileOf, rulesOf } from "@/lib/ceo/engine";
 import { COMPANIES, companyById } from "@/lib/ceo/companies";
 import { STAGES } from "@/lib/ceo/journey";
 import { celebrate, celebrateOnce } from "@/lib/ceo/celebrate";
@@ -131,7 +131,7 @@ export function Career() {
               <li key={i} className="relative flex gap-4 items-start">
                 <CompanyMark name={co.name} size={48} tone={run.passed ? "solid" : "muted"} className="relative z-10" />
                 <div className="flex-1 min-w-0 rounded-2xl border border-slate-100 px-4 py-3">
-                  <div className="flex flex-wrap items-center gap-2"><span className="font-semibold text-ink text-sm">{co.name}</span><span className={clsx("chip text-[10px]", run.passed ? "bg-indigo-soft text-indigo" : "bg-coral-soft text-coral")}>{run.passed ? "Aprobada" : "No aprobada"}</span><span className="text-[11px] text-slate-400">{rulesOf(run.tier).name}</span></div>
+                  <div className="flex flex-wrap items-center gap-2"><span className="font-semibold text-ink text-sm">{co.name}</span><span className={clsx("chip text-[10px]", run.passed ? "bg-indigo-soft text-indigo" : "bg-coral-soft text-coral")}>{run.passed ? "Aprobada" : "No aprobada"}</span><span className="text-[11px] text-slate-400">{rulesOf(run.tier, run.rulesVersion ?? LEGACY_RULES_VERSION).name}</span></div>
                   <div className="mt-1 text-xs text-slate-500">Salud {run.health}/100 · {run.answered}% respondido · +{run.xp} XP</div>
                 </div>
               </li>
