@@ -51,6 +51,7 @@ export async function POST(req: Request) {
     ["eval", day, EVAL_BUDGET_USD],
   ];
 
+  const errors = new Set<string>();
   const model: Model = async (messages, maxTokens, temperature) => {
     const est = costOf(modelName, approxTokens(messages.map((m) => m.content).join("\n")) + 20, maxTokens);
     const reserved: [string, string][] = [];
@@ -75,10 +76,11 @@ export async function POST(req: Request) {
       const real = costOf(modelName, inT, outT);
       await adjust(real - est);
       await admin.from("ai_calls").insert({ user_id: uid, purpose: "episodio_eval", model: modelName, input_tokens: inT, output_tokens: outT, cost_usd: real, latency_ms: Date.now() - t0, status: r.ok ? "ok" : "error", error: r.ok ? null : (j.error?.message ?? `HTTP ${r.status}`).slice(0, 300) });
-      if (!r.ok) return null;
+      if (!r.ok) { errors.add(`OpenAI ${r.status}: ${(j.error?.message ?? "sin detalle").slice(0, 200)}`); return null; }
       return { content: j.choices?.[0]?.message?.content ?? "", cost: real };
     } catch (e) {
       await adjust(-est);
+      errors.add(`Sin respuesta de OpenAI: ${String((e as Error)?.message ?? e).slice(0, 200)}`);
       await admin.from("ai_calls").insert({ user_id: uid, purpose: "episodio_eval", model: modelName, status: "error", latency_ms: Date.now() - t0, error: String((e as Error)?.message ?? e).slice(0, 300) });
       return null;
     }
@@ -86,7 +88,7 @@ export async function POST(req: Request) {
 
   try {
     const results = await Promise.all(EVAL_JOBS.slice(from, to).map((job) => runJob(job, model)));
-    return NextResponse.json({ ok: true, from, to, total: EVAL_JOBS.length, model: modelName, results });
+    return NextResponse.json({ ok: true, from, to, total: EVAL_JOBS.length, model: modelName, results, errors: [...errors].slice(0, 3) });
   } catch (e) {
     const msg = String((e as Error)?.message ?? e);
     return no(msg.startsWith("tope") ? "Se alcanzó el tope de gasto de la evaluación ($0.50 hoy)." : "La evaluación falló.", 429);
