@@ -14,6 +14,7 @@
  *
  * Lógica pura: sin React, sin navegador, sin Supabase.
  */
+import { pickRun } from "./episodes/engine";
 import type { CeoState, Decision, PausePeriod } from "./types";
 import { isDailyGoal, isSessionMinutes } from "./onboarding";
 
@@ -69,13 +70,15 @@ export function mergeStates(local: CeoState | null, cloud: CeoState | null): Mer
     return ka.length === Object.keys(b).length && ka.every((k) => k in b && JSON.stringify(a[k]) === JSON.stringify(b[k]));
   };
   const cadence = mergeCadence(local.cadence, cloud.cadence);
-  const untouched = JSON.stringify(cadence ?? null) === JSON.stringify(base.cadence ?? null) && same(decisions, base.decisions) && same(read, base.read) && same(lessons, base.lessons) && same(pinned, base.pinned) && same(dilemmas, base.dilemmas);
+  const episodes = mergeEpisodes(local.episodes, cloud.episodes);
+  const untouched = JSON.stringify(cadence ?? null) === JSON.stringify(base.cadence ?? null) && JSON.stringify(episodes ?? null) === JSON.stringify(base.episodes ?? null) && same(decisions, base.decisions) && same(read, base.read) && same(lessons, base.lessons) && same(pinned, base.pinned) && same(dilemmas, base.dilemmas);
   if (untouched) return { state: base, how: base === local ? (local.savedAt === cloud.savedAt ? "igual" : "local") : "nube" };
   const state: CeoState = {
     ...base,
     decisions, read, lessons, pinned,
     ...(Object.keys(dilemmas).length ? { dilemmas } : {}),
     ...(cadence ? { cadence } : {}),
+    ...(episodes ? { episodes } : {}),
     lastActiveAt: Math.max(local.lastActiveAt || 0, cloud.lastActiveAt || 0),
     savedAt: Math.max(local.savedAt || 0, cloud.savedAt || 0) + 1,
   };
@@ -126,4 +129,15 @@ export function planSave(lastSynced: number, cloudSavedAt: number | null | undef
   if (typeof cloudSavedAt !== "number" || !Number.isFinite(cloudSavedAt)) return "escribir";
   // Distinto (no solo mayor): el reloj del otro dispositivo puede ir atrasado.
   return cloudSavedAt !== lastSynced ? "traer" : "escribir";
+}
+
+/** Episodios de los dos dispositivos: por episodio se queda la copia con más avance (nunca se pierde una decisión). */
+export function mergeEpisodes(a: CeoState["episodes"], b: CeoState["episodes"]): CeoState["episodes"] {
+  if (!a && !b) return undefined;
+  const out: NonNullable<CeoState["episodes"]> = {};
+  for (const k of new Set([...Object.keys(a ?? {}), ...Object.keys(b ?? {})])) {
+    const r = pickRun(a?.[k], b?.[k]);
+    if (r) out[k] = r;
+  }
+  return out;
 }

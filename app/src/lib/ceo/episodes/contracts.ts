@@ -183,6 +183,8 @@ export interface DecisionTurn {
   node: string;
   stage: string;
   /** Lo que hizo el jugador: elegir, ajustar términos o escribir. */
+  /** Lo que te dijeron en ese punto (para releer el hilo tal como lo viste). Opcional por compatibilidad. */
+  said?: string[];
   input: { kind: "opcion" | "terminos" | "texto"; text?: string };
   strategy: string;
   terms?: Record<string, number>;

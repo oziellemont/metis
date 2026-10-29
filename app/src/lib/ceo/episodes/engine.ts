@@ -14,7 +14,7 @@
  */
 import {
   BRIEFING_MS, EPISODE_CONTRACT_VERSION, MAX_ADVISOR_CONSULTS, MAX_FACT_QUERIES,
-  type AdvisorBrief, type Cond, type DecisionTurn, type EpisodeNode, type EpisodeRun, type EpisodeSpec, type Fact, type ParamSpec, type Strategy, type Variant,
+  type AdvisorBrief, type Cond, type DecisionTurn, type EpisodeNode, type EpisodeRun, type EpisodeSpec, type Fact, type ParamSpec, type RevealBlock, type Strategy, type Variant,
 } from "./contracts";
 import { closeOutcome, deriveTerms } from "./rules";
 
@@ -137,6 +137,13 @@ export function clampParam(p: ParamSpec, v: unknown): number {
   return Math.round(Math.max(p.min, Math.min(p.max, stepped)) * 1000) / 1000;
 }
 
+/** Bloques de datos que se revelan en el nodo actual, con `{t:}` sustituido. */
+export function revealOf(spec: EpisodeSpec, run: EpisodeRun): RevealBlock[] {
+  const n = nodeOf(spec, run);
+  const sub = (x: string) => render(spec, run, [{ text: [x] }])[0] ?? x;
+  return (n?.reveal ?? []).filter((b) => holds(run, b.when)).map((b) => ({ title: b.title, rows: b.rows.map(([k, v]) => [sub(k), sub(v)] as [string, string]), ...(b.note ? { note: sub(b.note) } : {}) }));
+}
+
 /** Lo que dice el interlocutor en el nodo actual (con memoria). */
 export function sayOf(spec: EpisodeSpec, run: EpisodeRun): string[] {
   const n = nodeOf(spec, run);
@@ -226,7 +233,7 @@ export function applyEpisode(spec: EpisodeSpec, run: EpisodeRun, a: EpisodeActio
       const next = st.next.find((b) => holds(mid, b.when))?.to ?? "close";
       const text = a.text?.trim().slice(0, 1200);
       const turn: DecisionTurn = {
-        at, node: node.id, stage: node.stage,
+        at, node: node.id, stage: node.stage, said: render(spec, run, node.say),
         input: text ? { kind: "texto", text } : st.params?.length ? { kind: "terminos" } : { kind: "opcion" },
         strategy: st.id, ...(st.params?.length ? { terms: chosen } : {}),
         ...(text && a.interpretation ? { interpretation: { quality: a.interpretation.quality, feedback: a.interpretation.feedback.slice(0, 280) } } : {}),
@@ -267,8 +274,21 @@ export function sanitizeRun(raw: unknown): EpisodeRun | null {
 export function pickRun(a: EpisodeRun | undefined, b: EpisodeRun | undefined): EpisodeRun | undefined {
   if (!a) return b;
   if (!b) return a;
+  // Partidas distintas del mismo episodio (se reinició en modo prueba): vale la que empezó después.
+  if (a.runId !== b.runId) return b.startedAt > a.startedAt ? b : a;
   const rank = (r: EpisodeRun) => (r.phase === "closed" ? 1e6 : 0) + r.turns.length * 1000 + (r.phase === "deciding" ? 500 : 0) + r.queries.length * 10 + (r.advisor ? 5 : 0);
   const ra = rank(a), rb = rank(b);
   if (ra !== rb) return ra > rb ? a : b;
   return (b.updatedAt || 0) > (a.updatedAt || 0) ? b : a;
+}
+
+/** Limpia `episodes` al leer un estado guardado: descarta partidas dañadas o de episodios que ya no existen. */
+export function sanitizeEpisodes(raw: unknown): Record<string, EpisodeRun> | undefined {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return undefined;
+  const out: Record<string, EpisodeRun> = {};
+  for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
+    const r = sanitizeRun(v);
+    if (r && r.episode === k) out[k] = r;
+  }
+  return Object.keys(out).length ? out : undefined;
 }

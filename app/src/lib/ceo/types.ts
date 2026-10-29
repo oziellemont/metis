@@ -1,4 +1,5 @@
 import type { InitialDiagnostic, ProfessionalProfile, ProfileNudge } from "./profile";
+import type { EpisodeRun } from "./episodes/contracts";
 /**
  * mêtis CEO · tipos del simulador (metisalign.app).
  * Todo lo de esta carpeta es independiente de mêtis (alineación): no importa nada de store/academy.
@@ -190,6 +191,8 @@ export interface CeoState {
   origin?: CareerOrigin;
   /** Ritmo (1.2, adenda §5): vacaciones y días tranquilos. Sin dato = siempre activo. Ver cadence.ts. */
   cadence?: Cadence;
+  /** Executive Decision Episodes (adenda v3.3): una partida por episodio. Su XP vive en la partida y aún no suma al ranking. */
+  episodes?: Record<string, EpisodeRun>;
 }
 
 /** Estado de ritmo del jugador. Se deriva de `cadence.pauses` a una hora dada (ver cadence.ts). */

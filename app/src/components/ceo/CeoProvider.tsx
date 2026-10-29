@@ -28,6 +28,9 @@ import { playerRow } from "@/lib/ceo/player-row";
 import { RULES_VERSION } from "@/lib/ceo/rules";
 import { flushOnce, logAction } from "@/lib/ceo/journal-client";
 import { blockedOnVacation, type GameAction } from "@/lib/ceo/replay";
+import { actEpisode, openEpisode as openEpisodeFn, restartEpisode as restartEpisodeFn } from "@/lib/ceo/episodes/catalog";
+import type { EpisodeAction } from "@/lib/ceo/episodes/engine";
+import { onVacation } from "@/lib/ceo/pausetime";
 import { cadenceStatus, markReturnSeen as markReturnSeenFn, pauseCareer as pauseFn, quietUntil, resumeCareer as resumeFn, returnDue as returnDueFn, startQuietDay as quietFn } from "@/lib/ceo/cadence";
 import type { CadenceStatus } from "@/lib/ceo/types";
 
@@ -120,7 +123,14 @@ interface Ctx {
   /** Pantalla «Qué bueno tenerte de vuelta» pendiente (null si no toca). */
   returnDue: "vacaciones" | "ausencia" | null;
   markReturnSeen: () => void;
+  /** Executive Decision Episodes (vista previa): abrir un episodio y aplicar un paso. Devuelve el error, si lo hay. */
+  openEpisode: (id: string, mode?: "estandar" | "flexible") => void;
+  episodeAct: (id: string, act: DistributiveOmit<EpisodeAction, "at">) => string | null;
+  /** Solo modo prueba: borra la partida de un episodio para volver a recorrerlo por otra ruta. */
+  resetEpisode: (id: string) => void;
 }
+
+type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never;
 
 const C = createContext<Ctx | null>(null);
 export const useCeo = () => {
@@ -436,13 +446,26 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
   const saveProfile = useCallback((pf: ProfessionalProfile) => setS((p) => { const v = sanitizeProfile(pf); return v ? { ...p, profile: v, savedAt: Date.now() } : p; }), []);
   const saveDiagnostic = useCallback((d: InitialDiagnostic) => setS((p) => { const v = sanitizeDiagnostic(d); return v ? { ...p, diagnostic: v, savedAt: Date.now() } : p; }), []);
   const snoozeProfile = useCallback(() => setS((p) => ({ ...p, profileNudge: snoozeNudge(p.profileNudge, Date.now()), savedAt: Date.now() })), []);
+  const openEpisode = useCallback((id: string, mode?: "estandar" | "flexible") => play((p) => { const at = nowOf(p); return { n: openEpisodeFn(p, id, at, mode), a: { type: "episodeOpen", at, id, ...(mode ? { mode } : {}) } }; }), [play]);
+  // El error se calcula con el estado actual (fuera de setS) para poder mostrarlo; la jugada se aplica con `play`.
+  const episodeAct = useCallback((id: string, act: DistributiveOmit<EpisodeAction, "at">): string | null => {
+    const cur = sRef.current;
+    const at = nowOf(cur);
+    if (onVacation(cur, at)) return "Estás de vacaciones. Reanuda tu carrera para seguir con el caso.";
+    const full = { ...act, at } as EpisodeAction;
+    const probe = actEpisode(cur, id, full);
+    if (probe.error) return probe.error;
+    play((p) => ({ n: actEpisode(p, id, { ...full, at: nowOf(p) }).state, a: { type: "episode", at: nowOf(p), id, act: { ...full, at: nowOf(p) } } }));
+    return null;
+  }, [play]);
+  const resetEpisode = useCallback((id: string) => setS((p) => { const n = restartEpisodeFn(p, id, nowOf(p)); return n === p ? p : { ...n, savedAt: Date.now() }; }), []);
   const reset = useCallback(() => { localStorage.removeItem(user ? ownerKey(user.id) : KEY); seen.current = null; setS(newState()); }, [user]);
 
   const value: Ctx = {
     ready, s, now, pack, rules: rulesFor(s), verdict, entries, inbox, pending, kpis: k, health: healthOf(k), xp, level: levelOf(xp), streak, day: seasonDay(s, now), seasonDone, nextArrival,
     relations, changeOpen: changeOpen(s, now), cases: casesProgress(s, now, entries), change, startChange, playLever, closeChange,
     user, synced, toast, dismissToast: () => setToast(null), start, advance, switchCompany, decide, markRead, completeLesson, dilemma, answerDilemma, updateSettings, skipNext, testTools, importFlow, reset, journey, mastery, appoint, recordBoard, recordCrisis, saveProfile, saveDiagnostic, snoozeProfile,
-    cadence: cadenceStatus(s, now), pauseCareer, resumeCareer, startQuietDay, returnDue: ready ? returnDueFn(s, now) : null, markReturnSeen,
+    cadence: cadenceStatus(s, now), pauseCareer, resumeCareer, startQuietDay, returnDue: ready ? returnDueFn(s, now) : null, markReturnSeen, openEpisode, episodeAct, resetEpisode,
   };
   return <C.Provider value={value}>{children}</C.Provider>;
 }

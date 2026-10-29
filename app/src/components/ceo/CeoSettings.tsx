@@ -109,6 +109,14 @@ export function CeoSettings() {
         {c.testTools && (<>
         <p className="text-sm text-slate-500">Para recorrer la temporada sin esperar: adelanta el reloj hasta el siguiente mensaje.</p>
         <button type="button" onClick={c.skipNext} disabled={!c.nextArrival} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-ink hover:bg-slate-50 disabled:opacity-40"><FastForward size={15} /> Adelantar el reloj</button>
+        <div className="pt-3 border-t border-slate-100">
+          <div className="text-sm font-medium text-ink">Casos ejecutivos (vista previa, sin publicar)</div>
+          <p className="mt-0.5 text-xs text-slate-500">Piloto SuperNorte para revisión. No mueve tu temporada.</p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            <Link href="/ceo/episodio/supernorte" className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-ink hover:bg-slate-50">Abrir Negociación SuperNorte</Link>
+            {c.s.episodes?.supernorte && <button type="button" onClick={() => c.resetEpisode("supernorte")} className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-slate-500 hover:bg-slate-50"><RotateCcw size={14} /> Reiniciar el caso</button>}
+          </div>
+        </div>
         </>)}
         <div className="pt-3 border-t border-slate-100">
           {!confirm ? (
