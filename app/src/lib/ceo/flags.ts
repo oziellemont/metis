@@ -10,7 +10,7 @@
  *  - Esta función es pura: no lee red ni reloj, para poder probarla.
  */
 
-export const FLAG_KEYS = ["ai", "ai_shadow", "events", "game_journal", "replay_shadow"] as const;
+export const FLAG_KEYS = ["ai", "ai_shadow", "events", "game_journal", "replay_shadow", "episodes"] as const;
 export type FlagKey = (typeof FLAG_KEYS)[number];
 export type Flags = Record<FlagKey, boolean>;
 
