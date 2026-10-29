@@ -15,6 +15,16 @@ describe("pantallas de decisión paso a paso", () => {
     expect(ep).toContain('"El caso", "Investiga", "Decides", "Cierre", "Aprendes"');
   });
 
+  it("dilema del día, junta, crisis y personas también usan el escenario métis por pasos", () => {
+    const dil = read("components", "ceo", "DilemmaCard.tsx");
+    expect(dil).toMatch(/<Stage overlay\b/);
+    expect(dil).toContain('"El caso", "Decides", "Aprendes"');
+    expect(read("components", "ceo", "DilemmaPrompt.tsx")).toMatch(/<DilemmaStage\b/);
+    expect(read("components", "ceo", "PeopleView.tsx")).toMatch(/<DilemmaCard\b/);
+    expect(read("components", "ceo", "BoardView.tsx")).toMatch(/<Stage overlay\b/);
+    expect(read("components", "ceo", "CrisisView.tsx")).toMatch(/<Stage overlay\b/);
+  });
+
   it("el escenario usa el mismo fondo métis del onboarding", () => {
     const stage = read("components", "ceo", "Stage.tsx");
     const onb = read("components", "ceo", "Onboarding.tsx");

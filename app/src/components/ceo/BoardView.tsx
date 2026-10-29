@@ -5,7 +5,7 @@
  * La lógica vive en lib/ceo/board.ts; aquí solo se presenta y se guarda el resultado.
  */
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
 import { ArrowRight, Check, Clock, Lock, X } from "lucide-react";
 import {
@@ -16,6 +16,7 @@ import { personOf } from "@/lib/ceo/cast";
 import { celebrate } from "@/lib/ceo/celebrate";
 import { useCeo } from "./CeoProvider";
 import { Avatar, until } from "./ui";
+import { Stage, StageChoice, StepTitle } from "./Stage";
 
 export function BoardView() {
   const c = useCeo();
@@ -108,16 +109,15 @@ function Stat({ k, v }: { k: string; v: string }) {
   return <div className="rounded-2xl bg-white/10 px-3 py-2.5"><div className="text-[11px] text-white/60">{k}</div><div className="text-lg font-semibold tabular-nums">{v}</div></div>;
 }
 
-// ───────────────────────────────────────────── sesión
+// ───────────────────────────────────────────── sesión (pantalla completa, paso a paso)
 function Session({ onExit }: { onExit: () => void }) {
   const c = useCeo();
   const { chair, board, names } = useNames();
   const [t0] = useState(() => startTrust(c.relations[chair.id] ?? 50, c.relations[board.id] ?? 50));
   const [picks, setPicks] = useState<Picks>({});
+  const [sel, setSel] = useState<string | null>(null);
   const [i, setI] = useState(0);
   const [saved, setSaved] = useState(false);
-  const headRef = useRef<HTMLHeadingElement>(null);
-  const reactRef = useRef<HTMLParagraphElement>(null);
 
   const done = i >= STEPS.length;
   const result = useMemo(() => scoreBoard(picks, t0), [picks, t0]);
@@ -125,8 +125,7 @@ function Session({ onExit }: { onExit: () => void }) {
   const picked = step ? step.options.find((o) => o.id === picks[step.id]) : undefined;
   const chains = step ? chainsAt(step.id, picks) : [];
 
-  useEffect(() => { headRef.current?.focus(); }, [i]);
-  useEffect(() => { if (picked) reactRef.current?.focus(); }, [picked]);
+  useEffect(() => { setSel(null); }, [i]);
   useEffect(() => {
     if (!done || saved || !result.complete) return;
     setSaved(true);
@@ -134,108 +133,79 @@ function Session({ onExit }: { onExit: () => void }) {
     if (result.passed) celebrate("appointment");
   }, [done, saved, result, c]);
 
-  if (done) return <Result result={result} t0={t0} picks={picks} onExit={onExit} />;
+  const labels = [...STEPS.map((_, k) => `Momento ${k + 1}`), "Veredicto"];
+  const confirm = () => { if (step && sel && !picked) setPicks((p) => ({ ...p, [step.id]: sel })); };
+  const next = done ? undefined : picked ? () => setI((n) => n + 1) : confirm;
+  const label = picked ? (i + 1 < STEPS.length ? "Siguiente momento" : "Escuchar al consejo") : "Confirmar";
+
+  if (done) {
+    return (
+      <Stage overlay steps={labels} at={STEPS.length} onExit={onExit} aside={<Link href="/ceo/carrera" className="btn bg-white text-ink hover:bg-white/90 px-5 py-2.5 font-semibold">Ir a mi carrera <ArrowRight size={15} /></Link>}>
+        <Result result={result} t0={t0} picks={picks} />
+      </Stage>
+    );
+  }
   const who = step!.speaker === "chair" ? chair : board;
-
   return (
-    <div className="max-w-3xl mx-auto space-y-5">
-      <div className="flex items-center justify-between gap-3 text-xs text-slate-500">
-        <span>Junta ante el Consejo · {c.pack.name}</span>
-        <span className="tabular-nums">Momento {i + 1} de {STEPS.length}</span>
-      </div>
-      <div className="flex gap-1.5" aria-hidden>
-        {STEPS.map((s, k) => <div key={s.id} className={clsx("h-1.5 flex-1 rounded-full", k < i ? "bg-indigo" : k === i ? "bg-indigo/50" : "bg-indigo-soft")} />)}
-      </div>
-
-      <section className="card p-5 sm:p-7">
-        <h1 ref={headRef} tabIndex={-1} className="text-xl font-semibold text-ink outline-none">{step!.title}</h1>
-        {chains.map((ch) => (
-          <p key={ch.text} className="mt-4 rounded-2xl border-l-4 border-indigo/40 bg-indigo-soft/40 px-4 py-3 text-sm text-ink">{fill(ch.text, names)}</p>
-        ))}
-        <div className="mt-5 flex gap-3">
-          <Avatar id={who.id} size={40} />
-          <div className="min-w-0">
-            <div className="text-xs text-slate-500">{who.name} · {who.role}</div>
-            <p className="mt-1 text-[15px] leading-relaxed text-ink">{fill(step!.prompt, names)}</p>
-          </div>
+    <Stage overlay steps={labels} at={i} onExit={onExit} onNext={next} next={label} nextOff={!picked && !sel}
+      top={<span className="chip bg-white/10 text-white/80 text-xs">Junta · {c.pack.name}</span>}>
+      <StepTitle eyebrow={`Momento ${i + 1} de ${STEPS.length}`} title={step!.title} />
+      {chains.map((ch) => (
+        <p key={ch.text} className="mt-5 rounded-2xl border-l-4 border-mint/60 bg-white/[.08] px-4 py-3 text-sm text-white/90">{fill(ch.text, names)}</p>
+      ))}
+      <div className="mt-5 flex gap-3">
+        <Avatar id={who.id} size={40} />
+        <div className="min-w-0">
+          <div className="text-[11px] text-white/55">{who.name} · {who.role}</div>
+          <div className="mt-1 rounded-2xl rounded-tl-md bg-white text-ink px-4 py-3 text-[15px] leading-relaxed">{fill(step!.prompt, names)}</div>
         </div>
-
-        <fieldset className="mt-6" disabled={!!picked}>
-          <legend className="text-sm font-semibold text-ink">¿Qué haces?</legend>
+      </div>
+      {!picked ? (
+        <div className="mt-6">
+          <div className="text-sm font-semibold text-white/85">¿Qué haces?</div>
           <div className="mt-3 space-y-2.5">
-            {step!.options.map((o) => {
-              const on = picked?.id === o.id;
-              return (
-                <button
-                  key={o.id}
-                  type="button"
-                  aria-pressed={on}
-                  onClick={() => setPicks((p) => ({ ...p, [step!.id]: o.id }))}
-                  className={clsx("w-full text-left rounded-2xl border p-4 text-sm leading-relaxed transition-colors",
-                    on ? "border-indigo bg-indigo-soft/50 text-ink" : picked ? "border-slate-100 text-slate-400" : "border-slate-200 text-ink hover:border-indigo/50 hover:bg-indigo-soft/20")}
-                >{o.label}</button>
-              );
-            })}
+            {step!.options.map((o, k) => <StageChoice key={o.id} letter={String.fromCharCode(65 + k)} on={sel === o.id} onClick={() => setSel(o.id)}>{o.label}</StageChoice>)}
           </div>
-        </fieldset>
-
-        <div aria-live="polite">
-          {picked && (
-            <div className="mt-5 space-y-3 academy-in">
-              <p ref={reactRef} tabIndex={-1} className="rounded-2xl bg-canvas p-4 text-sm text-ink outline-none">{fill(picked.reaction, names)}</p>
-              <p className="text-sm text-slate-600"><b className="text-ink">Nota CEO.</b> {step!.nota}</p>
-              <button onClick={() => setI((n) => n + 1)} className="btn-primary">{i + 1 < STEPS.length ? "Siguiente momento" : "Escuchar al consejo"} <ArrowRight size={16} /></button>
-            </div>
-          )}
         </div>
-      </section>
-    </div>
+      ) : (
+        <div className="mt-6 space-y-3 academy-in" aria-live="polite">
+          <div className="flex justify-end"><div className="max-w-[85%] rounded-2xl rounded-br-md bg-indigo-light text-white px-4 py-2.5 text-sm leading-relaxed">{picked.label}</div></div>
+          <div className="rounded-2xl bg-white text-ink p-4 text-sm leading-relaxed">{fill(picked.reaction, names)}</div>
+          <p className="rounded-2xl bg-white/[.08] border border-white/10 px-4 py-3 text-sm text-white/85"><b className="text-white">Nota CEO.</b> {step!.nota}</p>
+        </div>
+      )}
+    </Stage>
   );
 }
 
 // ───────────────────────────────────────────── resultado
-function Result({ result, t0, picks, onExit }: { result: ReturnType<typeof scoreBoard>; t0: number; picks: Picks; onExit: () => void }) {
+function Result({ result, t0, picks }: { result: ReturnType<typeof scoreBoard>; t0: number; picks: Picks }) {
   const { chair } = useNames();
-  const headRef = useRef<HTMLHeadingElement>(null);
-  useEffect(() => { headRef.current?.focus(); }, []);
   const weak = CRITERIA.find((k) => k.id === result.weakest)!;
   const trustLow = result.trust < PASS_TRUST;
   const chainCount = STEPS.reduce((n, s) => n + chainsAt(s.id, picks).length, 0);
   return (
-    <div className="max-w-3xl mx-auto space-y-5">
-      <section className={clsx("rounded-3xl p-6 sm:p-8", result.passed ? "bg-gradient-to-br from-[#141735] via-[#1E1A5E] to-[#2B1F8A] text-white" : "card")}>
-        <div className={clsx("text-[11px] font-semibold uppercase tracking-wider", result.passed ? "text-white/60" : "text-indigo")}>Veredicto del consejo</div>
-        <h1 ref={headRef} tabIndex={-1} className={clsx("mt-2 text-2xl font-semibold leading-tight outline-none", result.passed ? "text-white" : "text-ink")}>
-          {result.passed ? "Superaste la Junta ante el Consejo." : "El consejo todavía no te da su voto."}
-        </h1>
-        <p className={clsx("mt-3 text-sm leading-relaxed max-w-2xl", result.passed ? "text-white/80" : "text-slate-600")}>
-          {result.passed
-            ? `${chair.name} cierra la sesión: «Queda en el acta. Si cumples lo demás, el nombramiento es tuyo». El requisito ya aparece cumplido en tu carrera.`
-            : trustLow
-              ? `${chair.name} agradece tu tiempo y pide volver a verte en la siguiente sesión. La confianza quedó en ${result.trust}; necesitabas ${PASS_TRUST}.`
-              : `La sala confía en ti, pero ${weak.name.toLowerCase()} quedó debajo de ${PASS_CRITERION}. El consejo no vota con promedios: revisa cada criterio.`}
-        </p>
+    <div>
+      <StepTitle eyebrow="Veredicto del consejo" title={result.passed ? "Superaste la Junta ante el Consejo." : "El consejo todavía no te da su voto."}
+        text={result.passed
+          ? `${chair.name} cierra la sesión: «Queda en el acta. Si cumples lo demás, el nombramiento es tuyo». El requisito ya aparece cumplido en tu carrera.`
+          : trustLow
+            ? `${chair.name} agradece tu tiempo y pide volver a verte en la siguiente sesión. La confianza quedó en ${result.trust}; necesitabas ${PASS_TRUST}.`
+            : `La sala confía en ti, pero ${weak.name.toLowerCase()} quedó debajo de ${PASS_CRITERION}. El consejo no vota con promedios: revisa cada criterio.`} />
+      <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 [&>*]:min-w-0">
+        <Score label="Confianza" value={result.trust} line={PASS_TRUST} dark sub={`Entraste con ${t0}`} />
+        {CRITERIA.map((k) => <Score key={k.id} label={k.id === "rendicion" ? "Rendición" : k.name} value={result.scores[k.id]} line={PASS_CRITERION} dark />)}
+      </div>
+      {chainCount > 0 && <p className="mt-4 text-xs text-white/60">{chainCount === 1 ? "Una de tus respuestas" : `${chainCount} de tus respuestas`} cambió lo que pasó después en la sala.</p>}
+      {!result.passed && <p className="mt-2 text-xs text-white/60">Puedes volver a presentar la junta cuando el consejo vuelva a sesionar, en un día.</p>}
 
-        <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 [&>*]:min-w-0">
-          <Score label="Confianza" value={result.trust} line={PASS_TRUST} dark={result.passed} sub={`Entraste con ${t0}`} />
-          {CRITERIA.map((k) => <Score key={k.id} label={k.id === "rendicion" ? "Rendición" : k.name} value={result.scores[k.id]} line={PASS_CRITERION} dark={result.passed} />)}
-        </div>
-        {chainCount > 0 && <p className={clsx("mt-4 text-xs", result.passed ? "text-white/60" : "text-slate-500")}>{chainCount === 1 ? "Una de tus respuestas" : `${chainCount} de tus respuestas`} cambió lo que pasó después en la sala.</p>}
-
-        <div className="mt-6 flex flex-wrap gap-2">
-          <Link href="/ceo/carrera" className={clsx("inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold", result.passed ? "bg-white text-ink hover:bg-white/90" : "bg-indigo text-white hover:bg-indigo/90")}>Ir a mi carrera <ArrowRight size={15} /></Link>
-          {!result.passed && <button onClick={onExit} className="btn-ghost">Volver</button>}
-        </div>
-        {!result.passed && <p className="mt-4 text-xs text-slate-500">Puedes volver a presentar la junta cuando el consejo vuelva a sesionar, en un día.</p>}
-      </section>
-
-      <section className="card p-5 sm:p-6">
-        <h2 className="font-semibold text-ink">Lo que dijiste en la sala</h2>
-        <ol className="mt-4 space-y-3">
+      <div className="mt-6 rounded-2xl bg-white text-ink p-4 sm:p-5">
+        <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Lo que dijiste en la sala</div>
+        <ol className="mt-3 space-y-3">
           {STEPS.map((s, k) => {
             const o = s.options.find((x) => x.id === picks[s.id]);
             return (
-              <li key={s.id} className="rounded-2xl border border-slate-100 p-4 text-sm">
+              <li key={s.id} className="rounded-xl border border-slate-100 p-3 text-sm">
                 <div className="text-xs text-slate-500">Momento {k + 1} · {s.title}</div>
                 <div className="mt-1 text-ink">{o?.label}</div>
                 <div className="mt-2 text-slate-600"><b className="text-ink">Nota CEO.</b> {s.nota}</div>
@@ -243,7 +213,7 @@ function Result({ result, t0, picks, onExit }: { result: ReturnType<typeof score
             );
           })}
         </ol>
-      </section>
+      </div>
     </div>
   );
 }
