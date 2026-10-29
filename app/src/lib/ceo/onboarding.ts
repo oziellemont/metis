@@ -6,7 +6,8 @@
  * Lógica pura: sin React ni navegador. El servidor usa `sanitizeOnboarding` antes de guardar.
  */
 import { EXP_AREAS, GOALS, ROLES, YEARS } from "./profile";
-import { validateHome } from "./catalog";
+import { catalogCompanyById, validateHome } from "./catalog";
+import type { CeoState } from "./types";
 
 export const ONBOARDING_VERSION = 1;
 
@@ -91,7 +92,7 @@ export function sanitizeOnboarding(raw: unknown, now: number): OnboardingCheck {
       preferredSessionMinutes: minutes,
       preferredNotificationWindow: { start, end },
       timeZone: tz,
-      onboardingCompletedAt: now,
+      onboardingCompletedAt: typeof r.onboardingCompletedAt === "number" && Number.isFinite(r.onboardingCompletedAt) && r.onboardingCompletedAt > 0 && r.onboardingCompletedAt <= now ? Math.round(r.onboardingCompletedAt) : now,
     },
   };
 }
@@ -113,4 +114,45 @@ export function onboardingToRow(p: OnboardingProfile): Record<string, unknown> {
     tz: p.timeZone,
     onboarding_completed_at: p.onboardingCompletedAt ? new Date(p.onboardingCompletedAt).toISOString() : null,
   };
+}
+
+/** Frase de apoyo de la pantalla de proyección (adenda §4). */
+export const PROJECTION_SUBTITLE = "Comenzarás a practicar cómo evaluar riesgos, priorizar y tomar decisiones con consecuencias.";
+export const GOAL_TITLE = "¿Cuántas decisiones quieres practicar cada día?";
+export const GOAL_SUBTITLE = "Empieza con un ritmo que puedas sostener. Puedes cambiarlo cuando quieras.";
+
+export const isDailyGoal = (v: unknown): v is DailyDecisionGoal => v === 1 || v === 2 || v === 3;
+export const isSessionMinutes = (v: unknown): v is SessionMinutes => (SESSION_MINUTES as readonly unknown[]).includes(v);
+
+/**
+ * Arma lo que se manda a POST /api/ceo/perfil a partir de la partida guardada.
+ * Devuelve null si la persona no pasó por la meta diaria (empezó antes de 1.0) o si su empresa no está en el catálogo.
+ * Lo declarado en el perfil profesional se reutiliza tal cual: no se vuelve a preguntar.
+ */
+export function onboardingFromState(s: CeoState): Record<string, unknown> | null {
+  const goal = s.settings.dailyGoal;
+  if (!s.startedAt || !isDailyGoal(goal)) return null;
+  const co = catalogCompanyById(s.company);
+  if (!co) return null;
+  const p = s.profile;
+  return {
+    professionalLevel: p?.role ?? null,
+    functionalArea: p?.areas?.[0] ?? null,
+    experienceBand: p?.years ?? null,
+    learningGoal: p?.goal ?? null,
+    homeIndustryId: co.industryId,
+    homeCompanyVariantId: co.id,
+    dailyDecisionGoal: goal,
+    preferredSessionMinutes: isSessionMinutes(s.settings.sessionMinutes) ? s.settings.sessionMinutes : DEFAULT_SESSION_MINUTES,
+    preferredNotificationWindow: { start: s.settings.windowStart, end: s.settings.windowEnd },
+    timeZone: s.settings.tz,
+    onboardingCompletedAt: s.startedAt,
+  };
+}
+
+/** Firma de lo enviado: si cambia (por ejemplo, la meta en Ajustes), se vuelve a guardar en el servidor. */
+export function onboardingSignature(payload: Record<string, unknown> | null): string | null {
+  if (!payload) return null;
+  const w = payload.preferredNotificationWindow as NotificationWindow;
+  return [ONBOARDING_VERSION, payload.homeCompanyVariantId, payload.dailyDecisionGoal, payload.preferredSessionMinutes, w.start, w.end, payload.timeZone, payload.professionalLevel, payload.functionalArea, payload.experienceBand, payload.learningGoal].join("|");
 }

@@ -13,9 +13,12 @@ import { DiagnosticCases, DiagnosticOffer, ProfileQuestions, StartingPoint, Tier
 import { companyForIndustry, suggestTier, type InitialDiagnostic, type ProfessionalProfile } from "@/lib/ceo/profile";
 import { newState, rulesOf } from "@/lib/ceo/engine";
 import { masteryOf } from "@/lib/ceo/mastery";
+import { visibleIndustries, statusLabel } from "@/lib/ceo/catalog";
+import { DAILY_GOALS, DEFAULT_DAILY_GOAL, GOAL_SUBTITLE, GOAL_TITLE, PROJECTION_SUBTITLE, SESSION_MINUTES, weeklyProjection, weeklyProjectionText, type DailyDecisionGoal, type SessionMinutes } from "@/lib/ceo/onboarding";
 
 /**
- * Pasos: tu nombre → tu experiencia (5 preguntas, todas omitibles) → eliges industria → tu empresa → cómo te contactamos.
+ * Pasos: tu nombre → tu experiencia (5 preguntas, todas omitibles) → eliges industria → tu empresa → tu meta diaria
+ * → cómo te contactamos → tu primera semana (proyección 7/14/21 y «Empezar en …»). Meta y proyección: adenda v3.2 §4.
  * La experiencia declarada solo ajusta recomendaciones y ayuda; nunca dominio, etapa, XP ni nombramientos (V33).
  */
 export function Onboarding() {
@@ -32,6 +35,8 @@ export function Onboarding() {
   const [we, setWe] = useState(19);
   const [wa, setWa] = useState(true);
   const [intensivo, setIntensivo] = useState(false);
+  const [goal, setGoal] = useState<DailyDecisionGoal>(DEFAULT_DAILY_GOAL);
+  const [minutes, setMinutes] = useState<SessionMinutes | undefined>();
   const [profile, setProfile] = useState<ProfessionalProfile | undefined>();
   const [q, setQ] = useState(0);
   /** Dentro del paso «Tu experiencia»: preguntas → oferta del diagnóstico → 3 decisiones → tu punto de partida. */
@@ -40,7 +45,8 @@ export function Onboarding() {
   const [tier, setTier] = useState(0);
   const offered = suggestTier(profile);
   const zero = useMemo(() => masteryOf(newState()), []);
-  const STEPS = 5;
+  const soon = useMemo(() => visibleIndustries().filter((i) => i.status === "coming_soon"), []);
+  const STEPS = 7;
   const toCompany = (pf?: ProfessionalProfile) => {
     const co = companyForIndustry(pf?.industry, COMPANIES.map((x) => x.id));
     if (co) setCompany(co);
@@ -57,7 +63,7 @@ export function Onboarding() {
 
   const go = () => {
     if (offered) track("exigencia_elegida", { tier: tier ? offered : 0 });
-    c.start({ name, email, phone, company, profile, diagnostic, tier: offered ? tier : 0, settings: { windowStart: ws, windowEnd: we, notifyEmail: !!email, notifyWhatsapp: wa && !!phone, intensivo } });
+    c.start({ name, email, phone, company, profile, diagnostic, tier: offered ? tier : 0, settings: { windowStart: ws, windowEnd: we, notifyEmail: !!email, notifyWhatsapp: wa && !!phone, intensivo, dailyGoal: goal, ...(minutes ? { sessionMinutes: minutes } : {}) } });
     try { if (typeof Notification !== "undefined" && Notification.permission === "default") Notification.requestPermission(); } catch { /* ignore */ }
     router.replace("/ceo");
   };
@@ -115,6 +121,12 @@ export function Onboarding() {
               ))}
             </div>
             <button onClick={() => setCompany(COMPANIES[Math.floor(Math.random() * COMPANIES.length)].id)} className="mt-3 inline-flex items-center gap-1.5 text-sm text-white/60 hover:text-white"><Shuffle size={14} /> Que me toque al azar</button>
+            {soon.length > 0 && (
+              <div className="mt-6">
+                <div className="text-[11px] font-semibold uppercase tracking-wider text-white/40">{statusLabel("coming_soon")}</div>
+                <div className="mt-2 flex flex-wrap gap-2">{soon.map((i) => <span key={i.id} className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/50">{i.name}</span>)}</div>
+              </div>
+            )}
             {offered > 0 && <TierChoice tier={tier} setTier={setTier} offered={offered} names={[rulesOf(0).name, rulesOf(offered).name]} />}
             <div className="mt-6 flex gap-3"><button onClick={() => { setPhase(diagnostic ? "start" : "q"); setStep(1); }} className="btn text-white/70 hover:text-white">Atrás</button><button onClick={() => setStep(3)} className="btn bg-white text-ink hover:bg-white/90 flex-1 justify-center py-3 text-base font-semibold">Dirigir {pk.short} <ArrowRight size={16} /></button></div>
           </section>
@@ -146,6 +158,35 @@ export function Onboarding() {
 
         {step === 4 && (
           <section key="s4" className="academy-in mt-10">
+            <div className="text-xs font-semibold uppercase tracking-wider text-mint">Tu ritmo</div>
+            <h1 className="mt-2 text-3xl font-semibold leading-tight">{GOAL_TITLE}</h1>
+            <p className="mt-3 text-white/70 text-[15px] leading-relaxed">{GOAL_SUBTITLE}</p>
+            <div role="radiogroup" aria-label="Meta diaria" className="mt-6 space-y-3">
+              {DAILY_GOALS.map((g) => (
+                <button key={g.value} role="radio" aria-checked={goal === g.value} onClick={() => setGoal(g.value)} className={clsx("w-full text-left rounded-2xl p-4 sm:p-5 flex gap-4 items-center transition-all border-2", goal === g.value ? "bg-white text-ink border-white shadow-2xl" : "bg-white/5 border-white/10 hover:bg-white/10")}>
+                  <span className={clsx("h-11 w-11 shrink-0 rounded-xl grid place-items-center text-lg font-semibold", goal === g.value ? "bg-indigo-soft text-indigo" : "bg-white/10 text-white")}>{g.value}</span>
+                  <span className="flex-1 min-w-0">
+                    <span className="flex flex-wrap items-center gap-2"><span className="font-semibold">{g.label}</span>{"recommended" in g && g.recommended && <span className={clsx("chip text-[10px]", goal === g.value ? "bg-indigo-soft text-indigo" : "bg-white/10 text-white/70")}>Recomendado</span>}</span>
+                    <span className={clsx("block text-sm mt-0.5", goal === g.value ? "text-slate-600" : "text-white/60")}>{g.hint}</span>
+                  </span>
+                  {goal === g.value && <span className="h-6 w-6 rounded-full bg-indigo text-white grid place-items-center shrink-0"><Check size={14} strokeWidth={3} /></span>}
+                </button>
+              ))}
+            </div>
+            <div className="mt-6 rounded-2xl bg-white/5 border border-white/10 p-4">
+              <div className="text-xs font-semibold text-white/60 flex items-center gap-1.5"><Clock size={13} /> Tiempo por sesión (opcional)</div>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {SESSION_MINUTES.map((m) => (
+                  <button key={m} aria-pressed={minutes === m} onClick={() => setMinutes((x) => (x === m ? undefined : m))} className={clsx("rounded-full px-3.5 py-1.5 text-sm border transition-colors", minutes === m ? "bg-white text-ink border-white" : "border-white/15 text-white/70 hover:bg-white/10")}>{m} min</button>
+                ))}
+              </div>
+            </div>
+            <div className="mt-6 flex gap-3"><button onClick={() => setStep(3)} className="btn text-white/70 hover:text-white">Atrás</button><button onClick={() => setStep(5)} className="btn bg-white text-ink hover:bg-white/90 flex-1 justify-center py-3 text-base font-semibold">Continuar <ArrowRight size={16} /></button></div>
+          </section>
+        )}
+
+        {step === 5 && (
+          <section key="s5" className="academy-in mt-10">
             <div className="text-xs font-semibold uppercase tracking-wider text-mint">Antes de que suene tu teléfono</div>
             <h1 className="mt-2 text-3xl font-semibold leading-tight">¿Dónde te encuentra tu equipo?</h1>
             <p className="mt-3 text-white/70 text-[15px]">Cada día te llegan de 2 a 4 asuntos a horas distintas. Casi todos tienen tiempo límite: como en la vida real, si no respondes, alguien decide por ti.</p>
@@ -168,10 +209,28 @@ export function Onboarding() {
                 <Zap size={18} className={intensivo ? "text-indigo" : "text-slate-400"} />
                 <span><span className="text-sm font-medium block">Modo intensivo</span><span className="text-xs text-slate-500">Todos los asuntos del día llegan juntos al inicio de tu horario. Para quien prefiere jugar en un solo rato.</span></span>
               </button>
-              <button onClick={go} className="btn-primary w-full justify-center py-3 text-base"><Bell size={16} /> Empezar mi primer día</button>
-              <p className="text-[11px] text-slate-400 text-center">Tu primer mensaje llega en unos segundos.</p>
+              <button onClick={() => setStep(6)} className="btn-primary w-full justify-center py-3 text-base">Continuar <ArrowRight size={16} /></button>
             </div>
-            <button onClick={() => setStep(3)} className="mt-4 btn text-white/70 hover:text-white">Atrás</button>
+            <button onClick={() => setStep(4)} className="mt-4 btn text-white/70 hover:text-white">Atrás</button>
+          </section>
+        )}
+
+        {step === 6 && (
+          <section key="s6" className="academy-in mt-10">
+            <div className="text-xs font-semibold uppercase tracking-wider text-mint">Tu primera semana</div>
+            <div className="mt-6 rounded-2xl bg-white text-ink p-6 sm:p-8 shadow-2xl text-center">
+              <div aria-live="polite" className="text-6xl font-semibold text-indigo tabular-nums">{weeklyProjection(goal)}</div>
+              <h1 className="mt-3 text-2xl sm:text-3xl font-semibold leading-tight">{weeklyProjectionText(goal)}</h1>
+              <p className="mt-3 text-[15px] leading-relaxed text-slate-600">{PROJECTION_SUBTITLE}</p>
+              <div role="radiogroup" aria-label="Meta diaria" className="mt-6 inline-flex rounded-full bg-slate-100 p-1">
+                {DAILY_GOALS.map((g) => (
+                  <button key={g.value} role="radio" aria-checked={goal === g.value} onClick={() => setGoal(g.value)} className={clsx("rounded-full px-4 py-1.5 text-sm transition-colors", goal === g.value ? "bg-white text-ink shadow font-medium" : "text-slate-500 hover:text-ink")}>{g.label}</button>
+                ))}
+              </div>
+              <button onClick={go} className="btn-primary w-full justify-center py-3 text-base mt-6"><Bell size={16} /> Empezar en {pk.short}</button>
+              <p className="mt-2 text-[11px] text-slate-400">Tu primer mensaje llega en unos segundos. Puedes cambiar tu meta en Ajustes.</p>
+            </div>
+            <button onClick={() => setStep(5)} className="mt-4 btn text-white/70 hover:text-white">Atrás</button>
           </section>
         )}
       </div>

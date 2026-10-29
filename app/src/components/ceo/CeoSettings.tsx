@@ -2,10 +2,12 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Bell, Cloud, LogOut, Clock, FastForward, Mail, MessageCircle, RotateCcw, Save, Volume2, Zap } from "lucide-react";
+import { Target, Bell, Cloud, LogOut, Clock, FastForward, Mail, MessageCircle, RotateCcw, Save, Volume2, Zap } from "lucide-react";
 import { playChime, setSoundOn, soundOn } from "@/lib/ceo/celebrate";
 import { ceoSignOut } from "@/lib/ceo/auth-client";
 import { useCeo } from "./CeoProvider";
+import clsx from "clsx";
+import { DAILY_GOALS, DEFAULT_DAILY_GOAL, SESSION_MINUTES, weeklyProjectionText } from "@/lib/ceo/onboarding";
 
 const TZS = ["America/Monterrey", "America/Mexico_City", "America/Cancun", "America/Tijuana", "America/Hermosillo", "America/Bogota", "America/Lima", "America/Santiago", "America/Argentina/Buenos_Aires", "Europe/Madrid"];
 
@@ -25,6 +27,7 @@ export function CeoSettings() {
 
   const set = <K extends keyof typeof f>(k: K, v: (typeof f)[K]) => { setF((x) => ({ ...x, [k]: v })); setSaved(false); };
   const save = () => { c.updateSettings(f); setSaved(true); };
+  const goal = f.dailyGoal ?? DEFAULT_DAILY_GOAL;
   const hours = Array.from({ length: 24 }, (_, i) => i);
   const input = "mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm focus:border-indigo focus:outline-none focus:ring-2 focus:ring-indigo/20";
 
@@ -64,6 +67,21 @@ export function CeoSettings() {
           <input type="checkbox" checked={f.intensivo} onChange={(e) => set("intensivo", e.target.checked)} className="accent-indigo h-4 w-4 mt-0.5" />
           <span><b className="inline-flex items-center gap-1 text-ink"><Zap size={14} /> Modo intensivo</b><br /><span className="text-slate-500">Todo lo del día te llega junto al inicio de tu horario, con 5 minutos entre mensaje y mensaje.</span></span>
         </label>
+        <div className="rounded-2xl bg-slate-50 p-4 text-sm">
+          <b className="inline-flex items-center gap-1 text-ink"><Target size={14} /> Meta diaria de decisiones</b>
+          <div role="radiogroup" aria-label="Meta diaria" className="mt-3 flex flex-wrap gap-2">
+            {DAILY_GOALS.map((g) => (
+              <button key={g.value} type="button" role="radio" aria-checked={goal === g.value} onClick={() => set("dailyGoal", g.value)} className={clsx("rounded-full border px-3.5 py-1.5", goal === g.value ? "border-indigo bg-indigo-soft text-indigo font-medium" : "border-slate-200 text-slate-600 hover:bg-white")}>{g.label} · {g.value}</button>
+            ))}
+          </div>
+          <p className="mt-2 text-slate-500">{weeklyProjectionText(goal)}</p>
+          <div className="mt-3 flex flex-wrap items-center gap-2 text-slate-600">
+            <span className="text-xs">Tiempo por sesión:</span>
+            {SESSION_MINUTES.map((m) => (
+              <button key={m} type="button" aria-pressed={f.sessionMinutes === m} onClick={() => set("sessionMinutes", m)} className={clsx("rounded-full border px-3 py-1 text-xs", f.sessionMinutes === m ? "border-indigo bg-indigo-soft text-indigo font-medium" : "border-slate-200 hover:bg-white")}>{m} min</button>
+            ))}
+          </div>
+        </div>
         <label className="flex items-start gap-3 rounded-2xl bg-slate-50 p-4 text-sm">
           <input type="checkbox" checked={sound} onChange={(e) => toggleSound(e.target.checked)} className="accent-indigo h-4 w-4 mt-0.5" />
           <span><b className="inline-flex items-center gap-1 text-ink"><Volume2 size={14} /> Sonido al lograr algo</b><br /><span className="text-slate-500">Un tono breve cuando recibes un nombramiento, apruebas una empresa, logras un cambio o terminas una lección. Se guarda en este dispositivo.</span></span>
