@@ -156,7 +156,7 @@ function Board({ sim }: { sim: ChangeSim }) {
             <div className="text-[11px] font-semibold uppercase tracking-wider text-white/60">Reto final · fase «{sim.orgPhase}»</div>
             <h1 className="mt-1 text-xl sm:text-2xl font-semibold leading-tight">{def.title}</h1>
           </div>
-          {!finished && <button onClick={() => window.confirm("¿Presentar el resultado al consejo? Ya no podrás usar más palancas y el consejo dará su veredicto del nivel.") && c.closeChange()} className="chip bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 text-xs gap-1"><Flag size={12} /> Presentar al consejo</button>}
+          {!finished && <button onClick={() => window.confirm("¿Presentar el resultado al consejo? El consejo dará su veredicto del nivel.") && c.closeChange()} className="chip bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 text-xs gap-1"><Flag size={12} /> Presentar al consejo</button>}
         </div>
         <div className="mt-5 grid grid-cols-3 gap-3">
           <Meter label="Semanas" value={`${sim.weeksLeft} restan`} pct={sim.weeksUsed / sim.weeksTotal} icon={<Hourglass size={13} />} />

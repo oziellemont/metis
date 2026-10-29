@@ -15,6 +15,9 @@ import { useCeo } from "./CeoProvider";
 import { competenciesOfItem } from "@/lib/ceo/mastery";
 import { competencyNames, helpBand } from "@/lib/ceo/profile";
 import { Avatar, ChannelChip, clock, until } from "./ui";
+import { Stage, StageChoice, StepTitle } from "./Stage";
+
+const CASE_STEPS = ["El caso", "Contexto", "Decides", "Resultado", "Aprendes"];
 
 export function CaseView({ id }: { id: string }) {
   const c = useCeo();
@@ -27,6 +30,8 @@ export function CaseView({ id }: { id: string }) {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [ev, setEv] = useState<{ option: string; quality: Written["quality"]; feedback: string } | null>(null);
+  const done = !!e && (e.status === "decidido" || e.status === "vencido");
+  const [step, setStep] = useState(done ? 3 : 0);
   const eligible = !!e && e.status === "pendiente" && writtenEligible(e.item) && !!c.user;
   useEffect(() => {
     if (!eligible || ai) return;
@@ -34,20 +39,22 @@ export function CaseView({ id }: { id: string }) {
   }, [eligible, ai]);
 
   useEffect(() => { if (e && e.status !== "futuro") c.markRead(id); }, [e?.status, id]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { window.scrollTo({ top: 0 }); }, [id]);
+  useEffect(() => { setStep(done ? 3 : 0); }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Si vence mientras está abierto, salta al resultado.
+  useEffect(() => { if (done && step < 3) setStep(3); }, [done]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!e || e.status === "futuro") {
     return (
-      <div className="card p-8 max-w-lg mx-auto text-center">
-        <h2 className="text-lg font-semibold">Este asunto todavía no llega</h2>
-        <p className="mt-1 text-sm text-slate-500">Cuando llegue lo verás en tu bandeja.</p>
-        <Link href="/ceo/bandeja" className="btn-primary mt-6">Ir a la bandeja</Link>
-      </div>
+      <Stage steps={CASE_STEPS} at={0} exit="/ceo/bandeja">
+        <StepTitle title="Este asunto todavía no llega" text="Cuando llegue lo verás en tu bandeja." />
+        <Link href="/ceo/bandeja" className="btn bg-white text-ink mt-6 inline-flex">Ir a la bandeja</Link>
+      </Stage>
     );
   }
 
   const it = e.item;
-  const confirm = () => { if (!picked) return; c.decide(it.id, picked); setJustDecided(true); window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" }); };
+  const decided = () => { setJustDecided(true); setStep(3); };
+  const confirm = () => { if (!picked) return; c.decide(it.id, picked); decided(); };
   const consent = async () => {
     setBusy(true);
     const r = await fetch("/api/ceo/responder", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ consent: true }) }).then((x) => x.json()).catch(() => null);
@@ -66,97 +73,92 @@ export function CaseView({ id }: { id: string }) {
   const confirmWritten = () => {
     if (!ev) return;
     c.decide(it.id, ev.option, { text: draft, quality: ev.quality, feedback: ev.feedback });
-    setJustDecided(true); window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+    decided();
   };
   const canWrite = eligible && ai?.enabled;
   const nextPending = c.pending.find((p) => p.item.id !== it.id);
+  const deadline = e.status === "pendiente" ? <span className={clsx("chip gap-1", e.deadline - c.now < 3 * 3_600_000 ? "bg-coral text-white" : "bg-white/10 text-white")}><Clock size={11} /> {until(e.deadline, c.now)}</span> : null;
+
+  // Navegación: antes de decidir no se puede pasar de «Decides»; después, no se regresa a decidir.
+  const back = step === 0 || (done && step === 3) ? undefined : () => setStep(step - 1);
+  const fwd = step < 2 ? () => setStep(step + 1) : done && step === 3 ? () => setStep(4) : undefined;
+  const nextLabel = step === 0 ? "Ver el contexto" : step === 1 ? "Decidir" : "Lo que aprendes";
 
   return (
-    <div className="max-w-3xl mx-auto">
-      <Link href="/ceo/bandeja" className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-ink"><ArrowLeft size={15} /> Bandeja</Link>
+    <Stage steps={CASE_STEPS} at={step} reach={done ? 4 : 2} exit="/ceo/bandeja" top={deadline} onBack={back} onNext={fwd} next={nextLabel}
+      aside={step === 4 ? (nextPending ? <Link href={`/ceo/caso/${nextPending.item.id}`} className="btn bg-white text-ink hover:bg-white/90 px-5 py-2.5 font-semibold">Siguiente asunto <ArrowRight size={15} /></Link> : <Link href="/ceo" className="btn bg-white text-ink hover:bg-white/90 px-5 py-2.5 font-semibold">Volver a Hoy <ArrowRight size={15} /></Link>) : undefined}>
+      {step === 0 && (
+        <>
+          <div className="text-xs font-semibold uppercase tracking-wider text-mint">Te llegó un asunto</div>
+          <article className="mt-3 text-ink">
+            {it.channel === "whatsapp" ? <WhatsApp e={e} /> : it.channel === "llamada" ? <Call e={e} /> : it.channel === "junta" ? <Meeting e={e} /> : <Mail e={e} />}
+          </article>
+        </>
+      )}
 
-      <article className="mt-3 academy-in">
-        {it.channel === "whatsapp" ? <WhatsApp e={e} /> : it.channel === "llamada" ? <Call e={e} /> : it.channel === "junta" ? <Meeting e={e} /> : <Mail e={e} />}
-      </article>
-
-      {it.data && <DataCard d={it.data} />}
-
-      <WhoIsInvolved it={it} open={e.status === "pendiente"} />
-
-      {/* decisión */}
-      {e.status === "pendiente" && (
-        <section className="mt-5 card p-5 sm:p-6 academy-in">
-          <div className="flex items-center justify-between gap-3">
-            <div className="text-[11px] font-semibold uppercase tracking-wider text-indigo">Tu decisión</div>
-            <span className={clsx("chip gap-1", e.deadline - c.now < 3 * 3_600_000 ? "bg-coral-soft text-coral" : "bg-amber-soft text-amber")}><Clock size={11} /> Vence en {until(e.deadline, c.now)}</span>
+      {step === 1 && (
+        <>
+          <StepTitle eyebrow="Antes de decidir" title="Lo que necesitas saber" text="Los datos del asunto y quién está en juego. Tómate tu tiempo." />
+          <div className="text-ink">
+            {it.data && <DataCard d={it.data} />}
+            <WhoIsInvolved it={it} open />
           </div>
-          <h2 className="mt-2 text-lg sm:text-xl font-semibold text-ink leading-snug">{it.ask}</h2>
+        </>
+      )}
+
+      {step === 2 && e.status === "pendiente" && (
+        <>
+          <StepTitle eyebrow="Tu decisión" title={it.ask} />
           <CaseHelp it={it} />
           {canWrite && (
-            <div className="mt-4 inline-flex rounded-xl bg-slate-100 p-1 text-sm">
-              <button onClick={() => setMode("options")} className={clsx("inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-medium", mode === "options" ? "bg-white text-ink shadow-sm" : "text-slate-500")}><ListChecks size={14} /> Elegir opción</button>
-              <button onClick={() => setMode("write")} className={clsx("inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-medium", mode === "write" ? "bg-white text-ink shadow-sm" : "text-slate-500")}><PenLine size={14} /> Escribir respuesta</button>
+            <div className="mt-5 inline-flex rounded-xl bg-white/10 p-1 text-sm">
+              <button onClick={() => setMode("options")} className={clsx("inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-medium", mode === "options" ? "bg-white text-ink" : "text-white/70")}><ListChecks size={14} /> Elegir opción</button>
+              <button onClick={() => setMode("write")} className={clsx("inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-medium", mode === "write" ? "bg-white text-ink" : "text-white/70")}><PenLine size={14} /> Escribir respuesta</button>
             </div>
           )}
           {eligible && ai?.available && !ai.consent && (
-            <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-3 rounded-2xl bg-canvas px-4 py-3 text-sm">
-              <PenLine size={16} className="text-indigo shrink-0" />
-              <span className="flex-1 text-slate-600">También puedes contestar con tus palabras. Una IA lee tu texto, lo relaciona con la opción más cercana y te da una nota de mentor. Tu texto no se usa para nada más.</span>
-              <button disabled={busy} onClick={consent} className="rounded-xl bg-indigo px-4 py-2 text-xs font-semibold text-white hover:bg-indigo/90 shrink-0">Activar</button>
+            <div className="mt-5 flex flex-col sm:flex-row sm:items-center gap-3 rounded-2xl bg-white/[.06] border border-white/[.12] px-4 py-3 text-sm">
+              <PenLine size={16} className="text-mint shrink-0" />
+              <span className="flex-1 text-white/75">También puedes contestar con tus palabras. Una IA lee tu texto, lo relaciona con la opción más cercana y te da una nota de mentor. Tu texto no se usa para nada más.</span>
+              <button disabled={busy} onClick={consent} className="rounded-xl bg-white px-4 py-2 text-xs font-semibold text-ink hover:bg-white/90 shrink-0">Activar</button>
             </div>
           )}
-          {err && <p className="mt-3 rounded-xl bg-coral-soft px-3 py-2 text-sm text-coral">{err}</p>}
+          {err && <p className="mt-4 rounded-xl bg-coral/20 px-3 py-2 text-sm text-white">{err}</p>}
           {canWrite && mode === "write" ? (
-            <div className="mt-4">
+            <div className="mt-5">
               {!ev ? (
                 <>
-                  <textarea value={draft} onChange={(x) => { setDraft(x.target.value.slice(0, MAX_CHARS)); setErr(null); }} rows={6} placeholder={it.channel === "whatsapp" ? `Contesta a ${firstName(c.pack, it.from)} como lo harías por WhatsApp…` : `Escribe tu respuesta a ${firstName(c.pack, it.from)}…`} className="w-full rounded-2xl border-2 border-slate-100 px-4 py-3 text-[15px] leading-relaxed text-ink focus:border-indigo focus:outline-none" />
-                  <div className="mt-1 flex justify-between text-[11px] text-slate-400"><span>Mínimo {MIN_CHARS} caracteres. Sé claro y propone un siguiente paso.</span><span className="tabular-nums">{draft.length}/{MAX_CHARS}</span></div>
-                  <button disabled={busy || draft.trim().length < MIN_CHARS} onClick={send} className="btn-primary w-full justify-center mt-4 py-3 text-base">{busy ? "Leyendo tu respuesta…" : <>Enviar respuesta <ArrowRight size={16} /></>}</button>
+                  <textarea value={draft} onChange={(x) => { setDraft(x.target.value.slice(0, MAX_CHARS)); setErr(null); }} rows={6} placeholder={it.channel === "whatsapp" ? `Contesta a ${firstName(c.pack, it.from)} como lo harías por WhatsApp…` : `Escribe tu respuesta a ${firstName(c.pack, it.from)}…`} className="w-full rounded-2xl border border-white/20 bg-white px-4 py-3 text-[15px] leading-relaxed text-ink focus:outline-none focus:ring-4 focus:ring-indigo-light/40" />
+                  <div className="mt-1 flex justify-between text-[11px] text-white/50"><span>Mínimo {MIN_CHARS} caracteres. Sé claro y propone un siguiente paso.</span><span className="tabular-nums">{draft.length}/{MAX_CHARS}</span></div>
+                  <button disabled={busy || draft.trim().length < MIN_CHARS} onClick={send} className="btn bg-white text-ink hover:bg-white/90 w-full justify-center mt-4 py-3 text-base font-semibold disabled:opacity-40">{busy ? "Leyendo tu respuesta…" : <>Revisar mi respuesta <ArrowRight size={16} /></>}</button>
                 </>
               ) : (
                 <div className="space-y-3">
-                  <div className="rounded-2xl border border-slate-100 p-4">
+                  <div className="rounded-2xl bg-white text-ink p-4">
                     <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Tu respuesta se acerca a</div>
-                    <p className="mt-1.5 text-[15px] text-ink font-medium leading-relaxed">{String.fromCharCode(65 + it.options.findIndex((o) => o.id === ev.option))}. {it.options.find((o) => o.id === ev.option)?.text}</p>
+                    <p className="mt-1.5 text-[15px] font-medium leading-relaxed">{String.fromCharCode(65 + it.options.findIndex((o) => o.id === ev.option))}. {it.options.find((o) => o.id === ev.option)?.text}</p>
+                    <div className="mt-4 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wider text-slate-400"><span>Nota del mentor</span><QualityDots q={ev.quality} /></div>
+                    <p className="mt-1.5 text-sm leading-relaxed">{ev.feedback}</p>
                   </div>
-                  <div className="rounded-2xl bg-canvas p-4">
-                    <div className="flex items-center justify-between text-[11px] font-semibold uppercase tracking-wider text-slate-400"><span>Nota del mentor</span><QualityDots q={ev.quality} /></div>
-                    <p className="mt-1.5 text-sm text-ink leading-relaxed">{ev.feedback}</p>
-                  </div>
-                  <button onClick={confirmWritten} className="btn-primary w-full justify-center py-3 text-base">Enviar y decidir <ArrowRight size={16} /></button>
+                  <button onClick={confirmWritten} className="btn bg-white text-ink hover:bg-white/90 w-full justify-center py-3 text-base font-semibold">Enviar y decidir <ArrowRight size={16} /></button>
                   <div className="flex justify-center gap-4 text-xs">
-                    <button onClick={() => setEv(null)} className="text-indigo font-medium">Corregir mi texto</button>
-                    <button onClick={() => { setEv(null); setMode("options"); }} className="text-slate-500">Prefiero elegir yo</button>
+                    <button onClick={() => setEv(null)} className="text-white font-medium">Corregir mi texto</button>
+                    <button onClick={() => { setEv(null); setMode("options"); }} className="text-white/60">Prefiero elegir yo</button>
                   </div>
                 </div>
               )}
             </div>
           ) : (<>
-          <div className="mt-4 space-y-2.5">
-            {it.options.map((o, i) => (
-              <button key={o.id} onClick={() => setPicked(o.id)} className={clsx("w-full text-left rounded-2xl border-2 p-4 flex gap-3 transition-all", picked === o.id ? "border-indigo bg-indigo-soft/50 shadow-[0_10px_30px_-18px_rgba(79,63,224,.6)]" : "border-slate-100 hover:border-indigo/30 hover:bg-slate-50")}>
-                <span className={clsx("h-7 w-7 rounded-full grid place-items-center text-xs font-bold shrink-0", picked === o.id ? "bg-indigo text-white" : "bg-slate-100 text-slate-500")}>{String.fromCharCode(65 + i)}</span>
-                <span className="text-[15px] text-ink leading-relaxed">{o.text}</span>
-              </button>
-            ))}
-          </div>
-          <button disabled={!picked} onClick={confirm} className="btn-primary w-full justify-center mt-5 py-3 text-base">Tomar la decisión <ArrowRight size={16} /></button>
+            <div className="mt-5 space-y-2.5">
+              {it.options.map((o, i) => <StageChoice key={o.id} on={picked === o.id} onClick={() => setPicked(o.id)} letter={String.fromCharCode(65 + i)}>{o.text}</StageChoice>)}
+            </div>
+            <button disabled={!picked} onClick={confirm} className="btn bg-white text-ink hover:bg-white/90 w-full justify-center mt-5 py-3 text-base font-semibold disabled:opacity-40">Tomar la decisión <ArrowRight size={16} /></button>
           </>)}
-          <p className="mt-2 text-center text-[11px] text-slate-400">No hay vuelta atrás. Como en la vida real.</p>
-        </section>
+        </>
       )}
 
-      {(e.status === "decidido" || e.status === "vencido") && <Outcome e={e} fresh={justDecided} />}
-
-      {(e.status === "decidido" || e.status === "vencido") && (
-        <div className="mt-5 flex flex-wrap gap-3 justify-between">
-          <Link href="/ceo" className="btn-ghost">Volver a Hoy</Link>
-          {nextPending ? <Link href={`/ceo/caso/${nextPending.item.id}`} className="btn-primary">Siguiente asunto: {firstName(c.pack, nextPending.item.from)} <ArrowRight size={15} /></Link>
-            : c.nextArrival ? <span className="text-sm text-slate-500 self-center">Tu siguiente asunto llega a las {clock(c.nextArrival)}.</span> : null}
-        </div>
-      )}
-    </div>
+      {step >= 3 && done && <div className="text-ink"><Outcome e={e} fresh={justDecided} part={step === 3 ? "resultado" : "aprendes"} /></div>}
+    </Stage>
   );
 }
 
@@ -284,7 +286,7 @@ function WhoIsInvolved({ it, open: initial }: { it: Item; open: boolean }) {
   const ids = [it.from, ...(it.involves ?? []), ...(it.lines ?? []).map((l) => l.who)].filter((x, i, a) => a.indexOf(x) === i && !!c.pack.cast[x]);
   const ties = c.pack.ties.filter((t) => ids.includes(t.a) && ids.includes(t.b));
   return (
-    <section className="mt-4 card overflow-hidden">
+    <section className="mt-5 card overflow-hidden">
       <button onClick={() => setOpen((v) => !v)} className="w-full flex items-center gap-3 px-5 sm:px-6 py-4 text-left">
         <span className="h-9 w-9 rounded-xl bg-indigo-soft text-indigo grid place-items-center shrink-0"><Network size={17} /></span>
         <span className="flex-1 min-w-0">
@@ -315,7 +317,7 @@ function WhoIsInvolved({ it, open: initial }: { it: Item; open: boolean }) {
 
 function DataCard({ d }: { d: NonNullable<Item["data"]> }) {
   return (
-    <section className="mt-4 card p-5 sm:p-6">
+    <section className="mt-6 card p-5 sm:p-6">
       <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">{d.title}</div>
       <dl className="mt-3 divide-y divide-slate-100">
         {d.rows.map(([k, v]) => <div key={k} className="flex justify-between gap-4 py-2 text-sm"><dt className="text-slate-500">{k}</dt><dd className="font-semibold text-ink text-right tabular-nums">{v}</dd></div>)}
@@ -326,7 +328,7 @@ function DataCard({ d }: { d: NonNullable<Item["data"]> }) {
 }
 
 // ───────────────────────────────────────────── consecuencia
-function Outcome({ e, fresh }: { e: Entry; fresh: boolean }) {
+function Outcome({ e, fresh, part }: { e: Entry; fresh: boolean; part: "resultado" | "aprendes" }) {
   const c = useCeo();
   const it = e.item;
   const expired = e.status === "vencido";
@@ -340,8 +342,9 @@ function Outcome({ e, fresh }: { e: Entry; fresh: boolean }) {
   const w = e.decision?.written;
 
   return (
-    <section className={clsx("mt-5 space-y-4", fresh && "academy-in")}>
-      {o && it.channel !== "whatsapp" && (
+    <section className={clsx("space-y-4", fresh && "academy-in")}>
+      {part === "resultado" && <>
+      {o && (
         <div className="card p-5 sm:p-6">
           <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">{w ? "Respondiste" : "Decidiste"}</div>
           {w ? <p className="mt-1.5 text-[15px] text-ink leading-relaxed whitespace-pre-line">{w.text}</p> : <p className="mt-1.5 text-[15px] text-ink font-medium leading-relaxed">{String.fromCharCode(65 + myIdx)}. {o.text}</p>}
@@ -381,7 +384,9 @@ function Outcome({ e, fresh }: { e: Entry; fresh: boolean }) {
       </div>
 
       <Ripples e={e} fresh={fresh} />
+      </>}
 
+      {part === "aprendes" && <>
       {it.real && (
         <div className="rounded-2xl bg-gradient-to-br from-[#141735] to-[#2B1F8A] p-5 sm:p-6 text-white">
           <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-white/60"><Globe2 size={13} /> Lo que pasó en la vida real · {it.real.company}</div>
@@ -405,6 +410,7 @@ function Outcome({ e, fresh }: { e: Entry; fresh: boolean }) {
           </Link>
         )}
       </div>
+      </>}
     </section>
   );
 }
@@ -421,10 +427,10 @@ function CaseHelp({ it }: { it: Item }) {
   if (!names.length) return null;
   const lesson = it.lesson ? lessonById(it.lesson) : undefined;
   return (
-    <div className="mt-3 flex gap-2.5 rounded-xl bg-canvas px-3.5 py-2.5 text-[12.5px] text-slate-600 leading-relaxed">
-      <Lightbulb size={14} className="text-indigo shrink-0 mt-0.5" />
+    <div className="mt-4 flex gap-2.5 rounded-xl bg-white/[.06] px-3.5 py-2.5 text-[12.5px] text-white/70 leading-relaxed">
+      <Lightbulb size={14} className="text-mint shrink-0 mt-0.5" />
       <span>
-        <b className="font-medium text-ink">Este caso entrena:</b> {names.join(", ")}.
+        <b className="font-medium text-white">Este caso entrena:</b> {names.join(", ")}.
         {band === "completa" && <> Piensa a quién afecta tu decisión hoy y a quién en tres meses. {lesson && <>La lección «{lesson.title}» lo explica a fondo; está disponible al cerrar el caso.</>}</>}
       </span>
     </div>
