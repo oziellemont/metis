@@ -231,6 +231,7 @@ function Briefing({ spec, run, leftMs, act }: { spec: EpisodeSpec; run: EpisodeR
   const [tab, setTab] = useState<"datos" | "equipo" | null>(null);
   const [q, setQ] = useState("");
   const [busy, setBusy] = useState(false);
+  const ai = useAiStatus();
   const open = leftMs > 0;
   const asked = new Set(run.queries.map((x) => x.factId));
   const suggestions = spec.facts.facts.filter((f) => !f.critical && !asked.has(f.id)).slice(0, 4);
@@ -282,7 +283,35 @@ function Briefing({ spec, run, leftMs, act }: { spec: EpisodeSpec; run: EpisodeR
         </div>
       )}
       {tab === "equipo" && open && advisorLeft(run) > 0 && <AdvisorPick spec={spec} busy={busy} onAsk={advise} />}
-      {!c.user && <p className="mt-3 text-[11px] text-slate-400">Sin sesión iniciada, las preguntas libres se responden por palabras clave.</p>}
+      <AiLine ai={ai} signedIn={Boolean(c.user)} />
+    </div>
+  );
+}
+
+// ───────────────────────────────────────────── estado de la IA
+type AiState = { available: boolean; consent: boolean; enabled: boolean; set: (v: boolean) => void } | null;
+function useAiStatus(): AiState {
+  const [st, setSt] = useState<{ available: boolean; consent: boolean; enabled: boolean } | null>(null);
+  useEffect(() => {
+    fetch("/api/ceo/responder").then((r) => r.json()).then((j) => setSt({ available: !!j.available, consent: !!j.consent, enabled: !!j.enabled })).catch(() => setSt(null));
+  }, []);
+  return st ? { ...st, set: (v: boolean) => setSt((x) => (x ? { ...x, consent: v, enabled: v && x.available } : x)) } : null;
+}
+function AiLine({ ai, signedIn }: { ai: AiState; signedIn: boolean }) {
+  const [busy, setBusy] = useState(false);
+  if (!signedIn) return <p className="mt-3 text-[11px] text-slate-400">Sin sesión iniciada, las preguntas libres se responden por palabras clave.</p>;
+  if (!ai || !ai.available) return null;
+  if (ai.enabled) return <p className="mt-3 text-[11px] text-slate-400">IA activa: entiende tus preguntas y tu texto libre. Nunca cambia los datos del caso.</p>;
+  const activate = async () => {
+    setBusy(true);
+    const r = await fetch("/api/ceo/responder", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ consent: true }) }).then((x) => x.json()).catch(() => null);
+    setBusy(false);
+    if (r?.ok) ai.set(true);
+  };
+  return (
+    <div className="mt-3 flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2">
+      <span className="text-[11px] text-slate-500">Activa la IA para que entienda tus preguntas y tu texto libre. Sin ella, se usan palabras clave.</span>
+      <button disabled={busy} onClick={() => void activate()} className="rounded-lg bg-indigo px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo/90 shrink-0">{busy ? "…" : "Activar"}</button>
     </div>
   );
 }
