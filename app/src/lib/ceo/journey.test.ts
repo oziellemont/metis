@@ -65,7 +65,7 @@ describe("Mastery Engine", () => {
   });
 
   it("el XP no compra dominio: un jugador con miles de XP en lecciones sigue en Novice", () => {
-    const s = withLessons(newState(), LESSONS.map((l) => l.id));
+    const s = withLessons({ ...newState(), rulesVersion: 1 }, LESSONS.map((l) => l.id));
     expect(xpOf(s, T0)).toBeGreaterThanOrEqual(700);
     for (const c of COMPETENCY_IDS) expect(masteryOf(s, T0)[c].level.name).toBe("Novice");
   });
@@ -126,7 +126,7 @@ describe("Executive Journey", () => {
   });
 
   it("el XP por sí solo nunca asciende", () => {
-    const s = withLessons(enrollJourney(newState(), T0), LESSONS.map((l) => l.id), T0 + 1000);
+    const s = withLessons(enrollJourney({ ...newState(), rulesVersion: 1 }, T0), LESSONS.map((l) => l.id), T0 + 1000);
     expect(xpOf(s, T0)).toBeGreaterThanOrEqual(STAGE_RULES[1].xp!);
     const v = journeyOf(s, T0);
     expect(v.ready).toBe(false);

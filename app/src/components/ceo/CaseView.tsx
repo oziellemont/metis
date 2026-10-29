@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
 import { ArrowLeft, ArrowRight, BookOpen, CheckCheck, PenLine, ListChecks, ChevronDown, Clock, Globe2, Lightbulb, Network, PhoneMissed, Play, Quote, XCircle } from "lucide-react";
 import { firstName, personOf } from "@/lib/ceo/cast";
-import { onTimeOf, rulesVersionOf, scaled, xpTableOf } from "@/lib/ceo/engine";
+import { effectOf, entryXp, nextLessonXp } from "@/lib/ceo/engine";
 import { runSpans } from "@/lib/ceo/pausetime";
 import { OrgMap } from "./OrgMap";
 import { entryRipples, moodOf, REL_START } from "@/lib/ceo/relations";
@@ -332,11 +332,10 @@ function Outcome({ e, fresh }: { e: Entry; fresh: boolean }) {
   const expired = e.status === "vencido";
   const o = e.option as Option | undefined;
   const reply = expired ? it.expired.reply : o?.reply ?? [];
-  const effects = scaled((expired ? it.expired.effects : o?.effects) ?? {}, c.s.tier, rulesVersionOf(c.s));
-  const XP = xpTableOf(c.s);
+  const effects = effectOf(c.s, e);
   const outcome = expired ? it.expired.outcome : o?.outcome;
   const lesson = it.lesson ? lessonById(it.lesson) : undefined;
-  const xp = o ? XP.decision + o.score * XP.perPoint + (onTimeOf(e, runSpans(c.s, c.now)) ? XP.onTime : 0) : 0;
+  const xp = o ? entryXp(c.s, e, runSpans(c.s, c.now)) : 0;
   const myIdx = o ? it.options.findIndex((x) => x.id === o.id) : -1;
   const w = e.decision?.written;
 
@@ -402,7 +401,7 @@ function Outcome({ e, fresh }: { e: Entry; fresh: boolean }) {
           <Link href={`/ceo/academy/${lesson.id}?from=${it.id}`} className="mt-4 flex items-center gap-3 rounded-xl bg-indigo text-white px-4 py-3 hover:bg-indigo-light transition-colors">
             <BookOpen size={18} />
             <span className="flex-1 text-sm"><b>Aprende la teoría:</b> {lesson.title} · {lesson.minutes} min</span>
-            {c.s.lessons[lesson.id] ? <span className="chip bg-white/20 text-white">Completada</span> : <span className="chip bg-white/20 text-white">+30 XP</span>}
+            {c.s.lessons[lesson.id] ? <span className="chip bg-white/20 text-white">Completada</span> : nextLessonXp(c.s, c.now) > 0 ? <span className="chip bg-white/20 text-white">+{nextLessonXp(c.s, c.now)} XP</span> : null}
           </Link>
         )}
       </div>

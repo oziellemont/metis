@@ -7,7 +7,7 @@ import { ArrowLeft, ArrowRight, Check, Clock, Coins, Compass, Flag, Flame as Fla
 import { BlockView } from "@/components/academy/Blocks";
 
 import { LESSONS, MAX_TRACK_LEVEL, TRACKS, lessonsOfTrack, rankOf, trackOf, type Lesson } from "@/lib/ceo/lessons";
-import { LEVELS, rankFor } from "@/lib/ceo/engine";
+import { LEVELS, nextLessonXp, rankFor } from "@/lib/ceo/engine";
 import { TRACK_TO } from "@/lib/ceo/mastery";
 import { celebrate } from "@/lib/ceo/celebrate";
 import { useCeo } from "./CeoProvider";
@@ -21,6 +21,7 @@ export function CeoAcademyHome() {
   const open = LESSONS.filter((l) => rankOf(l) <= rank);
   const done = LESSONS.filter((l) => c.s.lessons[l.id]).length;
   const pct = Math.round((done / Math.max(1, open.length)) * 100);
+  const lessonXp = nextLessonXp(c.s, c.now);
   const nextRank = LEVELS[rank + 1];
   const unlockNext = nextRank ? LESSONS.filter((l) => rankOf(l) === rank + 1).length : 0;
   const focus = c.journey.focus;
@@ -44,7 +45,7 @@ export function CeoAcademyHome() {
           <div className="rounded-2xl bg-white/10 backdrop-blur p-5">
             <div className="flex items-baseline justify-between"><span className="text-xs text-white/60">Lecciones abiertas</span><span className="text-sm font-semibold tabular-nums">{done} de {open.length}</span></div>
             <div className="mt-2 h-2 rounded-full bg-white/15 overflow-hidden"><div className="h-full rounded-full bg-gradient-to-r from-indigo-light to-white transition-all duration-700" style={{ width: `${Math.min(100, pct)}%` }} /></div>
-            <p className="mt-3 text-[11px] text-white/60">{nextRank ? `Al reunir ${nextRank.min} XP de constancia se abren ${unlockNext} lecciones nuevas.` : "Tienes todo abierto. Cada temporada llegan niveles nuevos."} +30 XP por lección.</p>
+            <p className="mt-3 text-[11px] text-white/60">{nextRank ? `Al reunir ${nextRank.min} XP de constancia se abren ${unlockNext} lecciones nuevas.` : "Tienes todo abierto. Cada temporada llegan niveles nuevos."} {lessonXp > 0 ? ` +${lessonXp} XP por lección.` : " Hoy ya sumaste el XP de lecciones."}</p>
           </div>
         </div>
       </section>
@@ -136,6 +137,8 @@ export function LessonPlayer({ lesson }: { lesson: Lesson }) {
   const [i, setI] = useState(0);
   const [ready, setReady] = useState(false);
   const [done, setDone] = useState(false);
+  /** XP que pagó esta lección al terminarla (null = era un repaso). */
+  const [gained, setGained] = useState<number | null>(null);
   const onReady = useCallback((ok: boolean) => setReady(ok), []);
   useEffect(() => { window.scrollTo({ top: 0, behavior: "smooth" }); }, [i, done]);
   const rank = rankFor(c.s, c.now);
@@ -144,12 +147,16 @@ export function LessonPlayer({ lesson }: { lesson: Lesson }) {
   const idx = avail.findIndex((l) => l.id === lesson.id);
   const next = sameTrack ?? avail.slice(idx + 1).find((l) => !c.s.lessons[l.id]) ?? avail.find((l) => !c.s.lessons[l.id] && l.id !== lesson.id);
   const locked = rankOf(lesson) > rank && !c.s.lessons[lesson.id];
-  const already = !!c.s.lessons[lesson.id];
 
   const advance = () => {
     setReady(false);
     if (i < lesson.blocks.length - 1) setI(i + 1);
-    else { if (!c.s.lessons[lesson.id]) celebrate("lesson"); c.completeLesson(lesson.id); setDone(true); }
+    else {
+      const first = !c.s.lessons[lesson.id];
+      if (first) celebrate("lesson");
+      setGained(first ? nextLessonXp(c.s, c.now) : null);
+      c.completeLesson(lesson.id); setDone(true);
+    }
   };
 
   if (locked) return (
@@ -184,7 +191,7 @@ export function LessonPlayer({ lesson }: { lesson: Lesson }) {
           <div className="academy-in flex-1 flex flex-col items-center justify-center text-center">
             <span className="h-16 w-16 rounded-2xl bg-gradient-to-br from-indigo to-indigo-light text-white grid place-items-center ceo-pop"><Check size={28} strokeWidth={2.6} /></span>
             <h2 className="mt-5 text-2xl font-semibold">Lección completada</h2>
-            <p className="mt-2 text-slate-500 max-w-md">{already ? "Repaso hecho. La teoría se vuelve criterio cuando la aplicas." : "+30 XP de constancia. Tu racha de hoy está encendida."}</p>
+            <p className="mt-2 text-slate-500 max-w-md">{gained === null ? "Repaso hecho. La teoría se vuelve criterio cuando la aplicas." : gained > 0 ? `+${gained} XP de constancia. Tu racha de hoy está encendida.` : "Ya sumaste el XP de lecciones de hoy. Cuenta para tu racha y tu dominio."}</p>
             <div className="mt-7 flex flex-wrap justify-center gap-2">
               {from && <button onClick={() => router.push(`/ceo/caso/${from}`)} className="btn-primary">Volver al caso <ArrowRight size={14} /></button>}
               {c.pending[0] && <button onClick={() => router.push(`/ceo/caso/${c.pending[0].item.id}`)} className={from ? "btn-ghost" : "btn-primary"}>Atender pendiente <ArrowRight size={14} /></button>}

@@ -208,8 +208,13 @@ const clamp = (n: number) => Math.max(0, Math.min(100, Math.round(n)));
 
 /** Efecto real (ya ajustado a tu nivel de exigencia) de lo que pasó en un asunto. */
 export function effectOf(s: CeoState, e: Entry): Partial<Kpis> {
-  const eff = e.status === "decidido" ? e.option?.effects : e.status === "vencido" ? e.item.expired.effects : undefined;
-  return scaled(eff, s.tier, rulesVersionOf(s));
+  const v = rulesVersionOf(s);
+  if (e.status === "vencido") {
+    // Con reglas de participación, el vencimiento tiene su consecuencia en la empresa, pero el nivel de
+    // exigencia ya no la amplifica: no se apilan castigos sobre una ausencia.
+    return scaled(e.item.expired.effects, ruleSet(v).participation ? 0 : s.tier, v);
+  }
+  return scaled(e.status === "decidido" ? e.option?.effects : undefined, s.tier, v);
 }
 export function kpis(s: CeoState, now = nowOf(s)): Kpis {
   const k = { ...packOf(s).kpiStart };
@@ -254,8 +259,28 @@ export const XP = ruleSet(RULES_VERSION).xp;
 export const CRISIS_XP: Record<CrisisRating, number> = ruleSet(RULES_VERSION).crisisXp;
 /** Cada crisis se valúa con las reglas de la temporada en que se jugó (sin versión = legacy). */
 export const crisisPoints = (rating: CrisisRating, version?: number) => ruleSet(isRulesVersion(version) ? version : LEGACY_RULES_VERSION).crisisXp[rating] ?? 0;
+/**
+ * XP que pagó cada crisis registrada (mismo orden que `s.crises`). Con reglas de participación,
+ * la crisis de una empresa paga una sola vez: repetir la empresa no la vuelve a pagar.
+ */
+export function crisisXpList(s: Pick<CeoState, "crises">): number[] {
+  const seen = new Set<string>();
+  return (s.crises ?? []).map((c) => {
+    const once = !!ruleSet(isRulesVersion(c.rulesVersion) ? c.rulesVersion : LEGACY_RULES_VERSION).participation?.oncePerCompany;
+    const dup = once && seen.has(c.company);
+    seen.add(c.company);
+    return dup ? 0 : crisisPoints(c.rating, c.rulesVersion);
+  });
+}
+/** XP que paga (o pagaría) la crisis de la temporada en curso con ese desenlace. */
+export function crisisPayNow(s: Pick<CeoState, "crises" | "company" | "startedAt" | "rulesVersion">, rating: CrisisRating): number {
+  const v = rulesVersionOf(s);
+  const once = !!ruleSet(v).participation?.oncePerCompany;
+  if (once && (s.crises ?? []).some((c) => c.company === s.company && c.startedAt !== s.startedAt)) return 0;
+  return crisisPoints(rating, v);
+}
 export function crisisXp(s: CeoState): number {
-  return (s.crises ?? []).reduce((a, c) => a + crisisPoints(c.rating, c.rulesVersion), 0);
+  return crisisXpList(s).reduce((a, x) => a + x, 0);
 }
 /** XP de los dilemas de personas (viajan entre empresas). */
 export function dilemmaXp(s: CeoState): number {
@@ -296,28 +321,78 @@ export function answerDilemma(s: CeoState, id: string, option: number, now = now
   if (d.min > rankFor(s, now)) return s;
   return { ...s, dilemmas: { ...(s.dilemmas ?? {}), [id]: { option, at: now } }, lastActiveAt: now };
 }
-/** XP de las decisiones de la empresa actual (sin lecciones). */
-export function runXp(s: CeoState, now = nowOf(s)): number {
-  const XP = xpTableOf(s);
-  const spans = runSpans(s, now);
-  let xp = 0;
-  for (const e of entries(s, now)) {
-    if (e.status !== "decidido" || !e.option || !e.decision) continue;
-    xp += XP.decision + e.option.score * XP.perPoint;
-    if (onTimeOf(e, spans)) xp += XP.onTime;
-  }
-  return xp;
+/** Asuntos de esta empresa que ya pagaron XP en una temporada anterior (para no pagarlos dos veces). */
+function paidItemsOf(s: CeoState): Set<string> {
+  const out = new Set<string>();
+  for (const r of s.career ?? []) if (r.company === s.company) Object.keys(r.decisions ?? {}).forEach((id) => out.add(id));
+  return out;
 }
-/** ¿Se decidió en la primera mitad del plazo? Se mide en tiempo activo: pausar no quita el bono. */
+/**
+ * XP de un asunto de la temporada en curso.
+ *  - Legacy (v1): 20 + 10 × puntaje + 5 si respondiste en la primera mitad del plazo.
+ *  - Participación (v2+): XP fijo por resolverlo, igual para cualquier opción y sin bono por rapidez;
+ *    un asunto que ya pagaste en esta misma empresa no vuelve a pagar.
+ * Un asunto vencido nunca da XP (no hubo participación), pero tampoco quita.
+ */
+export function entryXp(s: CeoState, e: Entry, spans: Span[] = [], paid: Set<string> | null = null): number {
+  if (e.status !== "decidido" || !e.option || !e.decision) return 0;
+  const R = ruleSet(rulesVersionOf(s));
+  const XP = R.xp;
+  if (R.participation) {
+    if (R.participation.oncePerCompany && (paid ?? paidItemsOf(s)).has(e.item.id)) return 0;
+    return XP.decision;
+  }
+  return XP.decision + e.option.score * XP.perPoint + (onTimeOf(e, spans) ? XP.onTime : 0);
+}
+/** Bono por terminar la empresa (reglas de participación): una vez por empresa, sin importar el veredicto. */
+export function finishXp(s: CeoState, now = nowOf(s)): number {
+  const P = ruleSet(rulesVersionOf(s)).participation;
+  if (!P || !s.startedAt || !seasonDoneOf(s, now)) return 0;
+  const paidBefore = (s.career ?? []).some((r) => r.company === s.company);
+  return P.oncePerCompany && paidBefore ? 0 : P.finish;
+}
+/** XP de la empresa actual: asuntos + bono de cierre (sin lecciones, dilemas ni crisis). */
+export function runXp(s: CeoState, now = nowOf(s)): number {
+  const spans = runSpans(s, now);
+  const paid = ruleSet(rulesVersionOf(s)).participation?.oncePerCompany ? paidItemsOf(s) : null;
+  let xp = 0;
+  for (const e of entries(s, now)) xp += entryXp(s, e, spans, paid);
+  return xp + finishXp(s, now);
+}
+/** ¿Se decidió en la primera mitad del plazo? Solo cuenta para XP con reglas legacy. Se mide en tiempo activo. */
 export function onTimeOf(e: Entry, spans: Span[] = []): boolean {
   if (!e.decision) return false;
   if (!spans.length) return e.decision.at - e.arrivesAt <= (e.deadline - e.arrivesAt) / 2;
   return activeMs(spans, e.arrivesAt, e.decision.at) <= activeMs(spans, e.arrivesAt, e.deadline) / 2;
 }
+/**
+ * XP de las lecciones (valuadas con la versión de la carrera). Con reglas de participación hay un tope
+ * diario: como mucho `lessonsPerDay` lecciones pagan XP en un mismo día (zona horaria del jugador).
+ */
+export function lessonXp(s: CeoState): number {
+  const R = ruleSet(careerRulesVersionOf(s));
+  const ats = Object.values(s.lessons ?? {});
+  const cap = R.participation?.lessonsPerDay;
+  if (!cap) return ats.length * R.xp.lesson;
+  const perDay = new Map<string, number>();
+  for (const at of ats) { const k = dayKey(at, s.settings.tz); perDay.set(k, (perDay.get(k) ?? 0) + 1); }
+  let n = 0;
+  perDay.forEach((c) => { n += Math.min(c, cap); });
+  return n * R.xp.lesson;
+}
+/** XP que daría completar una lección nueva ahora (0 si ya llegaste al tope del día). */
+export function nextLessonXp(s: CeoState, now = nowOf(s)): number {
+  const R = ruleSet(careerRulesVersionOf(s));
+  const cap = R.participation?.lessonsPerDay;
+  if (!cap) return R.xp.lesson;
+  const today = dayKey(now, s.settings.tz);
+  const done = Object.values(s.lessons ?? {}).filter((at) => dayKey(at, s.settings.tz) === today).length;
+  return done >= cap ? 0 : R.xp.lesson;
+}
 /** XP total de la carrera: empresas anteriores + la actual + lecciones. */
 export function xpOf(s: CeoState, now = nowOf(s)): number {
   const past = (s.career ?? []).reduce((a, r) => a + (r.xp || 0), 0);
-  return past + runXp(s, now) + Object.keys(s.lessons).length * ruleSet(careerRulesVersionOf(s)).xp.lesson + dilemmaXp(s) + crisisXp(s);
+  return past + runXp(s, now) + lessonXp(s) + dilemmaXp(s) + crisisXp(s);
 }
 
 export const LEVELS = [
