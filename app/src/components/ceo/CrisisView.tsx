@@ -4,7 +4,7 @@
  * La lógica vive en lib/ceo/crisis.ts; aquí solo se presenta y se guarda el resultado.
  */
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
 import { ArrowDown, ArrowRight, ArrowUp, Check, Clock, Lock, Timer } from "lucide-react";
 import {
@@ -17,12 +17,13 @@ import { celebrate } from "@/lib/ceo/celebrate";
 import type { Kpis } from "@/lib/ceo/types";
 import { useCeo } from "./CeoProvider";
 import { Avatar } from "./ui";
+import { Stage, StageChoice, StepTitle } from "./Stage";
 
 export function CrisisView() {
   const c = useCeo();
   const [playing, setPlaying] = useState(false);
   if (!c.ready) return null;
-  if (playing) return <Session />;
+  if (playing) return <Session onExit={() => setPlaying(false)} />;
   const access = crisisAccess(c.s, c.now);
   if (!access.open) return <Closed reason={access.reason} />;
   return <Intro onStart={() => setPlaying(true)} />;
@@ -102,18 +103,17 @@ function Stat({ k, v }: { k: string; v: string }) {
 }
 
 // ───────────────────────────────────────────── sesión
-function Session() {
+function Session({ onExit }: { onExit: () => void }) {
   const c = useCeo();
   const { chair, board, names } = useNames();
   const [base] = useState<Kpis>(() => ({ ...c.kpis }));
   const [from] = useState(() => c.now);
   const tier = c.s.tier;
   const [picks, setPicks] = useState<CrisisPicks>({});
+  const [sel, setSel] = useState<string | null>(null);
   const [i, setI] = useState(0);
   const [left, setLeft] = useState(STEP_SECONDS);
   const [saved, setSaved] = useState(false);
-  const headRef = useRef<HTMLHeadingElement>(null);
-  const reactRef = useRef<HTMLParagraphElement>(null);
 
   const done = i >= STEPS.length;
   const step = done ? null : STEPS[i];
@@ -122,9 +122,8 @@ function Session() {
   const before = useMemo(() => (step ? playCrisis(base, tier, Object.fromEntries(STEPS.slice(0, i).map((s) => [s.id, picks[s.id]]))) : result), [base, tier, picks, i, step, result]);
   const chains = step ? chainsAt(step.id, picks) : [];
 
-  useEffect(() => { window.scrollTo({ top: 0 }); headRef.current?.focus({ preventScroll: true }); setLeft(STEP_SECONDS); }, [i]);
-  useEffect(() => { if (picked) reactRef.current?.focus({ preventScroll: true }); reactRef.current?.scrollIntoView({ block: "nearest", behavior: "smooth" }); }, [picked]);
-  // Reloj de la decisión: se detiene al elegir; al llegar a 0 decide el consejo.
+  useEffect(() => { setLeft(STEP_SECONDS); setSel(null); }, [i]);
+  // Reloj de la decisión: se detiene al confirmar; al llegar a 0 decide el consejo.
   useEffect(() => {
     if (!step || picked) return;
     if (left <= 0) { setPicks((p) => ({ ...p, [step.id]: TIMEOUT })); return; }
@@ -138,75 +137,56 @@ function Session() {
     if (result.rating === "contenida") celebrate("company");
   }, [done, saved, result, picks, c, from]);
 
-  if (done) return <Result base={base} picks={picks} />;
+  const labels = [...STEPS.map((_, k) => `Decisión ${k + 1}`), "Cierre"];
+  if (done) {
+    return (
+      <Stage overlay steps={labels} at={STEPS.length} exit="/ceo" aside={<Link href="/ceo" className="btn bg-white text-ink hover:bg-white/90 px-5 py-2.5 font-semibold">Volver a Hoy <ArrowRight size={15} /></Link>}>
+        <Result base={base} picks={picks} />
+      </Stage>
+    );
+  }
   const who = step!.speaker === "chair" ? chair : board;
   const urgent = left <= 15;
+  const confirm = () => { if (step && sel && !picked) setPicks((p) => ({ ...p, [step.id]: sel })); };
+  const timer = !picked
+    ? <span role="timer" aria-label={`Quedan ${left} segundos`} className={clsx("chip tabular-nums text-xs", urgent ? "bg-coral text-white" : "bg-white/10 text-white/85")}><Timer size={13} /> {Math.floor(left / 60)}:{String(left % 60).padStart(2, "0")}</span>
+    : undefined;
 
   return (
-    <div className="max-w-3xl mx-auto space-y-5">
-      <div className="flex items-center justify-between gap-3 text-xs text-slate-500">
-        <span className="truncate">Boardroom Crisis · {c.pack.name}</span>
-        <span className="tabular-nums shrink-0">Decisión {i + 1} de {STEPS.length}</span>
+    <Stage overlay steps={labels} at={i} onExit={onExit} top={timer}
+      onNext={picked ? () => setI((n) => n + 1) : confirm} nextOff={!picked && !sel}
+      next={picked ? (i + 1 < STEPS.length ? "Siguiente decisión" : "Cerrar la sesión") : "Confirmar"}>
+      <StepTitle eyebrow={`Boardroom Crisis · Decisión ${i + 1} de ${STEPS.length}`} title={step!.title} />
+      <div className="mt-5 rounded-2xl bg-white/[.07] border border-white/10 p-3">
+        <KpiBoard k={picked ? result.kpis : before.kpis} prev={picked ? before.kpis : undefined} compact dark />
       </div>
-      <div className="flex gap-1.5" aria-hidden>
-        {STEPS.map((s, k) => <div key={s.id} className={clsx("h-1.5 flex-1 rounded-full", k < i ? "bg-coral" : k === i ? "bg-coral/50" : "bg-slate-100")} />)}
+      {chains.map((ch) => (
+        <p key={ch.text} className="mt-4 rounded-2xl border-l-4 border-coral/70 bg-white/[.08] px-4 py-3 text-sm text-white/90">{fillNames(ch.text, names)}</p>
+      ))}
+      <div className="mt-5 flex gap-3">
+        <Avatar id={who.id} size={40} />
+        <div className="min-w-0">
+          <div className="text-[11px] text-white/55">{who.name} · {who.role}</div>
+          <div className="mt-1 rounded-2xl rounded-tl-md bg-white text-ink px-4 py-3 text-[15px] leading-relaxed">{fillNames(step!.prompt, names)}</div>
+        </div>
       </div>
-
-      <section className="card p-4 sm:p-5">
-        <KpiBoard k={picked ? result.kpis : before.kpis} prev={picked ? before.kpis : undefined} compact />
-      </section>
-
-      <section className="card p-5 sm:p-7">
-        <div className="flex items-start justify-between gap-3">
-          <h1 ref={headRef} tabIndex={-1} className="text-xl font-semibold text-ink outline-none">{step!.title}</h1>
-          {!picked && (
-            <span role="timer" aria-label={`Quedan ${left} segundos`} className={clsx("chip shrink-0 tabular-nums", urgent ? "bg-coral/10 text-coral" : "bg-slate-100 text-slate-600")}>
-              <Timer size={13} /> {Math.floor(left / 60)}:{String(left % 60).padStart(2, "0")}
-            </span>
-          )}
-        </div>
-        {chains.map((ch) => (
-          <p key={ch.text} className="mt-4 rounded-2xl border-l-4 border-coral/40 bg-coral/5 px-4 py-3 text-sm text-ink">{fillNames(ch.text, names)}</p>
-        ))}
-        <div className="mt-5 flex gap-3">
-          <Avatar id={who.id} size={40} />
-          <div className="min-w-0">
-            <div className="text-xs text-slate-500">{who.name} · {who.role}</div>
-            <p className="mt-1 text-[15px] leading-relaxed text-ink">{fillNames(step!.prompt, names)}</p>
-          </div>
-        </div>
-
-        <fieldset className="mt-6" disabled={!!picked}>
-          <legend className="text-sm font-semibold text-ink">¿Qué haces?</legend>
+      {!picked ? (
+        <div className="mt-6">
+          <div className="text-sm font-semibold text-white/85">¿Qué haces?</div>
           <div className="mt-3 space-y-2.5">
-            {step!.options.map((o) => {
-              const on = picked?.id === o.id;
-              return (
-                <button
-                  key={o.id}
-                  type="button"
-                  aria-pressed={on}
-                  onClick={() => setPicks((p) => ({ ...p, [step!.id]: o.id }))}
-                  className={clsx("w-full text-left rounded-2xl border p-4 text-sm leading-relaxed transition-colors",
-                    on ? "border-indigo bg-indigo-soft/50 text-ink" : picked ? "border-slate-100 text-slate-400" : "border-slate-200 text-ink hover:border-indigo/50 hover:bg-indigo-soft/20")}
-                >{o.label}</button>
-              );
-            })}
+            {step!.options.map((o, k) => <StageChoice key={o.id} letter={String.fromCharCode(65 + k)} on={sel === o.id} onClick={() => setSel(o.id)}>{o.label}</StageChoice>)}
           </div>
-        </fieldset>
-
-        <div aria-live="polite">
-          {picked && (
-            <div className="mt-5 space-y-3 academy-in">
-              {picked.id === TIMEOUT && <div className="text-xs font-semibold uppercase tracking-wider text-coral">Se acabó el tiempo</div>}
-              <p ref={reactRef} tabIndex={-1} className="rounded-2xl bg-canvas p-4 text-sm text-ink outline-none">{fillNames(picked.reaction, names)}</p>
-              <p className="text-sm text-slate-600"><b className="text-ink">Nota CEO.</b> {step!.nota}</p>
-              <button onClick={() => setI((n) => n + 1)} className="btn-primary">{i + 1 < STEPS.length ? "Siguiente decisión" : "Cerrar la sesión"} <ArrowRight size={16} /></button>
-            </div>
-          )}
         </div>
-      </section>
-    </div>
+      ) : (
+        <div className="mt-6 space-y-3 academy-in" aria-live="polite">
+          {picked.id === TIMEOUT
+            ? <div className="text-xs font-semibold uppercase tracking-wider text-coral">Se acabó el tiempo: decidió el consejo</div>
+            : <div className="flex justify-end"><div className="max-w-[85%] rounded-2xl rounded-br-md bg-indigo-light text-white px-4 py-2.5 text-sm leading-relaxed">{picked.label}</div></div>}
+          <div className="rounded-2xl bg-white text-ink p-4 text-sm leading-relaxed">{fillNames(picked.reaction, names)}</div>
+          <p className="rounded-2xl bg-white/[.08] border border-white/10 px-4 py-3 text-sm text-white/85"><b className="text-white">Nota CEO.</b> {step!.nota}</p>
+        </div>
+      )}
+    </Stage>
   );
 }
 
@@ -214,33 +194,23 @@ function Session() {
 function Result({ base, picks }: { base: Kpis; picks: CrisisPicks }) {
   const c = useCeo();
   const r = playCrisis(base, c.s.tier, picks);
-  const headRef = useRef<HTMLHeadingElement>(null);
-  useEffect(() => { window.scrollTo({ top: 0 }); headRef.current?.focus({ preventScroll: true }); }, []);
-  const good = r.rating === "contenida";
   const t = RATING_TEXT[r.rating];
+  const xp = crisisPayNow(c.s, r.rating);
   return (
-    <div className="max-w-3xl mx-auto space-y-5">
-      <section className={clsx("rounded-3xl p-6 sm:p-8", good ? "bg-gradient-to-br from-[#141735] via-[#1E1A5E] to-[#2B1F8A] text-white" : "card")}>
-        <div className={clsx("text-[11px] font-semibold uppercase tracking-wider", good ? "text-white/60" : "text-coral")}>Cierre de la sesión</div>
-        <h1 ref={headRef} tabIndex={-1} className={clsx("mt-2 text-2xl font-semibold leading-tight outline-none", good ? "text-white" : "text-ink")}>{t.title}</h1>
-        <p className={clsx("mt-3 text-sm leading-relaxed max-w-2xl", good ? "text-white/80" : "text-slate-600")}>{t.text} {r.timeouts > 0 && `${r.timeouts === 1 ? "Una decisión se fue" : `${r.timeouts} decisiones se fueron`} por tiempo.`}</p>
-        <div className={clsx("mt-5 rounded-2xl p-4", good ? "bg-white/10" : "bg-canvas")}>
-          <KpiBoard k={r.kpis} prev={r.start} dark={good} />
-          <p className={clsx("mt-3 text-[11px]", good ? "text-white/60" : "text-slate-500")}>Contenida: todos en {CONTAINED_MIN} o más y consejo en {CONTAINED_BOARD} o más. Debajo de {OVERRUN_BELOW}, la crisis te rebasa. La comparación es contra el día del golpe.</p>
-        </div>
-        <div className="mt-6 flex flex-wrap items-center gap-3">
-          <Link href="/ceo" className={clsx("inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold", good ? "bg-white text-ink hover:bg-white/90" : "bg-indigo text-white hover:bg-indigo/90")}>Volver a Hoy <ArrowRight size={15} /></Link>
-          {crisisPayNow(c.s, r.rating) > 0 && <span className={clsx("chip", good ? "bg-white/10 text-white" : "bg-mint-soft text-sob")}>+{crisisPayNow(c.s, r.rating)} XP</span>}
-        </div>
-      </section>
-
-      <section className="card p-5 sm:p-6">
-        <h2 className="font-semibold text-ink">Lo que decidiste</h2>
-        <ol className="mt-4 space-y-3">
+    <div>
+      <StepTitle eyebrow="Cierre de la sesión" title={t.title} text={<>{t.text} {r.timeouts > 0 && `${r.timeouts === 1 ? "Una decisión se fue" : `${r.timeouts} decisiones se fueron`} por tiempo.`}</>} />
+      {xp > 0 && <span className="mt-4 inline-flex chip bg-mint text-ink">+{xp} XP</span>}
+      <div className="mt-5 rounded-2xl bg-white/[.07] border border-white/10 p-4">
+        <KpiBoard k={r.kpis} prev={r.start} dark />
+        <p className="mt-3 text-[11px] text-white/60">Contenida: todos en {CONTAINED_MIN} o más y consejo en {CONTAINED_BOARD} o más. Debajo de {OVERRUN_BELOW}, la crisis te rebasa. La comparación es contra el día del golpe.</p>
+      </div>
+      <div className="mt-5 rounded-2xl bg-white text-ink p-4 sm:p-5">
+        <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Lo que decidiste</div>
+        <ol className="mt-3 space-y-3">
           {STEPS.map((s, k) => {
             const o = optionOf(s, picks[s.id]);
             return (
-              <li key={s.id} className="rounded-2xl border border-slate-100 p-4 text-sm">
+              <li key={s.id} className="rounded-xl border border-slate-100 p-3 text-sm">
                 <div className="text-xs text-slate-500">Decisión {k + 1} · {s.title}</div>
                 <div className={clsx("mt-1", o?.id === TIMEOUT ? "text-coral" : "text-ink")}>{o?.id === TIMEOUT ? "Se acabó el tiempo: decidió el consejo." : o?.label}</div>
                 <div className="mt-2 text-slate-600"><b className="text-ink">Nota CEO.</b> {s.nota}</div>
@@ -248,7 +218,7 @@ function Result({ base, picks }: { base: Kpis; picks: CrisisPicks }) {
             );
           })}
         </ol>
-      </section>
+      </div>
     </div>
   );
 }
