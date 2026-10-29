@@ -5,6 +5,8 @@
 import { COMPANIES } from "./companies";
 import { record, type ChangePlan, type Strategy } from "./golden/play";
 import { replay } from "./replay";
+import { KPI_KEYS, KPI_LABEL } from "./engine";
+import { personOf } from "./cast";
 import {
   EDITORIAL_STATUSES, EDITORIAL_THRESHOLDS, EDITORIAL_VERSION, FINDING_TEXT, RED_LINES, countBy, inventory, scoreAudit,
   type EditorialStatus, type Finding, type ItemAudit,
@@ -62,7 +64,7 @@ export function reportMarkdown(pop: PopulationGame[], audits: ItemAudit[] = inve
   L.push("|---|---:|---:|");
   for (const s of EDITORIAL_STATUSES) L.push(`| ${STATUS_ES[s]} | ${counts[s]} | ${pct(counts[s], total)} |`);
   L.push("");
-  L.push("Ningún asunto queda aprobado de forma definitiva: «approved» es una propuesta automática que requiere la firma de dos revisores humanos (tabla `EDITORIAL_REVIEW` en `editorial.ts`).");
+  L.push("Ningún asunto queda aprobado de forma definitiva: «approved» es una propuesta automática que requiere la aprobación de Oziel (tabla `EDITORIAL_REVIEW` en `editorial.ts`).");
   L.push("");
   L.push("| Empresa | approved | legacy | needsRewrite | restrictedEthics |");
   L.push("|---|---:|---:|---:|---:|");
@@ -161,4 +163,64 @@ export function reportMarkdown(pop: PopulationGame[], audits: ItemAudit[] = inve
   L.push("Confirmar o corregir la lista de líneas rojas; firmar (dos revisores) los asuntos que queden en approved; decidir el orden de reescritura de los needsRewrite empezando por SuperNorte; y aprobar o ajustar los umbrales y objetivos del veredicto sombra antes de usarlo con jugadores reales. Ningún cambio de contenido o de veredicto entra en una temporada en curso.");
   L.push("");
   return L.join("\n");
+}
+
+/**
+ * Paquete de aprobación para Oziel y su asesoría (texto plano en Markdown, pensado para pegarse en otra IA).
+ * Por cada asunto: el caso completo, las opciones con score y efectos, la propuesta automática y el formato de respuesta.
+ */
+export function approvalPacket(audits: ItemAudit[] = inventory()): string {
+  const L: string[] = [];
+  const sign = (n: number) => (n > 0 ? `+${n}` : `${n}`);
+  const fx = (e: Partial<Record<string, number>>) => KPI_KEYS.filter((k) => e[k]).map((k) => `${KPI_LABEL[k]} ${sign(e[k]!)}`).join(", ") || "sin efecto";
+  L.push("# mêtis CEO · Paquete de aprobación de casos");
+  L.push("");
+  L.push("Para Oziel y su asesoría. Hay un solo aprobador: Oziel. Nada se publica como «aprobado» sin su respuesta.");
+  L.push("");
+  L.push("## Qué se pide");
+  L.push("");
+  L.push("Para cada asunto, responder una línea con este formato exacto:");
+  L.push("");
+  L.push("```");
+  L.push("<id del asunto> | <aprobado | legacy | reescribir | etica> | <nota corta: qué cambiar o por qué>");
+  L.push("```");
+  L.push("");
+  L.push("Significado de cada respuesta:");
+  L.push("");
+  L.push("- **aprobado**: el caso está bien como está; hay al menos dos caminos defendibles y no se adivina «la buena».");
+  L.push("- **legacy**: se queda como contenido histórico jugable, pero no entra al contrato nuevo.");
+  L.push("- **reescribir**: la respuesta es obvia o el score premia lo mismo que los números; hay que reescribirlo (decir qué).");
+  L.push("- **etica**: hay una obligación legal, ética o de seguridad; la opción que la cruza se analiza, no se presenta como alternativa legítima.");
+  L.push("");
+  L.push("Criterios que usa la propuesta automática: (1) ninguna opción debe ganar en todo; (2) la opción con score más alto no debe ser también, con ventaja clara, la más rentable; (3) debe haber al menos dos opciones defendibles por números; (4) las líneas rojas ya confirmadas por Oziel se marcan «etica».");
+  L.push("");
+  L.push("Indicadores: Caja, Margen, Equipo, Clientes, Consejo. «Score» (0–3) es qué tan alineada está la opción con los principios de dirección; hoy se traduce en XP.");
+  L.push("");
+  const names: Record<string, string> = Object.fromEntries(COMPANIES.map((c) => [c.id, c.name]));
+  const tr: Record<string, string> = { approved: "aprobado", legacy: "legacy", needsRewrite: "reescribir", restrictedEthics: "etica" };
+  for (const co of COMPANIES) {
+    L.push(`## ${names[co.id]}`);
+    L.push("");
+    for (const a of audits.filter((x) => x.company === co.id)) {
+      const item = co.items.find((i) => i.id === a.id)!;
+      L.push(`### ${a.id} · Día ${a.day}${a.consequence ? " · consecuencia" : ""} · ${item.subject}`);
+      L.push("");
+      L.push(`**Propuesta automática:** ${tr[a.suggested]}. ${a.reason}`);
+      L.push("");
+      const body = [...item.body, ...(item.lines ?? []).map((l) => `${personOf(co, l.who).name}: ${l.text}`)].join(" ").replace(/\s+/g, " ").trim();
+      L.push(`**Caso:** ${body}`);
+      L.push("");
+      L.push(`**Pregunta:** ${item.ask}`);
+      L.push("");
+      for (const o of item.options) {
+        const au = a.options.find((x) => x.id === o.id)!;
+        L.push(`- **${o.id.toUpperCase()}** (score ${o.score}, balance ${sign(au.net)}): ${o.text} → ${fx(o.effects)}.${au.redLine ? ` Línea roja: ${au.redLine}` : ""}`);
+      }
+      L.push(`- **Sin respuesta** (balance ${sign(a.expiredNet)}): ${fx(item.expired.effects)}.`);
+      L.push("");
+      L.push("Respuesta: `" + a.id + " | ... | ...`");
+      L.push("");
+    }
+  }
+  return L.join("\n") + "\n";
 }

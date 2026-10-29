@@ -9,8 +9,8 @@
  *    también es claramente la más rentable). Enseña a adivinar la preferencia del autor.
  *  - `legacy`: se puede seguir jugando como contenido histórico, pero no cumple el contrato v3
  *    (p. ej. la de score más alto sigue siendo la más rentable, aunque por poco).
- *  - `approved`: pasa todas las pruebas automáticas. Es una PROPUESTA: la aprobación real la firman
- *    dos revisores humanos en `EDITORIAL_REVIEW`.
+ *  - `approved`: pasa todas las pruebas automáticas. Es una PROPUESTA: la aprobación real la da
+ *    Oziel (con su asesoría) en `EDITORIAL_REVIEW`.
  *
  * Todas las cuentas usan los efectos tal como están escritos (nivel 0, sin multiplicadores).
  */
@@ -45,8 +45,10 @@ export const RED_LINES: Record<string, { option: string; why: string }[]> = {
   "gb-d3-brote": [{ option: "b", why: "Seguir abiertos tras un brote de intoxicación sin dar la cara." }],
 };
 
-/** Revisión humana (dos firmas). Vacía hasta que el equipo editorial revise; manda sobre la propuesta. */
-export interface HumanReview { status: EditorialStatus; reviewers: [string, string]; date: string; note?: string }
+/** Quien aprueba los casos (decisión de Oziel, 29-oct-2026: un solo aprobador, apoyado en su asesoría). */
+export const EDITORIAL_APPROVER = "Oziel";
+/** Aprobación del caso. Vacía hasta que Oziel revise; manda sobre la propuesta automática. */
+export interface HumanReview { status: EditorialStatus; approvedBy: typeof EDITORIAL_APPROVER; date: string; note?: string }
 export const EDITORIAL_REVIEW: Record<string, HumanReview> = {};
 
 export type Finding =

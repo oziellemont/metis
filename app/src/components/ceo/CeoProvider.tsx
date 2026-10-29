@@ -22,6 +22,7 @@ import { closeChange as closeChangeFn, playLever as playLeverFn, relationsOf, st
 import type { ChangeSim } from "@/lib/ceo/change";
 import type { CastId, CeoState, CompanyPack, Entry, Kpis, LeverId, Settings, Written } from "@/lib/ceo/types";
 import { onboardingFromState, onboardingSignature } from "@/lib/ceo/onboarding";
+import { mergeStates, planSave, SYNC_POLL_MS, withServerPrefs, type ServerPrefs } from "@/lib/ceo/sync";
 import { claimLegacy, finishImport, importIdFor, kvOf, legacyOwners, LEGACY_KEY, ownerKey, planImport, readClaim, readLegacy, readOwner, writeOwner, type ImportPlan } from "@/lib/ceo/import";
 import { playerRow } from "@/lib/ceo/player-row";
 import { RULES_VERSION } from "@/lib/ceo/rules";
@@ -169,11 +170,17 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
         const { data: row, error } = await sb!.schema("ceo").from("players").select("state").eq("user_id", u.id).maybeSingle();
         const st = row?.state as CeoState | undefined;
         if (!error) setSynced(true);
-        if (st && typeof st === "object" && st.startedAt) cloud = migrate(st);
+        if (st && typeof st === "object" && st.startedAt) { cloud = migrate(st); lastSynced.current = cloud.savedAt || 0; }
       } catch { /* sin esquema ceo todavía: se juega con la copia de la cuenta */ }
       if (!alive) return;
-      // Misma cuenta en otro dispositivo: gana la copia más reciente de ESA cuenta (nunca la de otra persona).
-      const best = cloud && (!mine?.startedAt || (cloud.savedAt || 0) > (mine.savedAt || 0)) ? cloud : mine;
+      // Misma cuenta en otro dispositivo (1.1): se mezclan las dos copias de ESA cuenta (nunca la de otra persona).
+      let best = mergeStates(mine, cloud)?.state ?? mine;
+      if (best?.startedAt) {
+        // Preferencias guardadas en columnas (perfil de onboarding) rellenan lo que la partida no traiga.
+        const { data: pref } = await sb!.schema("ceo").from("players").select("daily_decision_goal, preferred_session_minutes").eq("user_id", u.id).maybeSingle().then((r) => r, () => ({ data: null }));
+        best = withServerPrefs(best, pref as ServerPrefs | null);
+      }
+      if (!alive) return;
       if (best && best !== mine) setS(best);
       if (kv) {
         const p = planImport({ uid: u.id, legacy: readLegacy(kv), owners: legacyOwners(kv), claim: readClaim(kv), cloud: best?.startedAt ? best : null });
@@ -211,6 +218,30 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
   sRef.current = s;
   userRef.current = user;
   const flushing = useRef(false);
+  /** `savedAt` de la última partida que este dispositivo subió o bajó de la nube (1.1). */
+  const lastSynced = useRef(0);
+  /** Trae la copia de la nube si otro dispositivo guardó algo más nuevo y la mezcla con la de aquí. */
+  const pullCloud = useCallback(async (force = false): Promise<boolean> => {
+    const u = userRef.current;
+    const sb = supabaseBrowser();
+    if (!u || !sb) return false;
+    try {
+      const { data: head, error } = await sb.schema("ceo").from("players").select("saved:state->savedAt").eq("user_id", u.id).maybeSingle();
+      if (error) return false;
+      const cloudSaved = typeof (head as { saved?: unknown } | null)?.saved === "number" ? (head as { saved: number }).saved : null;
+      if (!force && planSave(lastSynced.current, cloudSaved) === "escribir") return false;
+      const { data: row } = await sb.schema("ceo").from("players").select("state").eq("user_id", u.id).maybeSingle();
+      const st = row?.state as CeoState | undefined;
+      if (!st || typeof st !== "object" || !st.startedAt) return false;
+      const cloud = migrate(st);
+      lastSynced.current = cloud.savedAt || 0;
+      const m = mergeStates(sRef.current, cloud);
+      if (!m || m.how === "local" || m.how === "igual") return false;
+      seen.current = null;
+      setS(m.state);
+      return true;
+    } catch { return false; }
+  }, []);
   const flushJournal = useCallback(async () => {
     const u = userRef.current;
     if (!u || flushing.current || journalOff.current) return;
@@ -239,10 +270,14 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
     saveTimer.current = setTimeout(async () => {
       const sb = supabaseBrowser();
       if (!sb) return;
+      // 1.1: si otro dispositivo guardó algo más nuevo, primero se trae y se mezcla (el guardado siguiente sube la mezcla).
+      if (await pullCloud()) return;
+      const cur = sRef.current;
       let stored = false;
-      await sb.schema("ceo").from("players").upsert(playerRow(user.id, s, user.email)).then(({ error }) => {
+      await sb.schema("ceo").from("players").upsert(playerRow(user.id, cur, user.email)).then(({ error }) => {
         if (error) return;
         stored = true;
+        lastSynced.current = cur.savedAt || 0;
         setSynced(true);
         // Primera vez con cuenta: carta de bienvenida por correo (el servidor evita duplicados).
         const wk = `${ownerKey(user.id)}:bienvenida`;
@@ -251,14 +286,24 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
       });
       // Perfil de onboarding v3.2 (meta diaria, empresa de casa…): se guarda en columnas propias, solo si cambió.
       if (!stored) return;
-      const ob = onboardingFromState(s), sig = onboardingSignature(ob);
+      const ob = onboardingFromState(cur), sig = onboardingSignature(ob);
       const ok = `${ownerKey(user.id)}:onboarding`;
       try { if (!sig || localStorage.getItem(ok) === sig) return; } catch { return; }
       fetch("/api/ceo/perfil", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(ob) })
         .then((r) => { if (r.ok) try { localStorage.setItem(ok, sig); } catch { /* ignore */ } })
         .catch(() => { /* se reintenta en el siguiente guardado */ });
     }, 1200);
-  }, [s, ready, user, plan]);
+  }, [s, ready, user, plan, pullCloud]);
+
+  // 1.1: al volver a la pestaña y cada minuto con ella visible, revisar si otro dispositivo avanzó.
+  useEffect(() => {
+    if (!ready || !user || plan) return;
+    const check = () => { if (document.visibilityState === "visible") void pullCloud(); };
+    document.addEventListener("visibilitychange", check);
+    window.addEventListener("focus", check);
+    const t = setInterval(check, SYNC_POLL_MS);
+    return () => { document.removeEventListener("visibilitychange", check); window.removeEventListener("focus", check); clearInterval(t); };
+  }, [ready, user, plan, pullCloud]);
 
   const importLocal = useCallback(async () => {
     if (!user || !plan || importBusy) return;

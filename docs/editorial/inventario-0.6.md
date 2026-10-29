@@ -13,7 +13,7 @@ De los 52 asuntos (38 base y 14 consecuencias), el clasificador propone:
 | needsRewrite (reescribir) | 26 | 50 % |
 | restrictedEthics (obligación ética o de seguridad) | 8 | 15 % |
 
-Ningún asunto queda aprobado de forma definitiva: «approved» es una propuesta automática que requiere la firma de dos revisores humanos (tabla `EDITORIAL_REVIEW` en `editorial.ts`).
+Ningún asunto queda aprobado de forma definitiva: «approved» es una propuesta automática que requiere la aprobación de Oziel (tabla `EDITORIAL_REVIEW` en `editorial.ts`).
 
 | Empresa | approved | legacy | needsRewrite | restrictedEthics |
 |---|---:|---:|---:|---:|

@@ -3,9 +3,9 @@ import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { COMPANIES } from "./companies";
 import {
-  EDITORIAL_REVIEW, EDITORIAL_STATUSES, RED_LINES, auditItem, countBy, dominates, inventory, isRedLine, netOf, pearson, scoreAudit,
+  EDITORIAL_APPROVER, EDITORIAL_REVIEW, EDITORIAL_STATUSES, RED_LINES, auditItem, countBy, dominates, inventory, isRedLine, netOf, pearson, scoreAudit,
 } from "./editorial";
-import { itemsCsv, population, reportMarkdown } from "./editorial-report";
+import { approvalPacket, itemsCsv, population, reportMarkdown } from "./editorial-report";
 import { SHADOW_RULES, compare, shadowVerdictOf } from "./shadow-verdict";
 import { decide, kpis, newState, verdictOf } from "./engine";
 import { replay } from "./replay";
@@ -53,10 +53,11 @@ describe("0.6 inventario editorial", () => {
     for (const a of all.filter((x) => x.areas.includes("etica"))) expect(a.status).toBe("restrictedEthics");
   });
 
-  it("nadie queda «revisado» sin dos firmas humanas", () => {
+  it("nadie queda «revisado» sin la aprobación de Oziel", () => {
     for (const [id, r] of Object.entries(EDITORIAL_REVIEW)) {
       expect(all.some((a) => a.id === id)).toBe(true);
-      expect(r.reviewers[0] && r.reviewers[1] && r.reviewers[0] !== r.reviewers[1]).toBeTruthy();
+      expect(r.approvedBy).toBe(EDITORIAL_APPROVER);
+      expect(r.date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     }
     expect(all.filter((a) => a.reviewed).length).toBe(Object.keys(EDITORIAL_REVIEW).length);
   });
@@ -177,10 +178,19 @@ describe("0.6 veredicto sombra", () => {
  * Regenera el reporte revisable. NO corre en la suite normal:
  *   EDITORIAL_REPORT=1 npx vitest run src/lib/ceo/editorial.test.ts
  */
+it("el paquete de aprobación incluye los 52 asuntos con su formato de respuesta y está al día", () => {
+  const md = approvalPacket();
+  expect((md.match(/^### /gm) ?? []).length).toBe(52);
+  expect((md.match(/^Respuesta: `/gm) ?? []).length).toBe(52);
+  expect(md).not.toMatch(/undefined|NaN/);
+  expect(readFileSync(join(__dirname, "..", "..", "..", "..", "docs", "editorial", "aprobacion-casos.md"), "utf8")).toBe(md);
+});
+
 it.runIf(process.env.EDITORIAL_REPORT === "1")("genera docs/editorial (reporte + CSV)", () => {
   const dir = join(__dirname, "..", "..", "..", "..", "docs", "editorial");
   mkdirSync(dir, { recursive: true });
   const pop = population(2);
   writeFileSync(join(dir, "inventario-0.6.md"), reportMarkdown(pop));
   writeFileSync(join(dir, "inventario-0.6.csv"), itemsCsv());
+  writeFileSync(join(dir, "aprobacion-casos.md"), approvalPacket());
 }, 300_000);
