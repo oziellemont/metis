@@ -14,7 +14,8 @@ import { relationsOf } from "../relations";
 import { applyAction, type GameAction } from "../replay";
 import type { CeoState, ChangeMove, CompanyPack, Option, Settings } from "../types";
 
-export type Strategy = "best" | "worst" | "random" | "lazy";
+/** `score` = siempre la preferida por el autor; `mixed` = la preferida ~60 % de las veces (solo para poblaciones del veredicto sombra). */
+export type Strategy = "best" | "worst" | "random" | "lazy" | "score" | "mixed";
 export type ChangePlan = "smart" | "skip" | "partial";
 
 export interface SeasonPlan { strategy: Strategy; change: ChangePlan; dilemmas?: boolean; lessons?: number; settingsMidway?: boolean; advance?: boolean }
@@ -77,6 +78,7 @@ const sum = (e: Partial<Record<string, number>>) => Object.values(e).reduce<numb
 function pick(st: Strategy, s: CeoState, t: number, itemId: string, opts: Option[], seed: string): string | null {
   if (st === "best") return careful(s, t, itemId, opts);
   if (st === "worst") return opts.slice().sort((a, b) => sum(a.effects) - sum(b.effects))[0].id;
+  if (st === "score" || (st === "mixed" && rand01(`${seed}|mix|${itemId}`) < 0.6)) return opts.slice().sort((a, b) => b.score - a.score)[0].id;
   if (st === "lazy") return rand01(`${seed}|lazy|${itemId}`) < 0.4 ? null : opts[0].id; // deja vencer ~40 %
   return opts[Math.floor(rand01(`${seed}|${itemId}`) * opts.length)].id;
 }
