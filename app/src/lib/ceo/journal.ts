@@ -57,6 +57,8 @@ function cleanSettings(x: unknown): Record<string, unknown> | undefined {
     const v = r[k];
     if (k === "tz" ? str(v, 64) : k === "windowStart" || k === "windowEnd" ? num(v) && v >= 0 && v <= 24 : typeof v === "boolean") out[k] = v;
   }
+  if (r.dailyGoal === 1 || r.dailyGoal === 2 || r.dailyGoal === 3) out.dailyGoal = r.dailyGoal;
+  if (r.sessionMinutes === 3 || r.sessionMinutes === 5 || r.sessionMinutes === 8 || r.sessionMinutes === 12) out.sessionMinutes = r.sessionMinutes;
   return out; // correo y teléfono nunca entran al diario
 }
 function cleanPicks(x: unknown): Record<string, string> | null {

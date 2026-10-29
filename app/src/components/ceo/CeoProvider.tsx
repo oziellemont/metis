@@ -21,6 +21,7 @@ import { appEnvOf, testToolsVisible } from "@/lib/ceo/flags";
 import { closeChange as closeChangeFn, playLever as playLeverFn, relationsOf, startChange as startChangeFn } from "@/lib/ceo/relations";
 import type { ChangeSim } from "@/lib/ceo/change";
 import type { CastId, CeoState, CompanyPack, Entry, Kpis, LeverId, Settings, Written } from "@/lib/ceo/types";
+import { onboardingFromState, onboardingSignature } from "@/lib/ceo/onboarding";
 import { claimLegacy, finishImport, importIdFor, kvOf, legacyOwners, LEGACY_KEY, ownerKey, planImport, readClaim, readLegacy, readOwner, writeOwner, type ImportPlan } from "@/lib/ceo/import";
 import { playerRow } from "@/lib/ceo/player-row";
 import { RULES_VERSION } from "@/lib/ceo/rules";
@@ -238,14 +239,24 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
     saveTimer.current = setTimeout(async () => {
       const sb = supabaseBrowser();
       if (!sb) return;
+      let stored = false;
       await sb.schema("ceo").from("players").upsert(playerRow(user.id, s, user.email)).then(({ error }) => {
         if (error) return;
+        stored = true;
         setSynced(true);
         // Primera vez con cuenta: carta de bienvenida por correo (el servidor evita duplicados).
         const wk = `${ownerKey(user.id)}:bienvenida`;
         try { if (localStorage.getItem(wk) || localStorage.getItem(`${KEY}:welcome:${user.id}`)) return; localStorage.setItem(wk, "1"); } catch { return; }
         fetch("/api/ceo/bienvenida", { method: "POST" }).catch(() => { /* el cron la manda de respaldo */ });
       });
+      // Perfil de onboarding v3.2 (meta diaria, empresa de casa…): se guarda en columnas propias, solo si cambió.
+      if (!stored) return;
+      const ob = onboardingFromState(s), sig = onboardingSignature(ob);
+      const ok = `${ownerKey(user.id)}:onboarding`;
+      try { if (!sig || localStorage.getItem(ok) === sig) return; } catch { return; }
+      fetch("/api/ceo/perfil", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(ob) })
+        .then((r) => { if (r.ok) try { localStorage.setItem(ok, sig); } catch { /* ignore */ } })
+        .catch(() => { /* se reintenta en el siguiente guardado */ });
     }, 1200);
   }, [s, ready, user, plan]);
 

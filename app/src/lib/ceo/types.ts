@@ -77,6 +77,10 @@ export interface Settings {
   notifyWhatsapp: boolean;
   /** Todo el día llega de golpe (para probar o para quien juega en un solo rato). */
   intensivo: boolean;
+  /** Meta diaria de decisiones elegida en el onboarding v3.2 (1, 2 o 3). Opcional: quien empezó antes no la tiene. */
+  dailyGoal?: 1 | 2 | 3;
+  /** Minutos aproximados por sesión (3, 5, 8 o 12). Opcional. */
+  sessionMinutes?: 3 | 5 | 8 | 12;
 }
 
 /** Respuesta escrita (evaluada con IA): tu texto, la calidad 0–3 y la nota del mentor. */
