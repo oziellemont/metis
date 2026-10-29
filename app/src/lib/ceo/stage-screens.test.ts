@@ -46,4 +46,11 @@ describe("pantallas de decisión paso a paso", () => {
       expect(read("components", "ceo", f), f).not.toMatch(banned);
     }
   });
+
+  it("las lecciones de Academy van por pasos, a pantalla completa con fondo métis", () => {
+    const ac = read("components", "ceo", "CeoAcademy.tsx");
+    expect(ac).toMatch(/<Stage\b/);
+    expect(ac).toContain("lesson.blocks.map((b) => b.eyebrow)");
+    expect(read("components", "ceo", "CeoShell.tsx")).toContain('path.startsWith("/ceo/academy/")');
+  });
 });
