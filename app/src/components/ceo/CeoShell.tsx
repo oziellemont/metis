@@ -43,6 +43,8 @@ export function CeoShell({ children }: { children: React.ReactNode }) {
   // 1.2: de vacaciones se ve la pantalla de descanso (salvo Ajustes); al volver de una ausencia larga, la bienvenida.
   if (c.cadence === "vacation_paused" && path !== "/ceo/ajustes") return <RestScreen />;
   if (c.returnDue) return <ReturnScreen />;
+  // Pantallas de decisión (caso del día y casos ejecutivos): pantalla completa con fondo mêtis, sin menú.
+  if (path.startsWith("/ceo/caso/") || path.startsWith("/ceo/episodio/")) return <>{children}</>;
 
   const active = (h: string) => (h === "/ceo" ? path === "/ceo" : path.startsWith(h));
   const n = c.pending.length;
