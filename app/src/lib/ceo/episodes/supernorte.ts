@@ -222,6 +222,7 @@ export const SUPERNORTE: EpisodeSpec = {
       ] }] },
   ],
   history: [{ flag: "comio", item: "d1-hector", options: ["a"] }],
+  preview: [{ key: "margen_final", label: "Margen de la cuenta" }, { key: "wc", label: "Caja adicional" }],
   chance: [{ flag: "regional_capaz", p: 0.35, label: "La marca regional sí tiene capacidad para surtir" }],
   terms: {
     descuento: { label: "Descuento", unit: "pts", initial: 0 },
