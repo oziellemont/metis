@@ -121,6 +121,7 @@ export function CeoSettings() {
               </li>
             ))}
           </ul>
+          <Link href="/ceo/evaluacion-ia" className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-indigo hover:underline">Evaluación de la IA de los casos</Link>
         </div>
         </>)}
         <div className="pt-3 border-t border-slate-100">
