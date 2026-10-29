@@ -67,10 +67,13 @@ export function closeOutcome(spec: EpisodeSpec, run: EpisodeRun, at: number): Ep
     ...(custom ? [{ id: `${run.runId}:acuerdo`, kind: "acuerdo" as const, text: custom.headline, cause: cause(), at, rule: spec.rules, ...(custom.data ? { data: custom.data } : {}) }] : []),
     ...commitments.map((c) => ({ id: `${run.runId}:c:${c.id}`, kind: "compromiso" as const, text: c.text, cause: cause(), at, rule: "estrategia elegida", data: { owner: c.owner } })),
     ...risks.map((r) => ({ id: `${run.runId}:r:${r.id}`, kind: "riesgo" as const, text: r.text, cause: cause(), at, rule: "estrategia elegida" })),
-    { id: `${run.runId}:rel`, kind: "relacion" as const, text: `Confianza con ${spec.from}: ${run.trust}`, cause: cause(), at, rule: "suma de confianza de las estrategias (−3…+3)", data: { trust: run.trust } },
+    { id: `${run.runId}:rel`, kind: "relacion" as const, text: `Confianza con ${spec.counterpart ?? spec.from}: ${run.trust}`, cause: cause(), at, rule: "suma de confianza de las estrategias (−3…+3)", data: { trust: run.trust } },
     ...kpi.map((k) => ({ id: `${run.runId}:k:${k.key}`, kind: "kpi" as const, text: `${k.key} ${k.delta > 0 ? "+" : ""}${k.delta}`, cause: cause(), at, rule: k.why, data: { delta: k.delta } })),
     ...followUps.map((f) => ({ id: `${run.runId}:f:${f.id}`, kind: "seguimiento" as const, text: f.subject, cause: cause(), at, activatesAt: f.at, rule: "condición del seguimiento" })),
   ];
+
+  const obligations = (spec.obligations ?? []).map((o) => ({ id: o.id, text: o.text, met: holds(run, o.met) }));
+  for (const o of obligations) events.push({ id: `${run.runId}:o:${o.id}`, kind: "compromiso", text: `${o.met ? "Cumplida" : "Incumplida"}: ${o.text}`, cause: cause(), at, rule: "obligación no negociable", data: { met: o.met ? 1 : 0 } });
 
   return {
     headline: custom?.headline ?? "Caso cerrado.",
@@ -78,6 +81,7 @@ export function closeOutcome(spec: EpisodeSpec, run: EpisodeRun, at: number): Ep
     economics: custom?.economics ?? [],
     commitments, risks, kpi, events, evidence, followUps,
     luck: custom?.luck ?? null,
+    ...(obligations.length ? { obligations } : {}),
   };
 }
 

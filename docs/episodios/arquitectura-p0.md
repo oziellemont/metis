@@ -230,7 +230,7 @@ Hay una ruta nueva, `api/ceo/episodio`, que reutiliza **exactamente** los candad
 | Hecho | Fase 0, 1.0, 1.1, 1.2, 1.3 | Publicado |
 | **P0-A** | Auditoría, arquitectura, contratos, motor del episodio con pruebas, propuesta de migración e interfaz | Este PR |
 | **P0-B** | Piloto SuperNorte completo: briefing, consultas, colaborador, texto libre, 5–6 decisiones, rutas divergentes, cierre, lección y persistencia (vista previa) | Siguiente PR |
-| **P0-C** | Piloto de Personas (conversación abierta con un colaborador) y piloto de crisis (operativa o ética, con obligaciones no negociables) | Después |
+| **P0-C** | Piloto de Personas (conversación abierta con un colaborador) y piloto de crisis (operativa o ética, con obligaciones no negociables). Detalle en `p0c.md` | Hecho (borrador) |
 | **P0-D** | Validación de los 15 chequeos, evaluación de IA (con tu permiso de gasto), prueba en móvil y escritorio, y tu aprobación | Después |
 | 1.4–1.9 | DecisionSpec v3 (se absorbe en `EpisodeSpec`), Workbench (se absorbe en la tarjeta), debrief IA en sombra, variantes, rotación | En pausa hasta aprobar P0 |
 | Contenido | Llevar los 52 casos al nuevo estándar | Congelado hasta validar P0 |

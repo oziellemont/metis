@@ -83,11 +83,32 @@ function Situation({ spec }: { spec: EpisodeSpec }) {
       </div>
       <div className="mt-3"><Facts rows={spec.briefing.context.rows} title={spec.briefing.context.title} /></div>
       {criticalFacts(spec).map((f) => <div key={f.id} className="mt-3"><Facts title="Dato crítico" rows={[[f.label, f.answer]]} tone="coral" /></div>)}
+      <Obligations spec={spec} />
     </>
   );
 }
 
 // ───────────────────────────────────────────── recorrido por pasos
+/** Obligaciones no negociables: se muestran desde el inicio; no son opciones, el cierre dice si se cumplieron. */
+function Obligations({ spec, result }: { spec: EpisodeSpec; result?: { id: string; text: string; met: boolean }[] }) {
+  const rows = result ?? (spec.obligations ?? []).map((o) => ({ id: o.id, text: o.text, met: null as boolean | null }));
+  if (!rows.length) return null;
+  return (
+    <div className="mt-3 rounded-2xl bg-white text-ink px-4 py-3 ring-2 ring-coral/60">
+      <div className="text-[11px] font-semibold uppercase tracking-wider text-coral">No negociable</div>
+      <ul className="mt-2 space-y-2">
+        {rows.map((o) => (
+          <li key={o.id} className="flex items-start gap-2.5 text-sm">
+            <span className="flex-1">{o.text}</span>
+            {o.met !== null && <span className={clsx("chip shrink-0 text-xs font-semibold", o.met ? "bg-mint text-ink" : "bg-coral text-white")}>{o.met ? "Cumplida" : "Incumplida"}</span>}
+          </li>
+        ))}
+      </ul>
+      {!result && <p className="mt-2 text-[11px] text-slate-500">No son opciones. Decides cómo cumplirlas; el cierre dice si se cumplieron.</p>}
+    </div>
+  );
+}
+
 function Card({ spec, run }: { spec: EpisodeSpec; run: EpisodeRun }) {
   const c = useCeo();
   const [err, setErr] = useState<string | null>(null);
@@ -409,6 +430,16 @@ function Decision({ spec, run, act }: { spec: EpisodeSpec; run: EpisodeRun; act:
   );
 }
 
+/** Escribe un término con su unidad declarada en el caso ($ para millones, % pegado). */
+function termValue(spec: EpisodeSpec, key: string, v: number): string {
+  const t = spec.terms[key];
+  const n = v.toFixed(t?.decimals ?? 0);
+  if (!t) return n;
+  if (t.unit === "M") return `$${n} M`;
+  if (t.unit === "%") return `${n}%`;
+  return `${n} ${t.unit}`;
+}
+
 function Terms({ spec, run, st, params, setParams }: { spec: EpisodeSpec; run: EpisodeRun; st: Strategy; params: Record<string, number>; setParams: (p: Record<string, number>) => void }) {
   // Vista previa en vivo de lo que cuesta, con el mismo modelo del cierre (sin revelar si el otro lado acepta).
   const preview = useMemo(() => {
@@ -424,10 +455,11 @@ function Terms({ spec, run, st, params, setParams }: { spec: EpisodeSpec; run: E
           {p.hint && <div className="text-[11px] text-slate-500">{p.hint}</div>}
         </label>
       ))}
-      {"margen_final" in preview && (
+      {(spec.preview ?? []).length > 0 && (
         <div className="grid grid-cols-2 gap-2 text-xs">
-          <div className="rounded-lg bg-slate-50 px-3 py-2"><div className="text-slate-500">Margen de la cuenta</div><div className="font-semibold text-ink tabular-nums">{preview.margen_final.toFixed(1)}%</div></div>
-          <div className="rounded-lg bg-slate-50 px-3 py-2"><div className="text-slate-500">Caja adicional</div><div className="font-semibold text-ink tabular-nums">${(preview.wc ?? 0).toFixed(1)} M</div></div>
+          {spec.preview!.map((p) => (
+            <div key={p.key} className="rounded-lg bg-slate-50 px-3 py-2"><div className="text-slate-500">{p.label}</div><div className="font-semibold text-ink tabular-nums">{termValue(spec, p.key, preview[p.key] ?? 0)}</div></div>
+          ))}
         </div>
       )}
     </div>
@@ -498,7 +530,8 @@ function Close({ spec, run, part }: { spec: EpisodeSpec; run: EpisodeRun; part: 
       <StepTitle eyebrow="Cierre del caso" title={o.headline} />
       <div className="mt-4 flex flex-wrap gap-2 text-xs"><span className="chip bg-mint text-ink font-semibold">+{run.xp} XP</span><span className="chip bg-white/10 text-white">{run.turns.length} decisiones</span></div>
       <div className="mt-6 space-y-3 text-ink">
-        {o.agreement.length > 0 && <Facts title="Lo acordado" rows={o.agreement} />}
+        {o.obligations && o.obligations.length > 0 && <div className="-mt-3"><Obligations spec={spec} result={o.obligations} /></div>}
+        {o.agreement.length > 0 && <Facts title={spec.obligations?.length ? "Lo que hiciste" : "Lo acordado"} rows={o.agreement} />}
         {o.economics.length > 0 && <Facts title="Números" rows={o.economics} />}
         {o.kpi.length > 0 && (
           <div className="rounded-2xl bg-white px-4 py-3">

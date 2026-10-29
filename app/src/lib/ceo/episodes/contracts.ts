@@ -133,6 +133,12 @@ export interface EpisodeNode {
   freeText: boolean;
 }
 
+/**
+ * Obligación no negociable (seguridad, salud o ley). No es una opción más: el cierre dice si se cumplió o no,
+ * con base en lo que el jugador hizo (`met`), y las reglas del caso cargan la consecuencia.
+ */
+export interface Obligation { id: string; text: string; met: Cond }
+
 /** Seguimiento que llega después como nueva notificación (grafo de consecuencias, nivel 2). */
 export interface FollowUpSpec { id: string; when?: Cond; afterDays: number; from: CastId; subject: string; text: Variant[] }
 
@@ -149,6 +155,8 @@ export interface EpisodeSpec {
   title: string;
   subject: string;
   from: CastId;
+  /** Con quién se mide la confianza del caso (si no, con quien escribe). */
+  counterpart?: CastId;
   channel: Channel;
   areas: Area[];
   cast: CastId[];
@@ -164,6 +172,10 @@ export interface EpisodeSpec {
   history?: { flag: string; item: string; options: string[] }[];
   /** Factores fuera de tu control, reproducibles por partida (distinguir suerte de razonamiento). */
   chance?: { flag: string; p: number; label: string }[];
+  /** Obligaciones no negociables del caso (crisis operativa o ética). Se muestran desde el inicio. */
+  obligations?: Obligation[];
+  /** Cifras que se recalculan en vivo mientras ajustas términos (clave del término y etiqueta). */
+  preview?: { key: string; label: string }[];
   /** Cómo se escriben los términos en los textos. */
   terms: Record<string, { label: string; unit: string; initial: number; decimals?: number }>;
   start: string;
@@ -225,6 +237,8 @@ export interface EpisodeOutcome {
   followUps: { id: string; at: number; from: CastId; subject: string; text: string[] }[];
   /** Separar razonamiento de suerte (adenda §7). */
   luck: string | null;
+  /** Obligaciones no negociables y si se cumplieron. */
+  obligations?: { id: string; text: string; met: boolean }[];
 }
 
 /** Estado de un episodio de un jugador (EpisodeRun). Vive en la partida y viaja con la sincronización. */

@@ -5,9 +5,15 @@
 import type { EpisodeRun, EpisodeSpec } from "./contracts";
 import { applyEpisode, startEpisode, type EpisodeAction } from "./engine";
 import { SUPERNORTE } from "./supernorte";
+import { DIEGO } from "./diego";
+import { ALERGENO } from "./alergeno";
 import type { CeoState } from "../types";
 
-export const EPISODES: Record<string, EpisodeSpec> = { [SUPERNORTE.id]: SUPERNORTE };
+export const EPISODES: Record<string, EpisodeSpec> = {
+  [SUPERNORTE.id]: SUPERNORTE,
+  [DIEGO.id]: DIEGO,
+  [ALERGENO.id]: ALERGENO,
+};
 export const episodeSpec = (id: string): EpisodeSpec | undefined => EPISODES[id];
 
 /** Abre (o reabre) un episodio en el estado del jugador. Si ya existe una partida abierta, no hace nada. */

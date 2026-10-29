@@ -9,6 +9,7 @@ import { useCeo } from "./CeoProvider";
 import clsx from "clsx";
 import { DAILY_GOALS, DEFAULT_DAILY_GOAL, SESSION_MINUTES, weeklyProjectionText } from "@/lib/ceo/onboarding";
 import { CadenceCard } from "./Cadence";
+import { EPISODES } from "@/lib/ceo/episodes/catalog";
 
 const TZS = ["America/Monterrey", "America/Mexico_City", "America/Cancun", "America/Tijuana", "America/Hermosillo", "America/Bogota", "America/Lima", "America/Santiago", "America/Argentina/Buenos_Aires", "Europe/Madrid"];
 
@@ -111,11 +112,15 @@ export function CeoSettings() {
         <button type="button" onClick={c.skipNext} disabled={!c.nextArrival} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-ink hover:bg-slate-50 disabled:opacity-40"><FastForward size={15} /> Adelantar el reloj</button>
         <div className="pt-3 border-t border-slate-100">
           <div className="text-sm font-medium text-ink">Casos ejecutivos (vista previa, sin publicar)</div>
-          <p className="mt-0.5 text-xs text-slate-500">Piloto SuperNorte para revisión. No mueve tu temporada.</p>
-          <div className="mt-2 flex flex-wrap gap-2">
-            <Link href="/ceo/episodio/supernorte" className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-ink hover:bg-slate-50">Abrir Negociación SuperNorte</Link>
-            {c.s.episodes?.supernorte && <button type="button" onClick={() => c.resetEpisode("supernorte")} className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-slate-500 hover:bg-slate-50"><RotateCcw size={14} /> Reiniciar el caso</button>}
-          </div>
+          <p className="mt-0.5 text-xs text-slate-500">Pilotos para revisión. No mueven tu temporada.</p>
+          <ul className="mt-2 space-y-2">
+            {Object.values(EPISODES).map((e) => (
+              <li key={e.id} className="flex flex-wrap items-center gap-2">
+                <Link href={`/ceo/episodio/${e.id}`} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-ink hover:bg-slate-50">Abrir {e.title}</Link>
+                {c.s.episodes?.[e.id] && <button type="button" onClick={() => c.resetEpisode(e.id)} className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-slate-500 hover:bg-slate-50"><RotateCcw size={14} /> Reiniciar</button>}
+              </li>
+            ))}
+          </ul>
         </div>
         </>)}
         <div className="pt-3 border-t border-slate-100">
