@@ -27,7 +27,9 @@ import { claimLegacy, finishImport, importIdFor, kvOf, legacyOwners, LEGACY_KEY,
 import { playerRow } from "@/lib/ceo/player-row";
 import { RULES_VERSION } from "@/lib/ceo/rules";
 import { flushOnce, logAction } from "@/lib/ceo/journal-client";
-import type { GameAction } from "@/lib/ceo/replay";
+import { blockedOnVacation, type GameAction } from "@/lib/ceo/replay";
+import { cadenceStatus, markReturnSeen as markReturnSeenFn, pauseCareer as pauseFn, quietUntil, resumeCareer as resumeFn, returnDue as returnDueFn, startQuietDay as quietFn } from "@/lib/ceo/cadence";
+import type { CadenceStatus } from "@/lib/ceo/types";
 
 const KEY = LEGACY_KEY;
 
@@ -108,6 +110,16 @@ interface Ctx {
   /** Carrera del navegador por decidir (null si no hay nada que preguntar). */
   importFlow: ImportFlow | null;
   reset: () => void;
+  /** Ritmo (1.2): activo, día tranquilo o vacaciones. */
+  cadence: CadenceStatus;
+  /** Vacaciones: `until` = fecha prevista de regreso (ms) o null si es indefinida. */
+  pauseCareer: (until: number | null) => void;
+  /** «Reanudar ahora» (también termina antes un día tranquilo). */
+  resumeCareer: () => void;
+  startQuietDay: () => void;
+  /** Pantalla «Qué bueno tenerte de vuelta» pendiente (null si no toca). */
+  returnDue: "vacaciones" | "ausencia" | null;
+  markReturnSeen: () => void;
 }
 
 const C = createContext<Ctx | null>(null);
@@ -143,7 +155,7 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
   /** Aplica una jugada y, si procede, la anota. */
   const play = useCallback((f: (p: CeoState) => { n: CeoState; a: GameAction }) => setS((p) => {
     const { n, a } = f(p);
-    if (n === p) return p;
+    if (n === p || blockedOnVacation(p, a)) return p;
     log(n, a);
     return { ...n, savedAt: Date.now() };
   }), [log]);
@@ -284,6 +296,12 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
         try { if (localStorage.getItem(wk) || localStorage.getItem(`${KEY}:welcome:${user.id}`)) return; localStorage.setItem(wk, "1"); } catch { return; }
         fetch("/api/ceo/bienvenida", { method: "POST" }).catch(() => { /* el cron la manda de respaldo */ });
       });
+      // 1.2: recién pausada (vacaciones o día tranquilo) → cancelar los correos ya programados. Una vez por pausa.
+      const lastP = cur.cadence?.pauses?.at(-1);
+      if (stored && lastP && cadenceStatus(cur, nowOf(cur)) !== "active") {
+        const pk = `${ownerKey(user.id)}:pausa`, tag = `${lastP.kind}:${lastP.from}`;
+        try { if (localStorage.getItem(pk) !== tag) fetch("/api/ceo/pausa", { method: "POST" }).then((r) => { if (r.ok) try { localStorage.setItem(pk, tag); } catch { /* ignore */ } }).catch(() => { /* el cron también cancela */ }); } catch { /* ignore */ }
+      }
       // Perfil de onboarding v3.2 (meta diaria, empresa de casa…): se guarda en columnas propias, solo si cambió.
       if (!stored) return;
       const ob = onboardingFromState(cur), sig = onboardingSignature(ob);
@@ -388,6 +406,10 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
     if (p.startedAt) log(n, { type: "settings", at, patch, ...(name !== undefined ? { name } : {}), ...(alias !== undefined ? { alias } : {}) });
     return n;
   }), [log]);
+  const pauseCareer = useCallback((until: number | null) => { play((p) => { const at = nowOf(p); return { n: pauseFn(pinArrived(p, at), at, until), a: { type: "pause", at, until } }; }); setTick(Date.now()); }, [play]);
+  const resumeCareer = useCallback(() => { play((p) => { const at = nowOf(p); return { n: resumeFn(p, at), a: { type: "resume", at } }; }); seen.current = null; setTick(Date.now()); }, [play]);
+  const startQuietDay = useCallback(() => { play((p) => { const at = nowOf(p); const until = quietUntil(at, p.settings.tz); return { n: quietFn(pinArrived(p, at), at, until), a: { type: "quiet", at, until } }; }); setTick(Date.now()); }, [play]);
+  const markReturnSeen = useCallback(() => setS((p) => ({ ...markReturnSeenFn(p, nowOf(p)), savedAt: Date.now() })), []);
   const skipNext = useCallback(() => { setS((p) => ({ ...skipToNext(p), savedAt: Date.now() })); setTick(Date.now()); }, []);
   const advance = useCallback(() => { play((p) => { const at = nowOf(p); return { n: advanceFn(p, at, RULES_VERSION), a: { type: "advance", at, rulesVersion: RULES_VERSION } }; }); seen.current = null; setTick(Date.now()); }, [play]);
   const switchCompany = useCallback((id: string) => { play((p) => { const at = nowOf(p); return { n: switchFn(p, id, at), a: { type: "switch", at, company: id } }; }); seen.current = null; }, [play]);
@@ -420,6 +442,7 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
     ready, s, now, pack, rules: rulesFor(s), verdict, entries, inbox, pending, kpis: k, health: healthOf(k), xp, level: levelOf(xp), streak, day: seasonDay(s, now), seasonDone, nextArrival,
     relations, changeOpen: changeOpen(s, now), cases: casesProgress(s, now, entries), change, startChange, playLever, closeChange,
     user, synced, toast, dismissToast: () => setToast(null), start, advance, switchCompany, decide, markRead, completeLesson, dilemma, answerDilemma, updateSettings, skipNext, testTools, importFlow, reset, journey, mastery, appoint, recordBoard, recordCrisis, saveProfile, saveDiagnostic, snoozeProfile,
+    cadence: cadenceStatus(s, now), pauseCareer, resumeCareer, startQuietDay, returnDue: ready ? returnDueFn(s, now) : null, markReturnSeen,
   };
   return <C.Provider value={value}>{children}</C.Provider>;
 }

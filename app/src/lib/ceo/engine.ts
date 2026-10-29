@@ -8,6 +8,7 @@ import { DILEMMAS, dilemmaById, type Dilemma } from "./dilemmas";
 import { changeEffect, simulate, type ChangeSim } from "./change";
 import { sanitizeDiagnostic, sanitizeProfile } from "./profile";
 import { LEGACY_RULES_VERSION, RULES_VERSION, isRulesVersion, ruleSet, tierRules } from "./rules";
+import { activeMs, extendDeadline, onVacation, runSpans, sanitizeCadence, shiftArrival, shiftDaysOf, spansOf, type Span } from "./pausetime";
 
 export { LEGACY_RULES_VERSION, RULES_VERSION, ruleSet };
 
@@ -98,6 +99,7 @@ export function migrate(raw: unknown): CeoState {
   if (out.startTier !== undefined && (typeof out.startTier !== "number" || out.startTier < 0 || out.startTier > 1)) delete out.startTier;
   if (out.crises !== undefined && (!Array.isArray(out.crises) || out.crises.some((c) => !c || typeof c.company !== "string" || typeof c.startedAt !== "number" || !(c.rating in CRISIS_XP)))) delete out.crises;
   if (out.profileNudge !== undefined) { const n = out.profileNudge as unknown as Record<string, unknown>; if (!n || typeof n.dismissed !== "number" || typeof n.until !== "number") delete out.profileNudge; }
+  if (out.cadence !== undefined) { const c = sanitizeCadence(out.cadence); if (c) out.cadence = c; else delete out.cadence; }
   return out;
 }
 
@@ -138,9 +140,15 @@ function slotsOf(p: CompanyPack) {
   return SLOTS[p.id];
 }
 
-/** Hora de llegada de un mensaje (determinista para cada jugador). */
-export function arrivalOf(s: CeoState, it: Item): number {
+/**
+ * Hora de llegada de un mensaje (determinista para cada jugador).
+ * `spans`: pausas de la temporada (1.2). Lo que aún no llegaba se recorre días completos; lo ya recibido no se mueve.
+ */
+export function arrivalOf(s: CeoState, it: Item, spans: Span[] = []): number {
   if (s.pinned[it.id]) return s.pinned[it.id];
+  return spans.length ? shiftArrival(spans, rawArrival(s, it), s.settings.windowStart) : rawArrival(s, it);
+}
+function rawArrival(s: CeoState, it: Item): number {
   const start = s.startedAt ?? 0;
   const seed = `${s.alias || s.name}|${it.id}|${start}`;
   if (it.day === 1) {
@@ -162,8 +170,9 @@ export function resolution(s: CeoState, itemId: string, now: number): string | n
   if (d) return d.option;
   const it = packOf(s).items.find((x) => x.id === itemId);
   if (!it || !isActive(s, it, now)) return null;
-  const at = arrivalOf(s, it);
-  return now >= at + deadlineOf(s, it) * H ? "__expired" : null;
+  const spans = runSpans(s, now);
+  const at = arrivalOf(s, it, spans);
+  return now >= extendDeadline(spans, at, deadlineOf(s, it) * H) ? "__expired" : null;
 }
 
 /** ¿Este mensaje existe para este jugador? (Las consecuencias sólo llegan si se cumplió su detonador.) */
@@ -176,15 +185,17 @@ export function isActive(s: CeoState, it: Item, now: number): boolean {
 export function entries(s: CeoState, now = nowOf(s)): Entry[] {
   if (!s.startedAt) return [];
   const out: Entry[] = [];
+  // Pausas (vacaciones / día tranquilo): el plazo solo corre en tiempo activo. Sin pausas, todo queda igual.
+  const spans = runSpans(s, now);
   for (const it of packOf(s).items) {
     if (!isActive(s, it, now)) continue;
-    let arrivesAt = arrivalOf(s, it);
+    let arrivesAt = arrivalOf(s, it, spans);
     // Una consecuencia nunca llega antes de que se haya resuelto lo que la detona.
     if (it.trigger) {
       const t = s.decisions[it.trigger.item];
-      if (t) arrivesAt = Math.max(arrivesAt, t.at + 2 * 60_000);
+      if (t) arrivesAt = Math.max(arrivesAt, s.pinned[it.id] || !spans.length ? t.at + 2 * 60_000 : shiftArrival(spans.filter((x) => x.to > t.at), t.at + 2 * 60_000, s.settings.windowStart));
     }
-    const deadline = arrivesAt + deadlineOf(s, it) * H;
+    const deadline = spans.length ? extendDeadline(spans, arrivesAt, deadlineOf(s, it) * H) : arrivesAt + deadlineOf(s, it) * H;
     const decision = s.decisions[it.id];
     const status = decision ? "decidido" : now < arrivesAt ? "futuro" : now >= deadline ? "vencido" : "pendiente";
     out.push({ item: it, arrivesAt, deadline, status, decision, option: decision ? it.options.find((o) => o.id === decision.option) : undefined });
@@ -288,13 +299,20 @@ export function answerDilemma(s: CeoState, id: string, option: number, now = now
 /** XP de las decisiones de la empresa actual (sin lecciones). */
 export function runXp(s: CeoState, now = nowOf(s)): number {
   const XP = xpTableOf(s);
+  const spans = runSpans(s, now);
   let xp = 0;
   for (const e of entries(s, now)) {
     if (e.status !== "decidido" || !e.option || !e.decision) continue;
     xp += XP.decision + e.option.score * XP.perPoint;
-    if (e.decision.at - e.arrivesAt <= (e.deadline - e.arrivesAt) / 2) xp += XP.onTime;
+    if (onTimeOf(e, spans)) xp += XP.onTime;
   }
   return xp;
+}
+/** ¿Se decidió en la primera mitad del plazo? Se mide en tiempo activo: pausar no quita el bono. */
+export function onTimeOf(e: Entry, spans: Span[] = []): boolean {
+  if (!e.decision) return false;
+  if (!spans.length) return e.decision.at - e.arrivesAt <= (e.deadline - e.arrivesAt) / 2;
+  return activeMs(spans, e.arrivesAt, e.decision.at) <= activeMs(spans, e.arrivesAt, e.deadline) / 2;
 }
 /** XP total de la carrera: empresas anteriores + la actual + lecciones. */
 export function xpOf(s: CeoState, now = nowOf(s)): number {
@@ -326,6 +344,8 @@ export function streakOf(s: CeoState, now = nowOf(s)) {
   Object.values(s.dilemmas ?? {}).forEach((d) => days.add(dayKey(d.at, tz)));
   const today = dayKey(now, tz);
   const doneToday = days.has(today);
+  const paused = pausedDays(s, now);
+  if (paused.size) return pausedStreak(days, paused, now, tz);
   let n = 0;
   let cursor = doneToday ? now : now - DAY;
   while (days.has(dayKey(cursor, tz))) { n++; cursor -= DAY; }
@@ -336,13 +356,45 @@ export function streakOf(s: CeoState, now = nowOf(s)) {
   });
   return { days: n, doneToday, atRisk: n > 0 && !doneToday, best, week: lastDays(days, now, tz) };
 }
-function lastDays(days: Set<string>, now: number, tz: string) {
-  const out: { key: string; label: string; on: boolean; today: boolean }[] = [];
+/** Días (en tu zona) que tocó alguna pausa de toda la carrera: cuentan como neutros para la racha. */
+function pausedDays(s: CeoState, now: number): Set<string> {
+  const out = new Set<string>();
+  for (const sp of spansOf(s.cadence?.pauses, now)) {
+    for (let t = sp.from; t < sp.to; t += DAY) out.add(dayKey(t, s.settings.tz));
+    if (sp.to > sp.from) out.add(dayKey(sp.to - 1, s.settings.tz));
+    if (sp.open) out.add(dayKey(now, s.settings.tz));
+  }
+  return out;
+}
+/** Racha con pausas: un día en pausa sin actividad ni suma ni rompe (adenda §5.3: pausas neutrales). */
+function pausedStreak(days: Set<string>, paused: Set<string>, now: number, tz: string) {
+  const today = dayKey(now, tz);
+  const doneToday = days.has(today);
+  let n = 0;
+  let cursor = doneToday ? now : now - DAY;
+  for (let guard = 0; guard < 4000; guard++) {
+    const k = dayKey(cursor, tz);
+    if (days.has(k)) n++;
+    else if (!paused.has(k)) break;
+    cursor -= DAY;
+  }
+  const all = [...new Set([...days, ...paused])].sort();
+  let best = 0, run = 0;
+  all.forEach((d, i, arr) => {
+    const next = i > 0 && Date.parse(d) - Date.parse(arr[i - 1]) === DAY;
+    run = (next ? run : 0) + (days.has(d) ? 1 : 0);
+    best = Math.max(best, run);
+  });
+  const atRisk = n > 0 && !doneToday && !paused.has(today);
+  return { days: n, doneToday, atRisk, best, week: lastDays(days, now, tz, paused) };
+}
+function lastDays(days: Set<string>, now: number, tz: string, paused?: Set<string>) {
+  const out: { key: string; label: string; on: boolean; today: boolean; paused?: boolean }[] = [];
   const L = ["D", "L", "M", "M", "J", "V", "S"];
   for (let i = 6; i >= 0; i--) {
     const t = now - i * DAY;
     const key = dayKey(t, tz);
-    out.push({ key, label: L[new Date(key + "T12:00:00Z").getUTCDay()], on: days.has(key), today: i === 0 });
+    out.push({ key, label: L[new Date(key + "T12:00:00Z").getUTCDay()], on: days.has(key), today: i === 0, ...(paused?.has(key) && !days.has(key) ? { paused: true } : {}) });
   }
   return out;
 }
@@ -442,7 +494,15 @@ export function skipToNext(s: CeoState, real = Date.now()): CeoState {
 
 export function seasonDay(s: CeoState, now = nowOf(s)): number {
   if (!s.startedAt) return 0;
-  const d = Math.floor((localMidnight(now, s.settings.tz) - localMidnight(s.startedAt, s.settings.tz)) / DAY) + 1;
+  const raw = (t: number) => Math.floor((localMidnight(t, s.settings.tz) - localMidnight(s.startedAt!, s.settings.tz)) / DAY) + 1;
+  let d = raw(now);
+  // Pausas: el calendario de la empresa se recorre los días que duraron; durante una pausa, el día se congela.
+  const spans = runSpans(s, now);
+  if (spans.length) {
+    const shiftBefore = (t: number) => spans.filter((x) => !x.open && x.to <= t).reduce((a, x) => a + shiftDaysOf(x), 0);
+    const inside = spans.find((x) => x.open || now < x.to);
+    d = inside ? raw(inside.from) - shiftBefore(inside.from) : Math.max(raw(now) - shiftBefore(now), raw(spans[spans.length - 1].from) - shiftBefore(spans[spans.length - 1].from));
+  }
   return Math.min(Math.max(d, 1), packOf(s).season.days);
 }
 

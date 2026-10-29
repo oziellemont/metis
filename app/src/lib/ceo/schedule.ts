@@ -12,11 +12,15 @@
  *  nudge:<día>   «en la oficina preguntan por ti» (2+ días sin entrar)
  *  season        cierre de temporada
  *  welcome       bienvenida (si no salió al conectar la cuenta)
+ *
+ * En pausa (vacaciones o día tranquilo, ver cadence.ts) no se manda nada; el cron además cancela lo que
+ * ya estaba programado en Resend y lo vuelve a programar una sola vez, a su nueva hora, al reanudar.
  */
 import { STAGES, stageOf } from "./journey";
 import { DAY, H, casesDoneOf, dayKey, entries, healthOf, kpis, levelOf, localMidnight, packOf, profileOf, rulesFor, seasonDay, seasonDoneOf, streakOf, verdictOf, xpOf } from "./engine";
 import { LESSONS, rankOf } from "./lessons";
 import type { CeoState, Entry, Kpis } from "./types";
+import { currentPause } from "./pausetime";
 
 export type Sent = Record<string, number | string>;
 export type Job =
@@ -50,6 +54,8 @@ export function clockLabel(ts: number, tz: string) {
 export function jobsFor(s: CeoState, sent: Sent, real: number, opts: { plan?: boolean } = {}): Job[] {
   if (!s.startedAt) return [];
   const now = real + (s.clockOffset || 0);          // el reloj del jugador (modo prueba puede ir adelantado)
+  // 1.2: de vacaciones o en día tranquilo no sale ningún aviso (ni casos, ni racha, ni resumen, ni inactividad).
+  if (currentPause(s, now)) return [];
   const { tz, windowStart, windowEnd } = s.settings;
   const h = localHour(now, tz);
   const today = dayKey(now, tz);

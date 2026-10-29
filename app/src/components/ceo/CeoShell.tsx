@@ -9,6 +9,7 @@ import { useCeo } from "./CeoProvider";
 import { Flame } from "./ui";
 import { JourneyMini } from "./Journey";
 import { ImportPrompt } from "./ImportPrompt";
+import { RestScreen, ReturnScreen } from "./Cadence";
 
 const NAV = [
   { href: "/ceo", label: "Hoy", Icon: Home },
@@ -38,6 +39,10 @@ export function CeoShell({ children }: { children: React.ReactNode }) {
   // Flujo de experiencia para usuarios actuales: pantalla completa, sin menú.
   if (path === "/ceo/experiencia" && c.ready && c.s.startedAt) return <>{children}</>;
   if (!c.ready || !c.s.startedAt) return <div className="min-h-screen grid place-items-center bg-canvas"><span className="h-8 w-8 rounded-full border-2 border-indigo border-t-transparent animate-spin" /></div>;
+
+  // 1.2: de vacaciones se ve la pantalla de descanso (salvo Ajustes); al volver de una ausencia larga, la bienvenida.
+  if (c.cadence === "vacation_paused" && path !== "/ceo/ajustes") return <RestScreen />;
+  if (c.returnDue) return <ReturnScreen />;
 
   const active = (h: string) => (h === "/ceo" ? path === "/ceo" : path.startsWith(h));
   const n = c.pending.length;

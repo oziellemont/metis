@@ -4,7 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
 import { ArrowLeft, ArrowRight, BookOpen, CheckCheck, PenLine, ListChecks, ChevronDown, Clock, Globe2, Lightbulb, Network, PhoneMissed, Play, Quote, XCircle } from "lucide-react";
 import { firstName, personOf } from "@/lib/ceo/cast";
-import { rulesVersionOf, scaled, xpTableOf } from "@/lib/ceo/engine";
+import { onTimeOf, rulesVersionOf, scaled, xpTableOf } from "@/lib/ceo/engine";
+import { runSpans } from "@/lib/ceo/pausetime";
 import { OrgMap } from "./OrgMap";
 import { entryRipples, moodOf, REL_START } from "@/lib/ceo/relations";
 import { lessonById } from "@/lib/ceo/lessons";
@@ -335,7 +336,7 @@ function Outcome({ e, fresh }: { e: Entry; fresh: boolean }) {
   const XP = xpTableOf(c.s);
   const outcome = expired ? it.expired.outcome : o?.outcome;
   const lesson = it.lesson ? lessonById(it.lesson) : undefined;
-  const xp = o ? XP.decision + o.score * XP.perPoint + (e.decision && e.decision.at - e.arrivesAt <= (e.deadline - e.arrivesAt) / 2 ? XP.onTime : 0) : 0;
+  const xp = o ? XP.decision + o.score * XP.perPoint + (onTimeOf(e, runSpans(c.s, c.now)) ? XP.onTime : 0) : 0;
   const myIdx = o ? it.options.findIndex((x) => x.id === o.id) : -1;
   const w = e.decision?.written;
 

@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useEffect } from "react";
 import clsx from "clsx";
-import { ArrowRight, BookOpen, Briefcase, Check, Clock, FastForward, Flag, Hourglass, Info, Trophy } from "lucide-react";
+import { ArrowRight, BookOpen, Briefcase, Check, Clock, Coffee, FastForward, Flag, Hourglass, Info, Trophy } from "lucide-react";
 import { KPI_KEYS } from "@/lib/ceo/engine";
 import { firstName, personOf } from "@/lib/ceo/cast";
 import { LESSONS } from "@/lib/ceo/lessons";
@@ -35,7 +35,13 @@ export function Today() {
 
   return (
     <div className="space-y-5">
-      <DilemmaPrompt />
+      {c.cadence === "quiet_day" ? (
+        <section className="card p-4 flex flex-wrap items-center gap-3 text-sm">
+          <span className="h-9 w-9 shrink-0 rounded-xl bg-mint-soft text-sob grid place-items-center"><Coffee size={16} /></span>
+          <span className="flex-1 min-w-0"><b className="text-ink">Hoy es tu día tranquilo.</b> <span className="text-slate-500">No llegan asuntos nuevos y tus plazos están detenidos hasta mañana.</span></span>
+          <button type="button" onClick={c.resumeCareer} className="text-indigo font-medium">Volver al ritmo normal</button>
+        </section>
+      ) : <DilemmaPrompt />}
       {/* héroe */}
       <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#141735] via-[#1E1A5E] to-[#2B1F8A] p-6 sm:p-8 text-white">
         <div aria-hidden className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-indigo-light/30 blur-3xl" />
@@ -64,7 +70,7 @@ export function Today() {
               <div><div className="text-2xl font-semibold tabular-nums leading-none">{c.streak.days}</div><div className="text-xs text-white/60 mt-1">{c.streak.days === 1 ? "día de racha" : "días de racha"}</div></div>
             </div>
             <div className="mt-4 flex justify-between">
-              {c.streak.week.map((d) => <div key={d.key} className="flex flex-col items-center gap-1"><span className={clsx("h-7 w-7 rounded-full grid place-items-center text-[11px] font-semibold", d.on ? "bg-gradient-to-br from-amber to-coral text-white" : d.today ? "bg-white/20 text-white ring-2 ring-white/40" : "bg-white/10 text-white/40")}>{d.on ? <Check size={12} strokeWidth={3} /> : ""}</span><span className="text-[10px] text-white/50">{d.label}</span></div>)}
+              {c.streak.week.map((d) => <div key={d.key} className="flex flex-col items-center gap-1"><span className={clsx("h-7 w-7 rounded-full grid place-items-center text-[11px] font-semibold", d.on ? "bg-gradient-to-br from-amber to-coral text-white" : d.paused ? "border border-dashed border-white/30 text-white/40" : d.today ? "bg-white/20 text-white ring-2 ring-white/40" : "bg-white/10 text-white/40")}>{d.on ? <Check size={12} strokeWidth={3} /> : ""}</span><span className="sr-only">{d.paused ? "en pausa" : ""}</span><span className="text-[10px] text-white/50">{d.label}</span></div>)}
             </div>
             <p className="mt-3 text-[11px] text-white/60">{c.streak.doneToday ? "Hoy ya cumpliste. Vuelve mañana." : c.streak.atRisk ? "Toma una decisión o termina una lección hoy para no perder tu racha." : "Toma una decisión o termina una lección para encender tu racha."}</p>
           </div>
