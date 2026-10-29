@@ -21,16 +21,16 @@ const GOLDENS: Golden[] = readdirSync(DIR).filter((f) => f.endsWith(".json")).so
 const last = (g: Golden) => g.checkpoints[g.checkpoints.length - 1];
 const byId = (id: string) => GOLDENS.find((g) => g.id === id)!;
 
-/** Una versión 2 simulada y mucho más dura: si algo legacy la usara por error, los números cambiarían. */
+/** Una versión 7 simulada y mucho más dura: si algo legacy la usara por error, los números cambiarían. */
 const V2: RuleSet = {
-  ...RULESETS[1], version: 2,
+  ...RULESETS[1], version: 7,
   tier: { ...RULESETS[1].tier, hitPerTier: 0.5, passBase: 58, passPerTier: 5, passMax: 75, deadlinePerTier: 0.3 },
   minAnswered: 0.95, defaultDeadlineH: 12,
   xp: { decision: 1, perPoint: 1, onTime: 1, lesson: 1, dilemma: 1, dilemmaPoint: 1 },
   crisisXp: { contenida: 1, danos: 1, rebaso: 1 },
 };
-const withV2 = () => { RULESETS[2] = V2; };
-afterEach(() => { delete RULESETS[2]; });
+const withV2 = () => { RULESETS[7] = V2; };
+afterEach(() => { delete RULESETS[7]; });
 
 describe("versión 1 = reglas legacy exactas", () => {
   it("la tabla de exigencia por nivel es la misma de siempre", () => {
@@ -73,10 +73,11 @@ describe("resolver la versión", () => {
     expect(knownRules(7)).toBe(false);
   });
   it("una versión de una app más nueva usa la más alta conocida que no la supera", () => {
-    expect(ruleSet(9).version).toBe(1);
-    withV2();
     expect(ruleSet(9).version).toBe(2);
-    expect(ruleSet(2).version).toBe(2);
+    withV2();
+    expect(ruleSet(9).version).toBe(7);
+    expect(ruleSet(7).version).toBe(7);
+    expect(ruleSet(5).version).toBe(2);
     expect(ruleSet(1).version).toBe(1);
   });
 });
@@ -104,7 +105,7 @@ describe("partidas doradas legacy", () => {
     expect(rulesVersionOf(state)).toBe(1);
     for (const r of state.career) expect(r.rulesVersion).toBe(1);
   });
-  it.each(GOLDENS.map((g) => [g.id, g] as const))("%s da el mismo resultado aunque exista una versión 2 más dura", (_id, g) => {
+  it.each(GOLDENS.map((g) => [g.id, g] as const))("%s da el mismo resultado aunque exista una versión 7 más dura", (_id, g) => {
     withV2();
     let s = newState();
     let i = 0;
@@ -113,15 +114,15 @@ describe("partidas doradas legacy", () => {
       expect(snapshotOf(s, cp.at)).toEqual(cp.snapshot);
     }
   });
-  it("y sí cambiaría si la partida se hubiera iniciado con la versión 2 (la versión de verdad se consulta)", () => {
+  it("y sí cambiaría si la partida se hubiera iniciado con la versión 7 (la versión de verdad se consulta)", () => {
     withV2();
     const g = byId("cumbre-peor");
     const [start, ...rest] = g.actions as GameAction[];
     // Fotografía justo antes del primer «advance» (después, la acción grabada sin versión vuelve a legacy, como debe).
     const cut = g.actions.findIndex((x) => x.type === "advance");
     const cp = g.checkpoints.filter((c) => c.after <= cut).at(-1)!;
-    const v2 = replay([{ ...start, rulesVersion: 2 } as GameAction, ...rest.slice(0, cp.after - 1)]);
-    expect(rulesVersionOf(v2.state)).toBe(2);
+    const v2 = replay([{ ...start, rulesVersion: 7 } as GameAction, ...rest.slice(0, cp.after - 1)]);
+    expect(rulesVersionOf(v2.state)).toBe(7);
     const snap = snapshotOf(v2.state, cp.at);
     expect(snap.xp).not.toBe(cp.snapshot.xp);
     expect(snap.timing).not.toEqual(cp.snapshot.timing); // plazos de 12 h en vez de 24 h
@@ -146,10 +147,10 @@ describe("una temporada no cambia de reglas en caliente", () => {
     const at = last(g).at;
     expect(seasonDoneOf(done, at)).toBe(true);
     const xpBefore = xpOf(done, at);
-    const next = advance(done, at, 2);
+    const next = advance(done, at, 7);
     expect(next.career.at(-1)!.rulesVersion).toBe(1);
-    expect(rulesVersionOf(next)).toBe(2);
-    expect(rulesFor(next).passLine).toBe(tierRules(next.tier, 2).passLine);
+    expect(rulesVersionOf(next)).toBe(7);
+    expect(rulesFor(next).passLine).toBe(tierRules(next.tier, 7).passLine);
     // El XP ya ganado no se recalcula con las reglas nuevas: lecciones y dilemas siguen valuándose con la versión de la carrera.
     expect(careerRulesVersionOf(next)).toBe(1);
     expect(xpOf(next, at)).toBe(xpBefore);
@@ -165,7 +166,7 @@ describe("una temporada no cambia de reglas en caliente", () => {
     withV2();
     const T = Date.UTC(2026, 9, 5, 15);
     const s1 = recordCrisis({ ...newState(), rulesVersion: 1, name: "A", startedAt: T }, { rating: "contenida", picks: {} }, T + 1);
-    const s2 = recordCrisis({ ...newState(), rulesVersion: 2, name: "B", startedAt: T }, { rating: "contenida", picks: {} }, T + 1);
+    const s2 = recordCrisis({ ...newState(), rulesVersion: 7, name: "B", startedAt: T }, { rating: "contenida", picks: {} }, T + 1);
     expect(s1.crises![0].rulesVersion).toBe(1);
     expect(crisisXp(s1)).toBe(60);
     expect(crisisXp(s2)).toBe(1);
@@ -175,6 +176,6 @@ describe("una temporada no cambia de reglas en caliente", () => {
   it("scaled sin versión usa legacy", () => {
     withV2();
     expect(scaled({ caja: -10, margen: 10 }, 3)).toEqual(scaled({ caja: -10, margen: 10 }, 3, 1));
-    expect(scaled({ caja: -10 }, 3, 2)).not.toEqual(scaled({ caja: -10 }, 3, 1));
+    expect(scaled({ caja: -10 }, 3, 7)).not.toEqual(scaled({ caja: -10 }, 3, 1));
   });
 });

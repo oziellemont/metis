@@ -32,6 +32,12 @@ export interface RuleSet {
   minDeadlineH: number;
   xp: XpTable;
   crisisXp: Record<CrisisRating, number>;
+  /**
+   * XP por participación (desde v2). Sin este bloque = reglas legacy.
+   *  - finish: bono por terminar una empresa (el veredicto se comunica aparte).
+   *  - oncePerCompany: el mismo asunto, la misma crisis o el mismo cierre no vuelven a dar XP si repites la empresa.
+   */
+  participation?: { finish: number; oncePerCompany: boolean; lessonsPerDay: number };
 }
 
 /** Versión 1 · reglas legacy (v2 del simulador, octubre 2026). Congeladas: no editar. */
@@ -52,13 +58,37 @@ const V1: RuleSet = Object.freeze({
   crisisXp: Object.freeze({ contenida: 60, danos: 30, rebaso: 10 }),
 }) as RuleSet;
 
+/**
+ * Versión 2 · «XP v3» por participación y vencimiento sin castigos apilados (Fase 1.3).
+ *  - XP por participar, no por elegir «la buena». Proporciones de la auditoría (6.2: asunto 10, lección 15,
+ *    dilema 10, reto integrador 30, empresa terminada 50) ×2, para quedar en la MISMA escala que el XP legacy
+ *    (20 por decisión, 30 por lección, 60 por crisis): rangos, etapas y ranking no cambian de umbral y nadie
+ *    queda con dos escalas mezcladas.
+ *  - Sin bono por rapidez: decidir antes no es decidir mejor.
+ *  - Idempotente: repetir la misma empresa no vuelve a pagar los mismos asuntos, su crisis ni su cierre;
+ *    y como mucho `lessonsPerDay` lecciones pagan XP en un mismo día.
+ *  - Dejar vencer asuntos tiene consecuencias en la empresa, pero no reprueba por sí solo (minAnswered 0).
+ *  - La exigencia por nivel (tier) no cambia aquí; dificultad por complejidad llega con DecisionSpec (1.4).
+ * Valores iniciales configurables y no validados; se recalibran con una versión nueva, nunca editando esta.
+ */
+const V2: RuleSet = Object.freeze({
+  version: 2,
+  tier: V1.tier,
+  minAnswered: 0,
+  defaultDeadlineH: 24,
+  minDeadlineH: 3,
+  xp: Object.freeze({ decision: 20, perPoint: 0, onTime: 0, lesson: 30, dilemma: 20, dilemmaPoint: 0 }),
+  crisisXp: Object.freeze({ contenida: 60, danos: 60, rebaso: 60 }),
+  participation: Object.freeze({ finish: 100, oncePerCompany: true, lessonsPerDay: 5 }),
+}) as RuleSet;
+
 /** Reglas de todas las partidas guardadas antes de que existiera `rulesVersion`. */
 export const LEGACY_RULES_VERSION = 1;
 /** Versión con la que empiezan las temporadas nuevas. */
-export const RULES_VERSION = 1;
+export const RULES_VERSION = 2;
 
 /** Todas las versiones publicadas. Las pruebas pueden registrar una versión simulada. */
-export const RULESETS: Record<number, RuleSet> = { 1: V1 };
+export const RULESETS: Record<number, RuleSet> = { 1: V1, 2: V2 };
 
 export const isRulesVersion = (v: unknown): v is number => typeof v === "number" && Number.isInteger(v) && v >= 1;
 /** ¿Este código conoce esa versión? (una partida guardada por una versión más nueva de la app no lo sería). */

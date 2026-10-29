@@ -8,7 +8,7 @@
  *    tiene exactamente 5 h al reanudar (la pausa abierta cuenta hasta «ahora», así que nunca vence).
  *  - Llegadas: lo que aún no llegaba se recorre días completos (lo que dure la pausa, redondeado hacia
  *    arriba). Así sigue cayendo dentro de tu horario, nada llega durante la pausa y nada llega de golpe al volver.
- *  - Puntualidad (XP): se mide en tiempo activo, para que pausar no te quite el bono por responder a tiempo.
+ *  - Puntualidad (XP, solo reglas legacy v1): se mide en tiempo activo, para que pausar no quite el bono.
  *
  * Sin pausas, todas las funciones son la identidad: las partidas doradas no cambian.
  */

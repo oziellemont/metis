@@ -91,7 +91,7 @@ export function Career() {
           </h2>
           <p className="mt-2 text-sm text-slate-500 max-w-xl">
             {!c.seasonDone
-              ? `${c.changeOpen ? "Cerraste los asuntos. Presenta tu proyecto de cambio al consejo para recibir el veredicto. " : "El nivel cierra con un reto de cambio cuando termines tus asuntos. "}Para ascender necesitas cerrar con todos los rubros en ${v.passLine} o más y responder al menos el ${Math.round(r.minAnswered * 100)}% de los asuntos. No basta con un buen promedio: el consejo revisa cada rubro.`
+              ? `${c.changeOpen ? "Cerraste los asuntos. Presenta tu proyecto de cambio al consejo para recibir el veredicto. " : "El nivel cierra con un reto de cambio cuando termines tus asuntos. "}Para ascender necesitas cerrar con todos los rubros en ${v.passLine} o más${r.minAnswered > 0 ? ` y responder al menos el ${Math.round(r.minAnswered * 100)}% de los asuntos` : ""}. No basta con un buen promedio: el consejo revisa cada rubro.`
               : v.passed
                 ? "El consejo firmó tu evaluación. Otra empresa, de otro giro, ya preguntó por ti. Allá los golpes pegan más fuerte y los plazos son más cortos."
                 : "Algunos rubros quedaron debajo de la línea. Puedes volver a dirigir la misma empresa con lo que ya sabes y probar otros caminos."}
@@ -106,7 +106,7 @@ export function Career() {
               </div>
             ))}
           </div>
-          <div className="mt-3 text-xs text-slate-500">Asuntos respondidos a tiempo: <b className={clsx("tabular-nums", v.answeredOk ? "text-ink" : "text-coral")}>{Math.round(v.answered * 100)}%</b> (mínimo {Math.round(r.minAnswered * 100)}%)</div>
+          <div className="mt-3 text-xs text-slate-500">Asuntos respondidos a tiempo: <b className={clsx("tabular-nums", v.answeredOk ? "text-ink" : "text-coral")}>{Math.round(v.answered * 100)}%</b> {r.minAnswered > 0 ? `(mínimo ${Math.round(r.minAnswered * 100)}%)` : "· Un asunto vencido tiene consecuencias en la empresa, pero no te reprueba por sí solo."}</div>
 
           {c.seasonDone && (
             <button onClick={confirmAdvance} className="mt-6 inline-flex items-center gap-2 rounded-xl bg-indigo px-5 py-3 text-sm font-semibold text-white hover:bg-indigo/90">

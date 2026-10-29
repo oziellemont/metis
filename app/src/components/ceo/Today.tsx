@@ -13,7 +13,7 @@ import { boardAccess } from "@/lib/ceo/board";
 import { crisisAccess } from "@/lib/ceo/crisis";
 import { specialTasks } from "@/lib/ceo/today";
 import { rankOf } from "@/lib/ceo/lessons";
-import { rankFor } from "@/lib/ceo/engine";
+import { nextLessonXp, rankFor } from "@/lib/ceo/engine";
 import { nudgeQuiet, shouldNudge } from "@/lib/ceo/profile";
 import { Avatar, Bar, ChannelChip, Delta, Flame, clock, rel, until } from "./ui";
 
@@ -148,7 +148,7 @@ export function Today() {
           {nextLesson && (
             <Link href={`/ceo/academy/${nextLesson.id}`} className="card p-5 flex gap-4 items-start hover:-translate-y-0.5 transition-transform">
               <span className="h-11 w-11 rounded-2xl bg-indigo-soft text-indigo grid place-items-center shrink-0"><BookOpen size={20} /></span>
-              <div className="min-w-0"><div className="text-[11px] font-semibold uppercase tracking-wider text-indigo">mêtis Academy · {nextLesson.minutes} min</div><div className="font-semibold text-ink leading-snug mt-0.5">{nextLesson.title}</div><div className="text-xs text-slate-500 mt-1">La teoría detrás de tus decisiones · +30 XP</div></div>
+              <div className="min-w-0"><div className="text-[11px] font-semibold uppercase tracking-wider text-indigo">mêtis Academy · {nextLesson.minutes} min</div><div className="font-semibold text-ink leading-snug mt-0.5">{nextLesson.title}</div><div className="text-xs text-slate-500 mt-1">La teoría detrás de tus decisiones{nextLessonXp(c.s, c.now) > 0 ? ` · +${nextLessonXp(c.s, c.now)} XP` : ""}</div></div>
             </Link>
           )}
           <section className="card p-5">

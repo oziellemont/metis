@@ -126,7 +126,10 @@ export interface Evidence {
   /** Índice de la temporada (0 = primera empresa jugada); -1 para dilemas. */
   run: number;
   tier: number;
-  /** Calidad 0…1 (puntaje de la opción / 3). */
+  /**
+   * Calidad 0…1 (puntaje de la opción / 3). En un vencido es 0 pero NO se usa (1.3, auditoría C2):
+   * no responder es ausencia de evidencia, no incompetencia. El vencido solo cuenta como asunto que te tocó.
+   */
   q: number;
   competencies: Competency[];
 }
@@ -173,7 +176,7 @@ export interface CompetencyMastery {
   level: ReturnType<typeof masteryLevelOf>;
   /** Desglose (para explicar al jugador de dónde sale su número). */
   parts: { decisions: number; consistency: number; challenges: number; academy: number; extra: number };
-  /** Cuánta evidencia de decisión hay (decisiones + vencidos + dilemas). */
+  /** Cuánta evidencia de decisión hay (decisiones + dilemas; los vencidos no cuentan). */
   n: number;
   /** Calidad promedio de esas decisiones (0…1), o null si no hay. */
   quality: number | null;
@@ -193,7 +196,9 @@ export function masteryOf(s: CeoState, now = nowOf(s), extra: Partial<Record<Com
   const career = s.career ?? [];
   const out = {} as Mastery;
   for (const c of COMPETENCIES) {
-    const mine = ev.filter((e) => e.competencies.includes(c.id));
+    const seen = ev.filter((e) => e.competencies.includes(c.id));
+    // Solo lo que decidiste es evidencia de dominio; un vencido no sube ni baja.
+    const mine = seen.filter((e) => e.kind !== "expired");
     // 1 · decisiones
     let sw = 0, sq = 0;
     for (const e of mine) {
@@ -204,15 +209,19 @@ export function masteryOf(s: CeoState, now = nowOf(s), extra: Partial<Record<Com
     const conf = sw / (sw + W.confidenceK);
     const decisions = quality === null ? 0 : W.decisions * quality * conf;
     // 2 · consistencia: empresas con buen criterio sostenido en esta competencia
-    const byRun = new Map<number, { n: number; q: number }>();
-    for (const e of mine) {
+    //    El mínimo de asuntos cuenta los que te tocaron (decididos o vencidos); el promedio, solo los decididos.
+    //    Así ninguna empresa que antes contaba deja de contar al retirar los vencidos del promedio.
+    const byRun = new Map<number, { seen: number; n: number; q: number }>();
+    for (const e of seen) {
       if (e.run < 0) continue;
-      const r = byRun.get(e.run) ?? { n: 0, q: 0 };
-      r.n++; r.q += e.q; byRun.set(e.run, r);
+      const r = byRun.get(e.run) ?? { seen: 0, n: 0, q: 0 };
+      r.seen++;
+      if (e.kind !== "expired") { r.n++; r.q += e.q; }
+      byRun.set(e.run, r);
     }
     const goodCompanies = new Set<string>();
     byRun.forEach((r, run) => {
-      if (r.n >= W.consistencyMinN && r.q / r.n >= W.consistencyQ) goodCompanies.add(run < career.length ? career[run].company : s.company);
+      if (r.n > 0 && r.seen >= W.consistencyMinN && r.q / r.n >= W.consistencyQ) goodCompanies.add(run < career.length ? career[run].company : s.company);
     });
     const consistency = W.consistency * Math.min(goodCompanies.size, W.consistencyCompanies) / W.consistencyCompanies;
     // 3 · retos

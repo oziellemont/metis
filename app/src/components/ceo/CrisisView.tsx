@@ -11,7 +11,7 @@ import {
   CONTAINED_BOARD, CONTAINED_MIN, CRISIS_DAY, OVERRUN_BELOW, RATING_TEXT, STEPS, STEP_SECONDS, TIMEOUT,
   chainsAt, crisisAccess, crisisOfRun, fillNames, optionOf, playCrisis, shockOf, type CrisisPicks,
 } from "@/lib/ceo/crisis";
-import { KPI_KEYS, crisisPoints, rulesVersionOf } from "@/lib/ceo/engine";
+import { KPI_KEYS, crisisPayNow } from "@/lib/ceo/engine";
 import { personOf } from "@/lib/ceo/cast";
 import { celebrate } from "@/lib/ceo/celebrate";
 import type { Kpis } from "@/lib/ceo/types";
@@ -41,7 +41,7 @@ function Closed({ reason }: { reason: "early" | "done" | "closed" }) {
   const title = { early: "El consejo no ha convocado", done: run ? RATING_TEXT[run.rating].title : "Crisis atendida", closed: "La temporada ya cerró" }[reason];
   const text = {
     early: `La sesión extraordinaria se convoca a partir del día ${CRISIS_DAY} de la temporada. Mientras, sigue dirigiendo ${c.pack.name}.`,
-    done: run ? `${RATING_TEXT[run.rating].text} Ganaste ${crisisPoints(run.rating, run.rulesVersion)} XP. Cada empresa trae su propia crisis.` : "",
+    done: run ? `${RATING_TEXT[run.rating].text}${crisisPayNow(c.s, run.rating) > 0 ? ` Ganaste ${crisisPayNow(c.s, run.rating)} XP.` : ""} Cada empresa trae su propia crisis.` : "",
     closed: "La crisis de esta empresa ya no se puede atender. La siguiente empresa trae la suya.",
   }[reason];
   return (
@@ -230,7 +230,7 @@ function Result({ base, picks }: { base: Kpis; picks: CrisisPicks }) {
         </div>
         <div className="mt-6 flex flex-wrap items-center gap-3">
           <Link href="/ceo" className={clsx("inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold", good ? "bg-white text-ink hover:bg-white/90" : "bg-indigo text-white hover:bg-indigo/90")}>Volver a Hoy <ArrowRight size={15} /></Link>
-          <span className={clsx("chip", good ? "bg-white/10 text-white" : "bg-mint-soft text-sob")}>+{crisisPoints(r.rating, rulesVersionOf(c.s))} XP</span>
+          {crisisPayNow(c.s, r.rating) > 0 && <span className={clsx("chip", good ? "bg-white/10 text-white" : "bg-mint-soft text-sob")}>+{crisisPayNow(c.s, r.rating)} XP</span>}
         </div>
       </section>
 
