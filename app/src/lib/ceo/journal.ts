@@ -16,6 +16,7 @@
  *
  * Lógica pura (sin red ni base): se usa en la ruta /api/ceo/partida y en las pruebas.
  */
+import type { EpisodeAction } from "./episodes/engine";
 import { applyAction, type GameAction } from "./replay";
 import { H, migrate, newState, xpOf } from "./engine";
 import type { CeoState } from "./types";
@@ -111,6 +112,40 @@ export function sanitizeAction(raw: unknown): GameAction | null {
     case "pause": return a.until === null || a.until === undefined ? { type: "pause", at, until: null } : num(a.until) && a.until > at ? { type: "pause", at, until: Math.round(a.until) } : null;
     case "resume": return { type: "resume", at };
     case "quiet": return num(a.until) && a.until > at ? { type: "quiet", at, until: Math.round(a.until) } : null;
+    case "episodeOpen": return str(a.id, 60) ? { type: "episodeOpen", at, id: a.id, ...(a.mode === "flexible" || a.mode === "estandar" ? { mode: a.mode } : {}) } : null;
+    case "episode": { const act = cleanEpisodeAct(a.act, at); return str(a.id, 60) && act ? { type: "episode", at, id: a.id, act } : null; }
+    default: return null;
+  }
+}
+
+/** Paso dentro de un episodio: solo campos conocidos y acotados; la hora es la del evento. */
+function cleanEpisodeAct(x: unknown, at: number): EpisodeAction | null {
+  if (!x || typeof x !== "object" || Array.isArray(x)) return null;
+  const a = x as Record<string, unknown>;
+  const txt = (v: unknown, n: number) => (typeof v === "string" && v.trim() ? { ok: true as const, v: v.slice(0, n) } : null);
+  switch (a.type) {
+    case "begin": case "pause": case "resume": case "flexible": return { type: a.type, at };
+    case "fact": {
+      const out: EpisodeAction = { type: "fact", at };
+      if (str(a.factId, 40)) out.factId = a.factId; else if (str(a.unknownId, 40)) out.unknownId = a.unknownId; else { const t = txt(a.text, 240); if (!t) return null; out.text = t.v; }
+      if (a.text && !out.text) { const t = txt(a.text, 240); if (t) out.text = t.v; }
+      if (a.via === "sugerida" || a.via === "libre" || a.via === "ia") out.via = a.via;
+      return out;
+    }
+    case "advisor": {
+      if (!str(a.id, 40)) return null;
+      const q = txt(a.question, 240), ans = txt(a.answer, 900);
+      return { type: "advisor", at, id: a.id, ...(q ? { question: q.v } : {}), ...(ans ? { answer: ans.v } : {}) };
+    }
+    case "decide": {
+      if (!str(a.strategy, 40)) return null;
+      const params: Record<string, number> = {};
+      if (a.params && typeof a.params === "object") for (const [k, v] of Object.entries(a.params as Record<string, unknown>).slice(0, 6)) if (str(k, 30) && num(v)) params[k] = v;
+      const t = txt(a.text, 1200);
+      const i = a.interpretation as Record<string, unknown> | undefined;
+      const interp = t && i && typeof i === "object" && num(i.quality) ? { quality: Math.max(0, Math.min(3, Math.round(i.quality))) as 0 | 1 | 2 | 3, feedback: String(i.feedback ?? "").slice(0, 280) } : null;
+      return { type: "decide", at, strategy: a.strategy, ...(Object.keys(params).length ? { params } : {}), ...(t ? { text: t.v } : {}), ...(interp ? { interpretation: interp } : {}) };
+    }
     default: return null;
   }
 }

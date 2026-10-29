@@ -8,6 +8,7 @@ import { DILEMMAS, dilemmaById, type Dilemma } from "./dilemmas";
 import { changeEffect, simulate, type ChangeSim } from "./change";
 import { sanitizeDiagnostic, sanitizeProfile } from "./profile";
 import { LEGACY_RULES_VERSION, RULES_VERSION, isRulesVersion, ruleSet, tierRules } from "./rules";
+import { sanitizeEpisodes } from "./episodes/engine";
 import { activeMs, extendDeadline, onVacation, runSpans, sanitizeCadence, shiftArrival, shiftDaysOf, spansOf, type Span } from "./pausetime";
 
 export { LEGACY_RULES_VERSION, RULES_VERSION, ruleSet };
@@ -100,6 +101,7 @@ export function migrate(raw: unknown): CeoState {
   if (out.crises !== undefined && (!Array.isArray(out.crises) || out.crises.some((c) => !c || typeof c.company !== "string" || typeof c.startedAt !== "number" || !(c.rating in CRISIS_XP)))) delete out.crises;
   if (out.profileNudge !== undefined) { const n = out.profileNudge as unknown as Record<string, unknown>; if (!n || typeof n.dismissed !== "number" || typeof n.until !== "number") delete out.profileNudge; }
   if (out.cadence !== undefined) { const c = sanitizeCadence(out.cadence); if (c) out.cadence = c; else delete out.cadence; }
+  if (out.episodes !== undefined) { const e = sanitizeEpisodes(out.episodes); if (e) out.episodes = e; else delete out.episodes; }
   return out;
 }
 

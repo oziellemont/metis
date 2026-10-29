@@ -19,15 +19,28 @@ function startFlagSets(spec: EpisodeSpec): string[][] {
 }
 
 /** Todas las rutas completas: longitud y partida cerrada. Corta si una ruta pasa de 12 decisiones (ciclo). */
-export function allEnds(spec: EpisodeSpec, limit = 20000): PathEnd[] {
+export function allEnds(spec: EpisodeSpec, limit = 20000, used?: Set<string>): PathEnd[] {
   const ends: PathEnd[] = [];
   for (const fs of startFlagSets(spec)) {
     const base = startEpisode(spec, 0, { runId: "validar" });
     const r0 = applyEpisode(spec, { ...base, flags: [...new Set([...base.flags.filter((f) => !(spec.chance ?? []).some((c) => c.flag === f)), ...fs])] }, { type: "begin", at: 1 }).run;
     const stack: { run: EpisodeRun; actions: EpisodeAction[] }[] = [{ run: r0, actions: [{ type: "begin", at: 1 }] }];
+    const seen = new Set<string>();
     while (stack.length && ends.length < limit) {
       const { run, actions } = stack.pop()!;
-      if (run.phase === "closed") { ends.push({ length: run.turns.length, run, actions }); continue; }
+      // Dos rutas que llegan al mismo estado (nodo, banderas, términos, confianza y nº de decisiones) se comportan igual
+      // desde ahí: basta explorar una. Las rutas cerradas sí se guardan todas porque su desenlace puede diferir.
+      if (run.phase !== "closed") {
+        const key = `${run.node}|${[...run.flags].sort().join(",")}|${JSON.stringify(Object.entries(run.terms).sort())}|${run.trust}|${run.turns.length}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+      }
+      if (run.phase === "closed") {
+        // Un cierre por secuencia de decisiones + banderas basta para validar longitudes y desenlaces.
+        const k = `END|${run.turns.map((t) => `${t.node}:${t.strategy}`).join(">")}|${[...run.flags].sort().join(",")}`;
+        if (seen.has(k)) continue;
+        seen.add(k);
+        ends.push({ length: run.turns.length, run, actions }); continue; }
       if (run.turns.length > 12) { ends.push({ length: run.turns.length, run, actions }); continue; }
       for (const st of strategiesFor(spec, run)) {
         const combos: Record<string, number>[] = [{}];
@@ -40,6 +53,7 @@ export function allEnds(spec: EpisodeSpec, limit = 20000): PathEnd[] {
         for (const params of combos) {
           const a: EpisodeAction = { type: "decide", at: 2 + run.turns.length, strategy: st.id, ...(st.params?.length ? { params } : {}) };
           const r = applyEpisode(spec, run, a);
+          if (!r.error) used?.add(`${run.node}.${st.id}`);
           if (!r.error) stack.push({ run: r.run, actions: [...actions, a] });
         }
       }
@@ -71,15 +85,16 @@ export function lintEpisode(spec: EpisodeSpec): string[] {
     for (const k of a.knows) if (!factIds.has(k)) bad.push(`colaborador ${a.id}: conoce un hecho inexistente ${k}`);
     if (!a.view.some((v) => !v.when)) bad.push(`colaborador ${a.id}: falta una opinión por defecto`);
   }
-  const ends = allEnds(spec);
+  const used = new Set<string>();
+  const ends = allEnds(spec, 20000, used);
+  if (ends.length >= 20000) bad.push("demasiadas rutas para validar (simplifica el grafo)");
   const lens = ends.map((e) => e.length);
   if (!ends.length) bad.push("ninguna ruta llega al cierre");
   if (lens.some((l) => l < MIN_DECISIONS)) bad.push(`hay rutas con menos de ${MIN_DECISIONS} decisiones`);
   if (lens.some((l) => l > MAX_DECISIONS)) bad.push(`hay rutas con más de ${MAX_DECISIONS} decisiones`);
   if (ends.some((e) => e.run.phase !== "closed")) bad.push("hay rutas que no cierran (ciclo)");
-  const used = new Set(ends.flatMap((e) => e.run.turns.map((t) => `${t.node}.${t.strategy}`)));
   for (const n of Object.values(spec.nodes)) {
-    if (!ends.some((e) => e.run.turns.some((t) => t.node === n.id))) bad.push(`${n.id}: nodo inalcanzable`);
+    if (!n.strategies.some((s) => used.has(`${n.id}.${s.id}`))) bad.push(`${n.id}: nodo inalcanzable`);
     for (const s of n.strategies) if (!used.has(`${n.id}.${s.id}`)) bad.push(`${n.id}.${s.id}: estrategia que nunca se puede elegir`);
   }
   return bad;

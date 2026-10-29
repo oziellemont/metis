@@ -20,6 +20,8 @@ import { appoint, recordBoard } from "./journey";
 import { OFFERED_TIER } from "./profile";
 import { pauseCareer, resumeCareer, startQuietDay } from "./cadence";
 import { onVacation } from "./pausetime";
+import { actEpisode, openEpisode } from "./episodes/catalog";
+import type { EpisodeAction } from "./episodes/engine";
 
 export type GameAction =
   | { type: "start"; at: number; name: string; company: string; settings?: Partial<Settings>; rulesVersion?: number; tier?: number; journey?: boolean }
@@ -40,7 +42,10 @@ export type GameAction =
   /** Ritmo (1.2): vacaciones con fecha prevista de regreso (o null), reanudar, día tranquilo hasta `until`. */
   | { type: "pause"; at: number; until: number | null }
   | { type: "resume"; at: number }
-  | { type: "quiet"; at: number; until: number };
+  | { type: "quiet"; at: number; until: number }
+  /** Executive Decision Episodes (adenda v3.3): abrir un episodio y cada paso dentro de él. */
+  | { type: "episodeOpen"; at: number; id: string; mode?: "estandar" | "flexible" }
+  | { type: "episode"; at: number; id: string; act: EpisodeAction };
 
 /** Lo único que se puede hacer de vacaciones: reanudar o cambiar ajustes. El resto se rechaza. */
 const ALLOWED_ON_VACATION = new Set<GameAction["type"]>(["resume", "pause", "settings"]);
@@ -83,6 +88,8 @@ export function applyAction(s: CeoState, a: GameAction): { state: CeoState; appl
     case "pause": n = pauseCareer(s, a.at, a.until ?? null); break;
     case "resume": n = resumeCareer(s, a.at); break;
     case "quiet": n = startQuietDay(s, a.at, a.until); break;
+    case "episodeOpen": n = openEpisode(s, a.id, a.at, a.mode); break;
+    case "episode": n = a.act && a.act.at === a.at ? actEpisode(s, a.id, a.act).state : s; break;
   }
   if (n === s) return { state: s, applied: false };
   return { state: { ...n, savedAt: a.at }, applied: true };
