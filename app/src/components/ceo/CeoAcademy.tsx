@@ -1,9 +1,9 @@
 "use client";
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import clsx from "clsx";
-import { ArrowLeft, ArrowRight, Check, Clock, Coins, Compass, Flag, Flame as FlameIcon, GraduationCap, Handshake, Layers, Lock, MessagesSquare, Rocket, Target, Users, Zap } from "lucide-react";
+import { ArrowRight, Check, Clock, Coins, Compass, Flag, Flame as FlameIcon, GraduationCap, Handshake, Layers, Lock, MessagesSquare, Rocket, Target, Users, Zap } from "lucide-react";
 import { BlockView } from "@/components/academy/Blocks";
 
 import { LESSONS, MAX_TRACK_LEVEL, TRACKS, lessonsOfTrack, rankOf, trackOf, type Lesson } from "@/lib/ceo/lessons";
@@ -11,6 +11,7 @@ import { LEVELS, nextLessonXp, rankFor } from "@/lib/ceo/engine";
 import { TRACK_TO } from "@/lib/ceo/mastery";
 import { celebrate } from "@/lib/ceo/celebrate";
 import { useCeo } from "./CeoProvider";
+import { Stage, StepTitle } from "./Stage";
 import { personalized, trackHints } from "@/lib/ceo/profile";
 
 const ICON = { compass: Compass, users: Users, flag: Flag, message: MessagesSquare, handshake: Handshake, coins: Coins, flame: FlameIcon, rocket: Rocket, target: Target, layers: Layers };
@@ -140,7 +141,6 @@ export function LessonPlayer({ lesson }: { lesson: Lesson }) {
   /** XP que pagó esta lección al terminarla (null = era un repaso). */
   const [gained, setGained] = useState<number | null>(null);
   const onReady = useCallback((ok: boolean) => setReady(ok), []);
-  useEffect(() => { window.scrollTo({ top: 0, behavior: "smooth" }); }, [i, done]);
   const rank = rankFor(c.s, c.now);
   const avail = LESSONS.filter((l) => rankOf(l) <= rank);
   const sameTrack = lessonsOfTrack(trackOf(lesson).track).find((l) => !c.s.lessons[l.id] && l.id !== lesson.id && rankOf(l) <= rank);
@@ -159,48 +159,50 @@ export function LessonPlayer({ lesson }: { lesson: Lesson }) {
     }
   };
 
+  const exit = from ? `/ceo/caso/${from}` : "/ceo/academy";
+  const steps = [...lesson.blocks.map((b) => b.eyebrow), "Listo"];
+
   if (locked) return (
-    <div className="max-w-xl mx-auto card p-8 text-center">
-      <span className="mx-auto h-14 w-14 rounded-2xl bg-slate-100 text-slate-400 grid place-items-center"><Lock size={24} /></span>
-      <h1 className="mt-4 text-xl font-semibold">{lesson.title}</h1>
-      <p className="mt-2 text-sm text-slate-500">Esta lección se abre al reunir <b className="text-ink">{LEVELS[rankOf(lesson)]?.min} XP de constancia</b>. Sigue decidiendo en tu empresa y resolviendo tus dilemas del día.</p>
-      <Link href="/ceo/academy" className="btn-primary mt-6 inline-flex">Volver a Academy</Link>
-    </div>
+    <Stage steps={[]} at={0} exit="/ceo/academy">
+      <div className="text-center">
+        <span className="mx-auto h-14 w-14 rounded-2xl bg-white/10 text-white/70 grid place-items-center"><Lock size={24} /></span>
+        <StepTitle title={lesson.title} />
+        <p className="mt-3 text-white/70 text-[15px] leading-relaxed">Esta lección se abre al reunir <b className="text-white">{LEVELS[rankOf(lesson)]?.min} XP de constancia</b>. Sigue decidiendo en tu empresa y resolviendo tus dilemas del día.</p>
+        <Link href="/ceo/academy" className="btn bg-white text-ink hover:bg-white/90 px-5 py-2.5 font-semibold mt-6 inline-flex">Volver a Academy</Link>
+      </div>
+    </Stage>
+  );
+
+  if (done) return (
+    <Stage steps={steps} at={steps.length - 1} exit={exit} top={gained ? <span className="chip bg-mint/20 text-mint text-xs font-semibold">+{gained} XP</span> : undefined}>
+      <div className="text-center">
+        <span className="mx-auto h-16 w-16 rounded-2xl bg-white text-indigo grid place-items-center ceo-pop"><Check size={28} strokeWidth={2.6} /></span>
+        <div className="mt-6"><StepTitle eyebrow={lesson.part} title="Lección completada" text={gained === null ? "Repaso hecho. La teoría se vuelve criterio cuando la aplicas." : gained > 0 ? `+${gained} XP de constancia. Tu racha de hoy está encendida.` : "Ya sumaste el XP de lecciones de hoy. Cuenta para tu racha y tu dominio."} /></div>
+        <div className="mt-8 flex flex-col gap-2 max-w-sm mx-auto">
+          {from && <button onClick={() => router.push(`/ceo/caso/${from}`)} className="btn bg-white text-ink hover:bg-white/90 px-5 py-3 font-semibold justify-center">Volver al caso <ArrowRight size={14} /></button>}
+          {c.pending[0] && <button onClick={() => router.push(`/ceo/caso/${c.pending[0].item.id}`)} className={clsx("btn px-5 py-3 font-semibold justify-center", from ? "bg-white/10 text-white hover:bg-white/20" : "bg-white text-ink hover:bg-white/90")}>Atender pendiente <ArrowRight size={14} /></button>}
+          {next && <button onClick={() => router.push(`/ceo/academy/${next.id}`)} className="btn bg-white/10 text-white hover:bg-white/20 px-5 py-3 justify-center">Siguiente: {next.title}</button>}
+          <Link href="/ceo" className="btn bg-white/10 text-white hover:bg-white/20 px-5 py-3 justify-center">Ir a Hoy</Link>
+        </div>
+      </div>
+    </Stage>
   );
 
   return (
-    <div className="max-w-3xl mx-auto">
-      <div className="flex items-center gap-3">
-        <Link href={from ? `/ceo/caso/${from}` : "/ceo/academy"} className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-ink"><ArrowLeft size={15} /> {from ? "Volver al caso" : "Academy"}</Link>
-        <div className="flex-1 h-1.5 rounded-full bg-slate-100 overflow-hidden"><div className="h-full rounded-full bg-gradient-to-r from-indigo-light to-indigo transition-all duration-500" style={{ width: `${done ? 100 : Math.round((i / lesson.blocks.length) * 100)}%` }} /></div>
-        <span className="text-xs text-slate-400 whitespace-nowrap">{lesson.part}</span>
-      </div>
-
-      <div className="card mt-5 p-6 sm:p-9 min-h-[440px] flex flex-col">
-        {!done ? (
-          <>
-            <div key={i} className="academy-in flex-1"><BlockView block={lesson.blocks[i]} onReady={onReady} /></div>
-            <div className="mt-8 flex items-center justify-between gap-3 border-t border-slate-100 pt-5">
-              <button onClick={() => i > 0 && setI(i - 1)} disabled={i === 0} className="btn-ghost !px-3 disabled:opacity-0"><ArrowLeft size={14} /> Atrás</button>
-              <div className="hidden sm:flex gap-1.5">{lesson.blocks.map((_, j) => <span key={j} className={clsx("h-1.5 rounded-full transition-all", j === i ? "w-5 bg-indigo" : j < i ? "w-1.5 bg-indigo/40" : "w-1.5 bg-slate-200")} />)}</div>
-              <button onClick={advance} disabled={!ready} className="btn-primary">{i === lesson.blocks.length - 1 ? "Terminar lección" : "Continuar"} <ArrowRight size={14} /></button>
-            </div>
-            {!ready && <p className="mt-2 text-right text-[11px] text-slate-400">Completa la interacción para continuar</p>}
-          </>
-        ) : (
-          <div className="academy-in flex-1 flex flex-col items-center justify-center text-center">
-            <span className="h-16 w-16 rounded-2xl bg-gradient-to-br from-indigo to-indigo-light text-white grid place-items-center ceo-pop"><Check size={28} strokeWidth={2.6} /></span>
-            <h2 className="mt-5 text-2xl font-semibold">Lección completada</h2>
-            <p className="mt-2 text-slate-500 max-w-md">{gained === null ? "Repaso hecho. La teoría se vuelve criterio cuando la aplicas." : gained > 0 ? `+${gained} XP de constancia. Tu racha de hoy está encendida.` : "Ya sumaste el XP de lecciones de hoy. Cuenta para tu racha y tu dominio."}</p>
-            <div className="mt-7 flex flex-wrap justify-center gap-2">
-              {from && <button onClick={() => router.push(`/ceo/caso/${from}`)} className="btn-primary">Volver al caso <ArrowRight size={14} /></button>}
-              {c.pending[0] && <button onClick={() => router.push(`/ceo/caso/${c.pending[0].item.id}`)} className={from ? "btn-ghost" : "btn-primary"}>Atender pendiente <ArrowRight size={14} /></button>}
-              {next && <button onClick={() => router.push(`/ceo/academy/${next.id}`)} className="btn-ghost">Siguiente: {next.title}</button>}
-              <Link href="/ceo" className="btn-ghost">Ir a Hoy</Link>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
+    <Stage
+      steps={steps}
+      at={i}
+      exit={exit}
+      top={<span className="chip bg-white/10 text-white/80 text-xs"><Clock size={12} /> {lesson.minutes} min</span>}
+      onBack={i > 0 ? () => setI(i - 1) : undefined}
+      onNext={advance}
+      nextOff={!ready}
+      next={i === lesson.blocks.length - 1 ? "Terminar lección" : "Continuar"}
+      aside={!ready ? <span className="text-[11px] text-white/55">Completa la interacción para continuar</span> : undefined}
+    >
+      <div className="text-xs font-semibold uppercase tracking-wider text-mint">Academy · {lesson.part}</div>
+      <h1 className="mt-2 text-xl sm:text-2xl font-semibold leading-tight">{lesson.title}</h1>
+      <div className="mt-6 rounded-3xl bg-white text-ink p-5 sm:p-8 shadow-xl"><BlockView block={lesson.blocks[i]} onReady={onReady} /></div>
+    </Stage>
   );
 }
