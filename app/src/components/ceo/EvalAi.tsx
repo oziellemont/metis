@@ -26,8 +26,10 @@ export function EvalAi() {
     try {
       for (let from = 0; from < EVAL_JOBS.length; from += BATCH) {
         const r = await fetch("/api/ceo/episodio/evaluar", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ from, to: from + BATCH }) });
-        const j = (await r.json().catch(() => ({}))) as { ok?: boolean; error?: string; results?: JobResult[]; model?: string };
+        const j = (await r.json().catch(() => ({}))) as { ok?: boolean; error?: string; results?: JobResult[]; model?: string; errors?: string[] };
         if (!j.ok || !j.results) { setError(j.error ?? `Error ${r.status}`); break; }
+        const allFailed = j.results.every((x) => x.got.every((g) => g === null || g === "ninguno")) && (j.errors?.length ?? 0) > 0;
+        if (allFailed) { setError(`OpenAI rechazó las llamadas; se detuvo sin gastar. Detalle: ${j.errors!.join(" · ")}`); all.length = 0; break; }
         all.push(...j.results); setDone(all.length); if (j.model) setModel(j.model);
       }
       if (all.length) setReport(summarize(all));
