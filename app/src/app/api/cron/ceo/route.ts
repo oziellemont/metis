@@ -16,8 +16,10 @@ import { CEO_URL } from "@/lib/site";
  */
 import { NextResponse, type NextRequest } from "next/server";
 import { supabaseCeoAdmin } from "@/lib/supabase/server";
-import { sendMail } from "@/lib/email";
-import { migrate, packOf } from "@/lib/ceo/engine";
+import { cancelMail, sendMail } from "@/lib/email";
+import { migrate, nowOf, packOf } from "@/lib/ceo/engine";
+import { schedKey, unscheduleAll } from "@/lib/ceo/cadence";
+import { currentPause } from "@/lib/ceo/pausetime";
 import { jobsFor, type Sent } from "@/lib/ceo/schedule";
 import { renderJob } from "@/lib/ceo/mailer";
 import { ceoWhatsappText, fromHeader, sendWhatsapp } from "@/lib/ceo/notify";
@@ -46,6 +48,15 @@ export async function GET(req: NextRequest) {
     const s: CeoState = migrate(p.state);
     if (!s.startedAt) continue;
     const sent: Sent = { ...((p.sent as Sent) ?? {}) };
+    // 1.2: en pausa no se manda nada y se cancela lo programado (al reanudar se vuelve a programar una vez).
+    if (currentPause(s, nowOf(s, real))) {
+      const u = unscheduleAll(sent, real);
+      if (u.changed && !dry) {
+        for (const id of u.ids) await cancelMail(id);
+        await sb.from("players").update({ sent: u.sent }).eq("user_id", p.user_id);
+      }
+      continue;
+    }
     const jobs = jobsFor(s, sent, real, { plan });
     if (!jobs.length) continue;
     const to = (p.email as string | null) || s.settings.email || "";
@@ -63,7 +74,7 @@ export async function GET(req: NextRequest) {
         idempotencyKey: `ceo:${p.user_id}:${job.key}`, tags: [{ name: "app", value: "ceo" }, { name: "tipo", value: job.kind }],
       });
       out.push({ user: p.user_id, key: job.key, subject: m.subject, at, ok: r.ok, error: r.error });
-      if (r.ok && !dry) { sent[job.key] = real; changed = true; }
+      if (r.ok && !dry) { sent[job.key] = real; if (at && "id" in r && r.id) sent[schedKey(job.key)] = `${r.id}|${at}`; changed = true; }
       // WhatsApp (opcional) solo para asuntos que llegan ya, no para los programados.
       if (job.kind === "case" && !at && p.notify_whatsapp && p.phone && !dry) await sendWhatsapp(p.phone, ceoWhatsappText({ appUrl, entry: job.entry, pack: packOf(s) }));
     }

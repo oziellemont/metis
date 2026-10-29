@@ -18,6 +18,8 @@ import { closeChange, playLever, startChange } from "./relations";
 import { crisisAccess, playCrisis, recordCrisis } from "./crisis";
 import { appoint, recordBoard } from "./journey";
 import { OFFERED_TIER } from "./profile";
+import { pauseCareer, resumeCareer, startQuietDay } from "./cadence";
+import { onVacation } from "./pausetime";
 
 export type GameAction =
   | { type: "start"; at: number; name: string; company: string; settings?: Partial<Settings>; rulesVersion?: number; tier?: number; journey?: boolean }
@@ -34,7 +36,16 @@ export type GameAction =
   | { type: "crisis"; at: number; from: number; picks: Record<string, string>; rating?: string }
   | { type: "appoint"; at: number }
   /** Junta ante el Consejo (resultado declarado por el dispositivo). */
-  | { type: "board"; at: number; passed: boolean };
+  | { type: "board"; at: number; passed: boolean }
+  /** Ritmo (1.2): vacaciones con fecha prevista de regreso (o null), reanudar, día tranquilo hasta `until`. */
+  | { type: "pause"; at: number; until: number | null }
+  | { type: "resume"; at: number }
+  | { type: "quiet"; at: number; until: number };
+
+/** Lo único que se puede hacer de vacaciones: reanudar o cambiar ajustes. El resto se rechaza. */
+const ALLOWED_ON_VACATION = new Set<GameAction["type"]>(["resume", "pause", "settings"]);
+/** ¿Esta acción queda bloqueada porque el jugador está de vacaciones? */
+export const blockedOnVacation = (s: CeoState, a: GameAction) => onVacation(s, a.at) && !ALLOWED_ON_VACATION.has(a.type);
 
 /**
  * Aplica una acción. Devuelve el mismo objeto si la acción no procede (igual que el motor),
@@ -42,6 +53,7 @@ export type GameAction =
  */
 export function applyAction(s: CeoState, a: GameAction): { state: CeoState; applied: boolean } {
   let n: CeoState = s;
+  if (blockedOnVacation(s, a)) return { state: s, applied: false };
   switch (a.type) {
     case "start": {
       const base = newState();
@@ -68,6 +80,9 @@ export function applyAction(s: CeoState, a: GameAction): { state: CeoState; appl
     }
     case "appoint": n = appoint(s, a.at); break;
     case "board": n = recordBoard(s, a.passed === true, a.at); break;
+    case "pause": n = pauseCareer(s, a.at, a.until ?? null); break;
+    case "resume": n = resumeCareer(s, a.at); break;
+    case "quiet": n = startQuietDay(s, a.at, a.until); break;
   }
   if (n === s) return { state: s, applied: false };
   return { state: { ...n, savedAt: a.at }, applied: true };

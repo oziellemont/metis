@@ -14,7 +14,7 @@
  *
  * Lógica pura: sin React, sin navegador, sin Supabase.
  */
-import type { CeoState, Decision } from "./types";
+import type { CeoState, Decision, PausePeriod } from "./types";
 import { isDailyGoal, isSessionMinutes } from "./onboarding";
 
 export const SYNC_VERSION = 1;
@@ -68,16 +68,39 @@ export function mergeStates(local: CeoState | null, cloud: CeoState | null): Mer
     const ka = Object.keys(a);
     return ka.length === Object.keys(b).length && ka.every((k) => k in b && JSON.stringify(a[k]) === JSON.stringify(b[k]));
   };
-  const untouched = same(decisions, base.decisions) && same(read, base.read) && same(lessons, base.lessons) && same(pinned, base.pinned) && same(dilemmas, base.dilemmas);
+  const cadence = mergeCadence(local.cadence, cloud.cadence);
+  const untouched = JSON.stringify(cadence ?? null) === JSON.stringify(base.cadence ?? null) && same(decisions, base.decisions) && same(read, base.read) && same(lessons, base.lessons) && same(pinned, base.pinned) && same(dilemmas, base.dilemmas);
   if (untouched) return { state: base, how: base === local ? (local.savedAt === cloud.savedAt ? "igual" : "local") : "nube" };
   const state: CeoState = {
     ...base,
     decisions, read, lessons, pinned,
     ...(Object.keys(dilemmas).length ? { dilemmas } : {}),
+    ...(cadence ? { cadence } : {}),
     lastActiveAt: Math.max(local.lastActiveAt || 0, cloud.lastActiveAt || 0),
     savedAt: Math.max(local.savedAt || 0, cloud.savedAt || 0) + 1,
   };
   return { state, how: "mezcla" };
+}
+
+/**
+ * Pausas de los dos dispositivos (1.2). Una pausa se identifica por su inicio y tipo; si un lado ya la
+ * cerró (reanudó), gana el cierre más temprano. Así un dispositivo viejo nunca quita una pausa ni la reabre.
+ */
+export function mergeCadence(a: CeoState["cadence"], b: CeoState["cadence"]): CeoState["cadence"] {
+  if (!a && !b) return undefined;
+  const by = new Map<string, PausePeriod>();
+  for (const p of [...(a?.pauses ?? []), ...(b?.pauses ?? [])]) {
+    const k = `${p.kind}:${p.from}`;
+    const q = by.get(k);
+    if (!q) { by.set(k, p); continue; }
+    const to = q.to === null ? p.to : p.to === null ? q.to : Math.min(q.to, p.to);
+    by.set(k, { ...q, to });
+  }
+  const pauses = [...by.values()].sort((x, y) => x.from - y.from);
+  // Si quedaron dos abiertas (pausaron en ambos lados), la anterior termina donde empieza la siguiente.
+  for (let i = 0; i < pauses.length - 1; i++) if (pauses[i].to === null || (pauses[i].to as number) > pauses[i + 1].from) pauses[i] = { ...pauses[i], to: pauses[i + 1].from };
+  const seen = Math.max(a?.welcomeSeenAt ?? 0, b?.welcomeSeenAt ?? 0);
+  return { policyVersion: 1, pauses, ...(seen ? { welcomeSeenAt: seen } : {}) };
 }
 
 /** Columnas de preferencias de `ceo.players` (migración 0016) que pueden rellenar la partida. */

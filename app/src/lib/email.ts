@@ -30,6 +30,13 @@ export async function sendMail(m: Mail): Promise<{ ok: boolean; id?: string; err
   return { ok: true, id: j.id };
 }
 
+/** Cancela un correo programado (Resend). Sin llave: simulación. Que ya no exista o ya saliera no es error grave. */
+export async function cancelMail(id: string): Promise<{ ok: boolean; error?: string }> {
+  if (!KEY) { console.info(`[email:dry-run] cancelar ${id}`); return { ok: true }; }
+  const res = await fetch(`https://api.resend.com/emails/${encodeURIComponent(id)}/cancel`, { method: "POST", headers: { Authorization: `Bearer ${KEY}` } });
+  return res.ok || res.status === 404 || res.status === 422 ? { ok: true } : { ok: false, error: `${res.status} ${await res.text()}` };
+}
+
 /** Envía en lotes pequeños para respetar límites del proveedor. */
 export async function sendMany(mails: Mail[], batch = 10) {
   const results: Awaited<ReturnType<typeof sendMail>>[] = [];

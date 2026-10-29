@@ -108,6 +108,9 @@ export function sanitizeAction(raw: unknown): GameAction | null {
     case "crisis": { const picks = cleanPicks(a.picks); return picks && num(a.from) ? { type: "crisis", at, from: Math.round(a.from), picks } : null; }
     case "appoint": return { type: "appoint", at };
     case "board": return typeof a.passed === "boolean" ? { type: "board", at, passed: a.passed } : null;
+    case "pause": return a.until === null || a.until === undefined ? { type: "pause", at, until: null } : num(a.until) && a.until > at ? { type: "pause", at, until: Math.round(a.until) } : null;
+    case "resume": return { type: "resume", at };
+    case "quiet": return num(a.until) && a.until > at ? { type: "quiet", at, until: Math.round(a.until) } : null;
     default: return null;
   }
 }

@@ -8,6 +8,7 @@ import { ceoSignOut } from "@/lib/ceo/auth-client";
 import { useCeo } from "./CeoProvider";
 import clsx from "clsx";
 import { DAILY_GOALS, DEFAULT_DAILY_GOAL, SESSION_MINUTES, weeklyProjectionText } from "@/lib/ceo/onboarding";
+import { CadenceCard } from "./Cadence";
 
 const TZS = ["America/Monterrey", "America/Mexico_City", "America/Cancun", "America/Tijuana", "America/Hermosillo", "America/Bogota", "America/Lima", "America/Santiago", "America/Argentina/Buenos_Aires", "Europe/Madrid"];
 
@@ -95,6 +96,13 @@ export function CeoSettings() {
           {c.synced && <span className="text-xs text-slate-400">Sincronizado con tu cuenta</span>}
         </div>
       </section>
+
+      {c.cadence === "vacation_paused" ? (
+        <section className="card p-5 sm:p-6 flex flex-wrap items-center gap-3 text-sm">
+          <span className="flex-1 min-w-0 text-slate-600">Tu carrera está en pausa. Puedes cambiar tus ajustes; nada corre hasta que reanudes.</span>
+          <button type="button" onClick={c.resumeCareer} className="btn-primary">Reanudar ahora</button>
+        </section>
+      ) : <CadenceCard />}
 
       <section className="card p-5 sm:p-6 space-y-3">
         <h2 className="font-semibold text-ink">{c.testTools ? "Modo prueba" : "Reiniciar"}</h2>

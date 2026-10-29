@@ -188,6 +188,22 @@ export interface CeoState {
   crises?: CrisisRun[];
   /** Procedencia: carrera traída del navegador a la cuenta (adenda v3.2 §3). La escribe el servidor al importar. */
   origin?: CareerOrigin;
+  /** Ritmo (1.2, adenda §5): vacaciones y días tranquilos. Sin dato = siempre activo. Ver cadence.ts. */
+  cadence?: Cadence;
+}
+
+/** Estado de ritmo del jugador. Se deriva de `cadence.pauses` a una hora dada (ver cadence.ts). */
+export type CadenceStatus = "active" | "quiet_day" | "vacation_paused";
+/**
+ * Un periodo de pausa en hora real. Vacaciones: `to` = null mientras dura (se cierra al reanudar).
+ * Día tranquilo: `to` = medianoche local, fijada al empezar (o antes, si vuelves ese mismo día).
+ */
+export interface PausePeriod { kind: "vacation" | "quiet"; from: number; to: number | null; plannedResumeAt?: number | null }
+export interface Cadence {
+  policyVersion: 1;
+  pauses: PausePeriod[];
+  /** Última vez que viste la pantalla de regreso (para no repetirla). */
+  welcomeSeenAt?: number;
 }
 
 /** De dónde viene una carrera importada. No cambia la historia jugada; solo la etiqueta como progreso anterior. */
