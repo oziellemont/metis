@@ -1,6 +1,6 @@
 # Pruebas de base de datos (esquema ceo)
 
-Corren las migraciones reales 0013–0017 en un Postgres local con un «shim» mínimo de Supabase
+Corren las migraciones reales 0013–0018 en un Postgres local con un «shim» mínimo de Supabase
 y verifican el aislamiento entre usuarios (RLS). No tocan ningún proyecto de Supabase.
 
 ```bash

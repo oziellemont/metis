@@ -106,6 +106,7 @@ function Session() {
   const c = useCeo();
   const { chair, board, names } = useNames();
   const [base] = useState<Kpis>(() => ({ ...c.kpis }));
+  const [from] = useState(() => c.now);
   const tier = c.s.tier;
   const [picks, setPicks] = useState<CrisisPicks>({});
   const [i, setI] = useState(0);
@@ -133,9 +134,9 @@ function Session() {
   useEffect(() => {
     if (!done || saved || !result.complete) return;
     setSaved(true);
-    c.recordCrisis({ rating: result.rating, picks });
+    c.recordCrisis({ rating: result.rating, picks, from });
     if (result.rating === "contenida") celebrate("company");
-  }, [done, saved, result, picks, c]);
+  }, [done, saved, result, picks, c, from]);
 
   if (done) return <Result base={base} picks={picks} />;
   const who = step!.speaker === "chair" ? chair : board;

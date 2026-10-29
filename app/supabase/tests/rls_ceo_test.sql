@@ -90,5 +90,53 @@ do $$ begin
   if (select alias from ceo.players) <> 'A' then raise exception 'A fue modificado por B'; end if;
   if (select count(*) from ceo.industry_interest) <> 1 then raise exception 'El interés de A fue borrado'; end if;
 end $$;
+
+-- Diario en sombra (0018): solo el servidor escribe; choques de versión y duplicados no corrompen.
+reset role; set role service_role;
+do $$
+declare r text; ev jsonb;
+begin
+  ev := '[{"eventId":"22222222-2222-4222-8222-000000000001","seq":1,"action":{"type":"start","at":1790000000000},"at":1790000000000,"accepted":true,"note":null},
+          {"eventId":"22222222-2222-4222-8222-000000000002","seq":2,"action":{"type":"decide","at":1790000060000},"at":1790000060000,"accepted":false,"note":"no_procede;reloj_adelantado"}]';
+  r := ceo.journal_commit('00000000-0000-4000-8000-00000000000a', '33333333-3333-4333-8333-333333333333', to_timestamp(1790000000), 0, '{"company":"cumbre"}', 0, 10, 'inicio', 0, 1, ev);
+  if r <> 'ok' then raise exception 'no guardó la carrera nueva: %', r; end if;
+  -- otro dispositivo intenta crearla también → conflicto
+  r := ceo.journal_commit('00000000-0000-4000-8000-00000000000a', '33333333-3333-4333-8333-333333333333', to_timestamp(1790000000), 0, '{"company":"forja"}', 0, 10, 'inicio', 0, 1, '[]');
+  if r <> 'conflicto' then raise exception 'dos altas de la misma carrera: %', r; end if;
+  -- guardado con versión vieja → conflicto; con la correcta → ok y sube la versión
+  r := ceo.journal_commit('00000000-0000-4000-8000-00000000000a', '33333333-3333-4333-8333-333333333333', to_timestamp(1790000000), 7, '{}', 0, null, 'inicio', 0, 1, '[]');
+  if r <> 'conflicto' then raise exception 'aceptó una versión vieja'; end if;
+  -- el mismo evento repetido no se duplica
+  r := ceo.journal_commit('00000000-0000-4000-8000-00000000000a', '33333333-3333-4333-8333-333333333333', to_timestamp(1790000000), 1, '{"company":"cumbre","x":1}', 20, null, 'inicio', 0, 1, jsonb_build_array(ev->0));
+  if r <> 'ok' then raise exception 'no guardó con la versión correcta'; end if;
+  if (select count(*) from ceo.game_events where run_id = '33333333-3333-4333-8333-333333333333') <> 2 then raise exception 'evento duplicado'; end if;
+  if (select version from ceo.game_runs) <> 2 then raise exception 'la versión no subió'; end if;
+  if (select client_xp from ceo.game_runs) <> 10 then raise exception 'perdió el XP del navegador'; end if;
+  if (select events_flagged from ceo.game_runs) <> 1 then raise exception 'no contó reloj adelantado'; end if;
+  -- B no puede guardar sobre la carrera de A ni aunque conozca el run_id
+  r := ceo.journal_commit('00000000-0000-4000-8000-00000000000b', '33333333-3333-4333-8333-333333333333', to_timestamp(1790000000), 2, '{"hack":1}', 9999, null, 'inicio', 0, 1, '[]');
+  if r <> 'conflicto' then raise exception 'B escribió en la carrera de A'; end if;
+  if (select count(*) from ceo.xp_comparacion(10)) <> 1 then raise exception 'xp_comparacion no lista la carrera'; end if;
+end $$;
+reset role; set role authenticated;
+select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-00000000000b', false);
+do $$ begin
+  if (select count(*) from ceo.game_runs) <> 0 then raise exception 'FUGA: B ve carreras de A'; end if;
+  if (select count(*) from ceo.game_events) <> 0 then raise exception 'FUGA: B ve jugadas de A'; end if;
+  begin perform ceo.journal_commit('00000000-0000-4000-8000-00000000000b', gen_random_uuid(), now(), 0, '{}', 0, 0, 'inicio', 0, 1, '[]');
+    raise exception 'FUGA: un navegador pudo llamar journal_commit';
+  exception when insufficient_privilege then null; end;
+  begin perform 1 from ceo.xp_comparacion(5); raise exception 'FUGA: un navegador ve la comparación de XP';
+  exception when insufficient_privilege then null; end;
+  begin insert into ceo.game_runs (run_id, user_id, career_started_at, state, base_kind) values (gen_random_uuid(), '00000000-0000-4000-8000-00000000000b', now(), '{}', 'inicio');
+    raise exception 'FUGA: un navegador pudo escribir su propia carrera de servidor';
+  exception when insufficient_privilege then null; end;
+end $$;
+select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-00000000000a', false);
+do $$ begin
+  if (select count(*) from ceo.game_runs) <> 1 then raise exception 'A no ve su carrera'; end if;
+  begin update ceo.game_runs set server_xp = 99999; raise exception 'A pudo inflar su XP de servidor';
+  exception when insufficient_privilege then null; end;
+end $$;
 reset role;
 select 'RLS OK' as resultado;
