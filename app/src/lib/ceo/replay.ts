@@ -12,21 +12,29 @@
  *
  * Cada acción replica, una a una, lo que hacen las acciones de `CeoProvider`.
  */
-import type { CeoState, CastId, LeverId, Settings } from "./types";
-import { LEGACY_RULES_VERSION, advance, aliasOf, answerDilemma, decide, newState, pinArrived, switchCompany } from "./engine";
+import type { CeoState, CastId, LeverId, Settings, Written } from "./types";
+import { H, LEGACY_RULES_VERSION, advance, aliasOf, answerDilemma, decide, kpis, newState, pinArrived, switchCompany } from "./engine";
 import { closeChange, playLever, startChange } from "./relations";
+import { crisisAccess, playCrisis, recordCrisis } from "./crisis";
+import { appoint, recordBoard } from "./journey";
+import { OFFERED_TIER } from "./profile";
 
 export type GameAction =
-  | { type: "start"; at: number; name: string; company: string; settings?: Partial<Settings>; rulesVersion?: number }
-  | { type: "decide"; at: number; item: string; option: string }
+  | { type: "start"; at: number; name: string; company: string; settings?: Partial<Settings>; rulesVersion?: number; tier?: number; journey?: boolean }
+  | { type: "decide"; at: number; item: string; option: string; written?: Written }
   | { type: "dilemma"; at: number; id: string; option: number }
   | { type: "lesson"; at: number; id: string }
-  | { type: "settings"; at: number; patch: Partial<Settings> }
+  | { type: "settings"; at: number; patch: Partial<Settings>; name?: string; alias?: string }
   | { type: "changeStart"; at: number }
   | { type: "lever"; at: number; lever: LeverId; targets: CastId[] }
   | { type: "changeClose"; at: number }
   | { type: "advance"; at: number; rulesVersion?: number }
-  | { type: "switch"; at: number; company: string };
+  | { type: "switch"; at: number; company: string }
+  /** Boardroom Crisis: `from` = cuándo empezó la sesión (de ahí sale el tablero). El resultado lo calcula el motor. */
+  | { type: "crisis"; at: number; from: number; picks: Record<string, string>; rating?: string }
+  | { type: "appoint"; at: number }
+  /** Junta ante el Consejo (resultado declarado por el dispositivo). */
+  | { type: "board"; at: number; passed: boolean };
 
 /**
  * Aplica una acción. Devuelve el mismo objeto si la acción no procede (igual que el motor),
@@ -38,17 +46,28 @@ export function applyAction(s: CeoState, a: GameAction): { state: CeoState; appl
     case "start": {
       const base = newState();
       n = { ...base, rulesVersion: a.rulesVersion ?? LEGACY_RULES_VERSION, company: a.company || base.company, name: a.name.trim(), alias: aliasOf(a.name), startedAt: a.at, lastActiveAt: a.at, savedAt: a.at, settings: { ...s.settings, ...a.settings } };
+      if (typeof a.tier === "number") { const t = Math.max(0, Math.min(OFFERED_TIER, Math.round(a.tier))); n = { ...n, tier: t, startTier: t }; }
+      if (a.journey) n = { ...n, journey: { stage: 0, enrolledAt: a.at, appointments: [] } };
       break;
     }
-    case "decide": n = decide(s, a.item, a.option, a.at); break;
+    case "decide": n = decide(s, a.item, a.option, a.at, a.written); break;
     case "dilemma": n = answerDilemma(s, a.id, a.option, a.at); break;
     case "lesson": n = s.lessons[a.id] ? s : { ...s, lessons: { ...s.lessons, [a.id]: a.at }, lastActiveAt: a.at }; break;
-    case "settings": { const q = pinArrived(s, a.at); n = { ...q, settings: { ...q.settings, ...a.patch } }; break; }
+    case "settings": { const q = pinArrived(s, a.at); n = { ...q, name: a.name ?? q.name, alias: a.alias ?? q.alias, settings: { ...q.settings, ...a.patch } }; break; }
     case "changeStart": n = startChange(s, a.at); break;
     case "lever": n = playLever(s, a.lever, a.targets, a.at); break;
     case "changeClose": n = closeChange(s, a.at); break;
     case "advance": n = advance(s, a.at, a.rulesVersion ?? LEGACY_RULES_VERSION); break;
     case "switch": n = switchCompany(s, a.company, a.at); break;
+    case "crisis": {
+      if (!(a.from <= a.at && a.at - a.from <= 2 * H) || !a.picks || typeof a.picks !== "object") break;
+      if (!crisisAccess(s, a.from).open) break;
+      const r = playCrisis(kpis(s, a.from), s.tier, a.picks);
+      if (r.complete) n = recordCrisis(s, { rating: r.rating, picks: a.picks }, a.at);
+      break;
+    }
+    case "appoint": n = appoint(s, a.at); break;
+    case "board": n = recordBoard(s, a.passed === true, a.at); break;
   }
   if (n === s) return { state: s, applied: false };
   return { state: { ...n, savedAt: a.at }, applied: true };

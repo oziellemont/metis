@@ -23,6 +23,9 @@ import type { ChangeSim } from "@/lib/ceo/change";
 import type { CastId, CeoState, CompanyPack, Entry, Kpis, LeverId, Settings, Written } from "@/lib/ceo/types";
 import { claimLegacy, finishImport, importIdFor, kvOf, legacyOwners, LEGACY_KEY, ownerKey, planImport, readClaim, readLegacy, readOwner, writeOwner, type ImportPlan } from "@/lib/ceo/import";
 import { playerRow } from "@/lib/ceo/player-row";
+import { RULES_VERSION } from "@/lib/ceo/rules";
+import { flushOnce, logAction } from "@/lib/ceo/journal-client";
+import type { GameAction } from "@/lib/ceo/replay";
 
 const KEY = LEGACY_KEY;
 
@@ -97,7 +100,7 @@ interface Ctx {
   appoint: () => string | null;
   /** Guarda el resultado de la Junta ante el Consejo (no toca KPI ni la partida). */
   recordBoard: (passed: boolean) => void;
-  recordCrisis: (r: { rating: CrisisRating; picks: CrisisPicks }) => void;
+  recordCrisis: (r: { rating: CrisisRating; picks: CrisisPicks; from?: number }) => void;
   /** Mostrar herramientas de prueba (adelantar reloj). Ver lib/ceo/flags.ts. */
   testTools: boolean;
   /** Carrera del navegador por decidir (null si no hay nada que preguntar). */
@@ -125,6 +128,23 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
   const [plan, setPlan] = useState<ImportFlow["plan"] | null>(null);
   const [importBusy, setImportBusy] = useState(false);
   const [importError, setImportError] = useState<string | null>(null);
+
+  // Diario de jugadas (0.5, modo sombra): cada jugada aceptada por el motor se anota en una cola del
+  // dispositivo y se envía en segundo plano a /api/ceo/partida. Nunca bloquea ni cambia la partida.
+  const userRef = useRef<{ id: string; email: string } | null>(null);
+  const journalOff = useRef(false);
+  const log = useCallback((n: CeoState, a: GameAction) => {
+    const u = userRef.current;
+    if (!u || journalOff.current) return;
+    try { logAction(kvOf(localStorage), u.id, n, a); } catch { /* sin almacenamiento: no hay diario */ }
+  }, []);
+  /** Aplica una jugada y, si procede, la anota. */
+  const play = useCallback((f: (p: CeoState) => { n: CeoState; a: GameAction }) => setS((p) => {
+    const { n, a } = f(p);
+    if (n === p) return p;
+    log(n, a);
+    return { ...n, savedAt: Date.now() };
+  }), [log]);
 
   // cargar: primero quién es (la sesión), luego SU copia. Sin sesión, la partida sin cuenta de este navegador.
   useEffect(() => {
@@ -185,6 +205,26 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
   // guardar: copia de la cuenta (o sin cuenta) en el navegador; nube con retraso. Mientras haya una carrera
   // del navegador por decidir, no se sube nada (para no pisar la nube sin elección).
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const journalTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const sRef = useRef(s);
+  sRef.current = s;
+  userRef.current = user;
+  const flushing = useRef(false);
+  const flushJournal = useCallback(async () => {
+    const u = userRef.current;
+    if (!u || flushing.current || journalOff.current) return;
+    flushing.current = true;
+    try {
+      const kv = kvOf(localStorage);
+      for (let i = 0; i < 5; i++) {
+        const st = sRef.current;
+        const r = await flushOnce(kv, u.id, st, xpOf(st, nowOf(st)), (url, init) => fetch(url, init));
+        if (r === "apagado") { journalOff.current = true; break; }
+        if (r !== "enviado") break;
+      }
+    } catch { /* se reintenta en la siguiente jugada */ }
+    finally { flushing.current = false; }
+  }, []);
   useEffect(() => {
     if (!ready) return;
     try {
@@ -192,6 +232,8 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
       else localStorage.setItem(KEY, JSON.stringify(s));
     } catch { /* ignore */ }
     if (!user || !s.startedAt || plan) return;
+    if (journalTimer.current) clearTimeout(journalTimer.current);
+    journalTimer.current = setTimeout(() => { void flushJournal(); }, 4000);
     if (saveTimer.current) clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(async () => {
       const sb = supabaseBrowser();
@@ -268,34 +310,51 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
   const start: Ctx["start"] = useCallback(({ name, email, phone, company, settings, profile, diagnostic, tier }) => {
     const t = Date.now();
     const pf = sanitizeProfile(profile), dg = sanitizeDiagnostic(diagnostic);
-    setS((p) => ({ ...newState(), ...(pf ? { profile: pf } : {}), ...(dg ? { diagnostic: dg } : {}), tier: Math.max(0, Math.min(OFFERED_TIER, tier ?? 0)), startTier: Math.max(0, Math.min(OFFERED_TIER, tier ?? 0)), journey: { stage: 0, enrolledAt: t, appointments: [] }, company: company || newState().company, name: name.trim(), alias: aliasOf(name), startedAt: t, lastActiveAt: t, savedAt: t, settings: { ...p.settings, ...settings, email, phone, tz: Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Monterrey" } }));
+    setS((p) => {
+      const tr = Math.max(0, Math.min(OFFERED_TIER, tier ?? 0));
+      const n: CeoState = { ...newState(), ...(pf ? { profile: pf } : {}), ...(dg ? { diagnostic: dg } : {}), tier: tr, startTier: tr, journey: { stage: 0, enrolledAt: t, appointments: [] }, company: company || newState().company, name: name.trim(), alias: aliasOf(name), startedAt: t, lastActiveAt: t, savedAt: t, settings: { ...p.settings, ...settings, email, phone, tz: Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Monterrey" } };
+      const { email: _e, phone: _p, ...pub } = n.settings;
+      log(n, { type: "start", at: t, name: n.name, company: n.company, settings: pub, rulesVersion: n.rulesVersion ?? RULES_VERSION, tier: tr, journey: true });
+      return n;
+    });
     seen.current = null;
-  }, []);
-  const decide = useCallback((itemId: string, optionId: string, written?: Written) => setS((p) => { const n = decideFn(p, itemId, optionId, nowOf(p), written); return n === p ? p : { ...n, savedAt: Date.now() }; }), []);
+  }, [log]);
+  const decide = useCallback((itemId: string, optionId: string, written?: Written) => play((p) => { const at = nowOf(p); const n = decideFn(p, itemId, optionId, at, written); return { n, a: { type: "decide", at, item: itemId, option: optionId, ...(n !== p && n.decisions[itemId]?.written ? { written: n.decisions[itemId].written } : {}) } }; }), [play]);
   const markRead = useCallback((itemId: string) => setS((p) => (p.read[itemId] ? p : { ...p, read: { ...p.read, [itemId]: Date.now() }, savedAt: Date.now() })), []);
-  const answerDilemma = useCallback((id: string, option: number) => setS((p) => { const n = answerDilemmaFn(p, id, option); return n === p ? p : { ...n, savedAt: Date.now() }; }), []);
+  const answerDilemma = useCallback((id: string, option: number) => play((p) => { const at = nowOf(p); return { n: answerDilemmaFn(p, id, option, at), a: { type: "dilemma", at, id, option } }; }), [play]);
   const dilemma = useMemo(() => (s.startedAt ? dilemmaOfDay(s, now) : null), [s, now]);
-  const completeLesson = useCallback((id: string) => setS((p) => (p.lessons[id] ? p : { ...p, lessons: { ...p.lessons, [id]: nowOf(p) }, lastActiveAt: nowOf(p), savedAt: Date.now() })), []);
+  const completeLesson = useCallback((id: string) => play((p) => { const at = nowOf(p); return { n: p.lessons[id] ? p : { ...p, lessons: { ...p.lessons, [id]: at }, lastActiveAt: at }, a: { type: "lesson", at, id } }; }), [play]);
   const updateSettings: Ctx["updateSettings"] = useCallback(({ name, alias, ...rest }) => setS((p) => {
-    const q = pinArrived(p, nowOf(p));
-    return { ...q, name: name ?? q.name, alias: alias ?? q.alias, settings: { ...q.settings, ...rest }, savedAt: Date.now() };
-  }), []);
+    const at = nowOf(p);
+    const q = pinArrived(p, at);
+    const n = { ...q, name: name ?? q.name, alias: alias ?? q.alias, settings: { ...q.settings, ...rest }, savedAt: Date.now() };
+    const { email: _e, phone: _p, ...patch } = rest;
+    if (p.startedAt) log(n, { type: "settings", at, patch, ...(name !== undefined ? { name } : {}), ...(alias !== undefined ? { alias } : {}) });
+    return n;
+  }), [log]);
   const skipNext = useCallback(() => { setS((p) => ({ ...skipToNext(p), savedAt: Date.now() })); setTick(Date.now()); }, []);
-  const advance = useCallback(() => { setS((p) => { const n = advanceFn(p, nowOf(p)); return n === p ? p : { ...n, savedAt: Date.now() }; }); seen.current = null; setTick(Date.now()); }, []);
-  const switchCompany = useCallback((id: string) => { setS((p) => { const n = switchFn(p, id, nowOf(p)); return n === p ? p : { ...n, savedAt: Date.now() }; }); seen.current = null; }, []);
-  const startChange = useCallback(() => setS((p) => { const n = startChangeFn(p, nowOf(p)); return n === p ? p : { ...n, savedAt: Date.now() }; }), []);
-  const playLever = useCallback((lever: LeverId, targets: CastId[]) => setS((p) => { const n = playLeverFn(p, lever, targets, nowOf(p)); return n === p ? p : { ...n, savedAt: Date.now() }; }), []);
-  const closeChange = useCallback(() => setS((p) => { const n = closeChangeFn(p, nowOf(p)); return n === p ? p : { ...n, savedAt: Date.now() }; }), []);
+  const advance = useCallback(() => { play((p) => { const at = nowOf(p); return { n: advanceFn(p, at, RULES_VERSION), a: { type: "advance", at, rulesVersion: RULES_VERSION } }; }); seen.current = null; setTick(Date.now()); }, [play]);
+  const switchCompany = useCallback((id: string) => { play((p) => { const at = nowOf(p); return { n: switchFn(p, id, at), a: { type: "switch", at, company: id } }; }); seen.current = null; }, [play]);
+  const startChange = useCallback(() => play((p) => { const at = nowOf(p); return { n: startChangeFn(p, at), a: { type: "changeStart", at } }; }), [play]);
+  const playLever = useCallback((lever: LeverId, targets: CastId[]) => play((p) => { const at = nowOf(p); return { n: playLeverFn(p, lever, targets, at), a: { type: "lever", at, lever, targets } }; }), [play]);
+  const closeChange = useCallback(() => play((p) => { const at = nowOf(p); return { n: closeChangeFn(p, at), a: { type: "changeClose", at } }; }), [play]);
   const mastery = useMemo(() => masteryOf(s, now), [s, now]);
   const journey = useMemo(() => journeyOf(s, now, mastery), [s, now, mastery]);
   const appoint = useCallback((): string | null => {
-    const n = appointFn(s, nowOf(s));
+    const at = nowOf(s);
+    const n = appointFn(s, at);
     if (n === s) return null;
+    log(n, { type: "appoint", at });
     setS({ ...n, savedAt: Date.now() });
     return STAGES[n.journey!.stage].name;
-  }, [s]);
-  const recordCrisis = useCallback((r: { rating: CrisisRating; picks: CrisisPicks }) => setS((p) => { const n = recordCrisisFn(p, r, nowOf(p)); return n === p ? p : { ...n, savedAt: Date.now() }; }), []);
-  const recordBoard = useCallback((passed: boolean) => setS((p) => { const n = recordBoardFn(p, passed, nowOf(p)); return n === p ? p : { ...n, savedAt: Date.now() }; }), []);
+  }, [s, log]);
+  const recordCrisis = useCallback((r: { rating: CrisisRating; picks: CrisisPicks; from?: number }) => play((p) => {
+    const at = nowOf(p);
+    const picks: Record<string, string> = {};
+    for (const [k, v] of Object.entries(r.picks)) if (typeof v === "string") picks[k] = v;
+    return { n: recordCrisisFn(p, r, at), a: { type: "crisis", at, from: r.from ?? at, picks } };
+  }), [play]);
+  const recordBoard = useCallback((passed: boolean) => play((p) => { const at = nowOf(p); return { n: recordBoardFn(p, passed, at), a: { type: "board", at, passed } }; }), [play]);
   const saveProfile = useCallback((pf: ProfessionalProfile) => setS((p) => { const v = sanitizeProfile(pf); return v ? { ...p, profile: v, savedAt: Date.now() } : p; }), []);
   const saveDiagnostic = useCallback((d: InitialDiagnostic) => setS((p) => { const v = sanitizeDiagnostic(d); return v ? { ...p, diagnostic: v, savedAt: Date.now() } : p; }), []);
   const snoozeProfile = useCallback(() => setS((p) => ({ ...p, profileNudge: snoozeNudge(p.profileNudge, Date.now()), savedAt: Date.now() })), []);
