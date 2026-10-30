@@ -91,3 +91,77 @@ En producción tu usuario ya tiene el interruptor `episodes` encendido (lo hizo 
 - En la pantalla, la IA se consulta primero y el banco por palabras clave queda de respaldo. Antes era al revés, y el banco a veces elegía el dato equivocado: por ejemplo, «¿Quién autoriza un cambio de precio?» respondía con el piloto premium.
 
 Hay que volver a correr la evaluación para confirmar la meta de datos. Cuesta unos $0.05.
+
+## 6. Ronda 2: conversación adaptativa, aclaración obligatoria y validación separada
+
+Estado: **integración y pruebas controladas**. Sigue en modo prueba (interruptor `episodes` apagado para el público). No hay visto bueno final.
+
+### 6.1 Qué cambió en la conversación
+
+Antes, el texto libre solo se clasificaba en una de las opciones del autor. Ahora la lectura tiene cuatro resultados:
+
+| Lectura | Qué pasa en pantalla | Qué se compromete |
+|---|---|---|
+| **Clara** | «Lo que entendimos» y el jugador confirma | La estrategia, con sus consecuencias del motor |
+| **Con propuesta propia** | Igual, y además «También propusiste: …». El caso no modela esa parte: el interlocutor la escucha, pero las consecuencias se calculan con la acción principal | La estrategia; lo extra queda registrado |
+| **Ambigua** | «Antes de decidir, aclara»: una pregunta neutral y las opciones posibles. El jugador elige o reescribe | **Nada** hasta que elija |
+| **Fuera de tema** | Se le pide que diga qué haría | **Nada** |
+
+Una interpretación ambigua nunca llega al motor: `decideFrom` devuelve nulo y hay prueba de eso.
+
+**Respuesta adaptada.** El personaje reacciona a lo que el jugador escribió. La IA recibe la respuesta que escribió el autor para esa opción y la reescribe para retomar algo concreto de las palabras del jugador. El sentido, los hechos, las cifras y el desenlace no cambian. El motor la acepta solo si se cumplen dos condiciones:
+- no trae cifras que no estén en la respuesta del autor, en lo que le dijeron o en sus términos;
+- salió de la misma respuesta del autor que el motor habría dado.
+
+Si falla cualquiera de las dos, se muestra la del autor. Las dos versiones quedan guardadas.
+
+**Transiciones adaptativas.** La IA también lee el tono de lo que escribió el jugador, separado de la opción que eligió:
+- +1 si fue respetuoso o escuchó;
+- −1 si fue hostil, despectivo o amenazante.
+
+El tono mueve la confianza un punto, y la confianza ya decide qué pasa después. En Diego, por ejemplo, con las mismas cuatro decisiones:
+- dichas con escucha, el caso cierra con Diego;
+- dichas con desprecio, la confianza cae y Don Ramiro termina llamando (una escena más).
+
+Hay prueba de esto en el motor. La página de evaluación lo demuestra con la IA real en tres conversaciones completas.
+
+Los límites no cambian: la IA no crea hechos ni cifras, no decide por el jugador y no altera KPI ni consecuencias. La evidencia de una respuesta escrita sigue marcada como «provisional».
+
+### 6.2 Dos conjuntos separados
+
+- **Desarrollo** (`eval-set.ts`): las 180 respuestas, 20 preguntas de datos y 8 consultas con las que se ajustaron los prompts.
+- **Validación final** (`eval-validacion.ts`):
+  - 93 respuestas escritas después de congelar el diseño: 68 claras con otras palabras, 11 con propuestas que el caso no contempla, 10 ambiguas, 4 fuera de tema (una intenta manipular a la IA) y 8 con tono marcado;
+  - 29 preguntas de datos: existentes con otras palabras, datos que no existen, preguntas ambiguas y temas ajenos;
+  - 27 consultas a colaboradores: tres por persona (una normal, una que le pide elegir por el jugador y una sobre algo que nadie sabe).
+
+Hay pruebas que verifican que ninguna frase de validación está en el conjunto de desarrollo ni en los prompts. Si una ronda de validación obliga a cambiar un prompt, esas frases pasan a desarrollo y se escriben nuevas para validar.
+
+### 6.3 Metas (se juzgan en validación)
+
+| Medida | Meta |
+|---|---|
+| Interpreta bien (clara/propia → opción correcta; ambigua → pregunta; fuera → no compromete) | ≥ 95% |
+| Misma lectura en 3 corridas | ≥ 95% |
+| Respuestas inválidas | ≤ 2% |
+| Ambiguas o fuera de tema que comprometieron una decisión (en cualquier corrida) | 0 |
+| Datos: elige el correcto | ≥ 95% |
+| Datos: mostró un dato real distinto al que pidió | 0 |
+| Datos inventados que llegan al jugador | 0 (estructural: el texto siempre sale del banco) |
+| Colaborador útil, sin recomendar ni inventar | ≥ 95% |
+
+**Colaborador.** Una respuesta solo cuenta si cumple dos cosas:
+1. Pasa la validación automática: sin cifras nuevas y sin recomendaciones directas («te recomiendo», «yo que tú», «deberías aceptar…»).
+2. Un auditor, que es otra llamada a la IA, confirma que no recomienda una opción, no inventa información y sí responde.
+
+**Informativas:** cuántas respuestas se adaptaron, cuántas retoman palabras del jugador, el tono detectado, las propuestas propias reconocidas y cuántas veces preguntó de más.
+
+Costo estimado de todo: unos $0.30 como máximo. Lo real suele ser mucho menos: la ronda anterior costó $0.05. El tope es de $0.50 por día.
+
+### 6.4 Cómo correrla
+
+En **Evaluación de la IA de los casos** hay dos botones:
+- **Validación final y demostración**: es el que cuenta para las metas y trae las tres conversaciones completas.
+- **Conjunto de desarrollo**: es la nueva corrida de datos después del ajuste de la sección 5. También trae las 180 respuestas.
+
+Cada uno da su recuadro «Para copiar».
