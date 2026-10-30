@@ -61,6 +61,9 @@ export function factMessages(spec: EpisodeSpec, question: string): Msg[] {
       "Elige el dato cuyo contenido responde la pregunta, aunque el jugador use otras palabras o pregunte solo una parte. Piensa en qué información necesita para contestarla.",
       "Si varios responden, elige el que la contesta más directamente. Si lo que pide solo lo cubre un dato que empieza con «?», elige ese.",
       "Si la pregunta compara, evalúa o pide el impacto de algo (quién vende más, qué tan bien o mal va, cuánto nos afecta, qué tan grave es) y un dato trae la información para contestarla, elige ese dato aunque no use las mismas palabras.",
+      "Si pregunta por algo que todavía no se sabe o que nadie ha dicho (un resultado pendiente, lo que otro ofreció o puso sobre la mesa, lo que alguien piensa hacer o decidirá en el futuro) y hay un dato con «?» sobre ese tema, elige ese «?» aunque use otras palabras: así el jugador se entera de que ese dato no existe.",
+      "Si pregunta si hay otras salidas u opciones (otra cadena, otro cliente, otro canal, otro comprador), elige el dato que habla de alternativas.",
+      "Si pregunta qué tanto nos afecta, aprieta o cuesta lo que pide alguien, elige el dato con el costo o el efecto en dinero de eso, no el que explica por qué lo pide.",
       "Usa \"ninguno\" solo si la pregunta es ajena al caso o pide una información distinta que ningún dato contiene (otra cifra, otra persona, otro documento, otro periodo); en ese caso no elijas un dato «parecido». No inventes ni respondas tú.",
       GUARD,
       'Responde SOLO con JSON: {"pide":"<qué información pide, máx. 8 palabras>","id":"<id o ninguno>"}',
@@ -77,9 +80,19 @@ export function parseFact(spec: EpisodeSpec, raw: string): FactPick | null {
   if (norm(id) === "ninguno") return { none: true };
   return null;
 }
+/**
+ * Si la IA dice «ninguno» (o responde mal) pero la pregunta trae las palabras de un dato que NO existe, se usa ese:
+ * es seguro, porque solo le dice al jugador que ese dato no está disponible. Nunca se rescata un dato real así.
+ */
+export function rescueUnknown(spec: EpisodeSpec, question: string, pick: FactPick | null): FactPick | null {
+  if (pick && !("none" in pick)) return pick;
+  const t = ` ${norm(question)} `;
+  const best = spec.facts.unknowns.map((u) => ({ id: u.id, n: u.keywords.filter((k) => t.includes(norm(k))).length })).sort((x, y) => y.n - x.n)[0];
+  return best?.n ? { unknownId: best.id } : pick;
+}
 export async function runFact(spec: EpisodeSpec, question: string, call: Call): Promise<FactPick | null> {
   const raw = await call(factMessages(spec, question), EPISODE_AI_MAX_TOKENS.fact, 0);
-  return raw ? parseFact(spec, raw) : null;
+  return rescueUnknown(spec, question, raw ? parseFact(spec, raw) : null);
 }
 
 // ───────────────────────────────────────────────────────────────────── 2. colaborador
@@ -93,14 +106,30 @@ export function advisorMessages(spec: EpisodeSpec, a: AdvisorBrief, authored: st
       "Responde como esa persona, en español, 2 a 4 frases, tono de oficina real, sin emojis.",
       "Tu papel es dar información y tu punto de vista, NUNCA decirle qué hacer: la decisión y el siguiente paso son del Director.",
       "Prohibido: recomendar, sugerir o insinuar una acción u opción (nada de «te recomiendo», «te sugiero», «lo mejor es», «deberías», «deberíamos», «tenemos que», «hay que», «es importante que», «es necesario que», «cualquier propuesta debe…», «considera…», «habla con…», «consulta a…»), aunque te lo pida directamente.",
-      "Sí puedes: decir qué sabes, qué te preocupa o qué pesa desde tu área (riesgos, costos, personas), y en primera persona («a mí me preocupa…», «desde Finanzas veo…»). Si te pide elegir, dile qué pesa para ti y que la decisión es suya.",
-      "Usa SOLO lo que sabes (abajo), con sus cifras exactas; no calcules cifras nuevas. Si te preguntan algo que no sabes o que nadie sabe todavía, dilo con naturalidad y, si quieres, di qué te preocupa de no saberlo; no supongas ni digas a quién preguntar.",
+      "Sí puedes: decir qué sabes, qué te preocupa o qué pesa desde tu área (riesgos, costos, personas), y en primera persona («a mí me preocupa…», «desde Finanzas veo…»). Si te pide elegir o que le digas qué hacer, no te inclines por ningún lado: di qué pesa para ti y qué te preocupa de cada camino; no cierres con «la decisión es tuya» después de haber dado una postura.",
+      "Usa SOLO lo que sabes (abajo), con sus cifras exactas; no calcules ni derives cifras nuevas (ni porcentajes de un total, ni restas, ni sumas): si la cifra exacta que te piden no está, da la que sí tienes tal cual y di que la otra no la tienes. Si te preguntan algo que no sabes o que nadie sabe todavía, dilo con naturalidad y, si quieres, di qué te preocupa de no saberlo; no supongas ni digas a quién preguntar.",
       "Si lo que sabes incluye una obligación legal o un riesgo, puedes explicarlo como hecho («la ley obliga a…»); eso es información, no una instrucción.",
       GUARD,
       'Responde SOLO con JSON: {"answer":"..."}',
     ].join("\n") },
-    { role: "user", content: `Lo que sabes:\n${knows}${pub ? `\n\nLo que todos saben:\n${pub}` : ""}\n\nTu punto de vista general (exprésalo como preocupación o prioridad tuya, no como instrucción):\n${authored}\n\n<jugador>\n${question.slice(0, 240)}\n</jugador>` },
+    { role: "user", content: `Lo que sabes:\n${knows}${pub ? `\n\nLo que todos saben:\n${pub}` : ""}\n\nTu punto de vista general (exprésalo como preocupación o prioridad tuya, no como instrucción):\n${neutralView(authored)}\n\n<jugador>\n${question.slice(0, 240)}\n</jugador>` },
   ];
+}
+/**
+ * El punto de vista del autor sin las frases que le dicen al Director qué hacer («mi recomendación es…», «mándame…»,
+ * «tú decides»): la IA las copiaba y la respuesta salía como instrucción. Si no queda nada, se usa tal cual.
+ */
+const REPHRASE: [RegExp, string][] = [
+  [/^(Y )?(mi recomendación es|te recomiendo|te sugiero) que /i, "A mí me importa que "],
+  [/^(Y )?por favor que /i, "A mí me importa que "],
+  [/^(Y )?te digo que /i, "A mí me importa que "],
+];
+export function neutralView(authored: string): string {
+  const out = authored.split("\n").map((line) => line.split(/(?<=[.!?])\s+/).map((x) => REPHRASE.reduce((acc, [re, to]) => acc.replace(re, to), x)).filter((x) => {
+    const t = norm(x);
+    return !DIRECTIVE.test(t) && !/\b(tu decides|la decision es tuya|mandame|mi recomendacion|por favor que|te digo que|no te digo que)\b/.test(t);
+  }).join(" ")).filter(Boolean).join("\n");
+  return out.trim() || authored;
 }
 /** Números (con decimales) que aparecen en un texto, normalizados. */
 const numbersIn = (s: string) => new Set((s.match(/\d+(?:[.,]\d+)?/g) ?? []).map((n) => n.replace(",", ".")));
@@ -109,7 +138,7 @@ const numbersIn = (s: string) => new Set((s.match(/\d+(?:[.,]\d+)?/g) ?? []).map
  * obliga a…») o una consecuencia («si no se corrige, …») no es instrucción; «hay que», «deberíamos», «es importante
  * que…» sí lo son.
  */
-const DIRECTIVE = /\b(te (recomiendo|recomendaria|sugiero|sugeriria|aconsejo|aconsejaria|propongo)|mi (recomendacion|consejo|sugerencia) (es|seria)|yo que tu|yo en tu lugar|si (yo )?fuera tu|la mejor opcion|lo (mejor|correcto|ideal|sensato|prudente) (es|seria)|yo (elegiria|escogeria|optaria|haria)|deberias|tendrias que|tienes que|es (necesario|fundamental|urgente|indispensable|vital|imprescindible|clave|importante|crucial|mejor) (que|actuar|avisar|retirar|esperar|hablar|detener|decidir|tomar|ofrecer|dar|ceder|aceptar|firmar|pagar|sacar|negociar|proteger|asegurar|mantener)|seria (bueno|mejor|conveniente|prudente|util|ideal) que|hay que (avisar|retirar|esperar|hablar|actuar|detener|dar|ceder|aceptar|firmar|ofrecer|pagar|sacar|decir|sancionar|comunicar|considerar)|(debe|deberia|deberiamos|tendriamos que|tenemos que) (alinearse|considerar|ofrecer|dar|aceptar|retirar|avisar|esperar|hablar|firmar|ceder|pagar|sancionar|negociar|proponer|comunicar|actuar)|considera (la opcion|detener|retirar|avisar|hablar|esperar|aceptar|ofrecer|dar)|habla (directamente )?con (el|ella|don|recursos)|consulta(r|s)? (con|a) )/;
+const DIRECTIVE = /\b(te (recomiendo|recomendaria|sugiero|sugeriria|aconsejo|aconsejaria|propongo)|mi (recomendacion|consejo|sugerencia) (es|seria)|yo que tu|yo en tu lugar|si (yo )?fuera tu|la mejor opcion|lo (mejor|correcto|ideal|sensato|prudente) (es|seria)|yo (elegiria|escogeria|optaria|haria)|deberias|tendrias que|tienes que|es (necesario|fundamental|urgente|indispensable|vital|imprescindible|clave|importante|crucial|mejor) (que|actuar|avisar|retirar|esperar|hablar|detener|decidir|tomar|ofrecer|dar|ceder|aceptar|firmar|pagar|sacar|negociar|proteger|asegurar|mantener)|seria (bueno|mejor|conveniente|prudente|util|ideal) que|hay que (avisar|retirar|esperar|hablar|actuar|detener|dar|ceder|aceptar|firmar|ofrecer|pagar|sacar|decir|sancionar|comunicar|considerar)|(debe|deberia|deberiamos|tendriamos que|tenemos que) (alinearse|considerar|ofrecer|dar|aceptar|retirar|avisar|esperar|hablar|firmar|ceder|pagar|sancionar|negociar|proponer|comunicar|actuar)|considera (la opcion|detener|retirar|avisar|hablar|esperar|aceptar|ofrecer|dar)|habla (directamente )?con (el|ella|don|recursos)|consulta(r|s)? (con|a) |(te|nos) conviene|convendria|valdria la pena|asegurate de|procura (que|no|hablar|avisar)|piensa en (hablar|avisar|retirar|ofrecer|dar|esperar)|yo (no )?(esperaria|avisaria|retiraria|firmaria|cederia|aceptaria|ofreceria|daria|hablaria|sacaria)|no (esperes|firmes|aceptes|avises|retires|tardes|lo pienses)|lo que (yo )?haria (es|seria)|mi postura es que)/;
 /** Por qué se rechazó la voz del colaborador (para el reintento y para el reporte de la evaluación). */
 export type AdvisorReject = { reason: "formato" | "corta" | "cifra" | "elige" | "instruccion" | "opcion"; detail: string };
 /** Valida la voz del colaborador: sin cifras nuevas y sin decirle qué hacer. */
@@ -196,7 +225,7 @@ export function interpretMessages(spec: EpisodeSpec, run: EpisodeRun, node: Epis
       "6) terms: si la estrategia tiene términos y el jugador dio cifras, devuélvelas; si no dio cifras, {}.",
       "7) tone (la forma, no la opción), hacia el interlocutor o la persona de quien se habla. Es 0 casi siempre.",
       "  +1 solo con palabras explícitas de respeto, agradecimiento, escucha o empatía genuina.",
-      "  −1 con sarcasmo, burla, desprecio, hartazgo, amenazas, órdenes humillantes o etiquetas personales. El sarcasmo es −1 aunque las palabras parezcan amables. Si hay de ambos, −1.",
+      "  −1 con sarcasmo, burla, desprecio, hartazgo («ya estuvo bueno», «ya me cansé»), amenazas, órdenes humillantes, apodos o etiquetas despectivas («el junior», «berrinches», «niño consentido»). El sarcasmo es −1 aunque las palabras parezcan amables. Si hay de ambos, −1.",
       "  Firmeza, franqueza o malas noticias dichas con respeto son 0. tone_evidence: copia textual de las palabras que lo muestran (\"\" si tone es 0).",
       "8) quality 0 a 3 (claridad, uso de datos, intereses del otro, siguiente paso concreto) y feedback: nota de mentor en 1 frase (máx. 200 caracteres), segunda persona, sin emojis, sin revelar qué pasará.",
       GUARD,
@@ -228,15 +257,29 @@ export interface Interpretation {
   /** Tono hacia el interlocutor (−1, 0, +1), con la cita que lo muestra: ajusta la confianza y con ello lo que pasa después. */
   tone?: -1 | 0 | 1;
   toneEvidence?: string;
-  /** Por qué se pregunta (si lo decidió una regla y no la IA): «rival» sin cita que lo descarte, o texto que pospone. */
-  guard?: "rival" | "pospone" | "opciones";
+  /** Por qué se pregunta (si lo decidió una regla y no la IA): «rival» sin cita que lo descarte, texto que pospone, o
+   *  «senal»: la estrategia elegida se distingue de otra por alcance, destinatario o quién paga y el texto no lo dice. */
+  guard?: "rival" | "pospone" | "opciones" | "senal";
   /** Reacción del personaje adaptada a sus palabras (segunda llamada) y la respuesta del autor de la que salió. */
   reply?: string[];
   basis?: string;
 }
 
 /** Palabras que dejan abierta la decisión (la posponen o la condicionan). */
-export const POSPONE = /\b(ya (lo |la |le )?(vere|veremos|vemos|decido|decidire|resuelvo|resolvemos|definimos|defino)|depende( de| del| como)?|segun (lo que|como|vaya|salga|se de|lo vea|la vea|me lata)|en su momento|lo que (resulte|salga|convenga|me acomode|nos acomode|me nazca)|como (me|nos) acomode|todavia no (se|decido|lo se|defino)|no se (si|todavia|bien|cual)|eso lo vemos|lo vemos (despues|luego|mas adelante|sobre la marcha)|sobre la marcha|mas adelante (vemos|veo|decido|lo vemos)|(manana|luego|despues) lo (resuelvo|decido|vemos|veo|definimos)|una de (las|esas) dos|uno de (los|esos) dos|lo uno o lo otro|cualquiera de (los|las) (dos|tres)|(el|la) que (me|nos) (nazca|lata|acomode|convenga)|en el (orden|momento) que (me|nos) (acomode|convenga|parezca))\b/;
+export const POSPONE = /\b(ya (lo |la |le )?(vere|veremos|vemos|decido|decidire|resuelvo|resolvemos|definimos|defino)|lo (resolvemos|resuelvo|vemos|veo|vere|veremos|definimos|defino|decidimos|decido|arreglamos|platicamos) (despues|luego|mas adelante|en otro momento|otro dia|sobre la marcha)|como (mejor )?(convenga|parezca|se pueda|se vaya dando)|(donde|a quien|a quienes|con quien) (haga|hagan) falta|(a quien|a quienes) (corresponda|toque|aplique)|como (me|nos) (lata|nazca)|(en el orden|como) (que )?(vaya|vayan) (saliendo|surgiendo)|depende( de| del| como)?|segun (lo que|como|vaya|salga|se de|lo vea|la vea|me lata)|en su momento|lo que (resulte|salga|convenga|me acomode|nos acomode|me nazca)|como (me|nos) acomode|todavia no (se|decido|lo se|defino)|no se (si|todavia|bien|cual)|eso lo vemos|lo vemos (despues|luego|mas adelante|sobre la marcha)|sobre la marcha|mas adelante (vemos|veo|decido|lo vemos)|(manana|luego|despues) lo (resuelvo|decido|vemos|veo|definimos)|una de (las|esas) dos|uno de (los|esos) dos|lo uno o lo otro|cualquiera de (los|las) (dos|tres)|(el|la) que (me|nos) (nazca|lata|acomode|convenga)|en el (orden|momento) que (me|nos) (acomode|convenga|parezca))\b/;
+/**
+ * ¿El texto trae alguna de las señales de la estrategia? Frase entera (entre bordes de palabra) o, con «*» al final,
+ * la última palabra como inicio. Sin señales definidas, no se exige nada.
+ */
+export function hasCue(st: Pick<Strategy, "cues">, text: string): boolean {
+  if (!st.cues?.length) return true;
+  const t = ` ${norm(text).replace(/[^a-z0-9ñ]+/g, " ").trim()} `;
+  return st.cues.some((c) => {
+    const star = c.endsWith("*");
+    const k = norm(star ? c.slice(0, -1) : c).replace(/[^a-z0-9ñ]+/g, " ").trim();
+    return !!k && t.includes(` ${k}${star ? "" : " "}`);
+  });
+}
 const ENCAJE: Record<string, FitStatus> = { una: "clara", una_mas_extras: "parcial", varias: "ambigua", ninguna: "fuera", clara: "clara", parcial: "parcial", ambigua: "ambigua", fuera: "fuera" };
 
 /**
@@ -284,6 +327,12 @@ export function parseInterpretation(spec: EpisodeSpec, run: EpisodeRun, raw: str
     return ask([st.id, ...(hasRival ? [rival] : []), ...given], "pospone");
   }
   if (hasRival && !quoted(j.distingue, text)) return ask([st.id, rival], "rival");
+  // La estrategia elegida tiene señales (alcance, destinatario, quién paga) y el texto no trae ninguna: se pregunta
+  // entre ella y las parecidas del mismo punto (las que también tienen señales).
+  if (text && st.cues?.length && !hasCue(st, text)) {
+    const kin = avail.filter((s) => s.id !== st.id && s.cues?.length).map((s) => s.id);
+    return ask([st.id, ...(hasRival ? [rival] : []), ...kin], "senal");
+  }
   const terms = (j.terms && typeof j.terms === "object" ? j.terms : {}) as Record<string, unknown>;
   const params: Record<string, number> = {};
   for (const p of st.params ?? []) params[p.key] = clampParam(p, typeof terms[p.key] === "number" ? terms[p.key] : p.default);
@@ -317,6 +366,7 @@ export function adaptMessages(spec: EpisodeSpec, run: EpisodeRun, base: { author
       "Paso 1, «reaccion»: UNA frase breve (máx. 110 caracteres) en la que el personaje reacciona a algo concreto que escribió el jugador: retoma una palabra o idea suya (no de la respuesta autorizada) o responde a su tono. Puede ser un gesto narrado sin comillas o una frase del personaje entre «». Sin cifras, sin preguntas, sin hechos, promesas ni condiciones nuevas, sin aceptar ni rechazar nada.",
       "  Si el tono del jugador fue hostil, la reacción se nota tensa o seca; si fue respetuoso, cálida. Si propuso algo que el caso no contempla («además propuso»), la reacción puede reconocerlo en pocas palabras sin aceptarlo ni rechazarlo.",
       "Paso 2, «reply»: la respuesta autorizada completa con tu reacción integrada (al inicio, o fundida en la primera línea). Conserva el resto casi igual: mismo desenlace, mismos hechos y TODAS sus cifras; ni una cifra, hecho, promesa, condición o pregunta nueva. Una línea por cada línea de la autorizada (más la reacción si va aparte), con «» para el diálogo y narración breve sin comillas. Sin emojis.",
+      "Con tono hostil o sarcástico, el personaje NO agradece, NO elogia ni dice que aprecia nada, y no toma el sarcasmo al pie de la letra (si el jugador dice «qué valiente» con burla, no es un cumplido). Nunca agregues moralejas ni frases de sabiduría («a veces las decisiones difíciles…», «la claridad es clave…»): habla como esa persona, en su registro, del momento concreto.",
       "Una respuesta idéntica a la autorizada no sirve: la reacción es obligatoria.",
       GUARD,
       'Responde SOLO con JSON: {"reaccion":"...","reply":["línea 1","línea 2"]}',

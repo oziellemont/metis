@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { adaptMessages, advisorMessages, authoredFor, authoredReplies, checkAdvisor, clarified, POSPONE, sameAsAuthored, decideFrom, factMessages, interpretLocal, interpretMessages, parseAdaptation, parseAdvisor, parseFact, parseInterpretation, quoted, runAdapt, runAdvisor, runFact, runInterpret, type Call } from "./ai";
-import { adaptationOk, advisorAnswer, applyEpisode, nodeOf, sayOf, startEpisode } from "./engine";
+import { adaptMessages, advisorMessages, authoredFor, authoredReplies, checkAdvisor, clarified, hasCue, neutralView, POSPONE, rescueUnknown, sameAsAuthored, decideFrom, factMessages, interpretLocal, interpretMessages, parseAdaptation, parseAdvisor, parseFact, parseInterpretation, quoted, runAdapt, runAdvisor, runFact, runInterpret, type Call } from "./ai";
+import { adaptationOk, advisorAnswer, applyEpisode, nodeOf, norm, sayOf, startEpisode } from "./engine";
+import { runAt } from "./eval-harness";
 import { SUPERNORTE } from "./supernorte";
 import { EPISODES } from "./catalog";
 
@@ -319,5 +320,81 @@ describe("P0-D ronda 4 · correcciones del diagnóstico de la ronda 3", () => {
     expect(last.reply.join(" ")).not.toMatch(/Es justo/);
     const bien = at([["pronto"], ["hechos"], ["validar"]]);
     expect(bien.turns.at(-1)!.reply.join(" ")).toMatch(/Es justo/);
+  });
+});
+
+describe("P0-D ronda 5 · correcciones del diagnóstico de la ronda 4", () => {
+  const A = EPISODES.alergeno;
+  const ask = (ep: typeof A, node: string, strategy: string, text: string, rival: string | null = null) => {
+    const r = runAt(ep, node, strategy)!;
+    return parseInterpretation(ep, r, JSON.stringify({ encaje: "una", strategy, rival, distingue: "", quality: 2, feedback: "x" }), text);
+  };
+  it("señales: sin alcance, destinatario o quién paga, se pregunta aunque la IA no vea rival", () => {
+    // las cuatro respuestas de la ronda 4 que se comprometieron sin decir lo que distingue
+    expect(ask(A, "a1", "parcial", "Quitamos el producto donde haga falta, rápido.")).toMatchObject({ status: "ambigua", strategy: null });
+    expect(ask(A, "a1", "retiro_total", "Saquen el producto de circulación lo antes posible.")).toMatchObject({ status: "ambigua", guard: "senal", options: ["retiro_total", "parcial"] });
+    expect(ask(A, "a3", "privado", "Avisamos a quien haga falta, sin hacer más escándalo del necesario.")).toMatchObject({ status: "ambigua", strategy: null });
+    expect(ask(A, "a4", "absorber", "El costo de SuperNorte lo cubrimos; lo del proveedor lo resolvemos después.")).toMatchObject({ status: "ambigua", strategy: null });
+    expect(ask(SUPERNORTE, "d6", "tablero", "Que alguien le dé seguimiento, como mejor convenga.")).toMatchObject({ status: "ambigua", strategy: null });
+    // con la señal, se decide
+    expect(ask(A, "a1", "retiro_total", "Saquen todo el lote de circulación hoy.")).toMatchObject({ status: "clara", strategy: "retiro_total" });
+    expect(ask(A, "a3", "alerta", "Avisamos públicamente con el lote y el riesgo.")).toMatchObject({ status: "clara", strategy: "alerta" });
+    expect(ask(A, "a4", "reclamar", "Cubrimos a SuperNorte y vamos contra el proveedor.")).toMatchObject({ status: "clara", strategy: "reclamar" });
+    // las estrategias sin señales no cambian
+    expect(ask(A, "a1", "esperar_lab", "Esperamos al laboratorio.")).toMatchObject({ status: "clara" });
+  });
+  it("señales: «*» reconoce el inicio de palabra; la frase entera exige bordes", () => {
+    expect(hasCue({ cues: ["public*"] }, "Lo decimos públicamente")).toBe(true);
+    expect(hasCue({ cues: ["todo el"] }, "Retiramos todo el lote")).toBe(true);
+    expect(hasCue({ cues: ["todo"] }, "Todopoderoso")).toBe(false);
+    expect(hasCue({}, "cualquier cosa")).toBe(true);
+  });
+  it("señales: toda respuesta clara o parcial de los conjuntos trae al menos una señal de su estrategia, y nada clara pospone", async () => {
+    const D2 = await import("./eval-dev-ronda2"), D3 = await import("./eval-dev-ronda3"), D4 = await import("./eval-dev-ronda4"), V = await import("./eval-validacion");
+    const all = [...D2.DEV2_INTERPRET, ...D3.DEV3_INTERPRET, ...D4.DEV4_INTERPRET, ...V.VALIDATION_SET];
+    let withCues = 0;
+    for (const x of all.filter((x) => x.kind === "clara" || x.kind === "parcial")) {
+      const st = EPISODES[x.ep].nodes[x.node].strategies.find((s) => s.id === x.expect)!;
+      if (st.cues?.length) withCues++;
+      expect(hasCue(st, x.text), `${x.expect}: ${x.text}`).toBe(true);
+      expect(POSPONE.test(norm(x.text)), x.text).toBe(false);
+    }
+    expect(withCues).toBeGreaterThan(30);
+  });
+  it("hechos: si la IA dice «ninguno» y la pregunta es de un dato que no existe, se dice que no existe (nunca se rescata un dato real)", async () => {
+    const D = EPISODES.diego;
+    const none: Call = async () => '{"pide":"x","id":"ninguno"}';
+    expect(await runFact(D, "¿Don Ramiro ya decidió quién lo va a suceder?", none)).toEqual({ unknownId: "sucesion" });
+    expect(await runFact(SUPERNORTE, "¿Con cuántos puntos de descuento entró la regional?", none)).toEqual({ unknownId: "oferta_regional" });
+    expect(await runFact(A, "¿El laboratorio ya encontró cacahuate?", none)).toEqual({ unknownId: "resultado" });
+    expect(rescueUnknown(A, "¿Cuánto cuesta retirarlo?", { none: true })).toEqual({ none: true });
+    expect(rescueUnknown(A, "¿Tenemos seguro que cubra el retiro?", { none: true })).toEqual({ none: true });
+    expect(rescueUnknown(A, "¿El laboratorio ya encontró algo?", { factId: "costo" })).toEqual({ factId: "costo" });
+    const msg = factMessages(SUPERNORTE, "x")[0].content;
+    expect(msg).toMatch(/todavía no se sabe/);
+    expect(msg).toMatch(/alternativas/);
+  });
+  it("colaborador: su punto de vista llega a la IA sin frases de instrucción, y las nuevas formas de aconsejar se rechazan", () => {
+    const D = EPISODES.diego;
+    const m = D.advisors.find((a) => a.id === "mariana")!;
+    const view = advisorAnswer(D, startEpisode(D, T, { runId: "v" }), m);
+    expect(view).toMatch(/Mi recomendación/);
+    const n = neutralView(view);
+    expect(n).not.toMatch(/recomendaci|por favor/i);
+    expect(n).toMatch(/pronto y en privado/);
+    expect(advisorMessages(D, m, view, "¿Qué opinas?")[1].content).not.toMatch(/Mi recomendación/);
+    expect(neutralView("Tú decides.")).toBe("Tú decides.");
+    const L = A.advisors.find((a) => a.id === "lucia")!;
+    const auth = advisorAnswer(A, startEpisode(A, T, { runId: "v" }), L);
+    for (const bad of ["Nos conviene retirar todo hoy, eso me preocupa menos.", "Yo esperaría al laboratorio antes de mover dinero.", "No esperes, la caja lo aguanta y el riesgo es alto.", "Asegúrate de documentar todo con el proveedor desde hoy."])
+      expect(checkAdvisor(A, L, auth, JSON.stringify({ answer: bad })), bad).toMatchObject({ reason: "instruccion" });
+    expect(advisorMessages(A, L, auth, "x")[0].content).toMatch(/no calcules ni derives cifras/);
+  });
+  it("adaptación: con tono hostil no agradece ni toma el sarcasmo literal; sin moralejas", () => {
+    const r = runAt(A, "a1", "retiro_total")!;
+    const base = authoredFor(A, r, { strategy: "retiro_total", status: "clara", tone: -1 }, "x")!;
+    const sys = adaptMessages(A, r, base, "x", { tone: -1 })[0].content;
+    expect(sys).toMatch(/NO agradece/);
+    expect(sys).toMatch(/moralejas/);
   });
 });

@@ -104,6 +104,13 @@ export interface Strategy {
   set?: Record<string, number>;
   params?: ParamSpec[];
   flags?: string[];
+  /**
+   * Señales (sin acentos, minúsculas): si existen, una respuesta escrita solo compromete esta estrategia cuando contiene
+   * al menos una. Distinguen alcance, destinatario o quién paga frente a una estrategia parecida (p. ej. «todo el lote»
+   * contra «solo las 12 tiendas»). Si no aparece ninguna, se le pregunta al jugador. Frase entera por defecto; con «*»
+   * al final cuenta como inicio de palabra («public*» reconoce «pública» y «públicamente»).
+   */
+  cues?: string[];
   /** Cambio de confianza con el interlocutor (−2…+2). No es un KPI. */
   trust?: number;
   /** Respuesta del personaje (con memoria). */
