@@ -32,7 +32,7 @@ export function Header({ t }: { t: Copy }) {
 
   return (
     <header className={clsx("fixed inset-x-0 top-0 z-40 motion-safe:transition-colors", bare ? "bg-transparent text-ink" : "bg-white/95 backdrop-blur border-b border-slate-100 text-ink")}>
-      <div className="mx-auto max-w-6xl px-5 sm:px-6 h-16 flex items-center gap-6">
+      <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8 h-16 flex items-center gap-6">
         <Link href={LANG_HREF[t.lang]} aria-label={U.home} className={"flex items-center rounded " + focus}><Logo height={28} priority /></Link>
         <nav aria-label={U.mainNav} className="ml-auto hidden md:flex items-center gap-7 text-[14px]">
           {t.NAV.map((n) => <a key={n.href} href={n.href} className={clsx("rounded", "text-slate-600 hover:text-ink", focus)}>{n.label}</a>)}

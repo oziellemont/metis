@@ -79,7 +79,7 @@ export function MemoryCarousel({ t }: { t: Copy }) {
       onFocusCapture={() => setHeld(true)}
       onBlurCapture={(e) => { if (!rootRef.current?.contains(e.relatedTarget as Node | null)) setHeld(false); }}
       onKeyDown={(e) => { if (e.key === "ArrowRight") go(i + 1); else if (e.key === "ArrowLeft") go(i - 1); }}
-      className="mx-auto max-w-3xl"
+      className="mx-auto max-w-4xl"
     >
       <div className="grid" aria-live={playing && !held ? "off" : "polite"}>
         {items.map((e, k) => (

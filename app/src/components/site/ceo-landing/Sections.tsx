@@ -14,7 +14,7 @@ import { HowSlides } from "./HowSlides";
 import { ArenaLock } from "./ArenaLock";
 import { Stagger } from "./Stagger";
 
-const WRAP = "mx-auto max-w-6xl px-5 sm:px-6";
+const WRAP = "mx-auto max-w-7xl px-5 sm:px-6 lg:px-8";
 const EYEBROW = "text-[11px] font-semibold uppercase tracking-[0.14em] text-indigo";
 const H2 = "text-[28px] leading-[1.15] sm:text-4xl sm:leading-[1.12] font-semibold tracking-tight text-ink";
 const LEAD = "mt-4 text-[17px] leading-relaxed text-slate-600";
@@ -22,7 +22,7 @@ const PAD = "py-16 sm:py-24";
 
 function Head({ eyebrow, title, body, id, center = false }: { eyebrow?: string; title: string; body?: string; id: string; center?: boolean }) {
   return (
-    <div className={center ? "max-w-2xl mx-auto text-center" : "max-w-2xl"}>
+    <div className={center ? "max-w-3xl mx-auto text-center" : "max-w-3xl"}>
       {eyebrow && <p className={EYEBROW}>{eyebrow}</p>}
       <h2 id={id} className={(eyebrow ? "mt-3 " : "") + H2}>{title}</h2>
       {body && <p className={LEAD}>{body}</p>}
@@ -57,7 +57,7 @@ export function MemorySection({ t }: { t: Copy }) {
   return (
     <section id="experiencia" aria-labelledby="exp-title" className="scroll-mt-20 bg-[#141735] text-white">
       <div className={WRAP + " " + PAD}>
-        <div className="max-w-2xl mx-auto text-center">
+        <div className="max-w-3xl mx-auto text-center">
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-mint-light">{DIFF.eyebrow}</p>
           <h2 id="exp-title" className="mt-3 text-[28px] leading-[1.15] sm:text-4xl sm:leading-[1.12] font-semibold tracking-tight">{DIFF.title}</h2>
           <p className="mt-4 text-[17px] leading-relaxed text-white/70">{DIFF.body}</p>
@@ -139,7 +139,7 @@ export function FaqSection({ t }: { t: Copy }) {
                 {f.q}
                 <ChevronDown size={18} aria-hidden className="shrink-0 text-slate-500 motion-safe:transition-transform group-open:rotate-180" />
               </summary>
-              <p className="pb-5 -mt-1 text-[15px] leading-relaxed text-slate-600 max-w-xl">{f.a}</p>
+              <p className="pb-5 -mt-1 text-[15px] leading-relaxed text-slate-600 max-w-2xl">{f.a}</p>
             </details>
           ))}
         </div>
@@ -154,7 +154,7 @@ export function CloseSection({ t }: { t: Copy }) {
     <section id="acceso" aria-labelledby="cierre-title" className="scroll-mt-20">
       <div className={WRAP + " " + PAD + " text-center"}>
         <h2 id="cierre-title" className="text-[34px] leading-[1.06] sm:text-5xl sm:leading-[1.04] font-semibold tracking-tight text-ink">{CLOSE.title}</h2>
-        <p className="mt-5 mx-auto max-w-md text-lg text-slate-600">{CLOSE.body}</p>
+        <p className="mt-5 mx-auto max-w-lg text-lg text-slate-600">{CLOSE.body}</p>
         <div className="mt-8 flex justify-center"><CeoCta label={t.CTA} playingLabel={t.UI.playing} className="focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo" /></div>
         <p className="mt-4 text-[13px] text-slate-500">{t.UI.haveAccount} <Link href={LOGIN_HREF} className="text-indigo underline-offset-2 hover:underline">{t.UI.signIn}</Link></p>
       </div>
