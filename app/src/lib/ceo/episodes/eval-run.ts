@@ -135,7 +135,8 @@ export function adaptAuditMessages(spec: EpisodeSpec, player: string, authored: 
     { role: "system", content: [
       "Eres auditor de calidad de un simulador ejecutivo. Comparas la respuesta autorizada de un personaje con una versión reescrita para reaccionar a lo que escribió el jugador.",
       "fiel=true si la versión reescrita conserva el mismo desenlace, las mismas decisiones y consecuencias, y todas las cifras de la autorizada (puede cambiar la redacción y el tono).",
-      "agrega=true si añade un hecho, cifra, promesa, condición, fecha o pregunta que no está en la autorizada ni en lo que dijo el jugador (reaccionar con emoción o retomar palabras del jugador NO es agregar).",
+      "agrega=true si añade un hecho, cifra, promesa, condición, fecha o pregunta que no está en la autorizada ni en lo que dijo el jugador. NO es agregar: reaccionar con emoción, retomar palabras del jugador, reconocer o mencionar la propuesta que el propio jugador hizo (sin aceptarla), ni agradecer o responder a su tono.",
+      "fiel se juzga por el desenlace: si el personaje reconoce la idea del jugador y luego dice lo mismo que la autorizada, es fiel.",
       "responde_al_jugador=true si se nota que reacciona a algo concreto que escribió el jugador.",
       'Responde SOLO con JSON: {"fiel":true,"agrega":false,"responde_al_jugador":true,"motivo":"<máx. 120 caracteres>"}',
     ].join("\n") },
@@ -307,7 +308,7 @@ export interface SetReport {
      */
     adaptive: { replies: number; adapted: number; same: number; faithful: number; audited: number; echoes: number; reacts: number; tone: { total: number; hit: number; neutral: number; falsePositive: number }; extras: { total: number; hit: number } };
     byNode: Record<string, number>;
-    misses: { key: string; kind: string; expect: string; got: string | null; text: string }[];
+    misses: { key: string; kind: string; expect: string; got: string | null; text: string; guard?: string }[];
     samples: { key: string; text: string; authored: string; reply: string; audit?: string }[];
     adaptMisses: { key: string; text: string; authored: string; reply: string; motivo: string }[];
   };
@@ -337,7 +338,7 @@ function summarizeSet(set: EvalSetId, results: JobResult[]): SetReport | null {
     const m = mode(labels);
     const used = rr.find((x) => label(x) === m) ?? null;
     const ok = correct(it, used);
-    if (ok) hit++; else misses.push({ key: r.key, kind: it.kind, expect: it.kind === "ambigua" ? `preguntar (${it.options?.join(" / ")})` : it.kind === "fuera" ? "no comprometer" : it.expect!, got: m, text: it.text });
+    if (ok) hit++; else misses.push({ key: r.key, kind: it.kind, expect: it.kind === "ambigua" ? `preguntar (${it.options?.join(" / ")})` : it.kind === "fuera" ? "no comprometer" : it.expect!, got: m, text: it.text, ...(used?.guard ? { guard: used.guard } : {}) });
     tally(byNode, r.key, ok); tally(byKind, it.kind, ok);
     if (labels.every((g) => g === labels[0])) consistent++;
     invalid += rr.filter((x) => x === null).length; runs += rr.length;

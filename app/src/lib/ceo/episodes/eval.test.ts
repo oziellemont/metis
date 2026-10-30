@@ -121,7 +121,7 @@ describe("P0-D · evaluación con IA (con modelo falso, sin gasto)", () => {
       if (sys.startsWith("Escribes la reacción")) {
         const player = u.match(/<jugador>\n([\s\S]*?)\n<\/jugador>/)?.[1] ?? "";
         const authored = u.split("Respuesta autorizada (una línea por renglón):\n")[1]?.split("\n") ?? [];
-        const word = player.split(/\s+/).map((w) => w.replace(/[^\p{L}]/gu, "")).find((w) => w.length >= 7) ?? "eso";
+        const word = player.split(/\s+/).map((w) => w.replace(/[^\p{L}]/gu, "")).find((w) => w.length >= 7 && !/consentido|junior|genio/i.test(w)) ?? "eso";
         return { content: JSON.stringify({ reply: [`Sobre lo de ${word}: ${authored[0]}`, ...authored.slice(1)] }), cost: 0.0001 };
       }
       const ip = sys.startsWith("Eres el intérprete") ? items.find((it) => u.includes(`<jugador>\n${it.text}\n`)) : undefined;

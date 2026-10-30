@@ -192,6 +192,17 @@ export function adaptationOk(reply: unknown, authored: string[], said: string[],
   const all = parts.join(" ");
   if (!parts.length || all.length < 15 || all.length > 700) return null;
   const base = authored.join(" ");
+  // Ronda 6: restos de formato (JSON o bloques de código que el modelo coló en una línea).
+  if (/```|\]\s*\}|\{\s*"|"\s*:\s*[\[{"]|\bjson\b/i.test(all) && !/```|\{"/.test(base)) return null;
+  // Moralejas que el autor no escribió («es fundamental que…», «la clave es…»).
+  const MORAL = /\b(es (fundamental|crucial|clave|importante|esencial|vital) (que|para|tener|mantener|actuar)|la clave (es|esta)|lo importante es|a veces las decisiones)\b/;
+  if (MORAL.test(norm(all)) && !MORAL.test(norm(base))) return null;
+  // Una línea del autor copiada dos veces (la reacción repitió el texto de otra línea).
+  const flat = (x: string) => norm(x).replace(/[^a-z0-9ñ]+/g, " ").trim();
+  for (const line of authored) {
+    const k = flat(line);
+    if (k.length >= 12 && parts.filter((p) => flat(p).includes(k)).length > 1) return null;
+  }
   const allowed = new Set([...nums(base), ...nums(said.join(" ")), ...Object.values(terms).map(String)]);
   const got = new Set(nums(all));
   if ([...got].some((n) => !allowed.has(n))) return null;
