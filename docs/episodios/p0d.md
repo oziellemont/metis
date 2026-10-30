@@ -328,3 +328,64 @@ Tropiezo operativo: el tope de $0.50 se alcanzó aunque la corrida costó ~$0.22
 
 1. **Validación final (ronda 5)** (incluye las demostraciones). Copia el texto completo.
 2. **Desarrollo**, el mismo día si se quiere (el tope diario es de $1.50).
+
+## 10. Ronda 6: vaguedad que pospone, señales que distinguen, colaborador sin moralejas y reacción limpia
+
+### 10.1 Diagnóstico (validación de la ronda 5, gpt-4o-mini, $0.12; desarrollo $0.29)
+
+| Medida | Meta | Validación ronda 5 | Desarrollo |
+|---|---|---|---|
+| Texto libre: acierto | ≥95% | 91.5% (claras 96.2, con propuesta 100, ambiguas 66.7, fuera 100) | 99.4% |
+| Consistencia | ≥95% | 99.2% | — |
+| Inválidas | ≤2% | 0 | — |
+| Ambiguas comprometidas | 0 | 6 | — |
+| Datos: acierto | ≥95% | 85.7% (2 datos equivocados) | 93.3% |
+| Colaborador | ≥95% | 88.9% (4 rechazos automáticos; el auditor: 0 recomienda, 0 inventa) | 94.4% |
+
+- **Ambiguas comprometidas (6).** Respuestas vagas que se decidieron: «con o sin condiciones, lo que se negocie», «en el momento oportuno», «las que se necesiten», «sin comprometerme a nada», «de forma inteligente y profesional», «hablo con la familia… pronto». Una más («de la manera adecuada») se tomó como fuera de tema.
+- **Preguntó de más (2), ambas en a4.** «al proveedor le cobramos lo que marca el contrato» y «esperamos al laboratorio» ya descartaban al rival con sus palabras, pero la IA no copió la cita exacta.
+- **Datos.** Dos «ninguno» («cuánto nos pega aceptar todo», «la evaluación 360 de su gente») y dos equivocados: «qué tan serio es lo que hizo Diego» → la política; «¿alguien se enfermó?» → resultado pendiente del laboratorio.
+- **Colaborador.** Los cuatro fallos fueron rechazos automáticos por una sola frase de cierre: «es fundamental que», «es crucial que», «deberías», «es importante que». El resto de la respuesta servía.
+- **Reacción adaptada.** Una línea con restos de JSON pasó la regla de fidelidad; repitió el insulto del jugador («este niño consentido…»); tomó el sarcasmo literal («nadie entiende, eso es cierto»); duplicó una línea del autor; moralejas («es fundamental que respaldemos…»). El auditor marcó como «agrega» reconocer la propia propuesta del jugador.
+
+### 10.2 Qué cambió
+
+**Vaguedad = preguntar.** «Pospone» reconoce ahora «con o sin», «lo que se negocie/necesite», «las que se necesiten», «en el momento oportuno», «lo demás se verá», «de la manera adecuada», «sin comprometerme», «de forma inteligente», «le doy por su lado». El intérprete tiene dos reglas nuevas: si dice cómo lo hará solo con calificativos, es «varias» (no «una» ni «ninguna»); aceptar «con o sin» una condición es «varias».
+
+**Señales en más estrategias.** Diego p1: «pronto» exige con quién o cómo (a solas, en privado, en persona, esta semana…), «Don Ramiro primero» exige al fundador. Lote a4: recortar, ampliar y seguir esperando tienen señales.
+
+**No preguntar de más.** Si la IA vio un rival e intentó citar lo que lo descarta, pero la cita no es exacta, y el texto trae una señal de la estrategia elegida y ninguna del rival, se decide. Sin intento de cita, o con señales de ambas, se sigue preguntando.
+
+**Tono.** La urgencia o una orden directa sin burla es 0, no −1.
+
+**Datos.** Tres reglas nuevas: «qué tan serio/grave es lo que hizo» va al dato de lo que hizo, no a la política; «¿alguien se enfermó / tuvo reacción?» va a quejas (eso ya se sabe); lo que se nombra en el contenido de un dato (una evaluación, un grupo de personas) lo responde ese dato.
+
+**Colaborador.** Si solo alguna frase suena a instrucción, se quita esa frase y se valida el resto. Solo se rechaza si lo que queda es poco (menos de 40 caracteres o menos de la mitad). El prompt prohíbe cerrar con moralejas o imperativos disfrazados.
+
+**Reacción adaptada (reglas deterministas en el motor).**
+- Se rechaza con restos de formato (JSON, bloques de código).
+- Se rechaza con moralejas que el autor no escribió.
+- Se rechaza si una línea del autor aparece dos veces.
+- Con tono hostil, se rechaza si repite el insulto del jugador (una palabra de la cita del tono o una etiqueta conocida).
+
+El prompt también prohíbe repetir insultos, darle la razón al sarcasmo y el «Entiendo…» genérico.
+
+**Auditor de la adaptación.** Reconocer la propuesta del propio jugador, agradecer o responder a su tono no cuenta como «agrega».
+
+**Reporte.** Cada fallo de texto libre muestra qué regla decidió preguntar (`guard`).
+
+### 10.3 Conjuntos
+
+- **Desarrollo:** `eval-set.ts` + rondas 2 a 5 (`eval-dev-ronda5.ts` es la validación de la ronda 5, ya usada para diagnosticar). Tiene 604 respuestas, 133 datos y 143 consultas.
+- **Validación ronda 6** (`eval-validacion.ts`), escrita ANTES de cambiar reglas y prompts. Tiene:
+  - 127 respuestas: 83 claras, 15 con propuesta propia, 21 ambiguas y 8 fuera de tema; 9 respetuosas y 9 hostiles;
+  - 28 preguntas de datos y 36 consultas;
+  - tres demostraciones con frases nuevas.
+- Hay pruebas de que ninguna frase de validación está en desarrollo (rondas 1 a 5) ni en los prompts, y de que toda respuesta clara trae su señal y no pospone.
+
+### 10.4 Costo y cómo correr
+
+Estimación conservadora: validación + demos $0.23; desarrollo $0.60, unos $0.83 en total, dentro del tope diario de $1.50. En la ronda 5 el gasto real fue ~60% de lo estimado.
+
+1. **Validación final (ronda 6)**, que incluye las demostraciones. Copia el texto completo.
+2. **Desarrollo**, el mismo día si se quiere.

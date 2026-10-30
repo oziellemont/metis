@@ -4,9 +4,9 @@
  * La usa la ruta `api/ceo/episodio/evaluar` (con permiso de gasto) y las pruebas (modelo falso).
  *
  * Dos conjuntos que nunca se mezclan:
- *  - «dev»: `eval-set.ts` + `eval-dev-ronda2.ts` + `eval-dev-ronda3.ts` + `eval-dev-ronda4.ts` (lo que se usó para
- *    ajustar los prompts, incluidas las validaciones de las rondas 2 a 4).
- *  - «val» (`eval-validacion.ts`): validación final de la ronda 5, frases nuevas que no se usaron para ajustar nada.
+ *  - «dev»: `eval-set.ts` + `eval-dev-ronda2.ts` a `eval-dev-ronda5.ts` (lo que se usó para ajustar los prompts,
+ *    incluidas las validaciones de las rondas 2 a 5).
+ *  - «val» (`eval-validacion.ts`): validación final de la ronda 6, frases nuevas que no se usaron para ajustar nada.
  *
  * Mide, por conjunto:
  *  - texto libre: acierto (incluye preguntar cuando es ambigua y no comprometer nada si no responde a la decisión),
@@ -26,6 +26,7 @@ import { ADVISOR_SET, FACT_SET, INTERPRET_SET } from "./eval-set";
 import { DEV2_ADVISOR, DEV2_DEMOS, DEV2_FACTS, DEV2_INTERPRET } from "./eval-dev-ronda2";
 import { DEV3_ADVISOR, DEV3_FACTS, DEV3_INTERPRET } from "./eval-dev-ronda3";
 import { DEV4_ADVISOR, DEV4_FACTS, DEV4_INTERPRET } from "./eval-dev-ronda4";
+import { DEV5_ADVISOR, DEV5_FACTS, DEV5_INTERPRET } from "./eval-dev-ronda5";
 import { ADVISOR_VALIDATION, DEMO_SCRIPTS, FACT_VALIDATION, VALIDATION_SET, type ValItem } from "./eval-validacion";
 import { runAt } from "./eval-harness";
 
@@ -43,16 +44,16 @@ export type EvalSetId = "dev" | "val";
 
 // ───────────────────────────────────────────── conjuntos unificados
 const INTERPRET: Record<EvalSetId, ValItem[]> = {
-  dev: [...INTERPRET_SET.map((x) => ({ ep: x.ep, node: x.node, kind: "clara" as const, expect: x.expect, text: x.text })), ...DEV2_INTERPRET, ...DEV3_INTERPRET, ...DEV4_INTERPRET],
+  dev: [...INTERPRET_SET.map((x) => ({ ep: x.ep, node: x.node, kind: "clara" as const, expect: x.expect, text: x.text })), ...DEV2_INTERPRET, ...DEV3_INTERPRET, ...DEV4_INTERPRET, ...DEV5_INTERPRET],
   val: VALIDATION_SET,
 };
 type FactItem = { ep: string; q: string; accept: string[]; kind: string };
 const FACTS: Record<EvalSetId, FactItem[]> = {
-  dev: [...FACT_SET.map((f) => ({ ep: f.ep, q: f.q, accept: [f.expect], kind: f.expect === "ninguno" ? "ajena" : f.expect.startsWith("?") ? "inexistente" : "dato" })), ...DEV2_FACTS, ...DEV3_FACTS, ...DEV4_FACTS],
+  dev: [...FACT_SET.map((f) => ({ ep: f.ep, q: f.q, accept: [f.expect], kind: f.expect === "ninguno" ? "ajena" : f.expect.startsWith("?") ? "inexistente" : "dato" })), ...DEV2_FACTS, ...DEV3_FACTS, ...DEV4_FACTS, ...DEV5_FACTS],
   val: FACT_VALIDATION,
 };
 const ADVISORS: Record<EvalSetId, { ep: string; advisor: string; q: string; kind: string }[]> = {
-  dev: [...ADVISOR_SET.map((a) => ({ ...a, kind: "normal" })), ...DEV2_ADVISOR, ...DEV3_ADVISOR, ...DEV4_ADVISOR],
+  dev: [...ADVISOR_SET.map((a) => ({ ...a, kind: "normal" })), ...DEV2_ADVISOR, ...DEV3_ADVISOR, ...DEV4_ADVISOR, ...DEV5_ADVISOR],
   val: ADVISOR_VALIDATION,
 };
 /** Guiones: los de validación se muestran; los de la ronda 2 quedan como desarrollo (no se corren por defecto). */
@@ -134,7 +135,8 @@ export function adaptAuditMessages(spec: EpisodeSpec, player: string, authored: 
     { role: "system", content: [
       "Eres auditor de calidad de un simulador ejecutivo. Comparas la respuesta autorizada de un personaje con una versión reescrita para reaccionar a lo que escribió el jugador.",
       "fiel=true si la versión reescrita conserva el mismo desenlace, las mismas decisiones y consecuencias, y todas las cifras de la autorizada (puede cambiar la redacción y el tono).",
-      "agrega=true si añade un hecho, cifra, promesa, condición, fecha o pregunta que no está en la autorizada ni en lo que dijo el jugador (reaccionar con emoción o retomar palabras del jugador NO es agregar).",
+      "agrega=true si añade un hecho, cifra, promesa, condición, fecha o pregunta que no está en la autorizada ni en lo que dijo el jugador. NO es agregar: reaccionar con emoción, retomar palabras del jugador, reconocer o mencionar la propuesta que el propio jugador hizo (sin aceptarla), ni agradecer o responder a su tono.",
+      "fiel se juzga por el desenlace: si el personaje reconoce la idea del jugador y luego dice lo mismo que la autorizada, es fiel.",
       "responde_al_jugador=true si se nota que reacciona a algo concreto que escribió el jugador.",
       'Responde SOLO con JSON: {"fiel":true,"agrega":false,"responde_al_jugador":true,"motivo":"<máx. 120 caracteres>"}',
     ].join("\n") },
@@ -306,7 +308,7 @@ export interface SetReport {
      */
     adaptive: { replies: number; adapted: number; same: number; faithful: number; audited: number; echoes: number; reacts: number; tone: { total: number; hit: number; neutral: number; falsePositive: number }; extras: { total: number; hit: number } };
     byNode: Record<string, number>;
-    misses: { key: string; kind: string; expect: string; got: string | null; text: string }[];
+    misses: { key: string; kind: string; expect: string; got: string | null; text: string; guard?: string }[];
     samples: { key: string; text: string; authored: string; reply: string; audit?: string }[];
     adaptMisses: { key: string; text: string; authored: string; reply: string; motivo: string }[];
   };
@@ -336,7 +338,7 @@ function summarizeSet(set: EvalSetId, results: JobResult[]): SetReport | null {
     const m = mode(labels);
     const used = rr.find((x) => label(x) === m) ?? null;
     const ok = correct(it, used);
-    if (ok) hit++; else misses.push({ key: r.key, kind: it.kind, expect: it.kind === "ambigua" ? `preguntar (${it.options?.join(" / ")})` : it.kind === "fuera" ? "no comprometer" : it.expect!, got: m, text: it.text });
+    if (ok) hit++; else misses.push({ key: r.key, kind: it.kind, expect: it.kind === "ambigua" ? `preguntar (${it.options?.join(" / ")})` : it.kind === "fuera" ? "no comprometer" : it.expect!, got: m, text: it.text, ...(used?.guard ? { guard: used.guard } : {}) });
     tally(byNode, r.key, ok); tally(byKind, it.kind, ok);
     if (labels.every((g) => g === labels[0])) consistent++;
     invalid += rr.filter((x) => x === null).length; runs += rr.length;

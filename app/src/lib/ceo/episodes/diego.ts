@@ -152,7 +152,7 @@ export const DIEGO: EpisodeSpec = {
       say: [{ text: ["Mariana espera tu respuesta. Héctor también."] }],
       ask: "¿Cómo vas a atender esto?", freeText: true,
       strategies: [
-        { id: "pronto", text: "Hablar con Diego esta semana, en privado y en persona, con los hechos en la mano.", flags: ["pronto"],
+        { id: "pronto", text: "Hablar con Diego esta semana, en privado y en persona, con los hechos en la mano.", cues: ["a solas", "privad*", "en persona", "cara a cara", "esta semana", "esta misma semana", "proximos dias", "el y yo", "lo cito", "lo veo", "lo siento", "me siento", "me reuno"], flags: ["pronto"],
           reply: [{ text: ["Mariana: Perfecto. Le aparto 45 minutos el jueves en tu oficina.", "Te mando el resumen del 360 para que lo tengas, pero no se lo enseñes completo."] }],
           next: [{ to: "p2" }],
           evidence: [
@@ -160,7 +160,7 @@ export const DIEGO: EpisodeSpec = {
             { dim: "informacion", level: 3, basis: "Llegó con los hechos verificados.", when: { any: ["q:patron", "q:piloto", "a:hector"] } },
             { dim: "informacion", level: 1, basis: "Fue a la conversación sin verificar qué pasó exactamente.", when: { none: ["q:patron", "q:piloto", "a:hector"] } },
           ] },
-        { id: "ramiro_primero", text: "Antes de hablar con Diego, avisarle a Don Ramiro en persona que voy a tener esta conversación y por qué.", flags: ["ramiro_primero", "pronto"],
+        { id: "ramiro_primero", text: "Antes de hablar con Diego, avisarle a Don Ramiro en persona que voy a tener esta conversación y por qué.", cues: ["ramiro", "fundador", "su papa", "su padre", "primero", "antes de"], flags: ["ramiro_primero", "pronto"],
           reply: [{ text: ["Mariana: Buena idea. Así no se entera por Diego.", "Don Ramiro te ve mañana a las 9. Después de eso, el jueves con Diego."] }],
           next: [{ to: "p2" }],
           evidence: [

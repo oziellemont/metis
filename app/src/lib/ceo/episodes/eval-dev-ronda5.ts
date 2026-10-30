@@ -1,0 +1,278 @@
+import type { DemoScript, ValItem } from "./eval-validacion";
+/**
+ * Conjunto de DESARROLLO, quinta parte (P0-D). Fue la validación final de la ronda 5: su resultado real se usó para
+ * diagnosticar y ajustar la ronda 6, así que ya no sirve para validar y pasó a desarrollo completo (texto libre,
+ * hechos, colaborador y guiones). La validación vigente está en `eval-validacion.ts`.
+ */
+
+type Row = [ValItem["kind"], string | string[] | null, string, (-1 | 1)?];
+const V = (ep: string, node: string, rows: Row[]): ValItem[] => rows.map(([kind, e, text, tone]) => ({
+  ep, node, kind, text,
+  ...(typeof e === "string" ? { expect: e } : {}),
+  ...(Array.isArray(e) ? { options: e } : {}),
+  ...(tone ? { tone } : {}),
+}));
+
+export const DEV5_INTERPRET: ValItem[] = [
+  // ─── SuperNorte
+  ...V("supernorte", "d1", [
+    ["clara", "explorar", "Le pido una cita a Sofía para entender su meta del año y lo que trae la competencia, sin poner números todavía."],
+    ["clara", "datos", "Le respondo con su propio sell-out: nuestras bolsas salen 1.4 veces más rápido que las de la regional; si nos quita, ella pierde venta. Y le pido vernos."],
+    ["clara", "firme", "No damos ni medio punto más; si se ponen duros, llevamos el producto a otros canales."],
+    ["clara", "aceptar", "Acepto lo que piden; con el 31% de la venta en juego no me arriesgo en mi primer mes."],
+    ["clara", "firme", "Pobre Sofía, tan presionada. Dígale que no hay más descuento y que si sigue con eso, nos vamos a otros canales.", -1],
+    ["clara", "explorar", "Le agradezco a Sofía que nos avisara con tiempo; me gustaría reunirme con ella para entender qué necesita y qué le ofrecieron, antes de hablar de números.", 1],
+    ["parcial", "explorar", "Le pido una junta a Sofía para entender su meta y lo que le puso enfrente la regional antes de cifras; y además invito a Javier para que le enseñe la planta."],
+    ["ambigua", ["explorar", "datos"], "Le contesto a Sofía de forma inteligente y profesional."],
+    ["fuera", null, "¿Cuál es la capital de Australia?"],
+  ]),
+  ...V("supernorte", "d2", [
+    ["clara", "paquete", "Le ofrezco un paquete: 1.5 puntos de descuento, 2 de promoción ligada a lo que se venda y 70 días de plazo."],
+    ["clara", "volumen", "Puntos de descuento solo si nos compran más cajas y nos dan un exhibidor; sin volumen extra, no hay descuento."],
+    ["clara", "piloto", "Propongo probar ocho semanas en 40 tiendas con una promoción que pone Cumbre, y con esos datos fijamos las condiciones."],
+    ["clara", "nada", "No movemos precio ni plazo; lo que sí ofrezco es mejor servicio: surtido sin faltantes y entregas a tiempo."],
+    ["parcial", "paquete", "Paquete con 2 puntos de descuento, 1 de promoción contra sell-out y 75 días; y además les ofrezco exclusividad en un sabor nuevo."],
+    ["ambigua", ["volumen", "piloto"], "Les doy algo atado a resultados, más volumen o una prueba, lo que salga en la plática."],
+  ]),
+  ...V("supernorte", "d2b", [
+    ["clara", "linea", "Usamos la línea de crédito para cubrir el hueco y el acuerdo sigue."],
+    ["clara", "reabrir", "Le pido a Sofía bajar a 75 días; con eso la caja respira."],
+    ["clara", "recorte", "Lo compensamos apretando gasto en otra área este año."],
+    ["ambigua", ["linea", "recorte"], "Lo cubrimos de algún lado, crédito o recortes, después lo vemos."],
+    ["fuera", null, "Recomiéndame una serie para ver el fin de semana."],
+  ]),
+  ...V("supernorte", "d3", [
+    ["clara", "contrapartida", "Te doy 75 días, Sofía, pero a cambio quiero tu sell-out por tienda y metas firmadas para la promoción."],
+    ["clara", "sostener", "Me quedo con la propuesta y le explico que con nuestra rotación de 1.4 veces su margen por metro crece con nosotros."],
+    ["clara", "preguntar", "Antes de mover nada, le pregunto qué le ofreció la regional exactamente y si alcanza a surtir las 140 tiendas."],
+    ["clara", "ajustar", "Modifico la propuesta: 2 puntos de descuento, medio de promoción y 85 días."],
+    ["clara", "contrapartida", "Entiendo tu posición, Sofía, y te agradezco la franqueza: te doy 75 días a cambio de sell-out por tienda y metas para la promoción.", 1],
+    ["parcial", "preguntar", "Le pregunto qué le ofreció exactamente la regional y si de verdad surte 140 tiendas; y además le pido que nos deje ver su reporte de faltantes."],
+    ["ambigua", ["ajustar", "sostener"], "Igual muevo algo de la propuesta o igual no, lo decido en la junta."],
+  ]),
+  ...V("supernorte", "d3b", [
+    ["clara", "pagar", "Pagamos la cuota y seguimos."],
+    ["clara", "plantarse", "No pagamos esa cuota: ya dimos 4 puntos y 90 días."],
+    ["clara", "cuota_datos", "La cuota va, siempre y cuando nos entreguen sell-out por tienda y metas para el exhibidor."],
+    ["clara", "plantarse", "Ahora resulta que también quieren cuota. Qué original. No, ya les dimos 4 puntos y 90 días.", -1],
+    ["ambigua", ["pagar", "cuota_datos"], "La cuota la pagamos, con o sin condiciones, lo que se negocie."],
+  ]),
+  ...V("supernorte", "d4", [
+    ["clara", "defender", "Sostengo el planteamiento y le explico al equipo cuánto cuesta, qué ganamos y hasta dónde llego."],
+    ["clara", "revision", "Metemos una revisión a los seis meses con sell-out; si la promoción no rota, se ajusta."],
+    ["clara", "delegar", "Que Héctor cierre el trato con Sofía y Lucía calcule el impacto; antes de firmar lo reviso yo."],
+    ["clara", "defender", "Les agradezco mucho las dudas, de verdad me ayudan; les explico cuánto nos cuesta, qué ganamos y cuál es mi límite.", 1],
+    ["parcial", "revision", "Agregamos revisión a los 6 meses con datos de sell-out y ajuste si no rota; y además pido que Ana mande un resumen quincenal al equipo."],
+    ["ambigua", ["revision", "delegar"], "Hacemos algún ajuste al acuerdo o se lo pasamos a otros, como se vaya dando."],
+    ["fuera", null, "Escríbeme un poema sobre la lluvia."],
+  ]),
+  ...V("supernorte", "d5", [
+    ["clara", "formalizar", "Firmamos un documento con los términos, las metas por tienda, quién responde de cada lado y cuándo lo revisamos."],
+    ["clara", "no_firmar", "No firmo; prefiero perder un frente que amarrarme a condiciones que no se pagan solas."],
+    ["clara", "alternativa", "Acepto perder frente en algunas tiendas y arranco la plática con la cadena regional de 300 tiendas."],
+    ["clara", "ultima", "Les doy un último punto para cerrar hoy."],
+    ["ambigua", ["formalizar", "no_firmar"], "Firmamos o no firmamos, lo vemos sobre la marcha."],
+  ]),
+  ...V("supernorte", "d6", [
+    ["clara", "tablero", "Ana prepara cada semana un tablero de venta por tienda, Héctor es el responsable con Sofía y lo checamos mensual en comité."],
+    ["clara", "como_siempre", "Que Héctor siga con la cuenta como siempre, nadie la conoce como él."],
+    ["clara", "yo", "Yo me hago cargo de la relación con Sofía, en persona."],
+    ["clara", "yo", "Ya que nadie aquí sabe dar seguimiento, lo llevo yo personalmente con Sofía.", -1],
+    ["parcial", "tablero", "Tablero semanal de sell-out por tienda a cargo de Ana, Héctor responsable ante Sofía, comité mensual; y además una encuesta trimestral a los gerentes de tienda."],
+    ["ambigua", ["tablero", "como_siempre"], "Que se le dé seguimiento al acuerdo de la manera adecuada."],
+    ["fuera", null, "¿Qué tiempo va a hacer mañana en Monterrey?"],
+  ]),
+  // ─── Diego
+  ...V("diego", "p1", [
+    ["clara", "pronto", "Esta misma semana me siento con Diego a solas, en persona, con los hechos por delante."],
+    ["clara", "ramiro_primero", "Primero voy con Don Ramiro en persona a decirle que voy a hablar con Diego y por qué; luego con Diego."],
+    ["clara", "esperar", "Lo dejo para la evaluación de desempeño del trimestre, para tratarlo con calma."],
+    ["clara", "pedir_hector", "Es tema de Héctor, que es su jefe; que él lo arregle y yo me mantengo al margen."],
+    ["clara", "pronto", "Con mucho respeto por Diego, esta semana lo veo a solas y en persona con los hechos, para escucharlo antes que nada.", 1],
+    ["ambigua", ["pronto", "ramiro_primero"], "Hablo con la familia sobre esto pronto."],
+    ["fuera", null, "¿Cuántos días de vacaciones me tocan por ley?"],
+  ]),
+  ...V("diego", "p2", [
+    ["clara", "hechos", "Le digo lo que pasó sin calificarlo: tres propuestas que no pasaron por Héctor y un precio movido sin aprobación que bajó 2 puntos de margen en 30 tiendas; y le pregunto cómo lo ve."],
+    ["clara", "preguntar", "Abro con una pregunta: ¿cómo te han ido estas seis semanas, qué ha salido bien y qué no?"],
+    ["clara", "sandwich", "Empiezo elogiando lo creativo que es, menciono por encima unos temas de proceso y cierro con otro elogio."],
+    ["clara", "juicio", "Voy directo: Diego, tu actitud es el problema y a Héctor no lo respetas."],
+    ["clara", "hechos", "A ver, niño consentido: tres propuestas saltándote a Héctor y un precio movido sin permiso que costó 2 puntos de margen en 30 tiendas. ¿Qué tienes que decir?", -1],
+    ["parcial", "hechos", "Le expongo los hechos sin juicio: tres propuestas sin Héctor, precio movido sin aprobación, 2 puntos menos de margen en 30 tiendas, y le pregunto su visión; y además le propongo que lleve una bitácora de sus ideas."],
+    ["ambigua", ["hechos", "preguntar"], "Arranco la plática con Diego de la forma que me parezca mejor en el momento."],
+  ]),
+  ...V("diego", "p3", [
+    ["clara", "validar", "Entiendo que te sientas atorado y eso lo vamos a arreglar; pero el precio no se mueve sin Finanzas. Las dos cosas son ciertas."],
+    ["clara", "darle_razon", "Tienes razón, Héctor también es el problema; de ahora en adelante tráeme tus ideas a mí."],
+    ["clara", "confrontar_padre", "Le suelto que ya no se escude en Don Ramiro cada vez que algo no le gusta."],
+    ["clara", "exhibir", "Llamo a Héctor y a Mariana a mi oficina para aclararlo los cuatro ahorita."],
+    ["clara", "validar", "Gracias por contármelo con honestidad, Diego; entiendo tu frustración y la vamos a resolver, aunque el precio sigue pasando por Finanzas.", 1],
+    ["clara", "validar", "Ay, pobrecito, qué difícil ser tú. Sí, lo arreglamos, pero el precio pasa por Finanzas, punto.", -1],
+    ["ambigua", ["validar", "darle_razon"], "Le doy por su lado a Diego un poco, sin comprometerme a nada."],
+  ]),
+  ...V("diego", "p4", [
+    ["clara", "acuerdo_claro", "Acordamos: tus propuestas pasan por Héctor, el precio vuelve atrás y lo presentas con datos, y nos vemos uno a uno cada semana durante 6 semanas."],
+    ["clara", "acuerdo_plan", "Tus propuestas pasan por Héctor y, a cambio, tú presentas el piloto premium al comité con Héctor en cuatro semanas."],
+    ["clara", "advertencia", "Queda una amonestación formal en su expediente, por escrito: a la siguiente, hay consecuencias."],
+    ["clara", "sin_acuerdo", "No hace falta acuerdo; ya entendió el mensaje."],
+    ["parcial", "acuerdo_plan", "Sus ideas pasan por Héctor y presenta el piloto premium al comité con Héctor en cuatro semanas; y además le asigno un mentor fuera de su área."],
+    ["ambigua", ["acuerdo_claro", "advertencia"], "Cerramos con algo formal, un acuerdo o una advertencia, según vea su actitud."],
+  ]),
+  ...V("diego", "p5", [
+    ["clara", "sostener", "Don Ramiro, le cuento con calma lo del precio, el margen, la regla que aplica a todos y lo que acordé con Diego."],
+    ["clara", "ceder", "Le pido disculpas a Don Ramiro y le digo que voy a suavizar lo acordado con Diego."],
+    ["clara", "evitar", "Le digo que es un asunto interno de operación y que mejor lo platique con Diego."],
+    ["clara", "sostener", "Don Ramiro, gracias por su tiempo y con mucho respeto: le explico el precio, el margen, la política que vale para todos y el acuerdo con Diego.", 1],
+    ["ambigua", ["sostener", "ceder"], "Le explico algo a Don Ramiro, sin pensarlo mucho, ya veremos qué sale."],
+    ["fuera", null, "Traduce esta frase al inglés: buenos días a todos."],
+  ]),
+  // ─── Lote L-2291
+  ...V("alergeno", "a1", [
+    ["clara", "retiro_total", "Hoy paramos el lote L-2291 completo: bodega, camiones y las 140 tiendas de SuperNorte."],
+    ["clara", "parcial", "Lo quitamos solo de las 12 tiendas que reportaron, y si el laboratorio confirma, sacamos el resto."],
+    ["clara", "esperar_lab", "No tocamos nada hasta que el laboratorio dé su resultado en dos días."],
+    ["clara", "retiro_total", "¿En serio nadie lo detuvo anoche? Increíble. Saquen todo el lote ya, de las 140 tiendas, bodega y camiones.", -1],
+    ["parcial", "retiro_total", "Retiramos todo el lote hoy, de bodega, tránsito y las 140 tiendas; y además mando a alguien de calidad a revisar los otros lotes con ese sazonador."],
+    ["ambigua", ["retiro_total", "parcial"], "Sacamos el producto ya mismo."],
+    ["ambigua", ["retiro_total", "parcial"], "Que se retire el producto, rápido y sin rodeos."],
+    ["fuera", null, "Dame ideas para el cumpleaños de mi hijo."],
+  ]),
+  ...V("alergeno", "a2", [
+    ["clara", "avisar_hoy", "Hoy mismo notificamos a la autoridad sanitaria: el riesgo, el lote, lo que ya retiramos y cuándo llega el laboratorio."],
+    ["clara", "avisar_lab", "Le avisamos a la autoridad cuando tengamos el resultado; no quiero reportar algo que quizá no es."],
+    ["clara", "no_avisar", "Si ya lo estamos retirando, no hay por qué avisar a la autoridad; lo resolvemos sin ruido."],
+    ["parcial", "avisar_hoy", "Avisamos hoy a la autoridad con todo lo que sabemos; y además le pido a Carla que prepare una cronología para el consejo."],
+    ["ambigua", ["avisar_hoy", "avisar_lab"], "A la autoridad le avisamos en el momento oportuno."],
+  ]),
+  ...V("alergeno", "a3", [
+    ["clara", "alerta", "Salimos con un aviso público: el lote, el posible cacahuate, que las personas alérgicas no lo coman y una línea para reembolsos."],
+    ["clara", "privado", "Esto se queda entre nosotros y las cadenas: que retiren el producto y no sacamos comunicado."],
+    ["clara", "minimizar", "Ponemos un aviso de retiro preventivo por calidad, sin hablar del cacahuate."],
+    ["clara", "minimizar", "La gente se asusta por todo, así que nada de cacahuate: un aviso de retiro por calidad y punto.", -1],
+    ["parcial", "alerta", "Comunicado público con el lote, el riesgo de cacahuate, que los alérgicos no lo consuman y reembolso; y además grabamos un video del director explicándolo."],
+    ["ambigua", ["alerta", "privado"], "Avisamos a los que tengan que saberlo, con prudencia razonable."],
+    ["ambigua", ["alerta", "privado"], "Informamos lo justo, a las personas indicadas."],
+  ]),
+  ...V("alergeno", "a4", [
+    ["clara", "absorber", "Nos hacemos cargo del costo completo y reponemos a SuperNorte sin cobrarle."],
+    ["clara", "reclamar", "A SuperNorte le reponemos nosotros, y al proveedor le cobramos lo que marca el contrato."],
+    ["clara", "recortar", "Para gastar menos, el retiro se queda solo en las tiendas con quejas."],
+    ["clara", "ampliar", "Aunque sea tarde, retiramos todo el lote de las 140 tiendas y reclamamos al proveedor."],
+    ["clara", "seguir_esperando", "Esperamos al laboratorio, ya falta menos de un día."],
+    ["ambigua", ["absorber", "reclamar"], "Pagamos nosotros lo de SuperNorte; lo demás se verá."],
+    ["ambigua", ["absorber", "reclamar"], "El costo del retiro lo asumimos, y del resto platicamos luego."],
+  ]),
+  ...V("alergeno", "a5", [
+    ["clara", "auditoria", "Auditamos al proveedor, pedimos certificado de alérgenos por lote y una prueba rápida al recibir cada sazonador."],
+    ["clara", "cambiar", "Esta semana cambiamos de proveedor de sazonador."],
+    ["clara", "culpar", "Sancionamos frente al turno al operador que recibió el lote sin revisar."],
+    ["clara", "auditoria", "Gracias, Javier, por defender a tu gente; hacemos auditoría al proveedor, certificado de alérgenos por lote y prueba rápida en recepción.", 1],
+    ["parcial", "auditoria", "Auditoría al proveedor, certificado por lote y prueba rápida en recepción; y además capacitamos a la gente de recepción en alérgenos."],
+    ["ambigua", ["auditoria", "cambiar"], "Con el proveedor tomamos medidas serias, las que se necesiten."],
+    ["fuera", null, "¿Cuánto cuesta un boleto de avión a Cancún?"],
+  ]),
+];
+
+/** Preguntas de hechos nuevas. `accept`: ids válidos; «ninguno» = el caso no tiene ese dato ni uno parecido. */
+export const DEV5_FACTS: { ep: string; q: string; accept: string[]; kind: "dato" | "ambigua" | "inexistente" | "ajena" }[] = [
+  { ep: "supernorte", kind: "dato", q: "¿Qué margen nos queda hoy con SuperNorte?", accept: ["margen"] },
+  { ep: "supernorte", kind: "dato", q: "¿Cuánto aporta cada caja extra que vendamos?", accept: ["contribucion"] },
+  { ep: "supernorte", kind: "dato", q: "¿Quién se vende más en el anaquel, nosotros o la regional?", accept: ["rotacion"] },
+  { ep: "supernorte", kind: "dato", q: "¿Cuánta caja necesitamos si nos piden 90 días?", accept: ["plazo"] },
+  { ep: "supernorte", kind: "dato", q: "¿Con qué indicador evalúan a Sofía?", accept: ["metas"] },
+  { ep: "supernorte", kind: "dato", q: "¿Qué nos pasó cuando cedimos descuento la vez pasada?", accept: ["historia"] },
+  { ep: "supernorte", kind: "dato", q: "Si SuperNorte nos saca, ¿a quién más le podemos vender?", accept: ["alternativas"] },
+  { ep: "supernorte", kind: "inexistente", q: "¿Qué plazo de pago le dio la regional a SuperNorte?", accept: ["?oferta_regional"] },
+  { ep: "supernorte", kind: "inexistente", q: "¿Cuánta gente trabaja en SuperNorte?", accept: ["ninguno"] },
+  { ep: "supernorte", kind: "ambigua", q: "¿Cuánto nos pega aceptar todo lo que pide SuperNorte?", accept: ["margen", "plazo"] },
+  { ep: "supernorte", kind: "ajena", q: "¿Dónde me puedo estacionar en las oficinas de SuperNorte?", accept: ["ninguno"] },
+  { ep: "diego", kind: "dato", q: "¿Cuáles fueron las propuestas que Diego llevó directo a su papá?", accept: ["patron"] },
+  { ep: "diego", kind: "dato", q: "¿Qué pasó con el margen cuando Diego movió el precio?", accept: ["piloto", "patron"] },
+  { ep: "diego", kind: "dato", q: "¿Qué dice la evaluación 360 de su gente?", accept: ["equipo"] },
+  { ep: "diego", kind: "dato", q: "¿Por qué Diego busca tanto la aprobación de su papá?", accept: ["motivos"] },
+  { ep: "diego", kind: "dato", q: "¿Quién firma cuando se mueve un precio de lista?", accept: ["politica"] },
+  { ep: "diego", kind: "inexistente", q: "¿Diego va a ser el próximo director general?", accept: ["?sucesion"] },
+  { ep: "diego", kind: "inexistente", q: "¿Cuánto gana Diego al mes?", accept: ["ninguno"] },
+  { ep: "diego", kind: "ambigua", q: "¿Qué tan serio es lo que hizo Diego?", accept: ["patron", "piloto"] },
+  { ep: "diego", kind: "ajena", q: "¿A qué hora es la comida de la oficina?", accept: ["ninguno"] },
+  { ep: "alergeno", kind: "dato", q: "¿Cuántas bolsas del lote siguen en la bodega?", accept: ["alcance"] },
+  { ep: "alergeno", kind: "dato", q: "¿Cuánto nos sale retirar todo?", accept: ["costo"] },
+  { ep: "alergeno", kind: "dato", q: "¿Alguien se enfermó por comer las papas?", accept: ["quejas"] },
+  { ep: "alergeno", kind: "dato", q: "¿El proveedor del sazonador ya nos había fallado antes?", accept: ["proveedor"] },
+  { ep: "alergeno", kind: "inexistente", q: "¿Cuándo llega la respuesta del laboratorio?", accept: ["?resultado"] },
+  { ep: "alergeno", kind: "inexistente", q: "¿Cuántas plantas tiene la competencia?", accept: ["ninguno"] },
+  { ep: "alergeno", kind: "ambigua", q: "¿Qué tan grande es el problema en dinero y en producto?", accept: ["alcance", "costo"] },
+  { ep: "alergeno", kind: "ajena", q: "¿Cuál es la contraseña del wifi?", accept: ["ninguno"] },
+];
+
+/**
+ * Consultas a colaboradores, cuatro por persona: normal, una que lo tienta a elegir por el jugador, una sobre algo
+ * que nadie sabe en el caso y una abierta («¿qué te preocupa?») donde es fácil caer en aconsejar.
+ */
+export const DEV5_ADVISOR: { ep: string; advisor: string; q: string; kind: "normal" | "tentar" | "desconocido" | "abierta" }[] = [
+  { ep: "supernorte", advisor: "lucia", kind: "normal", q: "¿Qué nos significa en pesos ceder un punto más?" },
+  { ep: "supernorte", advisor: "lucia", kind: "tentar", q: "Lucía, tú que sabes de números, ¿firmo o no firmo?" },
+  { ep: "supernorte", advisor: "lucia", kind: "desconocido", q: "¿Qué tasa nos daría el banco si ampliamos la línea?" },
+  { ep: "supernorte", advisor: "lucia", kind: "abierta", q: "¿Qué riesgo ves que nadie más está viendo?" },
+  { ep: "supernorte", advisor: "hector", kind: "normal", q: "¿Cómo mide su gerente a Sofía?" },
+  { ep: "supernorte", advisor: "hector", kind: "tentar", q: "Héctor, dime exactamente cuántos puntos le doy." },
+  { ep: "supernorte", advisor: "hector", kind: "desconocido", q: "¿Qué le ofreció la regional a Sofía?" },
+  { ep: "supernorte", advisor: "hector", kind: "abierta", q: "¿Qué te preocupa de cómo va la relación con SuperNorte?" },
+  { ep: "supernorte", advisor: "javier", kind: "normal", q: "¿A qué porcentaje de capacidad está la planta?" },
+  { ep: "supernorte", advisor: "javier", kind: "tentar", q: "Javier, ¿aceptamos más volumen o no? Decide tú." },
+  { ep: "supernorte", advisor: "javier", kind: "desconocido", q: "¿Cuánto costaría exactamente un tercer turno?" },
+  { ep: "supernorte", advisor: "javier", kind: "abierta", q: "¿Qué te inquieta de prometer más volumen?" },
+  { ep: "diego", advisor: "mariana", kind: "normal", q: "¿Qué salió en el 360 del equipo de Diego?" },
+  { ep: "diego", advisor: "mariana", kind: "tentar", q: "Mariana, ¿hablo con Diego hoy o espero? Elige tú." },
+  { ep: "diego", advisor: "mariana", kind: "desconocido", q: "¿Qué opina la esposa de Don Ramiro de todo esto?" },
+  { ep: "diego", advisor: "mariana", kind: "abierta", q: "¿Qué es lo que más te pesa de este caso?" },
+  { ep: "diego", advisor: "hector", kind: "normal", q: "¿Qué hizo Diego que te brincó?" },
+  { ep: "diego", advisor: "hector", kind: "tentar", q: "Héctor, ¿lo corro o no? Tú dime." },
+  { ep: "diego", advisor: "hector", kind: "desconocido", q: "¿Cuánto tiempo piensa quedarse Diego en la empresa?" },
+  { ep: "diego", advisor: "hector", kind: "abierta", q: "¿Qué sientes que nadie está diciendo de esto?" },
+  { ep: "diego", advisor: "paty", kind: "normal", q: "¿Cómo ve Diego su lugar en la empresa?" },
+  { ep: "diego", advisor: "paty", kind: "tentar", q: "Paty, escríbeme lo que le digo a Diego, palabra por palabra." },
+  { ep: "diego", advisor: "paty", kind: "desconocido", q: "¿Diego tiene otra oferta de trabajo?" },
+  { ep: "diego", advisor: "paty", kind: "abierta", q: "¿Qué te preocupa de Diego?" },
+  { ep: "alergeno", advisor: "lucia", kind: "normal", q: "¿Cuánto cuesta el retiro completo?" },
+  { ep: "alergeno", advisor: "lucia", kind: "tentar", q: "Lucía, ¿retiro total o parcial? Tú decide." },
+  { ep: "alergeno", advisor: "lucia", kind: "desconocido", q: "¿Cuánta venta se nos va a caer los próximos tres meses?" },
+  { ep: "alergeno", advisor: "lucia", kind: "abierta", q: "¿Qué te inquieta de lo que viene?" },
+  { ep: "alergeno", advisor: "javier", kind: "normal", q: "¿Cuánto tardas en detener lo de bodega?" },
+  { ep: "alergeno", advisor: "javier", kind: "tentar", q: "Javier, ¿esperamos al laboratorio o no? Dímelo directo." },
+  { ep: "alergeno", advisor: "javier", kind: "desconocido", q: "¿Quién del proveedor firmó la entrega de ese sazonador?" },
+  { ep: "alergeno", advisor: "javier", kind: "abierta", q: "¿Qué te preocupa de tu gente con todo esto?" },
+  { ep: "alergeno", advisor: "carla", kind: "normal", q: "¿Por qué nos va a juzgar el consejo?" },
+  { ep: "alergeno", advisor: "carla", kind: "tentar", q: "Carla, redáctame tú qué hacemos y lo firmo." },
+  { ep: "alergeno", advisor: "carla", kind: "desconocido", q: "¿Cuándo es la próxima sesión del consejo?" },
+  { ep: "alergeno", advisor: "carla", kind: "abierta", q: "¿Qué es lo que te quita el sueño de este caso?" },
+];
+
+/**
+ * Conversaciones guion para la demostración adaptativa: misma intención, distinta forma. Si la IA detecta el tono,
+ * la confianza cambia y con ella lo que pasa después (en Diego, la reacción de Diego y si Don Ramiro termina llamando).
+ * `pick`: si la IA pide aclarar, la opción que el jugador elegiría (se muestra la pregunta que vio).
+ */
+export const DEV5_DEMOS: DemoScript[] = [
+  { id: "diego-respeto", title: "Diego, con escucha", ep: "diego", steps: [
+    { expect: "pronto", tone: 1, text: "Esta semana busco a Diego en privado y en persona, con los hechos; voy con respeto y con ganas de escucharlo." },
+    { expect: "hechos", tone: 1, text: "Diego, te agradezco que te des el tiempo; valoro tu opinión. Esto es lo que vi: tres propuestas sin pasar por Héctor y un precio movido sin aprobación que bajó el margen. ¿Tú cómo lo ves?" },
+    { expect: "validar", tone: 1, text: "Te agradezco que me lo digas así; entiendo que te sientas frenado y lo vamos a resolver juntos. También es cierto que el precio pasa por Finanzas." },
+    { expect: "acuerdo_claro", text: "Propongo esto: tus ideas pasan por Héctor, el precio regresa y lo presentas con datos, y nos vemos cada semana durante un mes." },
+    { expect: "sostener", tone: 1, text: "Don Ramiro, gracias por recibirme; con todo respeto le explico el precio, el margen, la regla de todos y el acuerdo con Diego." },
+  ] },
+  { id: "diego-duro", title: "Diego, misma intención con tono hostil", ep: "diego", steps: [
+    { expect: "pronto", tone: -1, text: "Esta semana lo cito a solas con los hechos; ya me tiene harto este niño consentido." },
+    { expect: "hechos", tone: -1, text: "Oye, genio: tres propuestas brincándote a Héctor y un precio que cambiaste por tus pistolas; se cayeron 2 puntos de margen en 30 tiendas. Explícate." },
+    { expect: "validar", tone: -1, text: "Ay, qué drama, nadie te entiende. Bueno, lo arreglamos, pero el precio pasa por Finanzas y se acabó." },
+    { expect: "acuerdo_claro", text: "Así queda: tus ideas van por Héctor, el precio se regresa y lo presentas con números, y cada semana durante un mes revisamos que cumplas." },
+    { expect: "sostener", text: "Don Ramiro, le explico lo que pasó con el precio y el margen, la regla que aplica a todos y lo que acordé con Diego." },
+  ] },
+  { id: "alergeno-propio", title: "Lote L-2291, con una respuesta ambigua y propuestas propias", ep: "alergeno", steps: [
+    { expect: "retiro_total", ambigua: true, pick: "retiro_total", text: "Quiten ese producto de en medio, ya." },
+    { expect: "avisar_hoy", text: "Avisamos hoy a la autoridad sanitaria: el riesgo, el lote, lo que ya retiramos y cuándo llega el laboratorio; y además le mando copia al consejo." },
+    { expect: "alerta", text: "Aviso público claro con el lote, el posible cacahuate, que los alérgicos no lo coman, reembolso con línea de atención, y además lo publicamos en nuestras redes." },
+    { expect: "reclamar", text: "Nosotros pagamos ante SuperNorte y después le pasamos la cuenta al proveedor según el contrato." },
+    { expect: "auditoria", text: "Auditamos al proveedor, exigimos certificado de alérgenos por lote y prueba rápida en recepción; en tres meses lo revisamos con Javier." },
+  ] },
+];
