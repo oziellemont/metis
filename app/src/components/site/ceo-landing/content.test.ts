@@ -27,9 +27,9 @@ function shape(o: unknown): unknown {
 
 describe("landing de MÊTIS CEO · primer bloque", () => {
   it("el primer bloque dice qué es mêtis con la frase pedida y una sola h1", () => {
-    expect(C.HERO.title).toBe("Unos minutos al día. Decisiones que te hacen crecer.");
+    expect(C.HERO.title).toBe("Unos minutos al día. Lidera, decide y aprende.");
     expect(C.HERO.eyebrow).toBe("Simulador de dirección");
-    expect(C.HERO.body).toBe("Vive los retos de dirigir una empresa: recibe mensajes de tu equipo, resuelve situaciones de negocio y aprende de sus consecuencias para desarrollar tu criterio como líder.");
+    expect(C.HERO.body).toBe("Vive los retos de un CEO: recibe mensajes de tu equipo, resuelve situaciones de negocio y aprende de sus consecuencias para desarrollar tu criterio como líder.");
     expect(EN.HERO.body).toBe("Live the challenges of running a company: get messages from your team, solve business situations and learn from their consequences to develop your judgment as a leader.");
     expect(allCopy()).not.toContain("una decisión nunca afecta una sola cosa");
     expect((sources().match(/<h1\b/g) ?? []).length).toBe(1);
