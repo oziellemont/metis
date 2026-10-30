@@ -389,3 +389,17 @@ Estimación conservadora: validación + demos $0.23; desarrollo $0.60, unos $0.8
 
 1. **Validación final (ronda 6)**, que incluye las demostraciones. Copia el texto completo.
 2. **Desarrollo**, el mismo día si se quiere.
+
+### 10.5 Desarrollo más barato
+
+Para bajar el gasto, el desarrollo cambia así; la validación queda igual (3 corridas por respuesta, todo se adapta):
+
+- **Una sola pasada por respuesta** (`DEV_REPEATS = 1`). La consistencia se mide en validación.
+- **Solo lo reciente y lo que ha fallado:**
+  - las validaciones de las rondas 4 y 5 completas;
+  - de `eval-set.ts` y las rondas 2 y 3, solo lo difícil: respuestas ambiguas, con propuesta propia o fuera de tema; datos que no existen, ambiguos o ajenos; consultas que tientan, piden lo desconocido o son abiertas;
+  - y los fallos históricos (`DEV_HISTORIC_MISSES`).
+- El desarrollo pasa de 604 respuestas, 133 datos y 143 consultas (×2) a 284, 90 y 118 (×1).
+- Estimación conservadora: desarrollo $0.24 (antes $0.60) y validación + demos $0.23. Con el ~60% real, el desarrollo costará unos $0.15.
+- Los archivos viejos siguen en el repositorio y en la prueba de que la validación no repite frases de desarrollo.
+

@@ -156,12 +156,12 @@ describe("P0-D · evaluación con IA (con modelo falso, sin gasto)", () => {
       expect(set.interpret.adaptive.adapted).toBe(set.interpret.adaptive.replies);
       expect(set.interpret.adaptive.echoes).toBeGreaterThan(set.interpret.adaptive.adapted * 0.8);
     }
-    expect(rep.dev!.interpret.total).toBeGreaterThan(INTERPRET_SET.length); // incluye la validación de la ronda 2
+    expect(rep.dev!.interpret.total).toBeGreaterThan(INTERPRET_SET.length); // rondas 4 y 5 + lo difícil de antes
     expect(rep.val!.interpret.adaptive.faithful).toBe(rep.val!.interpret.adaptive.audited);
     expect(rep.val!.interpret.adaptive.tone.hit).toBe(rep.val!.interpret.adaptive.tone.total);
     expect(rep.val!.interpret.adaptive.tone.falsePositive).toBe(0);
     expect(rep.val!.interpret.adaptive.extras.hit).toBe(rep.val!.interpret.adaptive.extras.total);
-    expect(rep.dev!.interpret.total * 2).toBeLessThan(rep.calls);
+    expect(rep.dev!.interpret.total).toBeLessThan(rep.calls);
     // demo: mismas decisiones en Diego, distinto tono → distinta confianza y distinto final
     const [suave, duro, ale] = rep.demos;
     expect(suave.path.map((p) => p.split(":")[1]).slice(0, 4)).toEqual(duro.path.map((p) => p.split(":")[1]).slice(0, 4));
@@ -195,6 +195,23 @@ describe("P0-D · evaluación con IA (con modelo falso, sin gasto)", () => {
     expect(rep.val!.interpret.ambiguousCommitted).toBeGreaterThan(0);
     expect(passes(rep.val!).ambiguousCommitted).toBe(false);
   }, 60_000);
+
+  it("desarrollo barato: una pasada, rondas 4 y 5 completas, de lo anterior solo lo difícil y los fallos históricos", async () => {
+    const { DEV_REPEATS, EVAL_REPEATS, repeatsOf, DEV_HISTORIC_MISSES, evalTexts, evalSizes } = await import("./eval-run");
+    const { DEV4_INTERPRET, DEV4_FACTS, DEV4_ADVISOR } = await import("./eval-dev-ronda4");
+    const { DEV5_INTERPRET, DEV5_FACTS, DEV5_ADVISOR } = await import("./eval-dev-ronda5");
+    const { DEV3_INTERPRET } = await import("./eval-dev-ronda3");
+    expect(DEV_REPEATS).toBe(1);
+    expect(repeatsOf("dev")).toBe(1);
+    expect(repeatsOf("val")).toBe(EVAL_REPEATS);
+    const dev = new Set(evalTexts("dev"));
+    for (const t of DEV_HISTORIC_MISSES) expect(dev.has(t), t).toBe(true);
+    for (const x of [...DEV4_INTERPRET, ...DEV5_INTERPRET]) expect(dev.has(x.text)).toBe(true);
+    for (const x of [...DEV4_FACTS, ...DEV5_FACTS, ...DEV4_ADVISOR, ...DEV5_ADVISOR]) expect(dev.has(x.q)).toBe(true);
+    for (const x of DEV3_INTERPRET.filter((y) => y.kind === "ambigua")) expect(dev.has(x.text)).toBe(true);
+    expect(DEV3_INTERPRET.filter((y) => y.kind === "clara" && !DEV_HISTORIC_MISSES.includes(y.text)).some((y) => dev.has(y.text) && !DEV4_INTERPRET.concat(DEV5_INTERPRET).some((z) => z.text === y.text))).toBe(false);
+    expect(evalSizes("dev").interpret).toBeLessThan(400);
+  });
 
   it("los costos estimados de las dos corridas (validación + demos; desarrollo) caben juntos el mismo día en el tope diario de $1.50", async () => {
     const { EVAL_JOBS, repeatsOf, EVAL_BUDGET_USD, DEV_ADAPT_EVERY, evalItem, evalSizes } = await import("./eval-run");
