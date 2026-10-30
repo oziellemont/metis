@@ -91,11 +91,20 @@ export async function POST(req: Request) {
     }
   };
 
+  // Lo gastado hoy en la evaluación (incluye corridas anteriores del mismo día): se muestra en pantalla.
+  const spentToday = async () => {
+    const { data } = await admin.from("ai_quota").select("cost_usd").eq("scope", "eval").eq("period", day).maybeSingle();
+    return Math.round(Number((data as { cost_usd?: number } | null)?.cost_usd ?? 0) * 10000) / 10000;
+  };
   try {
     const results = await Promise.all(idx.map((k) => runJob(EVAL_JOBS[k], model)));
-    return NextResponse.json({ ok: true, jobs: idx, total: EVAL_JOBS.length, model: modelName, results, errors: [...errors].slice(0, 3) });
+    return NextResponse.json({ ok: true, jobs: idx, total: EVAL_JOBS.length, model: modelName, results, errors: [...errors].slice(0, 3), spent: await spentToday() });
   } catch (e) {
     const msg = String((e as Error)?.message ?? e);
-    return no(msg.startsWith("tope") ? "Se alcanzó el tope de gasto de la evaluación ($0.50 hoy)." : "La evaluación falló.", 429);
+    if (!msg.startsWith("tope")) return no("La evaluación falló.", 429);
+    const spent = await spentToday();
+    return no(msg === "tope eval"
+      ? `Se alcanzó el tope de gasto de la evaluación: llevas $${spent.toFixed(2)} de $${EVAL_BUDGET_USD.toFixed(2)} hoy (cuenta todas las corridas del día). Se reinicia a la medianoche de Monterrey.`
+      : "Se alcanzó el tope global de IA del día o del mes.", 429);
   }
 }

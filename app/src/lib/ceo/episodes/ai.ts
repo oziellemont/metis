@@ -18,7 +18,7 @@ import type { AdvisorBrief, EpisodeNode, EpisodeRun, EpisodeSpec, Strategy } fro
 import { adaptationOk, applyEpisode, clampParam, criticalFacts, nodeOf, norm, sayOf, strategiesFor, type EpisodeAction } from "./engine";
 
 export type EpisodeAiPurpose = "fact" | "advisor" | "interpret" | "adapt";
-export const EPISODE_AI_MAX_TOKENS: Record<EpisodeAiPurpose, number> = { fact: 60, advisor: 220, interpret: 380, adapt: 260 };
+export const EPISODE_AI_MAX_TOKENS: Record<EpisodeAiPurpose, number> = { fact: 60, advisor: 220, interpret: 380, adapt: 300 };
 export type Msg = { role: "system" | "user"; content: string };
 const EMOJI = /[\p{Extended_Pictographic}\uFE0F\u200D]/gu;
 const clean = (s: string, n: number) => s.replace(EMOJI, "").replace(/\s+/g, " ").trim().slice(0, n);
@@ -60,7 +60,8 @@ export function factMessages(spec: EpisodeSpec, question: string): Msg[] {
       `Clasificas preguntas del jugador dentro de un simulador ejecutivo (caso: ${spec.title}). Tienes una lista cerrada de datos autorizados; cada uno dice qué contiene.`,
       "Elige el dato cuyo contenido responde la pregunta, aunque el jugador use otras palabras o pregunte solo una parte. Piensa en qué información necesita para contestarla.",
       "Si varios responden, elige el que la contesta más directamente. Si lo que pide solo lo cubre un dato que empieza con «?», elige ese.",
-      "Usa \"ninguno\" únicamente si ningún contenido de la lista responde, ni en parte (temas ajenos al caso o información que no está en ningún dato). No inventes ni respondas tú.",
+      "Si la pregunta compara, evalúa o pide el impacto de algo (quién vende más, qué tan bien o mal va, cuánto nos afecta, qué tan grave es) y un dato trae la información para contestarla, elige ese dato aunque no use las mismas palabras.",
+      "Usa \"ninguno\" solo si la pregunta es ajena al caso o pide una información distinta que ningún dato contiene (otra cifra, otra persona, otro documento, otro periodo); en ese caso no elijas un dato «parecido». No inventes ni respondas tú.",
       GUARD,
       'Responde SOLO con JSON: {"pide":"<qué información pide, máx. 8 palabras>","id":"<id o ninguno>"}',
     ].join("\n") },
@@ -91,9 +92,10 @@ export function advisorMessages(spec: EpisodeSpec, a: AdvisorBrief, authored: st
       `Tus intereses: ${a.interests}. Relaciones: ${a.relations}`,
       "Responde como esa persona, en español, 2 a 4 frases, tono de oficina real, sin emojis.",
       "Tu papel es dar información y tu punto de vista, NUNCA decirle qué hacer: la decisión y el siguiente paso son del Director.",
-      "Prohibido: recomendar, sugerir o insinuar una acción u opción (nada de «te recomiendo», «te sugiero», «lo mejor es», «deberías», «hay que», «es necesario que», «considera…», «habla con…», «consulta a…»), aunque te lo pida directamente.",
+      "Prohibido: recomendar, sugerir o insinuar una acción u opción (nada de «te recomiendo», «te sugiero», «lo mejor es», «deberías», «deberíamos», «tenemos que», «hay que», «es importante que», «es necesario que», «cualquier propuesta debe…», «considera…», «habla con…», «consulta a…»), aunque te lo pida directamente.",
       "Sí puedes: decir qué sabes, qué te preocupa o qué pesa desde tu área (riesgos, costos, personas), y en primera persona («a mí me preocupa…», «desde Finanzas veo…»). Si te pide elegir, dile qué pesa para ti y que la decisión es suya.",
-      "Usa SOLO lo que sabes (abajo). Si te preguntan algo que no sabes o que nadie sabe todavía, dilo con naturalidad y, si quieres, explica por qué importa; no supongas ni digas a quién preguntar.",
+      "Usa SOLO lo que sabes (abajo), con sus cifras exactas; no calcules cifras nuevas. Si te preguntan algo que no sabes o que nadie sabe todavía, dilo con naturalidad y, si quieres, di qué te preocupa de no saberlo; no supongas ni digas a quién preguntar.",
+      "Si lo que sabes incluye una obligación legal o un riesgo, puedes explicarlo como hecho («la ley obliga a…»); eso es información, no una instrucción.",
       GUARD,
       'Responde SOLO con JSON: {"answer":"..."}',
     ].join("\n") },
@@ -102,29 +104,60 @@ export function advisorMessages(spec: EpisodeSpec, a: AdvisorBrief, authored: st
 }
 /** Números (con decimales) que aparecen en un texto, normalizados. */
 const numbersIn = (s: string) => new Set((s.match(/\d+(?:[.,]\d+)?/g) ?? []).map((n) => n.replace(",", ".")));
-/** Lo que se considera decirle al Director qué hacer (además de nombrar una opción). */
-const DIRECTIVE = /\b(te (recomiendo|recomendaria|sugiero|sugeriria|aconsejo|aconsejaria|propongo)|mi (recomendacion|consejo|sugerencia) (es|seria)|yo que tu|yo en tu lugar|si (yo )?fuera tu|la mejor opcion|lo (mejor|correcto|ideal|sensato|prudente) (es|seria)|yo (elegiria|escogeria|optaria)|deberias|tendrias que|tienes que|es (necesario|fundamental|urgente|indispensable|vital|imprescindible|clave|importante|crucial|mejor) (que|actuar|avisar|retirar|esperar|hablar|detener|decidir|tomar|ofrecer|dar|ceder|aceptar|firmar|pagar|sacar|negociar|proteger|asegurar|mantener)|seria (bueno|mejor|conveniente|prudente|util|ideal) que|hay que (avisar|retirar|esperar|hablar|actuar|detener|dar|ceder|aceptar|firmar|ofrecer|pagar|sacar|decir)|considera (la opcion|detener|retirar|avisar|hablar|esperar|aceptar|ofrecer|dar)|habla(r)? (directamente )?con (el|ella|don|recursos)|consulta(r|s)? (con|a) )/;
-/** Valida la voz del colaborador: sin cifras nuevas y sin decirle qué hacer. Null = usar el texto del autor. */
-export function parseAdvisor(spec: EpisodeSpec, a: AdvisorBrief, authored: string, raw: string): string | null {
-  const ans = clean(String(json(raw)?.answer ?? ""), 900);
-  if (ans.length < 20) return null;
-  const allowed = new Set([...numbersIn(authored), ...spec.facts.facts.filter((f) => a.knows.includes(f.id) || f.critical).flatMap((f) => [...numbersIn(f.answer)]), ...numbersIn(spec.briefing.message.join(" ")), ...spec.briefing.context.rows.flatMap((r) => [...numbersIn(r.join(" "))])]);
-  for (const n of numbersIn(ans)) if (!allowed.has(n)) return null;
+/**
+ * Lo que se considera decirle al Director qué hacer (además de nombrar una opción). Informar una obligación («la ley
+ * obliga a…») o una consecuencia («si no se corrige, …») no es instrucción; «hay que», «deberíamos», «es importante
+ * que…» sí lo son.
+ */
+const DIRECTIVE = /\b(te (recomiendo|recomendaria|sugiero|sugeriria|aconsejo|aconsejaria|propongo)|mi (recomendacion|consejo|sugerencia) (es|seria)|yo que tu|yo en tu lugar|si (yo )?fuera tu|la mejor opcion|lo (mejor|correcto|ideal|sensato|prudente) (es|seria)|yo (elegiria|escogeria|optaria|haria)|deberias|tendrias que|tienes que|es (necesario|fundamental|urgente|indispensable|vital|imprescindible|clave|importante|crucial|mejor) (que|actuar|avisar|retirar|esperar|hablar|detener|decidir|tomar|ofrecer|dar|ceder|aceptar|firmar|pagar|sacar|negociar|proteger|asegurar|mantener)|seria (bueno|mejor|conveniente|prudente|util|ideal) que|hay que (avisar|retirar|esperar|hablar|actuar|detener|dar|ceder|aceptar|firmar|ofrecer|pagar|sacar|decir|sancionar|comunicar|considerar)|(debe|deberia|deberiamos|tendriamos que|tenemos que) (alinearse|considerar|ofrecer|dar|aceptar|retirar|avisar|esperar|hablar|firmar|ceder|pagar|sancionar|negociar|proponer|comunicar|actuar)|considera (la opcion|detener|retirar|avisar|hablar|esperar|aceptar|ofrecer|dar)|habla (directamente )?con (el|ella|don|recursos)|consulta(r|s)? (con|a) )/;
+/** Por qué se rechazó la voz del colaborador (para el reintento y para el reporte de la evaluación). */
+export type AdvisorReject = { reason: "formato" | "corta" | "cifra" | "elige" | "instruccion" | "opcion"; detail: string };
+/** Valida la voz del colaborador: sin cifras nuevas y sin decirle qué hacer. */
+export function checkAdvisor(spec: EpisodeSpec, a: AdvisorBrief, authored: string, raw: string, question = ""): { answer: string } | AdvisorReject {
+  const j = json(raw);
+  if (!j || typeof j.answer !== "string") return { reason: "formato", detail: raw.slice(0, 80) };
+  const ans = clean(j.answer, 900);
+  if (ans.length < 20) return { reason: "corta", detail: ans };
+  const allowed = new Set([
+    ...numbersIn(authored), ...numbersIn(question), ...numbersIn(`${a.personality} ${a.interests} ${a.relations}`),
+    ...spec.facts.facts.filter((f) => a.knows.includes(f.id) || f.critical).flatMap((f) => [...numbersIn(f.answer)]),
+    ...numbersIn(spec.briefing.message.join(" ")), ...spec.briefing.context.rows.flatMap((r) => [...numbersIn(r.join(" "))]),
+  ]);
+  for (const n of numbersIn(ans)) if (!allowed.has(n)) return { reason: "cifra", detail: n };
   const t = norm(ans);
-  if (/\b(elige|escoge|selecciona) la opcion\b|\bopcion [a-f]\b|\bla respuesta correcta\b/.test(t)) return null;
-  if (DIRECTIVE.test(t)) return null;
+  const el = t.match(/\b(elige|escoge|selecciona) la opcion\b|\bopcion [a-f]\b|\bla respuesta correcta\b/);
+  if (el) return { reason: "elige", detail: el[0] };
+  const d = t.match(DIRECTIVE);
+  if (d) return { reason: "instruccion", detail: d[0].trim() };
   const options = Object.values(spec.nodes).flatMap((n) => n.strategies.map((s) => norm(s.text)));
-  if (options.some((o) => o.length > 30 && t.includes(o.slice(0, 40)))) return null;
-  return ans;
+  const o = options.find((o) => o.length > 30 && t.includes(o.slice(0, 40)));
+  if (o) return { reason: "opcion", detail: o.slice(0, 40) };
+  return { answer: ans };
 }
-/** Hasta dos intentos: si el primero no pasa la validación, se pide otra vez recordando la regla. */
-export async function runAdvisor(spec: EpisodeSpec, a: AdvisorBrief, authored: string, question: string, call: Call): Promise<string | null> {
+/** Null = usar el texto del autor. */
+export function parseAdvisor(spec: EpisodeSpec, a: AdvisorBrief, authored: string, raw: string, question = ""): string | null {
+  const r = checkAdvisor(spec, a, authored, raw, question);
+  return "answer" in r ? r.answer : null;
+}
+const RETRY: Record<AdvisorReject["reason"], (d: string) => string> = {
+  formato: () => 'tu intento anterior no vino en el formato pedido. Responde SOLO con JSON {"answer":"..."}.',
+  corta: () => "tu intento anterior fue demasiado corto. Contesta en 2 a 4 frases.",
+  cifra: (d) => `tu intento anterior usó la cifra «${d}», que no está en lo que sabes. Usa solo cifras de tu información o di que no la tienes.`,
+  elige: (d) => `tu intento anterior eligió por el Director («${d}»). No elijas: di qué pesa para ti y que la decisión es suya.`,
+  instruccion: (d) => `tu intento anterior dijo «${d}», que suena a instrucción. Dilo como preocupación tuya en primera persona («a mí me preocupa…», «desde mi área veo…») o como hecho que sabes, sin decir qué debe hacerse.`,
+  opcion: () => "tu intento anterior repitió una de las opciones del caso. No la nombres: habla de lo que sabes y de lo que te preocupa.",
+};
+/** Hasta dos intentos: si el primero no pasa la validación, se pide otra vez diciendo exactamente qué falló. */
+export async function runAdvisor(spec: EpisodeSpec, a: AdvisorBrief, authored: string, question: string, call: Call, onReject?: (r: AdvisorReject) => void): Promise<string | null> {
   const msgs = advisorMessages(spec, a, authored, question);
+  let why: AdvisorReject | null = null;
   for (let k = 0; k < 2; k++) {
-    const m = k === 0 ? msgs : [{ ...msgs[0], content: `${msgs[0].content}\nIMPORTANTE: tu intento anterior le dijo al Director qué hacer o usó una cifra que no conoces. No lo hagas: solo información y lo que te preocupa.` }, msgs[1]];
+    const m = k === 0 ? msgs : [{ ...msgs[0], content: `${msgs[0].content}\nIMPORTANTE: ${RETRY[why!.reason](why!.detail)}` }, msgs[1]];
     const raw = await call(m, EPISODE_AI_MAX_TOKENS.advisor, k === 0 ? 0.4 : 0.2);
-    const ans = raw ? parseAdvisor(spec, a, authored, raw) : null;
-    if (ans) return ans;
+    const r: { answer: string } | AdvisorReject = raw ? checkAdvisor(spec, a, authored, raw, question) : { reason: "formato", detail: "sin respuesta" };
+    if ("answer" in r) return r.answer;
+    why = r;
+    onReject?.(r);
   }
   return null;
 }
@@ -152,12 +185,13 @@ export function interpretMessages(spec: EpisodeSpec, run: EpisodeRun, node: Epis
       "Pasos:",
       "1) lectura: en una frase, a qué se compromete el jugador (qué hace, cuándo, con quién, cuánto).",
       "2) strategy: la estrategia (id de la lista) que mejor corresponde. Si dos estrategias comparten una parte (por ejemplo, ambas incluyen pedir una reunión), decide por la parte que las distingue.",
-      "3) rival: la otra estrategia que el texto TAMBIÉN podría significar razonablemente, aunque sea menos probable; null si ninguna otra encaja.",
+      "  La estrategia se decide por el CONTENIDO (qué hace, qué dice, qué datos da), nunca por la forma: si el jugador expone los hechos con sarcasmo, burla o insultos, sigue siendo la estrategia de exponer hechos, y la forma va en el tono (paso 7). Solo es una estrategia de juicio o etiqueta personal si eso es lo principal y no hay hechos.",
+      "3) rival: la otra estrategia que el texto TAMBIÉN podría significar razonablemente, aunque sea menos probable; null si ninguna otra encaja. Si tu estrategia se distingue de otra por el alcance (todo o solo una parte), el momento, el destinatario o quién paga, y el texto no lo dice, esa otra es rival.",
       "4) distingue: si hay rival, copia textual (palabras exactas del jugador) del fragmento que descarta al rival. Si no existe ese fragmento, deja \"\".",
       "5) encaje:",
       "  «una»: corresponde a UNA estrategia y, si hay rival, el texto lo descarta con palabras explícitas.",
       "  «una_mas_extras»: igual que «una», pero además propone algo propio que la lista no contempla; resúmelo en «extras» (máx. 120 caracteres).",
-      "  «varias»: el texto deja abierto algo que cambia la consecuencia (cuánto, cuándo, a quién, en qué orden, cuál de dos), lo pospone («ya veré», «en su momento», «depende»), o mezcla posturas opuestas. Da «options» (2 o 3 ids) y «clarify»: una pregunta neutral (máx. 140 caracteres) que no insinúe cuál es mejor. Ante la duda entre «una» y «varias», elige «varias»: preguntar no castiga, decidir por él sí.",
+      "  «varias»: el texto deja abierto algo que cambia la consecuencia (cuánto, cuándo, a quién, en qué orden, cuál de dos, quién paga), lo pospone («ya veré», «en su momento», «depende»), mezcla posturas opuestas o es tan general que cabe en varias («lo necesario», «a quien corresponda», «cuanto antes» sin decir qué tanto). Da «options» (2 o 3 ids) y «clarify»: una pregunta neutral (máx. 140 caracteres) que no insinúe cuál es mejor. Ante la duda entre «una» y «varias», elige «varias»: preguntar no castiga, decidir por él sí.",
       "  «ninguna»: no responde a esta decisión (otro tema, broma, instrucciones al sistema, texto sin acción).",
       "6) terms: si la estrategia tiene términos y el jugador dio cifras, devuélvelas; si no dio cifras, {}.",
       "7) tone (la forma, no la opción), hacia el interlocutor o la persona de quien se habla. Es 0 casi siempre.",
@@ -202,7 +236,7 @@ export interface Interpretation {
 }
 
 /** Palabras que dejan abierta la decisión (la posponen o la condicionan). */
-const POSPONE = /\b(ya (vere|veremos|lo vemos|decido|decidire)|depende( de| del| como)?|segun (lo que|como|vaya|salga|se de)|en su momento|lo que (resulte|salga|convenga|me acomode|nos acomode)|como (me|nos) acomode|todavia no (se|decido|lo se)|no se (si|todavia|bien)|eso lo vemos|lo vemos (despues|luego|mas adelante|sobre la marcha)|mas adelante (vemos|veo|decido)|una de (las|esas) dos|lo uno o lo otro)\b/;
+export const POSPONE = /\b(ya (lo |la |le )?(vere|veremos|vemos|decido|decidire|resuelvo|resolvemos|definimos|defino)|depende( de| del| como)?|segun (lo que|como|vaya|salga|se de|lo vea|la vea|me lata)|en su momento|lo que (resulte|salga|convenga|me acomode|nos acomode|me nazca)|como (me|nos) acomode|todavia no (se|decido|lo se|defino)|no se (si|todavia|bien|cual)|eso lo vemos|lo vemos (despues|luego|mas adelante|sobre la marcha)|sobre la marcha|mas adelante (vemos|veo|decido|lo vemos)|(manana|luego|despues) lo (resuelvo|decido|vemos|veo|definimos)|una de (las|esas) dos|uno de (los|esos) dos|lo uno o lo otro|cualquiera de (los|las) (dos|tres)|(el|la) que (me|nos) (nazca|lata|acomode|convenga)|en el (orden|momento) que (me|nos) (acomode|convenga|parezca))\b/;
 const ENCAJE: Record<string, FitStatus> = { una: "clara", una_mas_extras: "parcial", varias: "ambigua", ninguna: "fuera", clara: "clara", parcial: "parcial", ambigua: "ambigua", fuera: "fuera" };
 
 /**
@@ -242,11 +276,14 @@ export function parseInterpretation(spec: EpisodeSpec, run: EpisodeRun, raw: str
   }
   const st: Strategy | undefined = avail.find((s) => s.id === strategy);
   if (!st) return null;
-  // Reglas deterministas: con un rival posible, solo se decide si el jugador lo descartó con sus palabras.
-  if (has(rival) && rival !== st.id) {
-    if (text && POSPONE.test(norm(text))) return ask([st.id, rival], "pospone");
-    if (!quoted(j.distingue, text)) return ask([st.id, rival], "rival");
+  // Reglas deterministas: si el texto pospone o condiciona la decisión, se pregunta aunque la IA no haya visto rival;
+  // con un rival posible, solo se decide si el jugador lo descartó con sus palabras.
+  const hasRival = has(rival) && rival !== st.id;
+  if (text && POSPONE.test(norm(text))) {
+    const given = (Array.isArray(j.options) ? j.options : []).map((x) => String(x).trim()).filter((id) => has(id) && id !== st.id);
+    return ask([st.id, ...(hasRival ? [rival] : []), ...given], "pospone");
   }
+  if (hasRival && !quoted(j.distingue, text)) return ask([st.id, rival], "rival");
   const terms = (j.terms && typeof j.terms === "object" ? j.terms : {}) as Record<string, unknown>;
   const params: Record<string, number> = {};
   for (const p of st.params ?? []) params[p.key] = clampParam(p, typeof terms[p.key] === "number" ? terms[p.key] : p.default);
@@ -276,15 +313,13 @@ export function authoredFor(spec: EpisodeSpec, run: EpisodeRun, it: Pick<Interpr
 export function adaptMessages(spec: EpisodeSpec, run: EpisodeRun, base: { authored: string[]; said: string[]; who: string }, text: string, it: Pick<Interpretation, "tone" | "extras">): Msg[] {
   return [
     { role: "system", content: [
-      "Escribes la reacción de un personaje en un simulador ejecutivo en español. El motor del juego ya decidió QUÉ pasa; tú solo haces que el personaje reaccione a las palabras exactas del jugador (el Director General).",
-      "Reescribe la «respuesta autorizada» así:",
-      "- Mismo desenlace, mismos hechos y TODAS sus cifras; ni una cifra, hecho, promesa, condición o pregunta nueva.",
-      "- Retoma una cosa concreta que dijo el jugador (una idea, una palabra suya o su tono) con naturalidad, dentro del diálogo.",
-      "- Si el tono del jugador fue hostil, el personaje puede notarlo en su forma (más seco, más tenso), sin cambiar lo que pasa. Si fue respetuoso, puede notarse cálido.",
-      "- Si el jugador propuso algo que el caso no contempla (abajo, «además propuso»), el personaje puede reconocerlo en pocas palabras sin aceptarlo, rechazarlo ni ponerle cifras.",
-      "- Conserva el formato: una línea por cada línea de la respuesta autorizada (puedes juntar o agregar una), con «» para el diálogo y narración breve sin comillas, como el original. Sin emojis.",
+      "Escribes la reacción de un personaje en un simulador ejecutivo en español. El motor del juego ya decidió QUÉ pasa; tú haces que el personaje reaccione a las palabras exactas del jugador (el Director General), para que sienta que lo escucharon.",
+      "Paso 1, «reaccion»: UNA frase breve (máx. 110 caracteres) en la que el personaje reacciona a algo concreto que escribió el jugador: retoma una palabra o idea suya (no de la respuesta autorizada) o responde a su tono. Puede ser un gesto narrado sin comillas o una frase del personaje entre «». Sin cifras, sin preguntas, sin hechos, promesas ni condiciones nuevas, sin aceptar ni rechazar nada.",
+      "  Si el tono del jugador fue hostil, la reacción se nota tensa o seca; si fue respetuoso, cálida. Si propuso algo que el caso no contempla («además propuso»), la reacción puede reconocerlo en pocas palabras sin aceptarlo ni rechazarlo.",
+      "Paso 2, «reply»: la respuesta autorizada completa con tu reacción integrada (al inicio, o fundida en la primera línea). Conserva el resto casi igual: mismo desenlace, mismos hechos y TODAS sus cifras; ni una cifra, hecho, promesa, condición o pregunta nueva. Una línea por cada línea de la autorizada (más la reacción si va aparte), con «» para el diálogo y narración breve sin comillas. Sin emojis.",
+      "Una respuesta idéntica a la autorizada no sirve: la reacción es obligatoria.",
       GUARD,
-      'Responde SOLO con JSON: {"reply":["línea 1","línea 2"]}',
+      'Responde SOLO con JSON: {"reaccion":"...","reply":["línea 1","línea 2"]}',
     ].join("\n") },
     { role: "user", content: [
       `Caso: ${spec.title}. Personaje que reacciona: ${base.who}.`,
@@ -295,20 +330,39 @@ export function adaptMessages(spec: EpisodeSpec, run: EpisodeRun, base: { author
     ].join("\n\n") },
   ];
 }
-/** Acepta la reacción adaptada solo si es fiel a la respuesta autorizada (misma regla que aplica el motor). */
+/** Texto comparable: sin comillas, signos ni mayúsculas (para saber si la «adaptación» solo cambió el formato). */
+const bare = (xs: string[]) => norm(xs.join(" ")).replace(/[^a-z0-9ñ]+/g, " ").trim();
+/** ¿La versión adaptada es la misma respuesta del autor (a lo sumo con otras comillas o cortes de línea)? */
+export const sameAsAuthored = (reply: string[], authored: string[]) => bare(reply) === bare(authored);
+/**
+ * Acepta la reacción adaptada solo si es fiel a la respuesta autorizada (misma regla que aplica el motor) y si de
+ * verdad reacciona: si el modelo devolvió la autorizada tal cual pero escribió la reacción aparte, se antepone.
+ */
 export function parseAdaptation(raw: string, base: { authored: string[]; said: string[]; terms: Record<string, number> }): string[] | null {
   const j = json(raw);
   const r = Array.isArray(j?.reply) ? j!.reply : typeof j?.reply === "string" ? [j.reply] : null;
   if (!r) return null;
-  return adaptationOk(r.map((x) => clean(String(x ?? ""), 400)).filter(Boolean), base.authored, base.said, base.terms);
+  let lines = r.map((x) => clean(String(x ?? ""), 400)).filter(Boolean);
+  const re = clean(String(j?.reaccion ?? ""), 140);
+  if (sameAsAuthored(lines, base.authored) && re.length >= 8 && !sameAsAuthored([re], base.authored)) lines = [re, ...base.authored].slice(0, 4);
+  if (sameAsAuthored(lines, base.authored)) return null;
+  return adaptationOk(lines, base.authored, base.said, base.terms);
 }
-/** Segunda llamada: adapta la respuesta real del motor a lo que escribió el jugador. Null = se muestra la del autor. */
+/**
+ * Segunda llamada: adapta la respuesta real del motor a lo que escribió el jugador. Si no pasa (idéntica a la del
+ * autor o infiel), se intenta una vez más; si tampoco, null = se muestra la del autor.
+ */
 export async function runAdapt(spec: EpisodeSpec, run: EpisodeRun, text: string, it: Interpretation, call: Call): Promise<{ reply: string[]; basis: string } | null> {
   const base = authoredFor(spec, run, it, text);
   if (!base || !text.trim()) return null;
-  const raw = await call(adaptMessages(spec, run, base, text, it), EPISODE_AI_MAX_TOKENS.adapt, 0.4);
-  const reply = raw ? parseAdaptation(raw, base) : null;
-  return reply ? { reply, basis: base.authored.join("\n") } : null;
+  const msgs = adaptMessages(spec, run, base, text, it);
+  for (let k = 0; k < 2; k++) {
+    const m = k === 0 ? msgs : [{ ...msgs[0], content: `${msgs[0].content}\nIMPORTANTE: tu intento anterior no sirvió (repitió la respuesta sin reaccionar, o cambió o agregó una cifra, un hecho o una pregunta). Escribe la reacción a una palabra del jugador y deja todo lo demás como está.` }, msgs[1]];
+    const raw = await call(m, EPISODE_AI_MAX_TOKENS.adapt, k === 0 ? 0.5 : 0.3);
+    const reply = raw ? parseAdaptation(raw, base) : null;
+    if (reply) return { reply, basis: base.authored.join("\n") };
+  }
+  return null;
 }
 
 /**

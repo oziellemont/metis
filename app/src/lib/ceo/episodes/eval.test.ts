@@ -60,10 +60,11 @@ describe("P0-D · respaldo sin IA (gratis, en cada corrida)", () => {
 });
 
 describe("P0-D · conjunto de validación final (separado del de desarrollo)", () => {
-  it("no repite ninguna frase del desarrollo (ronda 1 ni ronda 2) ni de los prompts, y cada caso es alcanzable", async () => {
+  it("no repite ninguna frase del desarrollo (rondas 1, 2 y 3) ni de los prompts, y cada caso es alcanzable", async () => {
     const { VALIDATION_SET, FACT_VALIDATION, ADVISOR_VALIDATION, DEMO_SCRIPTS } = await import("./eval-validacion");
     const D2 = await import("./eval-dev-ronda2");
-    const dev = new Set([...INTERPRET_SET.map((x) => x.text), ...FACT_SET.map((x) => x.q), ...ADVISOR_SET.map((x) => x.q),
+    const D3 = await import("./eval-dev-ronda3");
+    const dev = new Set([...D3.DEV3_INTERPRET.map((x) => x.text), ...D3.DEV3_FACTS.map((x) => x.q), ...D3.DEV3_ADVISOR.map((x) => x.q), ...D3.DEV3_DEMOS.flatMap((d) => d.steps.map((s) => s.text)),...INTERPRET_SET.map((x) => x.text), ...FACT_SET.map((x) => x.q), ...ADVISOR_SET.map((x) => x.q),
       ...D2.DEV2_INTERPRET.map((x) => x.text), ...D2.DEV2_FACTS.map((x) => x.q), ...D2.DEV2_ADVISOR.map((x) => x.q), ...D2.DEV2_DEMOS.flatMap((d) => d.steps.map((s) => s.text))]);
     for (const v of VALIDATION_SET) expect(dev.has(v.text), v.text).toBe(false);
     for (const f of FACT_VALIDATION) expect(dev.has(f.q), f.q).toBe(false);
@@ -105,9 +106,10 @@ describe("P0-D · evaluación con IA (con modelo falso, sin gasto)", () => {
   async function perfectModel() {
     const { VALIDATION_SET, FACT_VALIDATION, DEMO_SCRIPTS } = await import("./eval-validacion");
     const D2 = await import("./eval-dev-ronda2");
-    const items = [...INTERPRET_SET.map((x) => ({ ...x, kind: "clara" as const, options: undefined as string[] | undefined, tone: undefined as number | undefined })), ...VALIDATION_SET, ...D2.DEV2_INTERPRET,
+    const D3 = await import("./eval-dev-ronda3");
+    const items = [...D3.DEV3_INTERPRET, ...INTERPRET_SET.map((x) => ({ ...x, kind: "clara" as const, options: undefined as string[] | undefined, tone: undefined as number | undefined })), ...VALIDATION_SET, ...D2.DEV2_INTERPRET,
       ...DEMO_SCRIPTS.flatMap((d) => d.steps.map((s) => ({ ep: d.ep, node: "", text: s.text, expect: s.expect, kind: s.ambigua ? "ambigua" as const : "clara" as const, options: s.ambigua ? [s.expect, "parcial"] : undefined, tone: s.tone })))];
-    const facts = [...FACT_SET.map((f) => ({ q: f.q, id: f.expect })), ...FACT_VALIDATION.map((f) => ({ q: f.q, id: f.accept[0] })), ...D2.DEV2_FACTS.map((f) => ({ q: f.q, id: f.accept[0] }))];
+    const facts = [...FACT_SET.map((f) => ({ q: f.q, id: f.expect })), ...FACT_VALIDATION.map((f) => ({ q: f.q, id: f.accept[0] })), ...D2.DEV2_FACTS.map((f) => ({ q: f.q, id: f.accept[0] })), ...D3.DEV3_FACTS.map((f) => ({ q: f.q, id: f.accept[0] }))];
     const model: import("./eval-run").Model = async (msgs) => {
       const sys = msgs[0].content, u = msgs[1].content;
       if (sys.startsWith("Eres auditor")) return { content: JSON.stringify({ recomienda: false, inventa: false, responde: true, fiel: true, agrega: false, responde_al_jugador: true, motivo: "" }), cost: 0.00003 };
@@ -189,22 +191,24 @@ describe("P0-D · evaluación con IA (con modelo falso, sin gasto)", () => {
     expect(passes(rep.val!).ambiguousCommitted).toBe(false);
   }, 60_000);
 
-  it("el costo estimado de toda la evaluación (ambos conjuntos + adaptación + demo + auditores) cabe en el tope de $0.50", async () => {
-    const { EVAL_JOBS, EVAL_REPEATS, EVAL_BUDGET_USD, evalItem, evalSizes } = await import("./eval-run");
+  it("el costo estimado de cada corrida (validación + demos; desarrollo) cabe por separado en el tope diario de $0.50", async () => {
+    const { EVAL_JOBS, EVAL_REPEATS, EVAL_BUDGET_USD, DEV_ADAPT_EVERY, evalItem, evalSizes } = await import("./eval-run");
     const { costOf, approxTokens, DEFAULT_MODEL } = await import("../written");
-    let est = 0;
+    const est = { dev: 0, val: 0 };
     for (const set of ["dev", "val"] as const) {
       for (let i = 0; i < evalSizes(set).interpret; i++) {
         const it = evalItem(set, i);
         const spec = EPISODES[it.ep]; const run = runAt(spec, it.node, it.expect ?? it.options)!;
         const m = interpretMessages(spec, run, nodeOf(spec, run)!, sayOf(spec, run), it.text);
-        // salida real ~150 tokens (estimación conservadora: 200); + adaptación (~1,000 de entrada, 200 de salida) + auditor en validación
-        est += EVAL_REPEATS * costOf(DEFAULT_MODEL, approxTokens(m.map((x) => x.content).join("\n")) + 20, 200);
-        if (set === "val" || i % 2 === 0) est += costOf(DEFAULT_MODEL, 1000, 200) + (set === "val" ? costOf(DEFAULT_MODEL, 500, 60) : 0);
+        // salida real ~150 tokens (estimación conservadora: 200); + adaptación (~1,100 de entrada, 220 de salida) + auditor en validación
+        est[set] += EVAL_REPEATS * costOf(DEFAULT_MODEL, approxTokens(m.map((x) => x.content).join("\n")) + 20, 200);
+        if (set === "val" || i % DEV_ADAPT_EVERY === 0) est[set] += costOf(DEFAULT_MODEL, 1100, 220) + (set === "val" ? costOf(DEFAULT_MODEL, 500, 60) : 0);
       }
+      est[set] += EVAL_JOBS.filter((j) => j.kind === "fact" && j.set === set).length * 0.0003 + EVAL_JOBS.filter((j) => j.kind === "advisor" && j.set === set).length * 0.0008;
     }
-    est += EVAL_JOBS.filter((j) => j.kind === "fact").length * 0.0003 + EVAL_JOBS.filter((j) => j.kind === "advisor").length * 0.0008 + EVAL_JOBS.filter((j) => j.kind === "demo").length * 0.006;
-    console.info(`[eval] costo estimado de toda la evaluación: $${est.toFixed(3)}`);
-    expect(est).toBeLessThan(EVAL_BUDGET_USD);
+    est.val += EVAL_JOBS.filter((j) => j.kind === "demo").length * 0.006;
+    console.info(`[eval] costo estimado: validación $${est.val.toFixed(3)} · desarrollo $${est.dev.toFixed(3)}`);
+    expect(est.val).toBeLessThan(EVAL_BUDGET_USD);
+    expect(est.dev).toBeLessThan(EVAL_BUDGET_USD);
   }, 60_000);
 });
