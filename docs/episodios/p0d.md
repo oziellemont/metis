@@ -316,7 +316,7 @@ Tropiezo operativo: el tope de $0.50 se alcanzó aunque la corrida costó ~$0.22
 
 **Tono.** El intérprete reconoce hartazgo («ya estuvo bueno») y apodos despectivos («el junior», «berrinches») como −1.
 
-**Costo.** En desarrollo cada respuesta se corre 2 veces (en validación, 3). Estimación conservadora: validación + demos $0.21; desarrollo $0.45. Cada botón cabe solo en el tope diario de $0.50, pero no los dos el mismo día.
+**Costo.** En desarrollo cada respuesta se corre 2 veces (en validación, 3). Estimación conservadora: validación + demos $0.21; desarrollo $0.45. Desde el ajuste del tope a $1.50 por día, los dos botones caben el mismo día (suman ~$0.66).
 
 ### 9.3 Conjuntos
 
@@ -327,4 +327,4 @@ Tropiezo operativo: el tope de $0.50 se alcanzó aunque la corrida costó ~$0.22
 ### 9.4 Cómo correr
 
 1. **Validación final (ronda 5)** (incluye las demostraciones). Copia el texto completo.
-2. **Desarrollo**, otro día (o después de la medianoche de Monterrey).
+2. **Desarrollo**, el mismo día si se quiere (el tope diario es de $1.50).

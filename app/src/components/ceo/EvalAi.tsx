@@ -1,7 +1,7 @@
 "use client";
 /**
  * Evaluación de la IA de episodios (P0-D). Corre el conjunto elegido por lotes contra la ruta
- * `api/ceo/episodio/evaluar` (gasta: tope $0.50 por día) y muestra el reporte. Solo en modo prueba.
+ * `api/ceo/episodio/evaluar` (gasta: tope $1.50 por día) y muestra el reporte. Solo en modo prueba.
  * La validación final y el conjunto de desarrollo se corren y se reportan por separado.
  */
 import { useState } from "react";

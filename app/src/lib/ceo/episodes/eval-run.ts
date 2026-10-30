@@ -36,7 +36,7 @@ export const EVAL_REPEATS = 3;
 /** En desarrollo cada respuesta se corre menos veces (el conjunto ya es grande y cuida el tope de gasto). */
 export const DEV_REPEATS = 2;
 export const repeatsOf = (set: EvalSetId) => (set === "val" ? EVAL_REPEATS : DEV_REPEATS);
-export const EVAL_BUDGET_USD = 0.5;
+export const EVAL_BUDGET_USD = 1.5;
 /** En desarrollo se adapta una de cada N respuestas (en validación, todas). */
 export const DEV_ADAPT_EVERY = 3;
 export type EvalSetId = "dev" | "val";

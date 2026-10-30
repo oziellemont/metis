@@ -194,9 +194,9 @@ describe("P0-D · evaluación con IA (con modelo falso, sin gasto)", () => {
     expect(passes(rep.val!).ambiguousCommitted).toBe(false);
   }, 60_000);
 
-  it("el costo estimado de cada corrida (validación + demos; desarrollo) cabe por separado en el tope diario de $0.50", async () => {
+  it("los costos estimados de las dos corridas (validación + demos; desarrollo) caben juntos el mismo día en el tope diario de $1.50", async () => {
     const { EVAL_JOBS, repeatsOf, EVAL_BUDGET_USD, DEV_ADAPT_EVERY, evalItem, evalSizes } = await import("./eval-run");
-    const { costOf, approxTokens, DEFAULT_MODEL } = await import("../written");
+    const { costOf, approxTokens, DEFAULT_MODEL, CAPS } = await import("../written");
     const est = { dev: 0, val: 0 };
     for (const set of ["dev", "val"] as const) {
       for (let i = 0; i < evalSizes(set).interpret; i++) {
@@ -213,5 +213,7 @@ describe("P0-D · evaluación con IA (con modelo falso, sin gasto)", () => {
     console.info(`[eval] costo estimado: validación $${est.val.toFixed(3)} · desarrollo $${est.dev.toFixed(3)}`);
     expect(est.val).toBeLessThan(EVAL_BUDGET_USD);
     expect(est.dev).toBeLessThan(EVAL_BUDGET_USD);
+    expect(est.val + est.dev).toBeLessThan(EVAL_BUDGET_USD);
+    expect(EVAL_BUDGET_USD).toBeLessThanOrEqual(CAPS.dailyUsd);
   }, 60_000);
 });

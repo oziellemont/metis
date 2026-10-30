@@ -7,7 +7,7 @@
  * Candados:
  *  - sesión iniciada, IA activa para ese jugador (interruptor «ai» + CEO_AI_ENABLED=1 + consentimiento);
  *  - en producción, solo jugadores con el interruptor «episodes» (los invitados al piloto);
- *  - tope propio de la evaluación: $0.50 por día (scope «eval»), además de los topes globales del mes y del día.
+ *  - tope propio de la evaluación: $1.50 por día (scope «eval»), además de los topes globales del mes y del día.
  * Cada llamada queda en ceo.ai_calls con purpose «episodio_eval».
  */
 import { NextResponse } from "next/server";
