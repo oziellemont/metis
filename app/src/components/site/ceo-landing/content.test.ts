@@ -108,8 +108,11 @@ describe("landing de MÊTIS CEO · bloques", () => {
     expect(readFileSync("src/components/site/CeoCta.tsx", "utf8")).toContain('"/ceo/empezar"');
   });
 
-  it("cómo funciona: el título se queda y vuelven los tres pasos de antes; el primero dice «en cualquier momento del día»", () => {
-    expect(C.HOW.title).toBe("Practica con casos que evolucionan.");
+  it("cómo funciona: título y texto nuevos; los tres pasos se quedan, el primero dice «en cualquier momento del día»", () => {
+    expect(C.HOW.title).toBe("¡Tu próxima gran decisión está por llegar!");
+    expect(C.HOW.body).toBe("En MÊTIS te sumerges en una empresa que cobra vida con cada correo, WhatsApp o llamada. Toma decisiones, descubre sus consecuencias, gana experiencia y desbloquea nuevos retos mientras desarrollas tu criterio como líder. ¡Todo en unos minutos al día!");
+    expect(EN.HOW.title).toBe("Your next big decision is on its way!");
+    expect(EN.HOW.body).toMatch(/^At MÊTIS you dive into a company .* All in a few minutes a day!$/);
     expect(C.HOW.steps.map((s) => s.t)).toEqual(["Recibes una situación", "Tomas una decisión", "Aprendes de lo que ocurre"]);
     expect(C.HOW.steps[0].d).toContain("en cualquier momento del día");
   });
@@ -133,7 +136,10 @@ describe("landing de MÊTIS CEO · bloques", () => {
     for (const s of ["prefers-reduced-motion", "HOW_INTERVAL_MS", "onFocusCapture", "inert=", "aria-current"]) expect(src).toContain(s);
     // sin el marco oscuro: tarjeta blanca limpia con sombra sutil
     expect(src).not.toContain("bg-ink p-2");
-    expect(read("Sections.tsx")).toContain("<HowSlides t={t} />");
+    // por ahora las pantallas están ocultas: los tres pasos ocupan su lugar y entran uno por uno
+    const sec = read("Sections.tsx");
+    expect(sec).not.toContain("<HowSlides");
+    expect(sec).toMatch(/<Stagger className="relative space-y-8" label=\{HOW\.title\}>[\s\S]*HOW\.steps\.map[\s\S]*ceo-step/);
   });
 
   it("carrusel: una historia a la vez, cambia sola cada 4 s, sin botón de pausa, con anterior/siguiente e indicadores", () => {
@@ -192,7 +198,11 @@ describe("landing de MÊTIS CEO · bloques", () => {
   it("el tono evita frases genéricas y exceso de admiraciones (en los dos idiomas)", () => {
     for (const b of C.BANNED) expect(allCopy()).not.toContain(b);
     for (const b of BANNED_EN) expect(enCopy(), b).not.toMatch(new RegExp(`\\b${b}`));
-    expect(((allCopy() + enCopy()).match(/!/g) ?? []).length).toBe(0);
+    // las únicas admiraciones son las que pidió Oziel en «Cómo funciona» (título y cierre del texto)
+    const bang = (x: string) => (x.match(/!/g) ?? []).length;
+    expect(bang(allCopy() + enCopy()) - bang(JSON.stringify(C.HOW) + JSON.stringify(EN.HOW))).toBe(0);
+    expect(bang(C.HOW.title + C.HOW.body)).toBe(2);
+    expect(bang(EN.HOW.title + EN.HOW.body)).toBe(2);
   });
 
   it("SEO con el título acordado", () => {
@@ -212,7 +222,7 @@ describe("landing de MÊTIS CEO · inglés", () => {
 
   it("usa las frases de Oziel en los titulares", () => {
     const heads = [EN.HERO.motto, EN.HOW.title, EN.DIFF.title, EN.PATH.title, EN.PHILOSOPHY.title, EN.PHILOSOPHY.body, EN.CLOSE.title, EN.CLOSE.body, EN.FOOTER.tagline, EN.SEO.title].join(" | ");
-    for (const f of ["Every decision shapes the leader you become.", "Practice the decisions before they become yours.", "Think beyond the obvious.", "Leadership isn't a title. It's a practice.", "Leadership is a responsibility. Prepare for it.", "Great leaders aren't born ready.", "Tomorrow's leaders start deciding today.", "Before the title, build the judgment.", "Where leadership is practiced, not preached."]) expect(heads, f).toContain(f);
+    for (const f of ["Every decision shapes the leader you become.", "Think beyond the obvious.", "Leadership isn't a title. It's a practice.", "Leadership is a responsibility. Prepare for it.", "Great leaders aren't born ready.", "Tomorrow's leaders start deciding today.", "Before the title, build the judgment.", "Where leadership is practiced, not preached."]) expect(heads, f).toContain(f);
     // «The decisions are simulated. The learning is real.» espera evidencia antes de publicarse
     expect(enCopy()).not.toContain("the learning is real");
     expect(EN.HERO.title).toBe("Your next challenge can arrive at any moment.");

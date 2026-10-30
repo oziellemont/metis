@@ -135,8 +135,8 @@ export const CASE = {
 /* ---------------- Cómo funciona: tres pasos y una secuencia de tres pantallas ---------------- */
 export interface TodayItem { initials: string; tone: string; name: string; channel: "email" | "whatsapp" | "reporte"; text: string; due: string }
 export const HOW = {
-  title: "Practica con casos que evolucionan.",
-  body: "Practica desde cualquier dispositivo, dentro del horario que eliges y a tu propio ritmo.",
+  title: "¡Tu próxima gran decisión está por llegar!",
+  body: "En MÊTIS te sumerges en una empresa que cobra vida con cada correo, WhatsApp o llamada. Toma decisiones, descubre sus consecuencias, gana experiencia y desbloquea nuevos retos mientras desarrollas tu criterio como líder. ¡Todo en unos minutos al día!",
   steps: [
     { n: "01", t: "Recibes una situación", d: "Un cliente reclama, tu equipo necesita una respuesta o el presupuesto no alcanza. Te puede llegar en cualquier momento del día." },
     { n: "02", t: "Tomas una decisión", d: "Revisas el contexto, eliges un camino y asumes sus consecuencias. No siempre tendrás toda la información." },

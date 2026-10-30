@@ -94,8 +94,8 @@ export const EN: Copy = {
     note: "Day 2 case at Botanas Cumbre, exactly as it appears in the simulator (translated). This sample saves nothing.",
   },
   HOW: {
-    title: "Practice the decisions before they become yours.",
-    body: "Practice from any device, within the hours you choose and at your own pace.",
+    title: "Your next big decision is on its way!",
+    body: "At MÊTIS you dive into a company that comes alive with every email, WhatsApp message or call. Make decisions, discover their consequences, gain experience and unlock new challenges while you develop your judgment as a leader. All in a few minutes a day!",
     steps: [
       { n: "01", t: "A situation reaches you", d: "A customer complains, your team needs an answer or the budget falls short. It can arrive at any time of the day." },
       { n: "02", t: "You make a decision", d: "You review the context, choose a path and own its consequences. You won't always have all the information." },
