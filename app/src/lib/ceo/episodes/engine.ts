@@ -176,13 +176,35 @@ export interface DecideInterpretation {
 }
 
 const nums = (s: string) => (s.match(/\d+(?:[.,]\d+)?/g) ?? []).map((n) => n.replace(",", "."));
-/** La reacción adaptada solo puede usar cifras que ya estén en la respuesta autorizada, en lo que le dijeron o en sus términos. */
-function adaptedOk(reply: string[] | undefined, authored: string[], said: string[], terms: Record<string, number>): string[] | null {
+const STOPW = new Set("porque cuando sobre entre hasta desde donde quiero tenemos vamos hacer todos todas nuestro nuestra antes despues tambien ademas mismo misma ahora quiere puede pueden seguir solo eso esto esta este estas estos pero como para".split(" "));
+/** Palabras con contenido (5+ letras), comparadas por su raíz de 5 letras para tolerar conjugaciones. */
+const roots = (s: string) => new Set(norm(s).split(/[^a-z0-9ñ]+/).filter((w) => w.length >= 5 && !STOPW.has(w)).map((w) => w.slice(0, 5)));
+/**
+ * Reacción adaptada a las palabras del jugador: se acepta solo si es fiel a la respuesta del autor.
+ *  - cifras: solo las que ya están en la respuesta del autor, en lo que le dijeron o en sus términos; y conserva todas las del autor;
+ *  - no hace preguntas nuevas (si el autor no pregunta, ella tampoco);
+ *  - conserva el contenido: al menos la mitad de las palabras clave del autor y un tercio de las de cada línea.
+ * Si no cumple, se usa la respuesta del autor. La usan el servidor (al validar) y el motor (otra vez, al decidir).
+ */
+export function adaptationOk(reply: unknown, authored: string[], said: string[], terms: Record<string, number>): string[] | null {
   if (!Array.isArray(reply)) return null;
-  const parts = reply.filter((x) => typeof x === "string").map((x) => x.trim().slice(0, 400)).filter(Boolean).slice(0, 4);
-  if (!parts.length || parts.join(" ").length < 15) return null;
-  const allowed = new Set([...nums(authored.join(" ")), ...nums(said.join(" ")), ...Object.values(terms).map(String)]);
-  return nums(parts.join(" ")).every((n) => allowed.has(n)) ? parts : null;
+  const parts = reply.filter((x): x is string => typeof x === "string").map((x) => x.replace(/\s+/g, " ").trim().slice(0, 400)).filter(Boolean).slice(0, 4);
+  const all = parts.join(" ");
+  if (!parts.length || all.length < 15 || all.length > 700) return null;
+  const base = authored.join(" ");
+  const allowed = new Set([...nums(base), ...nums(said.join(" ")), ...Object.values(terms).map(String)]);
+  const got = new Set(nums(all));
+  if ([...got].some((n) => !allowed.has(n))) return null;
+  if (nums(base).some((n) => !got.has(n))) return null;
+  if (!/[?¿]/.test(base) && /[?¿]/.test(all)) return null;
+  const have = roots(all);
+  const need = roots(base);
+  if (need.size && [...need].filter((w) => have.has(w)).length / need.size < 0.5) return null;
+  for (const line of authored) {
+    const k = roots(line);
+    if (k.size >= 2 && [...k].filter((w) => have.has(w)).length / k.size < 1 / 3) return null;
+  }
+  return parts;
 }
 
 export interface ActResult { run: EpisodeRun; error?: string }
@@ -259,7 +281,7 @@ export function applyEpisode(spec: EpisodeSpec, run: EpisodeRun, a: EpisodeActio
       const mid = { ...run, terms: deriveTerms(spec, { ...run, terms, flags, trust }), flags, trust };
       const authored = render(spec, mid, st.reply);
       const said = render(spec, run, node.say);
-      const adapted = it && it.basis === authored.join("\n") ? adaptedOk(it.reply, authored, said, mid.terms) : null;
+      const adapted = it && it.basis === authored.join("\n") ? adaptationOk(it.reply, authored, said, mid.terms) : null;
       const reply = adapted ?? authored;
       const next = st.next.find((b) => holds(mid, b.when))?.to ?? "close";
       const turn: DecisionTurn = {

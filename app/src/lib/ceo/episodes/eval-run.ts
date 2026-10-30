@@ -1,29 +1,32 @@
 /**
- * Evaluación de la IA de episodios (P0-D). Lógica pura: arma las llamadas y mide; la llamada real al modelo
- * se inyecta (`Model`). La usa la ruta `api/ceo/episodio/evaluar` (con permiso de gasto) y las pruebas (modelo falso).
+ * Evaluación de la IA de episodios (P0-D). Lógica pura: corre EXACTAMENTE la misma tubería que producción
+ * (`runInterpret`, `runAdapt`, `runFact`, `runAdvisor` de `ai.ts`) con la llamada real inyectada (`Model`) y mide.
+ * La usa la ruta `api/ceo/episodio/evaluar` (con permiso de gasto) y las pruebas (modelo falso).
  *
  * Dos conjuntos que nunca se mezclan:
- *  - «dev» (`eval-set.ts`): el que se usó para ajustar los prompts.
- *  - «val» (`eval-validacion.ts`): validación final, frases nuevas que no se usaron para ajustar nada.
+ *  - «dev»: `eval-set.ts` + `eval-dev-ronda2.ts` (lo que se usó para ajustar los prompts, incluida la validación de la ronda 2).
+ *  - «val» (`eval-validacion.ts`): validación final de la ronda 3, frases nuevas que no se usaron para ajustar nada.
  *
  * Mide, por conjunto:
  *  - texto libre: acierto (incluye preguntar cuando es ambigua y no comprometer nada si no responde a la decisión),
- *    consistencia en N corridas, inválidas, decisiones ambiguas comprometidas (meta 0), y adaptación: reacción adaptada
- *    válida, retoma palabras del jugador, tono detectado, propuestas propias reconocidas;
- *  - hechos: acierto, datos equivocados mostrados (un dato real distinto al que pidió) e inventados (meta 0);
- *  - colaborador: pasa la validación automática Y un auditor (otra llamada) confirma que no recomienda opción,
- *    no inventa información y sí responde.
- * Además corre conversaciones guion completas (demostración adaptativa) con el motor real.
+ *    consistencia en N corridas, inválidas, decisiones ambiguas comprometidas (meta 0), tono (con cita), y la
+ *    adaptación real: la segunda llamada reescribe la respuesta del motor; se mide si pasó la regla de fidelidad,
+ *    si retoma palabras del jugador y un auditor revisa que no cambie el desenlace ni agregue hechos;
+ *  - hechos: acierto, datos equivocados mostrados e inventados (meta 0);
+ *  - colaborador: pasa la validación automática (con su reintento) Y un auditor confirma que no recomienda, no
+ *    inventa y sí responde.
+ * Además corre conversaciones guion completas (demostración adaptativa) con el motor real y la misma tubería.
  */
-import { advisorMessages, decideFrom, factMessages, interpretLocal, interpretMessages, parseAdvisor, parseFact, parseInterpretation, EPISODE_AI_MAX_TOKENS, type Interpretation } from "./ai";
+import { clarified, decideFrom, interpretLocal, runAdapt, runAdvisor, runFact, runInterpret, type Call, type Interpretation, type Msg } from "./ai";
 import { EPISODES } from "./catalog";
 import type { EpisodeRun, EpisodeSpec } from "./contracts";
-import { advisorAnswer, applyEpisode, nodeOf, norm, sayOf, startEpisode, strategiesFor } from "./engine";
+import { advisorAnswer, applyEpisode, nodeOf, norm, sayOf, startEpisode } from "./engine";
 import { ADVISOR_SET, FACT_SET, INTERPRET_SET } from "./eval-set";
+import { DEV2_ADVISOR, DEV2_DEMOS, DEV2_FACTS, DEV2_INTERPRET } from "./eval-dev-ronda2";
 import { ADVISOR_VALIDATION, DEMO_SCRIPTS, FACT_VALIDATION, VALIDATION_SET, type ValItem } from "./eval-validacion";
 import { runAt } from "./eval-harness";
 
-export type Msg = { role: "system" | "user"; content: string };
+export type { Msg };
 export type Model = (messages: Msg[], maxTokens: number, temperature: number) => Promise<{ content: string; cost: number } | null>;
 
 export const EVAL_REPEATS = 3;
@@ -32,18 +35,23 @@ export type EvalSetId = "dev" | "val";
 
 // ───────────────────────────────────────────── conjuntos unificados
 const INTERPRET: Record<EvalSetId, ValItem[]> = {
-  dev: INTERPRET_SET.map((x) => ({ ep: x.ep, node: x.node, kind: "clara" as const, expect: x.expect, text: x.text })),
+  dev: [...INTERPRET_SET.map((x) => ({ ep: x.ep, node: x.node, kind: "clara" as const, expect: x.expect, text: x.text })), ...DEV2_INTERPRET],
   val: VALIDATION_SET,
 };
-const FACTS: Record<EvalSetId, { ep: string; q: string; accept: string[]; kind: string }[]> = {
-  dev: FACT_SET.map((f) => ({ ep: f.ep, q: f.q, accept: [f.expect], kind: f.expect === "ninguno" ? "ajena" : f.expect.startsWith("?") ? "inexistente" : "dato" })),
+type FactItem = { ep: string; q: string; accept: string[]; kind: string };
+const FACTS: Record<EvalSetId, FactItem[]> = {
+  dev: [...FACT_SET.map((f) => ({ ep: f.ep, q: f.q, accept: [f.expect], kind: f.expect === "ninguno" ? "ajena" : f.expect.startsWith("?") ? "inexistente" : "dato" })), ...DEV2_FACTS],
   val: FACT_VALIDATION,
 };
 const ADVISORS: Record<EvalSetId, { ep: string; advisor: string; q: string; kind: string }[]> = {
-  dev: ADVISOR_SET.map((a) => ({ ...a, kind: "normal" })),
+  dev: [...ADVISOR_SET.map((a) => ({ ...a, kind: "normal" })), ...DEV2_ADVISOR],
   val: ADVISOR_VALIDATION,
 };
+/** Guiones: los de validación se muestran; los de la ronda 2 quedan como desarrollo (no se corren por defecto). */
+export const DEMOS = DEMO_SCRIPTS;
+export const DEV_DEMOS = DEV2_DEMOS;
 export const evalItem = (set: EvalSetId, i: number) => INTERPRET[set][i];
+export const evalSizes = (set: EvalSetId) => ({ interpret: INTERPRET[set].length, facts: FACTS[set].length, advisor: ADVISORS[set].length });
 
 /** Un trabajo = una unidad que se puede correr en un lote. */
 export type EvalJob =
@@ -56,7 +64,7 @@ const jobsOf = (set: EvalSetId): EvalJob[] => [
   ...FACTS[set].map((_, i) => ({ kind: "fact" as const, set, i })),
   ...ADVISORS[set].map((_, i) => ({ kind: "advisor" as const, set, i })),
 ];
-export const EVAL_JOBS: EvalJob[] = [...jobsOf("val"), ...DEMO_SCRIPTS.map((_, i) => ({ kind: "demo" as const, i })), ...jobsOf("dev")];
+export const EVAL_JOBS: EvalJob[] = [...jobsOf("val"), ...DEMOS.map((_, i) => ({ kind: "demo" as const, i })), ...jobsOf("dev")];
 /** Índices de EVAL_JOBS que corre cada botón de la pantalla. */
 export const EVAL_SCOPES: Record<"validacion" | "desarrollo", number[]> = {
   validacion: EVAL_JOBS.flatMap((j, k) => (j.kind === "demo" || j.set === "val" ? [k] : [])),
@@ -64,19 +72,34 @@ export const EVAL_SCOPES: Record<"validacion" | "desarrollo", number[]> = {
 };
 
 /** Lo que se observó en una corrida de texto libre. */
-export interface InterpretRun { status: string; strategy: string | null; options?: string[]; extras?: string; tone?: number; adapted: boolean; echoes?: boolean; reply?: string; authored?: string; clarify?: string }
+export interface InterpretRun { status: string; strategy: string | null; options?: string[]; extras?: string; tone?: number; toneEvidence?: string; guard?: string; clarify?: string }
+/** La adaptación (segunda llamada) sobre la lectura que se habría usado. */
+export interface AdaptRun { ok: boolean; reply?: string; authored: string; echoes?: boolean; audit?: AdaptAudit | null }
+export interface AdaptAudit { fiel: boolean; agrega: boolean; responde_al_jugador: boolean; motivo: string }
 export interface AdvisorAudit { recomienda: boolean; inventa: boolean; responde: boolean; motivo: string }
-export interface DemoStep { node: string; stage: string; said: string[]; text: string; status: string; strategy: string; options?: string[]; clarify?: string; extras?: string; tone?: number; reply: string[]; authored: string[]; adapted: boolean; trust: number }
-export interface DemoResult { id: string; title: string; ep: string; steps: DemoStep[]; closed: boolean; headline?: string; trust: number; path: string[] }
+export interface DemoStep { node: string; stage: string; said: string[]; text: string; status: string; strategy: string; options?: string[]; clarify?: string; guard?: string; extras?: string; tone?: number; toneEvidence?: string; reply: string[]; authored: string[]; adapted: boolean; trust: number }
+export interface DemoResult { id: string; title: string; ep: string; steps: DemoStep[]; closed: boolean; headline?: string; trust: number; path: string[]; expected: string[] }
 
 export interface JobResult {
   kind: EvalJob["kind"]; set?: EvalSetId; i: number; key: string;
   runs?: (InterpretRun | null)[];
+  adapt?: AdaptRun | null;
   quality?: number[];
   got?: string; raw?: string;
   answer?: string | null; audit?: AdvisorAudit | null;
   demo?: DemoResult;
   calls: number; cost: number;
+}
+
+/** Convierte el modelo inyectado en la `Call` de producción y cuenta llamadas y costo. */
+function meter(model: Model) {
+  const m = { calls: 0, cost: 0, last: "" };
+  const call: Call = async (msgs, max, temp) => {
+    const r = await model(msgs, max, temp);
+    m.calls++; m.cost += r?.cost ?? 0; m.last = r?.content ?? "";
+    return r?.content ?? null;
+  };
+  return { m, call };
 }
 
 // ───────────────────────────────────────────── texto libre
@@ -89,32 +112,64 @@ export function echoesPlayer(player: string, reply: string, authored: string): b
   return false;
 }
 
-function observe(it: Interpretation | null, text: string): InterpretRun | null {
+function observe(it: Interpretation | null): InterpretRun | null {
   if (!it) return null;
   return {
     status: it.status, strategy: it.strategy,
     ...(it.options ? { options: it.options } : {}), ...(it.extras ? { extras: it.extras } : {}), ...(it.clarify ? { clarify: it.clarify } : {}),
-    ...(it.tone !== undefined ? { tone: it.tone } : {}),
-    adapted: !!it.reply,
-    ...(it.reply ? { reply: it.reply.join(" "), authored: it.basis, echoes: echoesPlayer(text, it.reply.join(" "), it.basis ?? "") } : {}),
+    ...(it.tone !== undefined ? { tone: it.tone } : {}), ...(it.toneEvidence ? { toneEvidence: it.toneEvidence } : {}), ...(it.guard ? { guard: it.guard } : {}),
   };
+}
+
+export function adaptAuditMessages(spec: EpisodeSpec, player: string, authored: string, reply: string): Msg[] {
+  return [
+    { role: "system", content: [
+      "Eres auditor de calidad de un simulador ejecutivo. Comparas la respuesta autorizada de un personaje con una versión reescrita para reaccionar a lo que escribió el jugador.",
+      "fiel=true si la versión reescrita conserva el mismo desenlace, las mismas decisiones y consecuencias, y todas las cifras de la autorizada (puede cambiar la redacción y el tono).",
+      "agrega=true si añade un hecho, cifra, promesa, condición, fecha o pregunta que no está en la autorizada ni en lo que dijo el jugador (reaccionar con emoción o retomar palabras del jugador NO es agregar).",
+      "responde_al_jugador=true si se nota que reacciona a algo concreto que escribió el jugador.",
+      'Responde SOLO con JSON: {"fiel":true,"agrega":false,"responde_al_jugador":true,"motivo":"<máx. 120 caracteres>"}',
+    ].join("\n") },
+    { role: "user", content: `Caso: ${spec.title}.\n\nJugador: ${player}\n\nAutorizada:\n${authored}\n\nReescrita:\n${reply}` },
+  ];
+}
+export function parseAdaptAudit(raw: string): AdaptAudit | null {
+  try {
+    const j = JSON.parse(raw.match(/\{[\s\S]*\}/)?.[0] ?? raw) as Record<string, unknown>;
+    if (typeof j.fiel !== "boolean" || typeof j.agrega !== "boolean" || typeof j.responde_al_jugador !== "boolean") return null;
+    return { fiel: j.fiel, agrega: j.agrega, responde_al_jugador: j.responde_al_jugador, motivo: String(j.motivo ?? "").slice(0, 160) };
+  } catch { return null; }
 }
 
 async function interpretJob(set: EvalSetId, i: number, model: Model): Promise<JobResult> {
   const it = INTERPRET[set][i];
   const spec = EPISODES[it.ep];
   const run = runAt(spec, it.node, it.expect ?? it.options)!;
-  const msgs = interpretMessages(spec, run, nodeOf(spec, run)!, sayOf(spec, run), it.text);
-  const runs: (InterpretRun | null)[] = [], quality: number[] = [];
-  let cost = 0;
+  const { m, call } = meter(model);
+  const runs: (InterpretRun | null)[] = [], quality: number[] = [], parsed: (Interpretation | null)[] = [];
   for (let k = 0; k < EVAL_REPEATS; k++) {
-    const r = await model(msgs, EPISODE_AI_MAX_TOKENS.interpret, 0.1);
-    cost += r?.cost ?? 0;
-    const p = r ? parseInterpretation(spec, run, r.content) : null;
-    runs.push(observe(p, it.text));
+    const p = await runInterpret(spec, run, it.text, call);
+    parsed.push(p);
+    runs.push(observe(p));
     if (p && p.status !== "fuera") quality.push(p.quality);
   }
-  return { kind: "interpret", set, i, key: `${it.ep}/${it.node}`, runs, quality, calls: EVAL_REPEATS, cost };
+  // Adaptación: sobre la lectura que se habría usado (la más frecuente), si comprometió una decisión.
+  const labels = runs.map(label);
+  const top = mode(labels);
+  const used = parsed[labels.indexOf(top)] ?? null;
+  let adapt: AdaptRun | null = null;
+  // En validación se adapta cada respuesta; en desarrollo, una de cada dos (cuida el tope de gasto).
+  if (used && committed(observe(used)) && (set === "val" || i % 2 === 0)) {
+    const out = await runAdapt(spec, run, it.text, used, call);
+    const base = out?.basis ?? "";
+    adapt = { ok: !!out, authored: base, ...(out ? { reply: out.reply.join("\n"), echoes: echoesPlayer(it.text, out.reply.join(" "), base) } : {}) };
+    // El auditor de la adaptación corre solo en validación (en desarrollo basta la regla del motor; cuida el tope de gasto).
+    if (out && set === "val") {
+      const raw = await call(adaptAuditMessages(spec, it.text, base, out.reply.join("\n")), 80, 0);
+      adapt.audit = raw ? parseAdaptAudit(raw) : null;
+    }
+  }
+  return { kind: "interpret", set, i, key: `${it.ep}/${it.node}`, runs, adapt, quality, calls: m.calls, cost: m.cost };
 }
 
 /** Clase de una corrida para medir consistencia y acierto. */
@@ -132,10 +187,10 @@ export function correct(it: ValItem, r: InterpretRun | null): boolean {
 async function factJob(set: EvalSetId, i: number, model: Model): Promise<JobResult> {
   const f = FACTS[set][i];
   const spec = EPISODES[f.ep];
-  const r = await model(factMessages(spec, f.q), EPISODE_AI_MAX_TOKENS.fact, 0.1);
-  const p = r ? parseFact(spec, r.content) : null;
-  const got = p ? ("factId" in p ? p.factId : `?${p.unknownId}`) : "ninguno";
-  return { kind: "fact", set, i, key: f.ep, got, raw: (r?.content ?? "").slice(0, 80), calls: 1, cost: r?.cost ?? 0 };
+  const { m, call } = meter(model);
+  const p = await runFact(spec, f.q, call);
+  const got = !p ? "invalida" : "factId" in p ? p.factId : "unknownId" in p ? `?${p.unknownId}` : "ninguno";
+  return { kind: "fact", set, i, key: f.ep, got, raw: m.last.slice(0, 80), calls: m.calls, cost: m.cost };
 }
 
 // ───────────────────────────────────────────── colaborador (+ auditor)
@@ -164,43 +219,42 @@ async function advisorJob(set: EvalSetId, i: number, model: Model): Promise<JobR
   const spec = EPISODES[a.ep];
   const brief = spec.advisors.find((x) => x.id === a.advisor)!;
   const authored = advisorAnswer(spec, startEpisode(spec, 0, { runId: "eval" }), brief);
-  const r = await model(advisorMessages(spec, brief, authored, a.q), EPISODE_AI_MAX_TOKENS.advisor, 0.5);
-  const answer = r ? parseAdvisor(spec, brief, authored, r.content) : null;
-  let cost = r?.cost ?? 0, calls = 1, audit: AdvisorAudit | null = null;
+  const { m, call } = meter(model);
+  const answer = await runAdvisor(spec, brief, authored, a.q, call);
+  let audit: AdvisorAudit | null = null;
   if (answer) {
     const knows = [...spec.facts.facts.filter((f) => brief.knows.includes(f.id) || f.critical).map((f) => f.answer), authored];
-    const j = await model(auditMessages(spec, brief.id, knows, a.q, answer), 80, 0);
-    cost += j?.cost ?? 0; calls++;
-    audit = j ? parseAudit(j.content) : null;
+    const raw = await call(auditMessages(spec, brief.id, knows, a.q, answer), 80, 0);
+    audit = raw ? parseAudit(raw) : null;
   }
-  return { kind: "advisor", set, i, key: `${a.ep}/${a.advisor}`, answer, audit, calls, cost };
+  return { kind: "advisor", set, i, key: `${a.ep}/${a.advisor}`, answer, audit, calls: m.calls, cost: m.cost };
 }
 
 // ───────────────────────────────────────────── demostración: conversaciones completas
-async function demoJob(i: number, model: Model): Promise<JobResult> {
-  const d = DEMO_SCRIPTS[i];
+async function demoJob(i: number, model: Model, scripts = DEMOS): Promise<JobResult> {
+  const d = scripts[i];
   const spec = EPISODES[d.ep];
   // Sin azar: así la diferencia entre guiones sale solo de lo que escribió el jugador.
   let run: EpisodeRun = { ...startEpisode(spec, 0, { runId: `demo-${d.id}` }), flags: [] };
   run = applyEpisode(spec, run, { type: "begin", at: 1 }).run;
   const steps: DemoStep[] = [];
-  let cost = 0, calls = 0;
+  const { m, call } = meter(model);
   for (const s of d.steps) {
     const node = nodeOf(spec, run);
     if (!node || run.phase !== "deciding") break;
-    const r = await model(interpretMessages(spec, run, node, sayOf(spec, run), s.text), EPISODE_AI_MAX_TOKENS.interpret, 0.1);
-    cost += r?.cost ?? 0; calls++;
-    let it = (r ? parseInterpretation(spec, run, r.content) : null) ?? interpretLocal(spec, run, s.text);
-    const first = it;
+    // Paso 1, igual que la pantalla: interpretar (respaldo sin IA si la respuesta no es válida).
+    const first = (await runInterpret(spec, run, s.text, call)) ?? interpretLocal(spec, run, s.text);
+    let it = first;
     if (it && (it.status === "ambigua" || !it.strategy)) {
       // El jugador aclara eligiendo; queda registrada la pregunta que vio.
-      const pick = s.pick && strategiesFor(spec, run).some((x) => x.id === s.pick) ? s.pick : it.options?.[0];
-      if (!pick) break;
-      it = { strategy: pick, status: "clara", quality: it.quality, feedback: it.feedback };
+      const pick = s.pick && it.options?.includes(s.pick) ? s.pick : s.pick ?? it.options?.[0];
+      it = pick ? clarified(spec, run, it, pick) : null;
     }
     if (!it?.strategy) break;
+    // Paso 2: ya confirmada, la IA adapta la respuesta real del motor; el motor la vuelve a validar.
+    const adapted = await runAdapt(spec, run, s.text, it, call);
     const said = sayOf(spec, run);
-    const a = decideFrom(it, s.text, 2 + run.turns.length);
+    const a = decideFrom(adapted ? { ...it, ...adapted } : it, s.text, 2 + run.turns.length);
     if (!a) break;
     const out = applyEpisode(spec, run, a);
     if (out.error) break;
@@ -208,16 +262,18 @@ async function demoJob(i: number, model: Model): Promise<JobResult> {
     const t = run.turns[run.turns.length - 1];
     steps.push({
       node: node.id, stage: node.stage, said, text: s.text, status: first?.status ?? "respaldo", strategy: t.strategy,
-      ...(first?.status === "ambigua" ? { options: first.options, clarify: first.clarify } : {}),
+      ...(first?.status === "ambigua" ? { options: first.options, clarify: first.clarify, ...(first.guard ? { guard: first.guard } : {}) } : {}),
       ...(t.interpretation?.extras ? { extras: t.interpretation.extras } : {}),
-      ...(t.interpretation?.tone ? { tone: t.interpretation.tone } : {}),
+      ...(t.interpretation?.tone ? { tone: t.interpretation.tone, ...(it.toneEvidence ? { toneEvidence: it.toneEvidence } : {}) } : {}),
       reply: t.reply, authored: t.interpretation?.authored ?? t.reply, adapted: !!t.interpretation?.adapted, trust: run.trust,
     });
   }
-  const demo: DemoResult = { id: d.id, title: d.title, ep: d.ep, steps, closed: run.phase === "closed", ...(run.outcome ? { headline: run.outcome.headline } : {}), trust: run.trust, path: steps.map((s) => `${s.node}:${s.strategy}`) };
-  return { kind: "demo", i, key: d.id, demo, calls, cost };
+  const demo: DemoResult = { id: d.id, title: d.title, ep: d.ep, steps, closed: run.phase === "closed", ...(run.outcome ? { headline: run.outcome.headline } : {}), trust: run.trust, path: steps.map((s) => `${s.node}:${s.strategy}`), expected: d.steps.map((s) => s.expect) };
+  return { kind: "demo", i, key: d.id, demo, calls: m.calls, cost: m.cost };
 }
 
+/** Corre un guion de desarrollo (ronda 2); no forma parte de la validación. */
+export const runDevDemo = (i: number, model: Model) => demoJob(i, model, DEV_DEMOS);
 export function runJob(job: EvalJob, model: Model): Promise<JobResult> {
   if (job.kind === "demo") return demoJob(job.i, model);
   if (job.kind === "interpret") return interpretJob(job.set, job.i, model);
@@ -234,10 +290,16 @@ export interface SetReport {
     ambiguousCommitted: number; offTopicCommitted: number;
     /** Frases claras en las que preguntó de más (no compromete nada, pero estorba). */
     overAsked: number;
-    adaptive: { replies: number; adapted: number; echoes: number; tone: { total: number; hit: number }; extras: { total: number; hit: number } };
+    /**
+     * Adaptación real (segunda llamada): `adapted` = pasó la regla de fidelidad del motor (si no, se muestra la del
+     * autor); `faithful` = el auditor confirma mismo desenlace y nada agregado; `echoes` = retoma palabras del jugador.
+     * Tono: `hit` acierta en frases marcadas; `falsePositive` = frases neutras a las que se les puso tono.
+     */
+    adaptive: { replies: number; adapted: number; faithful: number; audited: number; echoes: number; reacts: number; tone: { total: number; hit: number; neutral: number; falsePositive: number }; extras: { total: number; hit: number } };
     byNode: Record<string, number>;
     misses: { key: string; kind: string; expect: string; got: string | null; text: string }[];
-    samples: { key: string; text: string; authored: string; reply: string }[];
+    samples: { key: string; text: string; authored: string; reply: string; audit?: string }[];
+    adaptMisses: { key: string; text: string; authored: string; reply: string; motivo: string }[];
   };
   facts: { total: number; accuracy: number; wrongFact: number; inventedShown: number; inventedRejected: number; byKind: Record<string, { total: number; accuracy: number }>; misses: { q: string; expect: string; got: string }[] };
   advisor: { total: number; valid: number; quality: number; recommends: number; invents: number; byKind: Record<string, { total: number; quality: number }>; misses: { key: string; q: string; answer: string | null; motivo: string }[]; samples: { key: string; q: string; answer: string }[] };
@@ -256,8 +318,8 @@ function summarizeSet(set: EvalSetId, results: JobResult[]): SetReport | null {
   const ip = rs.filter((r) => r.kind === "interpret");
   const byNode: Record<string, { t: number; h: number }> = {}, byKind: Record<string, { t: number; h: number }> = {};
   let hit = 0, consistent = 0, invalid = 0, runs = 0, qSum = 0, qN = 0, ambC = 0, offC = 0, over = 0;
-  const ad = { replies: 0, adapted: 0, echoes: 0, tone: { total: 0, hit: 0 }, extras: { total: 0, hit: 0 } };
-  const misses: SetReport["interpret"]["misses"] = [], samples: SetReport["interpret"]["samples"] = [];
+  const ad = { replies: 0, adapted: 0, faithful: 0, audited: 0, echoes: 0, reacts: 0, tone: { total: 0, hit: 0, neutral: 0, falsePositive: 0 }, extras: { total: 0, hit: 0 } };
+  const misses: SetReport["interpret"]["misses"] = [], samples: SetReport["interpret"]["samples"] = [], adaptMisses: SetReport["interpret"]["adaptMisses"] = [];
   for (const r of ip) {
     const it = INTERPRET[set][r.i];
     const rr = r.runs ?? [];
@@ -274,11 +336,23 @@ function summarizeSet(set: EvalSetId, results: JobResult[]): SetReport | null {
     if (it.kind === "ambigua" && rr.some(committed)) ambC++;
     if (it.kind === "fuera" && rr.some(committed)) offC++;
     if ((it.kind === "clara" || it.kind === "parcial") && used?.status === "ambigua") over++;
-    if (used && committed(used)) {
+    const A = r.adapt;
+    if (A) {
       ad.replies++;
-      if (used.adapted) { ad.adapted++; if (used.echoes) ad.echoes++; if (samples.length < 12 && r.i % 3 === 0) samples.push({ key: r.key, text: it.text, authored: used.authored ?? "", reply: used.reply ?? "" }); }
+      if (A.ok) {
+        ad.adapted++;
+        if (A.echoes) ad.echoes++;
+        if (A.audit) {
+          ad.audited++;
+          const fiel = A.audit.fiel && !A.audit.agrega;
+          if (fiel) ad.faithful++; else adaptMisses.push({ key: r.key, text: it.text, authored: A.authored, reply: A.reply ?? "", motivo: A.audit.motivo });
+          if (A.audit.responde_al_jugador) ad.reacts++;
+        }
+        if (samples.length < 14 && (r.i % 4 === 0 || it.tone)) samples.push({ key: r.key, text: it.text, authored: A.authored, reply: A.reply ?? "", ...(A.audit ? { audit: A.audit.motivo } : {}) });
+      }
     }
     if (it.tone) { ad.tone.total++; if (used?.tone === it.tone) ad.tone.hit++; }
+    else if (used && used.status !== "fuera") { ad.tone.neutral++; if (used.tone) ad.tone.falsePositive++; }
     if (it.kind === "parcial") { ad.extras.total++; if (used?.status === "parcial" && used.extras) ad.extras.hit++; }
   }
   const fx = rs.filter((r) => r.kind === "fact");
@@ -291,11 +365,11 @@ function summarizeSet(set: EvalSetId, results: JobResult[]): SetReport | null {
     if (ok) fHit++; else fMiss.push({ q: f.q, expect: f.accept.join(" o "), got: r.got! });
     tally(fByKind, f.kind, ok);
     // Dato real equivocado: el jugador vería un dato que no pidió (no inventado, pero desinforma).
-    if (!ok && r.got !== "ninguno") wrong++;
+    if (!ok && r.got !== "ninguno" && r.got !== "invalida") wrong++;
     // El modelo devolvió un id que no existe: se rechaza y nunca llega al jugador.
     let rawId = "";
     try { rawId = String((JSON.parse(r.raw ?? "") as { id?: unknown }).id ?? ""); } catch { /* sin JSON */ }
-    if (rawId && rawId !== "ninguno" && r.got === "ninguno") invRej++;
+    if (rawId && norm(rawId) !== "ninguno" && r.got === "invalida") invRej++;
   }
   const av = rs.filter((r) => r.kind === "advisor");
   const aByKind: Record<string, { t: number; h: number }> = {};
@@ -316,7 +390,7 @@ function summarizeSet(set: EvalSetId, results: JobResult[]): SetReport | null {
       total: ip.length, accuracy: pct(hit, ip.length), consistency: pct(consistent, ip.length), invalid: pct(invalid, runs),
       quality: qN ? Math.round((qSum / qN) * 100) / 100 : 0, byKind: fin(byKind),
       ambiguousCommitted: ambC, offTopicCommitted: offC, overAsked: over, adaptive: ad,
-      byNode: Object.fromEntries(Object.entries(byNode).map(([k, v]) => [k, pct(v.h, v.t)])), misses, samples,
+      byNode: Object.fromEntries(Object.entries(byNode).map(([k, v]) => [k, pct(v.h, v.t)])), misses, samples, adaptMisses,
     },
     // inventedShown es 0 por construcción: el texto del dato siempre sale del banco y un id inexistente se rechaza.
     facts: { total: fx.length, accuracy: pct(fHit, fx.length), wrongFact: wrong, inventedShown: 0, inventedRejected: invRej, byKind: fin(fByKind), misses: fMiss },
@@ -337,7 +411,7 @@ export function summarize(results: JobResult[]): EvalReport {
   };
 }
 
-/** Metas de Oziel (ronda 2). Se juzgan sobre el conjunto de validación final. */
+/** Metas de Oziel (ronda 2, vigentes en la ronda 3). Se juzgan sobre el conjunto de validación final. */
 export const EVAL_TARGETS = { accuracy: 95, consistency: 95, invalid: 2, facts: 95, factWrong: 0, inventedShown: 0, advisor: 95, ambiguousCommitted: 0 } as const;
 export function passes(r: SetReport): Record<keyof typeof EVAL_TARGETS, boolean> {
   return {

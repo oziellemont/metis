@@ -165,3 +165,75 @@ En **Evaluación de la IA de los casos** hay dos botones:
 - **Conjunto de desarrollo**: es la nueva corrida de datos después del ajuste de la sección 5. También trae las 180 respuestas.
 
 Cada uno da su recuadro «Para copiar».
+
+## 7. Ronda 3: dos pasos, reglas que protegen al jugador y validación nueva
+
+Estado: **integración y pruebas controladas**. Sigue en modo prueba. No hay visto bueno final.
+
+### 7.1 Diagnóstico honesto de la ronda 2 (validación real con gpt-4o-mini)
+
+| Medida | Resultado | Meta | Causa encontrada |
+|---|---|---|---|
+| Interpreta bien | 92.5% | ≥ 95% | Ambiguas al 40%: 3 se comprometieron y 3 dieron respuestas inválidas por un formato demasiado estricto |
+| Consistencia | 97.8% | ≥ 95% | Pasa |
+| Inválidas | 3.6% | ≤ 2% | Formato estricto: una ambigua con opciones mal escritas se descartaba entera |
+| Datos | 62.1% | ≥ 95% | La IA contestaba «ninguno» de más: solo veía el título de cada dato, no su contenido. Además, cuando decía «ninguno», la pantalla caía a las palabras clave (error real, corregido) |
+| Colaborador | 55.6% | ≥ 95% | Sugería acciones («te recomendaría», «es fundamental actuar»); el filtro solo atrapaba las formas más directas |
+| Tono | 5 de 8 | — | Sesgo hacia +1: el guion de Diego con tono duro sacó +1 en todo, confianza +3 y nunca llegó a Don Ramiro. **La demo no mostró adaptación por tono** |
+| Reacción adaptada | — | — | A veces contradecía el desenlace: en alérgeno, «Retiramos el producto» se leyó como retiro parcial y la respuesta hizo una pregunta nueva; en d5 dijo «1 pt» cuando el autor decía 3 |
+
+### 7.2 Qué cambió
+
+**Dos pasos, como en la pantalla.**
+1. *Interpretar*: la IA solo dice qué entendió (y ya no ve las respuestas del autor).
+2. *Adaptar*: cuando el jugador confirma, el motor calcula la respuesta real (con la estrategia, los términos y el tono reales), la IA la reescribe para reaccionar a sus palabras y el motor la vuelve a revisar.
+
+La adaptación se acepta solo si:
+- conserva todas las cifras del autor y no agrega ninguna;
+- no hace preguntas nuevas;
+- conserva al menos la mitad de las palabras clave del autor, y un tercio en cada línea.
+
+Si falla, se muestra la del autor. El caso «1 pt contra 3 pts» ya no pasa; hay prueba.
+
+**Reglas deterministas para lo ambiguo.** La IA ahora devuelve también la opción «rival» y la cita textual que la descarta. Se pregunta (nunca se decide) si:
+- hay rival y no hay cita real del jugador que lo descarte;
+- el texto pospone la decisión («ya veré», «depende», «en su momento», «lo que resulte»…);
+- la IA dijo «varias» aunque haya dado mal las opciones (antes eso era inválido).
+
+El nombre de la lectura cambió a «encaje» para evitar el choque entre «parcial» (lectura) y «parcial» (estrategia del alérgeno).
+
+**Tono con evidencia.** Solo cuenta si la IA copia las palabras exactas del jugador que lo muestran. El prompt dice que es 0 casi siempre y que el sarcasmo es −1. Al aclarar una ambigua, el tono se conserva.
+
+**Datos.** La IA ve de qué trata cada dato con las cifras enmascaradas (#). «Ninguno» explícito ya no cae a las palabras clave. Clasificar es a temperatura 0.
+
+**Colaborador.**
+- Prompt nuevo: dice qué sabe y qué le preocupa, nunca qué hacer; tampoco «habla con…» ni «consulta a…».
+- Filtro ampliado con lo que marcó el auditor.
+- Si el primer intento aconseja, se reintenta una vez; si vuelve a aconsejar, se usa el texto del autor.
+- Al auditor se le precisó que explicar un riesgo o una obligación no es recomendar.
+
+**Una sola tubería.** Producción y evaluación llaman a las mismas funciones (`runInterpret`, `runAdapt`, `runFact`, `runAdvisor`); la evaluación solo inyecta la llamada y cuenta el costo.
+
+### 7.3 Conjuntos
+
+- **Desarrollo**: `eval-set.ts` + `eval-dev-ronda2.ts`. La validación de la ronda 2 se usó para diagnosticar, así que pasó a desarrollo.
+- **Validación ronda 3** (`eval-validacion.ts`), escrita después de cerrar los prompts:
+  - 106 respuestas: 74 claras, 10 con propuesta propia, 17 ambiguas (incluye las que posponen) y 5 fuera de tema; 11 con tono marcado (5 respetuosas, 6 hostiles o sarcásticas);
+  - 28 preguntas de datos;
+  - 36 consultas a colaboradores, cuatro por persona: normal, le piden elegir, algo que nadie sabe y una pregunta abierta («¿qué te preocupa?»), que es donde más fácil se cae en aconsejar.
+- **Demostración**: tres guiones nuevos:
+  - Diego con escucha;
+  - Diego con la misma intención, pero con sarcasmo y desprecio explícitos;
+  - alérgeno con una respuesta ambigua y propuestas propias.
+
+Hay pruebas de que ninguna frase de validación está en desarrollo (ni de la ronda 1 ni de la 2) ni en los prompts.
+
+### 7.4 Nuevas medidas (informativas)
+
+- Adaptación que pasó la regla del motor.
+- Adaptación fiel según un auditor: mismo desenlace, nada agregado. Este auditor solo corre en validación.
+- Cuántas adaptaciones reaccionan a algo concreto del jugador.
+- Tono acertado y **tono puesto donde no había** (falso positivo).
+- En la demostración: la cita que mostró el tono y si el camino se desvió del guion.
+
+Costo estimado conservador de ambos botones: $0.48. El tope sigue en $0.50 por día. Para no rebasarlo, en desarrollo se adapta una de cada dos respuestas; en validación se adaptan todas.

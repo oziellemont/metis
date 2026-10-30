@@ -9,7 +9,7 @@ import Link from "next/link";
 import { ArrowLeft, Play } from "lucide-react";
 import clsx from "clsx";
 import { useCeo } from "./CeoProvider";
-import { EVAL_BUDGET_USD, EVAL_JOBS, EVAL_REPEATS, EVAL_SCOPES, EVAL_TARGETS, passes, summarize, type DemoResult, type EvalReport, type JobResult, type SetReport } from "@/lib/ceo/episodes/eval-run";
+import { EVAL_BUDGET_USD, EVAL_JOBS, EVAL_REPEATS, EVAL_SCOPES, EVAL_TARGETS, evalSizes, passes, summarize, type DemoResult, type EvalReport, type JobResult, type SetReport } from "@/lib/ceo/episodes/eval-run";
 import { EPISODES } from "@/lib/ceo/episodes/catalog";
 
 const BATCH = 12;
@@ -48,8 +48,8 @@ export function EvalAi() {
       <section className="card p-5 sm:p-6">
         <h1 className="text-xl font-semibold text-ink">Evaluación de la IA de los casos ejecutivos</h1>
         <p className="mt-2 text-sm text-slate-600">
-          Dos conjuntos separados. <b>Validación final</b>: respuestas nuevas que no se usaron para ajustar nada (claras, ambiguas, fuera de tema y con propuestas que el caso no contempla), preguntas de datos nuevas (incluye datos que no existen) y tres consultas por colaborador, más {EVAL_SCOPES.validacion.length - EVAL_JOBS.filter((j) => j.kind !== "demo" && j.set === "val").length} conversaciones completas de demostración.
-          <b> Desarrollo</b>: las 180 respuestas con las que se ajustaron los prompts. Cada respuesta escrita se corre {EVAL_REPEATS} veces para medir consistencia.
+          Dos conjuntos separados. <b>Validación final (ronda 3)</b>: {evalSizes("val").interpret} respuestas nuevas que no se usaron para ajustar nada (claras, ambiguas, fuera de tema, con propuestas propias y con tono marcado), {evalSizes("val").facts} preguntas de datos y {evalSizes("val").advisor} consultas a colaboradores, más {EVAL_SCOPES.validacion.length - EVAL_JOBS.filter((j) => j.kind !== "demo" && j.set === "val").length} conversaciones completas de demostración.
+          <b> Desarrollo</b>: {evalSizes("dev").interpret} respuestas con las que se ajustaron los prompts (incluye la validación de la ronda 2). Cada respuesta escrita se corre {EVAL_REPEATS} veces para medir consistencia; las que deciden se adaptan con la misma tubería que usa el juego.
         </p>
         <p className="mt-2 text-xs text-slate-500">Tope duro de ${EVAL_BUDGET_USD.toFixed(2)} USD por día entre ambas. Cada llamada queda registrada.</p>
         <div className="mt-4 flex flex-wrap gap-2">
@@ -91,7 +91,7 @@ function Row({ label, value, target, pass }: { label: string; value: string; tar
   );
 }
 
-const KIND: Record<string, string> = { clara: "Claras", parcial: "Con propuesta propia", ambigua: "Ambiguas (debe preguntar)", fuera: "Fuera de tema (no compromete)", dato: "Dato que existe", inexistente: "Dato que no existe", ambigua_f: "Pregunta ambigua", ajena: "Ajena al caso", normal: "Pregunta normal", tentar: "Le piden elegir", desconocido: "Algo que nadie sabe" };
+const KIND: Record<string, string> = { clara: "Claras", parcial: "Con propuesta propia", ambigua: "Ambiguas (debe preguntar)", fuera: "Fuera de tema (no compromete)", dato: "Dato que existe", inexistente: "Dato que no existe", ambigua_f: "Pregunta ambigua", ajena: "Ajena al caso", normal: "Pregunta normal", tentar: "Le piden elegir", desconocido: "Algo que nadie sabe", abierta: "Pregunta abierta" };
 
 function SetView({ title, r, model, judged }: { title: string; r: SetReport; model: string; judged?: boolean }) {
   const ok = passes(r);
@@ -113,9 +113,12 @@ function SetView({ title, r, model, judged }: { title: string; r: SetReport; mod
         <div className="mt-4 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Informativo</div>
         <ul className="mt-1">
           <Row label="Preguntó de más en respuestas claras" value={String(i.overAsked)} target="bajo" />
-          <Row label="Reacción del personaje adaptada a sus palabras" value={`${a.adapted} de ${a.replies}`} target="alto" />
-          <Row label="…que retoma algo concreto que escribió" value={`${a.echoes} de ${a.adapted}`} target="alto" />
-          <Row label="Tono detectado (respeto u hostilidad)" value={`${a.tone.hit} de ${a.tone.total}`} target="alto" />
+          <Row label="Reacción adaptada que pasó la regla de fidelidad del motor" value={`${a.adapted} de ${a.replies}`} target="alto" />
+          {a.audited > 0 && <Row label="…fiel según el auditor (mismo desenlace, nada agregado)" value={`${a.faithful} de ${a.audited}`} target="todas" />}
+          {a.audited > 0 && <Row label="…reacciona a algo concreto del jugador (auditor)" value={`${a.reacts} de ${a.audited}`} target="alto" />}
+          <Row label="…que retoma palabras suyas" value={`${a.echoes} de ${a.adapted}`} target="alto" />
+          <Row label="Tono detectado con cita (respeto u hostilidad)" value={`${a.tone.hit} de ${a.tone.total}`} target="alto" />
+          <Row label="Tono puesto donde no lo había" value={`${a.tone.falsePositive} de ${a.tone.neutral}`} target="bajo" />
           <Row label="Propuestas propias reconocidas" value={`${a.extras.hit} de ${a.extras.total}`} target="alto" />
           <Row label="Colaborador: pasó la validación automática" value={`${r.advisor.valid}%`} target="—" />
           <Row label="Colaborador: recomendó / inventó (auditor)" value={`${r.advisor.recommends} / ${r.advisor.invents}`} target="0 / 0" />
@@ -127,10 +130,11 @@ function SetView({ title, r, model, judged }: { title: string; r: SetReport; mod
           {Object.entries(r.advisor.byKind).map(([k, v]) => <div key={`a${k}`} className="flex justify-between py-1"><span className="text-slate-600">Colaborador · {KIND[k] ?? k} ({v.total})</span><span className={clsx("tabular-nums font-semibold", v.quality >= 95 ? "text-ink" : "text-coral")}>{v.quality}%</span></div>)}
         </div>
       </section>
-      {i.misses.length + r.facts.misses.length + r.advisor.misses.length > 0 && (
+      {i.misses.length + i.adaptMisses.length + r.facts.misses.length + r.advisor.misses.length > 0 && (
         <section className="card p-5 sm:p-6">
           <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Dónde falló · {title}</div>
           <ul className="mt-2 space-y-2 text-xs text-slate-600">
+            {i.adaptMisses.map((m, k) => <li key={`ad${k}`}><b className="text-ink">{m.key} · adaptación</b> {m.motivo}: «{m.reply}» (autor: «{m.authored}»)</li>)}
             {i.misses.map((m, k) => <li key={k}><b className="text-ink">{m.key}</b> ({m.kind}) esperaba «{m.expect}», leyó «{m.got ?? "nada"}»: {m.text}</li>)}
             {r.facts.misses.map((m, k) => <li key={`f${k}`}><b className="text-ink">dato</b> esperaba «{m.expect}», eligió «{m.got}»: {m.q}</li>)}
             {r.advisor.misses.map((m, k) => <li key={`a${k}`}><b className="text-ink">{m.key}</b> «{m.q}» → {m.motivo}{m.answer ? `: ${m.answer}` : ""}</li>)}
@@ -164,13 +168,13 @@ function Demos({ demos }: { demos: DemoResult[] }) {
       <div className="mt-3 space-y-5">
         {demos.map((d) => (
           <div key={d.id} className="rounded-xl border border-slate-200 p-4">
-            <div className="flex flex-wrap items-baseline justify-between gap-2"><b className="text-ink text-sm">{d.title}</b><span className="text-xs text-slate-500">Confianza final {d.trust > 0 ? `+${d.trust}` : d.trust} · {d.steps.length} decisiones{d.headline ? ` · ${d.headline}` : ""}</span></div>
+            <div className="flex flex-wrap items-baseline justify-between gap-2"><b className="text-ink text-sm">{d.title}{d.path.some((p, k) => p.split(":")[1] !== d.expected[k]) ? " · se desvió del guion" : ""}</b><span className="text-xs text-slate-500">Confianza final {d.trust > 0 ? `+${d.trust}` : d.trust} · {d.steps.length} decisiones{d.headline ? ` · ${d.headline}` : ""}</span></div>
             <ol className="mt-3 space-y-3 text-xs">
               {d.steps.map((s, k) => {
                 const st = EPISODES[d.ep]?.nodes[s.node]?.strategies.find((x) => x.id === s.strategy);
                 return (
                   <li key={k} className="space-y-1">
-                    <div className="text-slate-400">{s.stage} · confianza {s.trust > 0 ? `+${s.trust}` : s.trust}{s.tone ? ` · tono ${s.tone > 0 ? "respetuoso (+1)" : "hostil (−1)"}` : ""}</div>
+                    <div className="text-slate-400">{s.stage} · confianza {s.trust > 0 ? `+${s.trust}` : s.trust}{s.tone ? ` · tono ${s.tone > 0 ? "respetuoso (+1)" : "hostil (−1)"}${s.toneEvidence ? `: «${s.toneEvidence}»` : ""}` : ""}</div>
                     <div className="text-ink"><b>Tú:</b> {s.text}</div>
                     {s.status === "ambigua" && <div className="text-indigo"><b>La IA preguntó antes de decidir:</b> {s.clarify} <span className="text-slate-500">(opciones: {s.options?.join(", ")}; el jugador eligió «{s.strategy}»)</span></div>}
                     <div className="text-slate-500"><b>Se entendió:</b> {st?.text ?? s.strategy}{s.extras ? ` · También propusiste: ${s.extras}` : ""}</div>

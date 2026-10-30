@@ -60,15 +60,18 @@ describe("P0-D · respaldo sin IA (gratis, en cada corrida)", () => {
 });
 
 describe("P0-D · conjunto de validación final (separado del de desarrollo)", () => {
-  it("no repite ninguna frase del conjunto de desarrollo y cada caso es alcanzable", async () => {
+  it("no repite ninguna frase del desarrollo (ronda 1 ni ronda 2) ni de los prompts, y cada caso es alcanzable", async () => {
     const { VALIDATION_SET, FACT_VALIDATION, ADVISOR_VALIDATION, DEMO_SCRIPTS } = await import("./eval-validacion");
-    const dev = new Set([...INTERPRET_SET.map((x) => x.text), ...FACT_SET.map((x) => x.q), ...ADVISOR_SET.map((x) => x.q)]);
+    const D2 = await import("./eval-dev-ronda2");
+    const dev = new Set([...INTERPRET_SET.map((x) => x.text), ...FACT_SET.map((x) => x.q), ...ADVISOR_SET.map((x) => x.q),
+      ...D2.DEV2_INTERPRET.map((x) => x.text), ...D2.DEV2_FACTS.map((x) => x.q), ...D2.DEV2_ADVISOR.map((x) => x.q), ...D2.DEV2_DEMOS.flatMap((d) => d.steps.map((s) => s.text))]);
     for (const v of VALIDATION_SET) expect(dev.has(v.text), v.text).toBe(false);
     for (const f of FACT_VALIDATION) expect(dev.has(f.q), f.q).toBe(false);
     for (const a of ADVISOR_VALIDATION) expect(dev.has(a.q), a.q).toBe(false);
+    for (const d of DEMO_SCRIPTS) for (const s of d.steps) expect(dev.has(s.text), s.text).toBe(false);
     // ninguna frase de validación aparece en los prompts (no se usaron para ajustar)
     const ai = await import("fs").then((fs) => fs.readFileSync(new URL("./ai.ts", import.meta.url), "utf8"));
-    for (const v of VALIDATION_SET) expect(ai.includes(v.text.slice(0, 30)), v.text).toBe(false);
+    for (const v of [...VALIDATION_SET.map((x) => x.text), ...FACT_VALIDATION.map((x) => x.q), ...ADVISOR_VALIDATION.map((x) => x.q)]) expect(ai.includes(v.slice(0, 30)), v).toBe(false);
     for (const v of VALIDATION_SET) {
       const spec = EPISODES[v.ep];
       const run = runAt(spec, v.node, v.expect ?? v.options);
@@ -80,40 +83,49 @@ describe("P0-D · conjunto de validación final (separado del de desarrollo)", (
     }
     const kinds = (k: string) => VALIDATION_SET.filter((v) => v.kind === k).length;
     expect(VALIDATION_SET.length).toBeGreaterThanOrEqual(90);
-    expect(kinds("ambigua")).toBeGreaterThanOrEqual(10);
+    expect(kinds("ambigua")).toBeGreaterThanOrEqual(15);
     expect(kinds("parcial")).toBeGreaterThanOrEqual(10);
-    expect(kinds("fuera")).toBeGreaterThanOrEqual(4);
+    expect(kinds("fuera")).toBeGreaterThanOrEqual(5);
+    // tono en ambos sentidos, en los tres casos
+    expect(VALIDATION_SET.filter((v) => v.tone === 1).length).toBeGreaterThanOrEqual(5);
+    expect(VALIDATION_SET.filter((v) => v.tone === -1).length).toBeGreaterThanOrEqual(5);
     for (const f of FACT_VALIDATION) {
       const spec = EPISODES[f.ep];
       for (const id of f.accept) expect(id === "ninguno" || (id.startsWith("?") ? spec.facts.unknowns.some((u) => u.id === id.slice(1)) : spec.facts.facts.some((x) => x.id === id && !x.critical)), id).toBe(true);
     }
+    expect(FACT_VALIDATION.length).toBeGreaterThanOrEqual(28);
     for (const a of ADVISOR_VALIDATION) expect(EPISODES[a.ep].advisors.map((x) => x.id)).toContain(a.advisor);
-    expect(ADVISOR_VALIDATION.length).toBeGreaterThanOrEqual(27);
+    expect(ADVISOR_VALIDATION.length).toBeGreaterThanOrEqual(36);
     for (const d of DEMO_SCRIPTS) expect(EPISODES[d.ep]).toBeDefined();
   }, 60_000);
 });
 
 describe("P0-D · evaluación con IA (con modelo falso, sin gasto)", () => {
-  /** Modelo «perfecto»: lee el texto del jugador y devuelve lo esperado en el formato nuevo, con reacción adaptada. */
+  /** Modelo «perfecto»: lee el texto del jugador y devuelve lo esperado en el formato de la ronda 3 (dos pasos). */
   async function perfectModel() {
     const { VALIDATION_SET, FACT_VALIDATION, DEMO_SCRIPTS } = await import("./eval-validacion");
-    const items = [...INTERPRET_SET.map((x) => ({ ...x, kind: "clara" as const, options: undefined as string[] | undefined, tone: undefined as number | undefined })), ...VALIDATION_SET,
+    const D2 = await import("./eval-dev-ronda2");
+    const items = [...INTERPRET_SET.map((x) => ({ ...x, kind: "clara" as const, options: undefined as string[] | undefined, tone: undefined as number | undefined })), ...VALIDATION_SET, ...D2.DEV2_INTERPRET,
       ...DEMO_SCRIPTS.flatMap((d) => d.steps.map((s) => ({ ep: d.ep, node: "", text: s.text, expect: s.expect, kind: s.ambigua ? "ambigua" as const : "clara" as const, options: s.ambigua ? [s.expect, "parcial"] : undefined, tone: s.tone })))];
-    const facts = [...FACT_SET.map((f) => ({ q: f.q, id: f.expect })), ...FACT_VALIDATION.map((f) => ({ q: f.q, id: f.accept[0] }))];
+    const facts = [...FACT_SET.map((f) => ({ q: f.q, id: f.expect })), ...FACT_VALIDATION.map((f) => ({ q: f.q, id: f.accept[0] })), ...D2.DEV2_FACTS.map((f) => ({ q: f.q, id: f.accept[0] }))];
     const model: import("./eval-run").Model = async (msgs) => {
       const sys = msgs[0].content, u = msgs[1].content;
-      if (sys.startsWith("Eres auditor")) return { content: JSON.stringify({ recomienda: false, inventa: false, responde: true, motivo: "" }), cost: 0.00003 };
-      const ip = items.find((it) => u.includes(`<jugador>\n${it.text}\n`));
-      if (ip) {
-        if (ip.kind === "ambigua") return { content: JSON.stringify({ status: "ambigua", strategy: null, options: ip.options, clarify: "¿Cuál de las dos lecturas es la tuya?", quality: 1, feedback: "" }), cost: 0.0002 };
-        if (ip.kind === "fuera") return { content: JSON.stringify({ status: "fuera", strategy: null, quality: 0, feedback: "" }), cost: 0.0002 };
-        const line = u.split("\n").find((l) => l.startsWith(`${ip.expect}) `));
-        const auth = u.split("\n")[u.split("\n").indexOf(line!) + 1]?.replace(/^\s*respuesta autorizada: /, "") ?? "";
-        const word = ip.text.split(/\s+/).find((w) => w.length >= 7) ?? "";
-        return { content: JSON.stringify({ status: ip.kind, strategy: ip.expect, quality: 2, feedback: "Bien.", tone: ip.tone ?? 0, ...(ip.kind === "parcial" ? { extras: "algo propio" } : {}), reply: `Sobre lo de ${word.replace(/[^\p{L}]/gu, "")}: ${auth}` }), cost: 0.0002 };
+      if (sys.startsWith("Eres auditor")) return { content: JSON.stringify({ recomienda: false, inventa: false, responde: true, fiel: true, agrega: false, responde_al_jugador: true, motivo: "" }), cost: 0.00003 };
+      if (sys.startsWith("Escribes la reacción")) {
+        const player = u.match(/<jugador>\n([\s\S]*?)\n<\/jugador>/)?.[1] ?? "";
+        const authored = u.split("Respuesta autorizada (una línea por renglón):\n")[1]?.split("\n") ?? [];
+        const word = player.split(/\s+/).map((w) => w.replace(/[^\p{L}]/gu, "")).find((w) => w.length >= 7) ?? "eso";
+        return { content: JSON.stringify({ reply: [`Sobre lo de ${word}: ${authored[0]}`, ...authored.slice(1)] }), cost: 0.0001 };
       }
-      const f = facts.find((x) => u.includes(`<jugador>\n${x.q}`));
-      if (f) return { content: JSON.stringify({ id: f.id }), cost: 0.00005 };
+      const ip = sys.startsWith("Eres el intérprete") ? items.find((it) => u.includes(`<jugador>\n${it.text}\n`)) : undefined;
+      if (ip) {
+        const ev = ip.tone ? ip.text.split(/\s+/).slice(0, 4).join(" ") : "";
+        if (ip.kind === "ambigua") return { content: JSON.stringify({ encaje: "varias", strategy: null, options: ip.options, clarify: "¿Cuál de las dos lecturas es la tuya?", tone: ip.tone ?? 0, tone_evidence: ev, quality: 1, feedback: "" }), cost: 0.0002 };
+        if (ip.kind === "fuera") return { content: JSON.stringify({ encaje: "ninguna", strategy: null, quality: 0, feedback: "" }), cost: 0.0002 };
+        return { content: JSON.stringify({ encaje: ip.kind === "parcial" ? "una_mas_extras" : "una", strategy: ip.expect, rival: null, quality: 2, feedback: "Bien.", tone: ip.tone ?? 0, tone_evidence: ev, ...(ip.kind === "parcial" ? { extras: "algo propio" } : {}) }), cost: 0.0002 };
+      }
+      const f = sys.startsWith("Clasificas") ? facts.find((x) => u.includes(`<jugador>\n${x.q}`)) : undefined;
+      if (f) return { content: JSON.stringify({ pide: "x", id: f.id }), cost: 0.00005 };
       return { content: JSON.stringify({ answer: "Desde mi lado, lo que más me importa es que la decisión se sostenga con lo que sabemos; lo demás no lo sé." }), cost: 0.0001 };
     };
     return model;
@@ -126,17 +138,21 @@ describe("P0-D · evaluación con IA (con modelo falso, sin gasto)", () => {
     for (const j of EVAL_JOBS) all.push(await runJob(j, model));
     const rep = summarize(all);
     for (const set of [rep.dev!, rep.val!]) {
+      expect(set.interpret.misses).toEqual([]);
       expect(set.interpret.accuracy).toBe(100);
       expect(set.interpret.consistency).toBe(100);
       expect(set.interpret.ambiguousCommitted + set.interpret.offTopicCommitted).toBe(0);
       expect(set.facts.accuracy).toBe(100);
       expect(set.advisor.quality).toBe(100);
       expect(Object.values(passes(set)).every(Boolean)).toBe(true);
-      // la reacción adaptada (que conserva las cifras del autor) pasa la validación y retoma palabras del jugador
+      // la reacción adaptada (segunda llamada, sobre la respuesta real del motor) pasa la regla de fidelidad
       expect(set.interpret.adaptive.adapted).toBe(set.interpret.adaptive.replies);
       expect(set.interpret.adaptive.echoes).toBeGreaterThan(set.interpret.adaptive.adapted * 0.8);
     }
+    expect(rep.dev!.interpret.total).toBeGreaterThan(INTERPRET_SET.length); // incluye la validación de la ronda 2
+    expect(rep.val!.interpret.adaptive.faithful).toBe(rep.val!.interpret.adaptive.audited);
     expect(rep.val!.interpret.adaptive.tone.hit).toBe(rep.val!.interpret.adaptive.tone.total);
+    expect(rep.val!.interpret.adaptive.tone.falsePositive).toBe(0);
     expect(rep.val!.interpret.adaptive.extras.hit).toBe(rep.val!.interpret.adaptive.extras.total);
     expect(rep.dev!.interpret.total * EVAL_REPEATS).toBeLessThan(rep.calls);
     // demo: mismas decisiones en Diego, distinto tono → distinta confianza y distinto final
@@ -145,11 +161,12 @@ describe("P0-D · evaluación con IA (con modelo falso, sin gasto)", () => {
     expect(suave.trust).toBeGreaterThan(duro.trust);
     expect(suave.steps.some((s) => s.node === "p5")).toBe(false);
     expect(duro.steps.some((s) => s.node === "p5")).toBe(true);
+    expect(duro.steps.filter((s) => s.tone === -1).length).toBe(3);
     expect(suave.closed && duro.closed && ale.closed).toBe(true);
     expect(ale.steps[0].status).toBe("ambigua");
-    // tras aclarar, se usa la respuesta del autor (no hubo reacción a sus palabras que validar); las demás se adaptan
-    expect(ale.steps[0].adapted).toBe(false);
-    expect(ale.steps.slice(1).every((s) => s.adapted)).toBe(true);
+    expect(ale.path.map((p) => p.split(":")[1])).toEqual(ale.expected);
+    // con dos pasos, también la respuesta tras aclarar se adapta a lo que escribió
+    expect(ale.steps.every((s) => s.adapted)).toBe(true);
   }, 120_000);
 
   it("ambigua comprometida o basura cuentan en contra", async () => {
@@ -158,32 +175,35 @@ describe("P0-D · evaluación con IA (con modelo falso, sin gasto)", () => {
     const bad = summarize(await Promise.all(EVAL_JOBS.slice(0, 20).map((j) => runJob(j, junk))));
     expect(bad.val!.interpret.invalid).toBe(100);
     expect(passes(bad.val!).accuracy).toBe(false);
-    // un modelo que siempre decide (nunca pregunta) compromete las ambiguas
+    // un modelo que siempre decide (nunca pregunta ni ve rival) compromete las ambiguas
     const { VALIDATION_SET } = await import("./eval-validacion");
     const eager: import("./eval-run").Model = async (msgs) => {
       const u = msgs[1].content;
       const id = u.match(/\n(\w+)\) /)?.[1] ?? "x";
-      return { content: JSON.stringify({ status: "clara", strategy: id, quality: 2, feedback: "x" }), cost: 0 };
+      return { content: JSON.stringify({ encaje: "una", strategy: id, rival: null, quality: 2, feedback: "x" }), cost: 0 };
     };
     const idx = EVAL_JOBS.map((j, k) => (j.kind === "interpret" && j.set === "val" && VALIDATION_SET[j.i].kind === "ambigua" ? k : -1)).filter((k) => k >= 0);
     const rep = summarize(await Promise.all(idx.map((k) => runJob(EVAL_JOBS[k], eager))));
-    expect(rep.val!.interpret.ambiguousCommitted).toBe(idx.length);
+    // la regla de «pospone» atrapa algunas aunque el modelo no pregunte; las demás cuentan en contra
+    expect(rep.val!.interpret.ambiguousCommitted).toBeGreaterThan(0);
     expect(passes(rep.val!).ambiguousCommitted).toBe(false);
   }, 60_000);
 
-  it("el costo estimado de toda la evaluación (ambos conjuntos + demo + auditor) cabe en el tope de $0.50", async () => {
-    const { EVAL_JOBS, EVAL_REPEATS, EVAL_BUDGET_USD } = await import("./eval-run");
-    const { VALIDATION_SET } = await import("./eval-validacion");
-    const { EPISODE_AI_MAX_TOKENS } = await import("./ai");
+  it("el costo estimado de toda la evaluación (ambos conjuntos + adaptación + demo + auditores) cabe en el tope de $0.50", async () => {
+    const { EVAL_JOBS, EVAL_REPEATS, EVAL_BUDGET_USD, evalItem, evalSizes } = await import("./eval-run");
     const { costOf, approxTokens, DEFAULT_MODEL } = await import("../written");
     let est = 0;
-    for (const it of [...INTERPRET_SET, ...VALIDATION_SET]) {
-      const spec = EPISODES[it.ep]; const run = runAt(spec, it.node, it.expect ?? (it as { options?: string[] }).options)!;
-      const m = interpretMessages(spec, run, nodeOf(spec, run)!, sayOf(spec, run), it.text);
-      // salida real ~180 tokens (estimación conservadora: 250)
-      est += EVAL_REPEATS * costOf(DEFAULT_MODEL, approxTokens(m.map((x) => x.content).join("\n")) + 20, Math.min(250, EPISODE_AI_MAX_TOKENS.interpret));
+    for (const set of ["dev", "val"] as const) {
+      for (let i = 0; i < evalSizes(set).interpret; i++) {
+        const it = evalItem(set, i);
+        const spec = EPISODES[it.ep]; const run = runAt(spec, it.node, it.expect ?? it.options)!;
+        const m = interpretMessages(spec, run, nodeOf(spec, run)!, sayOf(spec, run), it.text);
+        // salida real ~150 tokens (estimación conservadora: 200); + adaptación (~1,000 de entrada, 200 de salida) + auditor en validación
+        est += EVAL_REPEATS * costOf(DEFAULT_MODEL, approxTokens(m.map((x) => x.content).join("\n")) + 20, 200);
+        if (set === "val" || i % 2 === 0) est += costOf(DEFAULT_MODEL, 1000, 200) + (set === "val" ? costOf(DEFAULT_MODEL, 500, 60) : 0);
+      }
     }
-    est += EVAL_JOBS.filter((j) => j.kind === "fact" || j.kind === "advisor").length * 0.0006 + EVAL_JOBS.filter((j) => j.kind === "demo").length * 0.004;
+    est += EVAL_JOBS.filter((j) => j.kind === "fact").length * 0.0003 + EVAL_JOBS.filter((j) => j.kind === "advisor").length * 0.0008 + EVAL_JOBS.filter((j) => j.kind === "demo").length * 0.006;
     console.info(`[eval] costo estimado de toda la evaluación: $${est.toFixed(3)}`);
     expect(est).toBeLessThan(EVAL_BUDGET_USD);
   }, 60_000);
