@@ -181,11 +181,9 @@ export const EN: Copy = {
     beyond: { t: "The Executive Arena", d: "After Global CEO, new challenges put your judgment to the test. There will always be more to learn." },
   },
   PHILOSOPHY: {
-    title: "Leadership is a responsibility. Prepare for it.",
-    body: "Great leaders aren't born ready. Behind every decision there are people, resources and consequences. A leader's judgment can be built before the moment comes to test it.",
+    title: "Your next big decision is on its way!",
+    body: "An unexpected email, an urgent WhatsApp message or a call from your team. At MÊTIS every day brings a new challenge. Decide, learn from what happens and unlock new stages in an immersive simulation that grows with you.",
     who: "For those who aspire to lead, for those who already lead and for those who believe there is always more to learn.",
-    author: "Oziel Leal Montemayor",
-    authorRole: "Creator of MÊTIS",
   },
   FAQ: [
     { q: "Do I need management experience?", a: "No. When you start, we ask about your experience to adjust the help you see and the order of the cases." },
