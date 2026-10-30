@@ -18,7 +18,7 @@ import { episodeSpec } from "@/lib/ceo/episodes/catalog";
 import { MAX_ADVISOR_CONSULTS, MAX_DECISIONS, MAX_FACT_QUERIES, RUBRIC_LABEL, type EpisodeRun, type EpisodeSpec, type ParamSpec, type Strategy } from "@/lib/ceo/episodes/contracts";
 import { advisorLeft, briefingLeftMs, criticalFacts, matchFact, nodeOf, queriesLeft, revealOf, sayOf, strategiesFor } from "@/lib/ceo/episodes/engine";
 import { deriveTerms, rubricSummary } from "@/lib/ceo/episodes/rules";
-import { decideFrom, interpretLocal, type Interpretation } from "@/lib/ceo/episodes/ai";
+import { clarified, decideFrom, interpretLocal, type Interpretation } from "@/lib/ceo/episodes/ai";
 
 type AiReply = { ok: boolean; fallback?: boolean; [k: string]: unknown };
 async function askAi(body: Record<string, unknown>): Promise<AiReply | null> {
@@ -265,7 +265,9 @@ function Briefing({ spec, run, leftMs, act, readOnly }: { spec: EpisodeSpec; run
     const r = await askAi({ episode: spec.id, purpose: "fact", run, question: text });
     if (r?.ok && typeof r.factId === "string") a = { type: "fact", factId: r.factId, text, via: "ia" };
     else if (r?.ok && typeof r.unknownId === "string") a = { type: "fact", unknownId: r.unknownId, text, via: "ia" };
-    if (!a && matchFact(spec, text)) a = { type: "fact", text, via: "libre" };
+    // Si la IA dijo explícitamente que ningún dato responde, no se adivina con palabras clave (evita mostrar un dato que no pidió).
+    const none = r?.ok === true && r.none === true;
+    if (!a && !none && matchFact(spec, text)) a = { type: "fact", text, via: "libre" };
     setBusy(false);
     if (!a) { act({ type: "fact", text, via: "libre" }); return; }
     if (!act(a)) setQ("");
@@ -487,16 +489,19 @@ function FreeText({ spec, run, act }: { spec: EpisodeSpec; run: EpisodeRun; act:
   };
   const pick = (id: string) => {
     if (!ask) return;
-    const st = strategiesFor(spec, run).find((s) => s.id === id);
-    if (!st) return;
-    const params: Record<string, number> = {};
-    for (const p of st.params ?? []) params[p.key] = p.default;
-    setDraft({ text: ask.text, it: { strategy: id, status: "clara", ...(st.params?.length ? { params } : {}), quality: ask.it.quality, feedback: ask.it.feedback || "Aclaraste tu intención: cuando una instrucción admite dos lecturas, el equipo ejecuta la que no querías." } });
+    const it = clarified(spec, run, ask.it, id);
+    if (!it) return;
+    setDraft({ text: ask.text, it });
     setAsk(null);
   };
-  const confirm = () => {
+  const confirm = async () => {
     if (!draft) return;
-    const a = decideFrom(draft.it, draft.text, Date.now());
+    // Ya confirmada la decisión, el personaje reacciona a sus palabras (si la IA falla, se usa la respuesta del autor).
+    setBusy(true);
+    const r = await askAi({ episode: spec.id, purpose: "adapt", run, text: draft.text, interpretation: { strategy: draft.it.strategy, status: draft.it.status, params: draft.it.params, tone: draft.it.tone, extras: draft.it.extras } });
+    setBusy(false);
+    const adapted = r?.ok && Array.isArray(r.reply) && typeof r.basis === "string" ? { reply: (r.reply as unknown[]).map(String), basis: r.basis } : {};
+    const a = decideFrom({ ...draft.it, ...adapted }, draft.text, Date.now());
     if (!a) return;
     const err = act(a);
     if (err) setMsg(err); else setDraft(null);
@@ -527,7 +532,7 @@ function FreeText({ spec, run, act }: { spec: EpisodeSpec; run: EpisodeRun; act:
           {draft.it.feedback && <p className="mt-2 text-xs text-slate-500">{draft.it.feedback}</p>}
         </div>
         <div className="flex gap-2">
-          <button onClick={confirm} className="btn bg-white text-ink hover:bg-white/90 font-semibold">Confirmar</button>
+          <button onClick={() => void confirm()} disabled={busy} className="btn bg-white text-ink hover:bg-white/90 font-semibold">{busy ? "Enviando…" : "Confirmar"}</button>
           <button onClick={() => setDraft(null)} className="btn text-white/75 hover:text-white">Corregir</button>
         </div>
         {msg && <p className="text-xs text-white bg-coral/25 rounded-lg px-3 py-2">{msg}</p>}

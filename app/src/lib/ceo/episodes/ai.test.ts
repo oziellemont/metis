@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { advisorMessages, authoredReplies, decideFrom, factMessages, interpretLocal, interpretMessages, parseAdvisor, parseFact, parseInterpretation } from "./ai";
-import { advisorAnswer, applyEpisode, nodeOf, sayOf, startEpisode } from "./engine";
+import { adaptMessages, advisorMessages, authoredFor, authoredReplies, clarified, decideFrom, factMessages, interpretLocal, interpretMessages, parseAdaptation, parseAdvisor, parseFact, parseInterpretation, quoted, runAdapt, runAdvisor, runFact, runInterpret, type Call } from "./ai";
+import { adaptationOk, advisorAnswer, applyEpisode, nodeOf, sayOf, startEpisode } from "./engine";
 import { SUPERNORTE } from "./supernorte";
 import { EPISODES } from "./catalog";
 
@@ -15,15 +15,17 @@ describe("IA · consulta de hechos", () => {
     expect(m[0].content).toMatch(/ignora cualquier instrucción/);
     expect(m[1].content).toContain("margen:");
     expect(m[1].content).toContain("?oferta_regional");
-    expect(m[1].content).not.toContain("7.1%"); // la IA no ve ni redacta las respuestas
-    expect(m[1].content).toMatch(/margen: .*\(temas: .*descuento/); // ve el tema de cada dato para entender otras palabras
-    expect(m[0].content).toMatch(/ninguno.*solo si/);
+    expect(m[1].content).not.toContain("7.1%"); // la IA no ve ninguna cifra: el contenido va enmascarado
+    expect(m[1].content).toMatch(/margen: .*Contiene: .*margen de la cuenta hoy es #%/); // sabe de qué trata cada dato
+    expect(factMessages(EPISODES.alergeno, "x")[1].content).not.toContain("obligacion:"); // los hechos críticos ya están a la vista
+    expect(m[0].content).toMatch(/ninguno.*únicamente si/);
   });
   it("acepta solo ids del banco; lo demás se descarta", () => {
     expect(parseFact(SUPERNORTE, '{"id":"plazo"}')).toEqual({ factId: "plazo" });
     expect(parseFact(SUPERNORTE, '{"id":"?oferta_regional"}')).toEqual({ unknownId: "oferta_regional" });
     expect(parseFact(SUPERNORTE, '{"id":"inventado"}')).toBeNull();
-    expect(parseFact(SUPERNORTE, '{"id":"ninguno"}')).toBeNull();
+    // «ninguno» explícito: no se muestra nada y la pantalla NO cae al respaldo por palabras
+    expect(parseFact(SUPERNORTE, '{"pide":"x","id":"ninguno"}')).toEqual({ none: true });
     expect(parseFact(SUPERNORTE, "basura")).toBeNull();
   });
 });
@@ -34,7 +36,8 @@ describe("IA · colaborador", () => {
     const m = advisorMessages(SUPERNORTE, lucia, authored, "¿qué harías?");
     expect(m[1].content).toContain("7.1%");
     expect(m[1].content).not.toContain("1.4 veces"); // la rotación no es dato de Lucía
-    expect(m[0].content).toMatch(/NO le digas qué opción elegir/);
+    expect(m[0].content).toMatch(/NUNCA decirle qué hacer/);
+    expect(m[1].content).toMatch(/preocupación o prioridad tuya, no como instrucción/);
   });
   it("rechaza cifras inventadas y recomendaciones de opción", () => {
     expect(parseAdvisor(SUPERNORTE, lucia, authored, '{"answer":"Yo cuidaría la caja: cada 30 días son $10.4 M y la línea es de $14 M."}')).toMatch(/caja/);
@@ -44,6 +47,12 @@ describe("IA · colaborador", () => {
     expect(parseAdvisor(SUPERNORTE, lucia, authored, '{"answer":"Si yo fuera tú, aceptaría el plazo; la caja aguanta con la línea."}')).toBeNull();
     expect(parseAdvisor(SUPERNORTE, lucia, authored, '{"answer":"Te recomiendo pedir una reunión antes de mover precios."}')).toBeNull();
     expect(parseAdvisor(SUPERNORTE, lucia, authored, '{"answer":"Deberías ofrecer menos descuento, la caja está apretada."}')).toBeNull();
+    // lo que el auditor de la ronda 2 marcó como recomendación
+    for (const bad of ["Te recomendaría revisar la caja antes de dar más plazo.", "Te sugiero que hables con Héctor sobre esto.", "Es fundamental actuar hoy, el riesgo es alto.", "Lo mejor sería esperar a tener más datos de la caja.", "Habla con Don Ramiro antes de que se entere por otro lado.", "Consulta a Carla sobre lo legal, ella sabe.", "Hay que avisar a la autoridad cuanto antes."]) {
+      expect(parseAdvisor(SUPERNORTE, lucia, authored, JSON.stringify({ answer: bad })), bad).toBeNull();
+    }
+    // decir lo que preocupa, un riesgo o una obligación NO es recomendar
+    expect(parseAdvisor(SUPERNORTE, lucia, authored, '{"answer":"A mí me preocupa la caja: cada punto cuesta $1.27 M al año y el consejo pidió no bajar de 4%. La decisión es tuya."}')).toMatch(/preocupa/);
     expect(parseAdvisor(SUPERNORTE, lucia, authored, '{"answer":"Eso no lo sé: nadie ha visto la oferta de la regional. Desde Finanzas me preocupa la caja."}')).toMatch(/no lo s/);
   });
 });
@@ -60,10 +69,12 @@ describe("IA · texto libre", () => {
     r = applyEpisode(SUPERNORTE, r, { type: "decide", at: T + 2, strategy: "explorar" }).run;
     const ok = parseInterpretation(SUPERNORTE, r, '{"status":"clara","strategy":"paquete","terms":{"descuento":9,"plazo":75},"quality":2.6,"feedback":"Bien planteado 🙂"}');
     expect(ok).toEqual({ strategy: "paquete", status: "clara", params: { descuento: 4, promo: 1.5, plazo: 75 }, quality: 3, feedback: "Bien planteado", tone: 0 });
-    // formato anterior (sin status) se acepta como «clara»
+    // formato nuevo («encaje») y anterior (sin status) se aceptan
+    expect(parseInterpretation(SUPERNORTE, r, '{"encaje":"una","strategy":"paquete","quality":2,"feedback":"x"}')?.status).toBe("clara");
     expect(parseInterpretation(SUPERNORTE, r, '{"strategy":"paquete","quality":2,"feedback":"x"}')?.status).toBe("clara");
     expect(parseInterpretation(SUPERNORTE, r, '{"strategy":"formalizar","quality":3}')).toBeNull();
-    expect(parseInterpretation(SUPERNORTE, r, '{"strategy":"paquete"}')).toBeNull();
+    // sin calidad, se asume 1 (no se tira la lectura por un campo secundario)
+    expect(parseInterpretation(SUPERNORTE, r, '{"strategy":"paquete"}')?.quality).toBe(1);
     expect(parseInterpretation(SUPERNORTE, r, '{"status":"quizá","strategy":"paquete","quality":2}')).toBeNull();
   });
   it("ambigua: nunca trae estrategia; exige 2+ opciones disponibles y una pregunta", () => {
@@ -73,8 +84,11 @@ describe("IA · texto libre", () => {
     expect(amb?.strategy).toBeNull();
     expect(amb?.options).toEqual(["paquete", "volumen"]);
     expect(amb?.clarify).toMatch(/volumen/);
-    expect(parseInterpretation(SUPERNORTE, r, '{"status":"ambigua","options":["paquete"],"clarify":"¿Cuál?","quality":1}')).toBeNull();
-    expect(parseInterpretation(SUPERNORTE, r, '{"status":"ambigua","options":["paquete","volumen"],"clarify":"","quality":1}')).toBeNull();
+    // si la IA no dio 2 opciones válidas, igual se pregunta (nunca se decide por él): con la estrategia y el rival, o con todas
+    const pocas = parseInterpretation(SUPERNORTE, r, '{"encaje":"varias","strategy":"paquete","rival":"piloto","options":["paquete"],"clarify":"¿Cuál?","quality":1}');
+    expect(pocas).toMatchObject({ status: "ambigua", strategy: null, options: ["paquete", "piloto"], guard: "opciones" });
+    expect(pocas?.clarify?.length).toBeGreaterThan(20); // pregunta por defecto si la de la IA es muy corta
+    expect(parseInterpretation(SUPERNORTE, r, '{"encaje":"varias","options":[],"quality":1}')?.options?.length).toBeGreaterThanOrEqual(2);
     // ninguna acción del motor sale de una interpretación ambigua o fuera de tema
     expect(decideFrom(amb!, "texto", T + 3)).toBeNull();
     const fuera = parseInterpretation(SUPERNORTE, r, '{"status":"fuera","strategy":"paquete","quality":2}');
@@ -84,21 +98,99 @@ describe("IA · texto libre", () => {
   it("parcial guarda lo que propuso fuera del caso; tono acotado a ±1", () => {
     let r = atD1();
     r = applyEpisode(SUPERNORTE, r, { type: "decide", at: T + 2, strategy: "explorar" }).run;
-    const p = parseInterpretation(SUPERNORTE, r, '{"status":"parcial","strategy":"piloto","extras":"capacitar a sus promotores","tone":5,"quality":2,"feedback":"ok"}');
-    expect(p).toMatchObject({ status: "parcial", strategy: "piloto", extras: "capacitar a sus promotores", tone: 1 });
+    const text = "Gracias por la confianza, Sofía: propongo un piloto y además capacitar a sus promotores.";
+    const p = parseInterpretation(SUPERNORTE, r, '{"encaje":"una_mas_extras","strategy":"piloto","extras":"capacitar a sus promotores","tone":5,"tone_evidence":"Gracias por la confianza","quality":2,"feedback":"ok"}', text);
+    expect(p).toMatchObject({ status: "parcial", strategy: "piloto", extras: "capacitar a sus promotores", tone: 1, toneEvidence: "Gracias por la confianza" });
     expect(parseInterpretation(SUPERNORTE, r, '{"status":"clara","strategy":"piloto","extras":"algo","quality":2}')?.extras).toBeUndefined();
+    // «parcial» sin decir qué agregó se trata como clara
+    expect(parseInterpretation(SUPERNORTE, r, '{"encaje":"una_mas_extras","strategy":"piloto","extras":"","quality":2}')?.status).toBe("clara");
   });
-  it("reacción adaptada: se acepta si conserva las cifras; se descarta si inventa una", () => {
+  it("tono: solo cuenta con una cita textual de lo que escribió el jugador (sin cita, 0)", () => {
     let r = atD1();
     r = applyEpisode(SUPERNORTE, r, { type: "decide", at: T + 2, strategy: "explorar" }).run;
-    const basis = authoredReplies(SUPERNORTE, r).piloto;
-    expect(basis.length).toBeGreaterThan(10);
-    const good = parseInterpretation(SUPERNORTE, r, JSON.stringify({ status: "clara", strategy: "piloto", quality: 2, feedback: "ok", reply: `Sofía lo piensa. Lo de probar antes le gusta. ${basis}` }));
-    expect(good?.reply?.join(" ")).toMatch(/probar antes/);
-    expect(good?.basis).toBe(basis);
-    const bad = parseInterpretation(SUPERNORTE, r, JSON.stringify({ status: "clara", strategy: "piloto", quality: 2, feedback: "ok", reply: "Sofía acepta y además nos da 37 tiendas extra." }));
-    expect(bad?.strategy).toBe("piloto");
-    expect(bad?.reply).toBeUndefined();
+    const text = "Ya me tienen harto con sus amenazas; propongo un piloto y que los datos manden.";
+    const raw = (ev: string, tone: number) => JSON.stringify({ encaje: "una", strategy: "piloto", tone, tone_evidence: ev, quality: 2, feedback: "x" });
+    expect(parseInterpretation(SUPERNORTE, r, raw("me tienen harto", -1), text)?.tone).toBe(-1);
+    expect(parseInterpretation(SUPERNORTE, r, raw("con todo respeto", 1), text)?.tone).toBe(0); // la cita no está en su texto
+    expect(parseInterpretation(SUPERNORTE, r, raw("", 1), text)?.tone).toBe(0);
+    expect(quoted("Me tienen  HARTO", text)).toBe(true);
+    expect(quoted("harto", text)).toBe(false); // una palabra corta no basta como evidencia
+  });
+  it("reglas que protegen al jugador: rival sin cita que lo descarte, o texto que pospone → se pregunta", () => {
+    const A = EPISODES.alergeno;
+    const r = applyEpisode(A, { ...startEpisode(A, T, { runId: "amb" }), flags: [] }, { type: "begin", at: T + 1 }).run;
+    // el caso de la ronda 2: «Retiramos el producto» se leyó como retiro parcial
+    const t1 = "Retiramos el producto de las tiendas.";
+    const g1 = parseInterpretation(A, r, JSON.stringify({ encaje: "una", strategy: "parcial", rival: "retiro_total", distingue: "", quality: 1, feedback: "x" }), t1);
+    expect(g1).toMatchObject({ status: "ambigua", strategy: null, guard: "rival" });
+    expect(g1?.options).toEqual(["parcial", "retiro_total"]);
+    expect(decideFrom(g1!, t1, T + 2)).toBeNull();
+    // si cita palabras reales que descartan al rival, sí decide
+    const t2 = "Retiramos solo de las 12 tiendas con quejas mientras llega el laboratorio.";
+    expect(parseInterpretation(A, r, JSON.stringify({ encaje: "una", strategy: "parcial", rival: "retiro_total", distingue: "solo de las 12 tiendas con quejas", quality: 2, feedback: "x" }), t2)?.strategy).toBe("parcial");
+    // una cita inventada no cuenta
+    expect(parseInterpretation(A, r, JSON.stringify({ encaje: "una", strategy: "parcial", rival: "retiro_total", distingue: "solo las tiendas con quejas", quality: 2, feedback: "x" }), t1)?.status).toBe("ambigua");
+    // pospone: aunque cite algo, si deja la decisión para después se pregunta
+    const t3 = "Retiramos todo el lote o solo una parte, ya veremos según el laboratorio.";
+    expect(parseInterpretation(A, r, JSON.stringify({ encaje: "una", strategy: "retiro_total", rival: "parcial", distingue: "todo el lote", quality: 1, feedback: "x" }), t3)).toMatchObject({ status: "ambigua", guard: "pospone" });
+    // sin rival, una decisión clara no se frena
+    expect(parseInterpretation(A, r, JSON.stringify({ encaje: "una", strategy: "esperar_lab", rival: null, quality: 1, feedback: "x" }), "Esperamos al laboratorio.")?.strategy).toBe("esperar_lab");
+  });
+  it("aclarar eligiendo conserva el tono de lo que escribió", () => {
+    const D = EPISODES.diego;
+    const r = applyEpisode(D, { ...startEpisode(D, T, { runId: "cl" }), flags: [] }, { type: "begin", at: T + 1 }).run;
+    const amb = { strategy: null, status: "ambigua" as const, options: ["pronto", "esperar"], quality: 1 as const, feedback: "", tone: -1 as const, toneEvidence: "ya me harté" };
+    expect(clarified(D, r, amb, "pronto")).toMatchObject({ strategy: "pronto", status: "clara", tone: -1 });
+    expect(clarified(D, r, amb, "inventada")).toBeNull();
+  });
+  it("adaptación en dos pasos: se adapta la respuesta REAL del motor (con el tono real) y el motor la vuelve a validar", async () => {
+    let r = atD1();
+    r = applyEpisode(SUPERNORTE, r, { type: "decide", at: T + 2, strategy: "explorar" }).run;
+    const it0 = { strategy: "piloto", status: "clara" as const, quality: 2 as const, feedback: "ok", tone: 0 as const };
+    const base = authoredFor(SUPERNORTE, r, it0, "Probemos antes de mover precios.")!;
+    expect(base.authored.join("\n")).toBe(authoredReplies(SUPERNORTE, r).piloto);
+    const m = adaptMessages(SUPERNORTE, r, base, "Probemos antes de mover precios.", it0);
+    expect(m[1].content).toContain(base.authored[0]);
+    expect(m[0].content).toMatch(/ni una cifra, hecho, promesa, condición o pregunta nueva/);
+    // el modelo devuelve la autorizada con una reacción → se acepta; la base queda guardada
+    const good: Call = async () => JSON.stringify({ reply: ["Sofía asiente: lo de probar antes de mover precios le suena.", ...base.authored] });
+    const ok = await runAdapt(SUPERNORTE, r, "Probemos antes de mover precios.", it0, good);
+    expect(ok?.reply[0]).toMatch(/probar antes/);
+    const act = decideFrom({ ...it0, ...ok! }, "Probemos antes de mover precios.", T + 3)!;
+    const out = applyEpisode(SUPERNORTE, r, act).run;
+    expect(out.turns.at(-1)?.interpretation?.adapted).toBe(true);
+    // inventa una cifra → se descarta y se muestra la del autor
+    const bad: Call = async () => JSON.stringify({ reply: ["Sofía acepta y además nos da 37 tiendas extra."] });
+    expect(await runAdapt(SUPERNORTE, r, "Probemos.", it0, bad)).toBeNull();
+    expect(parseAdaptation('{"reply":"x"}', base)).toBeNull();
+  });
+  it("fidelidad: cambiar una cifra del autor, quitarla, o agregar una pregunta nueva se rechaza", () => {
+    const authored = ["Sofía: «Con 3 pts y el exhibidor, lo puedo vender arriba.»", "Firma el acuerdo."];
+    // el caso de la ronda 2: «Con 1 pt» cuando el autor decía 3
+    expect(adaptationOk(["Sofía, más seria: «Con 1 pt y el exhibidor, lo puedo vender arriba.»", "Firma el acuerdo."], authored, [], {})).toBeNull();
+    expect(adaptationOk(["Sofía: «Con el exhibidor, lo puedo vender arriba.»", "Firma el acuerdo."], authored, [], {})).toBeNull();
+    expect(adaptationOk(["Sofía: «Con 3 pts y el exhibidor, lo puedo vender arriba. ¿Me mandas el contrato hoy?»", "Firma el acuerdo."], authored, [], {})).toBeNull();
+    // cambiar todo el contenido (otro desenlace) también
+    expect(adaptationOk(["Sofía se levanta y se va sin firmar nada; dice que con 3 pts no le alcanza."], authored, [], {})).toBeNull();
+    // reaccionar a lo que dijo el jugador conservando todo, sí
+    expect(adaptationOk(["Sofía sonríe ante tu franqueza: «Con 3 pts y el exhibidor, lo puedo vender arriba.»", "Firma el acuerdo."], authored, [], {})).not.toBeNull();
+  });
+  it("tubería compartida: la misma función corre en producción y en la evaluación", async () => {
+    const r = atD1();
+    const calls: number[] = [];
+    const fake: Call = async (_m, max, temp) => { calls.push(temp); return max === 60 ? '{"pide":"margen","id":"margen"}' : '{"encaje":"una","strategy":"explorar","rival":null,"quality":2,"feedback":"x","tone":0}'; };
+    expect(await runFact(SUPERNORTE, "¿cuánto ganamos?", fake)).toEqual({ factId: "margen" });
+    expect((await runInterpret(SUPERNORTE, r, "Primero quiero escucharla.", fake))?.strategy).toBe("explorar");
+    expect(calls).toEqual([0, 0]); // clasificar es determinista (temperatura 0)
+  });
+  it("colaborador: si el primer intento aconseja, se reintenta una vez; si vuelve a aconsejar, manda el autor", async () => {
+    const authored = advisorAnswer(SUPERNORTE, fresh(), lucia);
+    let n = 0;
+    const second: Call = async (m) => { n++; return n === 1 ? '{"answer":"Te sugiero no dar más plazo, la caja no da."}' : (expect(m[0].content).toMatch(/IMPORTANTE/), '{"answer":"Desde Finanzas me preocupa la caja: pasar a 90 días pide $10.4 M y la línea es de $14 M."}'); };
+    expect(await runAdvisor(SUPERNORTE, lucia, authored, "¿Doy más plazo?", second)).toMatch(/preocupa la caja/);
+    expect(n).toBe(2);
+    const always: Call = async () => '{"answer":"Deberías esperar, es lo mejor para la caja."}';
+    expect(await runAdvisor(SUPERNORTE, lucia, authored, "¿Qué hago?", always)).toBeNull();
   });
   it("respaldo sin IA: acerca por palabras o no elige nada", () => {
     const r = atD1();
