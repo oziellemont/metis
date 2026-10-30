@@ -29,6 +29,11 @@ describe("metis.ceo sin sesión", () => {
     expect(rewrittenTo(r)).toBe("/simulador");
     expect(loc(r)).toBeNull();
   });
+  it("la landing en inglés (/en) también es pública", async () => {
+    const r = await call("https://metis.ceo/en");
+    expect(rewrittenTo(r)).toBe("/simulador/en");
+    expect(loc(r)).toBeNull();
+  });
   it("legales y /entrar son públicos", async () => {
     expect(rewrittenTo(await call("https://metis.ceo/privacidad"))).toBe("/legal/privacidad");
     const r = await call("https://metis.ceo/entrar");

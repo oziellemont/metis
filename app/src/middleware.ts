@@ -57,6 +57,8 @@ export async function middleware(req: NextRequest) {
   let rewrite: URL | null = null;
   if (isCeoHost) {
     if (p === "/") { const u = req.nextUrl.clone(); u.pathname = "/simulador"; return NextResponse.rewrite(u); }
+    // Landing en inglés: «/en» → «/simulador/en».
+    if (p === "/en" || p === "/en/") { const u = req.nextUrl.clone(); u.pathname = "/simulador/en"; return NextResponse.rewrite(u); }
     if (CEO_LEGAL[p]) { const u = req.nextUrl.clone(); u.pathname = CEO_LEGAL[p]; return NextResponse.rewrite(u); }
     // mêtis CEO tiene su propia entrada: la de Align (/login) no se usa en este dominio.
     if (p === "/login") {

@@ -5,9 +5,10 @@
  */
 import { useEffect, useRef, useState } from "react";
 import { Lock, LockOpen } from "lucide-react";
-import { PATH } from "./content";
+import type { Copy } from "./content";
 
-export function ArenaLock() {
+export function ArenaLock({ t }: { t: Copy }) {
+  const PATH = t.PATH;
   const ref = useRef<HTMLDivElement>(null);
   const [state, setState] = useState<"open" | "closed" | "opening">("open");
   useEffect(() => {

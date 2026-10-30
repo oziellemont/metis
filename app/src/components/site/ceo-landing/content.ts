@@ -1,5 +1,6 @@
 /**
- * Landing de MÊTIS CEO (www.metis.ceo) · todo el copy y los datos de las demos en un solo lugar.
+ * Landing de MÊTIS CEO (www.metis.ceo) · todo el copy en español y los datos de las demos en un solo lugar.
+ * La versión en inglés vive en content-en.ts con la misma forma (tipo Copy); la página elige con copyFor().
  *
  * Regla: aquí solo va lo que el producto hace hoy. Nada de «próximamente» ni de promesas a futuro:
  * lo que no existe, no se menciona (ver AVAILABILITY, solo para auditoría interna). La demo es ilustrativa: no toca el motor, la partida ni la cuenta del visitante.
@@ -32,174 +33,148 @@ export const AVAILABILITY: { item: string; state: Availability; note: string }[]
 export const SEO = {
   title: "MÊTIS CEO | Aprende a dirigir tomando decisiones",
   description: "Practica cómo dirigir una empresa. Resuelve situaciones de negocio, toma decisiones y descubre cómo afectan a los resultados y a las personas, unos minutos al día.",
+  ogAlt: "MÊTIS CEO. Dirigir se aprende decidiendo.",
+  locale: "es_MX",
 };
 
 /* ---------------- Navegación ---------------- */
-export const NAV = [
+export const NAV: { href: string; label: string }[] = [
   { href: "#como", label: "Cómo funciona" },
   { href: "#camino", label: "Tu carrera" },
-] as const;
+];
 export const LOGIN_HREF = "/entrar";
 export const START_HREF = "/ceo/empezar";
-/** La única acción principal de la landing: el mismo texto y el mismo destino en encabezado, hero, demo y cierre. */
+/** La única acción principal de la landing: el mismo texto y el mismo destino en encabezado, primer bloque y cierre. */
 export const CTA = "Comenzar gratis";
+/** Rutas de cada idioma (en metis.ceo, «/» es la landing en español y «/en» la versión en inglés). */
+export const LANG_HREF = { es: "/", en: "/en" } as const;
+export type Lang = keyof typeof LANG_HREF;
 
-/* ---------------- Hero ---------------- */
+/** Textos de la interfaz que no son titulares (accesibilidad, menú, pie). */
+export const UI = {
+  skip: "Saltar al contenido",
+  home: "MÊTIS CEO, inicio",
+  mainNav: "Principal",
+  login: "Iniciar sesión",
+  openMenu: "Abrir menú",
+  closeMenu: "Cerrar menú",
+  /** Selector de idioma: lleva a la otra versión. */
+  switchLabel: "Read in English",
+  switchShort: "EN",
+  howEyebrow: "Cómo funciona",
+  stage: "Etapa",
+  stagesLabel: "Etapas de la carrera",
+  faqTitle: "Preguntas frecuentes",
+  haveAccount: "¿Ya tienes cuenta?",
+  signIn: "Inicia sesión",
+  footerNav: "Pie de página",
+  privacy: "Aviso de privacidad",
+  terms: "Términos",
+  playing: "Seguir mi carrera",
+};
+
+/* ---------------- Primer bloque: qué es mêtis, con un caso real al lado ---------------- */
 export const HERO = {
   eyebrow: "Simulador de dirección",
-  title: "Practica cómo dirigir una empresa.",
-  body: "Resuelve situaciones de negocio, toma decisiones y descubre cómo afectan a los resultados y a las personas. Desarrolla tu criterio de liderazgo en unos minutos al día.",
+  title: "Tu siguiente reto puede llegar en cualquier momento.",
+  body: "mêtis CEO es un simulador para practicar cómo dirigir una empresa. Te llegan situaciones de negocio como en la vida real: un correo, un WhatsApp, una llamada. Revisas el contexto, decides y ves qué pasa con los resultados y con las personas. Después entiendes por qué, en un minuto.",
+  try: "Pruébalo aquí al lado: es un caso del simulador, paso por paso, como lo vives en la app.",
   motto: "Dirigir se aprende decidiendo.",
   note: "Sin tarjeta.",
 };
 
-/* ---------------- Cuadro del hero: el ciclo en 4 escenas ---------------- */
-export const STORY = {
-  label: "Así se vive MÊTIS, en cuatro escenas",
-  ring: "Tu camino a CEO",
-  scenes: [
-    { key: "caso", tab: "El caso", title: "Cada día te llega un problema real", pct: 24 },
-    { key: "decide", tab: "Decides", title: "Tú decides. La empresa responde.", pct: 41 },
-    { key: "aprende", tab: "Aprendes", title: "Entiendes por qué, en un minuto", pct: 63 },
-    { key: "sube", tab: "Avanzas", title: "Día a día, tu carrera avanza", pct: 86 },
-  ] as const,
-  caso: {
-    from: "Héctor Salinas", role: "Director Comercial", channel: "WhatsApp",
-    msg: "SuperNorte nos pide 4 puntos más de descuento y pagar a 90 días. ¿Cómo lo manejamos?",
-    facts: [["Ventas con SuperNorte", "31% del total"], ["Responde en", "3 h 40 min"]] as [string, string][],
-    foot: "Llega a tu celular, como en una empresa de verdad.",
-  },
-  decide: {
-    options: ["Aceptar el descuento", "Negociar condiciones", "Mantener el precio"],
-    pick: 1,
-    kpis: [["Margen", 54, 60], ["Clientes", 64, 59], ["Equipo", 57, 55]] as [string, number, number][],
-    foot: "Héctor esperaba otra cosa. Lo vas a notar la próxima semana.",
-  },
-  aprende: {
-    eyebrow: "Nota CEO",
-    note: "Cuando un cliente pesa tanto, no regales precio: ofrece algo que también le sirva a él.",
-    source: "Bitácora · Negociación",
-    ask: "¿Qué protegiste con tu decisión?",
-    chips: ["El margen", "La relación", "Las ventas"],
-    xp: "+30 XP", xpNote: "Buen criterio",
-  },
-  sube: {
-    streak: "días de racha",
-    stage: "Emerging Leader", next: "Functional Manager",
-    appoint: "Nombramiento: Functional Manager", appointNote: "Más alcance, decisiones más grandes.",
-  },
-};
-
-/* ---------------- Demo «Tu primera decisión» ---------------- */
-export type Dim = "finanzas" | "personas" | "clientes" | "operacion" | "confianza";
-export const DIMS: { key: Dim; label: string }[] = [
-  { key: "finanzas", label: "Finanzas" },
-  { key: "personas", label: "Personas" },
-  { key: "clientes", label: "Clientes" },
-  { key: "operacion", label: "Operación" },
-  { key: "confianza", label: "Confianza" },
-];
-/** −2 … +2: dirección y fuerza del efecto. 0 = sin cambio visible. */
-export type Effects = Record<Dim, -2 | -1 | 0 | 1 | 2>;
-
-/** Un momento de la consecuencia: qué se mueve y con qué palabras se describe cada dimensión. */
-export interface DemoPhase { text: string; effects: Effects; words: Record<Dim, string> }
-export interface DemoOption {
-  id: string;
-  label: string;
-  detail: string;
-  now: DemoPhase;
-  later: DemoPhase;
-  tradeoff: string;
-}
-
-export const DEMO = {
-  label: "Tu primera decisión",
-  title: "Una decisión nunca afecta una sola cosa.",
-  body: "Una muestra breve del primer caso del simulador. Elige qué le respondes a Héctor y mira qué cambia hoy y un mes después.",
-  steps: ["Recibes el problema", "Tomas una decisión", "Ves qué cambia hoy y un mes después"],
-  from: { name: "Héctor Salinas", initials: "HS", role: "Director Comercial · Botanas Cumbre", channel: "WhatsApp", time: "9:14" },
-  message: [
-    "Necesito que revisemos algo urgente.",
-    "Sofía Leal, la compradora de SuperNorte, nos pide 4 puntos más de descuento y pagar a 90 días. Dice que una marca regional les ofreció mejores condiciones.",
-    "Es casi un tercio de nuestras ventas.",
-    "¿Cómo lo manejamos?",
+/* ---------------- El caso del primer bloque (SuperNorte, día 2 de Botanas Cumbre) ---------------- */
+/** Copia fiel de lib/ceo/companies/cumbre-items.ts (d2-supernorte); las pruebas revisan que coincida. */
+export interface CaseOption { id: string; text: string; reply: string[]; outcome: string; effects: [string, number][] }
+export const CASE = {
+  label: "Un caso del simulador",
+  steps: ["El caso", "Contexto", "Decides", "Resultado", "Aprendes"],
+  stepOf: "Paso {n} de {t}",
+  received: "Te llegó un asunto",
+  from: { name: "Sofía Leal", initials: "SL", role: "Compradora de categoría · SuperNorte", tone: "#171A3A", time: "9:14" },
+  channel: "Correo",
+  subject: "Condiciones comerciales 2027 · Botanas Cumbre",
+  to: "Para: Director General <direccion@botanascumbre.mx>",
+  body: [
+    "Estimado Director:",
+    "Primero, bienvenido. Nos dio gusto saber del relevo en Cumbre.",
+    "Como cada año, revisamos condiciones con nuestros proveedores estratégicos. Para mantener sus dos frentes de anaquel en las 140 tiendas, necesitamos 4 puntos adicionales de descuento y pasar el plazo de pago de 60 a 90 días a partir de enero.",
+    "Sabemos que es un ajuste importante. También le comento que una marca regional nos ofreció condiciones muy competitivas por ese espacio.",
+    "Quedo atenta a su respuesta antes del viernes.",
+    "Saludos cordiales,\nSofía Leal · Compradora de categoría Botanas",
   ],
-  facts: [
-    ["Ventas con SuperNorte", "31% del total"],
-    ["Margen de la cuenta hoy", "7.1%"],
-    ["Si das los 4 puntos", "Margen 3.1%"],
-    ["Si se va", "La planta pierde casi un tercio de su volumen"],
-  ] as [string, string][],
-  ask: "¿Qué le respondes a Héctor?",
-  picked: "Tu decisión",
-  watch: "Observa cómo cambia tu empresa.",
-  phases: ["Hoy", "Un mes después"] as const,
-  seeLater: "Ver un mes después",
+  context: {
+    eyebrow: "Antes de decidir",
+    title: "Lo que necesitas saber",
+    text: "Los datos del asunto y quién está en juego. Tómate tu tiempo.",
+    data: {
+      title: "Lucía (Finanzas) te armó esto en 20 minutos",
+      rows: [["Ventas a SuperNorte", "$127 M al año"], ["Margen de la cuenta hoy", "7.1%"], ["Si damos 4 pts", "Margen 3.1% · −$5.1 M al año"], ["Si pasamos a 90 días", "Necesitamos ≈ $10 M más de capital de trabajo"], ["Rotación de Cumbre en sus tiendas", "1.4× la de la marca regional"]] as [string, string][],
+      note: "Nota de Lucía: «Ojo, nuestras papas rotan mejor que las de ellos. SuperNorte también pierde si nos saca.»",
+    },
+  },
+  decide: { eyebrow: "Tu decisión", ask: "¿Cómo respondes a SuperNorte?", cta: "Tomar la decisión" },
   options: [
-    {
-      id: "aceptar",
-      label: "Aceptar el descuento",
-      detail: "Conservas casi un tercio de las ventas y la planta sigue llena. Ese volumen ayuda a pagar los costos fijos.",
-      now: {
-        text: "Firmas hoy. Héctor respira, los turnos de la planta no se tocan y nadie tiene que explicar por qué se fue el cliente más grande.",
-        effects: { finanzas: -1, personas: 1, clientes: 1, operacion: 1, confianza: 0 },
-        words: { finanzas: "Margen a 3.1%", personas: "Alivio", clientes: "Cuenta asegurada", operacion: "Planta llena", confianza: "Sin cambios" },
-      },
-      later: {
-        text: "La cuenta casi no deja margen y Finanzas te pide recortar en otra parte. SuperNorte aprendió que presionar funciona.",
-        effects: { finanzas: -2, personas: 1, clientes: 1, operacion: 1, confianza: -1 },
-        words: { finanzas: "Recortes en otra parte", personas: "Turnos intactos", clientes: "Cuenta conservada", operacion: "Capacidad usada", confianza: "Precedente débil" },
-      },
-      tradeoff: "Compraste estabilidad para la planta y el equipo con margen. La próxima negociación empieza desde un precio más bajo.",
-    },
-    {
-      id: "negociar",
-      label: "Negociar condiciones",
-      detail: "Llevas datos: tus papas rotan 1.4 veces más que las de la marca regional. Ofreces 1.5 puntos en promociones atadas a volumen. Ganas tiempo, no certeza.",
-      now: {
-        text: "SuperNorte no firma hoy: pide una semana. Héctor tiene que volver con una contrapropuesta y sostenerla frente a su compradora.",
-        effects: { finanzas: 0, personas: -1, clientes: -1, operacion: 0, confianza: 1 },
-        words: { finanzas: "Estable", personas: "Héctor presionado", clientes: "En negociación", operacion: "Sin cambios", confianza: "Postura clara" },
-      },
-      later: {
-        text: "SuperNorte acepta las promociones con metas por tienda, pero retira dos productos del anaquel. Proteges margen; Héctor quedó desgastado.",
-        effects: { finanzas: 1, personas: -1, clientes: -1, operacion: 0, confianza: 1 },
-        words: { finanzas: "Margen protegido", personas: "Héctor desgastado", clientes: "Menos anaquel", operacion: "Sin cambios", confianza: "Acuerdo cumplido" },
-      },
-      tradeoff: "Cambiaste la certeza de hoy por un mejor acuerdo. Esta vez salió; en el simulador, no siempre sale.",
-    },
-    {
-      id: "mantener",
-      label: "Mantener el precio",
-      detail: "Otra cadena pidió cotización la semana pasada. Apuestas a que tu producto vale lo que cobras.",
-      now: {
-        text: "Proteges el margen completo y das una señal clara: el precio no se mueve por presión.",
-        effects: { finanzas: 2, personas: -1, clientes: -1, operacion: 0, confianza: 1 },
-        words: { finanzas: "Margen intacto", personas: "Héctor inquieto", clientes: "Relación tensa", operacion: "Sin cambios", confianza: "Señal firme" },
-      },
-      later: {
-        text: "SuperNorte reduce pedidos mientras prueba a otro proveedor. La planta queda con capacidad ociosa y Héctor siente que lo dejaste solo.",
-        effects: { finanzas: 2, personas: -1, clientes: -2, operacion: -1, confianza: 1 },
-        words: { finanzas: "Margen intacto", personas: "Héctor se siente solo", clientes: "Pedidos a la baja", operacion: "Capacidad ociosa", confianza: "Precio respetado" },
-      },
-      tradeoff: "Apostaste a que tu producto vale más para ellos de lo que dicen. Si te equivocas, el costo llega en volumen y en tu equipo.",
-    },
-  ] as DemoOption[],
-  disclaimer: "Ejemplo ilustrativo, no conectado a tu cuenta. En el simulador, el resultado también depende de lo que decidiste antes y de cómo está tu empresa.",
-  close: "Eso fue una decisión. En el simulador, cada una se conecta con las siguientes durante semanas.",
-  retry: "Volver a decidir",
+    { id: "a", text: "Aceptar. Es el 31% de las ventas y no puedo arriesgarme en mi primer mes.", reply: ["Excelente, Director. Le agradecemos mucho la disposición.", "Le hago llegar el anexo para firma esta semana."], outcome: "Conservas el anaquel, pero pierdes $5 M de margen al año y necesitas $10 M de caja. Y SuperNorte aprendió que contigo basta con apretar.", effects: [["Clientes", 4], ["Margen", -8], ["Caja", -6]] },
+    { id: "b", text: "Pedir una reunión con datos: nuestra rotación es 1.4× la de la competencia. Propongo invertir 1.5 puntos en promociones conjuntas atadas a volumen y mantener 60 días.", reply: ["Interesante. No tenía el dato de rotación por tienda.", "Lo reviso con mi gerente. Si el plan de promociones viene con metas por tienda, lo podemos considerar.", "¿Le parece el jueves a las 10?"], outcome: "Cambiaste la conversación de «cuánto me das» a «cómo crecemos los dos». Si te funciona, creas valor antes de pelearlo.", effects: [["Clientes", 2], ["Consejo", 3], ["Margen", -2], ["Caja", -1]] },
+    { id: "c", text: "Responder firme: si nos aprietan, sacamos producto y apostamos por tiendas de conveniencia. No vamos a regalar margen.", reply: ["Entiendo su postura, Director.", "Lo comentaré internamente."], outcome: "Defendiste el margen con tu poder. Pero tu alternativa (las tiendas de conveniencia) todavía no existe: estás alardeando.", effects: [["Margen", 3], ["Clientes", -8], ["Consejo", -2]] },
+  ] as CaseOption[],
+  result: { decided: "Decidiste", what: "Qué pasó en Botanas Cumbre" },
+  learn: {
+    eyebrow: "Bitácora del CEO",
+    title: "MAPAN: el poder está en tus alternativas",
+    text: "Tu fuerza no dependía de sonar duro, sino de tu mejor alternativa y de entender la de SuperNorte: perder un producto que rota 1.4× también les cuesta. Antes de pelear la rebanada, pregúntate si la mesa puede crecer.",
+    notaLabel: "Nota CEO:",
+    nota: "La mejor forma de negociar con fuerza no es sonar fuerte; es construir alternativas antes de necesitarlas.",
+    lessonLabel: "Aprende la teoría:",
+    lesson: "Negociar como CEO · 5 min",
+  },
+  nav: { back: "Atrás", next: ["Ver el contexto", "Decidir", "", "Lo que aprendes"], again: "Elegir otra respuesta" },
+  note: "Caso del día 2 en Botanas Cumbre, tal cual aparece en el simulador. Esta muestra no guarda nada.",
 };
 
-/* ---------------- Cómo funciona (incluye el ritmo diario) ---------------- */
+/* ---------------- Cómo funciona: tres pasos y una secuencia de tres pantallas ---------------- */
+export interface TodayItem { initials: string; tone: string; name: string; channel: "email" | "whatsapp" | "reporte"; text: string; due: string }
 export const HOW = {
   title: "Practica con casos que evolucionan.",
   body: "Practica desde cualquier dispositivo, dentro del horario que eliges y a tu propio ritmo.",
   steps: [
-    { n: "01", t: "Abre un caso", d: "Una situación de negocio pone a prueba tu criterio." },
-    { n: "02", t: "Toma decisiones", d: "Revisa el contexto y define cómo actuar; tus decisiones cambian lo que ocurre después." },
-    { n: "03", t: "Aprende de las consecuencias", d: "Comprende los resultados y refuerza conceptos en mêtis Academy." },
+    { n: "01", t: "Recibes una situación", d: "Un cliente reclama, tu equipo necesita una respuesta o el presupuesto no alcanza. Te puede llegar en cualquier momento del día." },
+    { n: "02", t: "Tomas una decisión", d: "Revisas el contexto, eliges un camino y asumes sus consecuencias. No siempre tendrás toda la información." },
+    { n: "03", t: "Aprendes de lo que ocurre", d: "Ves cómo reaccionan las personas, qué cambia en el negocio y qué podrías considerar la próxima vez." },
   ],
+  slides: {
+    label: "Así llega y así se resuelve un asunto",
+    tabs: ["Llega el correo", "Lo ves en Hoy", "Ya decidiste"],
+    channel: { email: "Correo", whatsapp: "WhatsApp", reporte: "Reporte" },
+    inbox: {
+      app: "Recibidos",
+      fromLine: "Sofía Leal · Botanas Cumbre",
+      time: "9:14",
+      preview: "Para mantener sus dos frentes de anaquel necesitamos 4 puntos adicionales de descuento y pasar a 90 días…",
+      decision: "Tu decisión",
+      button: "Responder",
+      deadline: "Responde en las próximas 24 h",
+    },
+    today: {
+      top: "Hoy · Día 2 en Botanas Cumbre",
+      title: "Esperando tu decisión",
+      inbox: "Bandeja",
+      items: [
+        { initials: "SL", tone: "#171A3A", name: "Sofía Leal", channel: "email", text: "Condiciones comerciales 2027 · Botanas Cumbre", due: "Vence en 23 h" },
+        { initials: "AM", tone: "#5B4BE8", name: "Ana Martínez", channel: "reporte", text: "Pronóstico Q1 · versión final (22 láminas)", due: "Vence en 23 h" },
+        { initials: "HS", tone: "#3A2DB8", name: "Héctor Salinas", channel: "whatsapp", text: "Me enteré de lo de SuperNorte. A Sofía la conozco desde que era practicante…", due: "Vence en 11 h" },
+      ] as TodayItem[],
+    },
+    done: {
+      status: "Asunto resuelto",
+      option: "b",
+      left: "Te quedan 2 asuntos por hoy.",
+    },
+    pause: "Pausar la secuencia",
+    play: "Reproducir la secuencia",
+    caption: "Ejemplo con el caso SuperNorte de Botanas Cumbre.",
+  },
 };
 
 /* ---------------- La experiencia: una empresa que recuerda (casos reales de Botanas Cumbre) ---------------- */
@@ -219,6 +194,7 @@ export const DIFF = {
   body: "Las personas recuerdan cómo las trataste y algunos problemas de hoy se sembraron días antes. Lo que regresa depende de lo que decidas.",
   decideLabel: "Decides",
   backLabel: "Regresa",
+  carousel: { region: "Historias de Botanas Cumbre", role: "carrusel", item: "historia", of: "de", prev: "Historia anterior", next: "Historia siguiente", pick: "Elegir historia", story: "Historia", pause: "Pausar el carrusel", play: "Reproducir el carrusel" },
   items: [
     {
       t: "Alguien recuerda lo que hiciste",
@@ -254,8 +230,9 @@ export const DIFF = {
 /* ---------------- Camino profesional (ruta visual) ---------------- */
 export type StageState = "inicio" | "siguiente" | "bloqueada";
 export const PATH = {
+  eyebrow: "Tu carrera",
   title: "Una carrera que crece contigo.",
-  body: "Empiezas dirigiendo una empresa en la industria que elijas. Al resolver retos, asumes responsabilidades mayores y otras industrias te llaman a dirigir.",
+  body: "Empiezas dirigiendo una empresa en la industria que elijas. Cada caso te deja un aprendizaje: entiendes por qué pasó lo que pasó y refuerzas la teoría en mêtis Academy. Al resolver retos, asumes responsabilidades mayores y otras industrias te llaman a dirigir.",
   stateLabel: { inicio: "Aquí empiezas", siguiente: "Siguiente objetivo", bloqueada: "Por desbloquear" } as Record<StageState, string>,
   stages: [
     { n: "01", name: "Emerging Leader", learn: "Equipos y prioridades", state: "inicio" },
@@ -294,6 +271,10 @@ export const CLOSE = {
   body: "Practica cómo dirigir una empresa y desarrolla tu criterio, un caso a la vez.",
 };
 export const FOOTER = { tagline: "Simulador de decisiones ejecutivas. Dirigir se aprende decidiendo.", place: "Monterrey, N.L., México" };
+
+/** Todo el copy visible de un idioma. content-en.ts exporta EN con esta misma forma. */
+export const ES = { lang: "es" as Lang, SEO, NAV, CTA, UI, HERO, CASE, HOW, DIFF, PATH, PHILOSOPHY, FAQ, CLOSE, FOOTER };
+export type Copy = typeof ES;
 
 /** Frases que no queremos en la landing (tono). Se revisan en las pruebas. */
 export const BANNED = ["revoluciona", "desbloquea tu", "transforma tu", "potencia tus", "siguiente nivel", "definitiva", "disruptiv", "game changer", "vanguardia", "powered by", "cancela cuando quieras", "prueba gratis", "próximamente", "en preparación", "más adelante", "muy pronto"];
