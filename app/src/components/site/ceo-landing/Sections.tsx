@@ -10,7 +10,6 @@ import { CeoCta } from "@/components/site/CeoCta";
 import { CEO_CONTACT_EMAIL } from "@/lib/site";
 import { LOGIN_HREF, type Copy, type StageState } from "./content";
 import { MemoryCarousel } from "./Memory";
-import { HowSlides } from "./HowSlides";
 import { ArenaLock } from "./ArenaLock";
 import { Stagger } from "./Stagger";
 
@@ -32,21 +31,20 @@ function Head({ eyebrow, title, body, id, center = false }: { eyebrow?: string; 
 
 export function HowSection({ t }: { t: Copy }) {
   const HOW = t.HOW;
+  // Las pantallas de ejemplo (HowSlides) quedan ocultas por ahora: los tres pasos ocupan su lugar y entran con animación.
   return (
     <section id="como" aria-labelledby="como-title" className="scroll-mt-20">
-      <div className={WRAP + " " + PAD + " grid lg:grid-cols-[1.05fr_1fr] gap-12 lg:gap-16 items-center [&>*]:min-w-0"}>
-        <div>
-          <Head id="como-title" eyebrow={t.UI.howEyebrow} title={HOW.title} body={HOW.body} />
-          <ol className="mt-10 space-y-6">
-            {HOW.steps.map((s) => (
-              <li key={s.n} className="grid grid-cols-[2.5rem_1fr] gap-3">
-                <span className="text-2xl font-semibold tabular-nums text-indigo/70 leading-none pt-0.5">{s.n}</span>
-                <div><h3 className="text-lg font-semibold text-ink">{s.t}</h3><p className="mt-1 text-[15px] leading-relaxed text-slate-600">{s.d}</p></div>
-              </li>
-            ))}
-          </ol>
-        </div>
-        <HowSlides t={t} />
+      <div className={WRAP + " " + PAD + " grid lg:grid-cols-[1fr_1fr] gap-12 lg:gap-20 items-center [&>*]:min-w-0"}>
+        <Head id="como-title" eyebrow={t.UI.howEyebrow} title={HOW.title} body={HOW.body} />
+        <Stagger className="relative space-y-8" label={HOW.title}>
+          <span aria-hidden className="absolute left-[19px] top-10 bottom-10 w-px bg-indigo/15" />
+          {HOW.steps.map((s, i) => (
+            <li key={s.n} style={{ "--i": i } as React.CSSProperties} className="ceo-step relative grid grid-cols-[40px_1fr] gap-5">
+              <span className="relative h-10 w-10 grid place-items-center rounded-full bg-indigo-soft text-[14px] font-semibold tabular-nums text-indigo">{s.n}</span>
+              <div className="pt-1.5"><h3 className="text-lg sm:text-xl font-semibold text-ink">{s.t}</h3><p className="mt-1.5 text-[15px] sm:text-base leading-relaxed text-slate-600">{s.d}</p></div>
+            </li>
+          ))}
+        </Stagger>
       </div>
     </section>
   );
