@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
 
-export function CeoCta({ className = "", label = "Empieza tu primer día" }: { className?: string; label?: string }) {
+export function CeoCta({ className = "", label = "Empieza tu primer día", playingLabel = "Seguir mi carrera" }: { className?: string; label?: string; playingLabel?: string }) {
   const [playing, setPlaying] = useState(false);
   useEffect(() => {
     // Partida sin cuenta (metis-ceo-v1) o copia de alguna cuenta (metis-ceo-v2:<usuario>) en este navegador.
@@ -19,7 +19,7 @@ export function CeoCta({ className = "", label = "Empieza tu primer día" }: { c
   }, []);
   return (
     <Link href={playing ? "/ceo" : "/ceo/empezar"} className={"btn bg-mint text-white hover:bg-mint-light !px-5 !py-3 " + className}>
-      {playing ? "Seguir mi carrera" : label} <ArrowRight size={16} />
+      {playing ? playingLabel : label} <ArrowRight size={16} />
     </Link>
   );
 }

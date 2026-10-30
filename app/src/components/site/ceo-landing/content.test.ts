@@ -2,154 +2,250 @@ import { describe, expect, it } from "vitest";
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import * as C from "./content";
+import { BANNED_EN, EN } from "./content-en";
 import { STAGES } from "../../../lib/ceo/journey";
 import { COMPANIES } from "../../../lib/ceo/companies";
+import { avatarHex } from "../../../lib/ceo/cast";
+import { lessonById } from "../../../lib/ceo/lessons";
 
 const DIR = "src/components/site/ceo-landing";
-const sources = () => [...readdirSync(DIR).filter((f) => (f.endsWith(".tsx") && f !== "Legal.tsx") || f === "content.ts").map((f) => readFileSync(join(DIR, f), "utf8")), readFileSync("src/app/simulador/page.tsx", "utf8")].join("\n");
+const PAGES = ["src/app/simulador/page.tsx", "src/app/simulador/en/page.tsx"];
+const read = (f: string) => readFileSync(join(DIR, f), "utf8");
+const sources = () => [...readdirSync(DIR).filter((f) => (f.endsWith(".tsx") && f !== "Legal.tsx") || f === "content.ts" || f === "content-en.ts").map(read), ...PAGES.map((p) => readFileSync(p, "utf8"))].join("\n");
 /** Copy visible: BANNED es la lista de control y AVAILABILITY es la matriz interna (no se muestra). */
-const allCopy = () => { const { BANNED: _b, AVAILABILITY: _a, ...rest } = C; void _b; void _a; return JSON.stringify(rest).toLowerCase(); };
+const allCopy = () => JSON.stringify(C.ES).toLowerCase();
+const enCopy = () => JSON.stringify(EN).toLowerCase();
+const cumbre = COMPANIES.find((c) => c.id === "cumbre")!;
+const sn = cumbre.items.find((i) => i.id === "d2-supernorte")!;
 
-describe("landing de MÊTIS CEO", () => {
-  it("la demo tiene tres opciones con consecuencias, intercambios y efectos distintos", () => {
-    const o = C.DEMO.options;
-    expect(o.map((x) => x.label)).toEqual(["Aceptar el descuento", "Negociar condiciones", "Mantener el precio"]);
-    for (const k of ["now", "later"] as const) expect(new Set(o.map((x) => x[k].text)).size).toBe(3);
-    expect(new Set(o.map((x) => x.tradeoff)).size).toBe(3);
-    expect(new Set(o.map((x) => JSON.stringify(x.later.effects))).size).toBe(3);
-    // un mes después, ninguna opción gana en todo ni pierde en todo
-    for (const x of o) {
-      const v = Object.values(x.later.effects);
-      expect(v.some((n) => n > 0)).toBe(true);
-      expect(v.some((n) => n < 0)).toBe(true);
+/** Mismas claves en los dos idiomas (en cualquier nivel), para que nada quede sin traducir. */
+function shape(o: unknown): unknown {
+  if (Array.isArray(o)) return o.map(shape);
+  if (o && typeof o === "object") return Object.fromEntries(Object.keys(o).sort().map((k) => [k, shape((o as Record<string, unknown>)[k])]));
+  return typeof o;
+}
+
+describe("landing de MÊTIS CEO · primer bloque", () => {
+  it("el primer bloque dice qué es mêtis con la frase pedida y una sola h1", () => {
+    expect(C.HERO.title).toBe("Practica cómo dirigir una empresa.");
+    expect(C.HERO.eyebrow).toBe("Simulador de dirección");
+    expect(C.HERO.body).toMatch(/^mêtis CEO es un simulador para practicar cómo dirigir una empresa\./);
+    expect(C.HERO.body).toMatch(/decides/);
+    expect(allCopy()).not.toContain("una decisión nunca afecta una sola cosa");
+    expect((sources().match(/<h1\b/g) ?? []).length).toBe(1);
+    const landing = read("Landing.tsx");
+    expect(landing.indexOf("<CaseDemo")).toBeLessThan(landing.indexOf("<HowSection"));
+  });
+
+  it("el caso de al lado es SuperNorte tal cual está en el juego (correo, datos, pregunta, opciones, respuestas y bitácora)", () => {
+    const k = C.CASE;
+    expect(sn.channel).toBe("email");
+    expect(k.subject).toBe(sn.subject);
+    expect(k.body).toEqual(sn.body);
+    expect(k.context.data.title).toBe(sn.data!.title);
+    expect(k.context.data.rows).toEqual(sn.data!.rows);
+    expect(k.context.data.note).toBe(sn.data!.note);
+    expect(k.decide.ask).toBe(sn.ask);
+    expect(k.options.map((o) => o.id)).toEqual(sn.options.map((o) => o.id));
+    for (const o of k.options) {
+      const g = sn.options.find((x) => x.id === o.id)!;
+      expect(o.text).toBe(g.text);
+      expect(o.reply).toEqual(g.reply);
+      expect(o.outcome).toBe(g.outcome);
+      // efectos del nivel inicial (sin escalar), con las etiquetas de la empresa y en el mismo orden
+      expect(o.effects).toEqual(Object.entries(g.effects).map(([kk, v]) => [cumbre.kpiLabel[kk as keyof typeof cumbre.kpiLabel], v]));
     }
+    expect(k.learn.title).toBe(sn.bitacora.title);
+    expect(k.learn.text).toBe(sn.bitacora.text);
+    expect(k.learn.nota).toBe(sn.bitacora.nota);
+    const lesson = lessonById(sn.lesson!)!;
+    expect(k.learn.lesson).toBe(`${lesson.title} · ${lesson.minutes} min`);
+    const sofia = cumbre.cast.sofia;
+    expect(k.from).toMatchObject({ name: sofia.name, initials: sofia.initials, role: sofia.role, tone: avatarHex(cumbre, "sofia") });
+    expect(k.to).toContain(`direccion@${cumbre.domain}`);
   });
 
-  it("una sola experiencia: tras decidir se ve hoy y un mes después, con palabras en cada dimensión", () => {
-    expect(C.DEMO.phases).toEqual(["Hoy", "Un mes después"]);
-    expect(C.DEMO.title).toBe("Una decisión nunca afecta una sola cosa.");
-    for (const x of C.DEMO.options) {
-      expect(JSON.stringify(x.now.effects), x.id).not.toBe(JSON.stringify(x.later.effects));
-      for (const ph of [x.now, x.later]) {
-        for (const d of C.DIMS) {
-          const w = ph.words[d.key];
-          expect(w, `${x.id}/${d.key}`).toBeTruthy();
-          // la palabra no contradice la dirección: «Sin cambios» solo con 0
-          if (w === "Sin cambios") expect(ph.effects[d.key], `${x.id}/${d.key}`).toBe(0);
-        }
-      }
-    }
-    // ya no hay una segunda sección de efectos cruzados
-    expect("RIPPLE" in C).toBe(false);
-    expect(readdirSync(DIR)).not.toContain("Ripple.tsx");
+  it("el caso avanza como en la app: mismos pasos, mismos botones y mismas reglas de navegación", () => {
+    expect(C.CASE.steps).toEqual(["El caso", "Contexto", "Decides", "Resultado", "Aprendes"]);
+    const app = readFileSync("src/components/ceo/CaseView.tsx", "utf8");
+    expect(app).toContain('const CASE_STEPS = ["El caso", "Contexto", "Decides", "Resultado", "Aprendes"]');
+    for (const s of [C.CASE.received, C.CASE.context.eyebrow, C.CASE.context.title, C.CASE.decide.eyebrow, C.CASE.decide.cta, ...C.CASE.nav.next.filter(Boolean)]) expect(app, s).toContain(s);
+    const demo = read("CaseDemo.tsx");
+    // antes de decidir no se pasa de «Decides»; después, no se regresa a decidir
+    expect(demo).toContain("const back = step === 0 || (done && step === 3) ? undefined : () => go(step - 1);");
+    expect(demo).toContain("const fwd = step < 2 ? () => go(step + 1) : done && step === 3 ? () => go(4) : undefined;");
+    // mismo aspecto que la pantalla de decisión: fondo, barras y opciones
+    for (const s of ["from-[#0F1130] via-[#1A1650] to-[#2B1F8A]", "bg-mint", "bg-white/60", "bg-white/15", "shadow-[0_0_0_4px_rgba(109,93,246,.35)]", "aria-pressed"]) expect(demo).toContain(s);
   });
 
-  it("el hero vuelve a mostrar el ciclo en cuatro escenas", () => {
-    expect(C.STORY.scenes.map((s) => s.tab)).toEqual(["El caso", "Decides", "Aprendes", "Avanzas"]);
-    const p = C.STORY.scenes.map((s) => s.pct);
-    expect([...p].sort((a, b) => a - b)).toEqual(p);
-    expect(C.PATH.stages.map((s) => s.name)).toContain(C.STORY.sube.stage);
-    expect(C.PATH.stages.map((s) => s.name)).toContain(C.STORY.sube.next);
-    const page = readFileSync("src/app/simulador/page.tsx", "utf8");
-    expect(page.indexOf("<Story />")).toBeLessThan(page.indexOf("<FirstDecision />"));
-  });
-
-  it("la demo se declara ilustrativa y cierra con la invitación pedida", () => {
-    expect(C.DEMO.disclaimer.toLowerCase()).toContain("ilustrativo");
-    expect(C.DEMO.close).toBe("Eso fue una decisión. Imagina dirigir la empresa durante semanas.");
-    expect(C.DEMO.cta).toBe("Empezar mi historia");
-    expect(C.DEMO.retry).toBe("Volver a decidir");
-    expect(C.DEMO.from.name).toBe("Héctor Salinas");
-  });
-
-  it("la demo está aislada: no importa el motor, el proveedor ni toca almacenamiento", () => {
-    const src = readFileSync(join(DIR, "FirstDecision.tsx"), "utf8") + readFileSync(join(DIR, "Story.tsx"), "utf8");
+  it("las demos están aisladas: no importan el motor, el proveedor ni tocan almacenamiento", () => {
+    const code = (t: string) => t.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:"'`])\/\/.*$/gm, "$1");
+    const src = code(read("CaseDemo.tsx") + read("HowSlides.tsx") + read("Memory.tsx") + read("Landing.tsx"));
     expect(src).not.toMatch(/lib\/ceo|CeoProvider|localStorage|supabase|fetch\(|track\(/);
+    // la demo vieja y el cuadro de cuatro escenas ya no existen (eran el mismo caso dos veces)
+    for (const f of ["FirstDecision.tsx", "Story.tsx", "Effects.tsx", "TryButton.tsx"]) expect(readdirSync(DIR)).not.toContain(f);
+    expect("DEMO" in C || "STORY" in C || "DIMS" in C).toBe(false);
+  });
+});
+
+describe("landing de MÊTIS CEO · bloques", () => {
+  it("orden: primer bloque, cómo funciona, empresa que recuerda, carrera, filosofía, preguntas y cierre", () => {
+    const page = read("Landing.tsx");
+    const order = ["<CaseDemo", "<HowSection", "<MemorySection", "<PathSection", "<PhilosophySection", "<FaqSection", "<CloseSection"];
+    const at = order.map((t) => page.indexOf(t));
+    expect(at.every((n) => n > 0)).toBe(true);
+    expect([...at].sort((a, b) => a - b)).toEqual(at);
+    for (const p of PAGES) expect(readFileSync(p, "utf8")).toMatch(/<Landing t=\{(ES|EN)\} \/>/);
   });
 
-  it("las etapas coinciden con las del producto", () => {
+  it("un mismo CTA y un mismo destino en encabezado, primer bloque y cierre; sin acciones competidoras", () => {
+    expect(C.CTA).toBe("Comenzar gratis");
+    expect(EN.CTA).toBe("Start free");
+    const files = { landing: read("Landing.tsx"), header: read("Header.tsx"), sections: read("Sections.tsx") };
+    for (const [k, src] of Object.entries(files)) expect(src, k).toMatch(/<CeoCta label=\{t\.CTA\} playingLabel=\{(t\.UI|U)\.playing\}/);
+    const all = Object.values(files).join("\n") + read("CaseDemo.tsx") + read("HowSlides.tsx");
+    expect(all.match(/btn bg-mint/g) ?? []).toEqual([]);
+    expect(readFileSync("src/components/site/CeoCta.tsx", "utf8")).toContain('"/ceo/empezar"');
+  });
+
+  it("cómo funciona: el título se queda y vuelven los tres pasos de antes; el primero dice «en cualquier momento del día»", () => {
+    expect(C.HOW.title).toBe("Practica con casos que evolucionan.");
+    expect(C.HOW.steps.map((s) => s.t)).toEqual(["Recibes una situación", "Tomas una decisión", "Aprendes de lo que ocurre"]);
+    expect(C.HOW.steps[0].d).toContain("en cualquier momento del día");
+  });
+
+  it("cómo funciona: tres pantallas en secuencia (correo → Hoy → decidido) que salen del mismo caso", () => {
+    const S = C.HOW.slides;
+    expect(S.tabs).toEqual(["Llega el correo", "Lo ves en Hoy", "Ya decidiste"]);
+    expect(S.today.title).toBe("Esperando tu decisión");
+    expect(readFileSync("src/components/ceo/Today.tsx", "utf8")).toContain(S.today.title);
+    expect(sn.preview).toContain(S.inbox.preview.replace("Para mantener sus dos frentes de anaquel necesitamos ", "").replace("…", ""));
+    // la bandeja del día 2: los asuntos y los remitentes son los del juego
+    for (const it of S.today.items) {
+      const g = cumbre.items.find((x) => x.day === 2 && personName(x.from) === it.name)!;
+      expect(g, it.name).toBeTruthy();
+      expect(it.channel).toBe(g.channel);
+      expect(g.channel === "whatsapp" ? g.preview : g.subject).toBe(it.text);
+      expect(it.tone).toBe(avatarHex(cumbre, g.from));
+    }
+    expect(C.CASE.options.map((o) => o.id)).toContain(S.done.option);
+    const src = read("HowSlides.tsx");
+    for (const s of ["prefers-reduced-motion", "MEMORY_INTERVAL_MS", "onFocusCapture", "inert=", "aria-current"]) expect(src).toContain(s);
+    expect(read("Sections.tsx")).toContain("<HowSlides t={t} />");
+  });
+
+  it("carrusel: una historia a la vez, cada 7 s, con pausa, anterior/siguiente e indicadores", () => {
+    expect(C.MEMORY_INTERVAL_MS).toBe(7000);
+    const src = read("Memory.tsx");
+    for (const s of ["prefers-reduced-motion", "L.pause", "L.prev", "L.next", "aria-roledescription={L.role}", "onFocusCapture", "inert="]) expect(src).toContain(s);
+    expect(C.DIFF.carousel.pause).toBe("Pausar el carrusel");
+  });
+
+  it("carrera: el texto también habla de aprender; seis etapas iguales a las del producto y Executive Arena aparte", () => {
+    expect(C.PATH.title).toBe("Una carrera que crece contigo.");
+    expect(C.PATH.body).toMatch(/aprendizaje/);
+    expect(C.PATH.body).toMatch(/mêtis Academy/);
     expect(C.PATH.stages.map((s) => s.name)).toEqual(STAGES.map((s) => s.name));
-    // Sin subtítulo en español: el nombre de la etapa va solo en inglés.
-    expect(C.PATH.stages.every((s) => !("es" in s))).toBe(true);
-  });
-
-  it("la carrera es una ruta: un punto de partida, un siguiente objetivo y el resto por desbloquear", () => {
+    expect(EN.PATH.stages.map((s) => s.name)).toEqual(STAGES.map((s) => s.name));
     const st = C.PATH.stages.map((s) => s.state);
     expect(st[0]).toBe("inicio");
     expect(st[1]).toBe("siguiente");
     expect(st.slice(2).every((x) => x === "bloqueada")).toBe(true);
-    expect(C.PATH.stages.map((s) => s.n)).toEqual(["01", "02", "03", "04", "05", "06"]);
-    // Solo «Aquí empiezas» es visible; «Siguiente objetivo» y «Por desbloquear» quedan para lectores de pantalla.
-    const sec = readFileSync(join(DIR, "Sections.tsx"), "utf8");
+    const sec = read("Sections.tsx");
     expect(sec).toContain('<span className="sr-only">{PATH.stateLabel[s.state]}</span>');
-    expect(sec).not.toMatch(/chip mt-3 " \+ BADGE\[/);
-    // Después de Global CEO sigue The Executive Arena (lo que la app llama exigencia Legendaria), sin fechas.
-    expect(C.PATH.beyond.t).toBe("Después de Global CEO: The Executive Arena");
-    expect(C.PATH.beyond.d).not.toMatch(/legendario|pronto|20\d\d/i);
-    expect(C.AVAILABILITY.find((a) => a.item === "The Executive Arena")!.state).toBe("hoy");
+    expect(sec).toContain("<ArenaLock t={t} />");
+    expect(C.PATH.beyond.t).toBe("The Executive Arena");
+    expect(C.PATH.beyond.d).toMatch(/^Después de Global CEO/);
+    const lock = read("ArenaLock.tsx");
+    expect(lock).not.toMatch(/<button|<a |<Link|onClick/);
   });
 
-  it("el mensaje de Héctor suena a una persona y la decisión tiene argumentos en las tres opciones", () => {
-    expect(C.DEMO.message.join(" ")).toContain("SuperNorte");
-    expect(C.DEMO.message.at(-1)).toBe("¿Cómo lo manejamos?");
-    // Aceptar ya no es obviamente malo: mejora algo más que una sola dimensión.
-    const ok = (id: string) => Object.values(C.DEMO.options.find((o) => o.id === id)!.later.effects).filter((n) => n > 0).length;
-    for (const id of ["aceptar", "negociar", "mantener"]) expect(ok(id)).toBeGreaterThanOrEqual(2);
-    const total = (id: string) => Object.values(C.DEMO.options.find((o) => o.id === id)!.later.effects).reduce((a: number, b) => a + b, 0);
-    const sums = ["aceptar", "negociar", "mantener"].map(total);
-    expect(Math.max(...sums) - Math.min(...sums)).toBeLessThanOrEqual(1);
+  it("filosofía breve y firma", () => {
+    expect(C.PHILOSOPHY.title).toBe("Dirigir es una responsabilidad. Y vale la pena prepararse para ella.");
+    expect(C.PHILOSOPHY.author).toBe("Oziel Leal Montemayor");
+    expect(allCopy().split("aspiran a dirigir").length - 1).toBe(1);
   });
 
-  it("la landing es más corta: hero, decisión y seis bloques, sin secciones repetidas", () => {
-    const page = readFileSync("src/app/simulador/page.tsx", "utf8");
-    expect((page.match(/<[A-Z]\w+Section \/>/g) ?? []).length).toBe(6);
-    expect(page).not.toMatch(/LearnSection|RhythmSection|WhoSection|AccessSection|RippleSection/);
-    expect(C.HERO.who).toContain("aspiran a dirigir");
+  it("FAQ breve, industrias reales y CTA a rutas reales", () => {
+    expect(C.FAQ.length).toBe(6);
+    const ind = C.FAQ.find((f) => /industrias/.test(f.q))!.a.toLowerCase();
+    for (const c of COMPANIES) expect(ind).toContain(c.industry.toLowerCase());
+    expect(C.START_HREF).toBe("/ceo/empezar");
+    expect(C.LOGIN_HREF).toBe("/entrar");
   });
 
   it("no publica precio, prueba gratuita ni cancelación mientras no exista cobro", () => {
-    const txt = sources();
-    expect(txt).not.toMatch(/CEO_PRICE_MXN|\$59|59 MXN/);
+    expect(sources()).not.toMatch(/CEO_PRICE_MXN|\$59|59 MXN/);
     expect(C.AVAILABILITY.find((a) => a.item.startsWith("Suscripción"))!.state).toBe("futuro");
   });
 
-  it("lo que no existe se marca como próximo o futuro, nunca como disponible", () => {
+  it("lo que no existe no se menciona", () => {
     const hoy = C.AVAILABILITY.filter((a) => a.state === "hoy").map((a) => a.item.toLowerCase()).join(" ");
     for (const w of ["conversaciones", "generados", "respuestas escritas", "retos entre"]) expect(hoy).not.toContain(w);
-    // La junta ya existe (lib/ceo/board.ts): se marca como disponible.
-    expect(C.AVAILABILITY.find((a) => a.item === "Junta ante el Consejo")!.state).toBe("hoy");
-    // Lo que no existe no se menciona: nada de «próximamente», respuestas escritas ni retos entre jugadores.
-    expect(JSON.stringify({ ...C, AVAILABILITY: [], BANNED: [] }).toLowerCase()).not.toMatch(/respuestas escritas|retos entre jugadores/);
+    expect(allCopy() + enCopy()).not.toMatch(/respuestas escritas|retos entre jugadores|written answers|player challenges/);
   });
 
-  it("el tono evita frases genéricas y exceso de admiraciones", () => {
-    const t = allCopy();
-    for (const b of C.BANNED) expect(t).not.toContain(b);
-    expect((t.match(/!/g) ?? []).length).toBe(0);
+  it("el tono evita frases genéricas y exceso de admiraciones (en los dos idiomas)", () => {
+    for (const b of C.BANNED) expect(allCopy()).not.toContain(b);
+    for (const b of BANNED_EN) expect(enCopy(), b).not.toMatch(new RegExp(`\\b${b}`));
+    expect(((allCopy() + enCopy()).match(/!/g) ?? []).length).toBe(0);
   });
 
-  it("FAQ breve y CTA a rutas reales", () => {
-    expect(C.FAQ.length).toBeGreaterThanOrEqual(4);
-    expect(C.FAQ.length).toBeLessThanOrEqual(5);
-    expect(C.FAQ.map((f) => f.q).join(" ")).toMatch(/experiencia[\s\S]*tiempo[\s\S]*cuenta[\s\S]*costo/i);
-    expect(C.START_HREF).toBe("/ceo/empezar");
-    expect(C.LOGIN_HREF).toBe("/entrar");
-    expect(COMPANIES.length).toBe(3); // el copy dice «Tres empresas»
-  });
-
-  it("SEO con el título acordado y una sola h1", () => {
+  it("SEO con el título acordado", () => {
     expect(C.SEO.title).toBe("MÊTIS CEO | Aprende a dirigir tomando decisiones");
-    expect((sources().match(/<h1\b/g) ?? []).length).toBe(1);
   });
 });
+
+describe("landing de MÊTIS CEO · inglés", () => {
+  it("la versión en inglés tiene exactamente la misma forma que la española (nada queda sin traducir)", () => {
+    // el inglés suma una pregunta (idioma del simulador); el resto es idéntico
+    const { FAQ: fe, ...en } = EN, { FAQ: fs, ...es } = C.ES;
+    expect(shape(en)).toEqual(shape(es));
+    expect(shape(fe[0])).toEqual(shape(fs[0]));
+    // y no repite texto en español fuera de nombres propios
+    for (const k of ["HERO", "HOW", "PATH", "PHILOSOPHY", "CLOSE", "UI"] as const) expect(JSON.stringify(EN[k]), k).not.toMatch(/ción\b|Comenzar|decisión|empresa\b|Iniciar/);
+  });
+
+  it("usa las frases de Oziel en los titulares", () => {
+    const heads = [EN.HERO.motto, EN.HOW.title, EN.DIFF.title, EN.PATH.title, EN.PHILOSOPHY.title, EN.PHILOSOPHY.body, EN.CLOSE.title, EN.CLOSE.body, EN.FOOTER.tagline, EN.SEO.title].join(" | ");
+    for (const f of ["Every decision shapes the leader you become.", "Practice the decisions before they become yours.", "Think beyond the obvious.", "Leadership isn't a title. It's a practice.", "Leadership is a responsibility. Prepare for it.", "Great leaders aren't born ready.", "Tomorrow's leaders start deciding today.", "Before the title, build the judgment.", "Where leadership is practiced, not preached."]) expect(heads, f).toContain(f);
+    // «The decisions are simulated. The learning is real.» espera evidencia antes de publicarse
+    expect(enCopy()).not.toContain("the learning is real");
+    expect(EN.HERO.title).toBe("Your next challenge can arrive at any moment.");
+  });
+
+  it("dice con claridad que el simulador está en español y conserva los mismos datos del caso", () => {
+    expect(EN.FAQ.some((f) => /Spanish/.test(f.a))).toBe(true);
+    expect(EN.FAQ.length).toBe(C.FAQ.length + 1);
+    expect(EN.CASE.options.map((o) => o.effects.map(([, v]) => v))).toEqual(C.CASE.options.map((o) => o.effects.map(([, v]) => v)));
+    expect(EN.CASE.context.data.rows.map(([, v]) => v.replace(/\s/g, "")).join()).toMatch(/\$127M.*7\.1%.*3\.1%.*\$5\.1M.*\$10M.*1\.4×/);
+    expect(EN.DIFF.items.map((e) => [e.decide.day, e.back.day, e.back.initials, e.tone])).toEqual(C.DIFF.items.map((e) => [e.decide.day.replace("Día", "Day"), e.back.day.replace("Día", "Day"), e.back.initials, e.tone]));
+  });
+
+  it("cada idioma tiene su ruta, su lang y enlaces alternos; el selector lleva a la otra versión", () => {
+    expect(C.LANG_HREF).toEqual({ es: "/", en: "/en" });
+    const es = readFileSync(PAGES[0], "utf8"), en = readFileSync(PAGES[1], "utf8");
+    for (const p of [es, en]) expect(p).toMatch(/languages: \{ "es-MX": CEO_URL, en: /);
+    expect(en).toContain("canonical: URL_EN");
+    expect(read("Landing.tsx")).toContain('lang={t.lang === "en" ? "en" : "es-MX"}');
+    const h = read("Header.tsx");
+    expect(h).toContain("href={LANG_HREF[other]} hrefLang={other}");
+    expect(C.UI.switchShort).toBe("EN");
+    expect(EN.UI.switchShort).toBe("ES");
+    const mw = readFileSync("src/middleware.ts", "utf8");
+    expect(mw).toContain('u.pathname = "/simulador/en"');
+  });
+});
+
+function personName(id: string) { return cumbre.cast[id]?.name; }
 
 describe("landing: una empresa que recuerda y cifras coherentes", () => {
   const txt = (o: unknown) => JSON.stringify(o);
 
   it("la experiencia no repite el caso SuperNorte: muestra personas que recuerdan y crisis sembradas antes", () => {
     expect(txt(C.DIFF)).not.toMatch(/SuperNorte|Sofía|descuento|margen/i);
-    expect(C.DIFF.title).toBe("No estás respondiendo un examen. Estás dirigiendo.");
-    expect(C.DIFF.eyebrow).toBe("Una empresa que recuerda tus decisiones");
+    expect(C.DIFF.title).toBe("Tus decisiones siguen teniendo consecuencias.");
+    expect(C.DIFF.eyebrow).toBe("Una empresa que recuerda");
     expect(C.DIFF.items.length).toBe(4);
     for (const e of C.DIFF.items) {
       // lo que regresa ocurre después de la decisión
@@ -180,37 +276,12 @@ describe("landing: una empresa que recuerda y cifras coherentes", () => {
     for (const e of C.DIFF.items) expect(initials.has(e.back.initials), e.back.who).toBe(true);
   });
 
-  it("las cifras del caso SuperNorte coinciden con el juego en toda la landing", () => {
-    const sn = COMPANIES.find((c) => c.id === "cumbre")!.items.find((i) => i.id === "d2-supernorte")!;
+  it("sin cifras viejas del caso SuperNorte en ningún idioma", () => {
     const rows = Object.fromEntries(sn.data!.rows);
     expect(rows["Margen de la cuenta hoy"]).toBe("7.1%");
-    const facts = Object.fromEntries(C.DEMO.facts);
-    expect(facts["Margen de la cuenta hoy"]).toBe("7.1%");
-    expect(facts["Ventas con SuperNorte"]).toBe("31% del total");
-    expect(Object.fromEntries(C.STORY.caso.facts)["Ventas con SuperNorte"]).toBe("31% del total");
     expect(sn.preview + sn.body.join(" ")).toContain("4 puntos");
-    expect(C.STORY.caso.msg).toContain("4 puntos");
-    expect(C.DEMO.message.join(" ")).toContain("4 puntos");
-    // nada de las cifras viejas
-    expect(txt({ ...C, AVAILABILITY: [], BANNED: [] })).not.toMatch(/12%|11%|24%|cuarta parte/);
-    // Sofía se presenta antes de que se hable de ella
-    expect(C.DEMO.message.join(" ")).toContain("Sofía Leal, la compradora de SuperNorte");
+    expect(txt(C.ES) + txt(EN)).not.toMatch(/12%|11%|24%|cuarta parte/);
   });
 
-  it("el desarrollo ejecutivo se marca como ejemplo conceptual con cifras ilustrativas", () => {
-    expect(C.GROWTH.title).toBe("Tu criterio está evolucionando");
-    expect(C.GROWTH.tag).toBe("Ejemplo conceptual");
-    expect(C.GROWTH.disclaimer.toLowerCase()).toContain("ilustrativ");
-    expect(C.GROWTH.bars.map((b) => [b.name, b.pct])).toEqual([["Pensamiento estratégico", 76], ["Gestión financiera", 59], ["Liderazgo de personas", 84], ["Manejo de crisis", 38]]);
-    expect(C.GROWTH.next).toBe("Practicar decisiones financieras bajo presión.");
-    const src = readFileSync(join(DIR, "Sections.tsx"), "utf8");
-    expect(src).toContain("GROWTH.tag");
-    expect(src).toContain("GROWTH.disclaimer");
-  });
 
-  it("la filosofía habla de personas como solución, sin historia de fundador", () => {
-    expect(C.PHILOSOPHY.quote).toBe("Las personas no son el problema. Las personas son la solución.");
-    expect(C.PHILOSOPHY.story).toContain("máximo potencial");
-    expect(C.PHILOSOPHY.story).not.toMatch(/\bvi\b|construí/i);
-  });
 });
