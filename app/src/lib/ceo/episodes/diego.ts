@@ -113,7 +113,7 @@ export const DIEGO: EpisodeSpec = {
         answer: "Mariana: cualquier cambio de precio requiere la aprobación del Director Comercial y de Finanzas. Aplica para todos, sin excepción." },
     ],
     unknowns: [
-      { id: "sucesion", keywords: ["sucesion", "sucesor", "heredar", "director general", "plan de don ramiro", "futuro de diego"], answer: "Ese dato no existe en el caso: nadie sabe si Don Ramiro piensa en Diego como sucesor. Decidir como si lo supieras sería especular." },
+      { id: "sucesion", keywords: ["sucesion", "sucesor", "heredar", "director general", "plan de don ramiro", "futuro de diego", "suceder", "sucedera", "sucesora", "heredero", "relevo", "dejarle la empresa", "quedarse con la empresa", "se queda con la empresa", "va a dirigir la empresa", "cuando se retire", "se va a retirar"], answer: "Ese dato no existe en el caso: nadie sabe si Don Ramiro piensa en Diego como sucesor. Decidir como si lo supieras sería especular." },
     ],
   },
   advisors: [

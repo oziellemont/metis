@@ -129,7 +129,7 @@ export const ALERGENO: EpisodeSpec = {
         answer: "Lucía: es proveedor desde hace 6 años, sin incidentes previos. El contrato le permite a Cumbre reclamar los costos de un retiro causado por su materia prima." },
     ],
     unknowns: [
-      { id: "resultado", keywords: ["resultado", "laboratorio dice", "confirmado", "si tiene", "positivo", "negativo", "seguro que"], answer: "Ese dato todavía no existe: el laboratorio tarda 48 horas. Cualquier decisión de hoy se toma sin saberlo." },
+      { id: "resultado", keywords: ["resultado", "laboratorio dice", "confirmado", "si tiene", "positivo", "negativo", "es seguro que", "seguro que tiene", "con certeza si", "ya encontro", "ya salio", "ya hay resultado", "ya confirmo", "laboratorio ya", "cuando sabremos", "cuando sale el", "cuando llega el resultado", "ya se sabe si"], answer: "Ese dato todavía no existe: el laboratorio tarda 48 horas. Cualquier decisión de hoy se toma sin saberlo." },
     ],
   },
   advisors: [
@@ -161,14 +161,14 @@ export const ALERGENO: EpisodeSpec = {
       say: [{ text: ["Javier espera en la línea. Son las 23:40."] }],
       ask: "¿Qué haces con el producto en la primera hora?", freeText: true,
       strategies: [
-        { id: "retiro_total", text: "Retirar todo el lote L-2291 hoy mismo: detener bodega y tránsito, y pedir a SuperNorte que lo saque de las 140 tiendas.", flags: ["retiro", "retiro_inmediato"],
+        { id: "retiro_total", text: "Retirar todo el lote L-2291 hoy mismo: detener bodega y tránsito, y pedir a SuperNorte que lo saque de las 140 tiendas.", cues: ["todo el", "todo lo", "toda la", "todas las", "todos los", "complet*", "entero", "entera", "140", "total*", "sin excepcion", "de inmediato todo"], flags: ["retiro", "retiro_inmediato"],
           reply: [{ text: ["«Va, jefe. Detengo bodega y tránsito ahorita.»", "«Para las tiendas necesito que alguien hable con SuperNorte. A esta hora solo contesta Sofía.»"] }],
           next: [{ to: "a2" }],
           evidence: [
             { dim: "riesgos", level: 3, basis: "Actuó con la duda: en seguridad alimentaria, el riesgo posible ya obliga a retirar." },
             { dim: "informacion", level: 3, basis: "Dimensionó el lote antes de ordenar el retiro.", when: { any: ["q:alcance", "a:javier"] } },
           ] },
-        { id: "parcial", text: "Retirar solo de las 12 tiendas con quejas mientras llega el laboratorio; si sale positivo, retirar el resto.", flags: ["parcial"],
+        { id: "parcial", text: "Retirar solo de las 12 tiendas con quejas mientras llega el laboratorio; si sale positivo, retirar el resto.", cues: ["solo", "12", "queja*", "afectad*", "reportaron", "reclamos", "donde hubo", "el resto", "lo demas"], flags: ["parcial"],
           reply: [{ text: ["«Ok, jefe. Las 12 tiendas mañana temprano.»", "«El resto sigue en anaquel hasta el resultado.»"] }],
           next: [{ to: "a2" }],
           evidence: [{ dim: "riesgos", level: 1, basis: "Contuvo una parte, pero dejó en anaquel producto que podía tener el alérgeno." }] },
@@ -208,11 +208,11 @@ export const ALERGENO: EpisodeSpec = {
       ],
       ask: "¿Qué comunican y a quién?", freeText: true,
       strategies: [
-        { id: "alerta", text: "Una alerta pública clara: el lote, que puede tener cacahuate, que no lo consuman las personas alérgicas, y reembolso con una línea de atención.", flags: ["alerta_publica"], trust: 1,
+        { id: "alerta", text: "Una alerta pública clara: el lote, que puede tener cacahuate, que no lo consuman las personas alérgicas, y reembolso con una línea de atención.", cues: ["public*", "consumidor*", "comunicado abierto", "medios", "prensa", "redes", "alergic*", "la gente", "clientes finales", "reembolso"], flags: ["alerta_publica"], trust: 1,
           reply: [{ text: ["«Lo pongo en anaquel y en redes de SuperNorte hoy.»", "«Así sí puedo dar la cara con los clientes.»"] }],
           next: [{ to: "a4" }],
           evidence: [{ dim: "coherencia", level: 3, basis: "Una sola voz, clara y útil para quien está en riesgo." }] },
-        { id: "privado", text: "Avisar solo a las cadenas para que retiren el producto, sin comunicado público.", flags: ["aviso_privado"],
+        { id: "privado", text: "Avisar solo a las cadenas para que retiren el producto, sin comunicado público.", cues: ["cadena*", "privad*", "comercial*", "sin comunicado", "nada hacia", "nada al publico", "al publico no", "no le decimos", "nada en medios", "discret*", "sin aviso publico", "sin hacerlo publico"], flags: ["aviso_privado"],
           reply: [{ text: ["«Ok, lo retiramos.»", "«Pero si un cliente ya lo tiene en su casa, no se va a enterar.»"] }],
           next: [{ to: "a4" }],
           evidence: [{ dim: "riesgos", level: 1, basis: "Sacó el producto de la tienda, pero no advirtió a quien ya lo tenía en casa." }] },
@@ -230,11 +230,11 @@ export const ALERGENO: EpisodeSpec = {
       ],
       ask: "¿Qué decides sobre el retiro y su costo?", freeText: true,
       strategies: [
-        { id: "absorber", text: "Absorber todo el costo y reponer el producto sin cargo a SuperNorte.", requires: { all: ["retiro"] }, trust: 1,
+        { id: "absorber", text: "Absorber todo el costo y reponer el producto sin cargo a SuperNorte.", cues: ["todo", "complet*", "integr*", "100", "cien por ciento", "sin reclamar", "no reclamamos", "no le reclamamos", "no le cobramos al proveedor", "nada al proveedor"], requires: { all: ["retiro"] }, trust: 1,
           reply: [{ text: ["«Ok. Va contra el resultado del trimestre.»"] }],
           next: [{ to: "a5" }],
           evidence: [{ dim: "consecuencias", level: 2, basis: "Pagó el costo completo sin buscar recuperarlo de quien lo causó." }] },
-        { id: "reclamar", text: "Absorber el costo frente a SuperNorte y reclamar al proveedor según el contrato.", requires: { all: ["retiro"] }, flags: ["reclamo"], trust: 1,
+        { id: "reclamar", text: "Absorber el costo frente a SuperNorte y reclamar al proveedor según el contrato.", cues: ["proveedor*", "contrato", "sazonador"], requires: { all: ["retiro"] }, flags: ["reclamo"], trust: 1,
           reply: [{ text: ["«Perfecto. El contrato lo permite; armo el reclamo con la evidencia de Javier.»"] }],
           next: [{ to: "a5" }],
           evidence: [{ dim: "alternativas", level: 3, basis: "Protegió la relación con el cliente y trasladó el costo a quien lo causó, por la vía del contrato.", when: { any: ["q:proveedor", "a:lucia"] } },

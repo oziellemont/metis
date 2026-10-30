@@ -282,3 +282,49 @@ Tropiezo operativo: el tope de $0.50 se alcanzó aunque la corrida costó ~$0.22
 
 1. Primero **Validación final (ronda 4)** (incluye las demostraciones). Copia el texto completo.
 2. **Desarrollo**, otro día (o después de la medianoche de Monterrey).
+
+## 9. Ronda 5: señales de alcance, datos que no existen, colaborador sin consejos heredados y reacción sin elogios
+
+### 9.1 Diagnóstico honesto de la ronda 4 (validación real con gpt-4o-mini, $0.105)
+
+| Medida | Resultado | Meta | |
+|---|---|---|---|
+| Interpretación | 96.3% | ≥95% | pasa |
+| Consistencia | 99.1% | ≥95% | pasa |
+| Inválidas | 0 | ≤2% | pasa |
+| Datos inventados mostrados | 0 | 0 | pasa |
+| Ambiguas comprometidas | 4 | 0 | **no pasa** |
+| Datos | 82.1% (1 equivocado) | ≥95% | **no pasa** |
+| Colaborador | 88.9% | ≥95% | **no pasa** |
+
+- **Ambiguas.** Las cuatro que se comprometieron no decían lo que distingue a dos estrategias parecidas: alcance («donde haga falta»), destinatario («a quien haga falta»), quién paga («lo del proveedor lo resolvemos después») o quién da seguimiento («como mejor convenga»). En la demo, «Saquen el producto de circulación lo antes posible» se leyó como retiro total sin preguntar.
+- **Datos.** Cuatro de cinco fallos fueron «ninguno» ante datos que no existen (sucesión, oferta de la regional) o preguntas de impacto y alternativas. Uno fue un dato equivocado: «¿qué tanto nos aprieta lo que pide Sofía?» se respondió con sus metas, no con el costo.
+- **Colaborador.** Tres rechazos automáticos (instrucciones y una cifra calculada: 5,400 = 30% de 18,000) y uno del auditor: Mariana recomendaba porque su punto de vista escrito decía «Mi recomendación es…».
+- **Reacción adaptada.** Agradeció o elogió ante tono hostil, tomó sarcasmo al pie de la letra y agregó moralejas.
+
+### 9.2 Qué cambió
+
+**Señales por estrategia (regla determinista).** Las estrategias que se distinguen de otra parecida por alcance, destinatario o quién paga tienen `cues`: retiro total contra parcial; alerta pública contra aviso privado; absorber contra reclamar; tablero, como siempre o lo llevo yo. Si la IA elige una de ellas y el texto no trae ninguna de sus señales, se pregunta entre las parecidas (`guard: "senal"`). Hay una prueba de que toda respuesta clara o parcial de todos los conjuntos trae su señal, y de que las cinco ambiguas del diagnóstico se preguntan.
+
+**«Pospone» ampliado.** «lo resolvemos después», «como mejor convenga», «donde/a quien haga falta», «a quien corresponda», «como me lata», «en el orden que vaya saliendo». Revisado contra todos los conjuntos: ninguna respuesta clara lo activa.
+
+**Datos.** Reglas nuevas en el clasificador: lo que todavía no se sabe o lo que otro ofreció va al dato «?» de ese tema; «¿hay otra cadena…?» va a alternativas; «¿qué tanto nos aprieta…?» va al costo, no al porqué. Si la IA dice «ninguno» pero la pregunta trae las palabras de un dato que no existe, se le dice al jugador que ese dato no existe (seguro: nunca se rescata un dato real así). Se ampliaron las palabras de los tres datos inexistentes, revisadas contra todas las preguntas.
+
+**Colaborador.** Su punto de vista llega a la IA sin frases de instrucción («Mi recomendación es que…» pasa a «A mí me importa que…»; «Tú decides», «Mándame una nota» se quitan); la pantalla sin IA no cambia. Prohibido calcular o derivar cifras y cerrar con «la decisión es tuya» después de dar una postura. Nuevas formas de aconsejar que se rechazan: «nos conviene», «yo esperaría», «no esperes», «asegúrate de», «mi postura es que».
+
+**Reacción adaptada.** Con tono hostil o sarcástico no agradece, no elogia ni toma el sarcasmo literal; nunca moralejas.
+
+**Tono.** El intérprete reconoce hartazgo («ya estuvo bueno») y apodos despectivos («el junior», «berrinches») como −1.
+
+**Costo.** En desarrollo cada respuesta se corre 2 veces (en validación, 3). Estimación conservadora: validación + demos $0.21; desarrollo $0.45. Cada botón cabe solo en el tope diario de $0.50, pero no los dos el mismo día.
+
+### 9.3 Conjuntos
+
+- **Desarrollo**: `eval-set.ts` + rondas 2, 3 y 4 (`eval-dev-ronda4.ts` es la validación de la ronda 4, ya usada para diagnosticar). 486 respuestas, 105 datos, 107 consultas.
+- **Validación ronda 5** (`eval-validacion.ts`), escrita después de cerrar prompts y reglas: 118 respuestas (78 claras, 11 con propuesta propia, 21 ambiguas, 8 fuera de tema; 7 respetuosas y 7 hostiles), 28 preguntas de datos, 36 consultas y tres demostraciones con frases nuevas.
+- Hay pruebas de que ninguna frase de validación está en desarrollo (rondas 1 a 4) ni en los prompts.
+
+### 9.4 Cómo correr
+
+1. **Validación final (ronda 5)** (incluye las demostraciones). Copia el texto completo.
+2. **Desarrollo**, otro día (o después de la medianoche de Monterrey).
