@@ -170,9 +170,15 @@ describe("landing de MÊTIS CEO · bloques", () => {
     expect(lock).not.toMatch(/<button|<a |<Link|onClick/);
   });
 
-  it("filosofía breve y firma", () => {
-    expect(C.PHILOSOPHY.title).toBe("Dirigir es una responsabilidad. Y vale la pena prepararse para ella.");
-    expect(C.PHILOSOPHY.author).toBe("Oziel Leal Montemayor");
+  it("bloque oscuro: título y texto de Oziel, sin firma", () => {
+    expect(C.PHILOSOPHY.title).toBe("¡Tu próxima gran decisión está por llegar!");
+    expect(C.PHILOSOPHY.body).toBe("Un correo inesperado, un WhatsApp urgente o una llamada de tu equipo. En MÊTIS cada día trae un nuevo reto. Decide, aprende de lo que sucede y desbloquea nuevas etapas en una simulación inmersiva que crece contigo.");
+    expect(C.PHILOSOPHY.who).toMatch(/^Para quienes aspiran a dirigir/);
+    expect(EN.PHILOSOPHY.title).toBe("Your next big decision is on its way!");
+    // ya no lleva firma
+    expect(C.PHILOSOPHY).not.toHaveProperty("author");
+    expect(EN.PHILOSOPHY).not.toHaveProperty("author");
+    expect(read("Sections.tsx")).not.toContain("authorRole");
     expect(allCopy().split("aspiran a dirigir").length - 1).toBe(1);
   });
 
@@ -198,9 +204,10 @@ describe("landing de MÊTIS CEO · bloques", () => {
   it("el tono evita frases genéricas y exceso de admiraciones (en los dos idiomas)", () => {
     for (const b of C.BANNED) expect(allCopy()).not.toContain(b);
     for (const b of BANNED_EN) expect(enCopy(), b).not.toMatch(new RegExp(`\\b${b}`));
-    // las únicas admiraciones son las que pidió Oziel en «Cómo funciona» (título y cierre del texto)
+    // las únicas admiraciones son las que pidió Oziel en «Cómo funciona» y en el bloque oscuro (título)
     const bang = (x: string) => (x.match(/!/g) ?? []).length;
-    expect(bang(allCopy() + enCopy()) - bang(JSON.stringify(C.HOW) + JSON.stringify(EN.HOW))).toBe(0);
+    expect(bang(allCopy() + enCopy()) - bang(JSON.stringify(C.HOW) + JSON.stringify(EN.HOW)) - bang(C.PHILOSOPHY.title + EN.PHILOSOPHY.title)).toBe(0);
+    expect(bang(C.PHILOSOPHY.title + EN.PHILOSOPHY.title)).toBe(2);
     expect(bang(C.HOW.title + C.HOW.body)).toBe(2);
     expect(bang(EN.HOW.title + EN.HOW.body)).toBe(2);
   });
@@ -221,8 +228,8 @@ describe("landing de MÊTIS CEO · inglés", () => {
   });
 
   it("usa las frases de Oziel en los titulares", () => {
-    const heads = [EN.HERO.motto, EN.HOW.title, EN.DIFF.title, EN.PATH.title, EN.PHILOSOPHY.title, EN.PHILOSOPHY.body, EN.CLOSE.title, EN.CLOSE.body, EN.FOOTER.tagline, EN.SEO.title].join(" | ");
-    for (const f of ["Every decision shapes the leader you become.", "Think beyond the obvious.", "Leadership isn't a title. It's a practice.", "Leadership is a responsibility. Prepare for it.", "Great leaders aren't born ready.", "Tomorrow's leaders start deciding today.", "Before the title, build the judgment.", "Where leadership is practiced, not preached."]) expect(heads, f).toContain(f);
+    const heads = [EN.HERO.motto, EN.HOW.title, EN.DIFF.title, EN.PATH.title, EN.CLOSE.title, EN.CLOSE.body, EN.FOOTER.tagline, EN.SEO.title].join(" | ");
+    for (const f of ["Every decision shapes the leader you become.", "Think beyond the obvious.", "Leadership isn't a title. It's a practice.", "Tomorrow's leaders start deciding today.", "Before the title, build the judgment.", "Where leadership is practiced, not preached."]) expect(heads, f).toContain(f);
     // «The decisions are simulated. The learning is real.» espera evidencia antes de publicarse
     expect(enCopy()).not.toContain("the learning is real");
     expect(EN.HERO.title).toBe("Your next challenge can arrive at any moment.");

@@ -115,10 +115,6 @@ export function PhilosophySection({ t }: { t: Copy }) {
           <h2 id="filo-title" className="text-[30px] leading-[1.15] sm:text-5xl sm:leading-[1.1] font-semibold tracking-tight">{PHILOSOPHY.title}</h2>
           <p className="mt-6 text-lg sm:text-xl leading-relaxed text-white/75">{PHILOSOPHY.body}</p>
           <p className="mt-5 text-[15px] leading-relaxed text-white/55">{PHILOSOPHY.who}</p>
-          <div className="mt-10 border-t border-white/15 pt-6">
-            <p className="font-semibold">{PHILOSOPHY.author}</p>
-            <p className="text-[14px] text-white/60">{PHILOSOPHY.authorRole}</p>
-          </div>
         </div>
       </div>
     </section>

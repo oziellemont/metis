@@ -249,11 +249,9 @@ export const PATH = {
 
 /* ---------------- Filosofía ---------------- */
 export const PHILOSOPHY = {
-  title: "Dirigir es una responsabilidad. Y vale la pena prepararse para ella.",
-  body: "Detrás de cada decisión hay personas, recursos y consecuencias. El criterio de un líder puede desarrollarse antes de que llegue el momento de ponerlo a prueba.",
+  title: "¡Tu próxima gran decisión está por llegar!",
+  body: "Un correo inesperado, un WhatsApp urgente o una llamada de tu equipo. En MÊTIS cada día trae un nuevo reto. Decide, aprende de lo que sucede y desbloquea nuevas etapas en una simulación inmersiva que crece contigo.",
   who: "Para quienes aspiran a dirigir, para quienes ya lideran y para quienes creen que siempre hay algo más que aprender.",
-  author: "Oziel Leal Montemayor",
-  authorRole: "Creador de MÊTIS",
 };
 
 /* ---------------- FAQ ---------------- */
