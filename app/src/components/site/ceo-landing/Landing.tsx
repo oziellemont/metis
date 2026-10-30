@@ -28,7 +28,6 @@ export function Landing({ t }: { t: Copy }) {
                 <CeoCta label={t.CTA} playingLabel={t.UI.playing} className="focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo" />
                 <span className="text-[13px] text-slate-500">{H.note}</span>
               </div>
-              <p className="mt-10 max-w-md border-l-2 border-mint pl-4 text-[14px] leading-relaxed text-slate-500">{H.try}</p>
             </div>
             <CaseDemo t={t} />
           </section>

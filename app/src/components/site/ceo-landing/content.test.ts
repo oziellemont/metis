@@ -27,7 +27,7 @@ function shape(o: unknown): unknown {
 
 describe("landing de MÊTIS CEO · primer bloque", () => {
   it("el primer bloque dice qué es mêtis con la frase pedida y una sola h1", () => {
-    expect(C.HERO.title).toBe("Tu siguiente reto puede llegar en cualquier momento.");
+    expect(C.HERO.title).toBe("Practica cómo dirigir una empresa.");
     expect(C.HERO.eyebrow).toBe("Simulador de dirección");
     expect(C.HERO.body).toMatch(/^mêtis CEO es un simulador para practicar cómo dirigir una empresa\./);
     expect(C.HERO.body).toMatch(/decides/);
@@ -215,7 +215,6 @@ describe("landing de MÊTIS CEO · inglés", () => {
   });
 
   it("dice con claridad que el simulador está en español y conserva los mismos datos del caso", () => {
-    expect(EN.HERO.try).toMatch(/in Spanish/);
     expect(EN.FAQ.some((f) => /Spanish/.test(f.a))).toBe(true);
     expect(EN.FAQ.length).toBe(C.FAQ.length + 1);
     expect(EN.CASE.options.map((o) => o.effects.map(([, v]) => v))).toEqual(C.CASE.options.map((o) => o.effects.map(([, v]) => v)));

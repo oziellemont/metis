@@ -44,7 +44,6 @@ export const EN: Copy = {
     eyebrow: "Leadership simulator",
     title: "Your next challenge can arrive at any moment.",
     body: "mêtis CEO is a simulator for practicing how to run a company. Business situations reach you the way they do in real life: an email, a WhatsApp message, a call. You review the context, decide, and see what happens to the results and to the people. Then you understand why, in a minute.",
-    try: "Try it right here: it is a real case from the simulator, step by step, just as you live it in the app. The simulator itself is in Spanish.",
     motto: "Every decision shapes the leader you become.",
     note: "No card required.",
   },

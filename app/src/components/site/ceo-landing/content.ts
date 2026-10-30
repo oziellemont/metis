@@ -76,9 +76,8 @@ export const UI = {
 /* ---------------- Primer bloque: qué es mêtis, con un caso real al lado ---------------- */
 export const HERO = {
   eyebrow: "Simulador de dirección",
-  title: "Tu siguiente reto puede llegar en cualquier momento.",
+  title: "Practica cómo dirigir una empresa.",
   body: "mêtis CEO es un simulador para practicar cómo dirigir una empresa. Te llegan situaciones de negocio como en la vida real: un correo, un WhatsApp, una llamada. Revisas el contexto, decides y ves qué pasa con los resultados y con las personas. Después entiendes por qué, en un minuto.",
-  try: "Pruébalo aquí al lado: es un caso del simulador, paso por paso, como lo vives en la app.",
   motto: "Dirigir se aprende decidiendo.",
   note: "Sin tarjeta.",
 };
