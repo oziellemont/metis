@@ -158,7 +158,32 @@ export type EpisodeAction =
   | { type: "pause"; at: number }
   | { type: "resume"; at: number }
   | { type: "flexible"; at: number }
-  | { type: "decide"; at: number; strategy: string; params?: Record<string, number>; text?: string; interpretation?: { quality: 0 | 1 | 2 | 3; feedback: string } };
+  | { type: "decide"; at: number; strategy: string; params?: Record<string, number>; text?: string; interpretation?: DecideInterpretation };
+
+/** Lo que la IA entendió del texto libre (ya validado en servidor). El motor vuelve a acotar todo. */
+export interface DecideInterpretation {
+  quality: 0 | 1 | 2 | 3;
+  feedback: string;
+  status?: "clara" | "parcial";
+  extras?: string;
+  /** Tono hacia el interlocutor: mueve la confianza ±1 (y con ello lo que pasa después). */
+  tone?: -1 | 0 | 1;
+  /** Reacción del personaje adaptada a sus palabras, y la respuesta del autor de la que salió. Se usa solo si esa base
+   *  sigue siendo la respuesta del autor después de aplicar el tono (si el tono cambió el desenlace, manda el autor)
+   *  y si no trae cifras ajenas. */
+  reply?: string[];
+  basis?: string;
+}
+
+const nums = (s: string) => (s.match(/\d+(?:[.,]\d+)?/g) ?? []).map((n) => n.replace(",", "."));
+/** La reacción adaptada solo puede usar cifras que ya estén en la respuesta autorizada, en lo que le dijeron o en sus términos. */
+function adaptedOk(reply: string[] | undefined, authored: string[], said: string[], terms: Record<string, number>): string[] | null {
+  if (!Array.isArray(reply)) return null;
+  const parts = reply.filter((x) => typeof x === "string").map((x) => x.trim().slice(0, 400)).filter(Boolean).slice(0, 4);
+  if (!parts.length || parts.join(" ").length < 15) return null;
+  const allowed = new Set([...nums(authored.join(" ")), ...nums(said.join(" ")), ...Object.values(terms).map(String)]);
+  return nums(parts.join(" ")).every((n) => allowed.has(n)) ? parts : null;
+}
 
 export interface ActResult { run: EpisodeRun; error?: string }
 
@@ -227,16 +252,27 @@ export function applyEpisode(spec: EpisodeSpec, run: EpisodeRun, a: EpisodeActio
       const chosen: Record<string, number> = {};
       for (const p of st.params ?? []) { terms[p.key] = clampParam(p, a.params?.[p.key]); chosen[p.key] = terms[p.key]; }
       const flags = [...run.flags, ...(st.flags ?? []).filter((f) => !run.flags.includes(f))];
-      const trust = Math.max(TRUST_MIN, Math.min(TRUST_MAX, run.trust + (st.trust ?? 0)));
-      const mid = { ...run, terms: deriveTerms(spec, { ...run, terms, flags, trust }), flags, trust };
-      const reply = render(spec, mid, st.reply);
-      const next = st.next.find((b) => holds(mid, b.when))?.to ?? "close";
       const text = a.text?.trim().slice(0, 1200);
+      const it = text ? a.interpretation : undefined;
+      const tone = it?.tone === 1 || it?.tone === -1 ? it.tone : 0;
+      const trust = Math.max(TRUST_MIN, Math.min(TRUST_MAX, run.trust + (st.trust ?? 0) + tone));
+      const mid = { ...run, terms: deriveTerms(spec, { ...run, terms, flags, trust }), flags, trust };
+      const authored = render(spec, mid, st.reply);
+      const said = render(spec, run, node.say);
+      const adapted = it && it.basis === authored.join("\n") ? adaptedOk(it.reply, authored, said, mid.terms) : null;
+      const reply = adapted ?? authored;
+      const next = st.next.find((b) => holds(mid, b.when))?.to ?? "close";
       const turn: DecisionTurn = {
-        at, node: node.id, stage: node.stage, said: render(spec, run, node.say),
+        at, node: node.id, stage: node.stage, said,
         input: text ? { kind: "texto", text } : st.params?.length ? { kind: "terminos" } : { kind: "opcion" },
         strategy: st.id, ...(st.params?.length ? { terms: chosen } : {}),
-        ...(text && a.interpretation ? { interpretation: { quality: a.interpretation.quality, feedback: a.interpretation.feedback.slice(0, 280) } } : {}),
+        ...(it ? { interpretation: {
+          quality: it.quality, feedback: String(it.feedback ?? "").slice(0, 280),
+          ...(it.status ? { status: it.status } : {}),
+          ...(it.status === "parcial" && it.extras ? { extras: String(it.extras).slice(0, 140) } : {}),
+          ...(tone ? { tone } : {}),
+          ...(adapted ? { adapted: true, authored } : {}),
+        } } : {}),
         reply,
       };
       let out: EpisodeRun = { ...mid, turns: [...run.turns, turn], updatedAt: at, node: next === "close" ? null : next };

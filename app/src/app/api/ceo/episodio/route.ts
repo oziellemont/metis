@@ -4,7 +4,8 @@
  * POST { episode, purpose: "fact" | "advisor" | "interpret", run, question?, advisor?, text? }
  *   → fact:      { ok:true, factId | unknownId }        (el texto que ve el jugador sale del banco, nunca de la IA)
  *   → advisor:   { ok:true, answer }                     (validado: sin cifras nuevas ni recomendar opción)
- *   → interpret: { ok:true, strategy, params?, quality, feedback }
+ *   → interpret: { ok:true, status: clara|parcial|ambigua|fuera, strategy|null, params?, options?, clarify?, extras?, tone?, reply?, quality, feedback }
+ *                (ambigua: la pantalla pregunta y el jugador elige; nunca se compromete una decisión ambigua)
  *   o { ok:false, fallback:true } → la pantalla usa el respaldo sin IA (palabras clave / texto del autor / elegir opción).
  *
  * Mismos candados y topes que las respuestas escritas: interruptor «ai» + CEO_AI_ENABLED=1 + consentimiento,

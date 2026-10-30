@@ -201,7 +201,18 @@ export interface DecisionTurn {
   strategy: string;
   terms?: Record<string, number>;
   /** Interpretación validada del texto libre (si hubo). */
-  interpretation?: { quality: 0 | 1 | 2 | 3; feedback: string };
+  interpretation?: {
+    quality: 0 | 1 | 2 | 3;
+    feedback: string;
+    /** clara: coincide con una estrategia; parcial: agrega algo que el caso no modela (extras). */
+    status?: "clara" | "parcial";
+    extras?: string;
+    /** Tono hacia el interlocutor (±1 de confianza). */
+    tone?: -1 | 1;
+    /** La reacción mostrada fue adaptada a sus palabras; `authored` guarda la del autor (consecuencias idénticas). */
+    adapted?: boolean;
+    authored?: string[];
+  };
   reply: string[];
 }
 

@@ -18,7 +18,7 @@ import { episodeSpec } from "@/lib/ceo/episodes/catalog";
 import { MAX_ADVISOR_CONSULTS, MAX_DECISIONS, MAX_FACT_QUERIES, RUBRIC_LABEL, type EpisodeRun, type EpisodeSpec, type ParamSpec, type Strategy } from "@/lib/ceo/episodes/contracts";
 import { advisorLeft, briefingLeftMs, criticalFacts, matchFact, nodeOf, queriesLeft, revealOf, sayOf, strategiesFor } from "@/lib/ceo/episodes/engine";
 import { deriveTerms, rubricSummary } from "@/lib/ceo/episodes/rules";
-import { interpretLocal, type Interpretation } from "@/lib/ceo/episodes/ai";
+import { decideFrom, interpretLocal, type Interpretation } from "@/lib/ceo/episodes/ai";
 
 type AiReply = { ok: boolean; fallback?: boolean; [k: string]: unknown };
 async function askAi(body: Record<string, unknown>): Promise<AiReply | null> {
@@ -206,7 +206,7 @@ function TurnView({ spec, t }: { spec: EpisodeSpec; t: EpisodeRun["turns"][numbe
         {t.input.text ? <p className="mt-0.5">{t.input.text}</p> : <p className="mt-0.5">{spec.nodes[t.node]?.strategies.find((s) => s.id === t.strategy)?.text}</p>}
         {t.terms && <p className="mt-1 text-white/80 text-xs">{Object.entries(t.terms).map(([k, v]) => `${spec.terms[k]?.label ?? k}: ${v} ${spec.terms[k]?.unit ?? ""}`).join(" · ")}</p>}
       </Bubble>
-      {t.interpretation && <p className="text-right text-[11px] text-white/50">Con tus palabras: {t.interpretation.feedback}</p>}
+      {t.interpretation && <p className="text-right text-[11px] text-white/50">Con tus palabras: {t.interpretation.feedback}{t.interpretation.extras ? ` · Fuera del caso: ${t.interpretation.extras}` : ""}</p>}
       <Bubble who={spec.nodes[t.node]?.who}>{t.reply.map((p, k) => <p key={k}>{p}</p>)}</Bubble>
     </div>
   );
@@ -471,23 +471,50 @@ function FreeText({ spec, run, act }: { spec: EpisodeSpec; run: EpisodeRun; act:
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [draft, setDraft] = useState<{ text: string; it: Interpretation } | null>(null);
+  const [ask, setAsk] = useState<{ text: string; it: Interpretation } | null>(null);
   const send = async () => {
     const t = text.trim();
     if (t.length < 15) { setMsg("Escribe un poco más (al menos 15 caracteres)."); return; }
-    setBusy(true); setMsg(null);
+    setBusy(true); setMsg(null); setAsk(null);
     const r = await askAi({ episode: spec.id, purpose: "interpret", run, text: t });
-    let it: Interpretation | null = r?.ok && typeof r.strategy === "string" ? { strategy: r.strategy, params: r.params as Record<string, number> | undefined, quality: Number(r.quality) as 0 | 1 | 2 | 3, feedback: String(r.feedback ?? "") } : null;
+    let it: Interpretation | null = r?.ok && typeof r.status === "string" ? (r as unknown as Interpretation) : null;
     if (!it) it = interpretLocal(spec, run, t);
     setBusy(false);
-    if (!it) { setMsg("No pudimos relacionar tu respuesta con una acción concreta. Elige una opción o sé más específico."); return; }
+    if (!it || it.status === "fuera") { setMsg("No pudimos relacionar tu respuesta con una acción concreta en esta decisión. Di qué harías (por ejemplo, qué ofreces, a quién avisas o qué pides) o elige una opción."); return; }
+    // Ambigua: nunca se decide por el jugador. Se le pregunta y elige él.
+    if (it.status === "ambigua" || !it.strategy) { setAsk({ text: t, it }); return; }
     setDraft({ text: t, it });
+  };
+  const pick = (id: string) => {
+    if (!ask) return;
+    const st = strategiesFor(spec, run).find((s) => s.id === id);
+    if (!st) return;
+    const params: Record<string, number> = {};
+    for (const p of st.params ?? []) params[p.key] = p.default;
+    setDraft({ text: ask.text, it: { strategy: id, status: "clara", ...(st.params?.length ? { params } : {}), quality: ask.it.quality, feedback: ask.it.feedback || "Aclaraste tu intención: cuando una instrucción admite dos lecturas, el equipo ejecuta la que no querías." } });
+    setAsk(null);
   };
   const confirm = () => {
     if (!draft) return;
-    const { it, text: t } = draft;
-    const err = act({ type: "decide", strategy: it.strategy, ...(it.params ? { params: it.params } : {}), text: t, interpretation: { quality: it.quality, feedback: it.feedback } });
+    const a = decideFrom(draft.it, draft.text, Date.now());
+    if (!a) return;
+    const err = act(a);
     if (err) setMsg(err); else setDraft(null);
   };
+  if (ask) {
+    const opts = strategiesFor(spec, run).filter((s) => ask.it.options?.includes(s.id));
+    return (
+      <div className="mt-4 space-y-3">
+        <div className="rounded-2xl bg-white text-ink p-4 text-sm">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-indigo">Antes de decidir, aclara</div>
+          <p className="mt-1 text-ink leading-relaxed">{ask.it.clarify}</p>
+          <p className="mt-2 text-xs text-slate-500">Tu respuesta admite más de una lectura y cada una tiene consecuencias distintas. No enviamos nada hasta que elijas.</p>
+        </div>
+        <div className="space-y-2">{opts.map((s) => <button key={s.id} onClick={() => pick(s.id)} className="w-full text-left rounded-2xl bg-white/10 hover:bg-white/15 text-white px-4 py-3 text-sm">{s.text}</button>)}</div>
+        <button onClick={() => setAsk(null)} className="btn text-white/75 hover:text-white">Reescribir</button>
+      </div>
+    );
+  }
   const understood = draft ? strategiesFor(spec, run).find((s) => s.id === draft.it.strategy) : null;
   if (draft && understood) {
     return (
@@ -496,6 +523,7 @@ function FreeText({ spec, run, act }: { spec: EpisodeSpec; run: EpisodeRun; act:
           <div className="text-[11px] font-semibold uppercase tracking-wider text-indigo">Lo que entendimos</div>
           <p className="mt-1 text-ink leading-relaxed">{understood.text}</p>
           {draft.it.params && <p className="mt-1 text-xs text-slate-500">{Object.entries(draft.it.params).map(([k, v]) => `${understood.params?.find((p) => p.key === k)?.label ?? k}: ${v}`).join(" · ")}</p>}
+          {draft.it.extras && <p className="mt-2 text-xs text-ink"><b>También propusiste:</b> {draft.it.extras}. El caso no modela esa parte: tu interlocutor la escuchará, pero las consecuencias se calculan con la acción de arriba.</p>}
           {draft.it.feedback && <p className="mt-2 text-xs text-slate-500">{draft.it.feedback}</p>}
         </div>
         <div className="flex gap-2">

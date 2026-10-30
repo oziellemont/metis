@@ -9,13 +9,14 @@ import type { EvalItem } from "./eval-set";
 /** Una partida parada en `node` (fase de decisión), alcanzada por la primera ruta válida que pasa por ahí. */
 const cache = new Map<string, EpisodeRun | null>();
 /** Si se pide `need`, la partida debe tener esa estrategia disponible (algunas dependen de la ruta). */
-export function runAt(spec: EpisodeSpec, node: string, need?: string): EpisodeRun | null {
-  const k = `${spec.id}@${spec.version}/${node}/${need ?? ""}`;
+export function runAt(spec: EpisodeSpec, node: string, need?: string | string[]): EpisodeRun | null {
+  const k = `${spec.id}@${spec.version}/${node}/${[need ?? ""].flat().join("+")}`;
   if (!cache.has(k)) cache.set(k, findRunAt(spec, node, need));
   return cache.get(k)!;
 }
 /** Búsqueda a lo ancho (la ruta más corta) con términos por defecto; prueba sin azar/memoria y luego con cada bandera. */
-function findRunAt(spec: EpisodeSpec, node: string, need?: string): EpisodeRun | null {
+function findRunAt(spec: EpisodeSpec, node: string, need0?: string | string[]): EpisodeRun | null {
+  const need = need0 === undefined ? [] : [need0].flat();
   const extra = [[], ...(spec.chance ?? []).map((c) => [c.flag]), ...(spec.history ?? []).map((h) => [h.flag])];
   for (const flags of extra) {
     let r0 = { ...startEpisode(spec, 0, { runId: "eval" }), flags: [...flags] };
@@ -24,7 +25,7 @@ function findRunAt(spec: EpisodeSpec, node: string, need?: string): EpisodeRun |
     const seen = new Set<string>();
     while (queue.length) {
       const r = queue.shift()!;
-      if (r.node === node && r.phase === "deciding" && (!need || strategiesFor(spec, r).some((x) => x.id === need))) return r;
+      if (r.node === node && r.phase === "deciding" && need.every((n) => strategiesFor(spec, r).some((x) => x.id === n))) return r;
       if (r.phase !== "deciding" || r.turns.length > 8) continue;
       const key = `${r.node}|${[...r.flags].sort().join(",")}|${r.trust}`;
       if (seen.has(key)) continue;

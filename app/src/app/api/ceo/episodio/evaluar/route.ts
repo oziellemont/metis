@@ -1,8 +1,8 @@
 /**
  * mêtis CEO · Evaluación de la IA de episodios (P0-D). Gasta dinero: solo con permiso de Oziel.
  *
- * POST { from, to } → corre los trabajos EVAL_JOBS[from, to) y devuelve sus resultados (la pantalla los junta
- * y arma el reporte). Así ninguna llamada al servidor dura mucho.
+ * POST { jobs: number[] } (o { from, to }) → corre esos trabajos de EVAL_JOBS (máx. 12) y devuelve sus resultados
+ * (la pantalla los junta y arma el reporte). Así ninguna llamada al servidor dura mucho.
  *
  * Candados:
  *  - sesión iniciada, IA activa para ese jugador (interruptor «ai» + CEO_AI_ENABLED=1 + consentimiento);
@@ -38,10 +38,15 @@ export async function POST(req: Request) {
   const key = (process.env.OPENAI_API_KEY ?? "").trim();
   if (!admin || !key) return no("Servicio no configurado.", 503);
 
-  const body = (await req.json().catch(() => ({}))) as { from?: number; to?: number };
-  const from = Math.max(0, Math.floor(Number(body.from) || 0));
-  const to = Math.min(EVAL_JOBS.length, from + BATCH_MAX, Math.floor(Number(body.to) || from + BATCH_MAX));
-  if (to <= from) return no("Rango inválido.", 400);
+  const body = (await req.json().catch(() => ({}))) as { from?: number; to?: number; jobs?: unknown };
+  let idx: number[];
+  if (Array.isArray(body.jobs)) idx = [...new Set(body.jobs.map((x) => Math.floor(Number(x))).filter((k) => Number.isInteger(k) && k >= 0 && k < EVAL_JOBS.length))].slice(0, BATCH_MAX);
+  else {
+    const from = Math.max(0, Math.floor(Number(body.from) || 0));
+    const to = Math.min(EVAL_JOBS.length, from + BATCH_MAX, Math.floor(Number(body.to) || from + BATCH_MAX));
+    idx = Array.from({ length: Math.max(0, to - from) }, (_, k) => from + k);
+  }
+  if (!idx.length) return no("Rango inválido.", 400);
 
   const modelName = process.env.CEO_AI_MODEL?.trim() || DEFAULT_MODEL;
   const { day, month } = periodsOf(Date.now());
@@ -87,8 +92,8 @@ export async function POST(req: Request) {
   };
 
   try {
-    const results = await Promise.all(EVAL_JOBS.slice(from, to).map((job) => runJob(job, model)));
-    return NextResponse.json({ ok: true, from, to, total: EVAL_JOBS.length, model: modelName, results, errors: [...errors].slice(0, 3) });
+    const results = await Promise.all(idx.map((k) => runJob(EVAL_JOBS[k], model)));
+    return NextResponse.json({ ok: true, jobs: idx, total: EVAL_JOBS.length, model: modelName, results, errors: [...errors].slice(0, 3) });
   } catch (e) {
     const msg = String((e as Error)?.message ?? e);
     return no(msg.startsWith("tope") ? "Se alcanzó el tope de gasto de la evaluación ($0.50 hoy)." : "La evaluación falló.", 429);
