@@ -4,8 +4,10 @@
  * La usa la ruta `api/ceo/episodio/evaluar` (con permiso de gasto) y las pruebas (modelo falso).
  *
  * Dos conjuntos que nunca se mezclan:
- *  - «dev»: `eval-set.ts` + `eval-dev-ronda2.ts` a `eval-dev-ronda5.ts` (lo que se usó para ajustar los prompts,
- *    incluidas las validaciones de las rondas 2 a 5).
+ *  - «dev»: lo reciente y lo que ha fallado. Completas, las validaciones de las rondas 4 y 5 (`eval-dev-ronda4.ts`,
+ *    `eval-dev-ronda5.ts`); de lo anterior (`eval-set.ts`, rondas 2 y 3) solo lo difícil (respuestas ambiguas, con
+ *    propuesta propia o fuera de tema; datos que no existen, ambiguos o ajenos; consultas que tientan, piden lo
+ *    desconocido o son abiertas) y los fallos históricos (`DEV_HISTORIC_MISSES`). Se corre una sola vez por respuesta.
  *  - «val» (`eval-validacion.ts`): validación final de la ronda 6, frases nuevas que no se usaron para ajustar nada.
  *
  * Mide, por conjunto:
@@ -34,8 +36,8 @@ export type { Msg };
 export type Model = (messages: Msg[], maxTokens: number, temperature: number) => Promise<{ content: string; cost: number } | null>;
 
 export const EVAL_REPEATS = 3;
-/** En desarrollo cada respuesta se corre menos veces (el conjunto ya es grande y cuida el tope de gasto). */
-export const DEV_REPEATS = 2;
+/** En desarrollo cada respuesta se corre una sola vez (la consistencia se mide en validación); cuida el gasto. */
+export const DEV_REPEATS = 1;
 export const repeatsOf = (set: EvalSetId) => (set === "val" ? EVAL_REPEATS : DEV_REPEATS);
 export const EVAL_BUDGET_USD = 1.5;
 /** En desarrollo se adapta una de cada N respuestas (en validación, todas). */
@@ -43,23 +45,50 @@ export const DEV_ADAPT_EVERY = 3;
 export type EvalSetId = "dev" | "val";
 
 // ───────────────────────────────────────────── conjuntos unificados
+/** Frases de rondas viejas que fallaron en el desarrollo de la ronda 5: se quedan en desarrollo aunque sean «fáciles». */
+export const DEV_HISTORIC_MISSES: readonly string[] = [
+  "No firmo: prefiero perder un frente que aceptar condiciones que no se pagan solas.",
+  "No sé, le digo algo para calmarlo y vemos.",
+  "Aguantamos un poco más; el laboratorio llega en menos de un día.",
+  "¿Tenemos espacio en la planta para producir más?",
+  "¿Nuestro producto se desplaza mejor que el de la competencia en anaquel?",
+  "¿Cuánto efectivo extra necesitamos si alargamos el crédito al cliente?",
+  "¿Hay algún antecedente de negociación con esta cadena?",
+  "¿Qué tan grave fue lo que hizo?",
+  "¿Alguien se ha enfermado?",
+  "¿Cuánto nos pega aceptar todo lo que piden?",
+  "¿Avisamos hoy a la autoridad, sí o no?",
+  "Paty, ¿qué harías tú en mi lugar?",
+  "¿Diego está buscando trabajo en otra empresa?",
+  "¿Cuánto cuesta retirar solo una parte?",
+];
+const missed = new Set(DEV_HISTORIC_MISSES);
+/** De las rondas viejas: lo difícil (cualquier tipo que no sea el «fácil») o lo que ya falló. */
+const hard = <T extends { kind: string }>(items: T[], easy: string, text: (x: T) => string) => items.filter((x) => x.kind !== easy || missed.has(text(x)));
+
+const OLD_INTERPRET: ValItem[] = [...INTERPRET_SET.map((x) => ({ ep: x.ep, node: x.node, kind: "clara" as const, expect: x.expect, text: x.text })), ...DEV2_INTERPRET, ...DEV3_INTERPRET];
 const INTERPRET: Record<EvalSetId, ValItem[]> = {
-  dev: [...INTERPRET_SET.map((x) => ({ ep: x.ep, node: x.node, kind: "clara" as const, expect: x.expect, text: x.text })), ...DEV2_INTERPRET, ...DEV3_INTERPRET, ...DEV4_INTERPRET, ...DEV5_INTERPRET],
+  dev: [...DEV4_INTERPRET, ...DEV5_INTERPRET, ...hard(OLD_INTERPRET, "clara", (x) => x.text)],
   val: VALIDATION_SET,
 };
 type FactItem = { ep: string; q: string; accept: string[]; kind: string };
+const OLD_FACTS: FactItem[] = [...FACT_SET.map((f) => ({ ep: f.ep, q: f.q, accept: [f.expect], kind: f.expect === "ninguno" ? "ajena" : f.expect.startsWith("?") ? "inexistente" : "dato" })), ...DEV2_FACTS, ...DEV3_FACTS];
 const FACTS: Record<EvalSetId, FactItem[]> = {
-  dev: [...FACT_SET.map((f) => ({ ep: f.ep, q: f.q, accept: [f.expect], kind: f.expect === "ninguno" ? "ajena" : f.expect.startsWith("?") ? "inexistente" : "dato" })), ...DEV2_FACTS, ...DEV3_FACTS, ...DEV4_FACTS, ...DEV5_FACTS],
+  dev: [...DEV4_FACTS, ...DEV5_FACTS, ...hard(OLD_FACTS, "dato", (x) => x.q)],
   val: FACT_VALIDATION,
 };
-const ADVISORS: Record<EvalSetId, { ep: string; advisor: string; q: string; kind: string }[]> = {
-  dev: [...ADVISOR_SET.map((a) => ({ ...a, kind: "normal" })), ...DEV2_ADVISOR, ...DEV3_ADVISOR, ...DEV4_ADVISOR, ...DEV5_ADVISOR],
+type AdvisorItem = { ep: string; advisor: string; q: string; kind: string };
+const OLD_ADVISORS: AdvisorItem[] = [...ADVISOR_SET.map((a) => ({ ...a, kind: "normal" })), ...DEV2_ADVISOR, ...DEV3_ADVISOR];
+const ADVISORS: Record<EvalSetId, AdvisorItem[]> = {
+  dev: [...DEV4_ADVISOR, ...DEV5_ADVISOR, ...hard(OLD_ADVISORS, "normal", (x) => x.q)],
   val: ADVISOR_VALIDATION,
 };
 /** Guiones: los de validación se muestran; los de la ronda 2 quedan como desarrollo (no se corren por defecto). */
 export const DEMOS = DEMO_SCRIPTS;
 export const DEV_DEMOS = DEV2_DEMOS;
 export const evalItem = (set: EvalSetId, i: number) => INTERPRET[set][i];
+/** Todas las frases de un conjunto (respuestas, preguntas de datos y consultas). */
+export const evalTexts = (set: EvalSetId) => [...INTERPRET[set].map((x) => x.text), ...FACTS[set].map((x) => x.q), ...ADVISORS[set].map((x) => x.q)];
 export const evalSizes = (set: EvalSetId) => ({ interpret: INTERPRET[set].length, facts: FACTS[set].length, advisor: ADVISORS[set].length });
 
 /** Un trabajo = una unidad que se puede correr en un lote. */
