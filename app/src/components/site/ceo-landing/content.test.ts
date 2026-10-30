@@ -109,9 +109,12 @@ describe("landing de MÊTIS CEO · bloques", () => {
   });
 
   it("cómo funciona: título y texto nuevos; los tres pasos se quedan, el primero dice «en cualquier momento del día»", () => {
-    expect(C.HOW.title).toBe("¡Tu próxima gran decisión está por llegar!");
+    expect(C.HOW.title).toBe("¿Y si aprender a dirigir se sintiera como dirigir de verdad?");
     expect(C.HOW.body).toBe("En MÊTIS te sumerges en una empresa que cobra vida con cada correo, WhatsApp o llamada. Toma decisiones, descubre sus consecuencias, gana experiencia y desbloquea nuevos retos mientras desarrollas tu criterio como líder. ¡Todo en unos minutos al día!");
-    expect(EN.HOW.title).toBe("Your next big decision is on its way!");
+    expect(EN.HOW.title).toBe("What if learning to lead felt like actually leading?");
+    // el título ya no se repite con el del bloque oscuro
+    expect(C.HOW.title).not.toBe(C.PHILOSOPHY.title);
+    expect(EN.HOW.title).not.toBe(EN.PHILOSOPHY.title);
     expect(EN.HOW.body).toMatch(/^At MÊTIS you dive into a company .* All in a few minutes a day!$/);
     expect(C.HOW.steps.map((s) => s.t)).toEqual(["Recibes una situación", "Tomas una decisión", "Aprendes de lo que ocurre"]);
     expect(C.HOW.steps[0].d).toContain("en cualquier momento del día");
@@ -208,8 +211,8 @@ describe("landing de MÊTIS CEO · bloques", () => {
     const bang = (x: string) => (x.match(/!/g) ?? []).length;
     expect(bang(allCopy() + enCopy()) - bang(JSON.stringify(C.HOW) + JSON.stringify(EN.HOW)) - bang(C.PHILOSOPHY.title + EN.PHILOSOPHY.title)).toBe(0);
     expect(bang(C.PHILOSOPHY.title + EN.PHILOSOPHY.title)).toBe(2);
-    expect(bang(C.HOW.title + C.HOW.body)).toBe(2);
-    expect(bang(EN.HOW.title + EN.HOW.body)).toBe(2);
+    expect(bang(C.HOW.title + C.HOW.body)).toBe(1);
+    expect(bang(EN.HOW.title + EN.HOW.body)).toBe(1);
   });
 
   it("SEO con el título acordado", () => {
