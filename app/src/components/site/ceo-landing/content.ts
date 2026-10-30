@@ -31,27 +31,26 @@ export const AVAILABILITY: { item: string; state: Availability; note: string }[]
 /* ---------------- SEO ---------------- */
 export const SEO = {
   title: "MÊTIS CEO | Aprende a dirigir tomando decisiones",
-  description: "Entrena tu criterio como líder con MÊTIS CEO. Dirige empresas simuladas, enfrenta decisiones difíciles y aprende de sus consecuencias, unos minutos al día.",
+  description: "Practica cómo dirigir una empresa. Resuelve situaciones de negocio, toma decisiones y descubre cómo afectan a los resultados y a las personas, unos minutos al día.",
 };
 
 /* ---------------- Navegación ---------------- */
 export const NAV = [
   { href: "#como", label: "Cómo funciona" },
-  { href: "#experiencia", label: "La experiencia" },
-  { href: "#camino", label: "Tu camino" },
+  { href: "#camino", label: "Tu carrera" },
 ] as const;
 export const LOGIN_HREF = "/entrar";
 export const START_HREF = "/ceo/empezar";
+/** La única acción principal de la landing: el mismo texto y el mismo destino en encabezado, hero, demo y cierre. */
+export const CTA = "Comenzar gratis";
 
 /* ---------------- Hero ---------------- */
 export const HERO = {
-  eyebrow: "MÊTIS CEO · Simulador de decisiones ejecutivas",
-  title: "Dirigir se aprende decidiendo.",
-  body: "Enfrenta los retos de una empresa, toma decisiones difíciles y descubre cómo afectan al negocio y a las personas. Aprende a pensar como líder, unos minutos al día.",
-  primary: "Probar una decisión",
-  secondary: "Cómo funciona",
-  note: "Sin registro. Tarda un minuto.",
-  who: "Para quienes aspiran a dirigir, para quienes ya lideran y para quienes creen que siempre hay algo más que aprender.",
+  eyebrow: "Simulador de dirección",
+  title: "Practica cómo dirigir una empresa.",
+  body: "Resuelve situaciones de negocio, toma decisiones y descubre cómo afectan a los resultados y a las personas. Desarrolla tu criterio de liderazgo en unos minutos al día.",
+  motto: "Dirigir se aprende decidiendo.",
+  note: "Sin tarjeta.",
 };
 
 /* ---------------- Cuadro del hero: el ciclo en 4 escenas ---------------- */
@@ -117,7 +116,7 @@ export interface DemoOption {
 export const DEMO = {
   label: "Tu primera decisión",
   title: "Una decisión nunca afecta una sola cosa.",
-  body: "Lo que hoy protege tus ventas puede presionar tus márgenes. Lo que cuida el presupuesto puede afectar a tu equipo. Pruébalo con el primer caso del simulador.",
+  body: "Una muestra breve del primer caso del simulador. Elige qué le respondes a Héctor y mira qué cambia hoy y un mes después.",
   steps: ["Recibes el problema", "Tomas una decisión", "Ves qué cambia hoy y un mes después"],
   from: { name: "Héctor Salinas", initials: "HS", role: "Director Comercial · Botanas Cumbre", channel: "WhatsApp", time: "9:14" },
   message: [
@@ -188,24 +187,18 @@ export const DEMO = {
     },
   ] as DemoOption[],
   disclaimer: "Ejemplo ilustrativo, no conectado a tu cuenta. En el simulador, el resultado también depende de lo que decidiste antes y de cómo está tu empresa.",
-  close: "Eso fue una decisión. Imagina dirigir la empresa durante semanas.",
-  cta: "Empezar mi historia",
+  close: "Eso fue una decisión. En el simulador, cada una se conecta con las siguientes durante semanas.",
   retry: "Volver a decidir",
 };
 
 /* ---------------- Cómo funciona (incluye el ritmo diario) ---------------- */
 export const HOW = {
-  title: "Tu siguiente reto puede llegar en cualquier momento.",
-  body: "Como en una empresa real, las decisiones no siempre esperan a que estés listo. Unos minutos al día bastan.",
+  title: "Practica con casos que evolucionan.",
+  body: "Practica desde cualquier dispositivo, dentro del horario que eliges y a tu propio ritmo.",
   steps: [
-    { n: "01", t: "Recibes una situación", d: "Un cliente reclama, tu equipo necesita una respuesta o el presupuesto no alcanza." },
-    { n: "02", t: "Tomas una decisión", d: "Revisas el contexto, eliges un camino y asumes sus consecuencias. No siempre tendrás toda la información." },
-    { n: "03", t: "Aprendes de lo que ocurre", d: "Ves cómo reaccionan las personas, qué cambia en el negocio y qué podrías considerar la próxima vez." },
-  ],
-  rhythm: [
-    { t: "Tu horario", d: "Eliges desde qué hora y hasta qué hora te escribe tu equipo. Si prefieres, recibes todo el día de una vez." },
-    { t: "En el celular o la computadora", d: "Funciona en el navegador. Con tu cuenta, tu avance te sigue a cualquier dispositivo." },
-    { t: "Una racha que ayuda", d: "Sirve para crear el hábito, no para presionarte. Si un día no entras, algunos asuntos vencen, como en cualquier empresa." },
+    { n: "01", t: "Abre un caso", d: "Una situación de negocio pone a prueba tu criterio." },
+    { n: "02", t: "Toma decisiones", d: "Revisa el contexto y define cómo actuar; tus decisiones cambian lo que ocurre después." },
+    { n: "03", t: "Aprende de las consecuencias", d: "Comprende los resultados y refuerza conceptos en mêtis Academy." },
   ],
 };
 
@@ -218,10 +211,12 @@ export interface Echo {
   back: { day: string; who: string; initials: string; text: string };
   tone: "riesgo" | "bien";
 }
+/** Cada cuánto avanza el carrusel de historias (se detiene con foco, mouse, interacción o movimiento reducido). */
+export const MEMORY_INTERVAL_MS = 7000;
 export const DIFF = {
-  eyebrow: "Una empresa que recuerda tus decisiones",
-  title: "No estás respondiendo un examen. Estás dirigiendo.",
-  body: "En MÊTIS las personas recuerdan cómo las trataste, la confianza se gana o se pierde y algunos problemas de hoy se sembraron hace días. Tu empresa está viva.",
+  eyebrow: "Una empresa que recuerda",
+  title: "Tus decisiones siguen teniendo consecuencias.",
+  body: "Las personas recuerdan cómo las trataste y algunos problemas de hoy se sembraron días antes. Lo que regresa depende de lo que decidas.",
   decideLabel: "Decides",
   backLabel: "Regresa",
   items: [
@@ -254,38 +249,13 @@ export const DIFF = {
       tone: "bien",
     },
   ] as Echo[],
-  source: "Situaciones de Botanas Cumbre, la primera empresa del simulador. Lo que regresa depende de lo que decidas.",
-  after: {
-    title: "Al cerrar cada caso",
-    items: [
-      "Ves qué pasó, por qué y qué otra lectura era posible",
-      "Una Nota CEO y lecciones breves en mêtis Academy",
-      "Los siguientes casos se ordenan según lo que te conviene reforzar",
-    ],
-  },
-};
-
-/* ---------------- Tu desarrollo ejecutivo (ejemplo conceptual: cifras ilustrativas) ---------------- */
-export const GROWTH = {
-  eyebrow: "Tu desarrollo ejecutivo",
-  title: "Tu criterio está evolucionando",
-  tag: "Ejemplo conceptual",
-  bars: [
-    { name: "Pensamiento estratégico", pct: 76 },
-    { name: "Gestión financiera", pct: 59 },
-    { name: "Liderazgo de personas", pct: 84 },
-    { name: "Manejo de crisis", pct: 38 },
-  ],
-  nextLabel: "Próximo reto",
-  next: "Practicar decisiones financieras bajo presión.",
-  disclaimer: "Porcentajes ilustrativos. En el simulador, tu perfil se construye con tus propias decisiones.",
 };
 
 /* ---------------- Camino profesional (ruta visual) ---------------- */
 export type StageState = "inicio" | "siguiente" | "bloqueada";
 export const PATH = {
   title: "Una carrera que crece contigo.",
-  body: "No empiezas decidiendo adquisiciones internacionales. Primero aprendes a dirigir personas, recursos y resultados. Después, el alcance de tus decisiones crece.",
+  body: "Empiezas dirigiendo una empresa en la industria que elijas. Al resolver retos, asumes responsabilidades mayores y otras industrias te llaman a dirigir.",
   stateLabel: { inicio: "Aquí empiezas", siguiente: "Siguiente objetivo", bloqueada: "Por desbloquear" } as Record<StageState, string>,
   stages: [
     { n: "01", name: "Emerging Leader", learn: "Equipos y prioridades", state: "inicio" },
@@ -295,37 +265,33 @@ export const PATH = {
     { n: "05", name: "Chief Executive Officer", learn: "Crecimiento y riesgo", state: "bloqueada" },
     { n: "06", name: "Global CEO", learn: "Mercados y gobernanza", state: "bloqueada" },
   ] as { n: string; name: string; learn: string; state: StageState }[],
-  how: "Cada ascenso es un nombramiento: lo ganas aprobando empresas, demostrando dominio en tus competencias y manteniendo la constancia. En la simulación diriges una empresa desde el primer día; tu etapa refleja el criterio que has demostrado.",
-  beyond: { t: "Después de Global CEO: The Executive Arena", d: "La meta no es terminar. En The Executive Arena sigues dirigiendo empresas, con golpes más duros y una línea de aprobación más alta." },
+  beyond: { t: "The Executive Arena", d: "Después de Global CEO, nuevos desafíos ponen a prueba tu criterio. Siempre habrá algo más que aprender." },
 };
 
 /* ---------------- Filosofía ---------------- */
 export const PHILOSOPHY = {
   title: "Dirigir es una responsabilidad. Y vale la pena prepararse para ella.",
-  body: "Detrás de cada decisión hay personas, recursos y consecuencias. MÊTIS nace de una idea sencilla: el criterio de un líder puede desarrollarse antes de que llegue el momento de ponerlo a prueba.",
-  eyebrow: "Por qué creamos MÊTIS",
-  quote: "Las personas no son el problema. Las personas son la solución.",
-  story: "El trabajo de un director general no es tener todas las respuestas. Es cuidar cómo se relacionan las personas para que cada colaborador llegue a su máximo potencial. Por eso en MÊTIS casi todas las decisiones pasan por alguien: un vendedor que esperaba tu puesto, una analista que quiere crecer, un operador que necesita que lo escuches. Aquí practicas ese criterio antes de que tu equipo dependa de él.",
+  body: "Detrás de cada decisión hay personas, recursos y consecuencias. El criterio de un líder puede desarrollarse antes de que llegue el momento de ponerlo a prueba.",
+  who: "Para quienes aspiran a dirigir, para quienes ya lideran y para quienes creen que siempre hay algo más que aprender.",
   author: "Oziel Leal Montemayor",
   authorRole: "Creador de MÊTIS",
 };
 
 /* ---------------- FAQ ---------------- */
 export const FAQ: { q: string; a: string }[] = [
-  { q: "¿Necesito experiencia en dirección?", a: "No. Al empezar te preguntamos por tu experiencia para ajustar la ayuda y el orden de los casos. Si ya diriges, puedes empezar con más exigencia." },
-  { q: "¿Cuánto tiempo necesito al día?", a: "Unos minutos. Cada asunto se lee y se decide en poco tiempo, y tú eliges el horario en que llegan." },
-  { q: "¿En qué se diferencia de un curso?", a: "No hay respuestas correctas que memorizar. Decides, la empresa responde y después entiendes por qué. Las lecciones llegan cuando ya viviste el caso." },
-  { q: "¿Tengo que crear una cuenta o instalar algo?", a: "No instalas nada: funciona en el navegador del celular o la computadora. Para probar una decisión no necesitas cuenta. Para dirigir tu empresa creas una con Google o con tu correo, y tu avance te sigue a cualquier dispositivo." },
-  { q: "¿Tiene costo?", a: "Puedes empezar hoy, sin tarjeta." },
+  { q: "¿Necesito experiencia en dirección?", a: "No. Al empezar te preguntamos por tu experiencia para ajustar la ayuda y el orden de los casos." },
+  { q: "¿Cuánto tiempo necesito al día?", a: "Unos minutos. Tú eliges el horario en que llegan los asuntos." },
+  { q: "¿En qué se diferencia de un curso?", a: "No hay respuestas que memorizar. Decides, la empresa responde y después entiendes por qué." },
+  { q: "¿Tengo que crear una cuenta o instalar algo?", a: "No instalas nada: funciona en el navegador. Para dirigir tu empresa creas una cuenta con Google o con tu correo, y tu avance te sigue a cualquier dispositivo." },
+  { q: "¿Qué industrias hay?", a: "Consumo masivo, autopartes y restaurantes. Eliges con cuál empezar." },
+  { q: "¿Tiene costo?", a: "Empezar es gratis y no pide tarjeta." },
 ];
 
 /* ---------------- Cierre y pie ---------------- */
-/* Cierre con el acceso (no hay cobro operativo: no se publica precio). */
+/* Cierre: la misma acción principal (no hay cobro operativo: no se publica precio). */
 export const CLOSE = {
-  title: "La próxima decisión es tuya.",
-  body: "Empieza hoy, sin tarjeta, y desarrolla el criterio para enfrentarla.",
-  points: ["Sin tarjeta ni formulario largo", "Tres empresas que se abren conforme avanzas", "Lecciones de mêtis Academy", "Avisos por correo, si los activas"],
-  cta: "Comenzar en MÊTIS",
+  title: "Empieza a decidir como líder.",
+  body: "Practica cómo dirigir una empresa y desarrolla tu criterio, un caso a la vez.",
 };
 export const FOOTER = { tagline: "Simulador de decisiones ejecutivas. Dirigir se aprende decidiendo.", place: "Monterrey, N.L., México" };
 

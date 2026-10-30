@@ -1,17 +1,18 @@
 /**
  * Landing de MÊTIS CEO (www.metis.ceo; el middleware reescribe «/» hacia aquí).
- * Narrativa: entiendo qué es (hero con el ciclo en 4 escenas) → pruebo una decisión y veo hoy y un mes después → cómo se vive → por qué es distinto → mi camino → empiezo.
+ * Siete bloques, una idea cada uno (adenda de Oziel, 30-oct-2026): hero → una primera decisión → cómo funciona →
+ * una empresa que recuerda (carrusel) → tu carrera → por qué importa dirigir bien → preguntas y cierre.
+ * Una sola acción principal (CTA, «Comenzar gratis») con el mismo destino en encabezado, hero, demo y cierre.
  * Aislada del simulador: la demo vive en memoria y no usa el motor, la partida ni la cuenta.
  * Copy y estado real de cada función en components/site/ceo-landing/content.ts.
  */
 import type { Metadata } from "next";
-import { ArrowDown } from "lucide-react";
 import { Header } from "@/components/site/ceo-landing/Header";
 import { FirstDecision } from "@/components/site/ceo-landing/FirstDecision";
-import { TryButton } from "@/components/site/ceo-landing/TryButton";
+import { CeoCta } from "@/components/site/CeoCta";
 import { Story } from "@/components/site/ceo-landing/Story";
-import { CloseSection, DiffSection, FaqSection, Footer, HowSection, PathSection, PhilosophySection } from "@/components/site/ceo-landing/Sections";
-import { HERO, SEO } from "@/components/site/ceo-landing/content";
+import { CloseSection, FaqSection, MemorySection, Footer, HowSection, PathSection, PhilosophySection } from "@/components/site/ceo-landing/Sections";
+import { CTA, HERO, SEO } from "@/components/site/ceo-landing/content";
 import { CEO_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -34,19 +35,18 @@ export default function CeoLanding() {
               <p className="text-[11px] sm:text-[12px] font-semibold uppercase tracking-[0.16em] text-white/60">{HERO.eyebrow}</p>
               <h1 id="hero-title" className="mt-4 text-[40px] leading-[1.06] sm:text-6xl sm:leading-[1.04] font-semibold tracking-tight">{HERO.title}</h1>
               <p className="mt-5 text-[17px] sm:text-lg leading-relaxed text-white/75 max-w-xl">{HERO.body}</p>
-              <div className="mt-8 flex flex-wrap items-center gap-3">
-                <TryButton className="btn bg-mint text-white hover:bg-mint-light !px-5 !py-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">{HERO.primary} <ArrowDown size={16} aria-hidden /></TryButton>
-                <a href="#como" className="btn bg-white/10 text-white hover:bg-white/20 !px-5 !py-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">{HERO.secondary}</a>
+              <div className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-3">
+                <CeoCta label={CTA} className="focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white" />
+                <span className="text-[13px] text-white/50">{HERO.note}</span>
               </div>
-              <p className="mt-4 text-[13px] text-white/50">{HERO.note}</p>
-              <p className="mt-10 max-w-md border-l-2 border-mint/60 pl-4 text-[15px] leading-relaxed text-white/70">{HERO.who}</p>
+              <p className="mt-10 text-[15px] font-medium text-white/70">{HERO.motto}</p>
             </div>
             <Story />
           </section>
         </div>
         <FirstDecision />
         <HowSection />
-        <DiffSection />
+        <MemorySection />
         <PathSection />
         <PhilosophySection />
         <FaqSection />

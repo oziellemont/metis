@@ -6,7 +6,7 @@ import clsx from "clsx";
 import { Menu, X } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { CeoCta } from "@/components/site/CeoCta";
-import { LOGIN_HREF, NAV } from "./content";
+import { CTA, LOGIN_HREF, NAV } from "./content";
 
 export function Header() {
   const [solid, setSolid] = useState(false);
@@ -35,7 +35,7 @@ export function Header() {
           {NAV.map((n) => <a key={n.href} href={n.href} className={clsx("rounded", dark ? "text-white/80 hover:text-white" : "text-slate-600 hover:text-ink", focus)}>{n.label}</a>)}
           <Link href={LOGIN_HREF} className={clsx("rounded", dark ? "text-white/60 hover:text-white" : "text-slate-500 hover:text-ink", focus)}>Iniciar sesión</Link>
         </nav>
-        <CeoCta label="Empezar" className="ml-auto md:ml-0 !py-2 !px-4" />
+        <CeoCta label={CTA} className="ml-auto md:ml-0 !py-2 !px-4" />
         <button type="button" aria-expanded={open} aria-controls="menu-movil" aria-label={open ? "Cerrar menú" : "Abrir menú"} onClick={() => setOpen((v) => !v)} className={"md:hidden -mr-2 h-10 w-10 grid place-items-center rounded-lg " + focus}>
           {open ? <X size={20} /> : <Menu size={20} />}
         </button>

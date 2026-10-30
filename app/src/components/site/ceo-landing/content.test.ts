@@ -56,8 +56,8 @@ describe("landing de MÊTIS CEO", () => {
 
   it("la demo se declara ilustrativa y cierra con la invitación pedida", () => {
     expect(C.DEMO.disclaimer.toLowerCase()).toContain("ilustrativo");
-    expect(C.DEMO.close).toBe("Eso fue una decisión. Imagina dirigir la empresa durante semanas.");
-    expect(C.DEMO.cta).toBe("Empezar mi historia");
+    expect(C.DEMO.close).toMatch(/^Eso fue una decisión\./);
+    expect(C.DEMO.body).toMatch(/muestra breve/);
     expect(C.DEMO.retry).toBe("Volver a decidir");
     expect(C.DEMO.from.name).toBe("Héctor Salinas");
   });
@@ -84,7 +84,8 @@ describe("landing de MÊTIS CEO", () => {
     expect(sec).toContain('<span className="sr-only">{PATH.stateLabel[s.state]}</span>');
     expect(sec).not.toMatch(/chip mt-3 " \+ BADGE\[/);
     // Después de Global CEO sigue The Executive Arena (lo que la app llama exigencia Legendaria), sin fechas.
-    expect(C.PATH.beyond.t).toBe("Después de Global CEO: The Executive Arena");
+    expect(C.PATH.beyond.t).toBe("The Executive Arena");
+    expect(C.PATH.beyond.d).toMatch(/^Después de Global CEO/);
     expect(C.PATH.beyond.d).not.toMatch(/legendario|pronto|20\d\d/i);
     expect(C.AVAILABILITY.find((a) => a.item === "The Executive Arena")!.state).toBe("hoy");
   });
@@ -100,11 +101,70 @@ describe("landing de MÊTIS CEO", () => {
     expect(Math.max(...sums) - Math.min(...sums)).toBeLessThanOrEqual(1);
   });
 
-  it("la landing es más corta: hero, decisión y seis bloques, sin secciones repetidas", () => {
+  it("siete bloques en el orden de la adenda, sin secciones repetidas", () => {
     const page = readFileSync("src/app/simulador/page.tsx", "utf8");
-    expect((page.match(/<[A-Z]\w+Section \/>/g) ?? []).length).toBe(6);
-    expect(page).not.toMatch(/LearnSection|RhythmSection|WhoSection|AccessSection|RippleSection/);
-    expect(C.HERO.who).toContain("aspiran a dirigir");
+    const order = ["<FirstDecision />", "<HowSection />", "<MemorySection />", "<PathSection />", "<PhilosophySection />", "<FaqSection />", "<CloseSection />"];
+    const at = order.map((t) => page.indexOf(t));
+    expect(at.every((n) => n > 0)).toBe(true);
+    expect([...at].sort((a, b) => a - b)).toEqual(at);
+    expect(page).not.toMatch(/DiffSection|LearnSection|RhythmSection|WhoSection|AccessSection|RippleSection/);
+  });
+
+  it("hero: categoría, titular concreto, una descripción y una sola acción", () => {
+    expect(C.HERO.eyebrow).toBe("Simulador de dirección");
+    expect(C.HERO.title).toBe("Practica cómo dirigir una empresa.");
+    expect(C.HERO.motto).toBe("Dirigir se aprende decidiendo.");
+    expect("who" in C.HERO).toBe(false);
+    expect("secondary" in C.HERO).toBe(false);
+    // la frase de audiencia aparece una sola vez, en filosofía
+    expect(allCopy().split("aspiran a dirigir").length - 1).toBe(1);
+    expect(C.PHILOSOPHY.who).toContain("aspiran a dirigir");
+  });
+
+  it("un mismo CTA y un mismo destino en encabezado, hero, demo y cierre; sin acciones competidoras", () => {
+    expect(C.CTA).toBe("Comenzar gratis");
+    const page = readFileSync("src/app/simulador/page.tsx", "utf8");
+    const files = { page, header: readFileSync(join(DIR, "Header.tsx"), "utf8"), demo: readFileSync(join(DIR, "FirstDecision.tsx"), "utf8"), sections: readFileSync(join(DIR, "Sections.tsx"), "utf8") };
+    for (const [k, src] of Object.entries(files)) expect(src, k).toMatch(/<CeoCta label=\{CTA\}/);
+    // nada de botones destacados con otro destino (el verde es el de la acción principal)
+    const all = Object.values(files).join("\n");
+    expect(all.match(/btn bg-mint/g) ?? []).toEqual([]);
+    expect(all).not.toMatch(/TryButton|HERO\.secondary|HERO\.primary|DEMO\.cta/);
+    const cta = readFileSync("src/components/site/CeoCta.tsx", "utf8");
+    expect(cta).toContain('"/ceo/empezar"');
+  });
+
+  it("cómo funciona: tres pasos y una sola línea de ritmo; sin los microbloques", () => {
+    expect(C.HOW.title).toBe("Practica con casos que evolucionan.");
+    expect(C.HOW.steps.map((s) => s.t)).toEqual(["Abre un caso", "Toma decisiones", "Aprende de las consecuencias"]);
+    expect(C.HOW.body).toBe("Practica desde cualquier dispositivo, dentro del horario que eliges y a tu propio ritmo.");
+    expect("rhythm" in C.HOW).toBe(false);
+    const sec = readFileSync(join(DIR, "Sections.tsx"), "utf8");
+    expect(sec).not.toMatch(/Racha de|9:00 a 18:00|Tu horario|Una racha que ayuda/);
+  });
+
+  it("carrusel: una historia a la vez, cada 7 s, con pausa, anterior/siguiente e indicadores", () => {
+    expect(C.MEMORY_INTERVAL_MS).toBe(7000);
+    const src = readFileSync(join(DIR, "Memory.tsx"), "utf8");
+    for (const s of ["prefers-reduced-motion", "Pausar el carrusel", "Historia anterior", "Historia siguiente", "aria-roledescription=\"carrusel\"", "onFocusCapture", "inert="]) expect(src).toContain(s);
+    // sin cuadrícula de historias en la página
+    expect(readFileSync(join(DIR, "Sections.tsx"), "utf8")).not.toMatch(/DIFF\.items\.map/);
+    expect("after" in C.DIFF || "source" in C.DIFF || "GROWTH" in C).toBe(false);
+  });
+
+  it("carrera: seis hitos, sin los dos recuadros inferiores; Executive Arena como candado aislado que no es botón", () => {
+    const sec = readFileSync(join(DIR, "Sections.tsx"), "utf8");
+    expect(sec).not.toMatch(/Cómo avanzas|PATH\.how/);
+    expect(sec).toContain("<ArenaLock />");
+    const lock = readFileSync(join(DIR, "ArenaLock.tsx"), "utf8");
+    expect(lock).not.toMatch(/<button|<a |<Link|onClick/);
+    expect(lock).toContain("prefers-reduced-motion");
+  });
+
+  it("filosofía breve: sin el manifiesto largo", () => {
+    expect(C.PHILOSOPHY.title).toBe("Dirigir es una responsabilidad. Y vale la pena prepararse para ella.");
+    expect(allCopy()).not.toMatch(/por qué creamos|las personas no son el problema|no es tener todas las respuestas/);
+    expect(C.PHILOSOPHY.author).toBe("Oziel Leal Montemayor");
   });
 
   it("no publica precio, prueba gratuita ni cancelación mientras no exista cobro", () => {
@@ -129,12 +189,14 @@ describe("landing de MÊTIS CEO", () => {
   });
 
   it("FAQ breve y CTA a rutas reales", () => {
-    expect(C.FAQ.length).toBeGreaterThanOrEqual(4);
-    expect(C.FAQ.length).toBeLessThanOrEqual(5);
-    expect(C.FAQ.map((f) => f.q).join(" ")).toMatch(/experiencia[\s\S]*tiempo[\s\S]*cuenta[\s\S]*costo/i);
+    expect(C.FAQ.length).toBe(6);
+    expect(C.FAQ.map((f) => f.q).join(" ")).toMatch(/experiencia[\s\S]*tiempo[\s\S]*curso[\s\S]*cuenta[\s\S]*industrias[\s\S]*costo/i);
+    // las industrias que se nombran son las que hay
+    const ind = C.FAQ.find((f) => /industrias/.test(f.q))!.a.toLowerCase();
+    for (const c of COMPANIES) expect(ind).toContain(c.industry.toLowerCase());
     expect(C.START_HREF).toBe("/ceo/empezar");
     expect(C.LOGIN_HREF).toBe("/entrar");
-    expect(COMPANIES.length).toBe(3); // el copy dice «Tres empresas»
+    expect(COMPANIES.length).toBe(3); // el FAQ nombra tres industrias
   });
 
   it("SEO con el título acordado y una sola h1", () => {
@@ -148,8 +210,8 @@ describe("landing: una empresa que recuerda y cifras coherentes", () => {
 
   it("la experiencia no repite el caso SuperNorte: muestra personas que recuerdan y crisis sembradas antes", () => {
     expect(txt(C.DIFF)).not.toMatch(/SuperNorte|Sofía|descuento|margen/i);
-    expect(C.DIFF.title).toBe("No estás respondiendo un examen. Estás dirigiendo.");
-    expect(C.DIFF.eyebrow).toBe("Una empresa que recuerda tus decisiones");
+    expect(C.DIFF.title).toBe("Tus decisiones siguen teniendo consecuencias.");
+    expect(C.DIFF.eyebrow).toBe("Una empresa que recuerda");
     expect(C.DIFF.items.length).toBe(4);
     for (const e of C.DIFF.items) {
       // lo que regresa ocurre después de la decisión
@@ -197,20 +259,5 @@ describe("landing: una empresa que recuerda y cifras coherentes", () => {
     expect(C.DEMO.message.join(" ")).toContain("Sofía Leal, la compradora de SuperNorte");
   });
 
-  it("el desarrollo ejecutivo se marca como ejemplo conceptual con cifras ilustrativas", () => {
-    expect(C.GROWTH.title).toBe("Tu criterio está evolucionando");
-    expect(C.GROWTH.tag).toBe("Ejemplo conceptual");
-    expect(C.GROWTH.disclaimer.toLowerCase()).toContain("ilustrativ");
-    expect(C.GROWTH.bars.map((b) => [b.name, b.pct])).toEqual([["Pensamiento estratégico", 76], ["Gestión financiera", 59], ["Liderazgo de personas", 84], ["Manejo de crisis", 38]]);
-    expect(C.GROWTH.next).toBe("Practicar decisiones financieras bajo presión.");
-    const src = readFileSync(join(DIR, "Sections.tsx"), "utf8");
-    expect(src).toContain("GROWTH.tag");
-    expect(src).toContain("GROWTH.disclaimer");
-  });
 
-  it("la filosofía habla de personas como solución, sin historia de fundador", () => {
-    expect(C.PHILOSOPHY.quote).toBe("Las personas no son el problema. Las personas son la solución.");
-    expect(C.PHILOSOPHY.story).toContain("máximo potencial");
-    expect(C.PHILOSOPHY.story).not.toMatch(/\bvi\b|construí/i);
-  });
 });

@@ -6,10 +6,10 @@
  * Vive solo en memoria del navegador: no usa el motor, no guarda nada ni toca la partida.
  */
 import { useRef, useState } from "react";
-import Link from "next/link";
 import clsx from "clsx";
 import { ArrowRight, MessageCircle, RotateCcw } from "lucide-react";
-import { DEMO, START_HREF } from "./content";
+import { CeoCta } from "@/components/site/CeoCta";
+import { CTA, DEMO } from "./content";
 import { EffectBars } from "./Effects";
 
 export function FirstDecision() {
@@ -136,7 +136,7 @@ export function FirstDecision() {
                     <div className="mt-5 rounded-2xl bg-canvas p-4">
                       <p className="text-[15px] font-semibold text-ink">{DEMO.close}</p>
                       <div className="mt-3 flex flex-wrap gap-2">
-                        <Link href={START_HREF} className="btn bg-mint text-white hover:bg-mint-light !px-4 !py-2.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo">{DEMO.cta} <ArrowRight size={15} aria-hidden /></Link>
+                        <CeoCta label={CTA} className="!px-4 !py-2.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo" />
                         <button type="button" onClick={reset} className="btn-ghost !py-2.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo"><RotateCcw size={14} aria-hidden /> {DEMO.retry}</button>
                       </div>
                     </div>
