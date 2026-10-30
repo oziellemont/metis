@@ -33,14 +33,17 @@ function json(raw: string): Record<string, unknown> | null {
 
 // ───────────────────────────────────────────── 1. consulta de hechos
 export function factMessages(spec: EpisodeSpec, question: string): Msg[] {
+  // La IA ve el tema de cada dato (pregunta sugerida y palabras clave), nunca la respuesta.
   const bank = [
-    ...spec.facts.facts.filter((f) => !f.critical).map((f) => `${f.id}: ${f.label}`),
-    ...spec.facts.unknowns.map((u) => `?${u.id}: (dato que aún no existe en el caso)`),
+    ...spec.facts.facts.filter((f) => !f.critical).map((f) => `${f.id}: ${f.label} (temas: ${f.keywords.slice(0, 8).join(", ")})`),
+    ...spec.facts.unknowns.map((u) => `?${u.id}: dato que el caso NO tiene todavía (temas: ${u.keywords.slice(0, 8).join(", ")})`),
   ].join("\n");
   return [
     { role: "system", content: [
-      "Clasificas preguntas dentro de un simulador ejecutivo. Tienes una lista cerrada de datos autorizados.",
-      "Elige el id del dato que responde la pregunta del jugador. Si ninguno la responde, usa \"ninguno\". No inventes datos ni respondas tú.",
+      `Clasificas preguntas del jugador dentro de un simulador ejecutivo (caso: ${spec.title}). Tienes una lista cerrada de datos autorizados.`,
+      "Elige el id del dato que mejor responde la pregunta, aunque el jugador use otras palabras o pregunte solo una parte del dato.",
+      "Si la pregunta pide algo que el caso no tiene todavía, elige el id que empieza con «?».",
+      "Usa \"ninguno\" solo si la pregunta no tiene relación con ningún dato de la lista (por ejemplo, temas ajenos al caso). No inventes datos ni respondas tú.",
       GUARD,
       'Responde SOLO con JSON: {"id":"<id o ninguno>"}',
     ].join("\n") },

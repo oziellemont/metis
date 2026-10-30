@@ -15,6 +15,8 @@ describe("IA · consulta de hechos", () => {
     expect(m[1].content).toContain("margen:");
     expect(m[1].content).toContain("?oferta_regional");
     expect(m[1].content).not.toContain("7.1%"); // la IA no ve ni redacta las respuestas
+    expect(m[1].content).toMatch(/margen: .*\(temas: .*descuento/); // ve el tema de cada dato para entender otras palabras
+    expect(m[0].content).toMatch(/ninguno.*solo si/);
   });
   it("acepta solo ids del banco; lo demás se descarta", () => {
     expect(parseFact(SUPERNORTE, '{"id":"plazo"}')).toEqual({ factId: "plazo" });

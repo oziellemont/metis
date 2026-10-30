@@ -235,6 +235,9 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
   // guardar: copia de la cuenta (o sin cuenta) en el navegador; nube con retraso. Mientras haya una carrera
   // del navegador por decidir, no se sube nada (para no pisar la nube sin elección).
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  /** Guardado en la nube programado y todavía no hecho (para subirlo al cerrar la pestaña). */
+  const pendingSave = useRef<(() => Promise<void>) | null>(null);
+  const leaving = useRef(false);
   const journalTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const sRef = useRef(s);
   sRef.current = s;
@@ -289,7 +292,9 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
     if (journalTimer.current) clearTimeout(journalTimer.current);
     journalTimer.current = setTimeout(() => { void flushJournal(); }, 4000);
     if (saveTimer.current) clearTimeout(saveTimer.current);
-    saveTimer.current = setTimeout(async () => {
+    const saveNow = async () => {
+      saveTimer.current = null;
+      pendingSave.current = null;
       const sb = supabaseBrowser();
       if (!sb) return;
       // 1.1: si otro dispositivo guardó algo más nuevo, primero se trae y se mezcla (el guardado siguiente sube la mezcla).
@@ -320,8 +325,26 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
       fetch("/api/ceo/perfil", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(ob) })
         .then((r) => { if (r.ok) try { localStorage.setItem(ok, sig); } catch { /* ignore */ } })
         .catch(() => { /* se reintenta en el siguiente guardado */ });
-    }, 1200);
+    };
+    pendingSave.current = saveNow;
+    saveTimer.current = setTimeout(saveNow, 1200);
   }, [s, ready, user, plan, pullCloud]);
+
+  // Al cerrar o esconder la pestaña con un guardado pendiente, se sube ya (no se espera el retraso):
+  // así la última jugada no se queda solo en este dispositivo.
+  useEffect(() => {
+    const flush = () => {
+      if (document.visibilityState === "visible" && !leaving.current) return;
+      const f = pendingSave.current;
+      if (!f) return;
+      if (saveTimer.current) clearTimeout(saveTimer.current);
+      void f();
+    };
+    const onHide = () => { leaving.current = true; flush(); leaving.current = false; };
+    document.addEventListener("visibilitychange", flush);
+    window.addEventListener("pagehide", onHide);
+    return () => { document.removeEventListener("visibilitychange", flush); window.removeEventListener("pagehide", onHide); };
+  }, []);
 
   // 1.1: al volver a la pestaña y cada minuto con ella visible, revisar si otro dispositivo avanzó.
   useEffect(() => {
