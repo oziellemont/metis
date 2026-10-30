@@ -2,13 +2,14 @@
 /**
  * «Una empresa que recuerda»: las cuatro historias de Botanas Cumbre en un solo carrusel, una a la vez.
  * - Las cuatro tarjetas ocupan la misma celda de la cuadrícula: la altura es la de la más alta y no salta al rotar.
- * - Avanza cada 7 s; se detiene con el botón, al pasar el mouse, al recibir foco o al interactuar.
+ * - Avanza sola cada 4 s, sin botón de pausa. Se detiene solo mientras el mouse está encima o hay foco dentro
+ *   (para poder leer); las flechas y los puntos cambian de historia y la rotación sigue.
  * - Con movimiento reducido no rota sola y no hay transición.
  * - Sin JS se ve la primera historia (el resto queda oculto a todos, no solo a la vista).
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 import clsx from "clsx";
-import { ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { MEMORY_INTERVAL_MS, type Copy, type Echo } from "./content";
 
 function EchoCard({ e, D }: { e: Echo; D: Copy["DIFF"] }) {
@@ -64,8 +65,8 @@ export function MemoryCarousel({ t }: { t: Copy }) {
     return () => window.clearTimeout(t);
   }, [playing, held, i, n]);
 
-  // Interactuar detiene la rotación: quien está leyendo decide cuándo avanzar.
-  const go = useCallback((k: number) => { setPlaying(false); setI(((k % n) + n) % n); }, [n]);
+  // Elegir una historia reinicia el conteo de 4 s; la rotación no se apaga.
+  const go = useCallback((k: number) => { setI(((k % n) + n) % n); }, [n]);
 
   return (
     <div
@@ -108,9 +109,6 @@ export function MemoryCarousel({ t }: { t: Copy }) {
         </div>
         <button type="button" onClick={() => go(i + 1)} aria-label={L.next} className="h-10 w-10 grid place-items-center rounded-full text-white/70 hover:text-white hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white">
           <ChevronRight size={18} aria-hidden />
-        </button>
-        <button type="button" onClick={() => setPlaying((v) => !v)} aria-label={playing ? L.pause : L.play} className="ml-2 h-10 w-10 grid place-items-center rounded-full text-white/70 hover:text-white hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white">
-          {playing ? <Pause size={16} aria-hidden /> : <Play size={16} aria-hidden />}
         </button>
       </div>
     </div>

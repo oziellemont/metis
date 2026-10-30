@@ -4,13 +4,13 @@
  *  1. Llega el correo (así se ve el aviso en tu bandeja, con «Tu decisión» y «Responder», como lib/ceo/emails.ts).
  *  2. Lo ves en «Hoy · Esperando tu decisión» (como components/ceo/Today.tsx).
  *  3. Ya decidiste: tu respuesta, lo que contesta Sofía y lo que te queda por hoy.
- * Avanza sola cada MEMORY_INTERVAL_MS; se detiene con mouse, foco, interacción o movimiento reducido.
+ * Avanza sola cada HOW_INTERVAL_MS; se detiene con mouse, foco, interacción o movimiento reducido.
  * Ilustrativa y aislada: no usa el motor, la partida ni el almacenamiento.
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import { ArrowRight, CheckCheck, Clock, FileBarChart, Mail, MessageCircle, Pause, Play } from "lucide-react";
-import { MEMORY_INTERVAL_MS, type Copy, type TodayItem } from "./content";
+import { HOW_INTERVAL_MS, type Copy, type TodayItem } from "./content";
 
 const CH = {
   email: { Icon: Mail, cls: "bg-indigo-soft text-indigo" },
@@ -139,7 +139,7 @@ export function HowSlides({ t }: { t: Copy }) {
   }, []);
   useEffect(() => {
     if (!playing || held) return;
-    const id = window.setTimeout(() => setI((k) => (k + 1) % n), MEMORY_INTERVAL_MS);
+    const id = window.setTimeout(() => setI((k) => (k + 1) % n), HOW_INTERVAL_MS);
     return () => window.clearTimeout(id);
   }, [playing, held, i, n]);
   const go = useCallback((k: number) => { setPlaying(false); setI(((k % n) + n) % n); }, [n]);
@@ -155,8 +155,8 @@ export function HowSlides({ t }: { t: Copy }) {
       onKeyDown={(e) => { if (e.key === "ArrowRight") go(i + 1); else if (e.key === "ArrowLeft") go(i - 1); }}
       className="min-w-0"
     >
-      <div className="rounded-[26px] bg-ink p-2 shadow-[0_30px_70px_-35px_rgba(23,26,58,.6)]">
-        <div className="grid overflow-hidden rounded-[20px] bg-white h-[430px]">
+      <div className="rounded-[22px] bg-white shadow-[0_18px_50px_-24px_rgba(23,26,58,.22)]">
+        <div className="grid overflow-hidden rounded-[22px] bg-white h-[430px]">
           {slides.map((Slide, k) => (
             <div key={k} aria-hidden={k !== i} inert={k !== i} className={clsx("[grid-area:1/1] min-w-0 h-full", !calm && "motion-safe:transition-all motion-safe:duration-500", k === i ? "opacity-100 translate-x-0" : "opacity-0 pointer-events-none " + (k < i ? "-translate-x-4" : "translate-x-4"))}>
               <Slide t={t} />

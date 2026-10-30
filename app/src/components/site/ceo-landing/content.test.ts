@@ -27,10 +27,10 @@ function shape(o: unknown): unknown {
 
 describe("landing de MÊTIS CEO · primer bloque", () => {
   it("el primer bloque dice qué es mêtis con la frase pedida y una sola h1", () => {
-    expect(C.HERO.title).toBe("Practica cómo dirigir una empresa.");
+    expect(C.HERO.title).toBe("Unos minutos al día. Decisiones que te hacen crecer.");
     expect(C.HERO.eyebrow).toBe("Simulador de dirección");
-    expect(C.HERO.body).toMatch(/^mêtis CEO es un simulador para practicar cómo dirigir una empresa\./);
-    expect(C.HERO.body).toMatch(/decides/);
+    expect(C.HERO.body).toBe("Vive los retos de dirigir una empresa: recibe mensajes de tu equipo, resuelve situaciones de negocio y aprende de sus consecuencias para desarrollar tu criterio como líder.");
+    expect(EN.HERO.body).toBe("Live the challenges of running a company: get messages from your team, solve business situations and learn from their consequences to develop your judgment as a leader.");
     expect(allCopy()).not.toContain("una decisión nunca afecta una sola cosa");
     expect((sources().match(/<h1\b/g) ?? []).length).toBe(1);
     const landing = read("Landing.tsx");
@@ -130,15 +130,19 @@ describe("landing de MÊTIS CEO · bloques", () => {
     }
     expect(C.CASE.options.map((o) => o.id)).toContain(S.done.option);
     const src = read("HowSlides.tsx");
-    for (const s of ["prefers-reduced-motion", "MEMORY_INTERVAL_MS", "onFocusCapture", "inert=", "aria-current"]) expect(src).toContain(s);
+    for (const s of ["prefers-reduced-motion", "HOW_INTERVAL_MS", "onFocusCapture", "inert=", "aria-current"]) expect(src).toContain(s);
+    // sin el marco oscuro: tarjeta blanca limpia con sombra sutil
+    expect(src).not.toContain("bg-ink p-2");
     expect(read("Sections.tsx")).toContain("<HowSlides t={t} />");
   });
 
-  it("carrusel: una historia a la vez, cada 7 s, con pausa, anterior/siguiente e indicadores", () => {
-    expect(C.MEMORY_INTERVAL_MS).toBe(7000);
+  it("carrusel: una historia a la vez, cambia sola cada 4 s, sin botón de pausa, con anterior/siguiente e indicadores", () => {
+    expect(C.MEMORY_INTERVAL_MS).toBe(4000);
+    expect(C.HOW_INTERVAL_MS).toBe(7000);
     const src = read("Memory.tsx");
-    for (const s of ["prefers-reduced-motion", "L.pause", "L.prev", "L.next", "aria-roledescription={L.role}", "onFocusCapture", "inert="]) expect(src).toContain(s);
-    expect(C.DIFF.carousel.pause).toBe("Pausar el carrusel");
+    for (const s of ["prefers-reduced-motion", "L.prev", "L.next", "aria-roledescription={L.role}", "onFocusCapture", "inert=", "MEMORY_INTERVAL_MS"]) expect(src).toContain(s);
+    for (const s of ["Pause", "L.pause", "L.play", "setPlaying((v)"]) expect(src).not.toContain(s);
+    expect(C.DIFF.carousel).not.toHaveProperty("pause");
   });
 
   it("carrera: el texto también habla de aprender; seis etapas iguales a las del producto y Executive Arena aparte", () => {

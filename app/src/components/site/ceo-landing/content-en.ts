@@ -43,7 +43,7 @@ export const EN: Copy = {
   HERO: {
     eyebrow: "Leadership simulator",
     title: "Your next challenge can arrive at any moment.",
-    body: "mêtis CEO is a simulator for practicing how to run a company. Business situations reach you the way they do in real life: an email, a WhatsApp message, a call. You review the context, decide, and see what happens to the results and to the people. Then you understand why, in a minute.",
+    body: "Live the challenges of running a company: get messages from your team, solve business situations and learn from their consequences to develop your judgment as a leader.",
     motto: "Every decision shapes the leader you become.",
     note: "No card required.",
   },
@@ -140,7 +140,7 @@ export const EN: Copy = {
     body: "People remember how you treated them, and some of today's problems were planted days earlier. What comes back depends on what you decide.",
     decideLabel: "You decide",
     backLabel: "It comes back",
-    carousel: { region: "Stories from Botanas Cumbre", role: "carousel", item: "story", of: "of", prev: "Previous story", next: "Next story", pick: "Choose a story", story: "Story", pause: "Pause the carousel", play: "Play the carousel" },
+    carousel: { region: "Stories from Botanas Cumbre", role: "carousel", item: "story", of: "of", prev: "Previous story", next: "Next story", pick: "Choose a story", story: "Story" },
     items: [
       {
         t: "Someone remembers what you did",

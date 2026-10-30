@@ -76,8 +76,8 @@ export const UI = {
 /* ---------------- Primer bloque: qué es mêtis, con un caso real al lado ---------------- */
 export const HERO = {
   eyebrow: "Simulador de dirección",
-  title: "Practica cómo dirigir una empresa.",
-  body: "mêtis CEO es un simulador para practicar cómo dirigir una empresa. Te llegan situaciones de negocio como en la vida real: un correo, un WhatsApp, una llamada. Revisas el contexto, decides y ves qué pasa con los resultados y con las personas. Después entiendes por qué, en un minuto.",
+  title: "Unos minutos al día. Decisiones que te hacen crecer.",
+  body: "Vive los retos de dirigir una empresa: recibe mensajes de tu equipo, resuelve situaciones de negocio y aprende de sus consecuencias para desarrollar tu criterio como líder.",
   motto: "Dirigir se aprende decidiendo.",
   note: "Sin tarjeta.",
 };
@@ -186,14 +186,17 @@ export interface Echo {
   tone: "riesgo" | "bien";
 }
 /** Cada cuánto avanza el carrusel de historias (se detiene con foco, mouse, interacción o movimiento reducido). */
-export const MEMORY_INTERVAL_MS = 7000;
+/** El carrusel de historias cambia cada 4 s. */
+export const MEMORY_INTERVAL_MS = 4000;
+/** Las tres pantallas de «Practica con casos que evolucionan» cambian cada 7 s. */
+export const HOW_INTERVAL_MS = 7000;
 export const DIFF = {
   eyebrow: "Una empresa que recuerda",
   title: "Tus decisiones siguen teniendo consecuencias.",
   body: "Las personas recuerdan cómo las trataste y algunos problemas de hoy se sembraron días antes. Lo que regresa depende de lo que decidas.",
   decideLabel: "Decides",
   backLabel: "Regresa",
-  carousel: { region: "Historias de Botanas Cumbre", role: "carrusel", item: "historia", of: "de", prev: "Historia anterior", next: "Historia siguiente", pick: "Elegir historia", story: "Historia", pause: "Pausar el carrusel", play: "Reproducir el carrusel" },
+  carousel: { region: "Historias de Botanas Cumbre", role: "carrusel", item: "historia", of: "de", prev: "Historia anterior", next: "Historia siguiente", pick: "Elegir historia", story: "Historia" },
   items: [
     {
       t: "Alguien recuerda lo que hiciste",
