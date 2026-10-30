@@ -15,7 +15,7 @@ Catorce chequeos son pruebas automáticas que corren en cada PR (`episodes/acept
 | 5 | Se puede decidir desde el segundo 0 | Pasa | Pasa | Pasa |
 | 6 | Pausar detiene el reloj; recargar reconstruye la partida | Pasa | Pasa | Pasa |
 | 7 | Texto libre: el respaldo sin IA nunca elige algo fuera de lo disponible | Pasa | Pasa | Pasa |
-| 7b | La IA interpreta bien el texto libre | Falta tu clic (ver §3) | | |
+| 7b | La IA interpreta bien el texto libre | Pasa: 100% (ver §5) | | |
 | 8 | Los personajes recuerdan lo que pasó | Pasa | Pasa | Pasa |
 | 9 | Ninguna decisión intermedia mueve KPI; el cierre explica cada cambio | Pasa | Pasa | Pasa |
 | 10 | Enseña un concepto, con lección y evidencia | Pasa | Pasa | Pasa |
@@ -70,3 +70,24 @@ En producción tu usuario ya tiene el interruptor `episodes` encendido (lo hizo 
 - `api/ceo/episodio/evaluar`: la ruta del servidor, con sesión, interruptor, consentimiento, topes y registro.
 - `ceo/evaluacion-ia` y `EvalAi.tsx`: la página del botón y el reporte (solo en modo prueba).
 - `episodes/eval.test.ts` y `episodes/aceptacion.test.ts`: las pruebas.
+
+## 5. Resultado de la evaluación real (gpt-4o-mini)
+
+| Medida | Resultado | Meta | Estado |
+|---|---|---|---|
+| Acierto al interpretar la respuesta escrita | 100% (180 de 180) | 80% | Pasa |
+| Consistencia en 3 repeticiones | 100% | 90% | Pasa |
+| Respuestas inválidas | 0% | 5% | Pasa |
+| Calidad promedio asignada (0 a 3) | 2.31 | informativo | |
+| Acierto en preguntas de datos | 45% (9 de 20) | 85% | No pasa |
+| Respuestas válidas del colaborador | 87.5% (7 de 8) | 85% | Pasa |
+| Costo real (568 llamadas) | $0.0486 USD | $0.50 | Pasa |
+
+**Por qué fallaron las preguntas de datos.** La IA solo veía la pregunta sugerida de cada dato y era demasiado conservadora: en los 11 errores respondió «ninguno» y nunca eligió un dato equivocado. Para el jugador el efecto era leve, porque la pregunta no consumía consulta y el banco por palabras clave seguía respondiendo, pero la experiencia se sentía rígida.
+
+**Ajuste.**
+- Ahora la IA ve el tema de cada dato (sus palabras clave). Nunca ve la respuesta.
+- La regla cambió: «ninguno» solo si la pregunta es ajena al caso.
+- En la pantalla, la IA se consulta primero y el banco por palabras clave queda de respaldo. Antes era al revés, y el banco a veces elegía el dato equivocado: por ejemplo, «¿Quién autoriza un cambio de precio?» respondía con el piloto premium.
+
+Hay que volver a correr la evaluación para confirmar la meta de datos. Cuesta unos $0.05.

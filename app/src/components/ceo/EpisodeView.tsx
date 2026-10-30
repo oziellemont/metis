@@ -259,13 +259,13 @@ function Briefing({ spec, run, leftMs, act, readOnly }: { spec: EpisodeSpec; run
     const text = q.trim();
     if (text.length < 4) return;
     setBusy(true);
-    // Primero el banco por palabras clave (sin costo); la IA solo si no hubo coincidencia.
-    let a: Parameters<typeof act>[0] | null = matchFact(spec, text) ? { type: "fact", text, via: "libre" } : null;
-    if (!a) {
-      const r = await askAi({ episode: spec.id, purpose: "fact", run, question: text });
-      if (r?.ok && typeof r.factId === "string") a = { type: "fact", factId: r.factId, text, via: "ia" };
-      else if (r?.ok && typeof r.unknownId === "string") a = { type: "fact", unknownId: r.unknownId, text, via: "ia" };
-    }
+    // Primero la IA (entiende otras palabras; solo elige un dato del banco, nunca redacta). Si no está
+    // disponible o no reconoce nada, el banco por palabras clave (sin costo).
+    let a: Parameters<typeof act>[0] | null = null;
+    const r = await askAi({ episode: spec.id, purpose: "fact", run, question: text });
+    if (r?.ok && typeof r.factId === "string") a = { type: "fact", factId: r.factId, text, via: "ia" };
+    else if (r?.ok && typeof r.unknownId === "string") a = { type: "fact", unknownId: r.unknownId, text, via: "ia" };
+    if (!a && matchFact(spec, text)) a = { type: "fact", text, via: "libre" };
     setBusy(false);
     if (!a) { act({ type: "fact", text, via: "libre" }); return; }
     if (!act(a)) setQ("");
