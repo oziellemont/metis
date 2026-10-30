@@ -289,3 +289,12 @@ describe("landing: una empresa que recuerda y cifras coherentes", () => {
 
 
 });
+
+describe("landing: ancho de página", () => {
+  it("header, hero y secciones comparten el mismo ancho, un poco más amplio (max-w-7xl)", () => {
+    for (const f of ["Header.tsx", "Landing.tsx", "Sections.tsx"]) {
+      expect(read(f), f).toContain("mx-auto max-w-7xl px-5 sm:px-6 lg:px-8");
+      expect(read(f), f).not.toContain("max-w-6xl");
+    }
+  });
+});
