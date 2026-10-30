@@ -350,8 +350,8 @@ describe("P0-D ronda 5 · correcciones del diagnóstico de la ronda 4", () => {
     expect(hasCue({}, "cualquier cosa")).toBe(true);
   });
   it("señales: toda respuesta clara o parcial de los conjuntos trae al menos una señal de su estrategia, y nada clara pospone", async () => {
-    const D2 = await import("./eval-dev-ronda2"), D3 = await import("./eval-dev-ronda3"), D4 = await import("./eval-dev-ronda4"), V = await import("./eval-validacion");
-    const all = [...D2.DEV2_INTERPRET, ...D3.DEV3_INTERPRET, ...D4.DEV4_INTERPRET, ...V.VALIDATION_SET];
+    const D2 = await import("./eval-dev-ronda2"), D3 = await import("./eval-dev-ronda3"), D4 = await import("./eval-dev-ronda4"), D5 = await import("./eval-dev-ronda5"), V = await import("./eval-validacion");
+    const all = [...D2.DEV2_INTERPRET, ...D3.DEV3_INTERPRET, ...D4.DEV4_INTERPRET, ...D5.DEV5_INTERPRET, ...V.VALIDATION_SET];
     let withCues = 0;
     for (const x of all.filter((x) => x.kind === "clara" || x.kind === "parcial")) {
       const st = EPISODES[x.ep].nodes[x.node].strategies.find((s) => s.id === x.expect)!;

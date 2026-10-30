@@ -60,12 +60,13 @@ describe("P0-D · respaldo sin IA (gratis, en cada corrida)", () => {
 });
 
 describe("P0-D · conjunto de validación final (separado del de desarrollo)", () => {
-  it("no repite ninguna frase del desarrollo (rondas 1 a 4) ni de los prompts, y cada caso es alcanzable", async () => {
+  it("no repite ninguna frase del desarrollo (rondas 1 a 5) ni de los prompts, y cada caso es alcanzable", async () => {
     const { VALIDATION_SET, FACT_VALIDATION, ADVISOR_VALIDATION, DEMO_SCRIPTS } = await import("./eval-validacion");
     const D2 = await import("./eval-dev-ronda2");
     const D3 = await import("./eval-dev-ronda3");
     const D4 = await import("./eval-dev-ronda4");
-    const dev = new Set([...D4.DEV4_INTERPRET.map((x) => x.text), ...D4.DEV4_FACTS.map((x) => x.q), ...D4.DEV4_ADVISOR.map((x) => x.q), ...D4.DEV4_DEMOS.flatMap((d) => d.steps.map((s) => s.text)),
+    const D5 = await import("./eval-dev-ronda5");
+    const dev = new Set([...D5.DEV5_INTERPRET.map((x) => x.text), ...D5.DEV5_FACTS.map((x) => x.q), ...D5.DEV5_ADVISOR.map((x) => x.q), ...D5.DEV5_DEMOS.flatMap((d) => d.steps.map((s) => s.text)),...D4.DEV4_INTERPRET.map((x) => x.text), ...D4.DEV4_FACTS.map((x) => x.q), ...D4.DEV4_ADVISOR.map((x) => x.q), ...D4.DEV4_DEMOS.flatMap((d) => d.steps.map((s) => s.text)),
       ...D3.DEV3_INTERPRET.map((x) => x.text), ...D3.DEV3_FACTS.map((x) => x.q), ...D3.DEV3_ADVISOR.map((x) => x.q), ...D3.DEV3_DEMOS.flatMap((d) => d.steps.map((s) => s.text)),...INTERPRET_SET.map((x) => x.text), ...FACT_SET.map((x) => x.q), ...ADVISOR_SET.map((x) => x.q),
       ...D2.DEV2_INTERPRET.map((x) => x.text), ...D2.DEV2_FACTS.map((x) => x.q), ...D2.DEV2_ADVISOR.map((x) => x.q), ...D2.DEV2_DEMOS.flatMap((d) => d.steps.map((s) => s.text))]);
     for (const v of VALIDATION_SET) expect(dev.has(v.text), v.text).toBe(false);
@@ -110,9 +111,10 @@ describe("P0-D · evaluación con IA (con modelo falso, sin gasto)", () => {
     const D2 = await import("./eval-dev-ronda2");
     const D3 = await import("./eval-dev-ronda3");
     const D4 = await import("./eval-dev-ronda4");
-    const items = [...D3.DEV3_INTERPRET, ...D4.DEV4_INTERPRET, ...INTERPRET_SET.map((x) => ({ ...x, kind: "clara" as const, options: undefined as string[] | undefined, tone: undefined as number | undefined })), ...VALIDATION_SET, ...D2.DEV2_INTERPRET,
+    const D5 = await import("./eval-dev-ronda5");
+    const items = [...D3.DEV3_INTERPRET, ...D4.DEV4_INTERPRET, ...D5.DEV5_INTERPRET, ...INTERPRET_SET.map((x) => ({ ...x, kind: "clara" as const, options: undefined as string[] | undefined, tone: undefined as number | undefined })), ...VALIDATION_SET, ...D2.DEV2_INTERPRET,
       ...DEMO_SCRIPTS.flatMap((d) => d.steps.map((s) => ({ ep: d.ep, node: "", text: s.text, expect: s.expect, kind: s.ambigua ? "ambigua" as const : "clara" as const, options: s.ambigua ? [s.expect, "parcial"] : undefined, tone: s.tone })))];
-    const facts = [...FACT_SET.map((f) => ({ q: f.q, id: f.expect })), ...FACT_VALIDATION.map((f) => ({ q: f.q, id: f.accept[0] })), ...D2.DEV2_FACTS.map((f) => ({ q: f.q, id: f.accept[0] })), ...D3.DEV3_FACTS.map((f) => ({ q: f.q, id: f.accept[0] })), ...D4.DEV4_FACTS.map((f) => ({ q: f.q, id: f.accept[0] }))];
+    const facts = [...FACT_SET.map((f) => ({ q: f.q, id: f.expect })), ...FACT_VALIDATION.map((f) => ({ q: f.q, id: f.accept[0] })), ...D2.DEV2_FACTS.map((f) => ({ q: f.q, id: f.accept[0] })), ...D3.DEV3_FACTS.map((f) => ({ q: f.q, id: f.accept[0] })), ...D4.DEV4_FACTS.map((f) => ({ q: f.q, id: f.accept[0] })), ...D5.DEV5_FACTS.map((f) => ({ q: f.q, id: f.accept[0] }))];
     const model: import("./eval-run").Model = async (msgs) => {
       const sys = msgs[0].content, u = msgs[1].content;
       if (sys.startsWith("Eres auditor")) return { content: JSON.stringify({ recomienda: false, inventa: false, responde: true, fiel: true, agrega: false, responde_al_jugador: true, motivo: "" }), cost: 0.00003 };
