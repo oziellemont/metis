@@ -221,7 +221,11 @@ export const DIEGO: EpisodeSpec = {
       ask: "Diego se defiende. ¿Qué haces?", freeText: true,
       strategies: [
         { id: "validar", text: "Reconocer su frustración sin darle la razón en todo: «Entiendo que te sientas bloqueado; eso lo vamos a resolver. Y aun así, el precio no se cambia sin Finanzas. Las dos cosas son ciertas.»", flags: ["validar"], trust: 1,
-          reply: [{ text: ["Diego respira.", "«Ok. Es justo. Lo del precio estuvo mal. Pero necesito un camino para que mis ideas lleguen a algún lado.»"] }],
+          reply: [
+            // La misma frase no se recibe igual después de una conversación hostil: la confianza acumulada pesa.
+            { when: { all: ["trust<=-1"] }, text: ["Diego aprieta la mandíbula.", "«Ya. Lo del precio estuvo mal, ya entendí. Pero así no me dan ganas de traerte nada.»"] },
+            { text: ["Diego respira.", "«Ok. Es justo. Lo del precio estuvo mal. Pero necesito un camino para que mis ideas lleguen a algún lado.»"] },
+          ],
           next: [{ to: "p4" }],
           evidence: [
             { dim: "negociacion", level: 3, basis: "Separó el interés de Diego (ser escuchado) de la regla que no se negocia." },

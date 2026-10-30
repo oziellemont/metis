@@ -17,12 +17,13 @@
  *    inventa y sí responde.
  * Además corre conversaciones guion completas (demostración adaptativa) con el motor real y la misma tubería.
  */
-import { clarified, decideFrom, interpretLocal, runAdapt, runAdvisor, runFact, runInterpret, type Call, type Interpretation, type Msg } from "./ai";
+import { clarified, decideFrom, interpretLocal, runAdapt, runAdvisor, runFact, runInterpret, sameAsAuthored, type AdvisorReject, type Call, type Interpretation, type Msg } from "./ai";
 import { EPISODES } from "./catalog";
 import type { EpisodeRun, EpisodeSpec } from "./contracts";
 import { advisorAnswer, applyEpisode, nodeOf, norm, sayOf, startEpisode } from "./engine";
 import { ADVISOR_SET, FACT_SET, INTERPRET_SET } from "./eval-set";
 import { DEV2_ADVISOR, DEV2_DEMOS, DEV2_FACTS, DEV2_INTERPRET } from "./eval-dev-ronda2";
+import { DEV3_ADVISOR, DEV3_FACTS, DEV3_INTERPRET } from "./eval-dev-ronda3";
 import { ADVISOR_VALIDATION, DEMO_SCRIPTS, FACT_VALIDATION, VALIDATION_SET, type ValItem } from "./eval-validacion";
 import { runAt } from "./eval-harness";
 
@@ -31,20 +32,22 @@ export type Model = (messages: Msg[], maxTokens: number, temperature: number) =>
 
 export const EVAL_REPEATS = 3;
 export const EVAL_BUDGET_USD = 0.5;
+/** En desarrollo se adapta una de cada N respuestas (en validación, todas). */
+export const DEV_ADAPT_EVERY = 3;
 export type EvalSetId = "dev" | "val";
 
 // ───────────────────────────────────────────── conjuntos unificados
 const INTERPRET: Record<EvalSetId, ValItem[]> = {
-  dev: [...INTERPRET_SET.map((x) => ({ ep: x.ep, node: x.node, kind: "clara" as const, expect: x.expect, text: x.text })), ...DEV2_INTERPRET],
+  dev: [...INTERPRET_SET.map((x) => ({ ep: x.ep, node: x.node, kind: "clara" as const, expect: x.expect, text: x.text })), ...DEV2_INTERPRET, ...DEV3_INTERPRET],
   val: VALIDATION_SET,
 };
 type FactItem = { ep: string; q: string; accept: string[]; kind: string };
 const FACTS: Record<EvalSetId, FactItem[]> = {
-  dev: [...FACT_SET.map((f) => ({ ep: f.ep, q: f.q, accept: [f.expect], kind: f.expect === "ninguno" ? "ajena" : f.expect.startsWith("?") ? "inexistente" : "dato" })), ...DEV2_FACTS],
+  dev: [...FACT_SET.map((f) => ({ ep: f.ep, q: f.q, accept: [f.expect], kind: f.expect === "ninguno" ? "ajena" : f.expect.startsWith("?") ? "inexistente" : "dato" })), ...DEV2_FACTS, ...DEV3_FACTS],
   val: FACT_VALIDATION,
 };
 const ADVISORS: Record<EvalSetId, { ep: string; advisor: string; q: string; kind: string }[]> = {
-  dev: [...ADVISOR_SET.map((a) => ({ ...a, kind: "normal" })), ...DEV2_ADVISOR],
+  dev: [...ADVISOR_SET.map((a) => ({ ...a, kind: "normal" })), ...DEV2_ADVISOR, ...DEV3_ADVISOR],
   val: ADVISOR_VALIDATION,
 };
 /** Guiones: los de validación se muestran; los de la ronda 2 quedan como desarrollo (no se corren por defecto). */
@@ -74,7 +77,7 @@ export const EVAL_SCOPES: Record<"validacion" | "desarrollo", number[]> = {
 /** Lo que se observó en una corrida de texto libre. */
 export interface InterpretRun { status: string; strategy: string | null; options?: string[]; extras?: string; tone?: number; toneEvidence?: string; guard?: string; clarify?: string }
 /** La adaptación (segunda llamada) sobre la lectura que se habría usado. */
-export interface AdaptRun { ok: boolean; reply?: string; authored: string; echoes?: boolean; audit?: AdaptAudit | null }
+export interface AdaptRun { ok: boolean; reply?: string; authored: string; echoes?: boolean; same?: boolean; audit?: AdaptAudit | null }
 export interface AdaptAudit { fiel: boolean; agrega: boolean; responde_al_jugador: boolean; motivo: string }
 export interface AdvisorAudit { recomienda: boolean; inventa: boolean; responde: boolean; motivo: string }
 export interface DemoStep { node: string; stage: string; said: string[]; text: string; status: string; strategy: string; options?: string[]; clarify?: string; guard?: string; extras?: string; tone?: number; toneEvidence?: string; reply: string[]; authored: string[]; adapted: boolean; trust: number }
@@ -86,7 +89,7 @@ export interface JobResult {
   adapt?: AdaptRun | null;
   quality?: number[];
   got?: string; raw?: string;
-  answer?: string | null; audit?: AdvisorAudit | null;
+  answer?: string | null; audit?: AdvisorAudit | null; rejects?: AdvisorReject[];
   demo?: DemoResult;
   calls: number; cost: number;
 }
@@ -158,11 +161,11 @@ async function interpretJob(set: EvalSetId, i: number, model: Model): Promise<Jo
   const top = mode(labels);
   const used = parsed[labels.indexOf(top)] ?? null;
   let adapt: AdaptRun | null = null;
-  // En validación se adapta cada respuesta; en desarrollo, una de cada dos (cuida el tope de gasto).
-  if (used && committed(observe(used)) && (set === "val" || i % 2 === 0)) {
+  // En validación se adapta cada respuesta; en desarrollo, una de cada tres (cuida el tope de gasto).
+  if (used && committed(observe(used)) && (set === "val" || i % DEV_ADAPT_EVERY === 0)) {
     const out = await runAdapt(spec, run, it.text, used, call);
     const base = out?.basis ?? "";
-    adapt = { ok: !!out, authored: base, ...(out ? { reply: out.reply.join("\n"), echoes: echoesPlayer(it.text, out.reply.join(" "), base) } : {}) };
+    adapt = { ok: !!out, authored: base, ...(out ? { reply: out.reply.join("\n"), echoes: echoesPlayer(it.text, out.reply.join(" "), base), same: sameAsAuthored(out.reply, base.split("\n")) } : {}) };
     // El auditor de la adaptación corre solo en validación (en desarrollo basta la regla del motor; cuida el tope de gasto).
     if (out && set === "val") {
       const raw = await call(adaptAuditMessages(spec, it.text, base, out.reply.join("\n")), 80, 0);
@@ -220,14 +223,15 @@ async function advisorJob(set: EvalSetId, i: number, model: Model): Promise<JobR
   const brief = spec.advisors.find((x) => x.id === a.advisor)!;
   const authored = advisorAnswer(spec, startEpisode(spec, 0, { runId: "eval" }), brief);
   const { m, call } = meter(model);
-  const answer = await runAdvisor(spec, brief, authored, a.q, call);
+  const rejects: AdvisorReject[] = [];
+  const answer = await runAdvisor(spec, brief, authored, a.q, call, (r) => rejects.push(r));
   let audit: AdvisorAudit | null = null;
   if (answer) {
     const knows = [...spec.facts.facts.filter((f) => brief.knows.includes(f.id) || f.critical).map((f) => f.answer), authored];
     const raw = await call(auditMessages(spec, brief.id, knows, a.q, answer), 80, 0);
     audit = raw ? parseAudit(raw) : null;
   }
-  return { kind: "advisor", set, i, key: `${a.ep}/${a.advisor}`, answer, audit, calls: m.calls, cost: m.cost };
+  return { kind: "advisor", set, i, key: `${a.ep}/${a.advisor}`, answer, audit, ...(rejects.length ? { rejects } : {}), calls: m.calls, cost: m.cost };
 }
 
 // ───────────────────────────────────────────── demostración: conversaciones completas
@@ -295,14 +299,14 @@ export interface SetReport {
      * autor); `faithful` = el auditor confirma mismo desenlace y nada agregado; `echoes` = retoma palabras del jugador.
      * Tono: `hit` acierta en frases marcadas; `falsePositive` = frases neutras a las que se les puso tono.
      */
-    adaptive: { replies: number; adapted: number; faithful: number; audited: number; echoes: number; reacts: number; tone: { total: number; hit: number; neutral: number; falsePositive: number }; extras: { total: number; hit: number } };
+    adaptive: { replies: number; adapted: number; same: number; faithful: number; audited: number; echoes: number; reacts: number; tone: { total: number; hit: number; neutral: number; falsePositive: number }; extras: { total: number; hit: number } };
     byNode: Record<string, number>;
     misses: { key: string; kind: string; expect: string; got: string | null; text: string }[];
     samples: { key: string; text: string; authored: string; reply: string; audit?: string }[];
     adaptMisses: { key: string; text: string; authored: string; reply: string; motivo: string }[];
   };
   facts: { total: number; accuracy: number; wrongFact: number; inventedShown: number; inventedRejected: number; byKind: Record<string, { total: number; accuracy: number }>; misses: { q: string; expect: string; got: string }[] };
-  advisor: { total: number; valid: number; quality: number; recommends: number; invents: number; byKind: Record<string, { total: number; quality: number }>; misses: { key: string; q: string; answer: string | null; motivo: string }[]; samples: { key: string; q: string; answer: string }[] };
+  advisor: { total: number; valid: number; quality: number; recommends: number; invents: number; byKind: Record<string, { total: number; quality: number }>; misses: { key: string; q: string; answer: string | null; motivo: string }[]; samples: { key: string; q: string; answer: string }[]; rejects: Record<string, number> };
 }
 export interface EvalReport { dev: SetReport | null; val: SetReport | null; demos: DemoResult[]; calls: number; cost: number }
 
@@ -318,7 +322,7 @@ function summarizeSet(set: EvalSetId, results: JobResult[]): SetReport | null {
   const ip = rs.filter((r) => r.kind === "interpret");
   const byNode: Record<string, { t: number; h: number }> = {}, byKind: Record<string, { t: number; h: number }> = {};
   let hit = 0, consistent = 0, invalid = 0, runs = 0, qSum = 0, qN = 0, ambC = 0, offC = 0, over = 0;
-  const ad = { replies: 0, adapted: 0, faithful: 0, audited: 0, echoes: 0, reacts: 0, tone: { total: 0, hit: 0, neutral: 0, falsePositive: 0 }, extras: { total: 0, hit: 0 } };
+  const ad = { replies: 0, adapted: 0, same: 0, faithful: 0, audited: 0, echoes: 0, reacts: 0, tone: { total: 0, hit: 0, neutral: 0, falsePositive: 0 }, extras: { total: 0, hit: 0 } };
   const misses: SetReport["interpret"]["misses"] = [], samples: SetReport["interpret"]["samples"] = [], adaptMisses: SetReport["interpret"]["adaptMisses"] = [];
   for (const r of ip) {
     const it = INTERPRET[set][r.i];
@@ -342,6 +346,7 @@ function summarizeSet(set: EvalSetId, results: JobResult[]): SetReport | null {
       if (A.ok) {
         ad.adapted++;
         if (A.echoes) ad.echoes++;
+        if (A.same) ad.same++;
         if (A.audit) {
           ad.audited++;
           const fiel = A.audit.fiel && !A.audit.agrega;
@@ -375,11 +380,14 @@ function summarizeSet(set: EvalSetId, results: JobResult[]): SetReport | null {
   const aByKind: Record<string, { t: number; h: number }> = {};
   let aValid = 0, aQual = 0, rec = 0, inv = 0;
   const aMiss: SetReport["advisor"]["misses"] = [], aSamples: SetReport["advisor"]["samples"] = [];
+  const aRej: Record<string, number> = {};
   for (const r of av) {
     const a = ADVISORS[set][r.i];
     const good = !!r.answer && !!r.audit && !r.audit.recomienda && !r.audit.inventa && r.audit.responde;
     if (r.answer) aValid++;
-    if (good) aQual++; else aMiss.push({ key: r.key, q: a.q, answer: r.answer ?? null, motivo: r.answer ? (r.audit?.motivo || "sin auditoría") : "no pasó la validación automática (se usaría el texto del autor)" });
+    for (const x of r.rejects ?? []) aRej[x.reason] = (aRej[x.reason] ?? 0) + 1;
+    const why = (r.rejects ?? []).map((x) => `${x.reason}: ${x.detail}`).join(" · ");
+    if (good) aQual++; else aMiss.push({ key: r.key, q: a.q, answer: r.answer ?? null, motivo: r.answer ? (r.audit?.motivo || "sin auditoría") : `no pasó la validación automática (${why || "sin detalle"}); se usaría el texto del autor` });
     if (r.audit?.recomienda) rec++;
     if (r.audit?.inventa) inv++;
     tally(aByKind, a.kind, good);
@@ -396,7 +404,7 @@ function summarizeSet(set: EvalSetId, results: JobResult[]): SetReport | null {
     facts: { total: fx.length, accuracy: pct(fHit, fx.length), wrongFact: wrong, inventedShown: 0, inventedRejected: invRej, byKind: fin(fByKind), misses: fMiss },
     advisor: {
       total: av.length, valid: pct(aValid, av.length), quality: pct(aQual, av.length), recommends: rec, invents: inv,
-      byKind: Object.fromEntries(Object.entries(aByKind).map(([k, v]) => [k, { total: v.t, quality: pct(v.h, v.t) }])), misses: aMiss, samples: aSamples,
+      byKind: Object.fromEntries(Object.entries(aByKind).map(([k, v]) => [k, { total: v.t, quality: pct(v.h, v.t) }])), misses: aMiss, samples: aSamples, rejects: aRej,
     },
   };
 }

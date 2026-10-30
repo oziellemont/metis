@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { adaptMessages, advisorMessages, authoredFor, authoredReplies, clarified, decideFrom, factMessages, interpretLocal, interpretMessages, parseAdaptation, parseAdvisor, parseFact, parseInterpretation, quoted, runAdapt, runAdvisor, runFact, runInterpret, type Call } from "./ai";
+import { adaptMessages, advisorMessages, authoredFor, authoredReplies, checkAdvisor, clarified, POSPONE, sameAsAuthored, decideFrom, factMessages, interpretLocal, interpretMessages, parseAdaptation, parseAdvisor, parseFact, parseInterpretation, quoted, runAdapt, runAdvisor, runFact, runInterpret, type Call } from "./ai";
 import { adaptationOk, advisorAnswer, applyEpisode, nodeOf, sayOf, startEpisode } from "./engine";
 import { SUPERNORTE } from "./supernorte";
 import { EPISODES } from "./catalog";
@@ -18,7 +18,7 @@ describe("IA · consulta de hechos", () => {
     expect(m[1].content).not.toContain("7.1%"); // la IA no ve ninguna cifra: el contenido va enmascarado
     expect(m[1].content).toMatch(/margen: .*Contiene: .*margen de la cuenta hoy es #%/); // sabe de qué trata cada dato
     expect(factMessages(EPISODES.alergeno, "x")[1].content).not.toContain("obligacion:"); // los hechos críticos ya están a la vista
-    expect(m[0].content).toMatch(/ninguno.*únicamente si/);
+    expect(m[0].content).toMatch(/ninguno.*solo si la pregunta es ajena/);
   });
   it("acepta solo ids del banco; lo demás se descarta", () => {
     expect(parseFact(SUPERNORTE, '{"id":"plazo"}')).toEqual({ factId: "plazo" });
@@ -246,5 +246,78 @@ describe("IA · conversación adaptativa en el motor", () => {
     r = applyEpisode(D, r, { type: "decide", at: at(2), strategy: "pronto", interpretation: { quality: 2, feedback: "x", tone: -1, reply: ["otra cosa"], basis: "x" } }).run;
     expect(r.trust).toBe(t0 + (D.nodes.p1.strategies.find((s) => s.id === "pronto")!.trust ?? 0));
     expect(r.turns[0].interpretation).toBeUndefined();
+  });
+});
+
+describe("P0-D ronda 4 · correcciones del diagnóstico de la ronda 3", () => {
+  const D = EPISODES.diego;
+  const at = (path: [string, number?][]) => {
+    let r = applyEpisode(D, { ...startEpisode(D, T, { runId: "r4" }), flags: [] }, { type: "begin", at: T + 1 }).run;
+    path.forEach(([s, tone], k) => {
+      r = applyEpisode(D, r, { type: "decide", at: T + 2 + k, strategy: s, ...(tone ? { text: "x", interpretation: { strategy: s, status: "clara", quality: 2, feedback: "", tone } as never } : {}) }).run;
+    });
+    return r;
+  };
+  it("posponer la decisión nunca se compromete, aunque la IA no haya nombrado un rival", () => {
+    let r = atD1();
+    r = applyEpisode(SUPERNORTE, r, { type: "decide", at: T + 2, strategy: "explorar" }).run;
+    for (const t of ["Ya lo veremos según cómo se ponga la cosa.", "Lo resuelvo sobre la marcha.", "Cualquiera de las dos, la que me acomode.", "Mañana lo decido."]) {
+      expect(POSPONE.test(t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()), t).toBe(true);
+      const it = parseInterpretation(SUPERNORTE, r, '{"encaje":"una","strategy":"paquete","rival":null,"quality":2,"feedback":"x"}', t);
+      expect(it, t).toMatchObject({ status: "ambigua", strategy: null, guard: "pospone" });
+      expect(decideFrom(it!, t, T + 3)).toBeNull();
+    }
+    // una decisión concreta no se toca
+    expect(parseInterpretation(SUPERNORTE, r, '{"encaje":"una","strategy":"paquete","rival":null,"quality":2,"feedback":"x"}', "Doy 2 puntos de descuento a cambio del exhibidor.")?.status).toBe("clara");
+  });
+  it("colaborador: el motivo del rechazo queda registrado y la cifra de la pregunta o de su ficha se permite", () => {
+    const A = EPISODES.alergeno;
+    const l = A.advisors.find((a) => a.id === "lucia")!;
+    const auth = advisorAnswer(A, { ...startEpisode(A, T, { runId: "al" }), flags: [] }, l);
+    expect(checkAdvisor(A, l, auth, '{"answer":"Desde Finanzas veo que retirarlo solo de las tiendas con quejas cuesta unos $0.4 M; a mí me preocupa recuperar lo posible del proveedor."}')).toHaveProperty("answer");
+    expect(checkAdvisor(A, l, auth, '{"answer":"Desde Finanzas veo que retirarlo cuesta unos $7.3 M, lo que me preocupa mucho."}')).toEqual({ reason: "cifra", detail: "7.3" });
+    expect(checkAdvisor(A, l, auth, '{"answer":"Cualquier propuesta debe alinearse con la caja, eso me preocupa."}')).toMatchObject({ reason: "instruccion" });
+    expect(checkAdvisor(A, l, auth, '{"answer":"Yo haría el retiro parcial, es lo que conviene a la caja."}')).toMatchObject({ reason: "instruccion" });
+    expect(checkAdvisor(A, l, auth, '{"answer":"ok"}')).toMatchObject({ reason: "corta" });
+    expect(checkAdvisor(A, l, auth, "no es json")).toMatchObject({ reason: "formato" });
+    // la cifra viene en la pregunta del jugador: se puede repetir
+    expect(checkAdvisor(A, l, auth, '{"answer":"Si son 15 tiendas, a mí me preocupa que el costo suba; desde Finanzas lo reviso con el proveedor."}', "¿Y si fueran 15 tiendas?")).toHaveProperty("answer");
+    // informar una obligación no es instrucción
+    expect(checkAdvisor(A, l, auth, '{"answer":"La ley obliga a avisar a la autoridad; desde Finanzas me preocupa el costo del retiro."}')).toHaveProperty("answer");
+  });
+  it("colaborador: el reintento dice exactamente qué falló y el motivo se reporta", async () => {
+    const auth = advisorAnswer(SUPERNORTE, fresh(), lucia);
+    const seen: string[] = []; let second = "";
+    const call: Call = async (m) => { if (seen.length) second = m[0].content; seen.push("x"); return seen.length === 1 ? '{"answer":"Cualquier propuesta debe alinearse con lo que pidió el consejo, eso es todo."}' : '{"answer":"A mí me preocupa la caja: cada punto cuesta $1.27 M al año. La decisión es tuya."}'; };
+    const rej: string[] = [];
+    expect(await runAdvisor(SUPERNORTE, lucia, auth, "¿Qué opinas?", call, (r) => rej.push(r.reason))).toMatch(/preocupa la caja/);
+    expect(rej).toEqual(["instruccion"]);
+    expect(second).toMatch(/IMPORTANTE: tu intento anterior dijo «debe alinearse».*preocupación tuya/);
+  });
+  it("adaptación: repetir la respuesta del autor no cuenta como reaccionar; si la reacción vino aparte, se antepone", async () => {
+    let r = atD1();
+    r = applyEpisode(SUPERNORTE, r, { type: "decide", at: T + 2, strategy: "explorar" }).run;
+    const it0 = { strategy: "piloto", status: "clara" as const, quality: 2 as const, feedback: "ok", tone: 0 as const };
+    const base = authoredFor(SUPERNORTE, r, it0, "Probemos antes de mover precios.")!;
+    expect(parseAdaptation(JSON.stringify({ reply: base.authored }), base)).toBeNull();
+    expect(parseAdaptation(JSON.stringify({ reaccion: "", reply: base.authored }), base)).toBeNull();
+    const pre = parseAdaptation(JSON.stringify({ reaccion: "Sofía asiente al oír lo de probar primero.", reply: base.authored }), base);
+    expect(pre?.[0]).toMatch(/probar primero/);
+    expect(sameAsAuthored(pre!, base.authored)).toBe(false);
+    expect(sameAsAuthored(base.authored.map((x) => x.replace(/«|»/g, '"')), base.authored)).toBe(true);
+    // runAdapt reintenta una vez si la primera vino idéntica
+    let n = 0;
+    const call: Call = async (m) => { n++; return n === 1 ? JSON.stringify({ reply: base.authored }) : (expect(m[0].content).toMatch(/IMPORTANTE/), JSON.stringify({ reaccion: "Sofía toma nota de lo de probar.", reply: base.authored })); };
+    expect((await runAdapt(SUPERNORTE, r, "Probemos antes de mover precios.", it0, call))?.reply[0]).toMatch(/toma nota/);
+    expect(n).toBe(2);
+  });
+  it("Diego: «es justo» no sale después de una conversación hostil (la confianza acumulada pesa)", () => {
+    const hostil = at([["esperar"], ["juicio", -1], ["validar"]]);
+    expect(hostil.trust).toBeLessThanOrEqual(-1);
+    const last = hostil.turns.at(-1)!;
+    expect(last.reply.join(" ")).toMatch(/aprieta la mandíbula/);
+    expect(last.reply.join(" ")).not.toMatch(/Es justo/);
+    const bien = at([["pronto"], ["hechos"], ["validar"]]);
+    expect(bien.turns.at(-1)!.reply.join(" ")).toMatch(/Es justo/);
   });
 });

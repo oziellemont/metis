@@ -9,7 +9,7 @@ import Link from "next/link";
 import { ArrowLeft, Play } from "lucide-react";
 import clsx from "clsx";
 import { useCeo } from "./CeoProvider";
-import { EVAL_BUDGET_USD, EVAL_JOBS, EVAL_REPEATS, EVAL_SCOPES, EVAL_TARGETS, evalSizes, passes, summarize, type DemoResult, type EvalReport, type JobResult, type SetReport } from "@/lib/ceo/episodes/eval-run";
+import { DEV_ADAPT_EVERY, EVAL_BUDGET_USD, EVAL_JOBS, EVAL_REPEATS, EVAL_SCOPES, EVAL_TARGETS, evalSizes, passes, summarize, type DemoResult, type EvalReport, type JobResult, type SetReport } from "@/lib/ceo/episodes/eval-run";
 import { EPISODES } from "@/lib/ceo/episodes/catalog";
 
 const BATCH = 12;
@@ -22,6 +22,7 @@ export function EvalAi() {
   const [error, setError] = useState<string | null>(null);
   const [report, setReport] = useState<EvalReport | null>(null);
   const [model, setModel] = useState("");
+  const [spent, setSpent] = useState<number | null>(null);
 
   async function run(scope: Scope) {
     const ids = EVAL_SCOPES[scope];
@@ -30,11 +31,11 @@ export function EvalAi() {
     try {
       for (let k = 0; k < ids.length; k += BATCH) {
         const r = await fetch("/api/ceo/episodio/evaluar", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ jobs: ids.slice(k, k + BATCH) }) });
-        const j = (await r.json().catch(() => ({}))) as { ok?: boolean; error?: string; results?: JobResult[]; model?: string; errors?: string[] };
+        const j = (await r.json().catch(() => ({}))) as { ok?: boolean; error?: string; results?: JobResult[]; model?: string; errors?: string[]; spent?: number };
         if (!j.ok || !j.results) { setError(j.error ?? `Error ${r.status}`); break; }
         const allFailed = j.results.every((x) => x.cost === 0) && (j.errors?.length ?? 0) > 0;
         if (allFailed) { setError(`OpenAI rechazó las llamadas; se detuvo sin gastar. Detalle: ${j.errors!.join(" · ")}`); all.length = 0; break; }
-        all.push(...j.results); setDone(all.length); if (j.model) setModel(j.model);
+        all.push(...j.results); setDone(all.length); if (j.model) setModel(j.model); if (typeof j.spent === "number") setSpent(j.spent);
       }
       if (all.length) setReport(summarize(all));
     } finally { setBusy(null); }
@@ -48,10 +49,10 @@ export function EvalAi() {
       <section className="card p-5 sm:p-6">
         <h1 className="text-xl font-semibold text-ink">Evaluación de la IA de los casos ejecutivos</h1>
         <p className="mt-2 text-sm text-slate-600">
-          Dos conjuntos separados. <b>Validación final (ronda 3)</b>: {evalSizes("val").interpret} respuestas nuevas que no se usaron para ajustar nada (claras, ambiguas, fuera de tema, con propuestas propias y con tono marcado), {evalSizes("val").facts} preguntas de datos y {evalSizes("val").advisor} consultas a colaboradores, más {EVAL_SCOPES.validacion.length - EVAL_JOBS.filter((j) => j.kind !== "demo" && j.set === "val").length} conversaciones completas de demostración.
-          <b> Desarrollo</b>: {evalSizes("dev").interpret} respuestas con las que se ajustaron los prompts (incluye la validación de la ronda 2). Cada respuesta escrita se corre {EVAL_REPEATS} veces para medir consistencia; las que deciden se adaptan con la misma tubería que usa el juego.
+          Dos conjuntos separados. <b>Validación final (ronda 4)</b>: {evalSizes("val").interpret} respuestas nuevas que no se usaron para ajustar nada (claras, ambiguas, fuera de tema, con propuestas propias y con tono marcado), {evalSizes("val").facts} preguntas de datos y {evalSizes("val").advisor} consultas a colaboradores, más {EVAL_SCOPES.validacion.length - EVAL_JOBS.filter((j) => j.kind !== "demo" && j.set === "val").length} conversaciones completas de demostración.
+          <b> Desarrollo</b>: {evalSizes("dev").interpret} respuestas con las que se ajustaron los prompts (incluye las validaciones de las rondas 2 y 3); en desarrollo se adapta una de cada {DEV_ADAPT_EVERY} respuestas para que cada corrida quepa en el tope diario. Cada respuesta escrita se corre {EVAL_REPEATS} veces para medir consistencia; las que deciden se adaptan con la misma tubería que usa el juego.
         </p>
-        <p className="mt-2 text-xs text-slate-500">Tope duro de ${EVAL_BUDGET_USD.toFixed(2)} USD por día entre ambas. Cada llamada queda registrada.</p>
+        <p className="mt-2 text-xs text-slate-500">Tope duro de ${EVAL_BUDGET_USD.toFixed(2)} USD por día entre ambas (suma todas las corridas del día). Cada llamada queda registrada.{spent !== null && <> Llevas ${spent.toFixed(2)} hoy.</>}</p>
         <div className="mt-4 flex flex-wrap gap-2">
           <button type="button" onClick={() => run("validacion")} disabled={!!busy} className="inline-flex items-center gap-2 rounded-xl bg-indigo px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-light disabled:opacity-50">
             <Play size={15} /> {busy === "validacion" ? `Corriendo… ${done} de ${total}` : "Validación final y demostración"}

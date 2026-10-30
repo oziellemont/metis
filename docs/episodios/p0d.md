@@ -237,3 +237,48 @@ Hay pruebas de que ninguna frase de validación está en desarrollo (ni de la ro
 - En la demostración: la cita que mostró el tono y si el camino se desvió del guion.
 
 Costo estimado conservador de ambos botones: $0.48. El tope sigue en $0.50 por día. Para no rebasarlo, en desarrollo se adapta una de cada dos respuestas; en validación se adaptan todas.
+
+## 8. Ronda 4: no comprometer lo que se pospone, datos comparativos, colaborador con motivo y reacción real
+
+Estado: **integración y pruebas controladas**. Sigue en modo prueba. No hay visto bueno final.
+
+### 8.1 Diagnóstico honesto de la ronda 3 (validación real con gpt-4o-mini)
+
+| Medida | Resultado | Meta | Causa encontrada |
+|---|---|---|---|
+| Interpreta bien | 95.3% | ≥ 95% | Pasa |
+| Consistencia | 100% | ≥ 95% | Pasa |
+| Inválidas | 0% | ≤ 2% | Pasa |
+| Ambiguas que se comprometieron | 3 | 0 | La regla de «pospone» solo se revisaba si la IA nombraba un rival; con «ya lo veremos» la IA no lo nombró y la regla nunca corrió. Además, «lo necesario a quien corresponda» y «hay que sacar el producto» no dicen alcance |
+| Datos | 89.3% | ≥ 95% | Tres preguntas comparativas o de impacto («¿quién vende más?», «¿qué tan grave es?») se contestaron «ninguno» aunque un dato sí respondía |
+| Inventa datos | 0 | 0 | Pasa |
+| Colaborador | 63.9% | ≥ 95% | 11 respuestas descartadas por la validación automática sin registrar por qué; 2 recomendaron («cualquier propuesta debe alinearse…», «tú decides cómo abordar esto» tras aconsejar) |
+| Reacción adaptada | 21 de 85 reaccionan | — | La mayoría devolvía la respuesta del autor idéntica o solo con otras comillas |
+| Demo Diego duro | — | — | Con confianza −3, Diego respondía «Ok. Es justo», que contradice la relación |
+
+Tropiezo operativo: el tope de $0.50 se alcanzó aunque la corrida costó ~$0.22. El tope es por día y suma todas las corridas (incluidas las de prueba previas del mismo día).
+
+### 8.2 Qué cambió
+
+**Ambiguas.** La regla «pospone» ahora se aplica siempre, aunque la IA no nombre rival. Se ampliaron los patrones («sobre la marcha», «mañana lo decido», «cualquiera de las dos», «la que me acomode», «según lo vea»…), revisados contra todos los conjuntos sin falsos positivos en respuestas claras. El prompt aclara que la estrategia se decide por el contenido (no por la forma: entregar hechos con hostilidad sigue siendo «hechos», y la hostilidad va al tono) y que un texto que no dice alcance, quién paga o a quién («lo necesario», «a quien corresponda») es «varias».
+
+**Datos.** Si la pregunta compara, evalúa o pide el impacto y un dato trae esa información, se elige ese dato. «Ninguno» queda para lo ajeno al caso o para información que ningún dato contiene.
+
+**Colaborador.** Cada rechazo ahora guarda su motivo (formato, corta, cifra, elige, instrucción, opción) y aparece en el reporte. El reintento dice exactamente qué falló («dijiste "debe alinearse", que suena a instrucción; dilo como preocupación tuya»). Se permiten las cifras que trae la pregunta del jugador o la ficha del colaborador. El filtro atrapa «yo haría», «hay que sancionar/comunicar», «deberíamos/tenemos que…». Informar una obligación («la ley obliga a…») sigue permitido.
+
+**Reacción adaptada.** La IA escribe primero una frase de reacción a una palabra o al tono del jugador y luego la integra. Una respuesta idéntica a la del autor ya no cuenta: si la reacción vino aparte, se antepone; si no, se reintenta una vez y si falla se muestra la del autor. El reporte cuenta cuántas salieron idénticas.
+
+**Diego.** «Validar» con confianza ≤ −1 tiene su propia respuesta («Diego aprieta la mandíbula…»).
+
+**Costo.** La pantalla muestra lo gastado hoy y el mensaje del tope explica que suma todas las corridas del día y se reinicia a la medianoche de Monterrey. En desarrollo se adapta una de cada 3 respuestas. Estimación conservadora: validación + demos $0.19; desarrollo $0.45. **Cada botón cabe solo en el tope, pero los dos juntos no: córranse en días distintos.**
+
+### 8.3 Conjuntos
+
+- **Desarrollo**: `eval-set.ts` + `eval-dev-ronda2.ts` + `eval-dev-ronda3.ts` (la validación de la ronda 3 se usó para diagnosticar, así que pasó a desarrollo). 379 respuestas, 77 datos, 71 consultas.
+- **Validación ronda 4** (`eval-validacion.ts`), escrita después de cerrar los prompts: 107 respuestas (74 claras, 10 con propuesta propia, 17 ambiguas, 6 fuera de tema; 5 respetuosas y 6 hostiles), 28 preguntas de datos, 36 consultas a colaboradores y tres demostraciones (Diego con respeto, Diego duro, alérgeno con ambigua).
+- Hay pruebas de que ninguna frase de validación está en desarrollo (rondas 1, 2 y 3) ni en los prompts.
+
+### 8.4 Cómo correr
+
+1. Primero **Validación final (ronda 4)** (incluye las demostraciones). Copia el texto completo.
+2. **Desarrollo**, otro día (o después de la medianoche de Monterrey).
