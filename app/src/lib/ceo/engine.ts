@@ -12,6 +12,7 @@ import { newCompanyProfile, renameProfile, sanitizeCompanyProfile, type NewCompa
 import { isDisplayCurrency } from "./career/money";
 import { TAXONOMY_VERSION } from "./career/taxonomy";
 import { brandDeep, brandPack, brandText, type Brand } from "./career/template";
+import { industryLongFor } from "./career/lexicon";
 import { sanitizeEpisodes } from "./episodes/engine";
 import { EPISODES, SEASON_EPISODES, openEpisode as openEpisodeRaw } from "./episodes/catalog";
 import type { EpisodeRun, EpisodeSpec } from "./episodes/contracts";
@@ -32,16 +33,26 @@ export const KPI_LABEL: Record<KpiKey, string> = { caja: "Caja", margen: "Margen
 /** Marca del jugador (carrera continua) o null si juega las temporadas de siempre. */
 export const brandOf = (s: Pick<CeoState, "companyProfile">): Brand | null => {
   const p = s.companyProfile;
-  return p ? { name: p.displayName, short: p.shortName, city: p.exposure?.baseCity } : null;
+  return p ? { name: p.displayName, short: p.shortName, city: p.exposure?.baseCity, ...(p.specialty ? { specialty: p.specialty } : {}) } : null;
 };
 /** Paquete de la empresa actual. Con identidad propia, sus textos llevan el nombre que eligió el jugador. */
 export const packOf = (s: Pick<CeoState, "company"> & Partial<Pick<CeoState, "companyProfile">>): CompanyPack => brandPack(companyById(s.company), brandOf(s));
 /** Episodio con el nombre de la empresa del jugador (copia; ids, términos y reglas intactos). */
 export function brandedEpisode(spec: EpisodeSpec, s: Pick<CeoState, "companyProfile">): EpisodeSpec {
-  const b = brandOf(s);
+  return brandedEpisodeFor(spec, brandOf(s));
+}
+/** Igual, con la marca directa (rutas del servidor: el cliente manda nombre y especialidad). */
+export function brandedEpisodeFor(spec: EpisodeSpec, b: Brand | null): EpisodeSpec {
   if (!b) return spec;
   const pk = companyById(spec.company);
-  return { ...brandDeep(spec, (t) => brandText(t, pk, b)), id: spec.id, company: spec.company, rules: spec.rules };
+  return { ...brandDeep(spec, (t) => brandText(t, pk, b)), id: spec.id, company: spec.company, rules: spec.rules, industry: industryLongFor(spec.company, b.specialty) ?? spec.industry };
+}
+/** Cierre de un caso (guardado con los textos originales) con el nombre y la especialidad del jugador. */
+export function brandedOutcome<T>(o: T, company: string, s: Pick<CeoState, "companyProfile">): T {
+  const b = brandOf(s);
+  if (!b) return o;
+  const pk = companyById(company);
+  return brandDeep(o, (t) => brandText(t, pk, b));
 }
 /** ¿Juega la carrera continua (una empresa persistente con identidad propia)? */
 export const isContinuous = (s: Pick<CeoState, "careerMode" | "companyProfile">): boolean => s.careerMode === "continua" && !!s.companyProfile;

@@ -171,7 +171,7 @@ export function LetterStep({ sel, name, onBack, onNext }: Omit<StepProps, "setSe
   const first = name.trim().split(/\s+/)[0] || "";
   return (
     <section className="academy-in mt-10">
-      <div className="text-xs font-semibold uppercase tracking-wider text-mint">Tu empresa · 4 de 4 · {industryOf(sel.sectorId, sel.industryId)?.label} · {pk.city}</div>
+      <div className="text-xs font-semibold uppercase tracking-wider text-mint">Tu empresa · 4 de 4 · {industryOf(sel.sectorId, sel.industryId)?.label}{sel.specialty ? ` · ${sel.specialty}` : ""} · {pk.city}</div>
       <h1 className="mt-2 text-3xl font-semibold leading-tight">Tu nombramiento como Director General de {pk.name}</h1>
       <p className="mt-3 text-white/70 text-[15px] leading-relaxed">{appointedByOf(sel.archetype)} {pk.pitch}</p>
       <div className="mt-6 rounded-2xl bg-white text-ink p-5">

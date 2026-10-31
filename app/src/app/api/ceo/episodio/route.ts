@@ -21,6 +21,9 @@ import { aiStatusFor, flagsFor } from "@/lib/ceo/flags-server";
 import { appEnvOf } from "@/lib/ceo/flags";
 import { CAPS, DEFAULT_MODEL, approxTokens, costOf, periodsOf } from "@/lib/ceo/written";
 import { episodeSpec } from "@/lib/ceo/episodes/catalog";
+import { brandedEpisodeFor } from "@/lib/ceo/engine";
+import { cleanName } from "@/lib/ceo/career/identity";
+import { cleanSpecialty } from "@/lib/ceo/career/lexicon";
 import { advisorAnswer, nodeOf, sanitizeRun, strategiesFor } from "@/lib/ceo/episodes/engine";
 import { runAdapt, runAdvisor, runFact, runInterpret, type Call, type EpisodeAiPurpose, type Interpretation } from "@/lib/ceo/episodes/ai";
 
@@ -38,8 +41,12 @@ export async function POST(req: Request) {
   const key = (process.env.OPENAI_API_KEY ?? "").trim();
   if (!admin || !key) return fallback("Servicio no configurado.", 503);
 
-  const body = (await req.json().catch(() => ({}))) as { episode?: string; purpose?: string; run?: unknown; question?: string; advisor?: string; text?: string; interpretation?: unknown };
-  const spec = episodeSpec(String(body.episode ?? ""));
+  const body = (await req.json().catch(() => ({}))) as { episode?: string; purpose?: string; run?: unknown; question?: string; advisor?: string; text?: string; interpretation?: unknown; brand?: { name?: unknown; short?: unknown; specialty?: unknown } };
+  const raw = episodeSpec(String(body.episode ?? ""));
+  // Carrera continua: el caso se lee con el nombre y la especialidad de la empresa del jugador (validados).
+  const bn = cleanName(body.brand?.name), bs = cleanName(body.brand?.short);
+  const sp = raw ? cleanSpecialty(raw.company, body.brand?.specialty) : undefined;
+  const spec = raw ? brandedEpisodeFor(raw, bn && bs ? { name: bn, short: bs, ...(sp ? { specialty: sp } : {}) } : null) : undefined;
   const run = sanitizeRun(body.run);
   const purpose = body.purpose as EpisodeAiPurpose;
   if (!spec || !run || run.episode !== spec.id || !["fact", "advisor", "interpret", "adapt"].includes(purpose)) return fallback("Solicitud inválida.", 400);

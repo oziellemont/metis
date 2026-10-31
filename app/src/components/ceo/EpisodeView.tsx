@@ -12,7 +12,7 @@ import { useCeo } from "./CeoProvider";
 import { Stage, StageChoice, StepTitle } from "./Stage";
 import { Avatar, ChannelChip, Delta } from "./ui";
 import { personOf } from "@/lib/ceo/cast";
-import { KPI_LABEL, brandedEpisode, episodeSeasonXp, seasonEpisodesOf, seasonRunOf } from "@/lib/ceo/engine";
+import { KPI_LABEL, brandedEpisode, brandedOutcome, episodeSeasonXp, seasonEpisodesOf, seasonRunOf } from "@/lib/ceo/engine";
 import { lessonById } from "@/lib/ceo/lessons";
 import { episodeSpec } from "@/lib/ceo/episodes/catalog";
 import { MAX_ADVISOR_CONSULTS, MAX_DECISIONS, MAX_FACT_QUERIES, RUBRIC_LABEL, type EpisodeRun, type EpisodeSpec, type ParamSpec, type Strategy } from "@/lib/ceo/episodes/contracts";
@@ -21,9 +21,11 @@ import { deriveTerms, rubricSummary } from "@/lib/ceo/episodes/rules";
 import { clarified, decideFrom, interpretLocal, type Interpretation } from "@/lib/ceo/episodes/ai";
 
 type AiReply = { ok: boolean; fallback?: boolean; [k: string]: unknown };
+/** Marca de la empresa del jugador para que la IA lea el mismo caso que ve la pantalla (nombre y especialidad). */
+let aiBrand: { name: string; short: string; specialty?: string } | undefined;
 async function askAi(body: Record<string, unknown>): Promise<AiReply | null> {
   try {
-    const r = await fetch("/api/ceo/episodio", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    const r = await fetch("/api/ceo/episodio", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(aiBrand ? { ...body, brand: aiBrand } : body) });
     return (await r.json()) as AiReply;
   } catch { return null; }
 }
@@ -34,6 +36,7 @@ export function EpisodeView({ id }: { id: string }) {
   // Carrera continua: el caso lleva el nombre de la empresa del jugador (copia; reglas e ids intactos).
   const profile = c.s.companyProfile;
   const spec = useMemo(() => (raw ? brandedEpisode(raw, { companyProfile: profile }) : undefined), [raw, profile]);
+  aiBrand = profile ? { name: profile.displayName, short: profile.shortName, ...(profile.specialty ? { specialty: profile.specialty } : {}) } : undefined;
   if (!c.ready) return null;
   if (!spec) return <Notice title="Este caso no existe" text="Revisa el enlace o vuelve a Hoy." />;
   // Parte de tu temporada (reglas v3+): se abre cuando llega. Fuera de ella, solo como práctica en modo prueba.
@@ -561,7 +564,7 @@ function FreeText({ spec, run, act }: { spec: EpisodeSpec; run: EpisodeRun; act:
 // ───────────────────────────────────────────── cierre
 function Close({ spec, run, part }: { spec: EpisodeSpec; run: EpisodeRun; part: "cierre" | "aprendes" }) {
   const c = useCeo();
-  const o = run.outcome!;
+  const o = brandedOutcome(run.outcome!, spec.company, c.s);
   const lesson = lessonById(spec.lesson);
   const entry = c.episodes.find((e) => e.spec.id === spec.id && e.run?.runId === run.runId);
   const counts = !!entry;
