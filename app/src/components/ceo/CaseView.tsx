@@ -65,7 +65,7 @@ export function CaseView({ id }: { id: string }) {
     const p = textProblem(draft);
     if (p) { setErr(p); return; }
     setBusy(true); setErr(null);
-    const r = await fetch("/api/ceo/responder", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ itemId: it.id, company: c.pack.id, text: draft, profile: c.s.profile }) }).then((x) => x.json()).catch(() => null);
+    const r = await fetch("/api/ceo/responder", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ itemId: it.id, company: c.pack.id, text: draft, profile: c.s.profile, ...(c.s.companyProfile ? { brand: { name: c.s.companyProfile.displayName, short: c.s.companyProfile.shortName } } : {}) }) }).then((x) => x.json()).catch(() => null);
     setBusy(false);
     if (r?.ok) setEv({ option: r.option, quality: r.quality, feedback: r.feedback });
     else { setErr(r?.error ?? "No pudimos leer tu respuesta. Elige una opción."); if (r?.fallback) setMode("options"); }

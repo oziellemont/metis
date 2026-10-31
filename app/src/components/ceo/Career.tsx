@@ -24,6 +24,7 @@ export function Career() {
   const nextPick = nextCompanyOf(c.s);
   const j = c.journey;
   const m = c.mastery;
+  const cont = c.continuous;
   const [appointed, setAppointed] = useState<{ stage: string; rows: { label: string; value: string }[] } | null>(null);
   const receive = () => {
     const name = c.appoint();
@@ -33,7 +34,7 @@ export function Career() {
     setAppointed({
       stage: name,
       rows: [
-        { label: "Empresas aprobadas", value: String(career.filter((x) => x.passed).length) },
+        { label: cont ? "Periodos aprobados" : "Empresas aprobadas", value: String(career.filter((x) => x.passed).length) },
         { label: "Competencias en Competent o más", value: `${countAtLeast(m, 40)} de 8` },
         { label: "Fortaleza principal", value: `${m[best].name} · ${m[best].value}` },
         { label: "Estilo de dirección", value: profileOf(c.s, c.now).archetype.name },
@@ -43,7 +44,7 @@ export function Career() {
   const passedNow = c.seasonDone && v.passed;
   useEffect(() => { if (passedNow) celebrateOnce(`company:${pk.id}:${c.s.startedAt}:${career.length}`, "company"); }, [passedNow, pk.id, c.s.startedAt, career.length]);
   const confirmAdvance = () => {
-    const msg = v.passed ? `¿Listo para dejar ${pk.name}? Tu siguiente empresa será una sorpresa.` : `¿Volver a empezar ${pk.name}? Conservas tu XP, tu racha y lo aprendido.`;
+    const msg = cont ? `¿Cerrar este periodo en ${pk.name}? Sigues al frente de la misma empresa; tu historial, tu XP y tu racha se conservan.` : v.passed ? `¿Listo para dejar ${pk.name}? Tu siguiente empresa será una sorpresa.` : `¿Volver a empezar ${pk.name}? Conservas tu XP, tu racha y lo aprendido.`;
     if (window.confirm(msg)) c.advance();
   };
 
@@ -63,7 +64,7 @@ export function Career() {
                 ? `Cumples todo lo que pide el Consejo. Tu nombramiento como ${j.next.name} está listo.`
                 : <>Siguiente nombramiento: <b className="text-white">{j.next.name}</b>. Llevas {j.met} de {j.total} requisitos. Tu etapa sube por lo que demuestras, no por el XP.</>}
             </p>
-          ) : <p className="mt-4 text-sm text-white/80 max-w-xl">Llegaste a la última etapa. Sigue dirigiendo empresas en modo Legendario y mantén tu criterio en forma.</p>}
+          ) : <p className="mt-4 text-sm text-white/80 max-w-xl">{cont ? `Llegaste a la última etapa. Sigue al frente de ${pk.short} y mantén tu criterio en forma.` : "Llegaste a la última etapa. Sigue dirigiendo empresas en modo Legendario y mantén tu criterio en forma."}</p>}
           {j.requirements.length > 0 && (
             <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {j.requirements.map((q) => <RequirementTile key={q.id} r={q} m={m} dark />)}
@@ -87,11 +88,13 @@ export function Career() {
             <div className="text-xs text-slate-500">{pk.name} · {pk.industry} · Exigencia: {r.name}</div>
           </div>
           <h2 className="mt-4 text-xl sm:text-2xl font-semibold leading-tight text-ink">
-            {!c.seasonDone ? (c.changeOpen ? "Te falta el reto final: el cambio." : "El consejo te evalúa al cierre del nivel.") : v.passed ? `Aprobaste ${pk.short}.` : `Todavía no apruebas ${pk.short}.`}
+            {!c.seasonDone ? (c.changeOpen ? "Te falta el reto final: el cambio." : cont ? "El consejo te evalúa al cierre del periodo." : "El consejo te evalúa al cierre del nivel.") : v.passed ? (cont ? `Periodo aprobado en ${pk.short}.` : `Aprobaste ${pk.short}.`) : (cont ? `Periodo por debajo de la línea en ${pk.short}.` : `Todavía no apruebas ${pk.short}.`)}
           </h2>
           <p className="mt-2 text-sm text-slate-500 max-w-xl">
             {!c.seasonDone
               ? `${c.changeOpen ? "Cerraste los asuntos. Presenta tu proyecto de cambio al consejo para recibir el veredicto. " : "El nivel cierra con un reto de cambio cuando termines tus asuntos. "}Para ascender necesitas cerrar con todos los rubros en ${v.passLine} o más${r.minAnswered > 0 ? ` y responder al menos el ${Math.round(r.minAnswered * 100)}% de los asuntos` : ""}. No basta con un buen promedio: el consejo revisa cada rubro.`
+              : cont
+                ? (v.passed ? "El consejo firmó tu evaluación del periodo. Sigues al frente: el siguiente periodo arranca con lo que dejaste construido." : "Algunos rubros quedaron debajo de la línea. Sigues al frente de la misma empresa: el siguiente periodo es para corregirlos.")
               : v.passed
                 ? "El consejo firmó tu evaluación. Otra empresa, de otro giro, ya preguntó por ti. Allá los golpes pegan más fuerte y los plazos son más cortos."
                 : "Algunos rubros quedaron debajo de la línea. Puedes volver a dirigir la misma empresa con lo que ya sabes y probar otros caminos."}
@@ -110,7 +113,7 @@ export function Career() {
 
           {c.seasonDone && (
             <button onClick={confirmAdvance} className="mt-6 inline-flex items-center gap-2 rounded-xl bg-indigo px-5 py-3 text-sm font-semibold text-white hover:bg-indigo/90">
-              {v.passed ? <>Ir a la siguiente empresa <ArrowRight size={15} /></> : <><RotateCcw size={16} /> Volver a dirigir {pk.short}</>}
+              {cont ? <>Cerrar el periodo y seguir <ArrowRight size={15} /></> : v.passed ? <>Ir a la siguiente empresa <ArrowRight size={15} /></> : <><RotateCcw size={16} /> Volver a dirigir {pk.short}</>}
             </button>
           )}
           {!c.seasonDone && c.changeOpen && <Link href="/ceo/cambio" className="mt-6 mr-2 inline-flex items-center gap-2 rounded-xl bg-indigo px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo/90">Ir al reto final <ArrowRight size={15} /></Link>}
@@ -121,12 +124,12 @@ export function Career() {
       {/* camino */}
       <section className="card p-5 sm:p-6">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <h2 className="font-semibold text-ink">Tu camino de empresas</h2>
-          <span className="text-xs text-slate-400">{passedIds.size} de {COMPANIES.length} empresas aprobadas</span>
+          <h2 className="font-semibold text-ink">{cont ? `Tus periodos en ${pk.short}` : "Tu camino de empresas"}</h2>
+          <span className="text-xs text-slate-400">{cont ? `${career.filter((x) => x.passed).length} de ${career.length} periodos aprobados` : `${passedIds.size} de ${COMPANIES.length} empresas aprobadas`}</span>
         </div>
         <ol className="mt-5 relative space-y-3 before:absolute before:left-[23px] before:top-3 before:bottom-3 before:w-0.5 before:bg-indigo-soft">
           {career.map((run, i) => {
-            const co = companyById(run.company);
+            const co = cont && run.company === pk.id ? pk : companyById(run.company);
             return (
               <li key={i} className="relative flex gap-4 items-start">
                 <CompanyMark name={co.name} size={48} tone={run.passed ? "solid" : "muted"} className="relative z-10" />
@@ -144,7 +147,7 @@ export function Career() {
               <div className="mt-1 text-xs text-slate-500">{pk.industry} · Día {c.day} de {pk.season.days}</div>
             </div>
           </li>
-          <li className="relative flex gap-4 items-start">
+          {!cont && <li className="relative flex gap-4 items-start">
             <span className="relative z-10 h-12 w-12 rounded-full grid place-items-center shrink-0 bg-white border-2 border-dashed border-indigo/30 text-indigo"><Lock size={18} /></span>
             <div className="flex-1 min-w-0 rounded-2xl border border-dashed border-slate-200 px-4 py-3">
               <div className="font-semibold text-ink text-sm">{nextPick.legendary ? "Modo Legendario" : "Siguiente empresa: sorpresa"}</div>
@@ -152,7 +155,7 @@ export function Career() {
                 {nextPick.legendary ? "Ya aprobaste todos los giros. Vuelves a una empresa conocida, pero con exigencia Legendaria: golpes más duros y línea de aprobación más alta." : `Otro giro, elegido al azar. Exigencia «${next.name}»: línea de aprobación ${next.passLine}, plazos ${Math.round((1 - next.deadline) * 100)}% más cortos.`}
               </div>
             </div>
-          </li>
+          </li>}
           <li className="relative flex gap-4 items-start">
             <span className={clsx("relative z-10 h-12 w-12 rounded-full grid place-items-center shrink-0", j.ready ? "bg-indigo text-white" : "bg-white border-2 border-dashed border-slate-200 text-slate-400")}><Award size={18} /></span>
             <div className={clsx("flex-1 min-w-0 rounded-2xl px-4 py-3", j.ready ? "border-2 border-indigo/30 bg-indigo-soft/30" : "border border-dashed border-slate-200")}>
@@ -163,8 +166,8 @@ export function Career() {
         </ol>
       </section>
 
-      {/* industrias */}
-      <section className="card p-5 sm:p-6">
+      {/* industrias (solo carrera por temporadas) */}
+      {!cont && <section className="card p-5 sm:p-6">
         <h2 className="font-semibold text-ink">Industrias</h2>
         <p className="mt-1 text-sm text-slate-500">Cada empresa tiene su idioma, su red de relaciones y sus dilemas. Aprueba las tres para desbloquear el modo Legendario.</p>
         <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -178,7 +181,7 @@ export function Career() {
             );
           })}
         </div>
-      </section>
+      </section>}
     </div>
   );
 }

@@ -107,9 +107,10 @@ export function requirementsFor(target: number, s: CeoState, now = nowOf(s), m: 
   if (!rule) return [];
   const f = careerFacts(s);
   const out: Requirement[] = [];
-  if (rule.passed) out.push({ id: "passed", group: "empresas", label: "Empresas aprobadas", have: f.passed, need: rule.passed, ok: f.passed >= rule.passed });
+  const cont = s.careerMode === "continua" && !!s.companyProfile;
+  if (rule.passed) out.push({ id: "passed", group: "empresas", label: cont ? "Periodos aprobados" : "Empresas aprobadas", have: f.passed, need: rule.passed, ok: f.passed >= rule.passed });
   if (rule.changeOk) out.push({ id: "change", group: "retos", label: "Reto de cambio logrado", have: f.changeOk, need: rule.changeOk, ok: f.changeOk >= rule.changeOk });
-  if (rule.highTier) out.push({ id: "highTier", group: "retos", label: "Empresa aprobada con exigencia alta", have: f.highTier, need: rule.highTier, ok: f.highTier >= rule.highTier });
+  if (rule.highTier) out.push({ id: "highTier", group: "retos", label: cont ? "Periodo aprobado con exigencia alta" : "Empresa aprobada con exigencia alta", have: f.highTier, need: rule.highTier, ok: f.highTier >= rule.highTier });
   if (rule.board) out.push({ id: "board", group: "retos", label: "Junta ante el Consejo", have: f.board ? 1 : 0, need: 1, ok: f.board, href: "/ceo/junta" });
   if (rule.legendary) out.push({ id: "legendary", group: "retos", label: "Empresa internacional o modo Legendario", have: Math.min(1, f.legendary), need: 1, ok: f.legendary >= 1 });
   for (const a of rule.atLeast ?? []) {

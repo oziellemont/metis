@@ -9,7 +9,7 @@
  *    de empresa soportado. Todo lo demás se muestra con COMING_SOON_LABEL y se bloquea.
  *  - El tipo de empresa (PYME / startup / establecida) es una dimensión aparte, nunca parte de la industria.
  *  - La búsqueda por sinónimo SUGIERE una pareja sector/industria; no la selecciona sola.
- *  - Detrás de la bandera `carrera_continua`: hoy ninguna pantalla lo usa.
+ *  - Lo usa el onboarding de la carrera continua (P0-B3, components/ceo/CompanySetup.tsx), abierto para todos.
  */
 import { COMING_SOON_LABEL } from "../catalog";
 import { isCompany } from "../companies";
