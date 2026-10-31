@@ -4,11 +4,11 @@
  * La usa la ruta `api/ceo/episodio/evaluar` (con permiso de gasto) y las pruebas (modelo falso).
  *
  * Dos conjuntos que nunca se mezclan:
- *  - «dev»: lo reciente y lo que ha fallado. Completas, las validaciones de las rondas 4 y 5 (`eval-dev-ronda4.ts`,
- *    `eval-dev-ronda5.ts`); de lo anterior (`eval-set.ts`, rondas 2 y 3) solo lo difícil (respuestas ambiguas, con
+ *  - «dev»: lo reciente y lo que ha fallado. Completas, las validaciones de las rondas 5 y 6 (`eval-dev-ronda5.ts`,
+ *    `eval-dev-ronda6.ts`); de lo anterior (`eval-set.ts`, rondas 2 a 4) solo lo difícil (respuestas ambiguas, con
  *    propuesta propia o fuera de tema; datos que no existen, ambiguos o ajenos; consultas que tientan, piden lo
  *    desconocido o son abiertas) y los fallos históricos (`DEV_HISTORIC_MISSES`). Se corre una sola vez por respuesta.
- *  - «val» (`eval-validacion.ts`): validación final de la ronda 6, frases nuevas que no se usaron para ajustar nada.
+ *  - «val» (`eval-validacion.ts`): validación final de la ronda 7, frases nuevas que no se usaron para ajustar nada.
  *
  * Mide, por conjunto:
  *  - texto libre: acierto (incluye preguntar cuando es ambigua y no comprometer nada si no responde a la decisión),
@@ -29,6 +29,7 @@ import { DEV2_ADVISOR, DEV2_DEMOS, DEV2_FACTS, DEV2_INTERPRET } from "./eval-dev
 import { DEV3_ADVISOR, DEV3_FACTS, DEV3_INTERPRET } from "./eval-dev-ronda3";
 import { DEV4_ADVISOR, DEV4_FACTS, DEV4_INTERPRET } from "./eval-dev-ronda4";
 import { DEV5_ADVISOR, DEV5_FACTS, DEV5_INTERPRET } from "./eval-dev-ronda5";
+import { DEV6_ADVISOR, DEV6_FACTS, DEV6_INTERPRET } from "./eval-dev-ronda6";
 import { ADVISOR_VALIDATION, DEMO_SCRIPTS, FACT_VALIDATION, VALIDATION_SET, type ValItem } from "./eval-validacion";
 import { runAt } from "./eval-harness";
 
@@ -45,7 +46,7 @@ export const DEV_ADAPT_EVERY = 3;
 export type EvalSetId = "dev" | "val";
 
 // ───────────────────────────────────────────── conjuntos unificados
-/** Frases de rondas viejas que fallaron en el desarrollo de la ronda 5: se quedan en desarrollo aunque sean «fáciles». */
+/** Frases de rondas viejas que fallaron en el desarrollo de las rondas 5 y 6: se quedan en desarrollo aunque sean «fáciles». */
 export const DEV_HISTORIC_MISSES: readonly string[] = [
   "No firmo: prefiero perder un frente que aceptar condiciones que no se pagan solas.",
   "No sé, le digo algo para calmarlo y vemos.",
@@ -61,26 +62,31 @@ export const DEV_HISTORIC_MISSES: readonly string[] = [
   "Paty, ¿qué harías tú en mi lugar?",
   "¿Diego está buscando trabajo en otra empresa?",
   "¿Cuánto cuesta retirar solo una parte?",
+  // fallos del desarrollo de la ronda 6
+  "A SuperNorte le reponemos nosotros, y al proveedor le cobramos lo que marca el contrato.",
+  "Esperamos al laboratorio, ya falta menos de un día.",
+  "¿Qué dice la evaluación 360 de su gente?",
+  "Paty, tú lo conoces desde niño: ¿cómo le hablo?",
 ];
 const missed = new Set(DEV_HISTORIC_MISSES);
 /** De las rondas viejas: lo difícil (cualquier tipo que no sea el «fácil») o lo que ya falló. */
 const hard = <T extends { kind: string }>(items: T[], easy: string, text: (x: T) => string) => items.filter((x) => x.kind !== easy || missed.has(text(x)));
 
-const OLD_INTERPRET: ValItem[] = [...INTERPRET_SET.map((x) => ({ ep: x.ep, node: x.node, kind: "clara" as const, expect: x.expect, text: x.text })), ...DEV2_INTERPRET, ...DEV3_INTERPRET];
+const OLD_INTERPRET: ValItem[] = [...INTERPRET_SET.map((x) => ({ ep: x.ep, node: x.node, kind: "clara" as const, expect: x.expect, text: x.text })), ...DEV2_INTERPRET, ...DEV3_INTERPRET, ...DEV4_INTERPRET];
 const INTERPRET: Record<EvalSetId, ValItem[]> = {
-  dev: [...DEV4_INTERPRET, ...DEV5_INTERPRET, ...hard(OLD_INTERPRET, "clara", (x) => x.text)],
+  dev: [...DEV5_INTERPRET, ...DEV6_INTERPRET, ...hard(OLD_INTERPRET, "clara", (x) => x.text)],
   val: VALIDATION_SET,
 };
 type FactItem = { ep: string; q: string; accept: string[]; kind: string };
-const OLD_FACTS: FactItem[] = [...FACT_SET.map((f) => ({ ep: f.ep, q: f.q, accept: [f.expect], kind: f.expect === "ninguno" ? "ajena" : f.expect.startsWith("?") ? "inexistente" : "dato" })), ...DEV2_FACTS, ...DEV3_FACTS];
+const OLD_FACTS: FactItem[] = [...FACT_SET.map((f) => ({ ep: f.ep, q: f.q, accept: [f.expect], kind: f.expect === "ninguno" ? "ajena" : f.expect.startsWith("?") ? "inexistente" : "dato" })), ...DEV2_FACTS, ...DEV3_FACTS, ...DEV4_FACTS];
 const FACTS: Record<EvalSetId, FactItem[]> = {
-  dev: [...DEV4_FACTS, ...DEV5_FACTS, ...hard(OLD_FACTS, "dato", (x) => x.q)],
+  dev: [...DEV5_FACTS, ...DEV6_FACTS, ...hard(OLD_FACTS, "dato", (x) => x.q)],
   val: FACT_VALIDATION,
 };
 type AdvisorItem = { ep: string; advisor: string; q: string; kind: string };
-const OLD_ADVISORS: AdvisorItem[] = [...ADVISOR_SET.map((a) => ({ ...a, kind: "normal" })), ...DEV2_ADVISOR, ...DEV3_ADVISOR];
+const OLD_ADVISORS: AdvisorItem[] = [...ADVISOR_SET.map((a) => ({ ...a, kind: "normal" })), ...DEV2_ADVISOR, ...DEV3_ADVISOR, ...DEV4_ADVISOR];
 const ADVISORS: Record<EvalSetId, AdvisorItem[]> = {
-  dev: [...DEV4_ADVISOR, ...DEV5_ADVISOR, ...hard(OLD_ADVISORS, "normal", (x) => x.q)],
+  dev: [...DEV5_ADVISOR, ...DEV6_ADVISOR, ...hard(OLD_ADVISORS, "normal", (x) => x.q)],
   val: ADVISOR_VALIDATION,
 };
 /** Guiones: los de validación se muestran; los de la ronda 2 quedan como desarrollo (no se corren por defecto). */

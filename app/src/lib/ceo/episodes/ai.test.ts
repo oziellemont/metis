@@ -350,8 +350,8 @@ describe("P0-D ronda 5 · correcciones del diagnóstico de la ronda 4", () => {
     expect(hasCue({}, "cualquier cosa")).toBe(true);
   });
   it("señales: toda respuesta clara o parcial de los conjuntos trae al menos una señal de su estrategia, y nada clara pospone", async () => {
-    const D2 = await import("./eval-dev-ronda2"), D3 = await import("./eval-dev-ronda3"), D4 = await import("./eval-dev-ronda4"), D5 = await import("./eval-dev-ronda5"), V = await import("./eval-validacion");
-    const all = [...D2.DEV2_INTERPRET, ...D3.DEV3_INTERPRET, ...D4.DEV4_INTERPRET, ...D5.DEV5_INTERPRET, ...V.VALIDATION_SET];
+    const D2 = await import("./eval-dev-ronda2"), D3 = await import("./eval-dev-ronda3"), D4 = await import("./eval-dev-ronda4"), D5 = await import("./eval-dev-ronda5"), D6 = await import("./eval-dev-ronda6"), V = await import("./eval-validacion");
+    const all = [...D2.DEV2_INTERPRET, ...D3.DEV3_INTERPRET, ...D4.DEV4_INTERPRET, ...D5.DEV5_INTERPRET, ...D6.DEV6_INTERPRET, ...V.VALIDATION_SET];
     let withCues = 0;
     for (const x of all.filter((x) => x.kind === "clara" || x.kind === "parcial")) {
       const st = EPISODES[x.ep].nodes[x.node].strategies.find((s) => s.id === x.expect)!;
@@ -422,8 +422,8 @@ describe("P0-D ronda 6 · correcciones del diagnóstico de la ronda 5", () => {
     // a4 de la ronda 5: «proveedor» y «contrato» son señales de reclamar y no de absorber
     expect(read(A, "a4", "reclamar", "A SuperNorte le reponemos nosotros, y al proveedor le cobramos lo que marca el contrato.", "absorber", "al proveedor le cobramos lo del contrato")).toMatchObject({ status: "clara", strategy: "reclamar" });
     expect(read(A, "a4", "seguir_esperando", "Esperamos al laboratorio, ya falta menos de un día.", "ampliar", "esperamos al lab")).toMatchObject({ status: "clara", strategy: "seguir_esperando" });
-    // sin intento de cita, o con señales de los dos, se sigue preguntando
-    expect(read(A, "a4", "reclamar", "A SuperNorte le reponemos nosotros, y al proveedor le cobramos lo que marca el contrato.", "absorber")).toMatchObject({ status: "ambigua", guard: "rival" });
+    // ronda 7: sin intento de cita también basta la señal de la elegida; con señales de los dos se sigue preguntando
+    expect(read(A, "a4", "reclamar", "A SuperNorte le reponemos nosotros, y al proveedor le cobramos lo que marca el contrato.", "absorber")).toMatchObject({ status: "clara", strategy: "reclamar" });
     expect(read(A, "a4", "reclamar", "Pagamos todo y luego vemos con el proveedor.", "absorber", "vemos con el proveedor del sazonador")).toMatchObject({ status: "ambigua" });
   });
   it("hechos: reglas nuevas para «qué tan grave», «alguien se enfermó» y lo que se pregunta con otras palabras", () => {
@@ -462,5 +462,51 @@ describe("P0-D ronda 6 · correcciones del diagnóstico de la ronda 5", () => {
     const sys = adaptMessages(D, r, base, "x", { tone: -1 })[0].content;
     expect(sys).toMatch(/No repitas los insultos/);
     expect(sys).toMatch(/Entiendo…/);
+  });
+});
+
+describe("P0-D ronda 7 · correcciones del diagnóstico de la ronda 6", () => {
+  const A = EPISODES.alergeno;
+  const read = (ep: typeof A, node: string, strategy: string, text: string, rival: string | null = null, distingue = "") => {
+    const r = runAt(ep, node, strategy)!;
+    return parseInterpretation(ep, r, JSON.stringify({ encaje: "una", strategy, rival, distingue, quality: 2, feedback: "x" }), text);
+  };
+  it("ambigüedad: las formas vagas de la ronda 6 que se comprometieron ahora se preguntan", () => {
+    for (const t of ["Le respondemos como se merece, ni más ni menos.", "Lo resolvemos ya sea con el banco o con Sofía.", "Lo consulto con la almohada y mañana te digo.", "Revisamos y vemos qué procede.", "Hablamos con ellos y vemos.", "Lo hago de una u otra forma.", "Haré lo que crea correcto con el proveedor.", "A ver cómo reacciona Sofía primero."])
+      expect(POSPONE.test(norm(t)), t).toBe(true);
+    for (const t of ["Avisamos hoy a la autoridad con lo que sabemos.", "Retiramos todo el lote de las 140 tiendas.", "Vemos a Diego esta semana a solas."])
+      expect(POSPONE.test(norm(t)), t).toBe(false);
+  });
+  it("señal: si la estrategia elegida tiene señales y el texto no trae ninguna, se pregunta", () => {
+    expect(read(A, "a2", "avisar_hoy", "Avisamos a la autoridad sanitaria.")).toMatchObject({ status: "ambigua", guard: "senal" });
+    expect(read(A, "a2", "avisar_hoy", "Avisamos hoy a la autoridad sanitaria.")).toMatchObject({ status: "clara", strategy: "avisar_hoy" });
+  });
+  it("señal: si exactamente otra estrategia trae su señal, se toma esa en lugar de preguntar", () => {
+    expect(read(A, "a2", "avisar_hoy", "Avisamos a la autoridad cuando tengamos el resultado del laboratorio.")).toMatchObject({ status: "clara", strategy: "avisar_lab" });
+  });
+  it("rival: basta la señal de la elegida sin la del rival, aunque la IA no haya citado", () => {
+    expect(read(A, "a4", "reclamar", "Reponemos a SuperNorte y le cobramos al proveedor según el contrato.", "absorber")).toMatchObject({ status: "clara", strategy: "reclamar" });
+    expect(read(A, "a4", "reclamar", "Pagamos todo y luego le cobramos al proveedor.", "absorber")).toMatchObject({ status: "ambigua", guard: "rival" });
+  });
+  it("hechos: reglas para las paráfrasis de la ronda 6", () => {
+    const msg = factMessages(SUPERNORTE, "x")[0].content;
+    expect(msg).toMatch(/espacio, capacidad/);
+    expect(msg).toMatch(/se desplaza/);
+    expect(msg).toMatch(/crédito que se le da al cliente/);
+    expect(msg).toMatch(/negociaciones previas/);
+    expect(msg).toMatch(/360/);
+  });
+  it("colaborador: repetir un dato propio que coincide con una opción no se rechaza; nombrar otra opción sí", () => {
+    const L = A.advisors.find((a) => a.id === "lucia")!;
+    const auth = advisorAnswer(A, startEpisode(A, T, { runId: "v" }), L);
+    expect(checkAdvisor(A, L, auth, JSON.stringify({ answer: "Desde Finanzas veo dos costos: retirar solo de las 12 tiendas con quejas cuesta unos $0.4 M y todo el lote unos $1.6 M." }))).toHaveProperty("answer");
+    expect(checkAdvisor(A, L, auth, JSON.stringify({ answer: "A mí me preocupa avisar cuando tengamos el resultado del laboratorio, para no reportar algo que tal vez no es." }))).toMatchObject({ reason: "opcion" });
+    expect(advisorMessages(A, L, auth, "x")[0].content).toMatch(/con el mismo peso/);
+  });
+  it("adaptación: más moralejas que no estaban en el texto del autor", () => {
+    const authored = ["Diego se queda callado.", "«Bueno… sí, no lo pasé por Héctor.»"];
+    for (const m of ["es clave que confiemos", "es bueno que lo platiquemos", "la confianza es clave en esto", "hay que actuar con calma"])
+      expect(adaptationOk([`Diego frunce el ceño; ${m}.`, ...authored.slice(1)], authored, [], {}), m).toBeNull();
+    expect(adaptationOk(["Diego frunce el ceño al oír lo de Héctor.", ...authored.slice(1)], authored, [], {})).not.toBeNull();
   });
 });

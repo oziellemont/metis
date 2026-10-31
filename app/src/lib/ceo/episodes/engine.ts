@@ -195,7 +195,7 @@ export function adaptationOk(reply: unknown, authored: string[], said: string[],
   // Ronda 6: restos de formato (JSON o bloques de código que el modelo coló en una línea).
   if (/```|\]\s*\}|\{\s*"|"\s*:\s*[\[{"]|\bjson\b/i.test(all) && !/```|\{"/.test(base)) return null;
   // Moralejas que el autor no escribió («es fundamental que…», «la clave es…»).
-  const MORAL = /\b(es (fundamental|crucial|clave|importante|esencial|vital) (que|para|tener|mantener|actuar)|la clave (es|esta)|lo importante es|a veces las decisiones)\b/;
+  const MORAL = /\b(es (fundamental|crucial|clave|importante|esencial|vital|bueno|necesario) (que|para|tener|mantener|actuar|en)|la clave (es|esta)|lo importante es|a veces las decisiones|hay que actuar|(son|es) (clave|vital|esencial|fundamental) (en|para))\b/;
   if (MORAL.test(norm(all)) && !MORAL.test(norm(base))) return null;
   // Una línea del autor copiada dos veces (la reacción repitió el texto de otra línea).
   const flat = (x: string) => norm(x).replace(/[^a-z0-9ñ]+/g, " ").trim();

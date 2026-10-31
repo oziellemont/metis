@@ -167,12 +167,12 @@ export const DIEGO: EpisodeSpec = {
             { dim: "riesgos", level: 3, basis: "Anticipó que Don Ramiro se enteraría por otro lado y lo habló primero, sin pedirle permiso." },
             { dim: "informacion", level: 2, basis: "Preparó el terreno, aunque con poca información de primera mano.", when: { none: ["q:patron", "q:piloto", "a:hector"] } },
           ] },
-        { id: "esperar", text: "Esperar a la evaluación de desempeño del trimestre para tratarlo con calma.", flags: ["espera"], trust: -1,
+        { id: "esperar", text: "Esperar a la evaluación de desempeño del trimestre para tratarlo con calma.", cues: ["evaluacion", "trimestr*", "revision", "desempeno", "espero", "esperar"], flags: ["espera"], trust: -1,
           reply: [{ text: ["Mariana: Faltan siete semanas para la evaluación.", "Te advierto que Héctor no va a aguantar tanto. Y Diego va a seguir igual mientras nadie le diga nada."] }],
           next: [{ to: "p2" }],
           evidence: [{ dim: "consecuencias", level: 1, basis: "Pospuso una conversación necesaria: mientras tanto, el patrón sigue y el equipo lo ve." }],
           risks: [{ id: "dg-tarde", text: "La conversación llega tarde: el equipo ya se acostumbró a que Diego se brinque reglas.", owner: "ceo" }] },
-        { id: "pedir_hector", text: "Que lo resuelva Héctor; es su jefe directo. Yo no me meto.", flags: ["delegado_hector"], trust: -1,
+        { id: "pedir_hector", text: "Que lo resuelva Héctor; es su jefe directo. Yo no me meto.", cues: ["hector"], flags: ["delegado_hector"], trust: -1,
           reply: [{ text: ["Mariana: Ok… Héctor habló con él hoy. Salió mal: le dijo que «si no le gusta, que le pida chamba a su papá».", "Diego pidió verte. Está en tu puerta."] }],
           next: [{ to: "p2" }],
           evidence: [{ dim: "ejecucion", level: 1, basis: "Delegó una conversación que involucraba al dueño y a un jefe en conflicto; termina regresándole peor." }] },
@@ -187,7 +187,7 @@ export const DIEGO: EpisodeSpec = {
       ],
       ask: "¿Cómo abres la conversación?", freeText: true,
       strategies: [
-        { id: "hechos", text: "Describir los hechos y su impacto, sin juicios: tres propuestas sin pasar por Héctor y un precio cambiado sin aprobación, que bajó 2 puntos de margen en 30 tiendas. Y preguntarle cómo lo ve.", flags: ["hechos"], trust: 1,
+        { id: "hechos", text: "Describir los hechos y su impacto, sin juicios: tres propuestas sin pasar por Héctor y un precio cambiado sin aprobación, que bajó 2 puntos de margen en 30 tiendas. Y preguntarle cómo lo ve.", cues: ["hechos", "datos", "propuesta*", "precio", "margen", "lo que paso", "impacto"], flags: ["hechos"], trust: 1,
           reply: [
             { when: { any: ["q:piloto", "q:patron"] }, text: ["Diego se queda callado unos segundos.", "«No sabía lo del margen… Pensé que el precio iba a subir la rotación. Pero sí, no lo pasé por nadie.»"] },
             { text: ["«¿Dos puntos? ¿De dónde sacas eso?»", "«Bueno… sí, no lo pasé por Héctor. Pero tengo mis razones.»"] },
@@ -205,7 +205,7 @@ export const DIEGO: EpisodeSpec = {
           reply: [{ text: ["«¡Gracias! Sí, creo que el piloto va muy bien.»", "«¿Temas de proceso? Bueno, lo vemos con Héctor.»"] }],
           next: [{ to: "p3" }],
           evidence: [{ dim: "coherencia", level: 1, basis: "El mensaje importante quedó escondido entre elogios: Diego no entendió que había un problema." }] },
-        { id: "juicio", text: "Decirle directo: «Diego, tienes un problema de actitud. No respetas a tu jefe.»", flags: ["juicio"], trust: -2,
+        { id: "juicio", text: "Decirle directo: «Diego, tienes un problema de actitud. No respetas a tu jefe.»", cues: ["actitud", "respet*", "irrespetuoso", "el problema eres"], flags: ["juicio"], trust: -2,
           reply: [{ text: ["Diego cierra la laptop.", "«¿Actitud? Llevo seis semanas sacando ese piloto solo, porque Héctor no me hace caso.»"] }],
           next: [{ to: "p3" }],
           evidence: [{ dim: "coherencia", level: 0, basis: "Juzgó la actitud en lugar de describir conductas: el otro solo puede defenderse." }] },
@@ -220,7 +220,7 @@ export const DIEGO: EpisodeSpec = {
       ],
       ask: "Diego se defiende. ¿Qué haces?", freeText: true,
       strategies: [
-        { id: "validar", text: "Reconocer su frustración sin darle la razón en todo: «Entiendo que te sientas bloqueado; eso lo vamos a resolver. Y aun así, el precio no se cambia sin Finanzas. Las dos cosas son ciertas.»", flags: ["validar"], trust: 1,
+        { id: "validar", text: "Reconocer su frustración sin darle la razón en todo: «Entiendo que te sientas bloqueado; eso lo vamos a resolver. Y aun así, el precio no se cambia sin Finanzas. Las dos cosas son ciertas.»", cues: ["entiendo", "entiende", "reconozco", "valido", "frustra*", "siente*", "sienta*", "sientas", "escucho", "finanzas", "bloquead*", "frenado", "atorado"], flags: ["validar"], trust: 1,
           reply: [
             // La misma frase no se recibe igual después de una conversación hostil: la confianza acumulada pesa.
             { when: { all: ["trust<=-1"] }, text: ["Diego aprieta la mandíbula.", "«Ya. Lo del precio estuvo mal, ya entendí. Pero así no me dan ganas de traerte nada.»"] },
@@ -231,7 +231,7 @@ export const DIEGO: EpisodeSpec = {
             { dim: "negociacion", level: 3, basis: "Separó el interés de Diego (ser escuchado) de la regla que no se negocia." },
             { dim: "adaptacion", level: 2, basis: "Reencauzó la conversación después de la defensa.", when: { any: ["juicio", "sandwich"] } },
           ] },
-        { id: "darle_razon", text: "Darle la razón: Héctor es parte del problema. Que me traiga sus ideas a mí directamente.", flags: ["bypass_ceo"], trust: 2,
+        { id: "darle_razon", text: "Darle la razón: Héctor es parte del problema. Que me traiga sus ideas a mí directamente.", cues: ["razon", "a mi", "traeme", "me las traes", "me presente"], flags: ["bypass_ceo"], trust: 2,
           reply: [{ text: ["«¡Gracias! Sabía que tú sí lo ibas a entender.»", "(Héctor se entera esa misma tarde.)"] }],
           next: [{ to: "p4" }],
           evidence: [{ dim: "consecuencias", level: 0, basis: "Cambió un atajo por otro: ahora Diego se brinca a Héctor para llegar a ti." }],
@@ -255,7 +255,7 @@ export const DIEGO: EpisodeSpec = {
       ],
       ask: "¿Con qué acuerdo cierras?", freeText: true,
       strategies: [
-        { id: "acuerdo_claro", text: "Un acuerdo concreto: sus propuestas pasan por Héctor; el precio se revierte y se presenta con datos; y nos vemos 1 a 1 cada semana un tiempo para revisarlo.", flags: ["acuerdo_claro"],
+        { id: "acuerdo_claro", text: "Un acuerdo concreto: sus propuestas pasan por Héctor; el precio se revierte y se presenta con datos; y nos vemos 1 a 1 cada semana un tiempo para revisarlo.", cues: ["semana*", "semanal", "uno a uno", "1 a 1", "revier*", "revertido", "regresa", "vuelve", "precio", "seguimiento"], flags: ["acuerdo_claro"],
           params: [{ key: "seguimiento", label: "Seguimiento semanal contigo", min: 2, max: 8, step: 2, default: 4, unit: "semanas", hint: "Lo suficiente para ver si el cambio se sostiene" }],
           reply: [
             { when: { all: ["acuerdo=1"] }, text: ["«Va. Lo paso por Héctor. Y lo del precio lo revierto mañana.»", "«Nos vemos el lunes.»"] },
@@ -267,7 +267,7 @@ export const DIEGO: EpisodeSpec = {
             { dim: "ejecucion", level: 2, basis: "Acuerdo concreto, aunque con un seguimiento corto para ver si se sostiene.", when: { all: ["seguimiento<4"] } },
           ],
           commitments: [{ id: "dg-1a1", text: "1 a 1 semanal con Diego para revisar el acuerdo.", owner: "ceo" }] },
-        { id: "acuerdo_plan", text: "Un acuerdo con camino: sus propuestas pasan por Héctor, y a cambio presenta él mismo el piloto premium al comité, con Héctor, en cuatro semanas.", flags: ["acuerdo_plan"], set: { seguimiento: 4 }, trust: 1,
+        { id: "acuerdo_plan", text: "Un acuerdo con camino: sus propuestas pasan por Héctor, y a cambio presenta él mismo el piloto premium al comité, con Héctor, en cuatro semanas.", cues: ["piloto", "comite", "cuatro semanas", "un mes"], flags: ["acuerdo_plan"], set: { seguimiento: 4 }, trust: 1,
           reply: [
             { when: { all: ["acuerdo=1"] }, text: ["Diego sonríe por primera vez.", "«¿Lo presento yo? Va. Le pido a Héctor que lo revisemos juntos el martes.»"] },
             { text: ["«No sé si Héctor va a querer, pero lo intento.»"] },
@@ -278,7 +278,7 @@ export const DIEGO: EpisodeSpec = {
             { dim: "ejecucion", level: 3, basis: "Acuerdo con responsable, fecha y un entregable visible." },
           ],
           commitments: [{ id: "dg-comite", text: "Diego y Héctor presentan el piloto premium al comité en cuatro semanas.", owner: "diego" }] },
-        { id: "advertencia", text: "Una advertencia formal por escrito: si vuelve a pasar, hay consecuencias.", flags: ["advertencia"], trust: -1,
+        { id: "advertencia", text: "Una advertencia formal por escrito: si vuelve a pasar, hay consecuencias.", cues: ["advertencia", "consecuencias", "formal", "acta", "sancion*", "por escrito"], flags: ["advertencia"], trust: -1,
           reply: [{ text: ["Diego firma la advertencia.", "«Entendido.» No dice nada más."] }],
           next: [{ when: { none: ["ramiro_primero"] }, to: "p5" }, { to: "close" }],
           evidence: [{ dim: "ejecucion", level: 1, basis: "Dejó constancia, pero sin un acuerdo de conducta ni seguimiento: solo una amenaza." }] },
