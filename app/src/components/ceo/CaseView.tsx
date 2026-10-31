@@ -2,11 +2,10 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
-import { ArrowLeft, ArrowRight, BookOpen, CheckCheck, PenLine, ListChecks, ChevronDown, Clock, Globe2, Lightbulb, Network, PhoneMissed, Play, Quote, XCircle } from "lucide-react";
+import { ArrowLeft, ArrowRight, BookOpen, CheckCheck, PenLine, ListChecks, Clock, Globe2, Lightbulb, PhoneMissed, Play, Quote, XCircle } from "lucide-react";
 import { firstName, personOf } from "@/lib/ceo/cast";
 import { effectOf, entryXp, nextLessonXp } from "@/lib/ceo/engine";
 import { runSpans } from "@/lib/ceo/pausetime";
-import { OrgMap } from "./OrgMap";
 import { entryRipples, moodOf, REL_START } from "@/lib/ceo/relations";
 import { lessonById } from "@/lib/ceo/lessons";
 import type { Entry, Item, KpiKey, Option, Written } from "@/lib/ceo/types";
@@ -98,10 +97,9 @@ export function CaseView({ id }: { id: string }) {
 
       {step === 1 && (
         <>
-          <StepTitle eyebrow="Antes de decidir" title="Lo que necesitas saber" text="Los datos del asunto y quién está en juego. Tómate tu tiempo." />
+          <StepTitle eyebrow="Antes de decidir" title="Lo que necesitas saber" text={it.data ? "Los datos del asunto. Tómate tu tiempo." : "Este asunto no trae cifras: lo importante está en el mensaje."} />
           <div className="text-ink">
-            {it.data && <DataCard d={it.data} />}
-            <WhoIsInvolved it={it} open />
+            {it.data ? <DataCard d={it.data} /> : <Recap it={it} />}
           </div>
         </>
       )}
@@ -280,37 +278,16 @@ function Meeting({ e }: { e: Entry }) {
   );
 }
 
-function WhoIsInvolved({ it, open: initial }: { it: Item; open: boolean }) {
+/** Contexto sin cifras: lo esencial del mensaje en una tarjeta breve. */
+function Recap({ it }: { it: Item }) {
   const c = useCeo();
-  const [open, setOpen] = useState(initial);
-  const ids = [it.from, ...(it.involves ?? []), ...(it.lines ?? []).map((l) => l.who)].filter((x, i, a) => a.indexOf(x) === i && !!c.pack.cast[x]);
-  const ties = c.pack.ties.filter((t) => ids.includes(t.a) && ids.includes(t.b));
   return (
-    <section className="mt-5 card overflow-hidden">
-      <button onClick={() => setOpen((v) => !v)} className="w-full flex items-center gap-3 px-5 sm:px-6 py-4 text-left">
-        <span className="h-9 w-9 rounded-xl bg-indigo-soft text-indigo grid place-items-center shrink-0"><Network size={17} /></span>
-        <span className="flex-1 min-w-0">
-          <span className="block text-sm font-semibold text-ink">Quién está en juego</span>
-          <span className="block text-xs text-slate-500 truncate">{ids.map((x) => firstName(c.pack, x)).join(", ")}{ties.length ? ` · ${ties.length} ${ties.length === 1 ? "relación" : "relaciones"} que cuidar` : ""}</span>
-        </span>
-        <ChevronDown size={18} className={clsx("text-slate-400 transition-transform", open && "rotate-180")} />
-      </button>
-      {open && (
-        <div className="px-3 sm:px-5 pb-5 academy-in">
-          {ties.length > 0 && (
-            <ul className="mx-2 mb-2 space-y-1.5">
-              {ties.map((t, i) => (
-                <li key={i} className="text-xs text-slate-600 flex gap-2"><span className={clsx("mt-1 h-2 w-2 rounded-full shrink-0", t.kind === "tension" ? "bg-coral" : t.kind === "alianza" ? "bg-indigo" : "bg-ink")} /><span><b className="text-ink">{firstName(c.pack, t.a)} y {firstName(c.pack, t.b)}:</b> {t.note}</span></li>
-              ))}
-            </ul>
-          )}
-          <div className="mx-2 mb-3 flex flex-wrap gap-1.5">
-            {ids.map((x) => { const m = moodOf(c.relations[x] ?? REL_START); return <span key={x} className={clsx("chip text-[11px] gap-1", m.tone === "aliado" || m.tone === "bien" ? "bg-indigo-soft text-indigo" : m.tone === "frio" || m.tone === "roto" ? "bg-coral-soft text-coral" : "bg-slate-100 text-slate-600")}>{firstName(c.pack, x)} · {m.label}</span>; })}
-          </div>
-          <OrgMap pack={c.pack} highlight={ids} compact relations={c.relations} />
-          <p className="mx-2 mt-2 text-[11px] text-slate-400">Lo que decidas no solo le llega a quien te escribe: sus aliados lo resienten, sus rivales lo celebran y a quien influye le llega su opinión.</p>
-        </div>
-      )}
+    <section className="mt-6 card p-5 sm:p-6 flex gap-3 items-start">
+      <Avatar id={it.from} size={36} />
+      <div className="min-w-0">
+        <div className="text-xs font-semibold text-slate-500">{personOf(c.pack, it.from).name} · {personOf(c.pack, it.from).role.split("·")[0].trim()}</div>
+        <p className="mt-1 text-[15px] text-ink leading-relaxed">{it.preview}</p>
+      </div>
     </section>
   );
 }

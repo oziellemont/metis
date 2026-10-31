@@ -5,7 +5,7 @@ import { BookA, Network, Pencil } from "lucide-react";
 import { KPI_KEYS } from "@/lib/ceo/engine";
 import { COMPANIES } from "@/lib/ceo/companies";
 import { useCeo } from "./CeoProvider";
-import { OrgMap } from "./OrgMap";
+import { CompanyOrgChart } from "./CompanyOrgChart";
 import { BusinessPanel } from "./BusinessPanel";
 import { CompanyMark } from "./ui";
 import { NAME_MAX } from "@/lib/ceo/career/identity";
@@ -52,9 +52,9 @@ export function CompanyView() {
       {c.continuous && <BusinessPanel />}
 
       <section className="card p-5 sm:p-6">
-        <div className="flex items-center gap-2"><Network size={17} className="text-indigo" /><h2 className="font-semibold text-ink">Mapa de la organización</h2></div>
-        <p className="mt-1 text-sm text-slate-500">Quién le reporta a quién, quiénes se apoyan y dónde hay fricción. En un caso, las decisiones casi nunca afectan a una sola persona.</p>
-        <div className="mt-4"><OrgMap pack={pk} relations={c.relations} /></div>
+        <div className="flex items-center gap-2"><Network size={17} className="text-indigo" /><h2 className="font-semibold text-ink">Organigrama</h2></div>
+        <p className="mt-1 text-sm text-slate-500">Quién está en la empresa y a quién le reporta cada quien.</p>
+        <div className="mt-5"><CompanyOrgChart pack={pk} relations={c.relations} /></div>
       </section>
 
       <section className="card p-5 sm:p-6">
