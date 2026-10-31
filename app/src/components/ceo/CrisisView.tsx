@@ -39,11 +39,11 @@ function useNames() {
 function Closed({ reason }: { reason: "early" | "done" | "closed" }) {
   const c = useCeo();
   const run = crisisOfRun(c.s);
-  const title = { early: "El consejo no ha convocado", done: run ? RATING_TEXT[run.rating].title : "Crisis atendida", closed: "La temporada ya cerró" }[reason];
+  const title = { early: "El consejo no ha convocado", done: run ? RATING_TEXT[run.rating].title : "Crisis atendida", closed: c.continuous ? "El periodo ya cerró" : "La temporada ya cerró" }[reason];
   const text = {
     early: `La sesión extraordinaria se convoca a partir del día ${CRISIS_DAY} de la temporada. Mientras, sigue dirigiendo ${c.pack.name}.`,
-    done: run ? `${RATING_TEXT[run.rating].text}${crisisPayNow(c.s, run.rating) > 0 ? ` Ganaste ${crisisPayNow(c.s, run.rating)} XP.` : ""} Cada empresa trae su propia crisis.` : "",
-    closed: "La crisis de esta empresa ya no se puede atender. La siguiente empresa trae la suya.",
+    done: run ? `${RATING_TEXT[run.rating].text}${crisisPayNow(c.s, run.rating) > 0 ? ` Ganaste ${crisisPayNow(c.s, run.rating)} XP.` : ""} ${c.continuous ? "Cada periodo trae su propia crisis." : "Cada empresa trae su propia crisis."}` : "",
+    closed: c.continuous ? "La crisis de este periodo ya no se puede atender. Cada periodo trae la suya." : "La crisis de esta empresa ya no se puede atender. La siguiente empresa trae la suya.",
   }[reason];
   return (
     <div className="max-w-2xl mx-auto">

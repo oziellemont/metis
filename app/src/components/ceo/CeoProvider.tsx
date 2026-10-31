@@ -9,7 +9,7 @@
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { supabaseBrowser } from "@/lib/supabase/client";
-import { advance as advanceFn, decide as decideFn, entries as entriesFn, episodeEntries as episodeEntriesFn, nextArrivalOf, openSeasonEpisode, type EpisodeEntry, healthOf, kpis as kpisFn, levelOf, migrate, newState, nowOf, packOf, pinArrived, rulesFor, rulesOf, seasonDay, seasonDoneOf, skipToNext, streakOf, switchCompany as switchFn, verdictOf, xpOf, type Verdict } from "@/lib/ceo/engine";
+import { advance as advanceFn, isContinuous, renameCompany as renameFn, setupCompany as setupFn, decide as decideFn, entries as entriesFn, episodeEntries as episodeEntriesFn, nextArrivalOf, openSeasonEpisode, type EpisodeEntry, healthOf, kpis as kpisFn, levelOf, migrate, newState, nowOf, packOf, pinArrived, rulesFor, rulesOf, seasonDay, seasonDoneOf, skipToNext, streakOf, switchCompany as switchFn, verdictOf, xpOf, type Verdict } from "@/lib/ceo/engine";
 import { aliasOf, answerDilemma as answerDilemmaFn, casesProgress, changeOpen, changeSimOf, dilemmaOfDay } from "@/lib/ceo/engine";
 import type { Dilemma } from "@/lib/ceo/dilemmas";
 import { OFFERED_TIER, sanitizeDiagnostic, sanitizeProfile, snoozeNudge, type InitialDiagnostic, type ProfessionalProfile } from "@/lib/ceo/profile";
@@ -33,6 +33,7 @@ import type { EpisodeAction } from "@/lib/ceo/episodes/engine";
 import { onVacation } from "@/lib/ceo/pausetime";
 import { cadenceStatus, markReturnSeen as markReturnSeenFn, pauseCareer as pauseFn, quietUntil, resumeCareer as resumeFn, returnDue as returnDueFn, startQuietDay as quietFn } from "@/lib/ceo/cadence";
 import type { CadenceStatus } from "@/lib/ceo/types";
+import type { SetupInput } from "@/lib/ceo/career/setup";
 
 const KEY = LEGACY_KEY;
 
@@ -83,7 +84,11 @@ interface Ctx {
   synced: boolean;
   toast: Toast | null;
   dismissToast: () => void;
-  start: (p: { name: string; email: string; phone: string; company?: string; settings?: Partial<Settings>; profile?: ProfessionalProfile; diagnostic?: InitialDiagnostic; tier?: number }) => void;
+  start: (p: { name: string; email: string; phone: string; company?: string; settings?: Partial<Settings>; profile?: ProfessionalProfile; diagnostic?: InitialDiagnostic; tier?: number; setup?: SetupInput }) => void;
+  /** Carrera continua: cambia el nombre de tu empresa (conserva todo lo demás). Devuelve false si el nombre no es válido. */
+  renameCompany: (displayName: string, shortName?: string) => boolean;
+  /** Carrera continua: una empresa persistente con identidad propia. */
+  continuous: boolean;
   /** Guarda la experiencia declarada (V33). Nunca toca dominio, etapa, XP ni la partida. */
   saveProfile: (p: ProfessionalProfile) => void;
   saveDiagnostic: (d: InitialDiagnostic) => void;
@@ -421,7 +426,7 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
   const change = useMemo(() => changeSimOf(s), [s]);
   const nextArrival = useMemo(() => nextArrivalOf(s, now), [s, now]);
 
-  const start: Ctx["start"] = useCallback(({ name, email, phone, company, settings, profile, diagnostic, tier }) => {
+  const start: Ctx["start"] = useCallback(({ name, email, phone, company, settings, profile, diagnostic, tier, setup }) => {
     const t = Date.now();
     const pf = sanitizeProfile(profile), dg = sanitizeDiagnostic(diagnostic);
     setS((p) => {
@@ -429,7 +434,12 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
       const n: CeoState = { ...newState(), ...(pf ? { profile: pf } : {}), ...(dg ? { diagnostic: dg } : {}), tier: tr, startTier: tr, journey: { stage: 0, enrolledAt: t, appointments: [] }, company: company || newState().company, name: name.trim(), alias: aliasOf(name), startedAt: t, lastActiveAt: t, savedAt: t, settings: { ...p.settings, ...settings, email, phone, tz: Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Monterrey" } };
       const { email: _e, phone: _p, ...pub } = n.settings;
       log(n, { type: "start", at: t, name: n.name, company: n.company, settings: pub, rulesVersion: n.rulesVersion ?? RULES_VERSION, tier: tr, journey: true });
-      return n;
+      // Carrera continua (P0-B3): la empresa propia se crea en el mismo instante y se anota como jugada aparte.
+      if (!setup) return n;
+      const own = setupFn(n, setup, t);
+      if (own === n) return n;
+      log(own, { type: "setupCompany", at: t, ...setup });
+      return own;
     });
     seen.current = null;
   }, [log]);
@@ -452,6 +462,13 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
   const markReturnSeen = useCallback(() => setS((p) => ({ ...markReturnSeenFn(p, nowOf(p)), savedAt: Date.now() })), []);
   const skipNext = useCallback(() => { setS((p) => ({ ...skipToNext(p), savedAt: Date.now() })); setTick(Date.now()); }, []);
   const advance = useCallback(() => { play((p) => { const at = nowOf(p); return { n: advanceFn(p, at, RULES_VERSION), a: { type: "advance", at, rulesVersion: RULES_VERSION } }; }); seen.current = null; setTick(Date.now()); }, [play]);
+  const renameCompany = useCallback((displayName: string, shortName?: string): boolean => {
+    const cur = sRef.current;
+    const at = nowOf(cur);
+    if (renameFn(cur, displayName, shortName, at) === cur) return false;
+    play((p) => { const a = nowOf(p); const n = renameFn(p, displayName, shortName, a); return { n, a: { type: "renameCompany", at: a, displayName: n.companyProfile?.displayName ?? displayName, ...(shortName?.trim() ? { shortName: n.companyProfile?.shortName } : {}) } }; });
+    return true;
+  }, [play]);
   const switchCompany = useCallback((id: string) => { play((p) => { const at = nowOf(p); return { n: switchFn(p, id, at), a: { type: "switch", at, company: id } }; }); seen.current = null; }, [play]);
   const startChange = useCallback(() => play((p) => { const at = nowOf(p); return { n: startChangeFn(p, at), a: { type: "changeStart", at } }; }), [play]);
   const playLever = useCallback((lever: LeverId, targets: CastId[]) => play((p) => { const at = nowOf(p); return { n: playLeverFn(p, lever, targets, at), a: { type: "lever", at, lever, targets } }; }), [play]);
@@ -494,7 +511,7 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
   const value: Ctx = {
     ready, s, now, pack, rules: rulesFor(s), verdict, entries, inbox, pending, episodes, kpis: k, health: healthOf(k), xp, level: levelOf(xp), streak, day: seasonDay(s, now), seasonDone, nextArrival,
     relations, changeOpen: changeOpen(s, now), cases: casesProgress(s, now, entries), change, startChange, playLever, closeChange,
-    user, synced, toast, dismissToast: () => setToast(null), start, advance, switchCompany, decide, markRead, completeLesson, dilemma, answerDilemma, updateSettings, skipNext, testTools, importFlow, reset, journey, mastery, appoint, recordBoard, recordCrisis, saveProfile, saveDiagnostic, snoozeProfile,
+    user, synced, toast, dismissToast: () => setToast(null), start, advance, switchCompany, renameCompany, continuous: isContinuous(s), decide, markRead, completeLesson, dilemma, answerDilemma, updateSettings, skipNext, testTools, importFlow, reset, journey, mastery, appoint, recordBoard, recordCrisis, saveProfile, saveDiagnostic, snoozeProfile,
     cadence: cadenceStatus(s, now), pauseCareer, resumeCareer, startQuietDay, returnDue: ready ? returnDueFn(s, now) : null, markReturnSeen, openEpisode, episodeAct, resetEpisode,
   };
   return <C.Provider value={value}>{children}</C.Provider>;

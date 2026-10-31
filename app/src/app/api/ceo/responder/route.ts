@@ -14,6 +14,8 @@ import { NextResponse } from "next/server";
 import { supabaseCeoAdmin, supabaseServer } from "@/lib/supabase/server";
 import { aiStatusFor } from "@/lib/ceo/flags-server";
 import { companyById } from "@/lib/ceo/companies";
+import { cleanName } from "@/lib/ceo/career/identity";
+import { brandPack } from "@/lib/ceo/career/template";
 import { personOf } from "@/lib/ceo/cast";
 import { aiContext, sanitizeProfile } from "@/lib/ceo/profile";
 import { CAPS, DEFAULT_MODEL, MAX_OUTPUT_TOKENS, approxTokens, buildMessages, costOf, parseEvaluation, periodsOf, textProblem, writtenEligible } from "@/lib/ceo/written";
@@ -56,11 +58,13 @@ export async function POST(req: Request) {
   const key = (process.env.OPENAI_API_KEY ?? "").trim();
   if (!admin || !key) return fallback("Servicio no configurado.", 503);
 
-  const body = (await req.json().catch(() => ({}))) as { itemId?: string; company?: string; text?: string; profile?: unknown };
+  const body = (await req.json().catch(() => ({}))) as { itemId?: string; company?: string; text?: string; profile?: unknown; brand?: { name?: unknown; short?: unknown } };
   const text = String(body.text ?? "");
   const problem = textProblem(text);
   if (problem) return NextResponse.json({ ok: false, error: problem }, { status: 400 });
-  const pack = companyById(body.company);
+  // Carrera continua: el caso y el nombre de la empresa llegan con el nombre que eligió el jugador (validado).
+  const bn = cleanName(body.brand?.name), bs = cleanName(body.brand?.short);
+  const pack = brandPack(companyById(body.company), bn && bs ? { name: bn, short: bs } : null);
   const item = pack.items.find((i) => i.id === body.itemId);
   if (!item || !writtenEligible(item)) return fallback("Este asunto no acepta respuesta escrita.", 400);
 

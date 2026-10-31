@@ -308,14 +308,14 @@ export function ProfileEditor({ initial, onSave, onCancel }: { initial?: Profess
 }
 
 /** Oferta de exigencia en la primera empresa (solo perfiles con 11+ años o cargo de dirección). El jugador decide. */
-export function TierChoice({ tier, setTier, offered, names }: { tier: number; setTier: (t: number) => void; offered: number; names: [string, string] }) {
+export function TierChoice({ tier, setTier, offered, names, title = "Exigencia de tu primera empresa" }: { tier: number; setTier: (t: number) => void; offered: number; names: [string, string]; title?: string }) {
   const opts: [number, string, string][] = [
     [0, names[0], "La exigencia de siempre. Recomendada si es tu primera vez en el simulador."],
     [offered, names[1], "Plazos más cortos, golpes más fuertes y una línea de aprobación más alta."],
   ];
   return (
     <div className="mt-6 rounded-2xl bg-white/[.06] border border-white/[.12] p-4">
-      <div className="text-[11px] font-semibold uppercase tracking-wider text-white/55">Exigencia de tu primera empresa</div>
+      <div className="text-[11px] font-semibold uppercase tracking-wider text-white/55">{title}</div>
       <p className="mt-1 text-xs text-white/60">Por tu experiencia te ofrecemos empezar con más exigencia. No cambia tu etapa ni cuenta como modo Legendario.</p>
       <div className="mt-3 grid gap-2.5 sm:grid-cols-2">{opts.map(([t, n, sub]) => <Choice key={t} on={tier === t} onClick={() => setTier(t)} sub={sub}>{n}</Choice>)}</div>
     </div>

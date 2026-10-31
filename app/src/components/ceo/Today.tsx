@@ -51,7 +51,7 @@ export function Today() {
           <div>
             <div className="text-xs text-white/60">{pk.name} · {pk.industry} · Día {c.day} de {pk.season.days}{c.s.tier > 0 ? ` · Exigencia ${c.rules.name}` : ""}</div>
             <h1 className="mt-2 text-2xl sm:text-3xl font-semibold leading-tight">
-              {c.seasonDone ? (v.passed ? `Aprobaste ${pk.short}, ${first}. Te espera otra empresa.` : `Cerraste la temporada en ${pk.short}, ${first}. El consejo pide otra vuelta.`) : waiting ? `${hello}, ${first}. Tienes ${waiting} ${waiting === 1 ? "asunto" : "asuntos"} esperando tu decisión.` : `${hello}, ${first}. Todo al día.`}
+              {c.seasonDone ? (c.continuous ? (v.passed ? `Cerraste un buen periodo en ${pk.short}, ${first}. El consejo ya tiene tu evaluación.` : `Cerraste el periodo en ${pk.short}, ${first}. El consejo quiere hablar de los rubros bajos.`) : v.passed ? `Aprobaste ${pk.short}, ${first}. Te espera otra empresa.` : `Cerraste la temporada en ${pk.short}, ${first}. El consejo pide otra vuelta.`) : waiting ? `${hello}, ${first}. Tienes ${waiting} ${waiting === 1 ? "asunto" : "asuntos"} esperando tu decisión.` : `${hello}, ${first}. Todo al día.`}
             </h1>
             {!c.pending[0] && epPending[0] && !c.seasonDone && (
               <Link href={`/ceo/episodio/${epPending[0].spec.id}`} className="mt-5 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-ink hover:bg-white/90">Atender: {firstName(pk, epPending[0].spec.from)} <ArrowRight size={15} /></Link>

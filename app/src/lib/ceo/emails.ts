@@ -84,7 +84,7 @@ function shell(o: Shell) {
 }
 
 // ────────────────────────────────────────────── 1 · Bienvenida (nombramiento)
-export function welcomeEmail(i: { pack?: CompanyPack; name: string; appUrl: string; windowStart: number; windowEnd: number }): Mailable {
+export function welcomeEmail(i: { pack?: CompanyPack; name: string; appUrl: string; windowStart: number; windowEnd: number; continuous?: boolean }): Mailable {
   const pk = packIn(i);
   const first = firstOf(i.name) || "Director";
   const subject = `${first}, tu nombramiento como Director General de ${pk.name}`;
@@ -92,7 +92,9 @@ export function welcomeEmail(i: { pack?: CompanyPack; name: string; appUrl: stri
   const steps = [
     ["1", "Tu equipo te escribe", `Entre las ${i.windowStart}:00 y las ${i.windowEnd}:00 te llegan de 2 a 4 asuntos al día: correos, WhatsApps, reportes y juntas.`],
     ["2", "Todo tiene plazo", "Si no respondes a tiempo, alguien decide por ti. Y lo que decides regresa días después."],
-    ["3", "Aprueba todos los rubros", "Si al cierre todos tus indicadores pasan la línea, asciendes a otra empresa de otro giro (y más exigente)."],
+    i.continuous
+      ? ["3", "El consejo te evalúa cada periodo", `Al cierre de cada periodo revisa todos tus rubros. Sigues al frente de ${esc(pk.name)}: lo que construyes se queda.`]
+      : ["3", "Aprueba todos los rubros", "Si al cierre todos tus indicadores pasan la línea, asciendes a otra empresa de otro giro (y más exigente)."],
     ["4", "Aprende en el camino", "Cada asunto se conecta con una lección corta de mêtis Academy."],
   ].map(([ic, t, d]) => `<tr><td width="34" valign="top" style="padding:8px 0"><div style="width:22px;height:22px;border-radius:11px;background:#EEEBFD;color:${INDIGO};font-family:${FONT};font-size:12px;font-weight:700;line-height:22px;text-align:center">${ic}</div></td><td style="padding:8px 0;font-family:${FONT}"><div style="font-size:14px;font-weight:600;color:${INK}">${t}</div><div style="font-size:13px;line-height:20px;color:${SLATE}">${d}</div></td></tr>`).join("");
   const chair = pk.roles.chair;
@@ -110,7 +112,7 @@ export function welcomeEmail(i: { pack?: CompanyPack; name: string; appUrl: stri
     </td></tr></table>
     ${button("Entrar a mi oficina", base(i.appUrl))}`;
   const html = shell({ pack: pk, preheader, title: subject, body, appUrl: i.appUrl, brand: true });
-  const text = `Querido ${first}:\n\n${letter.map(plain).join("\n\n")}\n— ${firstOfCast(pk, chair)}\n\nCómo funciona: tu equipo te escribe entre las ${i.windowStart}:00 y las ${i.windowEnd}:00; todo tiene plazo; aprueba todos los rubros para ascender a otra empresa; aprende en mêtis Academy.\n\nEntrar: ${base(i.appUrl)}`;
+  const text = `Querido ${first}:\n\n${letter.map(plain).join("\n\n")}\n— ${firstOfCast(pk, chair)}\n\nCómo funciona: tu equipo te escribe entre las ${i.windowStart}:00 y las ${i.windowEnd}:00; todo tiene plazo; ${i.continuous ? "el consejo te evalúa cada periodo" : "aprueba todos los rubros para ascender a otra empresa"}; aprende en mêtis Academy.\n\nEntrar: ${base(i.appUrl)}`;
   return { subject, html, text, fromName: senderName(pk, chair), preheader };
 }
 
@@ -309,17 +311,17 @@ export function nudgeEmail(i: { pack?: CompanyPack; name: string; appUrl: string
 }
 
 // ────────────────────────────────────────────── 7 · Cierre de temporada
-export function seasonEmail(i: { pack?: CompanyPack; name: string; appUrl: string; health: number; xp: number; level: string; archetype: string; archetypeText: string; decisions: number; bestStreak: number; passed?: boolean; passLine?: number; kpis?: Kpis }): Mailable {
+export function seasonEmail(i: { pack?: CompanyPack; name: string; appUrl: string; health: number; xp: number; level: string; archetype: string; archetypeText: string; decisions: number; bestStreak: number; passed?: boolean; passLine?: number; kpis?: Kpis; continuous?: boolean }): Mailable {
   const pk = packIn(i);
   const first = firstOf(i.name) || "Director";
-  const subject = i.passed === undefined ? `${first}, cerraste tu temporada en ${pk.short}` : i.passed ? `${first}, aprobaste ${pk.short}: te espera otra empresa` : `${first}, el consejo de ${pk.short} pide otra vuelta`;
+  const subject = i.continuous ? `${first}, el consejo de ${pk.short} revisó tu periodo` : i.passed === undefined ? `${first}, cerraste tu temporada en ${pk.short}` : i.passed ? `${first}, aprobaste ${pk.short}: te espera otra empresa` : `${first}, el consejo de ${pk.short} pide otra vuelta`;
   const preheader = `Tu estilo de dirección: ${i.archetype}. Mira cómo quedó tu empresa.`;
   const stat = (v: string, l: string) => `<td width="25%" align="center" style="padding:12px 4px;background:${CANVAS};border-radius:12px;font-family:${FONT}"><div style="font-size:20px;font-weight:700;color:${INK}">${v}</div><div style="font-size:11px;color:${MUTED}">${l}</div></td>`;
   const body = `
     ${senderRow(pk, pk.roles.board)}
     <div style="height:18px"></div>
     <div style="font-family:${FONT};font-size:22px;line-height:30px;font-weight:600;color:${INK};margin:0 0 12px">${esc(first)}, el consejo revisó tu gestión.</div>
-    ${p(i.passed ? `Aprobaste todos los rubros. Hay otra empresa, de otro giro, que necesita a alguien como tú. Va a ser más exigente.` : i.passed === false ? `Algunos rubros quedaron por debajo de ${i.passLine ?? 60}. Puedes volver a dirigir ${esc(pk.name)} y probar otros caminos.` : "No todo salió como querías. Así es esto. Lo importante es que ahora sabes cómo decides cuando la presión es real.")}
+    ${p(i.continuous ? (i.passed ? `Todos los rubros cerraron en la línea o arriba. Sigues al frente de ${esc(pk.name)} y el siguiente periodo arranca con lo que construiste.` : `Algunos rubros quedaron por debajo de ${i.passLine ?? 60}. Sigues al frente de ${esc(pk.name)}: el siguiente periodo es para corregirlos.`) : i.passed ? `Aprobaste todos los rubros. Hay otra empresa, de otro giro, que necesita a alguien como tú. Va a ser más exigente.` : i.passed === false ? `Algunos rubros quedaron por debajo de ${i.passLine ?? 60}. Puedes volver a dirigir ${esc(pk.name)} y probar otros caminos.` : "No todo salió como querías. Así es esto. Lo importante es que ahora sabes cómo decides cuando la presión es real.")}
     ${i.kpis ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 16px">${KPI_ORDER.map((k) => { const v = i.kpis![k]; const ok = v >= (i.passLine ?? 60); return `<tr><td style="padding:4px 0;font-family:${FONT};font-size:13px;color:${SLATE}">${esc(pk.kpiLabel[k])}</td><td align="right" style="padding:4px 0;font-family:${FONT};font-size:13px;font-weight:600;color:${ok ? INDIGO : CORAL}">${v} · ${ok ? "en línea" : "bajo línea"}</td></tr>`; }).join("")}</table>` : ""}
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:6px 0 18px;background:${INK};border-radius:16px"><tr><td style="padding:18px 20px;font-family:${FONT}">
       <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:#A9A3F7">TU ESTILO DE DIRECCIÓN</div>

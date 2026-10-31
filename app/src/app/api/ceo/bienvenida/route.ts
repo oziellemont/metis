@@ -7,7 +7,7 @@ import { CEO_URL } from "@/lib/site";
 import { NextResponse } from "next/server";
 import { supabaseCeoAdmin, supabaseServer } from "@/lib/supabase/server";
 import { sendMail } from "@/lib/email";
-import { migrate, packOf } from "@/lib/ceo/engine";
+import { isContinuous, migrate, packOf } from "@/lib/ceo/engine";
 import { welcomeEmail } from "@/lib/ceo/emails";
 import { fromHeader } from "@/lib/ceo/notify";
 import type { Sent } from "@/lib/ceo/schedule";
@@ -32,7 +32,7 @@ export async function POST() {
   const s = migrate(p.state);
   const settings = s.settings;
   const appUrl = process.env.CEO_APP_URL ?? (process.env.CEO_MOVED !== "0" ? CEO_URL : "https://metisalign.app");
-  const m = welcomeEmail({ pack: packOf(s), name: p.name ?? "", appUrl, windowStart: settings.windowStart, windowEnd: settings.windowEnd });
+  const m = welcomeEmail({ pack: packOf(s), name: p.name ?? "", appUrl, windowStart: settings.windowStart, windowEnd: settings.windowEnd, continuous: isContinuous(s) });
   const r = await sendMail({
     to, from: fromHeader(m), subject: m.subject, html: m.html, text: m.text,
     idempotencyKey: `ceo:${u.user.id}:welcome`, tags: [{ name: "app", value: "ceo" }, { name: "tipo", value: "welcome" }],
