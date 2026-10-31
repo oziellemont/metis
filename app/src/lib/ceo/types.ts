@@ -1,5 +1,6 @@
 import type { CompanyProfile } from "./career/identity";
 import type { DisplayCurrency } from "./career/money";
+import type { BusinessLog } from "./business/model";
 import type { InitialDiagnostic, ProfessionalProfile, ProfileNudge } from "./profile";
 import type { EpisodeRun } from "./episodes/contracts";
 /**
@@ -206,6 +207,8 @@ export interface CeoState {
   careerMode?: "temporadas" | "continua";
   /** Identidad de la empresa del jugador (carrera continua). Opcional; ver career/identity.ts. */
   companyProfile?: CompanyProfile;
+  /** Negocio (P0-C): versión de supuestos y asignaciones de caja. Los números se reconstruyen con businessOf(). */
+  business?: BusinessLog;
 }
 
 /** Estado de ritmo del jugador. Se deriva de `cadence.pauses` a una hora dada (ver cadence.ts). */
