@@ -2,6 +2,7 @@
 import Link from "next/link";
 import clsx from "clsx";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { ArrowRight, Award, Check, Crown, Lock, RotateCcw, X } from "lucide-react";
 import { KPI_KEYS, LEGACY_RULES_VERSION, nextCompanyOf, profileOf, rulesOf } from "@/lib/ceo/engine";
 import { COMPANIES, companyById } from "@/lib/ceo/companies";
@@ -15,6 +16,7 @@ import { AppointmentModal, RequirementTile, StageTrack } from "./Journey";
 /** Mi carrera: el Executive Journey, el veredicto del consejo, el camino de empresas y el ascenso. */
 export function Career() {
   const c = useCeo();
+  const router = useRouter();
   const pk = c.pack;
   const v = c.verdict;
   const r = c.rules;
@@ -45,8 +47,11 @@ export function Career() {
   useEffect(() => { if (passedNow) celebrateOnce(`company:${pk.id}:${c.s.startedAt}:${career.length}`, "company"); }, [passedNow, pk.id, c.s.startedAt, career.length]);
   const confirmAdvance = () => {
     const msg = cont ? `¿Cerrar este periodo en ${pk.name}? Sigues al frente de la misma empresa; tu historial, tu XP y tu racha se conservan.` : v.passed ? `¿Listo para dejar ${pk.name}? Tu siguiente empresa será una sorpresa.` : `¿Volver a empezar ${pk.name}? Conservas tu XP, tu racha y lo aprendido.`;
-    if (window.confirm(msg)) c.advance();
+    if (!window.confirm(msg)) return;
+    c.advance();
+    if (cont) router.push("/ceo/reporte");
   };
+  const reportFirst = cont && c.seasonDone && c.reportDue !== null;
 
   return (
     <div className="space-y-5">
@@ -111,7 +116,10 @@ export function Career() {
           </div>
           <div className="mt-3 text-xs text-slate-500">Asuntos respondidos a tiempo: <b className={clsx("tabular-nums", v.answeredOk ? "text-ink" : "text-coral")}>{Math.round(v.answered * 100)}%</b> {r.minAnswered > 0 ? `(mínimo ${Math.round(r.minAnswered * 100)}%)` : "· Un asunto vencido tiene consecuencias en la empresa, pero no te reprueba por sí solo."}</div>
 
-          {c.seasonDone && (
+          {reportFirst && (
+            <Link href="/ceo/reporte" className="mt-6 inline-flex items-center gap-2 rounded-xl bg-indigo px-5 py-3 text-sm font-semibold text-white hover:bg-indigo/90">Revisar el reporte del mes {c.reportDue} para cerrar este periodo <ArrowRight size={15} /></Link>
+          )}
+          {c.seasonDone && !reportFirst && (
             <button onClick={confirmAdvance} className="mt-6 inline-flex items-center gap-2 rounded-xl bg-indigo px-5 py-3 text-sm font-semibold text-white hover:bg-indigo/90">
               {cont ? <>Cerrar el periodo y seguir <ArrowRight size={15} /></> : v.passed ? <>Ir a la siguiente empresa <ArrowRight size={15} /></> : <><RotateCcw size={16} /> Volver a dirigir {pk.short}</>}
             </button>

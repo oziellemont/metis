@@ -5,6 +5,7 @@ import clsx from "clsx";
 import { Briefcase, Check, Clock, Hourglass, XCircle } from "lucide-react";
 import { personOf } from "@/lib/ceo/cast";
 import { useCeo } from "./CeoProvider";
+import { presenterOf } from "@/lib/ceo/business/report";
 import { Avatar, ChannelChip, rel, until } from "./ui";
 
 const TABS = [
@@ -33,7 +34,17 @@ export function InboxView() {
         })}
       </div>
       <div className="mt-4 card divide-y divide-slate-100 overflow-hidden">
-        {list.length === 0 && eps.length === 0 && <div className="p-8 text-center text-sm text-slate-500">Nada por aquí.</div>}
+        {c.reportDue !== null && (tab === "todo" || tab === "pendiente") && (
+          <Link href="/ceo/reporte" className="flex gap-3 p-4 hover:bg-slate-50 transition-colors bg-indigo-soft/30">
+            <Avatar id={presenterOf(c.pack)} size={42} />
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2"><span className="text-sm font-semibold text-ink truncate">{personOf(c.pack, presenterOf(c.pack)).name}</span><span className="chip bg-indigo-soft text-indigo text-[10px]">Reporte</span></div>
+              <div className="text-sm text-ink font-medium truncate">Cierre del mes {c.reportDue}</div>
+              <div className="text-xs text-slate-400 truncate">Tus números contra la meta y una decisión de caja. El siguiente mes se cierra después de firmarlo.</div>
+            </div>
+          </Link>
+        )}
+        {list.length === 0 && eps.length === 0 && c.reportDue === null && <div className="p-8 text-center text-sm text-slate-500">Nada por aquí.</div>}
         {eps.map((e) => (
           <Link key={e.spec.id} href={`/ceo/episodio/${e.spec.id}`} className={clsx("flex gap-3 p-4 hover:bg-slate-50 transition-colors", e.status === "pendiente" && !e.run && "bg-indigo-soft/30")}>
             <div className="relative"><Avatar id={e.spec.from} size={42} />{e.status === "pendiente" && !e.run && <span className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full bg-coral ring-2 ring-white" />}</div>

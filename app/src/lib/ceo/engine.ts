@@ -792,6 +792,8 @@ const fresh = (s: CeoState, company: string, tier: number, now: number, legendar
  */
 export function advance(s: CeoState, now = nowOf(s), rulesVersion: number = RULES_VERSION): CeoState {
   if (!seasonDoneOf(s, now)) return s;
+  // Carrera continua (P0-D): el mes se cierra cuando atendiste sus casos Y revisaste el reporte del mes anterior.
+  if (reportDueOf(s) !== null) return s;
   const run = closeRun(s, now);
   const career = [...(s.career ?? []), run];
   const after = { ...s, career };
@@ -804,6 +806,19 @@ export function advance(s: CeoState, now = nowOf(s), rulesVersion: number = RULE
   const passedCount = career.filter((r) => r.passed).length;
   const legendary = next.legendary || !!s.legendary;
   return fresh(after, next.id, passedCount + (legendary ? 1 : 0), now, legendary, rulesVersion);
+}
+
+/** Periodos cerrados de la empresa actual (carrera continua). Cada uno es un mes del negocio. */
+export function closedRunsOf(s: Pick<CeoState, "companyProfile" | "career">) {
+  const p = s.companyProfile;
+  if (!p) return [];
+  return (s.career ?? []).filter((r) => r.company === p.contentPackId && r.startedAt >= p.appointedAt);
+}
+/** Mes cuyo reporte espera tu revisión (el último cerrado), o null. Solo carrera continua. */
+export function reportDueOf(s: CeoState): number | null {
+  if (!isContinuous(s)) return null;
+  const p = closedRunsOf(s).length;
+  return p >= 1 && !(s.business?.reviewed ?? []).includes(p) ? p : null;
 }
 
 /** Cambiar de empresa a media temporada (solo antes de la primera decisión). */

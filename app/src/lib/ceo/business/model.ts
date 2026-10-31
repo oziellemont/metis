@@ -65,7 +65,12 @@ export interface Allocation {
   amount: number;
   months?: number;
 }
-export interface BusinessLog { assumptionsVersion: number; allocations: Allocation[] }
+export interface BusinessLog {
+  assumptionsVersion: number;
+  allocations: Allocation[];
+  /** Meses cuyo reporte ya revisaste (P0-D). El periodo siguiente no se cierra sin revisar el del mes anterior. */
+  reviewed?: number[];
+}
 
 // ───────────────────────────────────────────── resultado
 export type PeriodStatus = "llegada" | "cerrado" | "en_curso";
@@ -221,5 +226,6 @@ export function sanitizeBusiness(raw: unknown): BusinessLog | null {
     seen.add(x.id);
     allocations.push({ id: x.id, period: x.period, lever: x.lever as Allocation["lever"], amount: x.amount, ...(months ? { months } : {}) });
   }
-  return { assumptionsVersion: v, allocations };
+  const reviewed = Array.isArray(r.reviewed) ? [...new Set(r.reviewed.filter((x): x is number => typeof x === "number" && Number.isInteger(x) && x >= 1 && x <= 600))].sort((a, b) => a - b) : [];
+  return { assumptionsVersion: v, allocations, ...(reviewed.length ? { reviewed } : {}) };
 }

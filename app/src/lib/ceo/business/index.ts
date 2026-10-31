@@ -11,7 +11,7 @@
  * El tiempo del negocio avanza por cierre de periodo, no por reloj: las vacaciones no mueven nada.
  */
 import { companyById } from "../companies";
-import { KPI_KEYS, isContinuous, kpis, nowOf, packOf } from "../engine";
+import { KPI_KEYS, closedRunsOf, isContinuous, kpis, nowOf, packOf } from "../engine";
 import type { CeoState, Kpis } from "../types";
 import { profileFor, type BusinessProfile } from "./profiles";
 import { simulate, type PeriodInput, type PeriodState } from "./model";
@@ -34,12 +34,7 @@ const delta = (end: Kpis, start: Kpis): Partial<Kpis> => {
   return d;
 };
 
-/** Periodos cerrados de la empresa actual (carrera continua). */
-export function closedRunsOf(s: CeoState) {
-  const p = s.companyProfile;
-  if (!p) return [];
-  return (s.career ?? []).filter((r) => r.company === p.contentPackId && r.startedAt >= p.appointedAt);
-}
+export { closedRunsOf, reportDueOf } from "../engine";
 
 /** Números de la empresa. Null fuera de la carrera continua (las temporadas no tienen negocio). */
 export function businessOf(s: CeoState, now = nowOf(s)): Business | null {

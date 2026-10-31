@@ -22,6 +22,7 @@ import { pauseCareer, resumeCareer, startQuietDay } from "./cadence";
 import { onVacation } from "./pausetime";
 import { actEpisode } from "./episodes/catalog";
 import type { EpisodeAction } from "./episodes/engine";
+import { allocate, closePeriod } from "./business/report";
 
 export type GameAction =
   | { type: "start"; at: number; name: string; company: string; settings?: Partial<Settings>; rulesVersion?: number; tier?: number; journey?: boolean }
@@ -48,7 +49,10 @@ export type GameAction =
   | { type: "episode"; at: number; id: string; act: EpisodeAction }
   /** Carrera continua (P0-B2): crear la empresa del jugador y cambiarle el nombre (conserva su id). */
   | { type: "setupCompany"; at: number; companyId: string; sectorId: string; industryId: string; archetype: string; displayName: string; shortName?: string; specialty?: string }
-  | { type: "renameCompany"; at: number; displayName: string; shortName?: string };
+  | { type: "renameCompany"; at: number; displayName: string; shortName?: string }
+  /** Negocio (P0-D): aprobar una opción de la propuesta del reporte del mes, y firmar ese reporte. */
+  | { type: "allocate"; at: number; period: number; option: "a" | "b" }
+  | { type: "closePeriod"; at: number; period: number };
 
 /** Lo único que se puede hacer de vacaciones: reanudar o cambiar ajustes. El resto se rechaza. */
 const ALLOWED_ON_VACATION = new Set<GameAction["type"]>(["resume", "pause", "settings"]);
@@ -95,6 +99,8 @@ export function applyAction(s: CeoState, a: GameAction): { state: CeoState; appl
     case "episode": n = a.act && a.act.at === a.at ? actEpisode(s, a.id, a.act).state : s; break;
     case "setupCompany": n = setupCompany(s, { companyId: a.companyId, sectorId: a.sectorId, industryId: a.industryId, archetype: a.archetype, displayName: a.displayName, shortName: a.shortName, specialty: a.specialty }, a.at); break;
     case "renameCompany": n = renameCompany(s, a.displayName, a.shortName, a.at); break;
+    case "allocate": n = allocate(s, a.period, a.option, a.at); break;
+    case "closePeriod": n = closePeriod(s, a.period, a.at); break;
   }
   if (n === s) return { state: s, applied: false };
   return { state: { ...n, savedAt: a.at }, applied: true };

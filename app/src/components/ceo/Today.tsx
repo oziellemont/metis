@@ -17,6 +17,7 @@ import { nextLessonXp, rankFor } from "@/lib/ceo/engine";
 import { nudgeQuiet, shouldNudge } from "@/lib/ceo/profile";
 import { Avatar, Bar, ChannelChip, Delta, Flame, rel, until } from "./ui";
 import { STAGES } from "@/lib/ceo/journey";
+import { presenterOf } from "@/lib/ceo/business/report";
 
 export function Today() {
   const c = useCeo();
@@ -32,7 +33,8 @@ export function Today() {
   useEffect(() => { if (nudge) track("aviso_perfil_visto"); }, [nudge]);
   const specials = specialTasks({ changeOpen: c.changeOpen && !c.seasonDone, changeStarted: !!c.change, changeDone: !!c.change?.done, changeTitle: pk.change.title, boardOpen: boardAccess(c.s, c.now).open, crisisOpen: crisisAccess(c.s, c.now).open });
   const epPending = c.episodes.filter((e) => e.status === "pendiente");
-  const waiting = c.pending.length + specials.length + epPending.length;
+  const report = c.reportDue !== null ? { href: "/ceo/reporte", period: c.reportDue, from: presenterOf(pk) } : null;
+  const waiting = c.pending.length + specials.length + epPending.length + (report ? 1 : 0);
   const nextLesson = open.find((l) => !c.s.lessons[l.id] && c.entries.some((e) => e.item.lesson === l.id && e.status !== "futuro")) ?? open.find((l) => !c.s.lessons[l.id]);
 
   const passed = KPI_KEYS.filter((k) => v.approved[k]).length;
@@ -45,6 +47,7 @@ export function Today() {
     ? (c.continuous ? (v.passed ? "El consejo ya tiene tu evaluación." : "El consejo quiere hablar de los rubros bajos.") : v.passed ? "Te espera otra empresa." : "El consejo pide otra vuelta.")
     : waiting ? `${waiting} ${waiting === 1 ? "asunto espera" : "asuntos esperan"} tu decisión.` : "Todo al día. Durante el día llegarán más asuntos.";
   const cta = c.seasonDone ? null
+    : report ? { href: report.href, label: `Revisar el cierre del mes ${report.period}` }
     : c.pending[0] ? { href: `/ceo/caso/${c.pending[0].item.id}`, label: `Atender: ${firstName(pk, c.pending[0].item.from)}` }
     : epPending[0] ? { href: `/ceo/episodio/${epPending[0].spec.id}`, label: `Atender: ${firstName(pk, epPending[0].spec.from)}` }
     : specials[0] ? { href: specials[0].href, label: `Atender: ${specials[0].subject.split(" · ")[0]}` }
@@ -102,6 +105,17 @@ export function Today() {
           <div className="flex items-center justify-between"><h2 className="font-semibold text-ink">Esperando tu decisión</h2><Link href="/ceo/bandeja" className="text-xs font-medium text-indigo">Bandeja →</Link></div>
           {waiting === 0 ? <p className="mt-4 text-sm text-slate-500">Nada pendiente. Aprovecha para repasar la teoría en mêtis Academy.</p> : (
             <ul className="mt-2 divide-y divide-slate-100">
+              {report && (
+                <li><Link href={report.href} className="flex gap-3 py-3 group">
+                  <Avatar id={report.from} size={38} />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2"><span className="text-sm font-semibold text-ink truncate">{personOf(pk, report.from).name}</span><span className="chip bg-indigo-soft text-indigo text-[10px]">Reporte</span></div>
+                    <div className="text-sm text-slate-600 truncate">Cierre del mes {report.period}: tus números y una decisión de caja</div>
+                    <div className="mt-0.5 text-[11px] text-indigo font-medium">El siguiente mes se cierra después de firmarlo</div>
+                  </div>
+                  <ArrowRight size={16} className="text-slate-300 group-hover:text-indigo mt-3" />
+                </Link></li>
+              )}
               {specials.map((t) => (
                 <li key={t.id}><Link href={t.href} className="flex gap-3 py-3 group">
                   <span className={clsx("h-[38px] w-[38px] shrink-0 rounded-full grid place-items-center", t.id === "crisis" ? "bg-coral/10 text-coral" : "bg-indigo-soft text-indigo")}><Flag size={16} /></span>

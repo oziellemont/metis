@@ -1,5 +1,6 @@
 "use client";
 import clsx from "clsx";
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { BarChart3 } from "lucide-react";
 import { useCeo } from "./CeoProvider";
@@ -67,7 +68,7 @@ export function BusinessPanel() {
         })}
       </dl>
 
-      <h3 className="mt-6 text-sm font-semibold text-ink">Historia</h3>
+      <div className="mt-6 flex flex-wrap items-baseline justify-between gap-2"><h3 className="text-sm font-semibold text-ink">Historia</h3>{periods.length > 2 && <Link href="/ceo/reporte" className="text-xs font-semibold text-indigo">{c.reportDue !== null ? `Revisar el reporte del mes ${c.reportDue}` : "Ver reportes mensuales"} →</Link>}</div>
       <p className="mt-0.5 text-xs text-slate-500">Un mes por cada periodo que cierras. Toca un mes para ver su detalle.</p>
       <div className="mt-3 flex items-end gap-2 h-28" aria-hidden>
         {periods.map((p) => (
