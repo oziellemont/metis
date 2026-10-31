@@ -122,6 +122,8 @@ export function sanitizeAction(raw: unknown): GameAction | null {
       return out;
     }
     case "renameCompany": return str(a.displayName, 40) ? { type: "renameCompany", at, displayName: a.displayName, ...(str(a.shortName, 40) ? { shortName: a.shortName } : {}) } : null;
+    case "allocate": return num(a.period) && Number.isInteger(a.period) && a.period >= 1 && a.period <= 600 && (a.option === "a" || a.option === "b") ? { type: "allocate", at, period: a.period, option: a.option } : null;
+    case "closePeriod": return num(a.period) && Number.isInteger(a.period) && a.period >= 1 && a.period <= 600 ? { type: "closePeriod", at, period: a.period } : null;
     case "episode": { const act = cleanEpisodeAct(a.act, at); return str(a.id, 60) && act ? { type: "episode", at, id: a.id, act } : null; }
     default: return null;
   }

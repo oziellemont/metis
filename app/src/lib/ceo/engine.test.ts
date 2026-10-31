@@ -8,6 +8,8 @@ import { LEVERS, canUse, leverById, simulate } from "./change";
 import { closeChange, entryRipples, playLever, relationsOf, ripplesOf, startChange } from "./relations";
 import { casesDoneOf, changeKpiEffect, changeOpen, episodeEntries, isContinuous, nextArrivalOf, openSeasonEpisode, packOf, renameCompany, setupCompany, switchCompany, RULES_VERSION } from "./engine";
 import { CONTINUOUS_RULES_VERSION } from "./rules";
+import { reportDueOf } from "./engine";
+import { closePeriod } from "./business/report";
 import { EPISODES, actEpisode } from "./episodes/catalog";
 import { applyEpisode, strategiesFor, type EpisodeAction } from "./episodes/engine";
 import type { EpisodeRun } from "./episodes/contracts";
@@ -415,6 +417,19 @@ describe("carrera continua · identidad y reglas v4", () => {
     const again = advance(bad.s, bad.t);
     expect(again.company).toBe("cumbre");
     expect(again.tier).toBe(0);
+  });
+
+  it("P0-D: el mes siguiente no se cierra hasta firmar el reporte del anterior", () => {
+    const good = finish(own(), best);
+    const m1 = advance(good.s, good.t);
+    expect(reportDueOf(m1)).toBe(1);
+    const again = finish(m1, best);
+    expect(seasonDoneOf(again.s, again.t)).toBe(true);
+    expect(advance(again.s, again.t)).toBe(again.s);
+    const signed = closePeriod(again.s, 1, again.t);
+    const m2 = advance(signed, again.t);
+    expect(m2.career).toHaveLength(2);
+    expect(reportDueOf(m2)).toBe(2);
   });
 
   it("no se cambia de empresa en la carrera continua", () => {

@@ -9,7 +9,8 @@
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { supabaseBrowser } from "@/lib/supabase/client";
-import { advance as advanceFn, isContinuous, renameCompany as renameFn, setupCompany as setupFn, decide as decideFn, entries as entriesFn, episodeEntries as episodeEntriesFn, nextArrivalOf, openSeasonEpisode, type EpisodeEntry, healthOf, kpis as kpisFn, levelOf, migrate, newState, nowOf, packOf, pinArrived, rulesFor, rulesOf, seasonDay, seasonDoneOf, skipToNext, streakOf, switchCompany as switchFn, verdictOf, xpOf, type Verdict } from "@/lib/ceo/engine";
+import { allocate as allocateFn, closePeriod as closePeriodFn } from "@/lib/ceo/business/report";
+import { advance as advanceFn, reportDueOf, isContinuous, renameCompany as renameFn, setupCompany as setupFn, decide as decideFn, entries as entriesFn, episodeEntries as episodeEntriesFn, nextArrivalOf, openSeasonEpisode, type EpisodeEntry, healthOf, kpis as kpisFn, levelOf, migrate, newState, nowOf, packOf, pinArrived, rulesFor, rulesOf, seasonDay, seasonDoneOf, skipToNext, streakOf, switchCompany as switchFn, verdictOf, xpOf, type Verdict } from "@/lib/ceo/engine";
 import { aliasOf, answerDilemma as answerDilemmaFn, casesProgress, changeOpen, changeSimOf, dilemmaOfDay } from "@/lib/ceo/engine";
 import type { Dilemma } from "@/lib/ceo/dilemmas";
 import { OFFERED_TIER, sanitizeDiagnostic, sanitizeProfile, snoozeNudge, type InitialDiagnostic, type ProfessionalProfile } from "@/lib/ceo/profile";
@@ -96,6 +97,10 @@ interface Ctx {
   snoozeProfile: () => void;
   /** Cierra la empresa: asciende (si aprobaste) o la repite. */
   advance: () => void;
+  /** Carrera continua (P0-D): mes cuyo reporte espera tu revisión (null si no hay). */
+  reportDue: number | null;
+  /** Firma el reporte del mes con la opción elegida (null = guardar la caja o «Enterado»). */
+  signReport: (period: number, option: "a" | "b" | null) => void;
   /** Cambiar de empresa antes de la primera decisión. */
   switchCompany: (id: string) => void;
   decide: (itemId: string, optionId: string, written?: Written) => void;
@@ -462,6 +467,11 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
   const markReturnSeen = useCallback(() => setS((p) => ({ ...markReturnSeenFn(p, nowOf(p)), savedAt: Date.now() })), []);
   const skipNext = useCallback(() => { setS((p) => ({ ...skipToNext(p), savedAt: Date.now() })); setTick(Date.now()); }, []);
   const advance = useCallback(() => { play((p) => { const at = nowOf(p); return { n: advanceFn(p, at, RULES_VERSION), a: { type: "advance", at, rulesVersion: RULES_VERSION } }; }); seen.current = null; setTick(Date.now()); }, [play]);
+  const signReport = useCallback((period: number, option: "a" | "b" | null) => {
+    if (option) play((p) => { const at = nowOf(p); return { n: allocateFn(p, period, option, at), a: { type: "allocate", at, period, option } }; });
+    play((p) => { const at = nowOf(p); return { n: closePeriodFn(p, period, at), a: { type: "closePeriod", at, period } }; });
+  }, [play]);
+  const reportDue = useMemo(() => reportDueOf(s), [s]);
   const renameCompany = useCallback((displayName: string, shortName?: string): boolean => {
     const cur = sRef.current;
     const at = nowOf(cur);
@@ -511,7 +521,7 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
   const value: Ctx = {
     ready, s, now, pack, rules: rulesFor(s), verdict, entries, inbox, pending, episodes, kpis: k, health: healthOf(k), xp, level: levelOf(xp), streak, day: seasonDay(s, now), seasonDone, nextArrival,
     relations, changeOpen: changeOpen(s, now), cases: casesProgress(s, now, entries), change, startChange, playLever, closeChange,
-    user, synced, toast, dismissToast: () => setToast(null), start, advance, switchCompany, renameCompany, continuous: isContinuous(s), decide, markRead, completeLesson, dilemma, answerDilemma, updateSettings, skipNext, testTools, importFlow, reset, journey, mastery, appoint, recordBoard, recordCrisis, saveProfile, saveDiagnostic, snoozeProfile,
+    user, synced, toast, dismissToast: () => setToast(null), start, advance, reportDue, signReport, switchCompany, renameCompany, continuous: isContinuous(s), decide, markRead, completeLesson, dilemma, answerDilemma, updateSettings, skipNext, testTools, importFlow, reset, journey, mastery, appoint, recordBoard, recordCrisis, saveProfile, saveDiagnostic, snoozeProfile,
     cadence: cadenceStatus(s, now), pauseCareer, resumeCareer, startQuietDay, returnDue: ready ? returnDueFn(s, now) : null, markReturnSeen, openEpisode, episodeAct, resetEpisode,
   };
   return <C.Provider value={value}>{children}</C.Provider>;

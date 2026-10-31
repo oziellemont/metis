@@ -46,7 +46,7 @@ export function CeoShell({ children }: { children: React.ReactNode }) {
   if (path.startsWith("/ceo/caso/") || path.startsWith("/ceo/episodio/") || path.startsWith("/ceo/academy/")) return <>{children}</>;
 
   const active = (h: string) => (h === "/ceo" ? path === "/ceo" : path.startsWith(h));
-  const n = c.pending.length;
+  const n = c.pending.length + (c.reportDue !== null ? 1 : 0);
 
   return (
     <div className="min-h-screen bg-canvas">
