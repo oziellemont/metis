@@ -61,3 +61,12 @@ describe("entorno y herramientas de prueba", () => {
     expect(testToolsVisible("development", "oculto", false)).toBe(true);
   });
 });
+
+describe("interruptor carrera_continua (P0-B2)", () => {
+  it("existe y arranca apagado; se prende por jugador en modo invitados", () => {
+    expect(ALL_OFF.carrera_continua).toBe(false);
+    const global = [{ key: "carrera_continua", enabled: false, value: { perPlayer: true } }];
+    expect(resolveFlags({ global }).carrera_continua).toBe(false);
+    expect(resolveFlags({ global, player: { carrera_continua: true } }).carrera_continua).toBe(true);
+  });
+});

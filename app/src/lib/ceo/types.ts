@@ -1,3 +1,5 @@
+import type { CompanyProfile } from "./career/identity";
+import type { DisplayCurrency } from "./career/money";
 import type { InitialDiagnostic, ProfessionalProfile, ProfileNudge } from "./profile";
 import type { EpisodeRun } from "./episodes/contracts";
 /**
@@ -82,6 +84,8 @@ export interface Settings {
   dailyGoal?: 1 | 2 | 3;
   /** Minutos aproximados por sesión (3, 5, 8 o 12). Opcional. */
   sessionMinutes?: 3 | 5 | 8 | 12;
+  /** Moneda en que el jugador quiere VER las cifras (solo pantalla; la simulación siempre es en MXN). */
+  displayCurrency?: DisplayCurrency;
 }
 
 /** Respuesta escrita (evaluada con IA): tu texto, la calidad 0–3 y la nota del mentor. */
@@ -195,6 +199,13 @@ export interface CeoState {
   cadence?: Cadence;
   /** Executive Decision Episodes (adenda v3.3): una partida por episodio. Su XP vive en la partida y aún no suma al ranking. */
   episodes?: Record<string, EpisodeRun>;
+  /**
+   * Carrera continua (P0-B2): sin dato = «temporadas» (todas las partidas actuales).
+   * «continua» = una sola empresa persistente; `advance()` nunca cambia de empresa.
+   */
+  careerMode?: "temporadas" | "continua";
+  /** Identidad de la empresa del jugador (carrera continua). Opcional; ver career/identity.ts. */
+  companyProfile?: CompanyProfile;
 }
 
 /** Estado de ritmo del jugador. Se deriva de `cadence.pauses` a una hora dada (ver cadence.ts). */

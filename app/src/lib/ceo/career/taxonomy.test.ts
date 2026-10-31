@@ -9,11 +9,32 @@ import {
 const all = SECTORS.flatMap((s) => s.industries);
 
 describe("taxonomía sector → industria", () => {
-  it("tiene versión, 21 sectores y más de 200 industrias", () => {
-    expect(TAXONOMY_VERSION).toBeGreaterThanOrEqual(1);
-    expect(SECTORS).toHaveLength(21);
-    expect(all.length).toBeGreaterThan(200);
-    for (const s of SECTORS) expect(s.industries.length).toBeGreaterThanOrEqual(9);
+  it("v2: sectores con lógica SCIAN, cada uno con industrias", () => {
+    expect(TAXONOMY_VERSION).toBe(2);
+    expect(SECTORS.length).toBeGreaterThanOrEqual(15);
+    for (const s of SECTORS) expect(s.industries.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("las 7 industrias foco quedan en el mismo nivel y en su sector correcto (ajuste de Oziel)", () => {
+    const f = Object.fromEntries(focusIndustries().map((i) => [i.id, i.sectorId]));
+    expect(f).toEqual({
+      alimentos_bebidas: "manufactura", autopartes: "manufactura", manufactura_general: "manufactura",
+      restaurantes: "restaurantes_alimentos", software_saas: "tecnologia_informacion", retail: "comercio", logistica_distribucion: "transporte_almacenamiento",
+    });
+  });
+
+  it("sin duplicidades conceptuales: Manufactura es sector, no industria; Restaurantes no está en Manufactura", () => {
+    expect(sectorById("manufactura")?.label).toBe("Manufactura");
+    expect(all.some((i) => i.label === "Manufactura")).toBe(false);
+    expect(industryOf("manufactura", "restaurantes")).toBeUndefined();
+    const labels = all.map((i) => norm(i.label));
+    expect(new Set(labels).size).toBe(labels.length);
+  });
+
+  it("las ramas finas (botanas, 3PL…) son especialidades de una industria, no industrias aparte", () => {
+    expect(industryOf("manufactura", "alimentos_bebidas")?.specialties).toContain("Botanas y snacks");
+    expect(industryOf("transporte_almacenamiento", "logistica_distribucion")?.specialties).toContain("Operador 3PL");
+    expect(all.some((i) => i.id === "botanas_y_snacks")).toBe(false);
   });
 
   it("ids estables: minúsculas y guion bajo, únicos por sector y globalmente", () => {
@@ -29,7 +50,7 @@ describe("taxonomía sector → industria", () => {
       expect(i.sectorId).toBe(s.id);
       expect(industryOf(s.id, i.id)).toBe(i);
     }
-    expect(industryOf("tecnologia", "botanas_y_snacks")).toBeUndefined();
+    expect(industryOf("tecnologia_informacion", "alimentos_bebidas")).toBeUndefined();
   });
 
   it("los tres tipos de empresa existen y el usuario siempre es nombrado (nunca fundador)", () => {
@@ -48,15 +69,15 @@ describe("desplegables dependientes", () => {
   });
 
   it("con sector, solo aparecen sus industrias", () => {
-    const list = industriesOf("alimentos");
-    expect(list.length).toBe(12);
-    expect(list.every((i) => i.sectorId === "alimentos")).toBe(true);
+    const list = industriesOf("manufactura");
+    expect(list.map((i) => i.id).slice(0, 3)).toEqual(["alimentos_bebidas", "autopartes", "manufactura_general"]);
+    expect(list.every((i) => i.sectorId === "manufactura")).toBe(true);
   });
 
   it("cambiar el sector limpia la industria anterior", () => {
-    const sel = { sectorId: "alimentos", industryId: "botanas_y_snacks" };
-    expect(changeSector(sel, "tecnologia")).toEqual({ sectorId: "tecnologia" });
-    expect(changeSector(sel, "alimentos")).toEqual(sel);
+    const sel = { sectorId: "manufactura", industryId: "alimentos_bebidas" };
+    expect(changeSector(sel, "comercio")).toEqual({ sectorId: "comercio" });
+    expect(changeSector(sel, "manufactura")).toEqual(sel);
     expect(changeSector(sel, "inventado")).toEqual({});
   });
 });
@@ -73,13 +94,13 @@ describe("disponibilidad: «Próximamente» bloquea", () => {
   });
 
   it("una combinación sin contenido no pasa", () => {
-    expect(isPlayableCombo("tecnologia", "software_empresarial_b2b")).toBe(false);
-    expect(isPlayableCombo("tecnologia", "software_empresarial_b2b", "startup")).toBe(false);
-    expect(isPlayableCombo("alimentos", "botanas_y_snacks", "establecida")).toBe(true);
-    expect(isPlayableCombo("alimentos", "botanas_y_snacks", "startup")).toBe(false);
-    expect(isPlayableCombo("alimentos", "lacteos", "establecida")).toBe(false);
+    expect(isPlayableCombo("tecnologia_informacion", "software_saas")).toBe(false);
+    expect(isPlayableCombo("tecnologia_informacion", "software_saas", "startup")).toBe(false);
+    expect(isPlayableCombo("manufactura", "alimentos_bebidas", "establecida")).toBe(true);
+    expect(isPlayableCombo("manufactura", "alimentos_bebidas", "startup")).toBe(false);
+    expect(isPlayableCombo("manufactura", "electronica", "establecida")).toBe(false);
     expect(isPlayableCombo(undefined, undefined)).toBe(false);
-    expect(archetypeAvailability("alimentos", "botanas_y_snacks", "startup")).toBe("coming_soon");
+    expect(archetypeAvailability("manufactura", "alimentos_bebidas", "startup")).toBe("coming_soon");
   });
 
   it("la etiqueta de lo no jugable es la única aprobada, sin fecha", () => {
@@ -88,9 +109,9 @@ describe("disponibilidad: «Próximamente» bloquea", () => {
   });
 
   it("los sectores con alguna industria jugable se marcan disponibles", () => {
-    expect(sectorById("alimentos")?.availability).toBe("available");
-    expect(sectorById("automotriz")?.availability).toBe("available");
-    expect(sectorById("turismo")?.availability).toBe("available");
+    expect(sectorById("manufactura")?.availability).toBe("available");
+    expect(sectorById("restaurantes_alimentos")?.availability).toBe("available");
+    expect(sectorById("comercio")?.availability).toBe("coming_soon");
     expect(sectorById("mineria")?.availability).toBe("coming_soon");
   });
 });
@@ -100,14 +121,14 @@ describe("búsqueda por sinónimos", () => {
     expect(norm("  Panadería  Industrial ")).toBe("panaderia industrial");
   });
 
-  it("«SaaS» sugiere Tecnología → Software empresarial B2B", () => {
+  it("«SaaS» sugiere Tecnología e información → Software y SaaS", () => {
     const [top] = searchIndustries("SaaS");
-    expect(top).toMatchObject({ sectorId: "tecnologia", industryId: "software_empresarial_b2b" });
+    expect(top).toMatchObject({ sectorId: "tecnologia_informacion", industryId: "software_saas" });
   });
 
-  it("«autopartes» sugiere Automotriz → Fabricación de autopartes (aunque se busque desde otro sector)", () => {
+  it("«autopartes» sugiere Manufactura → Autopartes", () => {
     const [top] = searchIndustries("autopartes");
-    expect(top).toMatchObject({ sectorId: "automotriz", industryId: "fabricacion_de_autopartes", availability: "available" });
+    expect(top).toMatchObject({ sectorId: "manufactura", industryId: "autopartes", availability: "available" });
   });
 
   it("«fintech» trae varias opciones de Finanzas, no una sola selección", () => {
@@ -117,23 +138,13 @@ describe("búsqueda por sinónimos", () => {
   });
 
   it("«snacks» y «restaurante» encuentran las combinaciones jugables", () => {
-    expect(searchIndustries("snacks")[0]).toMatchObject({ industryId: "botanas_y_snacks", availability: "available" });
+    expect(searchIndustries("snacks")[0]).toMatchObject({ industryId: "alimentos_bebidas", availability: "available" });
+    expect(searchIndustries("3pl")[0]).toMatchObject({ sectorId: "transporte_almacenamiento", industryId: "logistica_distribucion" });
     expect(searchIndustries("restaurante")[0]).toMatchObject({ industryId: "restaurantes", availability: "available" });
   });
 
   it("la búsqueda no selecciona nada (función pura) y textos cortos no devuelven ruido", () => {
     expect(searchIndustries("a")).toEqual([]);
     expect(searchIndustries("zzzz")).toEqual([]);
-  });
-});
-
-describe("foco de lanzamiento (decisión de Oziel)", () => {
-  it("incluye Alimentos, Software, Manufactura, Retail, Logística, Autopartes y Restaurantes", () => {
-    const f = focusIndustries();
-    const sectors = new Set(f.map((i) => i.sectorId));
-    for (const s of ["alimentos", "tecnologia", "manufactura", "retail", "logistica"]) expect(sectors.has(s)).toBe(true);
-    expect(f.some((i) => i.id === "fabricacion_de_autopartes")).toBe(true);
-    expect(f.some((i) => i.id === "restaurantes")).toBe(true);
-    expect(f.some((i) => i.sectorId === "mineria")).toBe(false);
   });
 });

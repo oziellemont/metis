@@ -12,7 +12,7 @@ import { useCeo } from "./CeoProvider";
 import { Stage, StageChoice, StepTitle } from "./Stage";
 import { Avatar, ChannelChip, Delta } from "./ui";
 import { personOf } from "@/lib/ceo/cast";
-import { KPI_LABEL, episodeSeasonXp, seasonEpisodesOf, seasonRunOf } from "@/lib/ceo/engine";
+import { KPI_LABEL, brandedEpisode, episodeSeasonXp, seasonEpisodesOf, seasonRunOf } from "@/lib/ceo/engine";
 import { lessonById } from "@/lib/ceo/lessons";
 import { episodeSpec } from "@/lib/ceo/episodes/catalog";
 import { MAX_ADVISOR_CONSULTS, MAX_DECISIONS, MAX_FACT_QUERIES, RUBRIC_LABEL, type EpisodeRun, type EpisodeSpec, type ParamSpec, type Strategy } from "@/lib/ceo/episodes/contracts";
@@ -30,7 +30,10 @@ async function askAi(body: Record<string, unknown>): Promise<AiReply | null> {
 
 export function EpisodeView({ id }: { id: string }) {
   const c = useCeo();
-  const spec = episodeSpec(id);
+  const raw = episodeSpec(id);
+  // Carrera continua: el caso lleva el nombre de la empresa del jugador (copia; reglas e ids intactos).
+  const profile = c.s.companyProfile;
+  const spec = useMemo(() => (raw ? brandedEpisode(raw, { companyProfile: profile }) : undefined), [raw, profile]);
   if (!c.ready) return null;
   if (!spec) return <Notice title="Este caso no existe" text="Revisa el enlace o vuelve a Hoy." />;
   // Parte de tu temporada (reglas v3+): se abre cuando llega. Fuera de ella, solo como práctica en modo prueba.

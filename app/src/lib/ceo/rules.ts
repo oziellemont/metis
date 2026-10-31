@@ -45,6 +45,11 @@ export interface RuleSet {
    *  - required: el reto final no se abre hasta cerrar los casos ejecutivos que ya llegaron.
    */
   episodes?: { xpDecision: number; xpClose: number; required: boolean };
+  /**
+   * Tipo de carrera (desde v4). Sin dato = «temporadas»: al aprobar, `advance()` te lleva a otra empresa.
+   * «continua»: una sola empresa persistente; cerrar un periodo nunca cambia de empresa ni sube la exigencia.
+   */
+  career?: "temporadas" | "continua";
 }
 
 /** Versión 1 · reglas legacy (v2 del simulador, octubre 2026). Congeladas: no editar. */
@@ -105,13 +110,26 @@ const V3: RuleSet = Object.freeze({
   episodes: Object.freeze({ xpDecision: 20, xpClose: 40, required: true }),
 }) as RuleSet;
 
+/**
+ * Versión 4 · carrera continua (P0-B2, esqueleto). Igual que v3 en exigencia, XP, crisis y casos ejecutivos;
+ * cambia solo el tipo de carrera: la empresa es tuya y persiste. No es la versión por omisión: la usan solo
+ * las partidas en modo «continua» (detrás del interruptor carrera_continua). Las temporadas siguen en v3.
+ */
+const V4: RuleSet = Object.freeze({
+  ...V3,
+  version: 4,
+  career: "continua",
+}) as RuleSet;
+
 /** Reglas de todas las partidas guardadas antes de que existiera `rulesVersion`. */
 export const LEGACY_RULES_VERSION = 1;
 /** Versión con la que empiezan las temporadas nuevas. */
 export const RULES_VERSION = 3;
+/** Versión con la que empiezan los periodos de la carrera continua. */
+export const CONTINUOUS_RULES_VERSION = 4;
 
 /** Todas las versiones publicadas. Las pruebas pueden registrar una versión simulada. */
-export const RULESETS: Record<number, RuleSet> = { 1: V1, 2: V2, 3: V3 };
+export const RULESETS: Record<number, RuleSet> = { 1: V1, 2: V2, 3: V3, 4: V4 };
 
 export const isRulesVersion = (v: unknown): v is number => typeof v === "number" && Number.isInteger(v) && v >= 1;
 /** ¿Este código conoce esa versión? (una partida guardada por una versión más nueva de la app no lo sería). */

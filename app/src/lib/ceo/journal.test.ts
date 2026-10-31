@@ -200,3 +200,34 @@ describe("cola del dispositivo", () => {
     expect(nextBatch(dropCareer(q, 2))).toBeNull();
   });
 });
+
+describe("carrera continua en el diario (P0-B2)", () => {
+  const CID = "3f1c2a4b-5d6e-4f70-8a9b-0c1d2e3f4a5b";
+  const setup = { type: "setupCompany", at: 2_000, companyId: CID, sectorId: "manufactura", industryId: "alimentos_bebidas", archetype: "establecida", displayName: "Casa Norte Alimentos" };
+
+  it("limpia crear y renombrar empresa; rechaza lo inválido", () => {
+    expect(sanitizeAction({ ...setup, evil: 1, specialty: "Botanas y snacks" })).toEqual({ ...setup, specialty: "Botanas y snacks" });
+    expect(sanitizeAction({ type: "renameCompany", at: 3, displayName: "Norteña", shortName: "", x: 1 })).toEqual({ type: "renameCompany", at: 3, displayName: "Norteña" });
+    for (const bad of [{ ...setup, companyId: "x" }, { ...setup, displayName: "x".repeat(41) }, { ...setup, sectorId: "" }, { type: "renameCompany", at: 3 }]) expect(sanitizeAction(bad)).toBeNull();
+    expect(sanitizeAction({ type: "settings", at: 5, patch: { displayCurrency: "USD" } })).toEqual({ type: "settings", at: 5, patch: { displayCurrency: "USD" } });
+    expect(sanitizeAction({ type: "settings", at: 5, patch: { displayCurrency: "EUR" } })).toEqual({ type: "settings", at: 5, patch: {} });
+  });
+
+  it("el servidor reproduce crear, decidir y renombrar igual que el navegador", () => {
+    const actions = [
+      { type: "start", at: 1_000, name: "Oziel Leal", company: "cumbre", rulesVersion: 3 },
+      setup,
+      { type: "decide", at: 3_000_000, item: "d1-bienvenida", option: "a" },
+      { type: "renameCompany", at: 3_100_000, displayName: "Norteña de Alimentos" },
+    ].map((a) => sanitizeAction(a)!) as GameAction[];
+    const { state, rejected } = replay(actions);
+    expect(rejected).toEqual([]);
+    expect(state.careerMode).toBe("continua");
+    expect(state.rulesVersion).toBe(4);
+    expect(state.companyProfile).toMatchObject({ companyId: CID, displayName: "Norteña de Alimentos", appointedAt: 2_000 });
+    expect(state.decisions["d1-bienvenida"].option).toBe("a");
+    // crear dos veces o cambiar de empresa en la carrera continua se rechaza
+    const twice = replay([...actions, { ...setup, at: 3_200_000 } as GameAction, { type: "switch", at: 3_300_000, company: "forja" }]);
+    expect(twice.rejected).toEqual([4, 5]);
+  });
+});

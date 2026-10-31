@@ -59,6 +59,7 @@ function cleanSettings(x: unknown): Record<string, unknown> | undefined {
     if (k === "tz" ? str(v, 64) : k === "windowStart" || k === "windowEnd" ? num(v) && v >= 0 && v <= 24 : typeof v === "boolean") out[k] = v;
   }
   if (r.dailyGoal === 1 || r.dailyGoal === 2 || r.dailyGoal === 3) out.dailyGoal = r.dailyGoal;
+  if (r.displayCurrency === "MXN" || r.displayCurrency === "USD") out.displayCurrency = r.displayCurrency;
   if (r.sessionMinutes === 3 || r.sessionMinutes === 5 || r.sessionMinutes === 8 || r.sessionMinutes === 12) out.sessionMinutes = r.sessionMinutes;
   return out; // correo y teléfono nunca entran al diario
 }
@@ -113,6 +114,14 @@ export function sanitizeAction(raw: unknown): GameAction | null {
     case "resume": return { type: "resume", at };
     case "quiet": return num(a.until) && a.until > at ? { type: "quiet", at, until: Math.round(a.until) } : null;
     case "episodeOpen": return str(a.id, 60) ? { type: "episodeOpen", at, id: a.id, ...(a.mode === "flexible" || a.mode === "estandar" ? { mode: a.mode } : {}) } : null;
+    case "setupCompany": {
+      if (!isUuid(a.companyId) || !str(a.sectorId, 60) || !str(a.industryId, 60) || !str(a.archetype, 20) || !str(a.displayName, 40)) return null;
+      const out: GameAction = { type: "setupCompany", at, companyId: a.companyId, sectorId: a.sectorId, industryId: a.industryId, archetype: a.archetype, displayName: a.displayName };
+      if (str(a.shortName, 40)) out.shortName = a.shortName;
+      if (str(a.specialty, 60)) out.specialty = a.specialty;
+      return out;
+    }
+    case "renameCompany": return str(a.displayName, 40) ? { type: "renameCompany", at, displayName: a.displayName, ...(str(a.shortName, 40) ? { shortName: a.shortName } : {}) } : null;
     case "episode": { const act = cleanEpisodeAct(a.act, at); return str(a.id, 60) && act ? { type: "episode", at, id: a.id, act } : null; }
     default: return null;
   }

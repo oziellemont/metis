@@ -24,7 +24,9 @@ export const SYNC_POLL_MS = 60_000;
 
 /** ¿Las dos copias son la misma temporada? (si no, no se mezclan: gana la más reciente). */
 export function sameRun(a: CeoState, b: CeoState): boolean {
-  return Boolean(a.startedAt) && a.startedAt === b.startedAt && a.company === b.company && (a.career?.length ?? 0) === (b.career?.length ?? 0);
+  return Boolean(a.startedAt) && a.startedAt === b.startedAt && a.company === b.company && (a.career?.length ?? 0) === (b.career?.length ?? 0)
+    // Carrera continua: misma empresa del jugador (el id no cambia al renombrar).
+    && (a.companyProfile?.companyId ?? null) === (b.companyProfile?.companyId ?? null);
 }
 
 /** La copia más reciente por `savedAt`. Empate: la local (no hay nada nuevo que traer). */

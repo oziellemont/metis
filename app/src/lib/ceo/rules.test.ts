@@ -73,11 +73,11 @@ describe("resolver la versión", () => {
     expect(knownRules(7)).toBe(false);
   });
   it("una versión de una app más nueva usa la más alta conocida que no la supera", () => {
-    expect(ruleSet(9).version).toBe(3);
+    expect(ruleSet(9).version).toBe(4);
     withV2();
     expect(ruleSet(9).version).toBe(7);
     expect(ruleSet(7).version).toBe(7);
-    expect(ruleSet(5).version).toBe(3);
+    expect(ruleSet(5).version).toBe(4);
     expect(ruleSet(1).version).toBe(1);
   });
 });
@@ -177,5 +177,19 @@ describe("una temporada no cambia de reglas en caliente", () => {
     withV2();
     expect(scaled({ caja: -10, margen: 10 }, 3)).toEqual(scaled({ caja: -10, margen: 10 }, 3, 1));
     expect(scaled({ caja: -10 }, 3, 7)).not.toEqual(scaled({ caja: -10 }, 3, 1));
+  });
+});
+
+describe("reglas v4 · carrera continua", () => {
+  it("es v3 + tipo de carrera; congelada; no es la versión por omisión", () => {
+    const v3 = ruleSet(3), v4 = ruleSet(4);
+    expect(v4.career).toBe("continua");
+    expect(v3.career).toBeUndefined();
+    const { version: _a, career: _b, ...rest4 } = v4;
+    const { version: _c, ...rest3 } = v3;
+    expect(rest4).toEqual(rest3);
+    expect(Object.isFrozen(RULESETS[4])).toBe(true);
+    expect(RULES_VERSION).toBe(3);
+    expect(knownRules(4)).toBe(true);
   });
 });

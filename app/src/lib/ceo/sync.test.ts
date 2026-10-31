@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { mergeStates, newest, planSave, sameRun, withServerPrefs } from "./sync";
-import { decide, entries, newState } from "./engine";
+import { decide, entries, newState, renameCompany, setupCompany } from "./engine";
 import { replay } from "./replay";
 import { record, SPECS } from "./golden/play";
 import type { CeoState } from "./types";
@@ -122,5 +122,24 @@ describe("mezcla sin falsos cambios", () => {
     const a = run({ lessons: { x: 1, y: 2 }, savedAt: 5 });
     const b = run({ lessons: { y: 2, x: 1 }, savedAt: 9 });
     expect(mergeStates(a, b)?.how).toBe("nube");
+  });
+});
+
+describe("carrera continua: dos dispositivos", () => {
+  const CID = "3f1c2a4b-5d6e-4f70-8a9b-0c1d2e3f4a5b";
+  const own = (over: Partial<CeoState> = {}): CeoState => ({ ...setupCompany({ ...newState(), name: "Oziel", alias: "Oziel L.", startedAt: 1_000 }, { companyId: CID, sectorId: "manufactura", industryId: "alimentos_bebidas", archetype: "establecida", displayName: "Casa Norte" }, 2_000), ...over });
+
+  it("misma empresa renombrada en un dispositivo: misma partida, gana el nombre más reciente y no se pierde la identidad", () => {
+    const a = own({ savedAt: 10 });
+    const b = { ...renameCompany(a, "Norteña", undefined, 3_000), savedAt: 20 };
+    expect(sameRun(a, b)).toBe(true);
+    const m = mergeStates(a, b)!;
+    expect(m.state.companyProfile?.displayName).toBe("Norteña");
+    expect(m.state.companyProfile?.companyId).toBe(CID);
+  });
+  it("otra empresa (otro id) no se mezcla", () => {
+    const a = own({ savedAt: 10 });
+    const b = { ...a, companyProfile: { ...a.companyProfile!, companyId: "9f1c2a4b-5d6e-4f70-8a9b-0c1d2e3f4a5b" }, savedAt: 20 };
+    expect(sameRun(a, b)).toBe(false);
   });
 });
