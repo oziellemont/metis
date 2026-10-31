@@ -5,7 +5,7 @@ import clsx from "clsx";
 import { Briefcase, Check, Clock, Hourglass, XCircle } from "lucide-react";
 import { personOf } from "@/lib/ceo/cast";
 import { useCeo } from "./CeoProvider";
-import { Avatar, ChannelChip, clock, rel, until } from "./ui";
+import { Avatar, ChannelChip, rel, until } from "./ui";
 
 const TABS = [
   { k: "todo", label: "Todo" },
@@ -75,7 +75,7 @@ export function InboxView() {
           );
         })}
       </div>
-      {c.nextArrival && <p className="mt-4 text-xs text-slate-400 inline-flex items-center gap-1.5"><Hourglass size={12} /> Siguiente asunto a las {clock(c.nextArrival)}.</p>}
+      {c.nextArrival && <p className="mt-4 text-xs text-slate-400 inline-flex items-center gap-1.5"><Hourglass size={12} /> Durante el día llegarán más asuntos.</p>}
     </div>
   );
 }

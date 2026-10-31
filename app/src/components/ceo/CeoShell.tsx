@@ -7,7 +7,6 @@ import { Home, Inbox, GraduationCap, Trophy, UserRound, Settings, X, Building2, 
 import { Logo } from "@/components/ui/Logo";
 import { useCeo } from "./CeoProvider";
 import { Flame } from "./ui";
-import { JourneyMini } from "./Journey";
 import { ImportPrompt } from "./ImportPrompt";
 import { RestScreen, ReturnScreen } from "./Cadence";
 
@@ -54,12 +53,11 @@ export function CeoShell({ children }: { children: React.ReactNode }) {
       {/* escritorio */}
       <aside className="hidden lg:flex fixed inset-y-0 left-0 w-60 flex-col bg-white border-r border-slate-100 px-4 py-5">
         <Link href="/ceo" className="flex items-center gap-2 px-2"><Logo height={26} /><span className="chip bg-ink text-white text-[10px] tracking-wider">CEO</span></Link>
-        <div className="mt-6 rounded-2xl bg-gradient-to-br from-[#141735] to-[#2B1F8A] p-4 text-white">
-          <div className="flex items-center justify-between text-xs text-white/60"><span className="inline-flex items-center gap-1 min-w-0"><Building2 size={12} className="shrink-0" /> <span className="truncate">{c.pack.name}</span></span><span>Día {c.day}</span></div>
-          <div className="mt-2 text-sm font-semibold truncate">{c.s.name || "CEO"}</div>
-          <div className="mt-3"><JourneyMini j={c.journey} /></div>
+        <div className="mt-6 px-3">
+          <div className="flex items-center gap-1.5 text-[13px] font-semibold text-ink min-w-0"><Building2 size={13} className="shrink-0 text-indigo" /><span className="truncate">{c.pack.name}</span></div>
+          <div className="mt-0.5 text-[11px] text-slate-400">Día {c.day} · {c.s.name || "CEO"}</div>
         </div>
-        <nav className="mt-5 space-y-1">
+        <nav className="mt-4 space-y-1">
           {NAV.map(({ href, label, Icon, badge }) => (
             <Link key={href} href={href} className={clsx("flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors", active(href) ? "bg-indigo-soft text-indigo" : "text-slate-500 hover:bg-slate-50 hover:text-ink")}>
               <Icon size={18} /> <span className="flex-1">{label}</span>
