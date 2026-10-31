@@ -74,19 +74,6 @@ export function CompetencyBars({ m, focus }: { m: Mastery; focus?: string | null
   );
 }
 
-/** Resumen corto del Journey para la barra lateral. */
-export function JourneyMini({ j }: { j: JourneyView }) {
-  const pct = j.total ? Math.round((j.met / j.total) * 100) : 100;
-  return (
-    <>
-      <div className="text-xs text-white/60">Executive Journey · Stage {j.stage + 1} de {STAGES.length}</div>
-      <div className="mt-0.5 text-sm font-semibold text-white">{j.name}</div>
-      <div className="mt-2 h-1.5 rounded-full bg-white/15 overflow-hidden"><div className="h-full bg-gradient-to-r from-indigo-light to-white" style={{ width: `${pct}%` }} /></div>
-      <div className="mt-1 text-[11px] text-white/50 tabular-nums">{j.next ? (j.ready ? "Listo para tu nombramiento" : `Siguiente nombramiento: ${j.met} de ${j.total} requisitos`) : "Última etapa"}</div>
-    </>
-  );
-}
-
 /** Pantalla de nombramiento: carta del Consejo. */
 export function AppointmentModal({ stage, rows, onClose }: { stage: string; rows: { label: string; value: string }[]; onClose: () => void }) {
   const date = new Date().toLocaleDateString("es-MX", { day: "numeric", month: "long", year: "numeric" });
