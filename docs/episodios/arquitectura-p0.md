@@ -218,8 +218,17 @@ Hay una ruta nueva, `api/ceo/episodio`, que reutiliza **exactamente** los candad
 ## 8. Cómo se conservan los casos históricos
 
 - Los 52 casos, las partidas doradas, las reglas v1/v2 y el historial **no cambian**. El episodio es un tipo nuevo, con sus propias pruebas.
-- El caso `d2-supernorte` sigue existiendo. Cuando apruebes el estándar, la integración hará que, para temporadas nuevas, la notificación de SuperNorte abra el episodio, y que las partidas en curso conserven el caso de una decisión. Es la misma lógica que con las reglas versionadas.
+- El caso `d2-supernorte` sigue existiendo. **Hecho (reglas v3):** en temporadas nuevas de Botanas Cumbre, SuperNorte llega como caso ejecutivo en lugar del asunto de una decisión, y llegan también Diego (día 4) y el lote L-2291 (día 6). Las temporadas que empezaron con v2 o v1 conservan el caso de una decisión y no reciben casos ejecutivos hasta su siguiente empresa. Detalle en §8.1.
 - No hay migraciones destructivas. La 0019 es aditiva y trae su reversa.
+
+### 8.1 Casos ejecutivos en la carrera normal (reglas v3)
+
+- **Cuándo llegan.** Calendario en `episodes/catalog.ts` (`SEASON_EPISODES`): SuperNorte día 2 (sustituye a `d2-supernorte`), Diego día 4, lote L-2291 día 6. La hora se calcula como la de un asunto y se fija al llegar (`pinned["ep:<id>"]`).
+- **Dónde aparecen.** En Hoy («Esperando tu decisión») y en la Bandeja, con aviso al llegar. Abrirlos antes de tiempo no procede, tampoco al reproducir en el servidor (`openSeasonEpisode`).
+- **Qué mueven.** Al cerrarse, su efecto en indicadores se suma a la temporada con la misma exigencia por nivel que un asunto, y dan XP: 20 por decisión + 40 al cerrar (igual que `EPISODE_XP`). Mientras están abiertos no mueven nada. Una vez por empresa: si repites la empresa, se juegan desde cero pero no vuelven a pagar XP (`CareerRun.episodes`).
+- **No vencen.** El reto final espera a que cierres los casos (`episodes.required`).
+- **Práctica.** Con reglas v1/v2, en otras empresas o desde Ajustes → Modo prueba antes de que lleguen, un caso se juega como práctica y no mueve la temporada. Una partida de otra temporada (por ejemplo la vista previa) no cuenta ni impide jugarlo de nuevo.
+- **IA.** La ruta `/api/ceo/episodio` atiende a cualquier jugador en casos aprobados, con los mismos candados que las respuestas escritas (interruptor `ai`, `CEO_AI_ENABLED=1`, consentimiento y topes de gasto). Sin IA, los casos funcionan con el respaldo (palabras clave o elegir opción). La evaluación de IA (`/api/ceo/episodio/evaluar`) sigue solo para invitados.
 
 ---
 
@@ -230,10 +239,10 @@ Hay una ruta nueva, `api/ceo/episodio`, que reutiliza **exactamente** los candad
 | Hecho | Fase 0, 1.0, 1.1, 1.2, 1.3 | Publicado |
 | **P0-A** | Auditoría, arquitectura, contratos, motor del episodio con pruebas, propuesta de migración e interfaz | Este PR |
 | **P0-B** | Piloto SuperNorte completo: briefing, consultas, colaborador, texto libre, 5–6 decisiones, rutas divergentes, cierre, lección y persistencia (vista previa) | Siguiente PR |
-| **P0-C** | Piloto de Personas (conversación abierta con un colaborador) y piloto de crisis (operativa o ética, con obligaciones no negociables). Detalle en `p0c.md` | Hecho (borrador) |
-| **P0-D** | Validación de los 15 chequeos, evaluación de IA (con tu permiso de gasto), prueba en móvil y escritorio, y tu aprobación. Detalle en `p0d.md` | Hecho (falta correr la evaluación de IA y tu aprobación) |
-| 1.4–1.9 | DecisionSpec v3 (se absorbe en `EpisodeSpec`), Workbench (se absorbe en la tarjeta), debrief IA en sombra, variantes, rotación | En pausa hasta aprobar P0 |
-| Contenido | Llevar los 52 casos al nuevo estándar | Congelado hasta validar P0 |
+| **P0-C** | Piloto de Personas (conversación abierta con un colaborador) y piloto de crisis (operativa o ética, con obligaciones no negociables). Detalle en `p0c.md` | Hecho (aprobado) |
+| **P0-D** | Validación de los 15 chequeos, evaluación de IA (con tu permiso de gasto), prueba en móvil y escritorio, y tu aprobación. Detalle en `p0d.md` | Hecho. Aprobado y publicado en la carrera normal (reglas v3). La evaluación de IA quedó en la ronda 7; se puede retomar |
+| 1.4–1.9 | DecisionSpec v3 (se absorbe en `EpisodeSpec`), Workbench (se absorbe en la tarjeta), debrief IA en sombra, variantes, rotación | Siguiente |
+| Contenido | Llevar los 52 casos al nuevo estándar | Siguiente (después de 1.4–1.9 o en paralelo, caso por caso) |
 
 **Nota.** La 1.4 (DecisionSpec v3) y la 1.6 (Workbench) quedan prácticamente cubiertas por los contratos y la tarjeta del episodio, así que el roadmap se acorta.
 

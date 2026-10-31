@@ -13,7 +13,7 @@
  * Usa la misma tubería que la evaluación (`runFact`, `runAdvisor`, `runInterpret`, `runAdapt`).
  * Mismos candados y topes que las respuestas escritas: interruptor «ai» + CEO_AI_ENABLED=1 + consentimiento,
  * reserva atómica de gasto por llamada (mes $50, día $3, jugador $0.05) y registro en ceo.ai_calls.
- * Mientras el flag «episodes» esté apagado, esta ruta solo atiende a quien tenga las herramientas de prueba.
+ * Casos aprobados: abiertos a todos (con los candados de IA). Borradores: solo con el flag «episodes» (invitados).
  */
 import { NextResponse } from "next/server";
 import { supabaseCeoAdmin, supabaseServer } from "@/lib/supabase/server";
@@ -32,8 +32,6 @@ export async function POST(req: Request) {
   const sb = await supabaseServer();
   const uid = sb ? (await sb.auth.getUser()).data.user?.id ?? null : null;
   if (!uid) return fallback("Sin sesión: se usa el modo sin IA.", 401);
-  // En producción, solo con el flag «episodes» encendido (hoy apagado). En vista previa y local, siempre.
-  if (appEnvOf(process.env.VERCEL_ENV, process.env.NODE_ENV) === "production" && !(await flagsFor(uid)).episodes) return fallback("Los episodios no están publicados.", 403);
   const st = await aiStatusFor(uid);
   if (!st.enabled) return fallback("La IA no está activa: se usa el modo sin IA.", 403);
   const admin = supabaseCeoAdmin();
@@ -45,6 +43,8 @@ export async function POST(req: Request) {
   const run = sanitizeRun(body.run);
   const purpose = body.purpose as EpisodeAiPurpose;
   if (!spec || !run || run.episode !== spec.id || !["fact", "advisor", "interpret", "adapt"].includes(purpose)) return fallback("Solicitud inválida.", 400);
+  // En producción: los casos aprobados están publicados; un borrador solo con el flag «episodes» (invitados).
+  if (spec.approval !== "aprobado" && appEnvOf(process.env.VERCEL_ENV, process.env.NODE_ENV) === "production" && !(await flagsFor(uid)).episodes) return fallback("Este caso no está publicado.", 403);
 
   const model = process.env.CEO_AI_MODEL?.trim() || DEFAULT_MODEL;
   const { day, month } = periodsOf(Date.now());

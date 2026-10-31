@@ -13,14 +13,14 @@
  * Cada acción replica, una a una, lo que hacen las acciones de `CeoProvider`.
  */
 import type { CeoState, CastId, LeverId, Settings, Written } from "./types";
-import { H, LEGACY_RULES_VERSION, advance, aliasOf, answerDilemma, decide, kpis, newState, pinArrived, switchCompany } from "./engine";
+import { H, LEGACY_RULES_VERSION, advance, aliasOf, answerDilemma, decide, kpis, newState, openSeasonEpisode, pinArrived, switchCompany } from "./engine";
 import { closeChange, playLever, startChange } from "./relations";
 import { crisisAccess, playCrisis, recordCrisis } from "./crisis";
 import { appoint, recordBoard } from "./journey";
 import { OFFERED_TIER } from "./profile";
 import { pauseCareer, resumeCareer, startQuietDay } from "./cadence";
 import { onVacation } from "./pausetime";
-import { actEpisode, openEpisode } from "./episodes/catalog";
+import { actEpisode } from "./episodes/catalog";
 import type { EpisodeAction } from "./episodes/engine";
 
 export type GameAction =
@@ -88,7 +88,7 @@ export function applyAction(s: CeoState, a: GameAction): { state: CeoState; appl
     case "pause": n = pauseCareer(s, a.at, a.until ?? null); break;
     case "resume": n = resumeCareer(s, a.at); break;
     case "quiet": n = startQuietDay(s, a.at, a.until); break;
-    case "episodeOpen": n = openEpisode(s, a.id, a.at, a.mode); break;
+    case "episodeOpen": n = openSeasonEpisode(s, a.id, a.at, a.mode); break;
     case "episode": n = a.act && a.act.at === a.at ? actEpisode(s, a.id, a.act).state : s; break;
   }
   if (n === s) return { state: s, applied: false };

@@ -26,7 +26,7 @@ const BEFORE: Record<string, Record<string, number>> = JSON.parse(readFileSync(j
 
 /** Reproduce una partida dorada, pero iniciada con las reglas nuevas (v2). */
 function replayV2(g: Golden, upTo = g.actions.length): CeoState {
-  const acts = g.actions.slice(0, upTo).map((a) => (a.type === "start" || a.type === "advance" ? { ...a, rulesVersion: RULES_VERSION } : a)) as GameAction[];
+  const acts = g.actions.slice(0, upTo).map((a) => (a.type === "start" || a.type === "advance" ? { ...a, rulesVersion: 2 } : a)) as GameAction[];
   return replay(acts).state;
 }
 const T = Date.UTC(2026, 9, 5, 15);
@@ -34,8 +34,9 @@ const started = (over: Partial<CeoState> = {}): CeoState => ({ ...newState(), na
 
 describe("reglas v2 («XP v3») para temporadas nuevas", () => {
   it("las temporadas nuevas empiezan con v2; lo guardado sin versión sigue en v1", () => {
-    expect(RULES_VERSION).toBe(2);
-    expect(newState().rulesVersion).toBe(2);
+    // Desde P0 la vigente es v3 (v2 + casos ejecutivos); v2 sigue publicada para las temporadas que empezaron con ella.
+    expect(RULES_VERSION).toBe(3);
+    expect(newState().rulesVersion).toBe(3);
     const { rulesVersion: _, ...old } = newState();
     expect(rulesVersionOf(migrate(old))).toBe(LEGACY_RULES_VERSION);
   });
@@ -74,7 +75,7 @@ describe("ningún score histórico se pierde", () => {
     const at = lastOf(g).at;
     expect(seasonDoneOf(done, at)).toBe(true);
     const before = xpOf(done, at);
-    const next = advance(done, at, RULES_VERSION);
+    const next = advance(done, at, 2);
     expect(next.career.at(-1)!.rulesVersion).toBe(1);
     expect(rulesVersionOf(next)).toBe(2);
     expect(xpOf(next, at)).toBe(before);
@@ -182,7 +183,7 @@ describe("XP por participación, sin recompensa por rapidez", () => {
     expect(verdictOf(s, at).passed).toBe(false);
     expect(finishXp(s, at)).toBe(100);
     // Repetir la misma empresa: ni los asuntos ya pagados ni el cierre vuelven a dar XP.
-    const again = advance(s, at + 1000, RULES_VERSION);
+    const again = advance(s, at + 1000, 2);
     expect(again.company).toBe(s.company);
     const xp0 = xpOf(again, at + 1000);
     expect(xp0).toBe(xpOf(s, at));

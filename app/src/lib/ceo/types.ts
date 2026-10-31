@@ -103,6 +103,8 @@ export interface CareerRun {
   passed: boolean;
   xp: number;
   decisions: Record<string, Decision>;
+  /** Casos ejecutivos que cerraste en esa empresa (reglas v3+). */
+  episodes?: string[];
   lessons?: string[];
   /** Resultado del proyecto de cambio de esa empresa. */
   change?: { adopted: number; weeks: number; ok: boolean };

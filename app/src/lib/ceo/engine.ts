@@ -9,6 +9,8 @@ import { changeEffect, simulate, type ChangeSim } from "./change";
 import { sanitizeDiagnostic, sanitizeProfile } from "./profile";
 import { LEGACY_RULES_VERSION, RULES_VERSION, isRulesVersion, ruleSet, tierRules } from "./rules";
 import { sanitizeEpisodes } from "./episodes/engine";
+import { EPISODES, SEASON_EPISODES, openEpisode as openEpisodeRaw } from "./episodes/catalog";
+import type { EpisodeRun, EpisodeSpec } from "./episodes/contracts";
 import { activeMs, extendDeadline, onVacation, runSpans, sanitizeCadence, shiftArrival, shiftDaysOf, spansOf, type Span } from "./pausetime";
 
 export { LEGACY_RULES_VERSION, RULES_VERSION, ruleSet };
@@ -170,11 +172,92 @@ function rawArrival(s: CeoState, it: Item): number {
 export function resolution(s: CeoState, itemId: string, now: number): string | null {
   const d = s.decisions[itemId];
   if (d) return d.option;
-  const it = packOf(s).items.find((x) => x.id === itemId);
+  const it = seasonItems(s).find((x) => x.id === itemId);
   if (!it || !isActive(s, it, now)) return null;
   const spans = runSpans(s, now);
   const at = arrivalOf(s, it, spans);
   return now >= extendDeadline(spans, at, deadlineOf(s, it) * H) ? "__expired" : null;
+}
+
+// ───────────────────────────────────────────── casos ejecutivos en la temporada (reglas v3+)
+/** Casos ejecutivos que llegan en esta temporada (vacío con reglas anteriores a v3 o si la empresa no tiene). */
+export function seasonEpisodesOf(s: Pick<CeoState, "company" | "rulesVersion">): { spec: EpisodeSpec; day: number; slot: number; replaces?: string }[] {
+  if (!ruleSet(rulesVersionOf(s)).episodes) return [];
+  return (SEASON_EPISODES[s.company] ?? []).flatMap((x) => {
+    const spec = EPISODES[x.episode];
+    return spec && spec.approval === "aprobado" && spec.company === s.company ? [{ spec, day: x.day, slot: x.slot, replaces: x.replaces }] : [];
+  });
+}
+/** Asuntos de la temporada: los del paquete menos los que sustituye un caso ejecutivo. */
+export function seasonItems(s: Pick<CeoState, "company" | "rulesVersion">): Item[] {
+  const items = packOf(s).items;
+  const gone = new Set(seasonEpisodesOf(s).map((x) => x.replaces).filter(Boolean));
+  return gone.size ? items.filter((i) => !gone.has(i.id)) : items;
+}
+/** Clave de llegada fijada de un caso ejecutivo (en `pinned`, junto a los asuntos). */
+export const episodePinKey = (id: string) => `ep:${id}`;
+
+export interface EpisodeEntry {
+  spec: EpisodeSpec;
+  arrivesAt: number;
+  /** futuro: no ha llegado · pendiente: llegó y no lo has cerrado · cerrado: ya cuenta para la temporada. */
+  status: "futuro" | "pendiente" | "cerrado";
+  /** Partida de esta temporada (si ya lo abriste). */
+  run?: EpisodeRun;
+}
+/** La partida de un episodio solo cuenta para la temporada en curso si empezó en ella. */
+export function seasonRunOf(s: CeoState, id: string): EpisodeRun | undefined {
+  const r = s.episodes?.[id];
+  return r && s.startedAt && r.startedAt >= s.startedAt ? r : undefined;
+}
+export function episodeEntries(s: CeoState, now = nowOf(s)): EpisodeEntry[] {
+  if (!s.startedAt) return [];
+  const eps = seasonEpisodesOf(s);
+  if (!eps.length) return [];
+  const spans = runSpans(s, now);
+  return eps.map(({ spec, day, slot }) => {
+    const key = episodePinKey(spec.id);
+    const pseudo = { id: key, day, slot } as Item;
+    const arrivesAt = arrivalOf(s, pseudo, spans);
+    const run = seasonRunOf(s, spec.id);
+    const closed = !!run && run.phase === "closed" && (run.closedAt ?? Infinity) <= now;
+    const status: EpisodeEntry["status"] = closed ? "cerrado" : now < arrivesAt && !run ? "futuro" : "pendiente";
+    return { spec, arrivesAt, status, run };
+  }).sort((a, b) => a.arrivesAt - b.arrivesAt);
+}
+/** ¿Este caso ejecutivo se puede abrir ahora en la temporada (ya llegó)? */
+export function episodeAvailable(s: CeoState, id: string, now = nowOf(s)): boolean {
+  const e = episodeEntries(s, now).find((x) => x.spec.id === id);
+  return !!e && e.status !== "futuro";
+}
+/**
+ * Abre un caso ejecutivo respetando la temporada: si el caso es parte de ella, solo cuando ya llegó.
+ * Fuera de la temporada (reglas anteriores o modo prueba) se abre como práctica: no cuenta para indicadores ni XP.
+ */
+export function openSeasonEpisode(s: CeoState, id: string, at: number, mode?: "estandar" | "flexible"): CeoState {
+  const inSeason = seasonEpisodesOf(s).some((x) => x.spec.id === id);
+  if (inSeason && !episodeAvailable(s, id, at)) return s;
+  return openEpisodeRaw(s, id, at, mode);
+}
+/** Casos ejecutivos que ya pagaste en esta misma empresa (temporadas anteriores). */
+function paidEpisodesOf(s: CeoState): Set<string> {
+  const out = new Set<string>();
+  for (const r of s.career ?? []) if (r.company === s.company) (r.episodes ?? []).forEach((id) => out.add(id));
+  return out;
+}
+/** XP que da en la temporada un caso ejecutivo cerrado (0 si no cuenta o si ya lo pagaste en esta empresa). */
+export function episodeSeasonXp(s: CeoState, e: EpisodeEntry, paid: Set<string> | null = null): number {
+  const R = ruleSet(rulesVersionOf(s));
+  if (!R.episodes || e.status !== "cerrado" || !e.run) return 0;
+  if (R.participation?.oncePerCompany && (paid ?? paidEpisodesOf(s)).has(e.spec.id)) return 0;
+  return e.run.turns.length * R.episodes.xpDecision + R.episodes.xpClose;
+}
+/** Efecto en indicadores de un caso ejecutivo cerrado, ajustado a tu nivel de exigencia (como un asunto). */
+export function episodeEffectOf(s: CeoState, e: EpisodeEntry): Partial<Kpis> {
+  if (e.status !== "cerrado" || !e.run?.outcome) return {};
+  const eff: Partial<Kpis> = {};
+  for (const k of e.run.outcome.kpi) if (KPI_KEYS.includes(k.key)) eff[k.key] = (eff[k.key] ?? 0) + k.delta;
+  return scaled(eff, s.tier, rulesVersionOf(s));
 }
 
 /** ¿Este mensaje existe para este jugador? (Las consecuencias sólo llegan si se cumplió su detonador.) */
@@ -189,7 +272,7 @@ export function entries(s: CeoState, now = nowOf(s)): Entry[] {
   const out: Entry[] = [];
   // Pausas (vacaciones / día tranquilo): el plazo solo corre en tiempo activo. Sin pausas, todo queda igual.
   const spans = runSpans(s, now);
-  for (const it of packOf(s).items) {
+  for (const it of seasonItems(s)) {
     if (!isActive(s, it, now)) continue;
     let arrivesAt = arrivalOf(s, it, spans);
     // Una consecuencia nunca llega antes de que se haya resuelto lo que la detona.
@@ -225,6 +308,10 @@ export function kpis(s: CeoState, now = nowOf(s)): Kpis {
     const eff = effectOf(s, e);
     for (const key of Object.keys(eff) as KpiKey[]) k[key] = clamp(k[key] + (eff[key] ?? 0));
   }
+  for (const e of episodeEntries(s, now)) {
+    const eff = episodeEffectOf(s, e);
+    for (const key of Object.keys(eff) as KpiKey[]) k[key] = clamp(k[key] + (eff[key] ?? 0));
+  }
   const ce = changeKpiEffect(s);
   for (const key of Object.keys(ce) as KpiKey[]) k[key] = clamp(k[key] + (ce[key] ?? 0));
   return k;
@@ -244,8 +331,9 @@ export function changeSimOf(s: CeoState): ChangeSim | null {
 /** Asuntos base cerrados (decididos o vencidos) sobre el total. */
 export function casesProgress(s: CeoState, now = nowOf(s), es = entries(s, now)): { done: number; total: number } {
   const done = new Set(es.filter((e) => e.status === "decidido" || e.status === "vencido").map((e) => e.item.id));
-  const base = packOf(s).items.filter((i) => !i.trigger);
-  return { done: base.filter((i) => done.has(i.id)).length, total: base.length };
+  const base = seasonItems(s).filter((i) => !i.trigger);
+  const eps = episodeEntries(s, now);
+  return { done: base.filter((i) => done.has(i.id)).length + eps.filter((e) => e.status === "cerrado").length, total: base.length + eps.length };
 }
 /** Lo que el proyecto de cambio suma a los indicadores (cuando lo presentas al consejo o se acaban las semanas). */
 export function changeKpiEffect(s: CeoState): Partial<Kpis> {
@@ -359,6 +447,8 @@ export function runXp(s: CeoState, now = nowOf(s)): number {
   const paid = ruleSet(rulesVersionOf(s)).participation?.oncePerCompany ? paidItemsOf(s) : null;
   let xp = 0;
   for (const e of entries(s, now)) xp += entryXp(s, e, spans, paid);
+  const paidEp = paidEpisodesOf(s);
+  for (const e of episodeEntries(s, now)) xp += episodeSeasonXp(s, e, paidEp);
   return xp + finishXp(s, now);
 }
 /** ¿Se decidió en la primera mitad del plazo? Solo cuenta para XP con reglas legacy. Se mide en tiempo activo. */
@@ -419,6 +509,7 @@ export function streakOf(s: CeoState, now = nowOf(s)) {
   (s.career ?? []).forEach((r) => Object.values(r.decisions ?? {}).forEach((d) => days.add(dayKey(d.at, tz))));
   Object.values(s.lessons).forEach((t) => days.add(dayKey(t, tz)));
   Object.values(s.dilemmas ?? {}).forEach((d) => days.add(dayKey(d.at, tz)));
+  Object.values(s.episodes ?? {}).forEach((r) => r.turns.forEach((t) => days.add(dayKey(t.at, tz))));
   const today = dayKey(now, tz);
   const doneToday = days.has(today);
   const paused = pausedDays(s, now);
@@ -558,15 +649,21 @@ export function pinArrived(s: CeoState, now = nowOf(s)): CeoState {
   let changed = false;
   const pinned = { ...s.pinned };
   for (const e of entries(s, now)) if (e.status !== "futuro" && !pinned[e.item.id]) { pinned[e.item.id] = e.arrivesAt; changed = true; }
+  for (const e of episodeEntries(s, now)) { const k = episodePinKey(e.spec.id); if (e.status !== "futuro" && !pinned[k]) { pinned[k] = e.arrivesAt; changed = true; } }
   return changed ? { ...s, pinned } : s;
 }
 
+/** Hora del siguiente asunto o caso ejecutivo que aún no llega (null si ya no queda nada por llegar). */
+export function nextArrivalOf(s: CeoState, now = nowOf(s)): number | null {
+  const ts = [...entries(s, now).filter((e) => e.status === "futuro").map((e) => e.arrivesAt), ...episodeEntries(s, now).filter((e) => e.status === "futuro").map((e) => e.arrivesAt)];
+  return ts.length ? Math.min(...ts) : null;
+}
 /** Modo prueba: adelanta el reloj hasta el siguiente mensaje. */
 export function skipToNext(s: CeoState, real = Date.now()): CeoState {
   const now = nowOf(s, real);
-  const next = entries(s, now).find((e) => e.status === "futuro");
-  if (!next) return s;
-  return { ...s, clockOffset: (s.clockOffset || 0) + (next.arrivesAt - now) + 1000 };
+  const at = nextArrivalOf(s, now);
+  if (at === null) return s;
+  return { ...s, clockOffset: (s.clockOffset || 0) + (at - now) + 1000 };
 }
 
 export function seasonDay(s: CeoState, now = nowOf(s)): number {
@@ -594,9 +691,11 @@ export function arrivalsBetween(s: CeoState, from: number, to: number): Entry[] 
 export function casesDoneOf(s: CeoState, now = nowOf(s)): boolean {
   if (!s.startedAt) return false;
   const es = entries(s, now);
-  const base = packOf(s).items.filter((i) => !i.trigger);
+  const base = seasonItems(s).filter((i) => !i.trigger);
   const done = (id: string) => es.some((e) => e.item.id === id && (e.status === "decidido" || e.status === "vencido"));
-  return base.every((i) => done(i.id)) && !es.some((e) => e.status === "pendiente" || (e.status === "futuro" && !e.item.trigger));
+  // Reglas v3+: los casos ejecutivos no vencen; el reto final espera a que los cierres.
+  const epsOk = !ruleSet(rulesVersionOf(s)).episodes?.required || episodeEntries(s, now).every((e) => e.status === "cerrado");
+  return epsOk && base.every((i) => done(i.id)) && !es.some((e) => e.status === "pendiente" || (e.status === "futuro" && !e.item.trigger));
 }
 /** Fin del nivel: cerraste los asuntos Y el reto final (proyecto de cambio). Hasta entonces no hay veredicto. */
 export function seasonDoneOf(s: CeoState, now = nowOf(s)): boolean {
@@ -640,6 +739,7 @@ function closeRun(s: CeoState, now: number): CareerRun {
   return {
     company: s.company, tier: s.tier, rulesVersion: rulesVersionOf(s), startedAt: s.startedAt ?? now, endedAt: now, kpis: v.kpis, health: v.health,
     answered: Math.round(v.answered * 100), passed: v.passed, xp: runXp(s, now), decisions: s.decisions as Record<string, Decision>,
+    ...(() => { const ep = episodeEntries(s, now).filter((e) => e.status === "cerrado").map((e) => e.spec.id); return ep.length ? { episodes: ep } : {}; })(),
     change: (() => { const sim = changeSimOf(s); return { adopted: sim?.adopted ?? 0, weeks: sim?.weeksUsed ?? 0, ok: !!sim?.ok }; })(),
   };
 }

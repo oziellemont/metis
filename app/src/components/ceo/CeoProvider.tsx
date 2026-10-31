@@ -9,7 +9,7 @@
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { supabaseBrowser } from "@/lib/supabase/client";
-import { advance as advanceFn, decide as decideFn, entries as entriesFn, healthOf, kpis as kpisFn, levelOf, migrate, newState, nowOf, packOf, pinArrived, rulesFor, rulesOf, seasonDay, seasonDoneOf, skipToNext, streakOf, switchCompany as switchFn, verdictOf, xpOf, type Verdict } from "@/lib/ceo/engine";
+import { advance as advanceFn, decide as decideFn, entries as entriesFn, episodeEntries as episodeEntriesFn, nextArrivalOf, openSeasonEpisode, type EpisodeEntry, healthOf, kpis as kpisFn, levelOf, migrate, newState, nowOf, packOf, pinArrived, rulesFor, rulesOf, seasonDay, seasonDoneOf, skipToNext, streakOf, switchCompany as switchFn, verdictOf, xpOf, type Verdict } from "@/lib/ceo/engine";
 import { aliasOf, answerDilemma as answerDilemmaFn, casesProgress, changeOpen, changeSimOf, dilemmaOfDay } from "@/lib/ceo/engine";
 import type { Dilemma } from "@/lib/ceo/dilemmas";
 import { OFFERED_TIER, sanitizeDiagnostic, sanitizeProfile, snoozeNudge, type InitialDiagnostic, type ProfessionalProfile } from "@/lib/ceo/profile";
@@ -28,7 +28,7 @@ import { playerRow } from "@/lib/ceo/player-row";
 import { RULES_VERSION } from "@/lib/ceo/rules";
 import { flushOnce, logAction } from "@/lib/ceo/journal-client";
 import { blockedOnVacation, type GameAction } from "@/lib/ceo/replay";
-import { actEpisode, openEpisode as openEpisodeFn, restartEpisode as restartEpisodeFn } from "@/lib/ceo/episodes/catalog";
+import { actEpisode, restartEpisode as restartEpisodeFn } from "@/lib/ceo/episodes/catalog";
 import type { EpisodeAction } from "@/lib/ceo/episodes/engine";
 import { onVacation } from "@/lib/ceo/pausetime";
 import { cadenceStatus, markReturnSeen as markReturnSeenFn, pauseCareer as pauseFn, quietUntil, resumeCareer as resumeFn, returnDue as returnDueFn, startQuietDay as quietFn } from "@/lib/ceo/cadence";
@@ -59,6 +59,8 @@ interface Ctx {
   entries: Entry[];
   inbox: Entry[];
   pending: Entry[];
+  /** Casos ejecutivos de la temporada (reglas v3+): llegados, pendientes y cerrados. */
+  episodes: EpisodeEntry[];
   kpis: Kpis;
   health: number;
   xp: number;
@@ -385,24 +387,29 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
   const entries = useMemo(() => entriesFn(s, now), [s, now]);
   const inbox = useMemo(() => entries.filter((e) => e.status !== "futuro").reverse(), [entries]);
   const pending = useMemo(() => inbox.filter((e) => e.status === "pendiente"), [inbox]);
+  const episodes = useMemo(() => episodeEntriesFn(s, now), [s, now]);
+  const arrivedEpisodes = episodes.filter((e) => e.status !== "futuro");
 
   // congelar llegadas + aviso de mensaje nuevo
   useEffect(() => {
     if (!ready || !s.startedAt) return;
     const pinned = pinArrived(s, now);
     if (pinned !== s) setS(pinned);
-    const arrived = inbox.map((e) => e.item.id);
+    const arrived = [...inbox.map((e) => e.item.id), ...arrivedEpisodes.map((e) => `ep:${e.spec.id}`)];
     if (seen.current === null) { seen.current = new Set(arrived); return; }
     const fresh = inbox.find((e) => !seen.current!.has(e.item.id) && e.status === "pendiente");
+    const freshEp = arrivedEpisodes.find((e) => !seen.current!.has(`ep:${e.spec.id}`) && e.status === "pendiente");
     arrived.forEach((id) => seen.current!.add(id));
-    if (fresh) {
-      const t = { id: fresh.item.id, title: fresh.item.channel === "whatsapp" ? `WhatsApp · ${fresh.item.subject}` : fresh.item.subject, text: fresh.item.preview, href: `/ceo/caso/${fresh.item.id}` };
+    const t = fresh
+      ? { id: fresh.item.id, title: fresh.item.channel === "whatsapp" ? `WhatsApp · ${fresh.item.subject}` : fresh.item.subject, text: fresh.item.preview, href: `/ceo/caso/${fresh.item.id}` }
+      : freshEp ? { id: `ep:${freshEp.spec.id}`, title: `Caso ejecutivo · ${freshEp.spec.subject}`, text: freshEp.spec.title, href: `/ceo/episodio/${freshEp.spec.id}` } : null;
+    if (t) {
       setToast(t);
       try {
         if (typeof Notification !== "undefined" && Notification.permission === "granted" && document.visibilityState !== "visible") new Notification(t.title, { body: t.text, icon: "/brand/app-icono-192.png" });
       } catch { /* ignore */ }
     }
-  }, [inbox, ready]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [inbox, arrivedEpisodes.length, ready]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const k = useMemo(() => kpisFn(s, now), [s, now]);
   const xp = useMemo(() => xpOf(s, now), [s, now]);
@@ -412,7 +419,7 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
   const pack = packOf(s);
   const relations = useMemo(() => relationsOf(s, now), [s, now]);
   const change = useMemo(() => changeSimOf(s), [s]);
-  const nextArrival = entries.find((e) => e.status === "futuro")?.arrivesAt ?? null;
+  const nextArrival = useMemo(() => nextArrivalOf(s, now), [s, now]);
 
   const start: Ctx["start"] = useCallback(({ name, email, phone, company, settings, profile, diagnostic, tier }) => {
     const t = Date.now();
@@ -469,7 +476,7 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
   const saveProfile = useCallback((pf: ProfessionalProfile) => setS((p) => { const v = sanitizeProfile(pf); return v ? { ...p, profile: v, savedAt: Date.now() } : p; }), []);
   const saveDiagnostic = useCallback((d: InitialDiagnostic) => setS((p) => { const v = sanitizeDiagnostic(d); return v ? { ...p, diagnostic: v, savedAt: Date.now() } : p; }), []);
   const snoozeProfile = useCallback(() => setS((p) => ({ ...p, profileNudge: snoozeNudge(p.profileNudge, Date.now()), savedAt: Date.now() })), []);
-  const openEpisode = useCallback((id: string, mode?: "estandar" | "flexible") => play((p) => { const at = nowOf(p); return { n: openEpisodeFn(p, id, at, mode), a: { type: "episodeOpen", at, id, ...(mode ? { mode } : {}) } }; }), [play]);
+  const openEpisode = useCallback((id: string, mode?: "estandar" | "flexible") => play((p) => { const at = nowOf(p); return { n: openSeasonEpisode(p, id, at, mode), a: { type: "episodeOpen", at, id, ...(mode ? { mode } : {}) } }; }), [play]);
   // El error se calcula con el estado actual (fuera de setS) para poder mostrarlo; la jugada se aplica con `play`.
   const episodeAct = useCallback((id: string, act: DistributiveOmit<EpisodeAction, "at">): string | null => {
     const cur = sRef.current;
@@ -485,7 +492,7 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
   const reset = useCallback(() => { localStorage.removeItem(user ? ownerKey(user.id) : KEY); seen.current = null; setS(newState()); }, [user]);
 
   const value: Ctx = {
-    ready, s, now, pack, rules: rulesFor(s), verdict, entries, inbox, pending, kpis: k, health: healthOf(k), xp, level: levelOf(xp), streak, day: seasonDay(s, now), seasonDone, nextArrival,
+    ready, s, now, pack, rules: rulesFor(s), verdict, entries, inbox, pending, episodes, kpis: k, health: healthOf(k), xp, level: levelOf(xp), streak, day: seasonDay(s, now), seasonDone, nextArrival,
     relations, changeOpen: changeOpen(s, now), cases: casesProgress(s, now, entries), change, startChange, playLever, closeChange,
     user, synced, toast, dismissToast: () => setToast(null), start, advance, switchCompany, decide, markRead, completeLesson, dilemma, answerDilemma, updateSettings, skipNext, testTools, importFlow, reset, journey, mastery, appoint, recordBoard, recordCrisis, saveProfile, saveDiagnostic, snoozeProfile,
     cadence: cadenceStatus(s, now), pauseCareer, resumeCareer, startQuietDay, returnDue: ready ? returnDueFn(s, now) : null, markReturnSeen, openEpisode, episodeAct, resetEpisode,

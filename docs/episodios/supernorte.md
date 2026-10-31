@@ -1,6 +1,6 @@
 # Piloto P0-B · Negociación SuperNorte
 
-Estado: **borrador para aprobación de Oziel**. No está publicado. Solo se puede abrir en modo prueba.
+Estado: **aprobado y publicado en la carrera normal** (versión 1.0.0, reglas v3). Llega solo en temporadas nuevas de Botanas Cumbre y cuenta para indicadores y XP. Detalle en `arquitectura-p0.md` §8.1.
 
 ## Qué es
 

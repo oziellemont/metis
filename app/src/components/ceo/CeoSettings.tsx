@@ -111,8 +111,8 @@ export function CeoSettings() {
         <p className="text-sm text-slate-500">Para recorrer la temporada sin esperar: adelanta el reloj hasta el siguiente mensaje.</p>
         <button type="button" onClick={c.skipNext} disabled={!c.nextArrival} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-ink hover:bg-slate-50 disabled:opacity-40"><FastForward size={15} /> Adelantar el reloj</button>
         <div className="pt-3 border-t border-slate-100">
-          <div className="text-sm font-medium text-ink">Casos ejecutivos (vista previa, sin publicar)</div>
-          <p className="mt-0.5 text-xs text-slate-500">Pilotos para revisión. No mueven tu temporada.</p>
+          <div className="text-sm font-medium text-ink">Casos ejecutivos</div>
+          <p className="mt-0.5 text-xs text-slate-500">En temporadas nuevas de Botanas Cumbre llegan solos y cuentan (adelanta el reloj para que lleguen). En temporadas anteriores o en otras empresas se abren aquí como práctica, sin mover tu temporada.</p>
           <ul className="mt-2 space-y-2">
             {Object.values(EPISODES).map((e) => (
               <li key={e.id} className="flex flex-wrap items-center gap-2">
