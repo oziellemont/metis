@@ -146,6 +146,7 @@ const firmar: Strategy = {
 
 const noFirmar: Strategy = {
   id: "no_firmar", text: "No firmar: prefiero perder un frente que aceptar condiciones que no se pagan solas.",
+  cues: ["no firm*", "no voy a firmar", "me levanto", "no es rentable", "perder un frente", "perder anaquel", "perder parte", "antes que firmar", "no se paga*", "no se sostiene"],
   flags: ["no_firma"], trust: -1,
   reply: [{ text: ["Entiendo, Director. Lamento no haber encontrado un punto medio.", "Le aviso que a partir del día 1 reasignamos uno de sus frentes."] }],
   next: [{ to: "close" }],
@@ -280,7 +281,7 @@ export const SUPERNORTE: EpisodeSpec = {
       reveal: [{ when: { all: ["explorar"] }, title: "Lo que Sofía compartió", rows: [["Su meta", "+2 pts de margen de categoría este trimestre"], ["Oferta de la regional", "5 pts, sin capacidad confirmada"]] }],
       ask: "¿Qué propones?", freeText: true,
       strategies: [
-        { id: "paquete", text: "Propuesta integral: ajustar descuento, inversión promocional ligada a sell-out y plazo.", flags: ["paquete"], params: [TERMS_PARAMS.descuento, TERMS_PARAMS.promo, TERMS_PARAMS.plazo],
+        { id: "paquete", text: "Propuesta integral: ajustar descuento, inversión promocional ligada a sell-out y plazo.", cues: ["paquete", "integral", "combin*", "todo junto", "tres palancas", "tres piezas", "plazo", "dias", "credito", "condiciones de pago"], flags: ["paquete"], params: [TERMS_PARAMS.descuento, TERMS_PARAMS.promo, TERMS_PARAMS.plazo],
           reply: [
             { when: { all: ["estado=2"] }, text: ["Mmm. {t:descuento} de descuento, {t:promo} en promoción con metas y pago a {t:plazo}.", "Eso sí lo puedo llevar. Pero antes de cerrar, déjeme plantearle algo."] },
             { text: ["{t:descuento} de descuento, {t:promo} en promoción y pago a {t:plazo}…", "Me falta camino. Déjeme decirle por qué."] },
@@ -292,7 +293,7 @@ export const SUPERNORTE: EpisodeSpec = {
             { dim: "consecuencias", level: 1, basis: "Cedió plazo sin revisar cuánto cuesta en caja.", when: { all: ["plazo>60"], none: ["q:plazo", "a:lucia"] } },
             { dim: "negociacion", level: 1, basis: "La oferta inicial ya concede 3 puntos o más: deja poco margen para negociar.", when: { all: ["descuento>=3"] } },
           ] },
-        { id: "volumen", text: "Descuento a cambio de volumen: los puntos que des, solo si SuperNorte compromete más volumen y un exhibidor.", flags: ["volumen_ofrecido"], params: [{ ...TERMS_PARAMS.descuento, default: 2 }, { key: "volumen", label: "Volumen comprometido", min: 0, max: 20, step: 5, default: 10, unit: "%", hint: "La planta surte hasta +15% sin turno extra" }],
+        { id: "volumen", text: "Descuento a cambio de volumen: los puntos que des, solo si SuperNorte compromete más volumen y un exhibidor.", cues: ["volumen", "caja", "cajas", "exhibidor", "exhibicion", "cabecera", "compr*", "anaquel"], flags: ["volumen_ofrecido"], params: [{ ...TERMS_PARAMS.descuento, default: 2 }, { key: "volumen", label: "Volumen comprometido", min: 0, max: 20, step: 5, default: 10, unit: "%", hint: "La planta surte hasta +15% sin turno extra" }],
           reply: [{ text: ["¿{t:descuento} a cambio de {t:volumen} más de volumen?", "Interesante, pero el volumen lo pone el consumidor, no yo. Le explico mi problema."] }],
           next: [{ to: "d3" }],
           evidence: [
@@ -318,14 +319,14 @@ export const SUPERNORTE: EpisodeSpec = {
       say: [{ text: ["Acabo de ver el anexo de SuperNorte.", "Con 90 días usamos $10.4 M de los $14 M de la línea. Y la cuenta queda en 3.1%: el consejo pidió no bajar de 4%.", "¿Qué hacemos?"] }],
       ask: "Lucía te alerta sobre la caja. ¿Qué decides?", freeText: true,
       strategies: [
-        { id: "linea", text: "Financiarlo con la línea de crédito y seguir.", flags: ["linea"],
+        { id: "linea", text: "Financiarlo con la línea de crédito y seguir.", cues: ["linea", "banco", "bancari*", "credito", "deuda", "prestamo", "prestado", "revolvente"], flags: ["linea"],
           reply: [{ text: ["Ok. Lo dejo documentado.", "Si otro cliente se atrasa, no tenemos colchón."] }], next: [{ to: "d3b" }],
           evidence: [{ dim: "riesgos", level: 1, basis: "Aceptó dejar la empresa sin colchón de liquidez." }],
           risks: [{ id: "sn-linea", text: "La línea de crédito queda casi agotada.", owner: "lucia" }] },
-        { id: "reabrir", text: "Regresar con Sofía a renegociar el plazo a 75 días.", set: { plazo: 75 }, flags: ["reabrir"], trust: -1,
+        { id: "reabrir", text: "Regresar con Sofía a renegociar el plazo a 75 días.", cues: ["sofia", "75", "renegoci*", "volver a hablar", "vuelvo a negociar", "dias de pago", "bajar el plazo"], set: { plazo: 75 }, flags: ["reabrir"], trust: -1,
           reply: [{ text: ["Me parece. Que se note que lo pedimos con datos, no por arrepentimiento."] }], next: [{ to: "d3b" }],
           evidence: [{ dim: "adaptacion", level: 2, basis: "Corrigió al recibir información nueva, aunque reabrir algo aceptado cuesta credibilidad." }] },
-        { id: "recorte", text: "Compensar recortando gasto en otra área este año.", flags: ["recorte"],
+        { id: "recorte", text: "Compensar recortando gasto en otra área este año.", cues: ["recort*", "gasto*", "presupuesto", "apret*", "compens*"], flags: ["recorte"],
           reply: [{ text: ["Puedo proponer recortes en mercadotecnia.", "Diego no va a estar contento con su línea premium."] }], next: [{ to: "d3b" }],
           evidence: [{ dim: "consecuencias", level: 2, basis: "Buscó cómo pagar la concesión, aunque traslada el costo a otro proyecto." }],
           risks: [{ id: "sn-recorte", text: "El recorte frena el proyecto premium de Diego.", owner: "diego" }] },
@@ -346,7 +347,7 @@ export const SUPERNORTE: EpisodeSpec = {
           reply: [{ when: { all: ["estado=2"] }, text: ["Con {t:descuento}, {t:promo} y {t:plazo}, ya nos estamos entendiendo."] }, { text: ["Con {t:descuento}, {t:promo} y {t:plazo}… sigue faltando."] }],
           next: [{ to: "d4" }],
           evidence: [{ dim: "adaptacion", level: 2, basis: "Ajustó términos en respuesta a la objeción." }] },
-        { id: "contrapartida", text: "Dar 75 días de plazo, pero solo a cambio de datos de sell-out por tienda y metas para la promoción.", set: { plazo: 75 }, flags: ["contrapartida"],
+        { id: "contrapartida", text: "Dar 75 días de plazo, pero solo a cambio de datos de sell-out por tienda y metas para la promoción.", cues: ["a cambio", "sell out", "tienda por tienda", "por tienda", "solo si", "siempre que", "nada gratis", "si a cambio", "metas"], set: { plazo: 75 }, flags: ["contrapartida"],
           reply: [{ text: ["75 días con metas por tienda… Eso lo puedo presentar.", "Y los datos de sell-out se los comparto; a mí también me sirven."] }],
           next: [{ to: "d4" }],
           evidence: [{ dim: "negociacion", level: 3, basis: "Cada concesión con una contrapartida que le sirve a ambos." }] },
@@ -383,7 +384,7 @@ export const SUPERNORTE: EpisodeSpec = {
         { id: "plantarse", text: "Negarse: ya cedimos 4 puntos y 90 días.", flags: ["se_planta"], trust: -1,
           reply: [{ text: ["Entiendo. Lo consulto con mi gerente.", "No le prometo nada."] }], next: [{ to: "d5" }],
           evidence: [{ dim: "negociacion", level: 2, basis: "Puso un límite, aunque tarde: lo que ya cedió no tuvo contrapartida." }] },
-        { id: "cuota_datos", text: "Aceptar la cuota solo a cambio de datos de sell-out por tienda y metas para el exhibidor.", set: { cuota: 1.5 }, flags: ["contrapartida"],
+        { id: "cuota_datos", text: "Aceptar la cuota solo a cambio de datos de sell-out por tienda y metas para el exhibidor.", cues: ["solo si", "a cambio", "siempre que", "siempre y cuando", "condicion*", "por tienda", "sell out", "metas", "si me dan", "si nos"], set: { cuota: 1.5 }, flags: ["contrapartida"],
           reply: [{ text: ["Me parece justo. Le comparto el sell-out semanal."] }], next: [{ to: "d5" }],
           evidence: [{ dim: "adaptacion", level: 3, basis: "Aprendió del error: esta concesión sí trae contrapartida." }] },
       ],
@@ -437,7 +438,7 @@ export const SUPERNORTE: EpisodeSpec = {
       ask: "Momento de cerrar. ¿Qué decides?", freeText: true,
       strategies: [
         firmar,
-        { id: "ultima", text: "Una última concesión para cerrar ya.", requires: { all: ["brecha>0"] }, params: [{ ...TERMS_PARAMS.descuento, default: 3 }],
+        { id: "ultima", text: "Una última concesión para cerrar ya.", cues: ["ultim*", "concesion", "un poquito mas", "un punto", "cedo", "para que firmen", "empujon"], requires: { all: ["brecha>0"] }, params: [{ ...TERMS_PARAMS.descuento, default: 3 }],
           reply: [{ when: { all: ["estado=2"] }, text: ["Trato hecho, Director. Con {t:descuento} lo firmo."] }, { when: { all: ["estado=1"] }, text: ["Con {t:descuento} acepto, con un frente menos en 40 tiendas."] }, { text: ["Lo siento, Director. Aun así no me alcanza."] }],
           next: [{ when: { all: ["estado>=1"], none: ["delegado"] }, to: "d6" }, { to: "close" }],
           evidence: [{ dim: "negociacion", level: 1, basis: "Cerró cediendo al final, sin contrapartida." }] },

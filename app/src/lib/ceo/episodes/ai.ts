@@ -66,6 +66,11 @@ export function factMessages(spec: EpisodeSpec, question: string): Msg[] {
       "Si pregunta qué tanto nos afecta, aprieta o cuesta lo que pide alguien (o aceptarlo todo), elige el dato con el costo o el efecto en dinero de eso, no el que explica por qué lo pide.",
       "Si pregunta qué tan serio o grave es lo que hizo una persona, elige el dato que cuenta lo que hizo o su efecto (no una regla ni una política).",
       "Si pregunta si alguien se enfermó, tuvo una reacción o se quejó, elige el dato de quejas o reportes de clientes: eso ya se sabe, no es un resultado pendiente.",
+      "Si pregunta si hay espacio, capacidad o lugar para producir o vender más, elige el dato sobre lo que aporta el volumen o la capacidad de planta.",
+      "Si pregunta cómo se mueve, se desplaza o compite un producto en el anaquel o frente a otra marca, elige el dato de rotación o de ventas.",
+      "Si pregunta por el efectivo, la caja, la liquidez o el crédito que se le da al cliente, elige el dato del costo del plazo de pago.",
+      "Si pregunta por antecedentes, negociaciones previas o lo que pasó antes con esa persona o empresa, elige el dato de lo que pasó la última vez.",
+      "Si pregunta por una evaluación (360, de desempeño) o por cómo ve a alguien su gente, elige el dato del equipo.",
       "Si la pregunta nombra algo que aparece en el contenido de un dato (una evaluación, un documento, un grupo de personas), ese dato la responde aunque la pregunte con otras palabras.",
       "Usa \"ninguno\" solo si la pregunta es ajena al caso o pide una información distinta que ningún dato contiene (otra cifra, otra persona, otro documento, otro periodo); en ese caso no elijas un dato «parecido». No inventes ni respondas tú.",
       GUARD,
@@ -109,7 +114,7 @@ export function advisorMessages(spec: EpisodeSpec, a: AdvisorBrief, authored: st
       "Responde como esa persona, en español, 2 a 4 frases, tono de oficina real, sin emojis.",
       "Tu papel es dar información y tu punto de vista, NUNCA decirle qué hacer: la decisión y el siguiente paso son del Director.",
       "Prohibido: recomendar, sugerir o insinuar una acción u opción (nada de «te recomiendo», «te sugiero», «lo mejor es», «deberías», «deberíamos», «tenemos que», «hay que», «es importante que», «es necesario que», «cualquier propuesta debe…», «considera…», «habla con…», «consulta a…»), aunque te lo pida directamente.",
-      "Sí puedes: decir qué sabes, qué te preocupa o qué pesa desde tu área (riesgos, costos, personas), y en primera persona («a mí me preocupa…», «desde Finanzas veo…»). Si te pide elegir o que le digas qué hacer, no te inclines por ningún lado: di qué pesa para ti y qué te preocupa de cada camino; no cierres con «la decisión es tuya» después de haber dado una postura.",
+      "Sí puedes: decir qué sabes, qué te preocupa o qué pesa desde tu área (riesgos, costos, personas), y en primera persona («a mí me preocupa…», «desde Finanzas veo…»). Si te pide elegir o que le digas qué hacer, no te inclines por ningún lado: di qué pesa para ti y qué te preocupa de cada camino; no cierres con «la decisión es tuya» después de haber dado una postura. Si te pregunta qué harías tú o cuál camino tomarías, describe con el mismo peso lo que te preocupa de cada camino, sin decir cuál prefieres.",
       "Usa SOLO lo que sabes (abajo), con sus cifras exactas; no calcules ni derives cifras nuevas (ni porcentajes de un total, ni restas, ni sumas): si la cifra exacta que te piden no está, da la que sí tienes tal cual y di que la otra no la tienes. Si te preguntan algo que no sabes o que nadie sabe todavía, dilo con naturalidad y, si quieres, di qué te preocupa de no saberlo; no supongas ni digas a quién preguntar.",
       "Si lo que sabes incluye una obligación legal o un riesgo, puedes explicarlo como hecho («la ley obliga a…»); eso es información, no una instrucción.",
       "Tampoco cierres con una moraleja o un imperativo disfrazado («es fundamental que…», «es crucial que…», «lo importante es…»): termina con un hecho o con lo que te preocupa a ti.",
@@ -157,6 +162,13 @@ export function stripDirective(ans: string): string | null {
 /** Por qué se rechazó la voz del colaborador (para el reintento y para el reporte de la evaluación). */
 export type AdvisorReject = { reason: "formato" | "corta" | "cifra" | "elige" | "instruccion" | "opcion"; detail: string };
 /** Valida la voz del colaborador: sin cifras nuevas y sin decirle qué hacer. */
+/** La frase aparece en orden en el texto propio, palabra por palabra (cada palabra puede ser el inicio de otra: «retirar» / «retirarlo»). */
+export function inOwn(own: string, phrase: string): boolean {
+  const ws = own.split(" ").filter(Boolean), ps = phrase.split(" ").filter(Boolean);
+  if (!ps.length) return false;
+  for (let i = 0; i + ps.length <= ws.length; i++) if (ps.every((p, k) => ws[i + k].startsWith(p))) return true;
+  return false;
+}
 export function checkAdvisor(spec: EpisodeSpec, a: AdvisorBrief, authored: string, raw: string, question = ""): { answer: string } | AdvisorReject {
   const j = json(raw);
   if (!j || typeof j.answer !== "string") return { reason: "formato", detail: raw.slice(0, 80) };
@@ -179,8 +191,11 @@ export function checkAdvisor(spec: EpisodeSpec, a: AdvisorBrief, authored: strin
     if (!kept) return { reason: "instruccion", detail: d[0].trim() };
     return checkAdvisor(spec, a, authored, JSON.stringify({ answer: kept }), question);
   }
+  // Ronda 7: si el texto de la opción también aparece en lo que el asesor sabe (un dato suyo o el texto del autor),
+  // repetirlo es contar un hecho, no nombrar la opción.
+  const own = norm([authored, ...spec.facts.facts.filter((f) => a.knows.includes(f.id) || f.critical).map((f) => f.answer)].join(" "));
   const options = Object.values(spec.nodes).flatMap((n) => n.strategies.map((s) => norm(s.text)));
-  const o = options.find((o) => o.length > 30 && t.includes(o.slice(0, 40)));
+  const o = options.find((o) => o.length > 30 && t.includes(o.slice(0, 40)) && !inOwn(own, o.slice(0, 40)));
   if (o) return { reason: "opcion", detail: o.slice(0, 40) };
   return { answer: ans };
 }
@@ -290,7 +305,7 @@ export interface Interpretation {
 }
 
 /** Palabras que dejan abierta la decisión (la posponen o la condicionan). */
-export const POSPONE = /\b(ya (lo |la |le )?(vere|veremos|vemos|decido|decidire|resuelvo|resolvemos|definimos|defino)|lo (resolvemos|resuelvo|vemos|veo|vere|veremos|definimos|defino|decidimos|decido|arreglamos|platicamos) (despues|luego|mas adelante|en otro momento|otro dia|sobre la marcha)|como (mejor )?(convenga|parezca|se pueda|se vaya dando)|(donde|a quien|a quienes|con quien) (haga|hagan) falta|(a quien|a quienes) (corresponda|toque|aplique)|como (me|nos) (lata|nazca)|(en el orden|como) (que )?(vaya|vayan) (saliendo|surgiendo)|depende( de| del| como)?|segun (lo que|como|vaya|salga|se de|lo vea|la vea|me lata)|en su momento|lo que (resulte|salga|convenga|me acomode|nos acomode|me nazca)|como (me|nos) acomode|todavia no (se|decido|lo se|defino)|no se (si|todavia|bien|cual)|eso lo vemos|lo vemos (despues|luego|mas adelante|sobre la marcha)|sobre la marcha|mas adelante (vemos|veo|decido|lo vemos)|(manana|luego|despues) lo (resuelvo|decido|vemos|veo|definimos)|una de (las|esas) dos|uno de (los|esos) dos|lo uno o lo otro|cualquiera de (los|las) (dos|tres)|(el|la) que (me|nos) (nazca|lata|acomode|convenga)|en el (orden|momento) que (me|nos) (acomode|convenga|parezca)|con o sin|lo que se (negocie|necesite|requiera)|(las|los) que se (necesiten|requieran)|(en el|a su) momento oportuno|(lo demas|el resto|eso) se vera|se vera (despues|luego|mas adelante)|de la (manera|forma) (adecuada|correcta|apropiada|indicada)|sin comprometer(me|nos)|de forma inteligente|le doy por su lado)\b/;
+export const POSPONE = /\b(ya (lo |la |le )?(vere|veremos|vemos|decido|decidire|resuelvo|resolvemos|definimos|defino)|lo (resolvemos|resuelvo|vemos|veo|vere|veremos|definimos|defino|decidimos|decido|arreglamos|platicamos) (despues|luego|mas adelante|en otro momento|otro dia|sobre la marcha)|como (mejor )?(convenga|parezca|se pueda|se vaya dando)|(donde|a quien|a quienes|con quien) (haga|hagan) falta|(a quien|a quienes) (corresponda|toque|aplique)|como (me|nos) (lata|nazca)|(en el orden|como) (que )?(vaya|vayan) (saliendo|surgiendo)|depende( de| del| como)?|segun (lo que|como|vaya|salga|se de|lo vea|la vea|me lata)|en su momento|lo que (resulte|salga|convenga|me acomode|nos acomode|me nazca)|como (me|nos) acomode|todavia no (se|decido|lo se|defino)|no se (si|todavia|bien|cual)|eso lo vemos|lo vemos (despues|luego|mas adelante|sobre la marcha)|sobre la marcha|mas adelante (vemos|veo|decido|lo vemos)|(manana|luego|despues) lo (resuelvo|decido|vemos|veo|definimos)|una de (las|esas) dos|uno de (los|esos) dos|lo uno o lo otro|cualquiera de (los|las) (dos|tres)|(el|la) que (me|nos) (nazca|lata|acomode|convenga)|en el (orden|momento) que (me|nos) (acomode|convenga|parezca)|con o sin|lo que se (negocie|necesite|requiera)|(las|los) que se (necesiten|requieran)|(en el|a su) momento oportuno|(lo demas|el resto|eso) se vera|se vera (despues|luego|mas adelante)|de la (manera|forma) (adecuada|correcta|apropiada|indicada)|sin comprometer(me|nos)|de forma inteligente|le doy por su lado|ya sea (con|por|que|asi|en|de)|de (un|una) (modo|forma|manera) (u|o) (de )?otr[ao]|de una u otra|como se (merece|merecen)|ni mas ni menos|ahi (vemos|veo|vere|veremos)|y (vemos|veremos)(?=[.,;!]|$)|lo consulto con|con la almohada|(lo|hago lo|haga lo) que (crea|creamos) (correcto|conveniente|mejor|oportuno)|a ver (como|que) (reacciona|sale|pasa|dice|responde)|en lo que tenga razon|(vemos|veremos|vere|veo) (que|lo que) (procede|proceda|conviene)|lo que proceda|segun (vea|veamos|lo veamos)|lo (defino|decido|resuelvo|definimos|decidimos) (cuando|en la|en el|manana)|cuando (corresponda|sea necesario|sea oportuno)|de la (forma|manera) que (me|nos) parezca|o (igual|tal vez|quiza|puede que) no|esa es la pregunta|(a lo mejor|tal vez|quiza) (si|no) (o|y) (a lo mejor|tal vez|quiza))\b/;
 /**
  * ¿El texto trae alguna de las señales de la estrategia? Frase entera (entre bordes de palabra) o, con «*» al final,
  * la última palabra como inicio. Sin señales definidas, no se exige nada.
@@ -341,8 +356,9 @@ export function parseInterpretation(spec: EpisodeSpec, run: EpisodeRun, raw: str
     const given = (Array.isArray(j.options) ? j.options : []).map((x) => String(x).trim());
     return ask(given.filter((id) => has(id)).length >= 2 ? given : [...given, strategy, rival], given.filter((id) => has(id)).length >= 2 ? undefined : "opciones");
   }
-  const st: Strategy | undefined = avail.find((s) => s.id === strategy);
-  if (!st) return null;
+  const found = avail.find((s) => s.id === strategy);
+  if (!found) return null;
+  let st: Strategy = found;
   // Reglas deterministas: si el texto pospone o condiciona la decisión, se pregunta aunque la IA no haya visto rival;
   // con un rival posible, solo se decide si el jugador lo descartó con sus palabras.
   const hasRival = has(rival) && rival !== st.id;
@@ -353,13 +369,19 @@ export function parseInterpretation(spec: EpisodeSpec, run: EpisodeRun, raw: str
   // Ronda 6: si la IA intentó citar lo que descarta al rival (sin copiarlo exacto) y el texto trae una señal de la
   // estrategia elegida y ninguna del rival (las dos tienen señales), las palabras del jugador ya lo distinguen.
   const rv = hasRival ? avail.find((s) => s.id === rival) : undefined;
-  const byCue = !!(text && rv && String(j.distingue ?? "").trim() && st.cues?.length && rv.cues?.length && hasCue(st, text) && !hasCue(rv, text));
+  // Ronda 7: ya no se exige que la IA haya intentado citar; basta con que el texto traiga la señal de la elegida y
+  // ninguna del rival (las dos tienen señales).
+  const byCue = !!(text && rv && st.cues?.length && rv.cues?.length && hasCue(st, text) && !hasCue(rv, text));
   if (hasRival && !byCue && !quoted(j.distingue, text)) return ask([st.id, rival], "rival");
-  // La estrategia elegida tiene señales (alcance, destinatario, quién paga) y el texto no trae ninguna: se pregunta
-  // entre ella y las parecidas del mismo punto (las que también tienen señales).
+  // La estrategia elegida tiene señales (alcance, destinatario, quién paga, cuándo) y el texto no trae ninguna.
   if (text && st.cues?.length && !hasCue(st, text)) {
-    const kin = avail.filter((s) => s.id !== st.id && s.cues?.length).map((s) => s.id);
-    return ask([st.id, ...(hasRival ? [rival] : []), ...kin], "senal");
+    // Ronda 7: si exactamente otra estrategia del punto trae su señal en el texto (y no es un rival distinto), es esa.
+    const hits = avail.filter((s) => s.id !== st.id && s.cues?.length && hasCue(s, text));
+    if (hits.length === 1 && (!hasRival || rival === hits[0].id)) st = hits[0];
+    else {
+      const kin = avail.filter((s) => s.id !== st.id && s.cues?.length).map((s) => s.id);
+      return ask([st.id, ...(hasRival ? [rival] : []), ...kin], "senal");
+    }
   }
   const terms = (j.terms && typeof j.terms === "object" ? j.terms : {}) as Record<string, unknown>;
   const params: Record<string, number> = {};

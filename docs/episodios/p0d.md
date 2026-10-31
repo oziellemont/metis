@@ -403,3 +403,49 @@ Para bajar el gasto, el desarrollo cambia así; la validación queda igual (3 co
 - Estimación conservadora: desarrollo $0.24 (antes $0.60) y validación + demos $0.23. Con el ~60% real, el desarrollo costará unos $0.15.
 - Los archivos viejos siguen en el repositorio y en la prueba de que la validación no repite frases de desarrollo.
 
+## 11. Ronda 7: más señales que distinguen, menos preguntas de más, datos con otras palabras y colaborador que cuenta sus propios datos
+
+### 11.1 Diagnóstico (validación de la ronda 6, gpt-4o-mini, $0.14; desarrollo $0.13)
+
+| Medida | Validación | Desarrollo | Meta |
+|---|---|---|---|
+| Interpretación | 89% (ambiguas 38.1%) | 98.6% | ≥95% |
+| Ambiguas comprometidas | 12 | 1 | 0 |
+| Consistencia | 96.9% | (1 pasada) | ≥95% |
+| Datos | 100% | 94.4% | ≥95% |
+| Colaborador | 88.9% | 92.4% (tentar 77.8%) | ≥95% |
+
+Lo que falló:
+
+- **Ambiguas comprometidas (12).** Frases vagas («como se merece», «ya sea con… o con…», «lo consulto con la almohada», «vemos qué procede», «y vemos.») que el filtro de «pospone» no conocía, y estrategias sin señales: la IA elegía una aunque el texto no dijera el alcance, el momento o quién paga.
+- **Preguntar de más (desarrollo, a4: 3).** Con un rival posible solo se decidía si la IA había intentado citar lo que lo descarta; cuando no lo citaba, se preguntaba aunque las palabras del jugador lo dejaban claro.
+- **Datos con otras palabras (desarrollo: 5 respondidas «ninguno»).** Espacio o capacidad de planta, cómo se desplaza el producto en anaquel, efectivo o crédito al cliente, negociaciones previas y la evaluación 360.
+- **Colaborador.** Se rechazaba a Lucía por «nombrar una opción» cuando solo repetía su propio dato («retirar solo de las 12 tiendas…»). En las preguntas que tientan («¿tú qué harías?») a veces se inclinaba por un camino.
+- **Adaptación.** Pasaban moralejas nuevas como «es clave que…», «es bueno que…» o «hay que actuar…».
+
+### 11.2 Qué cambió
+
+- **Pospone:** se agregaron las formas vagas de la ronda 6 (lista en `POSPONE`, `ai.ts`). Ninguna frase clara de desarrollo ni de validación cae en ellas (prueba).
+- **Señales:** casi todas las estrategias de los tres casos tienen ahora señales (`cues`). Si la IA elige una con señales y el texto no trae ninguna, se pregunta (guardia «senal»). Si el texto trae la señal de exactamente otra estrategia del punto, se toma esa en vez de preguntar.
+- **Rival:** basta con que el texto traiga la señal de la elegida y ninguna del rival, aunque la IA no haya citado; con señales de las dos se sigue preguntando.
+- **Datos:** cinco reglas nuevas en el prompt para esas paráfrasis.
+- **Colaborador:** si el texto de una opción también aparece en lo que el asesor sabe (sus datos o el texto del autor), repetirlo no cuenta como nombrar la opción. Ante «¿tú qué harías?», el asesor describe con el mismo peso lo que le preocupa de cada camino.
+- **Adaptación:** la lista de moralejas incluye «es clave/bueno/necesario que», «X es clave en/para» y «hay que actuar».
+
+### 11.3 Conjuntos
+
+- **Desarrollo:** las validaciones de las rondas 5 y 6 completas (`eval-dev-ronda6.ts` es la validación de la ronda 6) y, de las rondas anteriores, solo lo difícil y los fallos históricos (4 nuevos en `DEV_HISTORIC_MISSES`). Tiene 337 respuestas, 102 datos y 145 consultas.
+- **Validación ronda 7** (`eval-validacion.ts`), escrita ANTES de ajustar reglas y prompts. Tiene:
+  - 133 respuestas: 84 claras, 18 con propuesta propia, 23 ambiguas y 8 fuera de tema, varias con tono marcado;
+  - 28 preguntas de datos y 36 consultas;
+  - tres demostraciones con frases nuevas.
+- Las pruebas verifican que ninguna frase de validación está en desarrollo (rondas 1 a 6) ni en los prompts, y que toda respuesta clara trae su señal y no pospone.
+- Un solo ajuste tocó algo que también usa la validación: la señal «entra otro / se va el proveedor» para «cambiar de proveedor». Es genérica y no se escribió a la medida de una frase.
+
+### 11.4 Costo y cómo correr
+
+Estimación conservadora: validación + demos $0.24 y desarrollo $0.29. El gasto real ha sido cerca de la mitad de lo estimado.
+
+1. **Validación final (ronda 7)**, que incluye las demostraciones. Copia el texto completo.
+2. **Desarrollo**, el mismo día si se quiere.
+

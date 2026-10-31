@@ -99,7 +99,7 @@ export const VALIDATION_SET: ValItem[] = [
     ["clara", "como_siempre", "Héctor, con todo respeto por tus 22 años, sigue llevándola como siempre; confío en ti.", 1],
     ["parcial", "yo", "Yo me encargo personalmente de Sofía; y además le pido a Lucía un resumen de margen cada mes."],
     ["ambigua", ["tablero", "como_siempre"], "Que alguien le dé seguimiento serio."],
-    ["fuera", null, "¿Qué libro me recomiendas para las vacaciones?"],
+    ["fuera", null, "¿Qué película me recomiendas para el fin de semana?"],
   ]),
   // ─── Diego
   ...V("diego", "p1", [
