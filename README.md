@@ -1,2 +1,0 @@
-# metis
-Strategy &amp; Growth
