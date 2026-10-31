@@ -13,6 +13,7 @@ import { isDisplayCurrency } from "./career/money";
 import { TAXONOMY_VERSION } from "./career/taxonomy";
 import { brandDeep, brandPack, brandText, type Brand } from "./career/template";
 import { industryLongFor } from "./career/lexicon";
+import { ASSUMPTIONS_VERSION, sanitizeBusiness } from "./business/model";
 import { sanitizeEpisodes } from "./episodes/engine";
 import { EPISODES, SEASON_EPISODES, openEpisode as openEpisodeRaw } from "./episodes/catalog";
 import type { EpisodeRun, EpisodeSpec } from "./episodes/contracts";
@@ -140,6 +141,7 @@ export function migrate(raw: unknown): CeoState {
   if (out.careerMode === "continua" && !out.companyProfile) delete out.careerMode;
   if (out.careerMode === "continua" && out.companyProfile) out.company = out.companyProfile.contentPackId;
   if (out.settings.displayCurrency !== undefined && !isDisplayCurrency(out.settings.displayCurrency)) delete out.settings.displayCurrency;
+  if (out.business !== undefined) { const b = sanitizeBusiness(out.business); if (b) out.business = b; else delete out.business; }
   return out;
 }
 
@@ -821,7 +823,8 @@ export function setupCompany(s: CeoState, input: Omit<NewCompanyInput, "at">, no
   if (s.companyProfile || Object.keys(s.decisions).length) return s;
   const profile = newCompanyProfile({ ...input, at: now }, TAXONOMY_VERSION);
   if (!profile) return s;
-  return { ...fresh(s, profile.contentPackId, s.tier, now, undefined, CONTINUOUS_RULES_VERSION), careerMode: "continua", companyProfile: profile };
+  // Los supuestos del negocio se congelan al crear la empresa (como las reglas de una temporada).
+  return { ...fresh(s, profile.contentPackId, s.tier, now, undefined, CONTINUOUS_RULES_VERSION), careerMode: "continua", companyProfile: profile, business: { assumptionsVersion: ASSUMPTIONS_VERSION, allocations: [] } };
 }
 /** Cambia el nombre de la empresa. Conserva `companyId`, decisiones, periodo y todo lo demás. */
 export function renameCompany(s: CeoState, displayName: string, shortName: string | undefined, now = nowOf(s)): CeoState {

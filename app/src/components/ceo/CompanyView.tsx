@@ -6,6 +6,7 @@ import { KPI_KEYS } from "@/lib/ceo/engine";
 import { COMPANIES } from "@/lib/ceo/companies";
 import { useCeo } from "./CeoProvider";
 import { OrgMap } from "./OrgMap";
+import { BusinessPanel } from "./BusinessPanel";
 import { CompanyMark } from "./ui";
 import { NAME_MAX } from "@/lib/ceo/career/identity";
 import { effectiveShort } from "@/lib/ceo/career/setup";
@@ -48,6 +49,8 @@ export function CompanyView() {
         )}
       </section>
 
+      {c.continuous && <BusinessPanel />}
+
       <section className="card p-5 sm:p-6">
         <div className="flex items-center gap-2"><Network size={17} className="text-indigo" /><h2 className="font-semibold text-ink">Mapa de la organización</h2></div>
         <p className="mt-1 text-sm text-slate-500">Quién le reporta a quién, quiénes se apoyan y dónde hay fricción. En un caso, las decisiones casi nunca afectan a una sola persona.</p>
@@ -56,7 +59,7 @@ export function CompanyView() {
 
       <section className="card p-5 sm:p-6">
         <h2 className="font-semibold text-ink">Cómo te mide el consejo</h2>
-        <p className="mt-1 text-sm text-slate-500">Para ascender, cada rubro debe cerrar en <b className="text-ink">{c.verdict.passLine}</b> o más.</p>
+        <p className="mt-1 text-sm text-slate-500">{c.continuous ? "Cinco índices de salud de 0 a 100, aparte del dinero. " : ""}Para ascender, cada rubro debe cerrar en <b className="text-ink">{c.verdict.passLine}</b> o más.</p>
         <dl className="mt-4 grid gap-3 sm:grid-cols-2">
           {KPI_KEYS.map((k) => (
             <div key={k} className="rounded-2xl border border-slate-100 p-4">
