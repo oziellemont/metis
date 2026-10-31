@@ -21,21 +21,23 @@ Fuentes:
 
 ## 2. Matriz del foco de lanzamiento
 
+> Actualizada al catálogo v2 (lógica SCIAN, corrección de Oziel del 31-oct-2026). Ver `arquitectura-universal.md` §9.
+
 Leyenda:
 - **Listo**: casos aprobados hoy.
 - **Paquete nuevo**: sus casos salen del motor de casos y de redacción, con aprobación.
 - **Próximamente**: se ve en el selector, pero no se puede elegir.
 
-| Sector → Industria (id en `career/taxonomy.ts`) | Paquete hoy | PYME | Startup en operación | Establecida |
+| Sector → Industria (id en `career/taxonomy.ts`, catálogo v2) | Paquete hoy | PYME | Startup en operación | Establecida |
 |---|---|---|---|---|
-| Alimentos y bebidas → Botanas y snacks (`botanas_y_snacks`) | Cumbre | Paquete nuevo (escalar montos) | Próximamente | **Listo** |
-| Automotriz → Fabricación de autopartes (`fabricacion_de_autopartes`) | Forja | Paquete nuevo | Próximamente | **Listo** |
-| Turismo y gastronomía → Restaurantes (`restaurantes`) | Brasa | Paquete nuevo | Próximamente | **Listo** |
-| Tecnología → Software empresarial B2B / SaaS (`software_empresarial_b2b`) | — | Paquete nuevo | **Paquete nuevo (prioridad: el ejemplo de Nexo Labs)** | Paquete nuevo |
-| Manufactura → Plásticos, empaques, manufactura por contrato | — (familia de Forja) | Paquete nuevo | Próximamente | Paquete nuevo |
-| Retail → Comercio omnicanal / tiendas especializadas | — (familia de Brasa en sucursales) | Paquete nuevo | Paquete nuevo (e-commerce DTC) | Paquete nuevo |
-| Logística → Transporte de carga / 3PL / almacenes | — | Paquete nuevo | Paquete nuevo (última milla) | Paquete nuevo |
-| Los otros 14 sectores | — | Próximamente | Próximamente | Próximamente |
+| Manufactura → Alimentos y bebidas (`manufactura/alimentos_bebidas`) | Cumbre | Paquete nuevo (escalar montos) | Próximamente | **Listo** |
+| Manufactura → Autopartes (`manufactura/autopartes`) | Forja | Paquete nuevo | Próximamente | **Listo** |
+| Restaurantes y servicios de alimentos → Restaurantes (`restaurantes_alimentos/restaurantes`) | Brasa | Paquete nuevo | Próximamente | **Listo** |
+| Tecnología e información → Software y SaaS (`tecnologia_informacion/software_saas`) | — | Paquete nuevo | **Paquete nuevo (prioridad: el ejemplo de Nexo Labs)** | Paquete nuevo |
+| Manufactura → Manufactura industrial general (`manufactura/manufactura_general`) | — (familia de Forja) | Paquete nuevo | Próximamente | Paquete nuevo |
+| Comercio → Retail (`comercio/retail`) | — (familia de Brasa en sucursales) | Paquete nuevo | Paquete nuevo (e-commerce DTC) | Paquete nuevo |
+| Transporte y almacenamiento → Logística y distribución (`transporte_almacenamiento/logistica_distribucion`) | — | Paquete nuevo | Paquete nuevo (última milla) | Paquete nuevo |
+| Los otros 12 sectores del catálogo v2 | — | Próximamente | Próximamente | Próximamente |
 
 En la primera taxonomía (PR P0-B1) solo quedan jugables las 3 combinaciones «establecida» que ya tienen casos. La PYME de botanas, autopartes y restaurantes se abre cuando se escalen los montos de sus casos (no es lo mismo un crédito de $40 M que uno de $4 M). Así nunca entra nadie a una simulación incoherente.
 

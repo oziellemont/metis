@@ -6,7 +6,8 @@ import { DAY, H, KPI_KEYS, advance, arrivalOf, decide, dominates, entries, kpis,
 import type { CeoState, ChangeMove, CompanyPack, LeverId } from "./types";
 import { LEVERS, canUse, leverById, simulate } from "./change";
 import { closeChange, entryRipples, playLever, relationsOf, ripplesOf, startChange } from "./relations";
-import { casesDoneOf, changeKpiEffect, changeOpen, episodeEntries, nextArrivalOf, openSeasonEpisode, packOf } from "./engine";
+import { casesDoneOf, changeKpiEffect, changeOpen, episodeEntries, isContinuous, nextArrivalOf, openSeasonEpisode, packOf, renameCompany, setupCompany, switchCompany, RULES_VERSION } from "./engine";
+import { CONTINUOUS_RULES_VERSION } from "./rules";
 import { EPISODES, actEpisode } from "./episodes/catalog";
 import { applyEpisode, strategiesFor, type EpisodeAction } from "./episodes/engine";
 import type { EpisodeRun } from "./episodes/contracts";
@@ -366,5 +367,88 @@ describe("relaciones y proyecto de cambio", () => {
     expect(seasonDoneOf(s1, done.t)).toBe(true);
     expect(Object.values(changeKpiEffect(s1)).some((v) => (v ?? 0) < 0)).toBe(true);
     expect(kpis(s1, done.t).consejo).toBeLessThan(before.consejo);
+  });
+});
+
+// ───────────────────────────────────────────── carrera continua (P0-B2)
+describe("carrera continua · identidad y reglas v4", () => {
+  const CID = "3f1c2a4b-5d6e-4f70-8a9b-0c1d2e3f4a5b";
+  const SETUP = { companyId: CID, sectorId: "manufactura", industryId: "alimentos_bebidas", archetype: "establecida", displayName: "Casa Norte Alimentos" };
+  const own = () => setupCompany(started(), SETUP, T0);
+
+  it("crear la empresa: modo continua, reglas v4, paquete de la industria y textos con su nombre", () => {
+    const s = own();
+    expect(s.careerMode).toBe("continua");
+    expect(s.rulesVersion).toBe(CONTINUOUS_RULES_VERSION);
+    expect(s.company).toBe("cumbre");
+    expect(s.companyProfile?.displayName).toBe("Casa Norte Alimentos");
+    expect(packOf(s).name).toBe("Casa Norte Alimentos");
+    expect(JSON.stringify(packOf(s).items)).not.toMatch(/Cumbre/);
+    // la v4 no es la versión por omisión: las temporadas siguen en v3
+    expect(RULES_VERSION).toBe(3);
+    expect(newState().rulesVersion).toBe(3);
+  });
+
+  it("solo se crea una vez, antes de decidir, y con una combinación jugable", () => {
+    const s = own();
+    expect(setupCompany(s, { ...SETUP, displayName: "Otra" }, T0 + 1)).toBe(s);
+    const decided = decide(started(), "d1-bienvenida", "a", T0 + 60_000);
+    expect(setupCompany(decided, SETUP, T0 + 120_000)).toBe(decided);
+    const st = started();
+    expect(setupCompany(st, { ...SETUP, archetype: "pyme" }, T0)).toBe(st);
+    expect(setupCompany(st, { ...SETUP, sectorId: "tecnologia_informacion", industryId: "software_saas" }, T0)).toBe(st);
+  });
+
+  it("al cerrar el periodo sigue en LA MISMA empresa y con la misma exigencia, apruebe o no", () => {
+    const good = finish(own(), best);
+    expect(seasonDoneOf(good.s, good.t)).toBe(true);
+    const next = advance(good.s, good.t);
+    expect(next.company).toBe("cumbre");
+    expect(next.companyProfile?.companyId).toBe(CID);
+    expect(next.tier).toBe(0);
+    expect(next.rulesVersion).toBe(CONTINUOUS_RULES_VERSION);
+    expect(next.career).toHaveLength(1);
+    expect(next.decisions).toEqual({});
+    // aunque el cliente mande la versión de temporadas, el periodo nuevo sigue en v4
+    expect(advance(good.s, good.t, 3).rulesVersion).toBe(CONTINUOUS_RULES_VERSION);
+    const bad = finish(own(), worst, "skip");
+    const again = advance(bad.s, bad.t);
+    expect(again.company).toBe("cumbre");
+    expect(again.tier).toBe(0);
+  });
+
+  it("no se cambia de empresa en la carrera continua", () => {
+    const s = own();
+    expect(switchCompany(s, "forja", T0 + 1)).toBe(s);
+  });
+
+  it("renombrar conserva el id, el periodo y las decisiones", () => {
+    const s = decide(own(), "d1-bienvenida", "a", T0 + 60_000);
+    const r = renameCompany(s, "Norteña de Alimentos", undefined, T0 + 120_000);
+    expect(r.companyProfile).toMatchObject({ companyId: CID, displayName: "Norteña de Alimentos", shortName: "Norteña", renamedAt: T0 + 120_000 });
+    expect(r.decisions).toEqual(s.decisions);
+    expect(r.startedAt).toBe(s.startedAt);
+    expect(packOf(r).name).toBe("Norteña de Alimentos");
+    expect(renameCompany(s, "{x}", undefined, T0)).toBe(s);
+    expect(renameCompany(started(), "Algo", undefined, T0).companyProfile).toBeUndefined();
+  });
+
+  it("migrate: conserva la identidad, repara lo accesorio y vuelve a temporadas si la identidad no sirve", () => {
+    const s = own();
+    const m = migrate(JSON.parse(JSON.stringify(s)));
+    expect(m.companyProfile).toEqual(s.companyProfile);
+    expect(m.careerMode).toBe("continua");
+    // el paquete manda: si alguien cambió company a mano, se corrige al de su empresa
+    expect(migrate({ ...JSON.parse(JSON.stringify(s)), company: "forja" }).company).toBe("cumbre");
+    const broken = migrate({ ...JSON.parse(JSON.stringify(s)), companyProfile: { companyId: "x" } });
+    expect(broken.companyProfile).toBeUndefined();
+    expect(broken.careerMode).toBeUndefined();
+    expect(migrate({ ...started(), careerMode: "otro" }).careerMode).toBeUndefined();
+    expect(migrate({ ...started(), settings: { ...started().settings, displayCurrency: "EUR" } }).settings.displayCurrency).toBeUndefined();
+    expect(migrate({ ...started(), settings: { ...started().settings, displayCurrency: "USD" } }).settings.displayCurrency).toBe("USD");
+    // una partida de hoy no cambia
+    const legacy = started();
+    expect(migrate(JSON.parse(JSON.stringify(legacy))).careerMode).toBeUndefined();
+    expect(isContinuous(legacy)).toBe(false);
   });
 });

@@ -7,7 +7,11 @@ import { COMPANIES, FIRST_COMPANY, companyById } from "./companies";
 import { DILEMMAS, dilemmaById, type Dilemma } from "./dilemmas";
 import { changeEffect, simulate, type ChangeSim } from "./change";
 import { sanitizeDiagnostic, sanitizeProfile } from "./profile";
-import { LEGACY_RULES_VERSION, RULES_VERSION, isRulesVersion, ruleSet, tierRules } from "./rules";
+import { CONTINUOUS_RULES_VERSION, LEGACY_RULES_VERSION, RULES_VERSION, isRulesVersion, ruleSet, tierRules } from "./rules";
+import { newCompanyProfile, renameProfile, sanitizeCompanyProfile, type NewCompanyInput } from "./career/identity";
+import { isDisplayCurrency } from "./career/money";
+import { TAXONOMY_VERSION } from "./career/taxonomy";
+import { brandDeep, brandPack, brandText, type Brand } from "./career/template";
 import { sanitizeEpisodes } from "./episodes/engine";
 import { EPISODES, SEASON_EPISODES, openEpisode as openEpisodeRaw } from "./episodes/catalog";
 import type { EpisodeRun, EpisodeSpec } from "./episodes/contracts";
@@ -25,7 +29,22 @@ export const KPI_START: Kpis = { caja: 58, margen: 52, equipo: 55, clientes: 62,
 export const KPI_LABEL: Record<KpiKey, string> = { caja: "Caja", margen: "Margen", equipo: "Equipo", clientes: "Clientes", consejo: "Consejo" };
 
 // ───────────────────────────────────────────── empresa actual y exigencia
-export const packOf = (s: Pick<CeoState, "company">): CompanyPack => companyById(s.company);
+/** Marca del jugador (carrera continua) o null si juega las temporadas de siempre. */
+export const brandOf = (s: Pick<CeoState, "companyProfile">): Brand | null => {
+  const p = s.companyProfile;
+  return p ? { name: p.displayName, short: p.shortName, city: p.exposure?.baseCity } : null;
+};
+/** Paquete de la empresa actual. Con identidad propia, sus textos llevan el nombre que eligió el jugador. */
+export const packOf = (s: Pick<CeoState, "company"> & Partial<Pick<CeoState, "companyProfile">>): CompanyPack => brandPack(companyById(s.company), brandOf(s));
+/** Episodio con el nombre de la empresa del jugador (copia; ids, términos y reglas intactos). */
+export function brandedEpisode(spec: EpisodeSpec, s: Pick<CeoState, "companyProfile">): EpisodeSpec {
+  const b = brandOf(s);
+  if (!b) return spec;
+  const pk = companyById(spec.company);
+  return { ...brandDeep(spec, (t) => brandText(t, pk, b)), id: spec.id, company: spec.company, rules: spec.rules };
+}
+/** ¿Juega la carrera continua (una empresa persistente con identidad propia)? */
+export const isContinuous = (s: Pick<CeoState, "careerMode" | "companyProfile">): boolean => s.careerMode === "continua" && !!s.companyProfile;
 
 /**
  * Exigencia por nivel (tier). Cada empresa que apruebas sube un nivel; el modo Legendario suma 1 más.
@@ -104,6 +123,12 @@ export function migrate(raw: unknown): CeoState {
   if (out.profileNudge !== undefined) { const n = out.profileNudge as unknown as Record<string, unknown>; if (!n || typeof n.dismissed !== "number" || typeof n.until !== "number") delete out.profileNudge; }
   if (out.cadence !== undefined) { const c = sanitizeCadence(out.cadence); if (c) out.cadence = c; else delete out.cadence; }
   if (out.episodes !== undefined) { const e = sanitizeEpisodes(out.episodes); if (e) out.episodes = e; else delete out.episodes; }
+  // Carrera continua (P0-B2): identidad opcional. Sin identidad válida, la partida vuelve a «temporadas».
+  if (out.companyProfile !== undefined) { const p = sanitizeCompanyProfile(out.companyProfile); if (p) out.companyProfile = p; else delete out.companyProfile; }
+  if (out.careerMode !== undefined && out.careerMode !== "temporadas" && out.careerMode !== "continua") delete out.careerMode;
+  if (out.careerMode === "continua" && !out.companyProfile) delete out.careerMode;
+  if (out.careerMode === "continua" && out.companyProfile) out.company = out.companyProfile.contentPackId;
+  if (out.settings.displayCurrency !== undefined && !isDisplayCurrency(out.settings.displayCurrency)) delete out.settings.displayCurrency;
   return out;
 }
 
@@ -748,12 +773,19 @@ const fresh = (s: CeoState, company: string, tier: number, now: number, legendar
   ...s, company, tier, rulesVersion, legendary: legendary ?? s.legendary, startedAt: now, decisions: {}, pinned: {}, read: {}, change: undefined, lastActiveAt: now, savedAt: now,
 });
 
-/** Cierra la empresa actual y pasa a la siguiente (si aprobaste) o la repite (si no). */
+/**
+ * Cierra la empresa actual y pasa a la siguiente (si aprobaste) o la repite (si no).
+ * Carrera continua: cierra el periodo y sigue en LA MISMA empresa, con la misma exigencia (no hay «siguiente empresa»).
+ */
 export function advance(s: CeoState, now = nowOf(s), rulesVersion: number = RULES_VERSION): CeoState {
   if (!seasonDoneOf(s, now)) return s;
   const run = closeRun(s, now);
   const career = [...(s.career ?? []), run];
   const after = { ...s, career };
+  if (isContinuous(s)) {
+    const v = ruleSet(rulesVersion).career === "continua" ? rulesVersion : CONTINUOUS_RULES_VERSION;
+    return fresh(after, s.company, s.tier, now, undefined, v);
+  }
   if (!run.passed) return fresh(after, s.company, s.tier, now, undefined, rulesVersion);
   const next = nextCompanyOf(after);
   const passedCount = career.filter((r) => r.passed).length;
@@ -763,9 +795,28 @@ export function advance(s: CeoState, now = nowOf(s), rulesVersion: number = RULE
 
 /** Cambiar de empresa a media temporada (solo antes de la primera decisión). */
 export function switchCompany(s: CeoState, company: string, now = nowOf(s)): CeoState {
-  if (Object.keys(s.decisions).length || !COMPANIES.some((c) => c.id === company)) return s;
+  // En la carrera continua la empresa es persistente: no se cambia (las rotaciones serán misiones aparte).
+  if (isContinuous(s) || Object.keys(s.decisions).length || !COMPANIES.some((c) => c.id === company)) return s;
   // Cambiar antes de decidir es la misma temporada recién iniciada: conserva sus reglas.
   return fresh(s, company, s.tier, now, undefined, rulesVersionOf(s));
+}
+
+/**
+ * Crea la empresa del jugador y empieza la carrera continua (P0-B2).
+ * Solo antes de la primera decisión del periodo (igual que cambiar de empresa) y solo una vez: después se renombra.
+ * La combinación sector/industria/tipo debe tener casos aprobados. El periodo nuevo usa las reglas v4.
+ */
+export function setupCompany(s: CeoState, input: Omit<NewCompanyInput, "at">, now = nowOf(s)): CeoState {
+  if (s.companyProfile || Object.keys(s.decisions).length) return s;
+  const profile = newCompanyProfile({ ...input, at: now }, TAXONOMY_VERSION);
+  if (!profile) return s;
+  return { ...fresh(s, profile.contentPackId, s.tier, now, undefined, CONTINUOUS_RULES_VERSION), careerMode: "continua", companyProfile: profile };
+}
+/** Cambia el nombre de la empresa. Conserva `companyId`, decisiones, periodo y todo lo demás. */
+export function renameCompany(s: CeoState, displayName: string, shortName: string | undefined, now = nowOf(s)): CeoState {
+  if (!s.companyProfile) return s;
+  const p = renameProfile(s.companyProfile, displayName, shortName, now);
+  return p === s.companyProfile ? s : { ...s, companyProfile: p, lastActiveAt: now };
 }
 
 /** Opción A domina a B si es igual o mejor en todos los rubros y mejor en al menos uno. */
