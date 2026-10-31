@@ -12,7 +12,7 @@ import { useCeo } from "./CeoProvider";
 import { Stage, StageChoice, StepTitle } from "./Stage";
 import { Avatar, ChannelChip, Delta } from "./ui";
 import { personOf } from "@/lib/ceo/cast";
-import { KPI_LABEL } from "@/lib/ceo/engine";
+import { KPI_LABEL, episodeSeasonXp, seasonEpisodesOf, seasonRunOf } from "@/lib/ceo/engine";
 import { lessonById } from "@/lib/ceo/lessons";
 import { episodeSpec } from "@/lib/ceo/episodes/catalog";
 import { MAX_ADVISOR_CONSULTS, MAX_DECISIONS, MAX_FACT_QUERIES, RUBRIC_LABEL, type EpisodeRun, type EpisodeSpec, type ParamSpec, type Strategy } from "@/lib/ceo/episodes/contracts";
@@ -33,8 +33,12 @@ export function EpisodeView({ id }: { id: string }) {
   const spec = episodeSpec(id);
   if (!c.ready) return null;
   if (!spec) return <Notice title="Este caso no existe" text="Revisa el enlace o vuelve a Hoy." />;
-  if (!c.testTools) return <Notice title="Caso no disponible" text="Este caso no está abierto para tu cuenta." icon="lock" />;
-  const run = c.s.episodes?.[id];
+  // Parte de tu temporada (reglas v3+): se abre cuando llega. Fuera de ella, solo como práctica en modo prueba.
+  const inSeason = seasonEpisodesOf(c.s).some((x) => x.spec.id === id);
+  const entry = c.episodes.find((e) => e.spec.id === id);
+  if (inSeason && entry?.status === "futuro") return <Notice title="Este caso todavía no llega" text="Te avisamos en Hoy y en tu Bandeja cuando llegue." icon="lock" />;
+  if (!inSeason && !c.testTools) return <Notice title="Caso no disponible" text="Este caso no está abierto para tu cuenta." icon="lock" />;
+  const run = inSeason ? seasonRunOf(c.s, id) : c.s.episodes?.[id];
   if (!run) return <Cover spec={spec} />;
   return <Card spec={spec} run={run} />;
 }
@@ -556,12 +560,15 @@ function Close({ spec, run, part }: { spec: EpisodeSpec; run: EpisodeRun; part: 
   const c = useCeo();
   const o = run.outcome!;
   const lesson = lessonById(spec.lesson);
+  const entry = c.episodes.find((e) => e.spec.id === spec.id && e.run?.runId === run.runId);
+  const counts = !!entry;
+  const xp = entry ? episodeSeasonXp(c.s, entry) : 0;
   const rubric = rubricSummary(o.evidence);
   const owner = (id: string) => (id === "ceo" ? "Tú" : personOf(c.pack, id as never).name);
   if (part === "cierre") return (
     <>
       <StepTitle eyebrow="Cierre del caso" title={o.headline} />
-      <div className="mt-4 flex flex-wrap gap-2 text-xs"><span className="chip bg-mint text-ink font-semibold">+{run.xp} XP</span><span className="chip bg-white/10 text-white">{run.turns.length} decisiones</span></div>
+      <div className="mt-4 flex flex-wrap gap-2 text-xs">{counts ? (xp > 0 && <span className="chip bg-mint text-ink font-semibold">+{xp} XP</span>) : <span className="chip bg-white/10 text-white">Práctica</span>}<span className="chip bg-white/10 text-white">{run.turns.length} decisiones</span></div>
       <div className="mt-6 space-y-3 text-ink">
         {o.obligations && o.obligations.length > 0 && <div className="-mt-3"><Obligations spec={spec} result={o.obligations} /></div>}
         {o.agreement.length > 0 && <Facts title={spec.obligations?.length ? "Lo que hiciste" : "Lo acordado"} rows={o.agreement} />}
@@ -570,7 +577,7 @@ function Close({ spec, run, part }: { spec: EpisodeSpec; run: EpisodeRun; part: 
           <div className="rounded-2xl bg-white px-4 py-3">
             <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Efecto en tu empresa</div>
             <ul className="mt-2 space-y-2">{o.kpi.map((k) => <li key={k.key} className="text-sm"><span className="font-medium text-ink">{KPI_LABEL[k.key]}</span> <Delta n={k.delta} /><div className="text-xs text-slate-500">{k.why}</div></li>)}</ul>
-            <p className="mt-2 text-[11px] text-slate-400">Vista previa: en esta versión los efectos no se aplican a tu temporada.</p>
+            <p className="mt-2 text-[11px] text-slate-400">{counts ? "Ya se aplicó a tu temporada, ajustado a tu nivel de exigencia." : "Práctica: este resultado no se aplica a tu temporada."}</p>
           </div>
         )}
         {o.commitments.length > 0 && <List title="Compromisos" items={o.commitments.map((x) => `${x.text} (${owner(x.owner)})`)} />}

@@ -38,6 +38,13 @@ export interface RuleSet {
    *  - oncePerCompany: el mismo asunto, la misma crisis o el mismo cierre no vuelven a dar XP si repites la empresa.
    */
   participation?: { finish: number; oncePerCompany: boolean; lessonsPerDay: number };
+  /**
+   * Casos ejecutivos en la temporada (desde v3). Sin este bloque, los episodios no llegan a la temporada
+   * y, si se juegan, son práctica (no mueven indicadores ni XP).
+   *  - xpDecision / xpClose: XP del episodio en la temporada (por decisión comprometida y por cerrarlo).
+   *  - required: el reto final no se abre hasta cerrar los casos ejecutivos que ya llegaron.
+   */
+  episodes?: { xpDecision: number; xpClose: number; required: boolean };
 }
 
 /** Versión 1 · reglas legacy (v2 del simulador, octubre 2026). Congeladas: no editar. */
@@ -82,13 +89,29 @@ const V2: RuleSet = Object.freeze({
   participation: Object.freeze({ finish: 100, oncePerCompany: true, lessonsPerDay: 5 }),
 }) as RuleSet;
 
+/**
+ * Versión 3 · casos ejecutivos en la carrera normal (P0 aprobado).
+ *  - Igual que v2 en exigencia, XP de asuntos, crisis, lecciones y cierre.
+ *  - En Botanas Cumbre llegan tres casos ejecutivos (SuperNorte sustituye al asunto de una decisión del día 2;
+ *    Diego y el lote L-2291 se suman). Al cerrarlos, su efecto en indicadores se aplica a la temporada
+ *    (con la misma exigencia por nivel que los asuntos) y dan el XP de su diseño: 20 por decisión + 40 al cerrar
+ *    (100–160 por caso, unos 7 minutos de juego, igual que EPISODE_XP). Una vez por empresa, igual que los asuntos.
+ *  - Los casos ejecutivos no vencen; el reto final se abre cuando los cierras.
+ * Las temporadas que empezaron con v2 siguen con v2 hasta terminar.
+ */
+const V3: RuleSet = Object.freeze({
+  ...V2,
+  version: 3,
+  episodes: Object.freeze({ xpDecision: 20, xpClose: 40, required: true }),
+}) as RuleSet;
+
 /** Reglas de todas las partidas guardadas antes de que existiera `rulesVersion`. */
 export const LEGACY_RULES_VERSION = 1;
 /** Versión con la que empiezan las temporadas nuevas. */
-export const RULES_VERSION = 2;
+export const RULES_VERSION = 3;
 
 /** Todas las versiones publicadas. Las pruebas pueden registrar una versión simulada. */
-export const RULESETS: Record<number, RuleSet> = { 1: V1, 2: V2 };
+export const RULESETS: Record<number, RuleSet> = { 1: V1, 2: V2, 3: V3 };
 
 export const isRulesVersion = (v: unknown): v is number => typeof v === "number" && Number.isInteger(v) && v >= 1;
 /** ¿Este código conoce esa versión? (una partida guardada por una versión más nueva de la app no lo sería). */

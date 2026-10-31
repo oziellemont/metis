@@ -42,7 +42,7 @@ describe("SuperNorte · grafo editorial", () => {
   it("el piloto tiene las etapas pedidas: postura, propuesta, objeción, defensa, cierre y plan", () => {
     const stages = new Set(Object.values(SUPERNORTE.nodes).map((n) => n.stage));
     for (const s of ["Postura", "Propuesta", "Objeción", "Defensa", "Cierre", "Plan"]) expect(stages).toContain(s);
-    expect(SUPERNORTE.approval).toBe("borrador");
+    expect(SUPERNORTE.approval).toBe("aprobado");
   });
 });
 

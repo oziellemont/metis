@@ -6,7 +6,7 @@
  * El jugador prepara la conversación, la abre, maneja la reacción, cierra un acuerdo y, según cómo fue,
  * atiende la llamada de Don Ramiro. Entre 4 y 5 decisiones. Casi todas aceptan respuesta con tus palabras.
  *
- * Borrador para aprobación de Oziel. Datos nuevos (marcados en docs/episodios/p0c.md): 3 propuestas en 6 semanas
+ * Aprobado por Oziel para la carrera normal (antes: borrador). Datos nuevos (marcados en docs/episodios/p0c.md): 3 propuestas en 6 semanas
  * sin pasar por Héctor, el cambio de precio en 30 tiendas (−2 pts de margen ahí), y el 360 de su equipo.
  *
  * Modelo (todo declarado):
@@ -78,7 +78,7 @@ export function rulesDiego(_spec: EpisodeSpec, run: EpisodeRun): RulesResult {
 registerRules("diego-v1", rulesDiego, deriveDiego);
 
 export const DIEGO: EpisodeSpec = {
-  contract: 1, id: "diego", version: "0.1.0", approval: "borrador",
+  contract: 1, id: "diego", version: "1.0.0", approval: "aprobado",
   company: "cumbre", industry: "Alimentos y botanas", title: "La conversación con Diego", subject: "Diego se está brincando a Héctor",
   from: "mariana", counterpart: "diego", channel: "email", areas: ["personas", "comunicacion", "cultura"], cast: ["mariana", "diego", "hector", "paty", "ramiro"],
   lesson: "conversaciones-2", minutes: 7,

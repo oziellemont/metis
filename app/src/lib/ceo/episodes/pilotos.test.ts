@@ -28,10 +28,10 @@ function play(spec: EpisodeSpec, run: EpisodeRun, steps: Step[]): EpisodeRun {
 const kpi = (r: EpisodeRun, key: string) => r.outcome!.kpi.filter((k) => k.key === key).reduce((a, k) => a + k.delta, 0);
 
 describe("P0-C · catálogo", () => {
-  it("los dos pilotos están registrados como borrador, junto a SuperNorte", () => {
+  it("los dos pilotos están registrados y aprobados para la carrera, junto a SuperNorte", () => {
     expect(Object.keys(EPISODES).sort()).toEqual(["alergeno", "diego", "supernorte"]);
-    expect(DIEGO.approval).toBe("borrador");
-    expect(ALERGENO.approval).toBe("borrador");
+    expect(DIEGO.approval).toBe("aprobado");
+    expect(ALERGENO.approval).toBe("aprobado");
   });
   it("pasan la validación editorial: todas las rutas tienen de 3 a 6 decisiones", () => {
     for (const s of [DIEGO, ALERGENO]) {

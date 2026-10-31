@@ -1,7 +1,7 @@
 /**
  * Piloto P0-B · Executive Decision Episode · Negociación SuperNorte (Botanas Cumbre).
  *
- * Borrador para aprobación de Oziel (adenda v3.3 §6). Usa los hechos del caso d2-supernorte y agrega, como
+ * Aprobado por Oziel para la carrera normal (antes: borrador) (adenda v3.3 §6). Usa los hechos del caso d2-supernorte y agrega, como
  * contenido editorial nuevo, el margen de contribución (19%), la capacidad de planta (72%) y la línea de crédito
  * ($14 M al 12%). Esos tres datos están marcados en docs/episodios/supernorte.md para su revisión.
  *
@@ -157,7 +157,7 @@ const noFirmar: Strategy = {
 };
 
 export const SUPERNORTE: EpisodeSpec = {
-  contract: 1, id: "supernorte", version: "0.1.0", approval: "borrador",
+  contract: 1, id: "supernorte", version: "1.0.0", approval: "aprobado",
   company: "cumbre", industry: "Alimentos y botanas", title: "Negociación SuperNorte", subject: "Condiciones comerciales 2027 · Botanas Cumbre",
   from: "sofia", channel: "email", areas: ["negociacion", "clientes", "finanzas"], cast: ["sofia", "hector", "lucia", "javier", "ana"],
   lesson: "negociacion", minutes: 8,

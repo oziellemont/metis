@@ -6,7 +6,10 @@ import { DAY, H, KPI_KEYS, advance, arrivalOf, decide, dominates, entries, kpis,
 import type { CeoState, ChangeMove, CompanyPack, LeverId } from "./types";
 import { LEVERS, canUse, leverById, simulate } from "./change";
 import { closeChange, entryRipples, playLever, relationsOf, ripplesOf, startChange } from "./relations";
-import { casesDoneOf, changeKpiEffect, changeOpen, packOf } from "./engine";
+import { casesDoneOf, changeKpiEffect, changeOpen, episodeEntries, nextArrivalOf, openSeasonEpisode, packOf } from "./engine";
+import { EPISODES, actEpisode } from "./episodes/catalog";
+import { applyEpisode, strategiesFor, type EpisodeAction } from "./episodes/engine";
+import type { EpisodeRun } from "./episodes/contracts";
 
 /** Jugador estratégico: en cada paso elige la palanca que más acerca a la meta por semana usada. */
 function greedyPlan(pack: CompanyPack, rel0: Record<string, number>): ChangeMove[] {
@@ -209,14 +212,38 @@ describe("racha, nivel y perfil", () => {
 
 type Picker = (os: { id: string; effects: Record<string, number | undefined> }[], s: CeoState, t: number, itemId: string) => string;
 /** Juega la temporada: cierra los asuntos y luego el reto de cambio ("smart" = plan estratégico, "skip" = lo presenta sin hacer nada, "open" = lo deja abierto). */
+/**
+ * Casos ejecutivos (reglas v3): el jugador cuidadoso busca el cierre que más suma a la empresa; el descuidado, el que menos.
+ * Búsqueda exhaustiva por estrategias (con sus parámetros por omisión) desde la partida real.
+ */
+const playEpisode = (s0: CeoState, id: string, t0: number, sign: 1 | -1): { s: CeoState; t: number } => {
+  const spec = EPISODES[id];
+  let s = openSeasonEpisode(s0, id, t0);
+  s = actEpisode(s, id, { type: "begin", at: t0 + 1 }).state;
+  let bestSeq: string[] = [], bestV = -1e9;
+  const dfs = (run: EpisodeRun, seq: string[], at: number) => {
+    if (run.phase === "closed") { const v = sign * run.outcome!.kpi.reduce((a, k) => a + k.delta, 0); if (v > bestV) { bestV = v; bestSeq = seq; } return; }
+    if (seq.length > 8) return;
+    for (const st of strategiesFor(spec, run)) {
+      const r = applyEpisode(spec, run, { type: "decide", at, strategy: st.id } as EpisodeAction);
+      if (!r.error) dfs(r.run, [...seq, st.id], at + 1);
+    }
+  };
+  dfs(s.episodes![id], [], t0 + 2);
+  let t = t0 + 2;
+  for (const st of bestSeq) s = actEpisode(s, id, { type: "decide", at: t++, strategy: st } as EpisodeAction).state;
+  return { s, t };
+};
 const finish = (s0: CeoState, pick: Picker, change: "smart" | "skip" | "open" = "smart") => {
   let s = s0;
   let t = T0;
   for (let i = 0; i < 400 && !casesDoneOf(s, t); i++) {
     const p = entries(s, t).find((e) => e.status === "pendiente");
     if (p) { s = decide(s, p.item.id, pick(p.item.options as never, s, t, p.item.id), t); t += 60_000; continue; }
-    const nx = entries(s, t).find((e) => e.status === "futuro");
-    t = nx ? nx.arrivesAt + 1000 : t + H;
+    const ep = episodeEntries(s, t).find((e) => e.status === "pendiente");
+    if (ep) { ({ s, t } = playEpisode(s, ep.spec.id, t, pick === worst ? -1 : 1)); t += 60_000; continue; }
+    const nx = nextArrivalOf(s, t);
+    t = nx !== null ? nx + 1000 : t + H;
   }
   if (change === "open") return { s, t };
   s = startChange(s, t);

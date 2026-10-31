@@ -30,7 +30,8 @@ export function Today() {
   const nudge = shouldNudge(c.s, c.now) && !nudgeQuiet(c.pending, c.now) && !c.seasonDone;
   useEffect(() => { if (nudge) track("aviso_perfil_visto"); }, [nudge]);
   const specials = specialTasks({ changeOpen: c.changeOpen && !c.seasonDone, changeStarted: !!c.change, changeDone: !!c.change?.done, changeTitle: pk.change.title, boardOpen: boardAccess(c.s, c.now).open, crisisOpen: crisisAccess(c.s, c.now).open });
-  const waiting = c.pending.length + specials.length;
+  const epPending = c.episodes.filter((e) => e.status === "pendiente");
+  const waiting = c.pending.length + specials.length + epPending.length;
   const nextLesson = open.find((l) => !c.s.lessons[l.id] && c.entries.some((e) => e.item.lesson === l.id && e.status !== "futuro")) ?? open.find((l) => !c.s.lessons[l.id]);
 
   return (
@@ -52,7 +53,10 @@ export function Today() {
             <h1 className="mt-2 text-2xl sm:text-3xl font-semibold leading-tight">
               {c.seasonDone ? (v.passed ? `Aprobaste ${pk.short}, ${first}. Te espera otra empresa.` : `Cerraste la temporada en ${pk.short}, ${first}. El consejo pide otra vuelta.`) : waiting ? `${hello}, ${first}. Tienes ${waiting} ${waiting === 1 ? "asunto" : "asuntos"} esperando tu decisión.` : `${hello}, ${first}. Todo al día.`}
             </h1>
-            {!c.pending[0] && specials[0] && !c.seasonDone && (
+            {!c.pending[0] && epPending[0] && !c.seasonDone && (
+              <Link href={`/ceo/episodio/${epPending[0].spec.id}`} className="mt-5 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-ink hover:bg-white/90">Atender: {firstName(pk, epPending[0].spec.from)} <ArrowRight size={15} /></Link>
+            )}
+            {!c.pending[0] && !epPending[0] && specials[0] && !c.seasonDone && (
               <Link href={specials[0].href} className="mt-5 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-ink hover:bg-white/90">Atender: {specials[0].subject.split(" · ")[0]} <ArrowRight size={15} /></Link>
             )}
             {c.pending[0] && !c.seasonDone && (
@@ -118,6 +122,17 @@ export function Today() {
                     <div className="flex items-center gap-2"><span className="text-sm font-semibold text-ink truncate">Consejo de {pk.short}</span></div>
                     <div className="text-sm text-slate-600 truncate">{t.subject}</div>
                     <div className="mt-0.5 text-[11px] text-slate-400">{t.label}</div>
+                  </div>
+                  <ArrowRight size={16} className="text-slate-300 group-hover:text-indigo mt-3" />
+                </Link></li>
+              ))}
+              {epPending.map((e) => (
+                <li key={e.spec.id}><Link href={`/ceo/episodio/${e.spec.id}`} className="flex gap-3 py-3 group">
+                  <Avatar id={e.spec.from} size={38} />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2"><span className="text-sm font-semibold text-ink truncate">{personOf(pk, e.spec.from).name}</span><ChannelChip c={e.spec.channel} /></div>
+                    <div className="text-sm text-slate-600 truncate">{e.spec.subject}</div>
+                    <div className="mt-0.5 text-[11px] text-indigo font-medium">Caso ejecutivo · unos {e.spec.minutes} min{e.run ? " · en curso" : ""}</div>
                   </div>
                   <ArrowRight size={16} className="text-slate-300 group-hover:text-indigo mt-3" />
                 </Link></li>

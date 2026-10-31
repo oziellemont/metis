@@ -7,7 +7,7 @@
  * dice si se cumplieron y las reglas cargan la consecuencia. Lo que sí se decide es CÓMO cumplirlas y qué
  * más hacer: contener, avisar, comunicar, pagar y corregir la causa. Entre 4 y 5 decisiones.
  *
- * Borrador para aprobación de Oziel. Datos nuevos (marcados en docs/episodios/p0c.md): lote de 18,000 bolsas
+ * Aprobado por Oziel para la carrera normal (antes: borrador). Datos nuevos (marcados en docs/episodios/p0c.md): lote de 18,000 bolsas
  * en 140 tiendas, costo del retiro $1.6 M, 3 quejas, laboratorio en 48 h y probabilidad de reacción (25%).
  *
  * Modelo (todo declarado):
@@ -88,7 +88,7 @@ export function rulesAlergeno(spec: EpisodeSpec, run: EpisodeRun): RulesResult {
 }
 
 export const ALERGENO: EpisodeSpec = {
-  contract: 1, id: "alergeno", version: "0.1.0", approval: "borrador",
+  contract: 1, id: "alergeno", version: "1.0.0", approval: "aprobado",
   company: "cumbre", industry: "Alimentos y botanas", title: "Lote L-2291", subject: "Posible alérgeno no declarado en Picositas",
   from: "javier", counterpart: "sofia", channel: "llamada", areas: ["etica", "operacion", "comunicacion"], cast: ["javier", "lucia", "sofia", "carla", "mariana"],
   lesson: "crisis", minutes: 7,

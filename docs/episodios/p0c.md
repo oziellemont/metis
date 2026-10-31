@@ -1,6 +1,6 @@
 # P0-C · Pilotos de Personas y de Crisis
 
-Estado: **borrador para aprobación de Oziel**. Los dos casos están en vista previa: solo se abren desde Ajustes → Modo prueba, no mueven la temporada y no se publican a jugadores mientras el flag `episodes` esté apagado.
+Estado: **aprobado y publicado en la carrera normal** (versión 1.0.0, reglas v3). Llega solo en temporadas nuevas de Botanas Cumbre y cuenta para indicadores y XP. Detalle en `arquitectura-p0.md` §8.1.
 
 Los dos usan el mismo motor que SuperNorte (P0-B): mismo recorrido por pasos (El caso, Investiga, Decides, Cierre, Aprendes), mismas reglas de validación (cada ruta tiene de 3 a 6 decisiones, toda opción es alcanzable, todo nodo tiene salida por defecto) y la misma separación entre razonamiento y suerte.
 
