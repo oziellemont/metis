@@ -1,0 +1,36 @@
+[Unit]
+Description=Ninja Browser Automation Agent
+Documentation=https://github.com/NinjaTech-AI/phantom
+After=network.target supervisor.service
+Wants=supervisor.service
+# Park the unit in `failed` after 10 failures in 10 minutes, instead of
+# restarting every 30s forever while `activating` reads as "up".
+StartLimitIntervalSec=600
+StartLimitBurst=10
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/workspace/ninja
+# Skips the start (inactive, not failed) when the user has turned it off.
+ExecCondition=/usr/local/bin/python processes/orchestrator_enabled.py
+ExecStartPre=/usr/local/bin/python browser/browser_server.py ensure
+ExecStart=/usr/local/bin/python processes/orchestrator.py
+Restart=on-failure
+RestartSec=30s
+# 78 (EX_CONFIG): no agent configured, unknown agent, or no settings.json.
+# Retrying cannot fix those, so fail fast and stay visibly failed.
+RestartPreventExitStatus=78
+
+Environment=HOME=/root
+Environment=DISPLAY=:99
+Environment=PYTHONPATH=/workspace:/workspace/ninja
+# orchestrator.py owns its own log file: /workspace/logs/ninja_YYYY-MM-DD.log
+# systemd captures any pre-logging stdout/stderr (import errors, claude-wrapper
+# bleed-through) into the journal — view with: journalctl -u ninja -f
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=ninja
+
+[Install]
+WantedBy=multi-user.target
