@@ -16,8 +16,10 @@
  */
 import type { CompanyPack } from "../types";
 import { domainOf } from "./identity";
+import { industryLabelFor, lexText } from "./lexicon";
 
-export interface Brand { name: string; short: string; city?: string; domain?: string }
+/** Marca del jugador. `specialty` (Lácteos, Arneses eléctricos…) cambia el vocabulario del giro; ver lexicon.ts. */
+export interface Brand { name: string; short: string; city?: string; domain?: string; specialty?: string }
 
 export const TEMPLATE_VARS = ["company_name", "company_short", "company_city", "company_domain"] as const;
 export type TemplateVar = (typeof TEMPLATE_VARS)[number];
@@ -53,6 +55,8 @@ export function brandText(text: string, pack: Pick<CompanyPack, "id" | "name" | 
   const domain = b.domain ?? (brand ? domainOf(b.short) : pack.domain);
   let t = text;
   if (brand) {
+    // Primero el vocabulario de la especialidad (botanas → lácteos, soldador → técnico de moldeo…).
+    t = lexText(t, pack.id, brand.specialty);
     for (const [re, f] of PACK_RULES[pack.id] ?? []) t = t.replace(re, () => f(b));
     // Primero el nombre completo («Botanas Cumbre»), luego el corto («Cumbre»).
     t = t.replace(word(pack.name), () => b.name);
@@ -71,23 +75,25 @@ export function brandDeep<T>(x: T, f: (s: string) => string): T {
   if (Array.isArray(x)) return x.map((y) => brandDeep(y, f)) as T;
   if (x && typeof x === "object") {
     const out: Record<string, unknown> = {};
-    for (const [k, v] of Object.entries(x as Record<string, unknown>)) out[k] = ID_KEYS.has(k) ? v : brandDeep(v, f);
+    for (const [k, v] of Object.entries(x as Record<string, unknown>)) out[k] = ID_KEYS.has(k) && !isProse(v) ? v : brandDeep(v, f);
     return out as T;
   }
   return x;
 }
+/** Un texto con espacios nunca es un id (p. ej. `real.company`, el nombre de la empresa de un caso real). */
+const isProse = (v: unknown): boolean => typeof v === "string" && /\s/.test(v);
 /** Campos que son identificadores: nunca se traducen (aunque hoy ninguno contenga un nombre con mayúscula). */
 const ID_KEYS = new Set(["id", "from", "who", "item", "company", "trigger", "rules", "replaces", "contentPackId", "a", "b", "assistant", "board", "chair", "reportsTo", "targets"]);
 
 const CACHE = new Map<string, CompanyPack>();
-/** Paquete con la marca del jugador (memoizado por paquete + nombre). Sin marca, el original. */
+/** Paquete con la marca del jugador (memoizado por paquete + nombre + especialidad). Sin marca, el original. */
 export function brandPack(pack: CompanyPack, brand: Brand | null): CompanyPack {
   if (!brand) return pack;
-  const key = `${pack.id}|${brand.name}|${brand.short}|${brand.city ?? ""}`;
+  const key = `${pack.id}|${brand.name}|${brand.short}|${brand.city ?? ""}|${brand.specialty ?? ""}`;
   const hit = CACHE.get(key);
   if (hit) return hit;
   const f = (s: string) => brandText(s, pack, brand);
-  const out: CompanyPack = { ...brandDeep(pack, f), id: pack.id, name: brand.name, short: brand.short, domain: domainOf(brand.short), ...(brand.city ? { city: brand.city } : {}) };
+  const out: CompanyPack = { ...brandDeep(pack, f), id: pack.id, name: brand.name, short: brand.short, domain: domainOf(brand.short), industry: industryLabelFor(pack.id, brand.specialty) ?? pack.industry, ...(brand.city ? { city: brand.city } : {}) };
   if (CACHE.size > 50) CACHE.clear();
   CACHE.set(key, out);
   return out;

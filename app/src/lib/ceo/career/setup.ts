@@ -80,14 +80,16 @@ export function buildSetup(sel: SetupSelection, companyId: string): SetupInput |
   return newCompanyProfile({ ...out, at: 1 }, TAXONOMY_VERSION) ? out : null;
 }
 
-/** Paquete de la industria con el nombre elegido (para la carta de nombramiento). Sin nombre válido: el paquete tal cual. */
+/** Paquete de la industria con el nombre y la especialidad elegidos (para la carta de nombramiento). */
 export function previewPack(sel: SetupSelection): CompanyPack | null {
   const ind = industryOf(sel.sectorId, sel.industryId);
   if (!ind?.contentPackId) return null;
   const pk = companyById(ind.contentPackId);
   const name = cleanName(sel.displayName);
   const short = effectiveShort(sel.displayName, sel.shortName);
-  return name && short ? brandPack(pk, { name, short, city: exposureOfPack(pk.id).baseCity }) : pk;
+  const specialty = sel.specialty && ind.specialties.includes(sel.specialty) ? sel.specialty : undefined;
+  // Sin nombre todavía se muestra igual con el vocabulario de la especialidad elegida.
+  return brandPack(pk, { name: name && short ? name : pk.name, short: name && short ? short : pk.short, city: exposureOfPack(pk.id).baseCity, ...(specialty ? { specialty } : {}) });
 }
 
 /** Quién te nombra, según el tipo de empresa (nunca eres fundador). */
