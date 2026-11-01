@@ -8,7 +8,8 @@ import { LEVERS, canUse, leverById, simulate } from "./change";
 import { closeChange, entryRipples, playLever, relationsOf, ripplesOf, startChange } from "./relations";
 import { casesDoneOf, changeKpiEffect, changeOpen, episodeEntries, isContinuous, nextArrivalOf, openSeasonEpisode, packOf, renameCompany, setupCompany, switchCompany, RULES_VERSION } from "./engine";
 import { CONTINUOUS_RULES_VERSION } from "./rules";
-import { reportDueOf } from "./engine";
+import { boardReviewOf, companyStageOf, reportDueOf, seasonEpisodesOf, seasonItems } from "./engine";
+import { stageTrack } from "./career/stages";
 import { closePeriod } from "./business/report";
 import { EPISODES, actEpisode } from "./episodes/catalog";
 import { applyEpisode, strategiesFor, type EpisodeAction } from "./episodes/engine";
@@ -402,13 +403,15 @@ describe("carrera continua · identidad y reglas v4", () => {
     expect(setupCompany(st, { ...SETUP, sectorId: "tecnologia_informacion", industryId: "software_saas" }, T0)).toBe(st);
   });
 
-  it("al cerrar el periodo sigue en LA MISMA empresa y con la misma exigencia, apruebe o no", () => {
+  it("al cerrar el periodo sigue en LA MISMA empresa, apruebe o no; la exigencia sigue a la etapa (P1-B)", () => {
     const good = finish(own(), best);
     expect(seasonDoneOf(good.s, good.t)).toBe(true);
     const next = advance(good.s, good.t);
     expect(next.company).toBe("cumbre");
     expect(next.companyProfile?.companyId).toBe(CID);
-    expect(next.tier).toBe(0);
+    // el primer mes es la llegada: siempre pasa a «Estabilizar» y la exigencia sube un nivel
+    expect(next.companyProfile?.stage).toBe("estabilizar");
+    expect(next.tier).toBe(1);
     expect(next.rulesVersion).toBe(CONTINUOUS_RULES_VERSION);
     expect(next.career).toHaveLength(1);
     expect(next.decisions).toEqual({});
@@ -417,7 +420,7 @@ describe("carrera continua · identidad y reglas v4", () => {
     const bad = finish(own(), worst, "skip");
     const again = advance(bad.s, bad.t);
     expect(again.company).toBe("cumbre");
-    expect(again.tier).toBe(0);
+    expect(again.tier).toBe(1);
   });
 
   it("P0-D: el mes siguiente no se cierra hasta firmar el reporte del anterior", () => {
@@ -431,6 +434,52 @@ describe("carrera continua · identidad y reglas v4", () => {
     const m2 = advance(signed, again.t);
     expect(m2.career).toHaveLength(2);
     expect(reportDueOf(m2)).toBe(2);
+  });
+
+  it("P1-B: el mes 2 no repite la carta de llegada ni los casos ejecutivos ya cerrados", () => {
+    const m1 = finish(own(), best);
+    const ep1 = episodeEntries(m1.s, m1.t).filter((e) => e.status === "cerrado").map((e) => e.spec.id);
+    expect(ep1.length).toBeGreaterThan(0);
+    const m2 = closePeriod(advance(m1.s, m1.t), 1, m1.t);
+    const ids = seasonItems(m2).map((i) => i.id);
+    expect(ids).not.toContain("d1-bienvenida");
+    expect(ids).not.toContain("d1-hector");
+    expect(ids).not.toContain("c-hector-aliado");
+    // SuperNorte ya se jugó como caso ejecutivo: no vuelve, ni el asunto que sustituía
+    expect(ids).not.toContain("d2-supernorte");
+    for (const id of ep1) expect(seasonEpisodesOf(m2).some((x) => x.spec.id === id)).toBe(false);
+    // toda consecuencia del mes tiene su detonador en el mismo mes
+    for (const it of seasonItems(m2)) if (it.trigger) expect(ids).toContain(it.trigger.item);
+    expect(seasonItems(m2).filter((i) => !i.trigger).length).toBeGreaterThanOrEqual(10);
+  });
+
+  it("P1-B: revisión del consejo sin game over; la etapa avanza solo con meses mínimos y aprobación", () => {
+    const m1 = finish(own(), best);
+    expect(boardReviewOf(m1.s, m1.t)).toMatchObject({ stage: 0, next: 1, advances: true });
+    const s2 = closePeriod(advance(m1.s, m1.t), 1, m1.t);
+    expect(companyStageOf(s2)).toEqual({ idx: 1, months: 0 });
+    // un mes reprobado: sigue en la misma empresa y la misma etapa, sin bajar la exigencia
+    const bad = finish(s2, worst, "skip");
+    expect(verdictOf(bad.s, bad.t).passed).toBe(false);
+    expect(boardReviewOf(bad.s, bad.t)?.advances).toBe(false);
+    const s3 = advance(bad.s, bad.t);
+    expect(s3.companyProfile?.companyId).toBe(CID);
+    expect(s3.companyProfile?.stage).toBe("estabilizar");
+    expect(s3.tier).toBe(1);
+    expect(s3.startedAt).not.toBeNull();
+  });
+
+  it("P1-B: etapas puras: 1 mes de llegada, luego meses mínimos y aprobación", () => {
+    const P = { passed: true }, F = { passed: false };
+    expect(stageTrack([])).toEqual({ idx: 0, months: 0 });
+    expect(stageTrack([F])).toEqual({ idx: 1, months: 0 });
+    expect(stageTrack([F, P])).toEqual({ idx: 1, months: 1 });
+    expect(stageTrack([F, P, P])).toEqual({ idx: 2, months: 0 });
+    expect(stageTrack([F, P, F])).toEqual({ idx: 1, months: 2 });
+    expect(stageTrack([F, P, F, P])).toEqual({ idx: 2, months: 0 });
+    expect(stageTrack(Array(40).fill(P)).idx).toBe(5);
+    // temporadas: siempre etapa 0
+    expect(companyStageOf(newState())).toEqual({ idx: 0, months: 0 });
   });
 
   it("no se cambia de empresa en la carrera continua", () => {

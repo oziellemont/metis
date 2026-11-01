@@ -18,6 +18,7 @@ import { nudgeQuiet, shouldNudge } from "@/lib/ceo/profile";
 import { Avatar, Bar, ChannelChip, Delta, Flame, rel, until } from "./ui";
 import { STAGES } from "@/lib/ceo/journey";
 import { presenterOf } from "@/lib/ceo/business/report";
+import { COMPANY_STAGES } from "@/lib/ceo/career/identity";
 
 export function Today() {
   const c = useCeo();
@@ -69,7 +70,7 @@ export function Today() {
         <div aria-hidden className="absolute right-24 bottom-[-80px] h-48 w-48 rounded-full bg-mint/20 blur-3xl" />
         <div className="relative grid gap-5 md:grid-cols-[1.4fr_1fr] md:items-center">
           <div className="min-w-0">
-            <div className="text-xs text-white/60 truncate">{pk.name} · {pk.industry} · Día {c.day} de {pk.season.days}{c.s.tier > 0 ? ` · Exigencia ${c.rules.name}` : ""}</div>
+            <div className="text-xs text-white/60 truncate">{pk.name} · {pk.industry} · {c.continuous ? `Mes ${(c.s.career ?? []).length + 1} · ${COMPANY_STAGES.find((x) => x.id === c.s.companyProfile?.stage)?.label ?? COMPANY_STAGES[0].label}` : `Día ${c.day} de ${pk.season.days}`}{c.s.tier > 0 ? ` · Exigencia ${c.rules.name}` : ""}</div>
             <h1 className="mt-1.5 text-2xl sm:text-[28px] font-semibold leading-tight">{greeting}</h1>
             <p className="mt-1 text-[15px] text-white/75">{sub}</p>
             {cta && <Link href={cta.href} className="mt-4 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-ink hover:bg-white/90">{cta.label} <ArrowRight size={15} /></Link>}
