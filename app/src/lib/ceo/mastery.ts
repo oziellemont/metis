@@ -19,6 +19,7 @@
  */
 import type { Area, CeoState, Item } from "./types";
 import { companyById } from "./companies";
+import { isBankId, withBank } from "./cases/bank";
 import { dilemmaById, type DilemmaTheme } from "./dilemmas";
 import { lessonById, trackOf } from "./lessons";
 import { entries, nowOf } from "./engine";
@@ -139,9 +140,11 @@ export function evidenceOf(s: CeoState, now = nowOf(s)): Evidence[] {
   const out: Evidence[] = [];
   const career = s.career ?? [];
   career.forEach((r, run) => {
-    const p = companyById(r.company);
+    const p = withBank(companyById(r.company));
     for (const it of p.items) {
       const d = r.decisions?.[it.id];
+      // Del banco de casos solo cuenta lo que te llegó y decidiste (el catálogo trae todos los posibles).
+      if (!d && isBankId(it.id)) continue;
       const comps = competenciesOfItem(it);
       if (!comps.length) continue;
       if (d) {
