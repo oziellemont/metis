@@ -4,7 +4,9 @@ import clsx from "clsx";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Award, Check, Crown, Lock, RotateCcw, X } from "lucide-react";
-import { KPI_KEYS, LEGACY_RULES_VERSION, nextCompanyOf, profileOf, rulesOf } from "@/lib/ceo/engine";
+import { KPI_KEYS, LEGACY_RULES_VERSION, boardReviewOf, nextCompanyOf, profileOf, rulesOf } from "@/lib/ceo/engine";
+import { COMPANY_STAGES } from "@/lib/ceo/career/identity";
+import { STAGE_MONTHS } from "@/lib/ceo/career/stages";
 import { COMPANIES, companyById } from "@/lib/ceo/companies";
 import { STAGES } from "@/lib/ceo/journey";
 import { celebrate, celebrateOnce } from "@/lib/ceo/celebrate";
@@ -52,6 +54,16 @@ export function Career() {
     if (cont) router.push("/ceo/reporte");
   };
   const reportFirst = cont && c.seasonDone && c.reportDue !== null;
+  const review = cont ? boardReviewOf(c.s, c.now) : null;
+  const stageName = review ? COMPANY_STAGES[review.stage].label : "";
+  const nextName = review && review.next !== null ? COMPANY_STAGES[review.next].label : null;
+  const reviewText = !review ? "" : review.next === null
+    ? `Tu empresa está en la última etapa: ${stageName}. El consejo sigue revisando cada mes.`
+    : review.advances
+      ? `Si cierras este mes así, ${pk.short} pasa a la etapa «${nextName}».`
+      : review.stage === 0
+        ? `Etapa «${stageName}»: tu primer mes en la empresa.`
+        : `Etapa «${stageName}» · mes ${review.months + 1}. Para pasar a «${nextName}» el consejo pide ${STAGE_MONTHS[review.stage]} ${STAGE_MONTHS[review.stage] === 1 ? "mes" : "meses"} en la etapa y aprobar el cierre. Si no lo aprueba, sigues al frente: no hay despido.`;
 
   return (
     <div className="space-y-5">
@@ -114,6 +126,7 @@ export function Career() {
               </div>
             ))}
           </div>
+          {review && <div className="mt-4 rounded-2xl bg-indigo-soft/40 px-4 py-3 text-sm text-ink">{reviewText}</div>}
           <div className="mt-3 text-xs text-slate-500">Asuntos respondidos a tiempo: <b className={clsx("tabular-nums", v.answeredOk ? "text-ink" : "text-coral")}>{Math.round(v.answered * 100)}%</b> {r.minAnswered > 0 ? `(mínimo ${Math.round(r.minAnswered * 100)}%)` : "· Un asunto vencido tiene consecuencias en la empresa, pero no te reprueba por sí solo."}</div>
 
           {reportFirst && (
@@ -152,7 +165,7 @@ export function Career() {
             <CompanyMark name={pk.name} size={48} tone="solid" className="relative z-10 ring-4 ring-indigo-soft" />
             <div className="flex-1 min-w-0 rounded-2xl border-2 border-indigo/30 bg-indigo-soft/30 px-4 py-3">
               <div className="flex flex-wrap items-center gap-2"><span className="font-semibold text-ink text-sm">{pk.name}</span><span className="chip bg-indigo text-white text-[10px]">Ahora</span><span className="text-[11px] text-slate-400">{r.name} · línea {r.passLine}</span></div>
-              <div className="mt-1 text-xs text-slate-500">{pk.industry} · Día {c.day} de {pk.season.days}</div>
+              <div className="mt-1 text-xs text-slate-500">{pk.industry} · {cont ? `Mes ${career.length + 1} · ${stageName}` : `Día ${c.day} de ${pk.season.days}`}</div>
             </div>
           </li>
           {!cont && <li className="relative flex gap-4 items-start">

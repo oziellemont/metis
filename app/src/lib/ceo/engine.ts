@@ -12,6 +12,7 @@ import { newCompanyProfile, renameProfile, sanitizeCompanyProfile, type NewCompa
 import { isDisplayCurrency } from "./career/money";
 import { TAXONOMY_VERSION, type CompanyArchetype } from "./career/taxonomy";
 import { sizedPack } from "./career/size";
+import { LAST_COMPANY_STAGE, closesStage, stageIdOf, stageTrack } from "./career/stages";
 import { compatibleItems, episodeFits } from "./companies/tags";
 import { brandDeep, brandPack, brandText, type Brand } from "./career/template";
 import { industryLongFor } from "./career/lexicon";
@@ -62,6 +63,21 @@ export function brandedOutcome<T>(o: T, company: string, s: Pick<CeoState, "comp
 }
 /** ¿Juega la carrera continua (una empresa persistente con identidad propia)? */
 export const isContinuous = (s: Pick<CeoState, "careerMode" | "companyProfile">): boolean => s.careerMode === "continua" && !!s.companyProfile;
+
+type StageInput = Partial<Pick<CeoState, "careerMode" | "companyProfile" | "career">>;
+/**
+ * Etapa de la empresa (P1-B): índice en COMPANY_STAGES y meses que lleva en ella. Se deriva de los meses cerrados
+ * (determinista); fuera de la carrera continua siempre es 0. Ver career/stages.ts.
+ */
+export function companyStageOf(s: StageInput): { idx: number; months: number } {
+  if (s.careerMode !== "continua" || !s.companyProfile) return { idx: 0, months: 0 };
+  return stageTrack(closedRunsOf({ companyProfile: s.companyProfile, career: s.career ?? [] }));
+}
+/** Casos ejecutivos que ya cerraste en un mes anterior de tu empresa: en la carrera continua no se repiten. */
+function playedEpisodesOf(s: StageInput): Set<string> {
+  if (s.careerMode !== "continua" || !s.companyProfile) return new Set();
+  return new Set(closedRunsOf({ companyProfile: s.companyProfile, career: s.career ?? [] }).flatMap((r) => r.episodes ?? []));
+}
 
 /**
  * Exigencia por nivel (tier). Cada empresa que apruebas sube un nivel; el modo Legendario suma 1 más.
@@ -224,10 +240,13 @@ export function resolution(s: CeoState, itemId: string, now: number): string | n
 
 // ───────────────────────────────────────────── casos ejecutivos en la temporada (reglas v3+)
 /** Casos ejecutivos que llegan en esta temporada (vacío con reglas anteriores a v3 o si la empresa no tiene). */
-export function seasonEpisodesOf(s: Pick<CeoState, "company" | "rulesVersion"> & Partial<Pick<CeoState, "companyProfile">>): { spec: EpisodeSpec; day: number; slot: number; replaces?: string }[] {
+export function seasonEpisodesOf(s: Pick<CeoState, "company" | "rulesVersion"> & StageInput, all = false): { spec: EpisodeSpec; day: number; slot: number; replaces?: string }[] {
   if (!ruleSet(rulesVersionOf(s)).episodes) return [];
   const a = companyTypeOf(s);
+  // Carrera continua (P1-B): un caso ejecutivo llega una sola vez en la vida de tu empresa.
+  const played = all ? new Set<string>() : playedEpisodesOf(s);
   return (SEASON_EPISODES[s.company] ?? []).flatMap((x) => {
+    if (played.has(x.episode)) return [];
     // Auditoría (P1-A): un caso que no es compatible con el tipo de empresa no se muestra.
     if (!episodeFits(x.episode, a)) return [];
     const spec = EPISODES[x.episode];
@@ -238,9 +257,15 @@ export function seasonEpisodesOf(s: Pick<CeoState, "company" | "rulesVersion"> &
  * Asuntos de la temporada: los del paquete menos los que sustituye un caso ejecutivo. En la carrera continua, solo
  * los compatibles con el tipo de empresa, y sin las consecuencias cuyo detonador no se muestra (auditoría P1-A).
  */
-export function seasonItems(s: Pick<CeoState, "company" | "rulesVersion"> & Partial<Pick<CeoState, "companyProfile">>): Item[] {
-  const items = compatibleItems(packOf(s).items, companyTypeOf(s));
-  const gone = new Set(seasonEpisodesOf(s).map((x) => x.replaces).filter(Boolean));
+export function seasonItems(s: Pick<CeoState, "company" | "rulesVersion"> & StageInput): Item[] {
+  let items = compatibleItems(packOf(s).items, companyTypeOf(s));
+  // Carrera continua (P1-B): la carta de llegada y lo del primer día solo tienen sentido al tomar el mando.
+  if (companyStageOf(s).idx > 0) {
+    const first = new Set(items.filter((i) => i.day <= 1).map((i) => i.id));
+    items = items.filter((i) => !first.has(i.id) && !(i.trigger && first.has(i.trigger.item)));
+  }
+  // Lo que sustituye un caso ejecutivo no vuelve, aunque ese caso ya se haya jugado en un mes anterior.
+  const gone = new Set(seasonEpisodesOf(s, true).map((x) => x.replaces).filter(Boolean));
   if (!gone.size) return items;
   // Si un caso ejecutivo reemplaza a un detonador, sus consecuencias tampoco se muestran:
   // nunca llegaría una consecuencia sin la decisión que la causa.
@@ -815,7 +840,11 @@ export function advance(s: CeoState, now = nowOf(s), rulesVersion: number = RULE
   const after = { ...s, career };
   if (isContinuous(s)) {
     const v = ruleSet(rulesVersion).career === "continua" ? rulesVersion : CONTINUOUS_RULES_VERSION;
-    return fresh(after, s.company, s.tier, now, undefined, v);
+    // Revisión del consejo (P1-B): sin despido ni game over. Si aprueba y ya cumpliste los meses, la empresa pasa
+    // de etapa; la exigencia sigue a la etapa y nunca baja.
+    const st = companyStageOf(after);
+    const profile = { ...s.companyProfile!, stage: stageIdOf(st.idx) };
+    return { ...fresh(after, s.company, Math.max(s.tier, st.idx), now, undefined, v), companyProfile: profile };
   }
   if (!run.passed) return fresh(after, s.company, s.tier, now, undefined, rulesVersion);
   const next = nextCompanyOf(after);
@@ -830,6 +859,24 @@ export function closedRunsOf(s: Pick<CeoState, "companyProfile" | "career">) {
   if (!p) return [];
   return (s.career ?? []).filter((r) => r.company === p.contentPackId && r.startedAt >= p.appointedAt);
 }
+export interface BoardReview {
+  /** Etapa en curso y la que sigue (null en la última). */
+  stage: number;
+  next: number | null;
+  /** Meses que lleva en la etapa (sin contar el mes en curso) y mínimos para salir de ella. */
+  months: number;
+  /** ¿Cerrar el mes en curso, con el veredicto de hoy, pasa a la siguiente etapa? */
+  advances: boolean;
+  passed: boolean;
+}
+/** Revisión del consejo del mes en curso (carrera continua). Null en temporadas. */
+export function boardReviewOf(s: CeoState, now = nowOf(s)): BoardReview | null {
+  if (!isContinuous(s)) return null;
+  const st = companyStageOf(s);
+  const passed = verdictOf(s, now).passed;
+  return { stage: st.idx, next: st.idx < LAST_COMPANY_STAGE ? st.idx + 1 : null, months: st.months, passed, advances: closesStage(st.idx, st.months, passed) };
+}
+
 /** Mes cuyo reporte espera tu revisión (el último cerrado), o null. Solo carrera continua. */
 export function reportDueOf(s: CeoState): number | null {
   if (!isContinuous(s)) return null;
