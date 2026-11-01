@@ -15,6 +15,7 @@
  * Las llaves {cliente}, {clientes}, {producto}, {lote}, {sitio} y {afectado} las llena cada industria.
  */
 import type { Area, Axis, Channel, Kpis } from "../types";
+import { ARCHETYPES_P1D } from "./archetypes-p1d";
 
 /** Roles del caso. Cada paquete los asigna a su elenco (Cumbre: Finanzas = Lucía; Forja: Finanzas = Marcos…). */
 export type Role = "chair" | "board" | "cfo" | "ops" | "sales" | "people" | "assistant" | "frontline" | "client";
@@ -22,7 +23,9 @@ export const ROLES: readonly Role[] = ["chair", "board", "cfo", "ops", "sales", 
 
 export type ArchetypeId =
   | "retiro" | "cliente" | "incentivos" | "ciberataque" | "expansion"
-  | "precio" | "recorte" | "proveedor" | "apuesta" | "error";
+  | "precio" | "recorte" | "proveedor" | "apuesta" | "error"
+  // P1-D (archetypes-p1d.ts)
+  | "guerra" | "verde" | "trimestre" | "incidente" | "salarios" | "meta" | "foco" | "adaptativo";
 
 export interface ArchOption {
   text: string;
@@ -66,7 +69,7 @@ export interface Archetype {
   deadlineH?: number;
 }
 
-export const ARCHETYPES: readonly Archetype[] = [
+const ARCHETYPES_P1C: readonly Archetype[] = [
   // ─────────────────────────────────────────────── 1 · retirar sin certeza
   {
     id: "retiro",
@@ -600,5 +603,8 @@ export const ARCHETYPES: readonly Archetype[] = [
     minStage: 1,
   },
 ];
+
+/** Las diez decisiones de P1-C y las ocho de P1-D (mismas reglas, mismo generador). */
+export const ARCHETYPES: readonly Archetype[] = [...ARCHETYPES_P1C, ...ARCHETYPES_P1D];
 
 export const archetypeById = (id: string): Archetype | undefined => ARCHETYPES.find((a) => a.id === id);

@@ -12,6 +12,7 @@
  * Cifras en pesos y para la empresa establecida; en una PYME se escalan igual que el paquete (career/size.ts).
  */
 import type { ArchetypeId } from "./archetypes";
+import { P1D_FACTS, type P1DId } from "./contexts-p1d";
 
 export interface CaseFacts {
   subject: string;
@@ -27,7 +28,11 @@ export interface IndustryContext {
   cases: Record<ArchetypeId, CaseFacts>;
 }
 
-const ALIMENTOS: IndustryContext = {
+/** Contexto con las diez decisiones de P1-C; las ocho de P1-D viven en contexts-p1d.ts y se suman abajo. */
+type BaseContext = Omit<IndustryContext, "cases"> & { cases: Record<Exclude<ArchetypeId, P1DId>, CaseFacts> };
+const full = (c: BaseContext): IndustryContext => ({ ...c, cases: { ...c.cases, ...P1D_FACTS[c.industryId] } });
+
+const ALIMENTOS: BaseContext = {
   industryId: "alimentos_bebidas",
   label: "Alimentos y bebidas",
   vars: { cliente: "SuperNorte", clientes: "las cadenas", lote: "los tres lotes sospechosos", afectado: "SuperNorte y los consumidores" },
@@ -118,7 +123,7 @@ const ALIMENTOS: IndustryContext = {
   },
 };
 
-const AUTOPARTES: IndustryContext = {
+const AUTOPARTES: BaseContext = {
   industryId: "autopartes",
   label: "Autopartes",
   vars: { cliente: "Aurora Motors", clientes: "la armadora", lote: "las 3 semanas de piezas en tránsito", afectado: "Aurora Motors" },
@@ -208,7 +213,7 @@ const AUTOPARTES: IndustryContext = {
   },
 };
 
-const RESTAURANTES: IndustryContext = {
+const RESTAURANTES: BaseContext = {
   industryId: "restaurantes",
   label: "Restaurantes",
   vars: { cliente: "Rappido", clientes: "los comensales", lote: "el pollo marinado de la semana", afectado: "los comensales" },
@@ -299,7 +304,7 @@ const RESTAURANTES: IndustryContext = {
   },
 };
 
-const MANUFACTURA: IndustryContext = {
+const MANUFACTURA: BaseContext = {
   industryId: "manufactura_general",
   label: "Manufactura industrial general",
   vars: { cliente: "Grupo Envasa", clientes: "los clientes", lote: "los dos lotes sospechosos", afectado: "Grupo Envasa" },
@@ -389,7 +394,7 @@ const MANUFACTURA: IndustryContext = {
   },
 };
 
-const SAAS: IndustryContext = {
+const SAAS: BaseContext = {
   industryId: "software_saas",
   label: "Software y SaaS",
   vars: { cliente: "Grupo Altamar", clientes: "los clientes", lote: "la función de reportes compartidos", afectado: "los clientes expuestos" },
@@ -479,7 +484,7 @@ const SAAS: IndustryContext = {
   },
 };
 
-const RETAIL: IndustryContext = {
+const RETAIL: BaseContext = {
   industryId: "retail",
   label: "Retail",
   vars: { cliente: "Pagofácil", clientes: "los clientes", lote: "el modelo de calentador", afectado: "los clientes" },
@@ -569,7 +574,7 @@ const RETAIL: IndustryContext = {
   },
 };
 
-const LOGISTICA: IndustryContext = {
+const LOGISTICA: BaseContext = {
   industryId: "logistica_distribucion",
   label: "Logística y distribución",
   vars: { cliente: "Farmacias del Valle", clientes: "los clientes", lote: "los embarques de la cámara 3", afectado: "Farmacias del Valle" },
@@ -660,13 +665,13 @@ const LOGISTICA: IndustryContext = {
 };
 
 export const CONTEXTS: Readonly<Record<string, IndustryContext>> = Object.freeze({
-  alimentos_bebidas: ALIMENTOS,
-  autopartes: AUTOPARTES,
-  restaurantes: RESTAURANTES,
-  manufactura_general: MANUFACTURA,
-  software_saas: SAAS,
-  retail: RETAIL,
-  logistica_distribucion: LOGISTICA,
+  alimentos_bebidas: full(ALIMENTOS),
+  autopartes: full(AUTOPARTES),
+  restaurantes: full(RESTAURANTES),
+  manufactura_general: full(MANUFACTURA),
+  software_saas: full(SAAS),
+  retail: full(RETAIL),
+  logistica_distribucion: full(LOGISTICA),
 });
 
 export const contextFor = (industryId: string): IndustryContext | undefined => CONTEXTS[industryId];
