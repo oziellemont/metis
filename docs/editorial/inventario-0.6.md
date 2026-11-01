@@ -1,17 +1,17 @@
-# mêtis CEO · Inventario editorial de los 52 asuntos y veredicto sombra
+# mêtis CEO · Inventario editorial de los 69 asuntos y veredicto sombra
 
 Clasificador editorial v1 · Veredicto sombra v0. Reporte generado por código a partir del contenido actual; no cambia ningún resultado de partidas, XP ni veredicto en producción.
 
 ## 1. Resumen
 
-De los 52 asuntos (38 base y 14 consecuencias), el clasificador propone:
+De los 69 asuntos (51 base y 18 consecuencias), el clasificador propone:
 
 | Estado | Asuntos | % |
 |---|---:|---:|
-| approved (propuesta, falta firma humana) | 6 | 12 % |
-| legacy (se conserva como histórico) | 12 | 23 % |
-| needsRewrite (reescribir) | 26 | 50 % |
-| restrictedEthics (obligación ética o de seguridad) | 8 | 15 % |
+| approved (propuesta, falta firma humana) | 11 | 16 % |
+| legacy (se conserva como histórico) | 15 | 22 % |
+| needsRewrite (reescribir) | 32 | 46 % |
+| restrictedEthics (obligación ética o de seguridad) | 11 | 16 % |
 
 Ningún asunto queda aprobado de forma definitiva: «approved» es una propuesta automática que requiere la aprobación de Oziel (tabla `EDITORIAL_REVIEW` en `editorial.ts`).
 
@@ -20,6 +20,7 @@ Ningún asunto queda aprobado de forma definitiva: «approved» es una propuesta
 | Botanas Cumbre | 0 | 2 | 15 | 3 |
 | Forja Norte | 2 | 6 | 5 | 4 |
 | Grupo Brasa | 4 | 4 | 6 | 1 |
+| Kúbit | 5 | 3 | 6 | 3 |
 
 ## 2. Auditoría de `score` frente a efectos
 
@@ -30,18 +31,19 @@ Balance neto promedio (suma de los cinco indicadores, sin multiplicadores de niv
 | Botanas Cumbre | -5.27 (11) | -1.37 (19) | 0.00 (4) | +4.00 (20) | 0.82 |
 | Forja Norte | -6.20 (5) | -1.71 (14) | -1.33 (12) | +0.88 (17) | 0.59 |
 | Grupo Brasa | -3.20 (5) | -2.67 (12) | +0.09 (11) | +1.36 (14) | 0.55 |
+| Kúbit | -5.20 (5) | -1.00 (14) | -0.75 (12) | +1.35 (17) | 0.60 |
 
 Hallazgos por asunto (un asunto puede tener varios):
 
 | Hallazgo | Asuntos |
 |---|---:|
 | Una opción gana o empata en los cinco indicadores frente a todas las demás. | 0 |
-| La opción con score más alto también es la de mejor balance de indicadores. | 43 |
-| La opción con score más alto gana por una ventaja clara: se adivina la preferencia del autor. | 32 |
-| La opción con score 0 es la que peor le va a la empresa. | 19 |
+| La opción con score más alto también es la de mejor balance de indicadores. | 53 |
+| La opción con score más alto gana por una ventaja clara: se adivina la preferencia del autor. | 39 |
+| La opción con score 0 es la que peor le va a la empresa. | 23 |
 | Hay una opción sin ningún costo visible. | 0 |
-| Solo una opción queda cerca de la mejor; las demás no son defendibles por números. | 34 |
-| No responder castiga más que cualquier opción. | 42 |
+| Solo una opción queda cerca de la mejor; las demás no son defendibles por números. | 41 |
+| No responder castiga más que cualquier opción. | 59 |
 | Una opción cruza una línea roja (se analiza, no se presenta como alternativa legítima). | 6 |
 
 Umbrales: ventaja «obvia» ≥ 3 puntos netos; una opción es «defendible» si queda a 2 puntos o menos de la mejor.
@@ -130,23 +132,45 @@ Opciones como `id:score:balance`. Un `!` marca una línea roja. «Vencer» es el
 | 6 | `gb-d6-sucesion` Comida con los hermanos Arce | base | a:3:+5 b:1:-1 c:1:-2 | -4 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
 | 7 | `gb-d7-consejo` Para tu primer consejo como director | base | a:3:+5 b:2:+1 c:0:-2 | -4 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
 
+### Kúbit
+
+| Día | Asunto | Tipo | Opciones | Vencer | Estado propuesto | Motivo |
+|---:|---|---|---|---:|---|---|
+| 1 | `kb-d1-carta` Bienvenido a Kúbit. Esto es lo que esperamos. | base | a:3:+3 b:1:+3 c:2:+1 | -7 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 1 | `kb-d1-guardia` Memo Paz | base | a:2:+2 b:1:0 c:3:+3 | -5 | legacy | Jugable como contenido histórico, pero la opción preferida por el autor sigue siendo la que más conviene. |
+| 2 | `kb-d2-altamar` Grupo Altamar · Renovación del contrato anual | base | a:0:-6 b:2:0 c:3:-2 | -9 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 2 | `kb-d2-fuga` Fuga de ingenieros · 9 en dos meses | base | a:1:-1 b:3:-3 c:2:0 | -7 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 3 | `kb-c-caida` URGENTE · Seis horas sin plataforma en cierre de mes | consecuencia | a:3:+1 b:1:-3 c:0:-6 | -10 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
+| 3 | `kb-d3-demo` Junta · Grupo Ferrán firma el viernes si la integración ya existe | base | a:2:-4 b:0:0 c:3:-2 | -8 | restrictedEthics | Tema de ética o seguridad sin opción de línea roja. Revisar que el feedback no sea sermón. |
+| 4 | `kb-c-mejora` Memo Paz | consecuencia | a:3:+6 b:2:+2 | -1 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
+| 4 | `kb-d4-deuda` Propuesta del fondo · deuda de riesgo | base | a:1:+1 b:3:+3 c:2:-2 | -8 | legacy | Jugable como contenido histórico, pero la opción preferida por el autor sigue siendo la que más conviene. |
+| 4 | `kb-d4-pleito` Emilio Salinas | base | a:3:+3 b:1:-2 c:1:-2 | -7 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
+| 5 | `kb-d5-banco` Llamada perdida · Andrea Quiroga (Finanzas) | base | a:2:0 b:0:-7 c:3:+3 | -12 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
+| 5 | `kb-d5-ronda` Serie C · Dos propuestas sobre la mesa | base | a:1:+1 b:2:-2 c:3:+1 | -6 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 5 | `kb-c-renata` Mi renuncia | consecuencia | a:3:-1 b:1:-1 | -7 | restrictedEthics | Tema de ética o seguridad sin opción de línea roja. Revisar que el feedback no sea sermón. |
+| 6 | `kb-d6-centro` Riesgo crítico · DataNorte, nuestro centro de datos en México | base | a:3:-3 b:1:-2 c:2:-4 | -11 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 6 | `kb-d6-denuncia` Confidencial · Denuncia contra el gerente regional de ventas | base | a:3:+3 b:0:-7 c:1:-3 | -8 | restrictedEthics | Tema de ética o seguridad sin opción de línea roja. Revisar que el feedback no sea sermón. |
+| 6 | `kb-c-academia` Carmen Olvera | consecuencia | a:3:+2 b:1:-1 | -2 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
+| 7 | `kb-d7-consejo` Sesión de consejo · Cierre del trimestre | base | a:3:+3 b:1:-1 c:2:-3 | -12 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
+| 7 | `kb-d7-equipo` Joel Navarro | base | a:3:+3 b:1:-3 c:2:+1 | -10 | legacy | Jugable como contenido histórico, pero la opción preferida por el autor sigue siendo la que más conviene. |
+
 ## 5. Veredicto sombra
 
 El veredicto actual exige los cinco indicadores sobre la línea del nivel y 80 % de asuntos respondidos. El veredicto sombra (propuesta v0, no validada) corre en paralelo, nadie lo ve y no se guarda en la carrera:
 
 1. Límites críticos no compensables: caja < 30 (insolvencia), consejo < 30 (el consejo ya no te sostiene) o haber elegido una opción de línea roja.
-2. Objetivos de temporada por empresa: Botanas Cumbre: margen y equipo sobre la línea («Recuperar margen sin romper la planta.»); Forja Norte: clientes y caja sobre la línea («Cumplir a la armadora y generar caja para el fondo.»); Grupo Brasa: margen y clientes sobre la línea («Defender el margen frente a las apps sin perder clientes.»).
+2. Objetivos de temporada por empresa: Botanas Cumbre: margen y equipo sobre la línea («Recuperar margen sin romper la planta.»); Forja Norte: clientes y caja sobre la línea («Cumplir a la armadora y generar caja para el fondo.»); Grupo Brasa: margen y clientes sobre la línea («Defender el margen frente a las apps sin perder clientes.»); Kúbit: caja y clientes sobre la línea («Alargar la caja hasta la siguiente ronda sin perder a los clientes que quieren el producto.»).
 3. Desempeño integral: salud promedio sobre la línea, en lugar de exigir cada indicador por separado.
 4. Dejar vencer asuntos no reprueba por sí solo: con menos de 50 % respondido el resultado es «sin evidencia suficiente».
 
-Población: 108 partidas reproducibles (semilla fija) en las tres empresas, nivel 0, con seis estilos de juego (cuidadoso, preferido por el autor, mixto, azar, deja vencer, peor balance) y tres planes de cambio.
+Población: 144 partidas reproducibles (semilla fija) en las tres empresas, nivel 0, con seis estilos de juego (cuidadoso, preferido por el autor, mixto, azar, deja vencer, peor balance) y tres planes de cambio.
 
 | | Sombra: aprobado | Sombra: reprobado | Sombra: sin evidencia | Total |
 |---|---:|---:|---:|---:|
-| Actual: aprobó | 20 | 3 | 0 | 23 |
-| Actual: reprobó | 33 | 50 | 2 | 85 |
+| Actual: aprobó | 30 | 3 | 0 | 33 |
+| Actual: reprobó | 42 | 67 | 2 | 111 |
 
-Coinciden en 67 % de las partidas. Aprobación actual: 21 %; sombra: 49 %.
+Coinciden en 69 % de las partidas. Aprobación actual: 23 %; sombra: 50 %.
 
 Motivos de reprobación en sombra (una partida puede tener varios):
 
@@ -155,7 +179,7 @@ Motivos de reprobación en sombra (una partida puede tener varios):
 | Insolvencia (caja) | 0 |
 | Consejo perdido | 0 |
 | Eligió una línea roja | 26 |
-| No cumplió un objetivo de temporada | 35 |
+| No cumplió un objetivo de temporada | 52 |
 | Salud integral bajo la línea | 14 |
 
 Por empresa y estilo de juego (aprobadas actual / sombra, de cada grupo):
@@ -165,6 +189,7 @@ Por empresa y estilo de juego (aprobadas actual / sombra, de cada grupo):
 | Botanas Cumbre | 6 / 6 de 6 | 0 / 6 de 6 | 0 / 5 de 6 | 1 / 3 de 6 | 0 / 2 de 6 | 0 / 0 de 6 |
 | Forja Norte | 6 / 6 de 6 | 0 / 0 de 6 | 0 / 0 de 6 | 1 / 2 de 6 | 0 / 0 de 6 | 2 / 0 de 6 |
 | Grupo Brasa | 6 / 6 de 6 | 0 / 6 de 6 | 0 / 6 de 6 | 1 / 2 de 6 | 0 / 3 de 6 | 0 / 0 de 6 |
+| Kúbit | 6 / 6 de 6 | 0 / 0 de 6 | 3 / 3 de 6 | 1 / 2 de 6 | 0 / 2 de 6 | 0 / 6 de 6 |
 
 Estilos: best = cuidadoso (cuida la línea en cada decisión); score = siempre la opción preferida por el autor; mixed = la preferida 60 % de las veces y al azar el resto; random = al azar; lazy = deja vencer cerca del 40 %; worst = siempre la de peor balance.
 

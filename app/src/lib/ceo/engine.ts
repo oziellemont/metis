@@ -3,7 +3,7 @@
  * igual en la app, en el cron que agenda correos/WhatsApp y en las pruebas.
  */
 import type { Axis, CareerRun, CeoState, CrisisRating, CompanyPack, Decision, Entry, Item, KpiKey, Kpis, Option, Settings, Written } from "./types";
-import { COMPANIES, FIRST_COMPANY, companyById } from "./companies";
+import { COMPANIES, FIRST_COMPANY, LEGACY_ROTATION, companyById } from "./companies";
 import { DILEMMAS, dilemmaById, type Dilemma } from "./dilemmas";
 import { changeEffect, simulate, type ChangeSim } from "./change";
 import { sanitizeDiagnostic, sanitizeProfile } from "./profile";
@@ -844,9 +844,9 @@ export function verdictOf(s: CeoState, now = nowOf(s)): Verdict {
 export function nextCompanyOf(s: CeoState): { id: string; legendary: boolean } {
   const passed = new Set((s.career ?? []).filter((r) => r.passed).map((r) => r.company));
   passed.add(s.company);
-  const left = COMPANIES.filter((c) => !passed.has(c.id));
-  const pool = left.length ? left : COMPANIES.filter((c) => c.id !== s.company);
-  const pick = pool[Math.floor(rand01(`${s.alias || s.name}|${(s.career ?? []).length}|next`) * pool.length)] ?? COMPANIES[0];
+  const left = LEGACY_ROTATION.filter((c) => !passed.has(c.id));
+  const pool = left.length ? left : LEGACY_ROTATION.filter((c) => c.id !== s.company);
+  const pick = pool[Math.floor(rand01(`${s.alias || s.name}|${(s.career ?? []).length}|next`) * pool.length)] ?? LEGACY_ROTATION[0];
   return { id: pick.id, legendary: !left.length };
 }
 

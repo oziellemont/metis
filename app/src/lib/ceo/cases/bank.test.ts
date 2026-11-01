@@ -221,7 +221,7 @@ describe("banco de casos · P1-D (ocho decisiones más)", () => {
   });
   it("cada una se vive distinto en cada industria: hechos propios, sin copiar de otra", () => {
     for (const id of NEW) {
-      const bodies = Object.values(CONTEXTS).map((c) => c.cases[id as never].body.join(" "));
+      const bodies = Object.values(CONTEXTS).map((c) => (c.cases as unknown as Record<string, { body: string[] }>)[id].body.join(" "));
       expect(new Set(bodies).size, id).toBe(bodies.length);
     }
   });

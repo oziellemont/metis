@@ -29,6 +29,7 @@ export interface CaseTag {
 const BOTH: readonly CompanyArchetype[] = ["pyme", "establecida"];
 const EST: readonly CompanyArchetype[] = ["establecida"];
 const FORJA_NOTE = "Fabricante de 1,100 personas, propiedad de un fondo y con 72% de la venta en una armadora: una PYME necesita otra versión del caso.";
+const KUBIT_NOTE = "Empresa de software de 210 personas, con fondo de inversión en el consejo y 22% del ingreso en un cliente: una PYME o una startup necesita otra versión del caso.";
 const BRASA_NOTE = "Cadena de 34 sucursales: una PYME de restaurantes (una o dos sucursales) necesita otra versión del caso.";
 const EPISODE_NOTE = "Los montos se calculan dentro del caso (reglas y respuestas); todavía no se escalan por tamaño.";
 
@@ -93,6 +94,23 @@ export const CASE_TAGS: Readonly<Record<string, CaseTag>> = Object.freeze({
   "gb-d6-dark": p(EST, { note: BRASA_NOTE }),
   "gb-d6-sucesion": f(EST, { note: BRASA_NOTE }),
   "gb-d7-consejo": u(EST, { note: BRASA_NOTE }),
+  "kb-d1-carta": p(EST, { note: KUBIT_NOTE }),
+  "kb-d1-guardia": f(EST, { note: KUBIT_NOTE }),
+  "kb-d2-altamar": p(EST, { note: KUBIT_NOTE }),
+  "kb-d2-fuga": f(EST, { note: KUBIT_NOTE }),
+  "kb-c-caida": f(EST, { note: KUBIT_NOTE }),
+  "kb-d3-demo": p(EST, { note: KUBIT_NOTE }),
+  "kb-c-mejora": f(EST, { note: KUBIT_NOTE }),
+  "kb-d4-deuda": u(EST, { note: KUBIT_NOTE }),
+  "kb-d4-pleito": u(EST, { note: KUBIT_NOTE }),
+  "kb-d5-banco": u(EST, { note: KUBIT_NOTE }),
+  "kb-d5-ronda": p(EST, { note: KUBIT_NOTE }),
+  "kb-c-renata": u(EST, { note: KUBIT_NOTE }),
+  "kb-d6-centro": f(EST, { note: KUBIT_NOTE }),
+  "kb-d6-denuncia": u(EST, { note: KUBIT_NOTE }),
+  "kb-c-academia": f(EST, { note: KUBIT_NOTE }),
+  "kb-d7-consejo": f(EST, { note: KUBIT_NOTE }),
+  "kb-d7-equipo": f(EST, { note: KUBIT_NOTE }),
 });
 
 /** Etiquetas de los casos ejecutivos (por id de episodio). */

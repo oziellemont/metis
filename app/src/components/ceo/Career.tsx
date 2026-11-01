@@ -7,7 +7,7 @@ import { ArrowRight, Award, Check, Crown, Lock, RotateCcw, X } from "lucide-reac
 import { KPI_KEYS, LEGACY_RULES_VERSION, boardReviewOf, nextCompanyOf, profileOf, rulesOf } from "@/lib/ceo/engine";
 import { COMPANY_STAGES } from "@/lib/ceo/career/identity";
 import { STAGE_MONTHS } from "@/lib/ceo/career/stages";
-import { COMPANIES, companyById } from "@/lib/ceo/companies";
+import { LEGACY_ROTATION, companyById } from "@/lib/ceo/companies";
 import { STAGES } from "@/lib/ceo/journey";
 import { celebrate, celebrateOnce } from "@/lib/ceo/celebrate";
 import { COMPETENCY_IDS, countAtLeast } from "@/lib/ceo/mastery";
@@ -146,7 +146,7 @@ export function Career() {
       <section className="card p-5 sm:p-6">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <h2 className="font-semibold text-ink">{cont ? `Tus periodos en ${pk.short}` : "Tu camino de empresas"}</h2>
-          <span className="text-xs text-slate-400">{cont ? `${career.filter((x) => x.passed).length} de ${career.length} periodos aprobados` : `${passedIds.size} de ${COMPANIES.length} empresas aprobadas`}</span>
+          <span className="text-xs text-slate-400">{cont ? `${career.filter((x) => x.passed).length} de ${career.length} periodos aprobados` : `${passedIds.size} de ${LEGACY_ROTATION.length} empresas aprobadas`}</span>
         </div>
         <ol className="mt-5 relative space-y-3 before:absolute before:left-[23px] before:top-3 before:bottom-3 before:w-0.5 before:bg-indigo-soft">
           {career.map((run, i) => {
@@ -192,7 +192,7 @@ export function Career() {
         <h2 className="font-semibold text-ink">Industrias</h2>
         <p className="mt-1 text-sm text-slate-500">Cada empresa tiene su idioma, su red de relaciones y sus dilemas. Aprueba las tres para desbloquear el modo Legendario.</p>
         <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {COMPANIES.map((co) => {
+          {LEGACY_ROTATION.map((co) => {
             const done = passedIds.has(co.id), now = co.id === pk.id;
             return (
               <div key={co.id} className={clsx("rounded-2xl border p-4", now ? "border-indigo/40 bg-indigo-soft/30" : "border-slate-100")}>

@@ -144,7 +144,7 @@ export const PROFILES: Record<string, BusinessProfile> = {
 };
 
 /** Perfil por paquete (para empresas sin `metricProfileId` reconocido). */
-const BY_PACK: Record<string, string> = { cumbre: "alimentos", forja: "autopartes", brasa: "restaurantes" };
+const BY_PACK: Record<string, string> = { cumbre: "alimentos", forja: "autopartes", brasa: "restaurantes", kubit: "saas" };
 export function profileFor(metricProfileId: string | undefined, packId: string): BusinessProfile {
   return PROFILES[metricProfileId ?? ""] ?? PROFILES[BY_PACK[packId] ?? "alimentos"] ?? PROFILES.alimentos;
 }

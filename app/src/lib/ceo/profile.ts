@@ -59,7 +59,7 @@ export const INDUSTRIES = [
   { id: "restaurantes", label: "Restaurantes y alimentos", company: "brasa" },
   { id: "retail", label: "Retail" },
   { id: "financieros", label: "Servicios financieros" },
-  { id: "tecnologia", label: "Tecnología" },
+  { id: "tecnologia", label: "Tecnología", company: "kubit" },
   { id: "salud", label: "Salud" },
   { id: "construccion", label: "Construcción e inmobiliario" },
   { id: "logistica", label: "Logística" },

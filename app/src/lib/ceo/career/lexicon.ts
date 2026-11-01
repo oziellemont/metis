@@ -15,9 +15,9 @@
  */
 
 /** Industria (etiqueta del catálogo) de cada paquete. La prueba la compara con taxonomy.ts. */
-export const PACK_INDUSTRY: Record<string, string> = { cumbre: "Alimentos y bebidas", forja: "Autopartes", brasa: "Restaurantes" };
+export const PACK_INDUSTRY: Record<string, string> = { cumbre: "Alimentos y bebidas", forja: "Autopartes", brasa: "Restaurantes", kubit: "Software y SaaS" };
 /** Especialidad con la que se escribió cada paquete: con ella no se cambia nada. */
-export const PACK_ORIGINAL_SPECIALTY: Record<string, string> = { cumbre: "Botanas y snacks", forja: "Estampado y soldadura", brasa: "Casual dining" };
+export const PACK_ORIGINAL_SPECIALTY: Record<string, string> = { cumbre: "Botanas y snacks", forja: "Estampado y soldadura", brasa: "Casual dining", kubit: "SaaS B2B" };
 
 export type LexRule = [from: string, to: string];
 
@@ -212,11 +212,24 @@ const RESTAURANT: Record<string, LexRule[]> = {
   ],
 };
 
+// ───────────────────────────────────────────── Software y SaaS (paquete Kúbit)
+const saas = (giro: string, plataforma: string): LexRule[] => [
+  ["software de cobranza para empresas medianas", giro],
+  ["plataforma de cobranza", plataforma],
+];
+const SOFTWARE: Record<string, LexRule[]> = {
+  "Software vertical": saas("software de gestión hecho a la medida de una sola industria (constructoras medianas)", "plataforma de gestión para constructoras"),
+  "Software industrial": saas("software de mantenimiento y producción para plantas medianas", "plataforma de mantenimiento y producción"),
+  "HRTech": saas("software de nómina y recursos humanos para empresas medianas", "plataforma de nómina y recursos humanos"),
+  "MarTech": saas("software de marketing y ventas digitales para empresas medianas", "plataforma de marketing y ventas"),
+};
+
 /** Especialidades que este módulo sabe escribir, por paquete (además de la original). */
 export function lexSpecialties(packId: string): string[] {
   if (packId === "cumbre") return Object.keys(FOOD).filter(Boolean);
   if (packId === "forja") return Object.keys(PARTS);
   if (packId === "brasa") return Object.keys(RESTAURANT);
+  if (packId === "kubit") return Object.keys(SOFTWARE);
   return [];
 }
 
@@ -241,6 +254,7 @@ export function lexRules(packId: string, specialty: string | undefined): [RegExp
     if (packId === "cumbre") raw = foodRules(FOOD[sp ?? ""]);
     else if (packId === "forja" && sp) raw = partsRules(PARTS[sp]);
     else if (packId === "brasa" && sp) raw = RESTAURANT[sp];
+    else if (packId === "kubit" && sp) raw = SOFTWARE[sp];
   }
   const out = raw.map(([f, t]) => [new RegExp(`(?<![${L}])${esc(f)}(?![${L}])`, "gu"), t] as [RegExp, string]);
   COMPILED.set(key, out);
