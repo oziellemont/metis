@@ -10,6 +10,10 @@ import { casesDoneOf, changeKpiEffect, changeOpen, episodeEntries, isContinuous,
 import { CONTINUOUS_RULES_VERSION } from "./rules";
 import { boardReviewOf, companyStageOf, reportDueOf, seasonEpisodesOf, seasonItems } from "./engine";
 import { stageTrack } from "./career/stages";
+import { bankArchetypeOf, isBankId } from "./cases/bank";
+import { bankMonthOf, chosenOptions } from "./engine";
+import { evidenceOf } from "./mastery";
+import { validateImport } from "./import";
 import { closePeriod } from "./business/report";
 import { EPISODES, actEpisode } from "./episodes/catalog";
 import { applyEpisode, strategiesFor, type EpisodeAction } from "./episodes/engine";
@@ -451,6 +455,33 @@ describe("carrera continua · identidad y reglas v4", () => {
     // toda consecuencia del mes tiene su detonador en el mismo mes
     for (const it of seasonItems(m2)) if (it.trigger) expect(ids).toContain(it.trigger.item);
     expect(seasonItems(m2).filter((i) => !i.trigger).length).toBeGreaterThanOrEqual(10);
+  });
+
+  it("P1-C: desde el mes 2 llegan casos del banco; se deciden, cuentan y no se repiten", () => {
+    const m1 = finish(own(), best);
+    const s2 = closePeriod(advance(m1.s, m1.t), 1, m1.t);
+    const bank2 = seasonItems(s2).filter((i) => isBankId(i.id));
+    expect(bank2).toHaveLength(3);
+    expect(bankMonthOf(s2)?.picks.map((p) => p.id)).toEqual(bank2.map((i) => i.id));
+    // el primer mes (tomar el mando) no trae casos del banco
+    expect(seasonItems(own()).some((i) => isBankId(i.id))).toBe(false);
+    // con el nombre de la empresa del jugador, nunca el del paquete
+    expect(JSON.stringify(bank2)).not.toMatch(/Cumbre/);
+    const m2 = finish(s2, best);
+    for (const it of bank2) expect(m2.s.decisions[it.id], it.id).toBeDefined();
+    const s3 = closePeriod(advance(m2.s, m2.t), 2, m2.t);
+    const chosen = chosenOptions(s3).map((o) => o.id);
+    expect(chosen.length).toBeGreaterThan(0);
+    expect(evidenceOf(s3).filter((e) => e.kind === "decision" && e.run === 1).length).toBeGreaterThanOrEqual(bank2.length);
+    const ids3 = seasonItems(s3).filter((i) => isBankId(i.id)).map((i) => i.id);
+    expect(ids3.length).toBeGreaterThanOrEqual(3);
+    for (const id of ids3) expect(bank2.map((i) => i.id)).not.toContain(id);
+    // dilemas distintos, no solo otro giro del mismo
+    const arch = (id: string) => bankArchetypeOf(id);
+    for (const id of ids3) expect(bank2.map((i) => arch(i.id))).not.toContain(arch(id));
+    // la copia en la nube acepta las decisiones del banco
+    const v = validateImport(JSON.parse(JSON.stringify(s3)), s3.savedAt + 1000);
+    expect(v.ok).toBe(true);
   });
 
   it("P1-B: revisión del consejo sin game over; la etapa avanza solo con meses mínimos y aprobación", () => {

@@ -14,6 +14,7 @@ import { TAXONOMY_VERSION, type CompanyArchetype } from "./career/taxonomy";
 import { sizedPack } from "./career/size";
 import { LAST_COMPANY_STAGE, closesStage, stageIdOf, stageTrack } from "./career/stages";
 import { compatibleItems, episodeFits } from "./companies/tags";
+import { BANK_DAYS, bankMonth, isBankId, withBank, type BankMonth } from "./cases/bank";
 import { brandDeep, brandPack, brandText, type Brand } from "./career/template";
 import { industryLongFor } from "./career/lexicon";
 import { ASSUMPTIONS_VERSION, sanitizeBusiness } from "./business/model";
@@ -41,7 +42,7 @@ export const brandOf = (s: Pick<CeoState, "companyProfile">): Brand | null => {
 };
 /** Paquete de la empresa actual. Con identidad propia, sus textos llevan el nombre que eligió el jugador. */
 export const packOf = (s: Pick<CeoState, "company"> & Partial<Pick<CeoState, "companyProfile">>): CompanyPack =>
-  brandPack(sizedPack(companyById(s.company), companyTypeOf(s)), brandOf(s));
+  brandPack(sizedPack(s.companyProfile ? withBank(companyById(s.company)) : companyById(s.company), companyTypeOf(s)), brandOf(s));
 /** Tipo de empresa del jugador (carrera continua). Sin empresa propia, undefined: las temporadas usan el paquete tal cual. */
 export const companyTypeOf = (s: Partial<Pick<CeoState, "companyProfile">>): CompanyArchetype | undefined => s.companyProfile?.archetype;
 /** Episodio con el nombre de la empresa del jugador (copia; ids, términos y reglas intactos). */
@@ -258,20 +259,56 @@ export function seasonEpisodesOf(s: Pick<CeoState, "company" | "rulesVersion"> &
  * los compatibles con el tipo de empresa, y sin las consecuencias cuyo detonador no se muestra (auditoría P1-A).
  */
 export function seasonItems(s: Pick<CeoState, "company" | "rulesVersion"> & StageInput): Item[] {
-  let items = compatibleItems(packOf(s).items, companyTypeOf(s));
+  const pack = packOf(s);
+  let items = compatibleItems(pack.items.filter((i) => !isBankId(i.id)), companyTypeOf(s));
   // Carrera continua (P1-B): la carta de llegada y lo del primer día solo tienen sentido al tomar el mando.
   if (companyStageOf(s).idx > 0) {
     const first = new Set(items.filter((i) => i.day <= 1).map((i) => i.id));
     items = items.filter((i) => !first.has(i.id) && !(i.trigger && first.has(i.trigger.item)));
   }
   // Lo que sustituye un caso ejecutivo no vuelve, aunque ese caso ya se haya jugado en un mes anterior.
-  const gone = new Set(seasonEpisodesOf(s, true).map((x) => x.replaces).filter(Boolean));
-  if (!gone.size) return items;
-  // Si un caso ejecutivo reemplaza a un detonador, sus consecuencias tampoco se muestran:
-  // nunca llegaría una consecuencia sin la decisión que la causa.
-  const kept = items.filter((i) => !gone.has(i.id));
-  const ids = new Set(kept.map((i) => i.id));
-  return kept.filter((i) => !i.trigger || ids.has(i.trigger.item));
+  const gone = new Set<string>(seasonEpisodesOf(s, true).map((x) => x.replaces).filter((x): x is string => !!x));
+  // Banco de casos (P1-C): desde «Estabilizar» llegan casos nuevos cada mes, y lo que ya viviste dos veces cede su lugar.
+  const bank = bankMonthOf(s);
+  for (const id of bank?.stale ?? []) gone.add(id);
+  if (gone.size) {
+    // Si un caso ejecutivo (o uno del banco) reemplaza a un detonador, sus consecuencias tampoco se muestran:
+    // nunca llegaría una consecuencia sin la decisión que la causa.
+    const kept = items.filter((i) => !gone.has(i.id));
+    const ids = new Set(kept.map((i) => i.id));
+    items = kept.filter((i) => !i.trigger || ids.has(i.trigger.item));
+  }
+  if (!bank?.picks.length) return items;
+  const byId = new Map(pack.items.map((i) => [i.id, i]));
+  const slots = slotsOf(pack);
+  const extra = bank.picks.flatMap((p, k) => {
+    const it = byId.get(p.id);
+    if (!it) return [];
+    const day = BANK_DAYS[k % BANK_DAYS.length];
+    return [{ ...it, day, slot: 1 + (k % Math.max(1, slots[day] ?? 1)) }];
+  });
+  return [...items, ...extra];
+}
+/**
+ * Casos del banco del mes en curso (carrera continua) o null. Se reconstruye de los meses cerrados de tu empresa:
+ * primero lo que no has vivido y, entre eso, lo de las áreas donde has decidido más flojo. Ver cases/bank.ts.
+ */
+const BANK_MEMO = new WeakMap<object, Map<string, BankMonth>>();
+const NO_CAREER: CareerRun[] = [];
+export function bankMonthOf(s: Pick<CeoState, "company"> & StageInput): BankMonth | null {
+  if (s.careerMode !== "continua" || !s.companyProfile) return null;
+  const p = s.companyProfile;
+  const career = s.career ?? NO_CAREER;
+  // Se consulta muchas veces por pantalla: se recuerda por carrera (los meses cerrados no cambian).
+  const key = `${s.company}|${p.companyId}|${p.contentPackId}|${p.appointedAt}`;
+  let memo = BANK_MEMO.get(career);
+  if (!memo) { memo = new Map(); BANK_MEMO.set(career, memo); }
+  const hit = memo.get(key);
+  if (hit) return hit;
+  const runs = closedRunsOf({ companyProfile: p, career });
+  const out = bankMonth(s.company, runs, (k) => stageTrack(runs.slice(0, k)).idx, withBank(companyById(s.company)).items, p.companyId);
+  memo.set(key, out);
+  return out;
 }
 /** Clave de llegada fijada de un caso ejecutivo (en `pinned`, junto a los asuntos). */
 export const episodePinKey = (id: string) => `ep:${id}`;
@@ -668,7 +705,7 @@ export function profileOf(s: CeoState, now = nowOf(s)) {
 export function chosenOptions(s: CeoState, now = nowOf(s)): Option[] {
   const out: Option[] = [];
   for (const r of s.career ?? []) {
-    const p = companyById(r.company);
+    const p = withBank(companyById(r.company));
     for (const [id, d] of Object.entries(r.decisions ?? {})) {
       const o = p.items.find((i) => i.id === id)?.options.find((x) => x.id === d.option);
       if (o) out.push(o);

@@ -15,6 +15,7 @@
 import type { CeoState } from "./types";
 import { migrate, nowOf, rulesVersionOf, xpOf } from "./engine";
 import { COMPANIES, companyById, isCompany } from "./companies";
+import { withBank } from "./cases/bank";
 import { CATALOG_VERSION, catalogCompanyById } from "./catalog";
 import { STAGES } from "./journey";
 
@@ -208,7 +209,7 @@ export function validateImport(raw: unknown, now: number): ImportCheck {
   if ((s.savedAt || 0) > now + SLACK || s.startedAt! > now + SLACK) return { ok: false, error: "fecha_futura" };
   const warnings: string[] = [];
   const checkDecisions = (company: string, ds: Record<string, unknown>) => {
-    const pack = companyById(company);
+    const pack = withBank(companyById(company));
     for (const [id, d] of Object.entries(ds ?? {})) {
       const it = pack.items.find((i) => i.id === id);
       const dd = d as { option?: unknown; at?: unknown } | null;

@@ -6,6 +6,7 @@ import type { CompanyPack } from "../types";
 import { CUMBRE } from "./cumbre";
 import { FORJA } from "./forja";
 import { BRASA } from "./brasa";
+import { withBank } from "../cases/bank";
 
 /** Empresas jugables (el orden es el del mapa de carrera). */
 export const COMPANIES: CompanyPack[] = [CUMBRE, FORJA, BRASA];
@@ -19,7 +20,7 @@ export const isCompany = (id: string) => !!BY_ID[id];
 
 /** Busca un asunto en cualquier empresa (para validar rutas). */
 export function findItem(id: string) {
-  for (const c of COMPANIES) {
+  for (const c of COMPANIES.map(withBank)) {
     const it = c.items.find((i) => i.id === id);
     if (it) return { company: c, item: it };
   }

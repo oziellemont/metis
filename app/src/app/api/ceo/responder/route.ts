@@ -16,6 +16,7 @@ import { NextResponse } from "next/server";
 import { supabaseCeoAdmin, supabaseServer } from "@/lib/supabase/server";
 import { aiStatusFor } from "@/lib/ceo/flags-server";
 import { companyById } from "@/lib/ceo/companies";
+import { withBank } from "@/lib/ceo/cases/bank";
 import { cleanName } from "@/lib/ceo/career/identity";
 import { brandPack } from "@/lib/ceo/career/template";
 import { cleanSpecialty } from "@/lib/ceo/career/lexicon";
@@ -67,7 +68,7 @@ export async function POST(req: Request) {
   if (problem) return NextResponse.json({ ok: false, error: problem }, { status: 400 });
   // Carrera continua: el caso y el nombre de la empresa llegan con el nombre que eligió el jugador (validado).
   const bn = cleanName(body.brand?.name), bs = cleanName(body.brand?.short);
-  const base = companyById(body.company);
+  const base = withBank(companyById(body.company));
   const sp = cleanSpecialty(base.id, body.brand?.specialty);
   // Montos del tamaño de la empresa (P1-A): una PYME ve el caso con sus cifras, igual que en la pantalla.
   const size = bn && bs && isArchetype(body.brand?.archetype) ? body.brand.archetype : undefined;

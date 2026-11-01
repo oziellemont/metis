@@ -1,3 +1,4 @@
+import { isBankId } from "../cases/bank";
 import { describe, expect, it } from "vitest";
 import { COMPANIES } from ".";
 import { CASE_TAGS, EPISODE_TAGS, caseCast, caseKpis, caseStages, compatibleItems } from "./tags";
@@ -101,7 +102,7 @@ describe("auditoría de casos · combinaciones", () => {
   it("una industria solo ofrece un tipo si TODOS sus casos base caben (sin huecos en la temporada)", () => {
     for (const [, sectorId, industryId, a] of COMBOS) {
       const pk = packOf(own(sectorId, industryId, a));
-      const base = pk.items.filter((i) => !i.trigger);
+      const base = pk.items.filter((i) => !i.trigger && !isBankId(i.id));
       expect(compatibleItems(base, a).length, `${industryId}/${a}`).toBe(base.length);
     }
   });
