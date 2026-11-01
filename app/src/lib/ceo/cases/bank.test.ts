@@ -15,8 +15,8 @@ const EMOJI = /[\p{Extended_Pictographic}\u2605\u2606\u2713\u2717]/u;
 const texts = (it: Item): string[] => [it.subject, it.preview, ...it.body, it.ask, ...(it.data?.rows.flat() ?? []), it.data?.title ?? "", ...it.options.flatMap((o) => [o.text, o.outcome, ...o.reply]), ...it.expired.reply, it.expired.outcome, it.bitacora.title, it.bitacora.text, it.bitacora.nota, it.real?.company ?? "", it.real?.title ?? "", it.real?.text ?? ""];
 
 describe("banco de casos · arquetipos (lo que se aprende)", () => {
-  it("diez decisiones distintas, cada una con tres giros, precedente real con fuentes y lección existente", () => {
-    expect(ARCHETYPES.length).toBeGreaterThanOrEqual(10);
+  it("dieciocho decisiones distintas, cada una con tres giros, precedente real con fuentes y lección existente", () => {
+    expect(ARCHETYPES.length).toBeGreaterThanOrEqual(18);
     expect(new Set(ARCHETYPES.map((a) => a.id)).size).toBe(ARCHETYPES.length);
     for (const a of ARCHETYPES) {
       expect(a.twists.length, a.id).toBe(3);
@@ -99,7 +99,7 @@ describe("banco de casos · industrias", () => {
 
 describe.each(COMPANIES.map((c) => [c.id, c] as const))("banco de casos · %s", (_id, pack) => {
   const items = bankItems(pack);
-  it("30 casos (10 decisiones × 3 giros) con ids únicos que no chocan con el paquete", () => {
+  it("un caso por decisión y giro (18 × 3 = 54) con ids únicos que no chocan con el paquete", () => {
     expect(items.length).toBe(ARCHETYPES.length * 3);
     const ids = new Set(items.map((i) => i.id));
     expect(ids.size).toBe(items.length);
@@ -164,17 +164,19 @@ describe("banco de casos · selección que se retroalimenta", () => {
   it("no repite: primero lo nunca visto; luego otro giro del mismo dilema; con todo visto, vuelve a empezar", () => {
     const seen: string[] = [];
     const months: string[][] = [];
-    for (let m = 0; m < 12; m++) {
+    const N = ARCHETYPES.length;
+    const total = N * 3;
+    for (let m = 0; m < Math.ceil(total / 3) + 4; m++) {
       const picks = pickBank("forja", 2, { seen, last: months[m - 1] ?? [], quality: {} }, `s|${m}`, 3);
       expect(new Set(picks.map((p) => p.archetype)).size).toBe(picks.length);
-      for (const p of picks) { if (seen.length < 30) expect(seen, p.id).not.toContain(p.id); seen.push(p.id); }
+      for (const p of picks) { if (seen.length < total) expect(seen, p.id).not.toContain(p.id); seen.push(p.id); }
       months.push(picks.map((p) => p.id));
     }
-    // los 10 arquetipos aparecen antes de repetir alguno
-    const firstTen = seen.slice(0, 10).map((id) => id.split("-")[2]);
-    expect(new Set(firstTen).size).toBe(10);
-    // 30 casos distintos antes de repetir uno
-    expect(new Set(seen.slice(0, 30)).size).toBe(30);
+    // todos los arquetipos aparecen antes de repetir alguno
+    const first = seen.slice(0, N).map((id) => id.split("-")[2]);
+    expect(new Set(first).size).toBe(N);
+    // todos los casos distintos antes de repetir uno
+    expect(new Set(seen.slice(0, total)).size).toBe(total);
   });
   it("tomar el mando no trae casos del banco; las apuestas de innovación llegan desde «Construir capacidad»", () => {
     const run = { passed: true, decisions: {} };
@@ -203,5 +205,35 @@ describe("banco de casos · selección que se retroalimenta", () => {
     for (const p of after) expect(m1.map((x) => x.id)).not.toContain(p.id);
     const weakAreas = new Set(m1.flatMap((p) => archetypeById(p.archetype)!.areas));
     expect(after.some((p) => archetypeById(p.archetype)!.areas.some((a) => weakAreas.has(a)))).toBe(true);
+  });
+});
+
+describe("banco de casos · P1-D (ocho decisiones más)", () => {
+  const NEW = ["guerra", "verde", "trimestre", "incidente", "salarios", "meta", "foco", "adaptativo"];
+  it("las ocho existen, con su precedente y una lección distinta a la de su vecino", () => {
+    for (const id of NEW) expect(archetypeById(id), id).toBeTruthy();
+    const lessons = new Set(NEW.map((id) => archetypeById(id)!.lesson));
+    expect(lessons.size).toBeGreaterThanOrEqual(6);
+    // alineación y gobierno (consejo) quedan cubiertos por el banco
+    const areas = new Set(ARCHETYPES.flatMap((a) => a.areas));
+    expect(areas.has("alineacion")).toBe(true);
+    expect(ARCHETYPES.some((a) => a.lesson === "consejo")).toBe(true);
+  });
+  it("cada una se vive distinto en cada industria: hechos propios, sin copiar de otra", () => {
+    for (const id of NEW) {
+      const bodies = Object.values(CONTEXTS).map((c) => c.cases[id as never].body.join(" "));
+      expect(new Set(bodies).size, id).toBe(bodies.length);
+    }
+  });
+  it("los giros también se resuelven con el elenco (sin llaves sueltas)", () => {
+    const pack = companyById("brasa");
+    for (const it of bankItems(pack).filter((i) => NEW.some((n) => i.id.includes(`-${n}-`)))) expect(it.body.join(" "), it.id).not.toMatch(/\{[a-z_]+\}/);
+  });
+  it("las de más peso llegan con la empresa más madura: presión del consejo y retos adaptativos desde «Construir capacidad»", () => {
+    expect(archetypeById("trimestre")!.minStage).toBe(2);
+    expect(archetypeById("adaptativo")!.minStage).toBe(2);
+    const m1 = pickBank("cumbre", 1, { seen: [], last: [], quality: {} }, "w", 20).map((p) => p.archetype);
+    expect(m1).not.toContain("trimestre");
+    expect(m1).not.toContain("adaptativo");
   });
 });

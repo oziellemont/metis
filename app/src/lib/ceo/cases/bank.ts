@@ -9,8 +9,8 @@
  *  1. Cada mes de la carrera continua, desde «Estabilizar», llegan casos nuevos del banco.
  *  2. Se eligen primero los arquetipos que el jugador todavía no ha vivido, y entre ellos, los de las áreas donde
  *     sus decisiones han sido más flojas (lo que decidió en los meses cerrados). Así practica lo que más necesita.
- *  3. Cuando ya vivió un arquetipo, vuelve con otro giro (la misma decisión con otra presión). Con 10 arquetipos y
- *     3 giros hay 30 casos por industria antes de repetir, y luego el ciclo vuelve a empezar por lo más flojo.
+ *  3. Cuando ya vivió un arquetipo, vuelve con otro giro (la misma decisión con otra presión). Con 18 arquetipos y
+ *     3 giros hay 54 casos por industria antes de repetir, y luego el ciclo vuelve a empezar por lo más flojo.
  * Agregar un arquetipo o una industria es agregar datos: el generador, las pruebas y el motor no cambian.
  */
 import type { Area, CastId, CompanyPack, Item, Option } from "../types";
@@ -66,7 +66,7 @@ export function buildCase(a: Archetype, ctx: IndustryContext, twist: number, pac
       .replace(/\{cliente\}/g, ctx.vars.cliente).replace(/\{clientes\}/g, ctx.vars.clientes).replace(/\{lote\}/g, ctx.vars.lote).replace(/\{afectado\}/g, ctx.vars.afectado)
       .replace(/\{company_short\}/g, short);
   const facts = ctx.cases[a.id];
-  const said = [...facts.body.map(fill), a.twists[twist]];
+  const said = [...facts.body.map(fill), fill(a.twists[twist])];
   // La llamada perdida empieza con la duración del mensaje de voz (la pantalla la usa como etiqueta del audio).
   const body = a.channel === "llamada" ? [`Mensaje de voz · 0:${String(35 + Math.floor(rand01(id) * 20))}`, ...said] : said;
   const from = who(a.from);
