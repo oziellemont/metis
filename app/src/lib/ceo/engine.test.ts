@@ -397,7 +397,8 @@ describe("carrera continua · identidad y reglas v4", () => {
     const decided = decide(started(), "d1-bienvenida", "a", T0 + 60_000);
     expect(setupCompany(decided, SETUP, T0 + 120_000)).toBe(decided);
     const st = started();
-    expect(setupCompany(st, { ...SETUP, archetype: "pyme" }, T0)).toBe(st);
+    expect(setupCompany(st, { ...SETUP, industryId: "autopartes", archetype: "pyme" }, T0)).toBe(st);
+    expect(setupCompany(st, { ...SETUP, archetype: "startup" }, T0)).toBe(st);
     expect(setupCompany(st, { ...SETUP, sectorId: "tecnologia_informacion", industryId: "software_saas" }, T0)).toBe(st);
   });
 

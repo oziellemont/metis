@@ -25,8 +25,9 @@ export function selectionForPack(packId: string | undefined): SetupSelection {
   return {};
 }
 
-/** Primer tipo de empresa con casos aprobados para la industria (o undefined si ninguno). */
+/** Tipo sugerido: la establecida si la industria la tiene (es la de contenido más completo); si no, el primero disponible. */
 export function defaultArchetype(sectorId: string | undefined, industryId: string | undefined): CompanyArchetype | undefined {
+  if (archetypeAvailability(sectorId, industryId, "establecida") === "available") return "establecida";
   return ARCHETYPES.find((a) => archetypeAvailability(sectorId, industryId, a.id) === "available")?.id;
 }
 

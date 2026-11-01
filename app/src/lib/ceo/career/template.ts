@@ -85,16 +85,19 @@ const isProse = (v: unknown): boolean => typeof v === "string" && /\s/.test(v);
 /** Campos que son identificadores: nunca se traducen (aunque hoy ninguno contenga un nombre con mayúscula). */
 const ID_KEYS = new Set(["id", "from", "who", "item", "company", "trigger", "rules", "replaces", "contentPackId", "a", "b", "assistant", "board", "chair", "reportsTo", "targets"]);
 
-const CACHE = new Map<string, CompanyPack>();
+/** Memo por objeto de paquete (el original o su versión escalada a PYME son objetos distintos). */
+const CACHE = new WeakMap<CompanyPack, Map<string, CompanyPack>>();
 /** Paquete con la marca del jugador (memoizado por paquete + nombre + especialidad). Sin marca, el original. */
 export function brandPack(pack: CompanyPack, brand: Brand | null): CompanyPack {
   if (!brand) return pack;
-  const key = `${pack.id}|${brand.name}|${brand.short}|${brand.city ?? ""}|${brand.specialty ?? ""}`;
-  const hit = CACHE.get(key);
+  const key = `${brand.name}|${brand.short}|${brand.city ?? ""}|${brand.specialty ?? ""}`;
+  let memo = CACHE.get(pack);
+  if (!memo) { memo = new Map(); CACHE.set(pack, memo); }
+  const hit = memo.get(key);
   if (hit) return hit;
   const f = (s: string) => brandText(s, pack, brand);
   const out: CompanyPack = { ...brandDeep(pack, f), id: pack.id, name: brand.name, short: brand.short, domain: domainOf(brand.short), industry: industryLabelFor(pack.id, brand.specialty) ?? pack.industry, ...(brand.city ? { city: brand.city } : {}) };
-  if (CACHE.size > 50) CACHE.clear();
-  CACHE.set(key, out);
+  if (memo.size > 50) memo.clear();
+  memo.set(key, out);
   return out;
 }

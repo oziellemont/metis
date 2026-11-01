@@ -10,6 +10,8 @@
  * Gasto: reserva atómica en ceo.ai_reservar (por día, por mes y por jugador) ANTES de llamar a OpenAI,
  * y ajuste al costo real después. Cada llamada queda en ceo.ai_calls.
  */
+import { sizedPack } from "@/lib/ceo/career/size";
+import { isArchetype } from "@/lib/ceo/career/taxonomy";
 import { NextResponse } from "next/server";
 import { supabaseCeoAdmin, supabaseServer } from "@/lib/supabase/server";
 import { aiStatusFor } from "@/lib/ceo/flags-server";
@@ -59,7 +61,7 @@ export async function POST(req: Request) {
   const key = (process.env.OPENAI_API_KEY ?? "").trim();
   if (!admin || !key) return fallback("Servicio no configurado.", 503);
 
-  const body = (await req.json().catch(() => ({}))) as { itemId?: string; company?: string; text?: string; profile?: unknown; brand?: { name?: unknown; short?: unknown; specialty?: unknown } };
+  const body = (await req.json().catch(() => ({}))) as { itemId?: string; company?: string; text?: string; profile?: unknown; brand?: { name?: unknown; short?: unknown; specialty?: unknown; archetype?: unknown } };
   const text = String(body.text ?? "");
   const problem = textProblem(text);
   if (problem) return NextResponse.json({ ok: false, error: problem }, { status: 400 });
@@ -67,7 +69,9 @@ export async function POST(req: Request) {
   const bn = cleanName(body.brand?.name), bs = cleanName(body.brand?.short);
   const base = companyById(body.company);
   const sp = cleanSpecialty(base.id, body.brand?.specialty);
-  const pack = brandPack(base, bn && bs ? { name: bn, short: bs, ...(sp ? { specialty: sp } : {}) } : null);
+  // Montos del tamaño de la empresa (P1-A): una PYME ve el caso con sus cifras, igual que en la pantalla.
+  const size = bn && bs && isArchetype(body.brand?.archetype) ? body.brand.archetype : undefined;
+  const pack = brandPack(sizedPack(base, size), bn && bs ? { name: bn, short: bs, ...(sp ? { specialty: sp } : {}) } : null);
   const item = pack.items.find((i) => i.id === body.itemId);
   if (!item || !writtenEligible(item)) return fallback("Este asunto no acepta respuesta escrita.", 400);
 

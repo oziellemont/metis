@@ -10,7 +10,9 @@ import { sanitizeDiagnostic, sanitizeProfile } from "./profile";
 import { CONTINUOUS_RULES_VERSION, LEGACY_RULES_VERSION, RULES_VERSION, isRulesVersion, ruleSet, tierRules } from "./rules";
 import { newCompanyProfile, renameProfile, sanitizeCompanyProfile, type NewCompanyInput } from "./career/identity";
 import { isDisplayCurrency } from "./career/money";
-import { TAXONOMY_VERSION } from "./career/taxonomy";
+import { TAXONOMY_VERSION, type CompanyArchetype } from "./career/taxonomy";
+import { sizedPack } from "./career/size";
+import { compatibleItems, episodeFits } from "./companies/tags";
 import { brandDeep, brandPack, brandText, type Brand } from "./career/template";
 import { industryLongFor } from "./career/lexicon";
 import { ASSUMPTIONS_VERSION, sanitizeBusiness } from "./business/model";
@@ -37,7 +39,10 @@ export const brandOf = (s: Pick<CeoState, "companyProfile">): Brand | null => {
   return p ? { name: p.displayName, short: p.shortName, city: p.exposure?.baseCity, ...(p.specialty ? { specialty: p.specialty } : {}) } : null;
 };
 /** Paquete de la empresa actual. Con identidad propia, sus textos llevan el nombre que eligió el jugador. */
-export const packOf = (s: Pick<CeoState, "company"> & Partial<Pick<CeoState, "companyProfile">>): CompanyPack => brandPack(companyById(s.company), brandOf(s));
+export const packOf = (s: Pick<CeoState, "company"> & Partial<Pick<CeoState, "companyProfile">>): CompanyPack =>
+  brandPack(sizedPack(companyById(s.company), companyTypeOf(s)), brandOf(s));
+/** Tipo de empresa del jugador (carrera continua). Sin empresa propia, undefined: las temporadas usan el paquete tal cual. */
+export const companyTypeOf = (s: Partial<Pick<CeoState, "companyProfile">>): CompanyArchetype | undefined => s.companyProfile?.archetype;
 /** Episodio con el nombre de la empresa del jugador (copia; ids, términos y reglas intactos). */
 export function brandedEpisode(spec: EpisodeSpec, s: Pick<CeoState, "companyProfile">): EpisodeSpec {
   return brandedEpisodeFor(spec, brandOf(s));
@@ -219,18 +224,29 @@ export function resolution(s: CeoState, itemId: string, now: number): string | n
 
 // ───────────────────────────────────────────── casos ejecutivos en la temporada (reglas v3+)
 /** Casos ejecutivos que llegan en esta temporada (vacío con reglas anteriores a v3 o si la empresa no tiene). */
-export function seasonEpisodesOf(s: Pick<CeoState, "company" | "rulesVersion">): { spec: EpisodeSpec; day: number; slot: number; replaces?: string }[] {
+export function seasonEpisodesOf(s: Pick<CeoState, "company" | "rulesVersion"> & Partial<Pick<CeoState, "companyProfile">>): { spec: EpisodeSpec; day: number; slot: number; replaces?: string }[] {
   if (!ruleSet(rulesVersionOf(s)).episodes) return [];
+  const a = companyTypeOf(s);
   return (SEASON_EPISODES[s.company] ?? []).flatMap((x) => {
+    // Auditoría (P1-A): un caso que no es compatible con el tipo de empresa no se muestra.
+    if (!episodeFits(x.episode, a)) return [];
     const spec = EPISODES[x.episode];
     return spec && spec.approval === "aprobado" && spec.company === s.company ? [{ spec, day: x.day, slot: x.slot, replaces: x.replaces }] : [];
   });
 }
-/** Asuntos de la temporada: los del paquete menos los que sustituye un caso ejecutivo. */
-export function seasonItems(s: Pick<CeoState, "company" | "rulesVersion">): Item[] {
-  const items = packOf(s).items;
+/**
+ * Asuntos de la temporada: los del paquete menos los que sustituye un caso ejecutivo. En la carrera continua, solo
+ * los compatibles con el tipo de empresa, y sin las consecuencias cuyo detonador no se muestra (auditoría P1-A).
+ */
+export function seasonItems(s: Pick<CeoState, "company" | "rulesVersion"> & Partial<Pick<CeoState, "companyProfile">>): Item[] {
+  const items = compatibleItems(packOf(s).items, companyTypeOf(s));
   const gone = new Set(seasonEpisodesOf(s).map((x) => x.replaces).filter(Boolean));
-  return gone.size ? items.filter((i) => !gone.has(i.id)) : items;
+  if (!gone.size) return items;
+  // Si un caso ejecutivo reemplaza a un detonador, sus consecuencias tampoco se muestran:
+  // nunca llegaría una consecuencia sin la decisión que la causa.
+  const kept = items.filter((i) => !gone.has(i.id));
+  const ids = new Set(kept.map((i) => i.id));
+  return kept.filter((i) => !i.trigger || ids.has(i.trigger.item));
 }
 /** Clave de llegada fijada de un caso ejecutivo (en `pinned`, junto a los asuntos). */
 export const episodePinKey = (id: string) => `ep:${id}`;
