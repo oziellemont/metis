@@ -17,7 +17,9 @@ describe("identidad de la empresa", () => {
   it("los tres paquetes de hoy crean empresa; lo que no tiene casos, no", () => {
     expect(newCompanyProfile({ ...base, industryId: "autopartes", displayName: "Troqueles del Bajío" }, 2)?.contentPackId).toBe("forja");
     expect(newCompanyProfile({ ...base, sectorId: "restaurantes_alimentos", industryId: "restaurantes", displayName: "Fogón 33" }, 2)?.contentPackId).toBe("brasa");
-    expect(newCompanyProfile({ ...base, archetype: "pyme" }, 2)).toBeNull();
+    expect(newCompanyProfile({ ...base, archetype: "pyme" }, 2)?.contentPackId).toBe("cumbre");
+    expect(newCompanyProfile({ ...base, industryId: "autopartes", archetype: "pyme" }, 2)).toBeNull();
+    expect(newCompanyProfile({ ...base, archetype: "startup" }, 2)).toBeNull();
     expect(newCompanyProfile({ ...base, sectorId: "tecnologia_informacion", industryId: "software_saas" }, 2)).toBeNull();
     expect(newCompanyProfile({ ...base, sectorId: "restaurantes_alimentos" }, 2)).toBeNull();
     expect(newCompanyProfile({ ...base, archetype: "fundador" }, 2)).toBeNull();

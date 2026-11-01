@@ -24,7 +24,8 @@ describe("onboarding de carrera continua · lógica pura", () => {
     expect(canContinue("industria", {})).toBe(false);
     expect(canContinue("industria", { sectorId: "tecnologia_informacion", industryId: "software_saas" })).toBe(false);
     expect(canContinue("industria", OK)).toBe(true);
-    expect(canContinue("tipo", { ...OK, archetype: "pyme" })).toBe(false);
+    expect(canContinue("tipo", { ...OK, archetype: "pyme" })).toBe(true);
+    expect(canContinue("tipo", { ...OK, archetype: "startup" })).toBe(false);
     expect(canContinue("tipo", OK)).toBe(true);
     expect(canContinue("nombre", { ...OK, displayName: "x" })).toBe(false);
     expect(canContinue("nombre", { ...OK, displayName: "Mi {empresa}" })).toBe(false);
