@@ -85,7 +85,7 @@ describe("desplegables dependientes", () => {
 describe("disponibilidad: «Próximamente» bloquea", () => {
   it("solo es jugable lo que tiene paquete existente, métricas y un tipo soportado", () => {
     const playable = all.filter((i) => i.availability === "available");
-    expect(playable.map((i) => i.contentPackId).sort()).toEqual(["brasa", "cumbre", "forja"]);
+    expect(playable.map((i) => i.contentPackId).sort()).toEqual(["brasa", "cumbre", "forja", "kubit"]);
     for (const i of playable) {
       expect(COMPANIES.some((c) => c.id === i.contentPackId)).toBe(true);
       expect(i.metricProfileId).toBeTruthy();
@@ -94,7 +94,9 @@ describe("disponibilidad: «Próximamente» bloquea", () => {
   });
 
   it("una combinación sin contenido no pasa", () => {
-    expect(isPlayableCombo("tecnologia_informacion", "software_saas")).toBe(false);
+    expect(isPlayableCombo("comercio", "retail")).toBe(false);
+    expect(isPlayableCombo("tecnologia_informacion", "software_saas")).toBe(true);
+    expect(isPlayableCombo("tecnologia_informacion", "software_saas", "establecida")).toBe(true);
     expect(isPlayableCombo("tecnologia_informacion", "software_saas", "startup")).toBe(false);
     expect(isPlayableCombo("manufactura", "alimentos_bebidas", "establecida")).toBe(true);
     expect(isPlayableCombo("manufactura", "alimentos_bebidas", "startup")).toBe(false);

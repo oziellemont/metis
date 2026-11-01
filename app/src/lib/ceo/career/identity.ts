@@ -119,6 +119,13 @@ const PACK_EXPOSURE: Record<string, CompanyExposure> = {
     buyCurrencies: ["MXN"],
     sellCurrencies: ["MXN"],
   },
+  kubit: {
+    baseCity: "Monterrey, N.L.",
+    sites: [{ kind: "oficina", city: "Monterrey, N.L." }],
+    suppliers: [{ what: "Nube e infraestructura", region: "Virginia, EE. UU." }, { what: "Centro de datos de respaldo", region: "Nuevo León" }],
+    buyCurrencies: ["USD", "MXN"],
+    sellCurrencies: ["MXN"],
+  },
 };
 export const exposureOfPack = (packId: string): CompanyExposure => {
   const e = PACK_EXPOSURE[packId];

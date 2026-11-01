@@ -94,7 +94,7 @@ const SECTOR_DATA: SectorSeed[] = [
     { id: "catering", label: "Catering y comedores industriales", aliases: ["catering", "comedor industrial"] },
   ] },
   { id: "tecnologia_informacion", label: "Tecnología e información", family: "tecnologia", focus: true, industries: [
-    { id: "software_saas", label: "Software y SaaS", aliases: ["saas", "software", "b2b", "software as a service", "plataforma", "startup de software"], metric: "saas", focus: true, specialties: ["SaaS B2B", "Software vertical", "Software industrial", "HRTech", "MarTech"] },
+    { id: "software_saas", label: "Software y SaaS", aliases: ["saas", "software", "b2b", "software as a service", "plataforma", "startup de software"], pack: "kubit", archetypes: ["establecida"], metric: "saas", focus: true, specialties: ["SaaS B2B", "Software vertical", "Software industrial", "HRTech", "MarTech"] },
     { id: "inteligencia_artificial", label: "Inteligencia artificial aplicada", aliases: ["ia", "ai", "machine learning"] },
     { id: "ciberseguridad", label: "Ciberseguridad", aliases: ["cyber", "seguridad informatica"] },
     { id: "aplicaciones_consumo", label: "Aplicaciones de consumo", aliases: ["app", "apps", "b2c"] },

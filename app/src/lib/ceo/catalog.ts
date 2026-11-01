@@ -12,7 +12,7 @@
  */
 import { isCompany } from "./companies";
 
-export const CATALOG_VERSION = 1;
+export const CATALOG_VERSION = 2;
 
 export type CatalogStatus = "available" | "coming_soon" | "retired";
 
@@ -75,7 +75,7 @@ export const INDUSTRY_CATALOG: CatalogIndustry[] = [
     { id: "puntomadero", name: "Punto Madero", line: "Ferreterías y hogar", identity: "Cadena regional de ferreterías con clientes de toda la vida y poca tecnología.", tension: "Llega un competidor nacional a tres cuadras de la tienda principal.", status: "coming_soon", provisional: true },
   ]),
   ind("tecnologia", "Tecnología y software", "Crecer rápido sin quemar la caja ni al equipo.", [
-    { id: "kubit", name: "Kúbit", line: "Software para empresas", identity: "Startup con producto querido y ocho meses de caja. Un inversionista nervioso en el consejo.", tension: "Un cliente vale el 40% de los ingresos y pide funciones a la medida.", status: "coming_soon", provisional: true },
+    { id: "kubit", name: "Kúbit", line: "Software para empresas", identity: "Empresa de software con producto querido, 14 meses de caja y un fondo de inversión impaciente en el consejo.", tension: "Un cliente vale el 22% de los ingresos y pide descuento y desarrollos a la medida.", status: "available", provisional: true },
     { id: "farosistemas", name: "Faro Sistemas", line: "Servicios de tecnología", identity: "Consultora rentable que vive de proyectos. Buen talento, poca recurrencia.", tension: "Su mejor equipo recibe ofertas de una empresa extranjera.", status: "coming_soon", provisional: true },
     { id: "cauce", name: "Cauce Digital", line: "Pagos en línea", identity: "Plataforma de pagos para comercios pequeños. Crece rápido y opera en un sector regulado.", tension: "Un incidente de seguridad obliga a decidir qué y cuándo comunicar.", status: "coming_soon", provisional: true },
   ]),

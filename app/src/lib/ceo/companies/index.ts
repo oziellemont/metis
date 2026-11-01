@@ -6,11 +6,18 @@ import type { CompanyPack } from "../types";
 import { CUMBRE } from "./cumbre";
 import { FORJA } from "./forja";
 import { BRASA } from "./brasa";
+import { KUBIT } from "./kubit";
 import { withBank } from "../cases/bank";
 
 /** Empresas jugables (el orden es el del mapa de carrera). */
-export const COMPANIES: CompanyPack[] = [CUMBRE, FORJA, BRASA];
+export const COMPANIES: CompanyPack[] = [CUMBRE, FORJA, BRASA, KUBIT];
 export const FIRST_COMPANY = CUMBRE.id;
+/**
+ * Rotación del modo por temporadas (legacy): las tres empresas fundacionales, fija.
+ * Las empresas nuevas entran por la carrera continua (el jugador elige su industria);
+ * así las partidas grabadas se reproducen igual y ningún resultado histórico cambia.
+ */
+export const LEGACY_ROTATION: CompanyPack[] = [CUMBRE, FORJA, BRASA];
 
 /** Lo que viene ya no vive aquí: ver el catálogo editorial en ../catalog.ts (estados available / coming_soon / retired). */
 

@@ -17,12 +17,14 @@ describe("onboarding de carrera continua · lógica pura", () => {
 
   it("tipo por omisión: el primero con casos aprobados", () => {
     expect(defaultArchetype("manufactura", "alimentos_bebidas")).toBe("establecida");
-    expect(defaultArchetype("tecnologia_informacion", "software_saas")).toBeUndefined();
+    expect(defaultArchetype("tecnologia_informacion", "software_saas")).toBe("establecida");
+    expect(defaultArchetype("comercio", "retail")).toBeUndefined();
   });
 
   it("solo deja avanzar con combinaciones jugables", () => {
     expect(canContinue("industria", {})).toBe(false);
-    expect(canContinue("industria", { sectorId: "tecnologia_informacion", industryId: "software_saas" })).toBe(false);
+    expect(canContinue("industria", { sectorId: "comercio", industryId: "retail" })).toBe(false);
+    expect(canContinue("industria", { sectorId: "tecnologia_informacion", industryId: "software_saas" })).toBe(true);
     expect(canContinue("industria", OK)).toBe(true);
     expect(canContinue("tipo", { ...OK, archetype: "pyme" })).toBe(true);
     expect(canContinue("tipo", { ...OK, archetype: "startup" })).toBe(false);

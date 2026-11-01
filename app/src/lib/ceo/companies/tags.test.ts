@@ -20,7 +20,7 @@ describe("auditoría de casos · etiquetas", () => {
     const ids = COMPANIES.flatMap((c) => c.items.map((i) => i.id));
     expect(ids.filter((id) => !CASE_TAGS[id])).toEqual([]);
     expect(Object.keys(CASE_TAGS).filter((id) => !ids.includes(id))).toEqual([]);
-    expect(ids).toHaveLength(52);
+    expect(ids).toHaveLength(69);
   });
   it("cada caso ejecutivo de una temporada tiene etiqueta", () => {
     const eps = Object.values(SEASON_EPISODES).flat().map((x) => x.episode);
@@ -33,9 +33,9 @@ describe("auditoría de casos · etiquetas", () => {
       if (t.archetypes.length < 2) expect(t.note, id).toBeTruthy();
     }
   });
-  it("la clasificación confirma el plan P0-A §5.1: universal 17, de familia 23, del paquete 15 (con 3 casos ejecutivos)", () => {
+  it("la clasificación: universal 22, de familia 31, del paquete 19 (con 3 casos ejecutivos; P0-A §5.1 más Kúbit)", () => {
     const n = (scope: string) => Object.values(CASE_TAGS).filter((t) => t.scope === scope).length;
-    expect([n("universal"), n("familia"), n("paquete") + Object.keys(EPISODE_TAGS).length]).toEqual([17, 23, 15]);
+    expect([n("universal"), n("familia"), n("paquete") + Object.keys(EPISODE_TAGS).length]).toEqual([22, 31, 19]);
     const by = (pack: string, scope: string) => COMPANIES.find((c) => c.id === pack)!.items.filter((i) => CASE_TAGS[i.id].scope === scope).length;
     expect([by("cumbre", "universal"), by("forja", "universal"), by("brasa", "universal")]).toEqual([10, 5, 2]);
     expect([by("cumbre", "familia"), by("forja", "familia"), by("brasa", "familia")]).toEqual([6, 8, 9]);
@@ -96,8 +96,8 @@ describe.each(COMBOS)("auditoría de casos · %s", (_n, sectorId, industryId, ar
 });
 
 describe("auditoría de casos · combinaciones", () => {
-  it("jugables hoy: alimentos (PYME y establecida), autopartes y restaurantes (establecida)", () => {
-    expect(COMBOS.map(([, , i, a]) => `${i}/${a}`).sort()).toEqual(["alimentos_bebidas/establecida", "alimentos_bebidas/pyme", "autopartes/establecida", "restaurantes/establecida"]);
+  it("jugables hoy: alimentos (PYME y establecida), autopartes, restaurantes y software (establecida)", () => {
+    expect(COMBOS.map(([, , i, a]) => `${i}/${a}`).sort()).toEqual(["alimentos_bebidas/establecida", "alimentos_bebidas/pyme", "autopartes/establecida", "restaurantes/establecida", "software_saas/establecida"]);
   });
   it("una industria solo ofrece un tipo si TODOS sus casos base caben (sin huecos en la temporada)", () => {
     for (const [, sectorId, industryId, a] of COMBOS) {

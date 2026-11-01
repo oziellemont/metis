@@ -404,7 +404,8 @@ describe("carrera continua · identidad y reglas v4", () => {
     const st = started();
     expect(setupCompany(st, { ...SETUP, industryId: "autopartes", archetype: "pyme" }, T0)).toBe(st);
     expect(setupCompany(st, { ...SETUP, archetype: "startup" }, T0)).toBe(st);
-    expect(setupCompany(st, { ...SETUP, sectorId: "tecnologia_informacion", industryId: "software_saas" }, T0)).toBe(st);
+    expect(setupCompany(st, { ...SETUP, sectorId: "tecnologia_informacion", industryId: "software_saas", archetype: "startup" }, T0)).toBe(st);
+    expect(setupCompany(st, { ...SETUP, sectorId: "comercio", industryId: "retail" }, T0)).toBe(st);
   });
 
   it("al cerrar el periodo sigue en LA MISMA empresa, apruebe o no; la exigencia sigue a la etapa (P1-B)", () => {

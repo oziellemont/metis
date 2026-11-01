@@ -18,9 +18,9 @@ describe("catálogo de industrias", () => {
     for (const id of [...ids, ...INDUSTRY_CATALOG.map((i) => i.id)]) expect(id).toMatch(/^[a-z]+$/);
   });
 
-  it("solo las tres fundacionales son jugables, y coinciden con los paquetes construidos", () => {
+  it("solo son jugables las fundacionales y Kúbit, y coinciden con los paquetes construidos", () => {
     const playable = all.filter((c) => isPlayable(c.id)).map((c) => c.id).sort();
-    expect(playable).toEqual(["brasa", "cumbre", "forja"]);
+    expect(playable).toEqual(["brasa", "cumbre", "forja", "kubit"]);
     expect(playable).toEqual(COMPANIES.map((c) => c.id).sort());
     for (const c of all.filter((x) => x.foundational)) expect(c.status).toBe("available");
   });

@@ -795,3 +795,257 @@ Respuesta: `gb-d6-sucesion | ... | ...`
 
 Respuesta: `gb-d7-consejo | ... | ...`
 
+## Kúbit
+
+### kb-d1-carta · Día 1 · Bienvenido a Kúbit. Esto es lo que esperamos.
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Estimado Director: Bienvenido. En Andes Ventures lideramos la Serie B de Kúbit hace dos años y te elegimos para llevarla a la siguiente etapa. Seré directo: el ingreso recurrente creció 38% el año pasado, pero quemamos $9 M al mes y la caja alcanza para 14 meses. Emilio, el cofundador, dejó la dirección general para volver a producto. El equipo lo sigue viendo como su líder. Los clientes quieren el producto, pero Grupo Altamar pesa 22% del ingreso y lo sabe. En la sesión de consejo del mes que entra quiero ver tu plan: camino a la rentabilidad o a la Serie C. Antes de eso, dime cómo vas a usar tus primeras semanas. Rodrigo Ibarra Presidente del consejo · Socio de Andes Ventures
+
+**Pregunta:** ¿Cómo usas tus primeras semanas?
+
+- **A** (score 3, balance +3): Escuchar primero: 30 llamadas con clientes (empezando por Altamar), una conversación a solas con cada director y una semana sentado con soporte. El plan, al día 45. → Equipo +5, Clientes +3, Consejo -5.
+- **B** (score 1, balance +3): Plan de 100 días desde ya: congelar contrataciones, recortar 15% del gasto que no es esencial y una meta semanal de quema. → Caja +4, Equipo -6, Clientes -1, Consejo +6.
+- **C** (score 2, balance +1): Primero el cliente que más pesa: una semana con Grupo Altamar para entender qué les duele y asegurar la renovación. → Caja -1, Equipo -3, Clientes +5.
+- **Sin respuesta** (balance -7): Consejo -7.
+
+Respuesta: `kb-d1-carta | ... | ...`
+
+### kb-d1-guardia · Día 1 · Memo Paz
+
+**Propuesta automática:** legacy. Jugable como contenido histórico, pero la opción preferida por el autor sigue siendo la que más conviene.
+
+**Caso:** Hola, buenas noches. Disculpa que te escriba directo, soy Memo, líder de guardia de infraestructura. Emilio dijo que a partir de mañana quitamos la revisión obligatoria de código para llegar a la entrega de Altamar. Dice que cada revisión nos frena un día y que no hay tiempo. Los del equipo me preguntan si entonces ya nadie revisa lo que sube a producción. Yo nomás quiero saber qué les digo
+
+**Pregunta:** Un líder de equipo te escribe por encima de su director. ¿Qué le contestas?
+
+- **A** (score 2, balance +2): «Memo, la revisión se queda. Mañana hablo con Emilio. Si la entrega de Altamar se retrasa unos días, lo asumo yo.» → Margen -3, Equipo +3, Clientes +3, Consejo -1.
+- **B** (score 1, balance 0): «Memo, gracias por avisarme. Esto lo tiene que decidir Emilio: es tu jefe y conoce el producto mejor que nadie. Platícalo con él y yo lo respaldo.» → Margen +3, Equipo -3, Clientes -1, Consejo +1.
+- **C** (score 3, balance +3): «Memo, mañana a las 9 nos vemos Emilio, Renata, tú y yo. Regla temporal: revisión obligatoria para todo lo que toca dinero o datos de clientes; lo demás sale con revisión ligera y se puede revertir en un clic.» → Margen -1, Equipo +2, Clientes +1, Consejo +1.
+- **Sin respuesta** (balance -5): Equipo -4, Clientes -1.
+
+Respuesta: `kb-d1-guardia | ... | ...`
+
+### kb-d2-altamar · Día 2 · Grupo Altamar · Renovación del contrato anual
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Estimado Director: Estamos por renovar el contrato anual. Para seguir con Kúbit necesitamos 15% de descuento y tres desarrollos a la medida: integración con nuestro ERP, reportes propios y un tablero para el corporativo. Le recuerdo que el próximo trimestre decidiremos qué plataforma usarán las 14 empresas del grupo. Su disposición en esta renovación será considerada. Quedo atento a su respuesta esta semana. Hernán Villaseñor Director de Finanzas · Grupo Altamar
+
+**Pregunta:** ¿Cómo respondes a tu cliente más grande?
+
+- **A** (score 0, balance -6): Aceptar todo. Lo importante es ganar las 14 empresas del grupo; ahí recuperamos. → Margen -8, Clientes +5, Consejo -3.
+- **B** (score 2, balance 0): Renovar a precio de lista con el ajuste por inflación del contrato. Los desarrollos a la medida se cotizan aparte. → Margen +3, Clientes -5, Consejo +2.
+- **C** (score 3, balance -2): Mantener el precio y meter al producto, con fecha, lo que también sirve a otros clientes (la integración con ERP); el tablero propio se cotiza. A cambio, un piloto en tres empresas más del grupo. → Caja -1, Margen -2, Equipo -2, Clientes +2, Consejo +1.
+- **Sin respuesta** (balance -9): Clientes -6, Consejo -3.
+
+Respuesta: `kb-d2-altamar | ... | ...`
+
+### kb-d2-fuga · Día 2 · Fuga de ingenieros · 9 en dos meses
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Director: En dos meses se fueron 9 ingenieros. Siete se fueron a trabajar a distancia para empresas de Estados Unidos que pagan en dólares, sin salir de Monterrey. Que un ingeniero conozca bien nuestro producto toma de 6 a 9 meses. Hoy cubrimos con horas extra y la gente está cansada. Te pongo tres caminos con números. Carmen
+
+**Pregunta:** ¿Qué camino tomas?
+
+- **A** (score 1, balance -1): Bono de retención y ajuste de sueldo para los 40 clave. Hay que parar la fuga ya. → Caja -4, Margen -2, Equipo +5.
+- **B** (score 3, balance -3): Academia interna con plan de carrera: junior, ingeniero, senior y líder, con sueldo que sube en cada escalón. Mientras tanto aguantamos con lo que hay. → Caja -2, Equipo +2, Clientes -2, Consejo -1.
+- **C** (score 2, balance 0): Subcontratar un equipo en el extranjero para lo que no es el corazón del producto. Dependemos menos de un perfil escaso. → Caja -1, Margen +3, Equipo -5, Consejo +3.
+- **Sin respuesta** (balance -7): Margen -2, Equipo -5.
+
+Respuesta: `kb-d2-fuga | ... | ...`
+
+### kb-c-caida · Día 3 · consecuencia · URGENTE · Seis horas sin plataforma en cierre de mes
+
+**Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
+
+**Caso:** Director: Lo que temíamos. Ayer, en pleno cierre de mes, un cambio que subió sin revisión tumbó la plataforma 6 horas. 310 clientes no pudieron operar, entre ellos Grupo Altamar. Hernán me escribió, textual: «Si esto vuelve a pasar en un cierre, activamos la cláusula de salida». Piden un reporte de causa raíz en 24 horas. El cambio era parte de la entrega de Altamar que aceleramos al quitar las revisiones. Renata Cruz Directora de Éxito del Cliente
+
+**Pregunta:** ¿Cómo respondes a la caída?
+
+- **A** (score 3, balance +1): Asumirlo de frente: hoy llamo a los 20 clientes más afectados, el reporte de causa raíz lo presento yo, los créditos se aplican sin que los pidan y la revisión obligatoria regresa mañana. → Caja -3, Margen -2, Equipo +3, Clientes +3.
+- **B** (score 1, balance -3): Contener sin ruido: créditos solo a quien los pida, soporte responde con un mensaje estándar y Producto entrega el reporte. → Margen +1, Equipo -2, Clientes -2.
+- **C** (score 0, balance -6): Defender los datos: fueron 6 horas en un mes con 99.2% de disponibilidad, y el contrato garantiza 99%. No damos créditos extra. → Caja +1, Margen +2, Clientes -7, Consejo -2.
+- **Sin respuesta** (balance -10): Caja -3, Clientes -7.
+
+Respuesta: `kb-c-caida | ... | ...`
+
+### kb-d3-demo · Día 3 · Junta · Grupo Ferrán firma el viernes si la integración ya existe
+
+**Propuesta automática:** etica. Tema de ética o seguridad sin opción de línea roja. Revisar que el feedback no sea sermón.
+
+**Caso:** Sala de juntas, 8:00. Bruno (Comercial), Emilio (Producto) y Renata (Éxito del Cliente). Grupo Ferrán, el prospecto más grande del año, firma el viernes si la plataforma ya se conecta con su banco. Bruno Medina: Ferrán son $24 M al año. Firma el viernes si le confirmamos que la integración con su banco ya funciona. La competencia se lo está prometiendo. Renata Cruz: La integración no existe. Si firmamos diciendo que ya está, en tres meses tengo a otro cliente enojado y yo soy la que da la cara. No voy a sostener eso. Emilio Salinas: En seis semanas la tengo si me dejan concentrar al equipo. Mientras, la podemos hacer a mano con un archivo diario. Bruno Medina: Todos en la industria venden así, Renata. ¿Qué decidimos, Director?
+
+**Pregunta:** La sala espera tu decisión.
+
+- **A** (score 2, balance -4): Decirle a Ferrán la verdad y proponer firmar en 8 semanas, cuando la integración esté lista. → Margen -1, Equipo +3, Clientes -4, Consejo -2.
+- **B** (score 0, balance 0): Firmar el viernes confirmando que la integración funciona; mientras, la operamos a mano sin que el cliente lo note. → Equipo -6, Clientes +4, Consejo +2.
+- **C** (score 3, balance -2): Firmar el viernes diciendo la verdad: integración en 8 semanas por contrato, operación manual mientras tanto y un descuento si no llega a tiempo. → Caja -2, Margen -3, Equipo +2, Clientes +1.
+- **Sin respuesta** (balance -8): Equipo -6, Consejo -2.
+
+Respuesta: `kb-d3-demo | ... | ...`
+
+### kb-c-mejora · Día 4 · consecuencia · Memo Paz
+
+**Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
+
+**Caso:** ¡Buenas noticias! Con la revisión y el análisis sin culpables de cada incidente encontramos la causa de las caídas: una consulta a la base de datos que se disparaba en cierre de mes y nadie había visto. Ya la corregimos. Este mes los incidentes bajaron de 9 a 2 y soporte recibió 40% menos solicitudes. Los demás equipos quieren saber si esto se va a hacer en toda ingeniería
+
+**Pregunta:** ¿Qué haces con lo que logró el equipo de Memo?
+
+- **A** (score 3, balance +6): Llevarlo a todos los equipos en 60 días. Que Memo y su equipo lo enseñen a los demás, con reconocimiento público. → Caja -1, Margen -1, Equipo +5, Clientes +3.
+- **B** (score 2, balance +2): Felicitarlos y consolidarlo tres meses más en infraestructura antes de llevarlo a los demás. → Equipo +2, Clientes -1, Consejo +1.
+- **Sin respuesta** (balance -1): Equipo -1.
+
+Respuesta: `kb-c-mejora | ... | ...`
+
+### kb-d4-deuda · Día 4 · Propuesta del fondo · deuda de riesgo
+
+**Propuesta automática:** legacy. Jugable como contenido histórico, pero la opción preferida por el autor sigue siendo la que más conviene.
+
+**Caso:** Hola: Te escribo antes de que lo veas en el orden del día. En Andes Ventures proponemos tomar $120 M de deuda de riesgo para no recortar y acelerar el crecimiento hacia la Serie C. El banco la presta con nuestro ingreso recurrente como respaldo. Nos da meses de caja y nos permite contratar 30 vendedores. Quiero tu opinión honesta, no tu aprobación. Valeria Contreras Socia · Andes Ventures · Consejera
+
+**Pregunta:** ¿Qué le respondes a la socia del fondo?
+
+- **A** (score 1, balance +1): «Valeria, lo apoyo completo: tomamos la deuda y contratamos a los 30 vendedores.» → Caja -6, Clientes +1, Consejo +6.
+- **B** (score 3, balance +3): «Propongo tomar la mitad como colchón, sin la cláusula de crecimiento, y contratar vendedores por etapas: 10 ahora y el resto si el costo de conseguir un cliente se recupera en menos de 14 meses.» → Caja +2, Margen -1, Consejo +2.
+- **C** (score 2, balance -2): «Con todo respeto, no. Endeudarnos con una condición de crecimiento que hoy no cumplimos es poner en riesgo la empresa. Llegamos a equilibrio con lo que tenemos.» → Caja +3, Margen +2, Clientes -1, Consejo -6.
+- **Sin respuesta** (balance -8): Caja -4, Consejo -4.
+
+Respuesta: `kb-d4-deuda | ... | ...`
+
+### kb-d4-pleito · Día 4 · Emilio Salinas
+
+**Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
+
+**Caso:** Te lo digo claro porque ya no aguanto. Renata me mandó 14 errores «urgentes» esta semana. Saqué a 6 ingenieros de la entrega del trimestre para atenderlos. Así no llego al plan de producto. O Renata deja de mandar todo como urgente, o yo no respondo por la entrega del trimestre. Fundé esta empresa. Tú sabrás.
+
+**Pregunta:** Tu cofundador y tu directora de clientes están en guerra. ¿Qué haces?
+
+- **A** (score 3, balance +3): Sentarlos juntos conmigo esta semana. Definir qué es urgente y con qué criterio, y cambiar sus bonos: los dos se miden con la retención neta de ingreso (lo que siguen pagando los clientes de hace un año). → Margen -1, Equipo +4, Clientes +1, Consejo -1.
+- **B** (score 1, balance -2): Respaldar a Emilio: solo es urgente si la plataforma está caída. La entrega del trimestre es prioridad. → Margen +3, Equipo -3, Clientes -3, Consejo +1.
+- **C** (score 1, balance -2): Respaldar a Renata en público: el cliente que paga no espera. Emilio tiene que ajustar su plan. → Margen -2, Equipo -3, Clientes +3.
+- **Sin respuesta** (balance -7): Equipo -5, Clientes -2.
+
+Respuesta: `kb-d4-pleito | ... | ...`
+
+### kb-d5-banco · Día 5 · Llamada perdida · Andrea Quiroga (Finanzas)
+
+**Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
+
+**Caso:** Mensaje de voz · 0:48 «Es urgente. La autoridad intervino el banco donde tenemos el 70% de la caja, unos $90 M. Las cuentas están congeladas desde hoy en la mañana.» «La nómina de 210 personas sale en tres días: $14 M. En la otra cuenta tenemos $38 M. Nadie sabe todavía si los depósitos grandes se van a recuperar completos ni cuándo. Ya hay rumores en redes. Necesito que me digas qué hacemos.»
+
+**Pregunta:** ¿Qué decides en las próximas horas?
+
+- **A** (score 2, balance 0): Pagar la nómina completa con la otra cuenta, repartir lo que quede en dos bancos distintos y avisar hoy al equipo y a los clientes con lo que sabemos y lo que no. → Caja -3, Equipo +3, Clientes +1, Consejo -1.
+- **B** (score 0, balance -7): No decir nada hasta saber más. Pagar solo la mitad de la nómina por si acaso y explicar que fue un error del sistema. → Caja +2, Equipo -6, Consejo -3.
+- **C** (score 3, balance +3): Llamar hoy al consejo para pedir una línea puente de los inversionistas, pagar la nómina completa, avisar al equipo con hechos y armar con Andrea un plan de 30 días con la caja disponible. → Caja -1, Margen -1, Equipo +2, Consejo +3.
+- **Sin respuesta** (balance -12): Equipo -8, Consejo -4.
+
+Respuesta: `kb-d5-banco | ... | ...`
+
+### kb-d5-ronda · Día 5 · Serie C · Dos propuestas sobre la mesa
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Director: Tenemos dos caminos para la siguiente etapa y necesito tu postura antes del consejo. Un fondo extranjero ofrece $400 M con una valuación 30% menor que la de la Serie B y preferencia de liquidación de 2 veces. Los fondos actuales ofrecen $150 M en las condiciones de la Serie B si llegamos a punto de equilibrio en 12 meses. Andrea Quiroga Directora de Finanzas
+
+**Pregunta:** ¿Con qué camino llegas al consejo?
+
+- **A** (score 1, balance +1): La ronda grande. Con $400 M crecemos sin frenar y le ganamos el mercado a la competencia. → Caja +6, Margen -2, Equipo -4, Consejo +1.
+- **B** (score 2, balance -2): Sin ronda: recortamos 25% del gasto y llegamos a equilibrio con lo propio. → Caja +1, Margen +4, Equipo -5, Consejo -2.
+- **C** (score 3, balance +1): La ronda interna con la meta de equilibrio en 12 meses: crecemos menos, pero con mejores números y sin castigar al equipo. → Caja +3, Equipo -1, Clientes -2, Consejo +1.
+- **Sin respuesta** (balance -6): Caja -3, Consejo -3.
+
+Respuesta: `kb-d5-ronda | ... | ...`
+
+### kb-c-renata · Día 5 · consecuencia · Mi renuncia
+
+**Propuesta automática:** etica. Tema de ética o seguridad sin opción de línea roja. Revisar que el feedback no sea sermón.
+
+**Caso:** Director: Le presento mi renuncia con efecto en 30 días. No voy a seguir en una empresa donde se firma lo que no existe. Cuando Ferrán descubra que la integración la hacemos a mano cada noche, no quiero estar aquí para explicarlo. Le dejo documentado todo lo que está abierto. Le deseo suerte. Renata Cruz
+
+**Pregunta:** Tu directora de Éxito del Cliente renuncia. ¿Qué haces?
+
+- **A** (score 3, balance -1): Verla hoy: reconocer que me equivoqué, decirle a Ferrán la verdad esta semana y pedirle que se quede para liderar la corrección. → Equipo +4, Clientes -3, Consejo -2.
+- **B** (score 1, balance -1): Aceptar la renuncia y nombrar a Itzel (gerente de soporte) directora interina. → Margen +2, Equipo -2, Clientes -1.
+- **Sin respuesta** (balance -7): Equipo -4, Clientes -3.
+
+Respuesta: `kb-c-renata | ... | ...`
+
+### kb-d6-centro · Día 6 · Riesgo crítico · DataNorte, nuestro centro de datos en México
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Director: DataNorte, el centro de datos donde corremos la plataforma para los clientes que exigen que sus datos se queden en México (Grupo Altamar entre ellos), está en problemas de caja. Su director nos pidió $10 M por adelantado o deja de operar en 3 semanas. Migrar a otro proveedor en México toma unos 4 meses. Hoy no tenemos respaldo en otro lugar. Memo Paz Líder de guardia de infraestructura
+
+**Pregunta:** ¿Qué haces con el proveedor?
+
+- **A** (score 3, balance -3): Dar el anticipo con garantía sobre sus equipos, una persona nuestra revisando su caja cada semana y arrancar ya la migración a un segundo proveedor en México. → Caja -5, Clientes +3, Consejo -1.
+- **B** (score 1, balance -2): No arriesgar caja en un proveedor que se cae: pedir a los 120 clientes permiso para moverlos temporalmente a una nube extranjera. → Caja +1, Clientes -4, Consejo +1.
+- **C** (score 2, balance -4): Comprar DataNorte. Controlar la infraestructura más crítica nos protege y puede ser un negocio aparte. → Caja -8, Margen +2, Equipo -1, Consejo +3.
+- **Sin respuesta** (balance -11): Margen -3, Clientes -8.
+
+Respuesta: `kb-d6-centro | ... | ...`
+
+### kb-d6-denuncia · Día 6 · Confidencial · Denuncia contra el gerente regional de ventas
+
+**Propuesta automática:** etica. Tema de ética o seguridad sin opción de línea roja. Revisar que el feedback no sea sermón.
+
+**Caso:** Director (confidencial): Por la línea de denuncia anónima llegaron tres reportes de acoso contra Rafael Ugalde, gerente regional de ventas. Es el equipo con mejores números y Bruno lo considera su sucesor. Una de las vendedoras pidió cambio de equipo «por motivos personales» hace un mes. Una investigación externa toma unas 3 semanas. Necesito saber cómo procedemos mientras tanto. Carmen Olvera Directora de Personas
+
+**Pregunta:** ¿Qué decides mientras se investiga?
+
+- **A** (score 3, balance +3): Suspenderlo con goce de sueldo mientras una firma externa investiga, proteger a quienes denunciaron y que Bruno atienda sus cuentas. → Margen -2, Equipo +4, Consejo +1.
+- **B** (score 0, balance -7): Que siga trabajando mientras se investiga, pero cambiar de equipo a quienes denunciaron y que Personas lo investigue internamente. → Margen +1, Equipo -6, Consejo -2.
+- **C** (score 1, balance -3): Despedirlo de inmediato. Con tres denuncias no hay nada que investigar. → Caja -3, Equipo +3, Consejo -3.
+- **Sin respuesta** (balance -8): Equipo -6, Consejo -2.
+
+Respuesta: `kb-d6-denuncia | ... | ...`
+
+### kb-c-academia · Día 6 · consecuencia · Carmen Olvera
+
+**Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
+
+**Caso:** ¡Director! Primera generación de la academia: 12 ingenieros junior listos. Emilio quiere meterlos ya a la entrega del trimestre porque le faltan manos. Los mentores piden 3 meses más trabajando en pareja con un senior. ¿Qué hacemos?
+
+**Pregunta:** ¿Cómo integras a la primera generación?
+
+- **A** (score 3, balance +2): Acompañados 3 meses: cada junior en pareja con un senior y un bono para los mentores. → Caja -1, Equipo +4, Clientes -1.
+- **B** (score 1, balance -1): Directo a la entrega del trimestre. Ya terminaron la academia y el equipo los necesita hoy. → Margen -1, Equipo -2, Clientes +2.
+- **Sin respuesta** (balance -2): Equipo -2.
+
+Respuesta: `kb-c-academia | ... | ...`
+
+### kb-d7-consejo · Día 7 · Sesión de consejo · Cierre del trimestre
+
+**Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
+
+**Caso:** Sala de consejo, 9:00. Rodrigo Ibarra preside. Valeria Contreras y Andrea Quiroga en la mesa. Tu primer cierre de trimestre. Rodrigo Ibarra: Vamos al punto. La quema sigue en $9 M al mes. Proponemos recortar 50 puestos, la cuarta parte de la plantilla, sobre todo en Éxito del Cliente y soporte. Ahorro: $40 M al año. Andrea Quiroga: (en voz baja) El ahorro es real. Pero Éxito del Cliente es lo que tiene la cancelación en 2.1%. Si sube a 3.5%, perdemos más ingreso del que ahorramos. Valeria Contreras: Queremos escuchar tu recomendación, no solo tu opinión.
+
+**Pregunta:** El consejo espera tu recomendación.
+
+- **A** (score 3, balance +3): «Les pido 90 días: bajar la quema de $9 M a $6 M recortando lo que no son personas (nube, oficinas, herramientas) y congelando contrataciones, con metas semanales. Si no llegamos, yo mismo propongo el recorte.» → Margen +1, Equipo +4, Consejo -2.
+- **B** (score 1, balance -1): «Estoy de acuerdo. Recortamos con un proceso digno: indemnización completa, apoyo para recolocarse y un plan para que soporte no se caiga.» → Margen +2, Equipo -7, Clientes -2, Consejo +6.
+- **C** (score 2, balance -3): «No recomiendo tocar Éxito del Cliente. Recortamos solo contrataciones nuevas y marketing, aunque la quema baje más lento.» → Caja -1, Margen -2, Equipo +5, Consejo -5.
+- **Sin respuesta** (balance -12): Equipo -6, Consejo -6.
+
+Respuesta: `kb-d7-consejo | ... | ...`
+
+### kb-d7-equipo · Día 7 · Joel Navarro
+
+**Propuesta automática:** legacy. Jugable como contenido histórico, pero la opción preferida por el autor sigue siendo la que más conviene.
+
+**Caso:** Hola, soy Joel, de ingeniería. Disculpa que te escriba directo. Ya circula en el chat de la empresa una captura de lo que se habló en el consejo sobre recortar 50 puestos. La gente quiere saber HOY qué va a pasar. Tres de los mejores ya están contestando entrevistas.
+
+**Pregunta:** El equipo quiere una respuesta hoy. ¿Qué haces?
+
+- **A** (score 3, balance +3): Junta abierta hoy con todos, en persona y en línea, con Carmen y Emilio: lo que está decidido, lo que no y cuándo se va a saber. Sin promesas que no pueda cumplir. → Equipo +4, Consejo -1.
+- **B** (score 1, balance -3): Comunicado oficial por escrito de Personas: «No hay ninguna decisión tomada». Lo demás, por los canales formales. → Margen -1, Equipo -3, Consejo +1.
+- **C** (score 2, balance +1): Reunirme solo con Joel y los líderes informales, y pedirles que calmen al equipo a cambio de que estén en la mesa del plan. → Equipo +2, Clientes +1, Consejo -2.
+- **Sin respuesta** (balance -10): Margen -2, Equipo -6, Clientes -2.
+
+Respuesta: `kb-d7-equipo | ... | ...`
+
