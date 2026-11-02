@@ -103,7 +103,7 @@ const SECTOR_DATA: SectorSeed[] = [
     { id: "medios_digitales", label: "Medios y contenidos digitales", aliases: ["medios", "streaming", "contenidos"] },
   ] },
   { id: "comercio", label: "Comercio", family: "comercio", focus: true, industries: [
-    { id: "retail", label: "Retail", aliases: ["retail", "tiendas", "sucursales", "minorista", "omnicanal", "ecommerce", "e-commerce", "tienda en linea"], metric: "retail", focus: true, specialties: ["Tiendas especializadas", "Moda y accesorios", "Hogar y ferretería", "Electrónica de consumo", "E-commerce DTC", "Omnicanal"] },
+    { id: "retail", label: "Retail", aliases: ["retail", "tiendas", "sucursales", "minorista", "omnicanal", "ecommerce", "e-commerce", "tienda en linea"], pack: "puntomadero", archetypes: ["establecida"], metric: "retail", focus: true, specialties: ["Tiendas especializadas", "Moda y accesorios", "Hogar y ferretería", "Electrónica de consumo", "E-commerce DTC", "Omnicanal"] },
     { id: "mayoreo", label: "Comercio al por mayor (B2B)", aliases: ["mayoreo", "mayorista", "distribuidor"] },
     { id: "supermercados", label: "Supermercados y conveniencia", aliases: ["super", "abarrotes", "conveniencia", "minisuper"] },
     { id: "farmacias", label: "Farmacias", aliases: ["farmacia"] },

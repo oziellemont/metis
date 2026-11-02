@@ -126,6 +126,13 @@ const PACK_EXPOSURE: Record<string, CompanyExposure> = {
     buyCurrencies: ["USD", "MXN"],
     sellCurrencies: ["MXN"],
   },
+  puntomadero: {
+    baseCity: "Saltillo, Coah.",
+    sites: [{ kind: "sucursal", city: "Saltillo, Coah." }, { kind: "sucursal", city: "Monterrey, N.L." }, { kind: "sucursal", city: "Torreón, Coah." }, { kind: "centro_distribucion", city: "Ramos Arizpe, Coah." }],
+    suppliers: [{ what: "Herramienta y ferretería", region: "Nuevo León y China" }, { what: "Pintura y materiales", region: "Coahuila y Nuevo León" }],
+    buyCurrencies: ["MXN", "USD"],
+    sellCurrencies: ["MXN"],
+  },
 };
 export const exposureOfPack = (packId: string): CompanyExposure => {
   const e = PACK_EXPOSURE[packId];

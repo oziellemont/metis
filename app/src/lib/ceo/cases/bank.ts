@@ -21,7 +21,7 @@ export const BANK_PREFIX = "bk-";
 const LETTERS = ["a", "b", "c"] as const;
 
 /** Industria de cada paquete jugable (la prueba la compara con taxonomy.ts). */
-export const PACK_CONTEXT: Readonly<Record<string, string>> = Object.freeze({ cumbre: "alimentos_bebidas", forja: "autopartes", brasa: "restaurantes", kubit: "software_saas" });
+export const PACK_CONTEXT: Readonly<Record<string, string>> = Object.freeze({ cumbre: "alimentos_bebidas", forja: "autopartes", brasa: "restaurantes", kubit: "software_saas", puntomadero: "retail" });
 
 /** Quién ocupa cada rol en cada paquete. */
 export const PACK_ROLES: Readonly<Record<string, Record<Role, CastId>>> = Object.freeze({
@@ -29,6 +29,7 @@ export const PACK_ROLES: Readonly<Record<string, Record<Role, CastId>>> = Object
   forja: { chair: "zertuche", board: "regina", cfo: "marcos", ops: "ramon", sales: "daniela", people: "teresa", assistant: "paty", frontline: "fermin", client: "greg" },
   brasa: { chair: "ignacio", board: "lourdes", cfo: "fer", ops: "andres", sales: "sara", people: "vero", assistant: "paty", frontline: "maru", client: "nico" },
   kubit: { chair: "ibarra", board: "valeria", cfo: "andrea", ops: "emilio", sales: "bruno", people: "carmen", assistant: "paty", frontline: "joel", client: "hernan" },
+  puntomadero: { chair: "garza", board: "ines", cfo: "claudia", ops: "octavio", sales: "diego", people: "lorena", assistant: "paty", frontline: "beto", client: "ramos" },
 });
 
 export const bankItemId = (packId: string, archetype: string, twist: number) => `${BANK_PREFIX}${packId}-${archetype}-${twist + 1}`;

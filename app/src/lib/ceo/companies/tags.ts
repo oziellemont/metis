@@ -30,6 +30,7 @@ const BOTH: readonly CompanyArchetype[] = ["pyme", "establecida"];
 const EST: readonly CompanyArchetype[] = ["establecida"];
 const FORJA_NOTE = "Fabricante de 1,100 personas, propiedad de un fondo y con 72% de la venta en una armadora: una PYME necesita otra versión del caso.";
 const KUBIT_NOTE = "Empresa de software de 210 personas, con fondo de inversión en el consejo y 22% del ingreso en un cliente: una PYME o una startup necesita otra versión del caso.";
+const PUNTOMADERO_NOTE = "Cadena de 60 tiendas con 1,400 personas, familia y fondo en el consejo y 18% de la venta en un cliente de obra: una PYME o una startup necesita otra versión del caso.";
 const BRASA_NOTE = "Cadena de 34 sucursales: una PYME de restaurantes (una o dos sucursales) necesita otra versión del caso.";
 const EPISODE_NOTE = "Los montos se calculan dentro del caso (reglas y respuestas); todavía no se escalan por tamaño.";
 
@@ -111,6 +112,23 @@ export const CASE_TAGS: Readonly<Record<string, CaseTag>> = Object.freeze({
   "kb-c-academia": f(EST, { note: KUBIT_NOTE }),
   "kb-d7-consejo": f(EST, { note: KUBIT_NOTE }),
   "kb-d7-equipo": f(EST, { note: KUBIT_NOTE }),
+  "pm-d1-carta": p(EST, { note: PUNTOMADERO_NOTE }),
+  "pm-d1-piso": f(EST, { note: PUNTOMADERO_NOTE }),
+  "pm-d2-penasco": p(EST, { note: PUNTOMADERO_NOTE }),
+  "pm-d2-asesores": f(EST, { note: PUNTOMADERO_NOTE }),
+  "pm-c-tarima": f(EST, { note: PUNTOMADERO_NOTE }),
+  "pm-d3-entrega": p(EST, { note: PUNTOMADERO_NOTE }),
+  "pm-c-mejora": f(EST, { note: PUNTOMADERO_NOTE }),
+  "pm-d4-deuda": u(EST, { note: PUNTOMADERO_NOTE }),
+  "pm-d4-pleito": u(EST, { note: PUNTOMADERO_NOTE }),
+  "pm-d5-embargo": u(EST, { note: PUNTOMADERO_NOTE }),
+  "pm-d5-oferta": p(EST, { note: PUNTOMADERO_NOTE }),
+  "pm-c-monica": u(EST, { note: PUNTOMADERO_NOTE }),
+  "pm-d6-proveedor": f(EST, { note: PUNTOMADERO_NOTE }),
+  "pm-d6-denuncia": u(EST, { note: PUNTOMADERO_NOTE }),
+  "pm-c-escuela": f(EST, { note: PUNTOMADERO_NOTE }),
+  "pm-d7-consejo": f(EST, { note: PUNTOMADERO_NOTE }),
+  "pm-d7-equipo": f(EST, { note: PUNTOMADERO_NOTE }),
 });
 
 /** Etiquetas de los casos ejecutivos (por id de episodio). */

@@ -85,7 +85,7 @@ describe("desplegables dependientes", () => {
 describe("disponibilidad: «Próximamente» bloquea", () => {
   it("solo es jugable lo que tiene paquete existente, métricas y un tipo soportado", () => {
     const playable = all.filter((i) => i.availability === "available");
-    expect(playable.map((i) => i.contentPackId).sort()).toEqual(["brasa", "cumbre", "forja", "kubit"]);
+    expect(playable.map((i) => i.contentPackId).sort()).toEqual(["brasa", "cumbre", "forja", "kubit", "puntomadero"]);
     for (const i of playable) {
       expect(COMPANIES.some((c) => c.id === i.contentPackId)).toBe(true);
       expect(i.metricProfileId).toBeTruthy();
@@ -94,7 +94,9 @@ describe("disponibilidad: «Próximamente» bloquea", () => {
   });
 
   it("una combinación sin contenido no pasa", () => {
-    expect(isPlayableCombo("comercio", "retail")).toBe(false);
+    expect(isPlayableCombo("transporte_almacenamiento", "logistica_distribucion")).toBe(false);
+    expect(isPlayableCombo("comercio", "retail", "establecida")).toBe(true);
+    expect(isPlayableCombo("comercio", "retail", "pyme")).toBe(false);
     expect(isPlayableCombo("tecnologia_informacion", "software_saas")).toBe(true);
     expect(isPlayableCombo("tecnologia_informacion", "software_saas", "establecida")).toBe(true);
     expect(isPlayableCombo("tecnologia_informacion", "software_saas", "startup")).toBe(false);
@@ -113,7 +115,8 @@ describe("disponibilidad: «Próximamente» bloquea", () => {
   it("los sectores con alguna industria jugable se marcan disponibles", () => {
     expect(sectorById("manufactura")?.availability).toBe("available");
     expect(sectorById("restaurantes_alimentos")?.availability).toBe("available");
-    expect(sectorById("comercio")?.availability).toBe("coming_soon");
+    expect(sectorById("comercio")?.availability).toBe("available");
+    expect(sectorById("transporte_almacenamiento")?.availability).toBe("coming_soon");
     expect(sectorById("mineria")?.availability).toBe("coming_soon");
   });
 });

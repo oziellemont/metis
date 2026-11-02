@@ -57,7 +57,7 @@ export const INDUSTRIES = [
   { id: "consumo", label: "Consumo masivo", company: "cumbre" },
   { id: "manufactura", label: "Manufactura", company: "forja" },
   { id: "restaurantes", label: "Restaurantes y alimentos", company: "brasa" },
-  { id: "retail", label: "Retail" },
+  { id: "retail", label: "Retail", company: "puntomadero" },
   { id: "financieros", label: "Servicios financieros" },
   { id: "tecnologia", label: "Tecnología", company: "kubit" },
   { id: "salud", label: "Salud" },

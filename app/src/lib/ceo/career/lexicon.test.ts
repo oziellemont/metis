@@ -11,7 +11,7 @@ import type { CeoState } from "../types";
 
 const ID = "3f1c2a4b-5d6e-4f70-8a9b-0c1d2e3f4a5b";
 const BRAND = { name: "Sigma Alimentos", short: "Sigma" };
-const INDUSTRY_OF: Record<string, [string, string]> = { cumbre: ["manufactura", "alimentos_bebidas"], forja: ["manufactura", "autopartes"], brasa: ["restaurantes_alimentos", "restaurantes"], kubit: ["tecnologia_informacion", "software_saas"] };
+const INDUSTRY_OF: Record<string, [string, string]> = { cumbre: ["manufactura", "alimentos_bebidas"], forja: ["manufactura", "autopartes"], brasa: ["restaurantes_alimentos", "restaurantes"], kubit: ["tecnologia_informacion", "software_saas"], puntomadero: ["comercio", "retail"] };
 
 function strings(x: unknown, out: string[] = []): string[] {
   if (typeof x === "string") { if (!/^[a-z0-9_-]+$/.test(x)) out.push(x); }
@@ -25,6 +25,7 @@ const ORIGINAL_WORDS: Record<string, RegExp> = {
   forja: /soldad|troquel|estampad|\bprensas?\b|lámina/i,
   brasa: /de cortes y cocina mexicana a la brasa|restaurantes de cortes/i,
   kubit: /cobranza/i,
+  puntomadero: /ferreter/i,
 };
 const EXTRA: Record<string, RegExp> = { "Comida rápida": /mesero|arrachera/i, "Cocinas ocultas": /mesero/i };
 

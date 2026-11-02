@@ -1049,3 +1049,257 @@ Respuesta: `kb-d7-consejo | ... | ...`
 
 Respuesta: `kb-d7-equipo | ... | ...`
 
+## Punto Madero
+
+### pm-d1-carta · Día 1 · Bienvenido a Punto Madero. Esto es lo que esperamos.
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Estimado Director: Bienvenido. Mi padre fundó Punto Madero hace 41 años y es la primera vez que la familia pone a alguien de fuera al frente. Seré directo: vendemos $2,400 M al año en 60 tiendas, pero el margen bajó de 34% a 31% y la venta en mismas tiendas cayó 2%. Mundo Casa, la cadena nacional, abre 12 tiendas en la región este año. La primera queda a tres cuadras de nuestra tienda principal. Octavio, que dirigió la empresa de forma interina, conoce cada tienda y el equipo lo sigue viendo como su líder. Constructora Peñasco pesa 18% de la venta y lo sabe. En la sesión de consejo del mes que entra quiero ver tu plan. Antes de eso, dime cómo vas a usar tus primeras semanas. Esteban Garza Presidente del consejo
+
+**Pregunta:** ¿Cómo usas tus primeras semanas?
+
+- **A** (score 3, balance +3): Escuchar primero: visitar 20 tiendas (empezando por la principal), una conversación a solas con cada director y una semana atendiendo en piso. El plan, al día 45. → Equipo +5, Clientes +3, Consejo -5.
+- **B** (score 1, balance +3): Plan de 100 días desde ya: congelar contrataciones, recortar 15% del gasto que no es esencial y bajar precios en las 200 marcas que más compara la gente. → Caja +4, Equipo -6, Clientes -1, Consejo +6.
+- **C** (score 2, balance +1): Primero el cliente que más pesa: una semana con Constructora Peñasco para entender qué les duele y asegurar sus compras del año. → Caja -1, Equipo -3, Clientes +5.
+- **Sin respuesta** (balance -7): Consejo -7.
+
+Respuesta: `pm-d1-carta | ... | ...`
+
+### pm-d1-piso · Día 1 · Chuy Elizondo
+
+**Propuesta automática:** legacy. Jugable como contenido histórico, pero la opción preferida por el autor sigue siendo la que más conviene.
+
+**Caso:** Hola, buenas noches. Disculpa que te escriba directo, soy Chuy, gerente de la tienda principal. Octavio dijo que a partir de mañana surtimos con montacargas en horario de tienda, sin cerrar pasillos, para llegar a la temporada de lluvias con todo en anaquel. Dice que cerrar pasillos nos quita venta y que no hay tiempo. Los muchachos me preguntan si entonces ya se pueden bajar tarimas con clientes abajo. Yo nomás quiero saber qué les digo
+
+**Pregunta:** Un gerente de tienda te escribe por encima de su director. ¿Qué le contestas?
+
+- **A** (score 2, balance +2): «Chuy, los pasillos se cierran cuando baja una tarima. Mañana hablo con Octavio. Si la temporada se retrasa unos días, lo asumo yo.» → Margen -3, Equipo +3, Clientes +3, Consejo -1.
+- **B** (score 1, balance 0): «Chuy, gracias por avisarme. Esto lo tiene que decidir Octavio: es tu jefe y conoce las tiendas mejor que nadie. Platícalo con él y yo lo respaldo.» → Margen +3, Equipo -3, Clientes -1, Consejo +1.
+- **C** (score 3, balance +3): «Chuy, mañana a las 9 nos vemos Octavio, Mónica, tú y yo. Regla temporal: en horario de tienda solo se baja tarima con el pasillo cerrado y una persona cuidando; lo pesado se surte de noche con horas extra pagadas.» → Margen -1, Equipo +2, Clientes +1, Consejo +1.
+- **Sin respuesta** (balance -5): Equipo -4, Clientes -1.
+
+Respuesta: `pm-d1-piso | ... | ...`
+
+### pm-d2-penasco · Día 2 · Constructora Peñasco · Condiciones para el próximo año
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Estimado Director: Estamos por cerrar el presupuesto del próximo año. Para seguir comprando con Punto Madero necesitamos 12% de descuento, crédito a 90 días (hoy es a 30) y entrega gratis en cada obra. Le recuerdo que el próximo trimestre decidiremos quién surte nuestros nueve desarrollos nuevos. Mundo Casa ya nos visitó. Su disposición en esta negociación será considerada. Quedo atento a su respuesta esta semana. Federico Ramos Director de Compras · Constructora Peñasco
+
+**Pregunta:** ¿Cómo respondes a tu cliente más grande?
+
+- **A** (score 0, balance -6): Aceptar todo. Lo importante es ganar los nueve desarrollos; ahí recuperamos. → Margen -8, Clientes +5, Consejo -3.
+- **B** (score 2, balance 0): Mantener precio de lista con el ajuste por inflación del contrato y crédito a 30 días. La entrega en obra se cobra aparte. → Margen +3, Clientes -5, Consejo +2.
+- **C** (score 3, balance -2): Mantener el precio y crear un programa de entrega programada en obra que sirva a todos los constructores; crédito a 60 días con garantía. A cambio, surtir tres de los nueve desarrollos como prueba. → Caja -1, Margen -2, Equipo -2, Clientes +2, Consejo +1.
+- **Sin respuesta** (balance -9): Clientes -6, Consejo -3.
+
+Respuesta: `pm-d2-penasco | ... | ...`
+
+### pm-d2-asesores · Día 2 · Se nos van los asesores expertos · 26 en dos meses
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Director: En dos meses se fueron 26 asesores de piso con experiencia. Veinte se fueron a Mundo Casa, que les ofrece 15% más para abrir sus tiendas nuevas. Un asesor que de verdad sabe orientar a un cliente en plomería, electricidad o pintura tarda un año en formarse. Hoy cubrimos con personal temporal y los clientes de toda la vida lo notan. Te pongo tres caminos con números. Lorena
+
+**Pregunta:** ¿Qué camino tomas?
+
+- **A** (score 1, balance -1): Bono de permanencia y ajuste de sueldo para los 120 asesores expertos. Hay que parar la fuga ya. → Caja -4, Margen -2, Equipo +5.
+- **B** (score 3, balance -3): Escuela de asesores con plan de carrera: auxiliar, asesor, asesor experto y jefe de piso, con sueldo que sube en cada escalón. Mientras tanto aguantamos con lo que hay. → Caja -2, Equipo +2, Clientes -2, Consejo -1.
+- **C** (score 2, balance 0): Personal de piso por agencia para lo que no requiere experiencia. Dependemos menos de un perfil escaso. → Caja -1, Margen +3, Equipo -5, Consejo +3.
+- **Sin respuesta** (balance -7): Margen -2, Equipo -5.
+
+Respuesta: `pm-d2-asesores | ... | ...`
+
+### pm-c-tarima · Día 3 · consecuencia · URGENTE · Se cayó una tarima en la tienda principal
+
+**Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
+
+**Caso:** Director: Lo que temíamos. Ayer, en plena quincena, se cayó una tarima de cemento mientras se surtía con el pasillo abierto. Una clienta resultó con un golpe en el hombro. Protección Civil cerró la tienda principal dos días. Federico Ramos me escribió, textual: «Nuestros maestros recogen material en esa tienda. Si esto vuelve a pasar, cambiamos de proveedor». Piden un reporte de causa en 24 horas. El surtido con pasillos abiertos era parte del plan para llegar a la temporada. Mónica Saldívar Directora de Experiencia del Cliente y Tienda en Línea
+
+**Pregunta:** ¿Cómo respondes al accidente?
+
+- **A** (score 3, balance +1): Asumirlo de frente: hoy visito a la clienta, el reporte de causa lo presento yo, cubrimos todos sus gastos sin que los pida y el cierre de pasillos regresa mañana en las 60 tiendas. → Caja -3, Margen -2, Equipo +3, Clientes +3.
+- **B** (score 1, balance -3): Contener sin ruido: el seguro atiende a la clienta, redes responde con un mensaje estándar y Operaciones entrega el reporte. → Margen +1, Equipo -2, Clientes -2.
+- **C** (score 0, balance -6): Defender los datos: fue un incidente en 900 maniobras semanales y tenemos un índice de accidentes por debajo de la industria. No cambiamos nada. → Caja +1, Margen +2, Clientes -7, Consejo -2.
+- **Sin respuesta** (balance -10): Caja -3, Clientes -7.
+
+Respuesta: `pm-c-tarima | ... | ...`
+
+### pm-d3-entrega · Día 3 · Junta · ¿Anunciamos entrega el mismo día?
+
+**Propuesta automática:** etica. Tema de ética o seguridad sin opción de línea roja. Revisar que el feedback no sea sermón.
+
+**Caso:** Sala de juntas, 8:00. Diego (Comercial), Octavio (Operaciones y Tiendas) y Mónica (Experiencia del Cliente y Tienda en Línea). Mundo Casa anuncia entrega el mismo día. Faltan tres semanas para El Buen Fin. Diego Villarreal: Si anunciamos entrega el mismo día en El Buen Fin, calculo $60 M de venta en línea extra. Mundo Casa ya lo promete. Si no lo decimos, perdemos la temporada. Mónica Saldívar: Hoy entregamos en dos o tres días y el inventario en línea no es exacto. Si anunciamos el mismo día, en tres semanas tengo miles de clientes enojados y yo soy la que da la cara. No voy a sostener eso. Octavio Ríos: En ocho semanas lo tengo en las tiendas grandes si me dejan apartar gente y camionetas. Mientras, podemos sacar pedidos a mano desde la tienda principal. Diego Villarreal: Todos en la industria anuncian así, Mónica. ¿Qué decidimos, Director?
+
+**Pregunta:** La sala espera tu decisión.
+
+- **A** (score 2, balance -4): No anunciarlo este año. Decir la verdad (entrega en dos días) y lanzar el mismo día en 8 semanas, cuando funcione. → Margen -1, Equipo +3, Clientes -4, Consejo -2.
+- **B** (score 0, balance 0): Anunciar entrega el mismo día en toda la región; lo que no salga, lo cubrimos a mano y con taxis sin que el cliente lo note. → Equipo -6, Clientes +4, Consejo +2.
+- **C** (score 3, balance -2): Anunciar lo que sí podemos cumplir: el mismo día solo en las 4 tiendas grandes, 48 horas en las demás y un cupón automático si no llega a tiempo. → Caja -2, Margen -3, Equipo +2, Clientes +1.
+- **Sin respuesta** (balance -8): Equipo -6, Consejo -2.
+
+Respuesta: `pm-d3-entrega | ... | ...`
+
+### pm-c-mejora · Día 4 · consecuencia · Chuy Elizondo
+
+**Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
+
+**Caso:** ¡Buenas noticias! Con los pasillos cerrados y una revisión sin culpables de cada incidente encontramos la causa: las tarimas llegaban mal emplayadas del centro de distribución y nadie lo revisaba al recibir. Ya lo corregimos. Este mes los incidentes bajaron de 9 a 1 y, como ahora contamos al recibir, el inventario de la tienda cuadra 96%. Los otros gerentes quieren saber si esto se va a hacer en todas las tiendas
+
+**Pregunta:** ¿Qué haces con lo que logró el equipo de Chuy?
+
+- **A** (score 3, balance +6): Llevarlo a las 60 tiendas en 60 días. Que Chuy y su equipo lo enseñen a los demás, con reconocimiento público. → Caja -1, Margen -1, Equipo +5, Clientes +3.
+- **B** (score 2, balance +2): Felicitarlos y consolidarlo tres meses más en la tienda principal antes de llevarlo a las demás. → Equipo +2, Clientes -1, Consejo +1.
+- **Sin respuesta** (balance -1): Equipo -1.
+
+Respuesta: `pm-c-mejora | ... | ...`
+
+### pm-d4-deuda · Día 4 · Propuesta para el consejo · crédito para abrir tiendas
+
+**Propuesta automática:** legacy. Jugable como contenido histórico, pero la opción preferida por el autor sigue siendo la que más conviene.
+
+**Caso:** Hola: Te escribo antes de que lo veas en el orden del día. Capital Norte propone tomar $300 M de crédito para abrir 15 tiendas en las plazas donde llega Mundo Casa, antes que ellos. El banco presta con nuestras tiendas e inventario como garantía. Nos da presencia y le cierra el paso a la competencia. Quiero tu opinión honesta, no tu aprobación. Inés Treviño Consejera · Capital Norte
+
+**Pregunta:** ¿Qué le respondes a la consejera?
+
+- **A** (score 1, balance +1): «Inés, lo apoyo completo: tomamos el crédito y abrimos las 15 tiendas.» → Caja -6, Clientes +1, Consejo +6.
+- **B** (score 3, balance +3): «Propongo tomar la mitad y abrir por etapas: 5 tiendas ahora y el resto si las primeras llegan a su meta de venta en 12 meses.» → Caja +2, Margen -1, Consejo +2.
+- **C** (score 2, balance -2): «Con todo respeto, no. Endeudarnos casi hasta el límite del banco mientras nuestras tiendas venden menos es poner en riesgo la empresa. Primero arreglamos las que tenemos.» → Caja +3, Margen +2, Clientes -1, Consejo -6.
+- **Sin respuesta** (balance -8): Caja -4, Consejo -4.
+
+Respuesta: `pm-d4-deuda | ... | ...`
+
+### pm-d4-pleito · Día 4 · Octavio Ríos
+
+**Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
+
+**Caso:** Te lo digo claro porque ya no aguanto. Mónica me pidió esta semana 14 veces gente de piso para surtir pedidos en línea «urgentes». Saqué a 20 personas de atender clientes. Así no llego a la meta de venta en tienda. O Mónica deja de sacar a mi gente, o yo no respondo por la temporada. Llevo 30 años en esta empresa. Tú sabrás.
+
+**Pregunta:** Tus dos directores de venta están en guerra. ¿Qué haces?
+
+- **A** (score 3, balance +3): Sentarlos juntos conmigo esta semana. Definir qué pedido es urgente y con qué criterio, y cambiar sus bonos: los dos se miden con la venta total del cliente, en tienda y en línea. → Margen -1, Equipo +4, Clientes +1, Consejo -1.
+- **B** (score 1, balance -2): Respaldar a Octavio: la gente de piso es para el piso. Tienda en línea se las arregla con su propio personal. → Margen +3, Equipo -3, Clientes -3, Consejo +1.
+- **C** (score 1, balance -2): Respaldar a Mónica en público: el cliente en línea no espera. Octavio tiene que ajustar sus turnos. → Margen -2, Equipo -3, Clientes +3.
+- **Sin respuesta** (balance -7): Equipo -5, Clientes -2.
+
+Respuesta: `pm-d4-pleito | ... | ...`
+
+### pm-d5-embargo · Día 5 · Llamada perdida · Claudia Leal (Finanzas)
+
+**Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
+
+**Caso:** Mensaje de voz · 0:48 «Es urgente. Por la demanda de un exproveedor de transporte, un juez ordenó embargar las cuentas donde tenemos el 70% de la caja, unos $150 M. Están congeladas desde hoy en la mañana.» «La nómina de 1,400 personas sale en tres días: $28 M. En la otra cuenta tenemos $60 M. El abogado dice que el embargo es excesivo, pero nadie sabe cuándo lo levantan. Ya hay rumores en las tiendas. Necesito que me digas qué hacemos.»
+
+**Pregunta:** ¿Qué decides en las próximas horas?
+
+- **A** (score 2, balance 0): Pagar la nómina completa con la otra cuenta, pedir al abogado que ofrezca una garantía por lo reclamado y avisar hoy al equipo y a los proveedores con lo que sabemos y lo que no. → Caja -3, Equipo +3, Clientes +1, Consejo -1.
+- **B** (score 0, balance -7): No decir nada hasta saber más. Pagar solo la mitad de la nómina por si acaso y explicar que fue un error del banco. → Caja +2, Equipo -6, Consejo -3.
+- **C** (score 3, balance +3): Llamar hoy al consejo para pedir una línea de crédito puente de los accionistas, pagar la nómina completa, avisar al equipo con hechos y armar con Claudia un plan de 30 días con la caja disponible. → Caja -1, Margen -1, Equipo +2, Consejo +3.
+- **Sin respuesta** (balance -12): Equipo -8, Consejo -4.
+
+Respuesta: `pm-d5-embargo | ... | ...`
+
+### pm-d5-oferta · Día 5 · Mundo Casa quiere comprarnos · y hay otra opción
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Director: Tenemos dos caminos sobre la mesa y necesito tu postura antes del consejo. Mundo Casa ofrece comprar el 100% de Punto Madero a una valuación 30% menor de la que esperaba la familia, y cerraría las tiendas que se enciman con las suyas. Capital Norte ofrece meter $250 M más a cambio de 15% adicional, si llegamos a la meta de margen en 12 meses. Claudia Leal Directora de Finanzas
+
+**Pregunta:** ¿Con qué camino llegas al consejo?
+
+- **A** (score 1, balance +1): Vender a Mundo Casa. La familia recibe dinero hoy y la competencia deja de ser una amenaza. → Caja +6, Margen -2, Equipo -4, Consejo +1.
+- **B** (score 2, balance -2): Sin socio nuevo: recortamos 25% del gasto y competimos con lo propio. → Caja +1, Margen +4, Equipo -5, Consejo -2.
+- **C** (score 3, balance +1): El capital de Capital Norte con la meta de margen en 12 meses: crecemos menos, pero con mejores números y sin vender la empresa. → Caja +3, Equipo -1, Clientes -2, Consejo +1.
+- **Sin respuesta** (balance -6): Caja -3, Consejo -3.
+
+Respuesta: `pm-d5-oferta | ... | ...`
+
+### pm-c-monica · Día 5 · consecuencia · Mi renuncia
+
+**Propuesta automática:** etica. Tema de ética o seguridad sin opción de línea roja. Revisar que el feedback no sea sermón.
+
+**Caso:** Director: Le presento mi renuncia con efecto en 30 días. No voy a seguir en una empresa donde se anuncia lo que no se puede cumplir. Llevamos 2,000 pedidos tarde desde el anuncio y la autoridad del consumidor ya nos pidió información. No quiero estar aquí para explicarlo. Le dejo documentado todo lo que está abierto. Le deseo suerte. Mónica Saldívar
+
+**Pregunta:** Tu directora de Experiencia del Cliente renuncia. ¿Qué haces?
+
+- **A** (score 3, balance -1): Verla hoy: reconocer que me equivoqué, corregir el anuncio esta semana, compensar a los clientes afectados y pedirle que se quede para liderar la corrección. → Equipo +4, Clientes -3, Consejo -2.
+- **B** (score 1, balance -1): Aceptar la renuncia y nombrar a Karla (gerente del centro de atención) directora interina. → Margen +2, Equipo -2, Clientes -1.
+- **Sin respuesta** (balance -7): Equipo -4, Clientes -3.
+
+Respuesta: `pm-c-monica | ... | ...`
+
+### pm-d6-proveedor · Día 6 · Riesgo crítico · Industrias Ocampo, el fabricante de nuestra marca propia
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Director: Industrias Ocampo, el fabricante de toda nuestra marca propia, está en problemas de caja. Su dueño nos pidió $10 M por adelantado o deja de producir en 3 semanas. La marca propia es lo que mejor margen nos deja y lo que Mundo Casa no tiene. Desarrollar otro fabricante toma unos 4 meses. Hoy no tenemos respaldo. Diego Villarreal Director Comercial y de Compras
+
+**Pregunta:** ¿Qué haces con el proveedor?
+
+- **A** (score 3, balance -3): Dar el anticipo con garantía sobre su maquinaria, una persona nuestra revisando su caja cada semana y arrancar ya el desarrollo de un segundo fabricante. → Caja -5, Clientes +3, Consejo -1.
+- **B** (score 1, balance -2): No arriesgar caja en un proveedor que se cae: importar productos parecidos y pedir a los clientes de obra que acepten el cambio. → Caja +1, Clientes -4, Consejo +1.
+- **C** (score 2, balance -4): Comprar Industrias Ocampo. Controlar la fábrica de nuestra marca propia nos protege y puede ser un negocio aparte. → Caja -8, Margen +2, Equipo -1, Consejo +3.
+- **Sin respuesta** (balance -11): Margen -3, Clientes -8.
+
+Respuesta: `pm-d6-proveedor | ... | ...`
+
+### pm-d6-denuncia · Día 6 · Confidencial · Denuncia contra el gerente regional
+
+**Propuesta automática:** etica. Tema de ética o seguridad sin opción de línea roja. Revisar que el feedback no sea sermón.
+
+**Caso:** Director (confidencial): Por la línea de denuncia anónima llegaron tres reportes de acoso contra Raúl Benavides, gerente regional de la zona sur. Es la región con mejores números y Octavio lo considera su sucesor. Una de las cajeras pidió cambio de tienda «por motivos personales» hace un mes. Una investigación externa toma unas 3 semanas. Necesito saber cómo procedemos mientras tanto. Lorena Cantú Directora de Personas
+
+**Pregunta:** ¿Qué decides mientras se investiga?
+
+- **A** (score 3, balance +3): Suspenderlo con goce de sueldo mientras una firma externa investiga, proteger a quienes denunciaron y que Octavio atienda la región. → Margen -2, Equipo +4, Consejo +1.
+- **B** (score 0, balance -7): Que siga trabajando mientras se investiga, pero cambiar de tienda a quienes denunciaron y que Personas lo investigue internamente. → Margen +1, Equipo -6, Consejo -2.
+- **C** (score 1, balance -3): Despedirlo de inmediato. Con tres denuncias no hay nada que investigar. → Caja -3, Equipo +3, Consejo -3.
+- **Sin respuesta** (balance -8): Equipo -6, Consejo -2.
+
+Respuesta: `pm-d6-denuncia | ... | ...`
+
+### pm-c-escuela · Día 6 · consecuencia · Lorena Cantú
+
+**Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
+
+**Caso:** ¡Director! Primera generación de la escuela de asesores: 30 personas listas. Octavio quiere mandarlas ya solas a piso porque le faltan manos para la temporada. Los asesores expertos piden 3 meses más trabajando en pareja con ellas. ¿Qué hacemos?
+
+**Pregunta:** ¿Cómo integras a la primera generación?
+
+- **A** (score 3, balance +2): Acompañadas 3 meses: cada asesor nuevo en pareja con un experto y un bono para los mentores. → Caja -1, Equipo +4, Clientes -1.
+- **B** (score 1, balance -1): Directo a piso. Ya terminaron la escuela y las tiendas las necesitan hoy. → Margen -1, Equipo -2, Clientes +2.
+- **Sin respuesta** (balance -2): Equipo -2.
+
+Respuesta: `pm-c-escuela | ... | ...`
+
+### pm-d7-consejo · Día 7 · Sesión de consejo · Cierre del trimestre
+
+**Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
+
+**Caso:** Sala de consejo, 9:00. Esteban Garza preside. Inés Treviño y Claudia Leal en la mesa. Tu primer cierre de trimestre. Esteban Garza: Vamos al punto. Doce tiendas chicas no cubren su renta. Proponemos cerrarlas y recortar 300 puestos, sobre todo asesores de piso. Ahorro: $80 M al año. Claudia Leal: (en voz baja) El ahorro es real. Pero los asesores son lo que nos distingue de Mundo Casa. Si el cliente de toda la vida se va, perdemos más venta de la que ahorramos. Inés Treviño: Queremos escuchar tu recomendación, no solo tu opinión.
+
+**Pregunta:** El consejo espera tu recomendación.
+
+- **A** (score 3, balance +3): «Les pido 90 días: bajar el gasto $50 M renegociando rentas, cerrando solo las 4 tiendas sin remedio y reubicando a su gente, con metas semanales. Si no llegamos, yo mismo propongo el resto.» → Margen +1, Equipo +4, Consejo -2.
+- **B** (score 1, balance -1): «Estoy de acuerdo. Cerramos con un proceso digno: indemnización completa, apoyo para recolocarse y un plan para que los clientes de esas zonas no se vayan.» → Margen +2, Equipo -7, Clientes -2, Consejo +6.
+- **C** (score 2, balance -3): «No recomiendo tocar a los asesores ni cerrar tiendas. Recortamos solo contrataciones nuevas y publicidad, aunque el ahorro llegue más lento.» → Caja -1, Margen -2, Equipo +5, Consejo -5.
+- **Sin respuesta** (balance -12): Equipo -6, Consejo -6.
+
+Respuesta: `pm-d7-consejo | ... | ...`
+
+### pm-d7-equipo · Día 7 · Beto Castañeda
+
+**Propuesta automática:** legacy. Jugable como contenido histórico, pero la opción preferida por el autor sigue siendo la que más conviene.
+
+**Caso:** Hola, soy Beto, asesor de la tienda principal. Disculpa que te escriba directo. Ya circula en el chat de las tiendas una foto de lo que se habló en el consejo sobre cerrar 12 tiendas y recortar 300 puestos. La gente quiere saber HOY qué va a pasar. Tres de los mejores asesores ya fueron a entrevista a Mundo Casa.
+
+**Pregunta:** El equipo quiere una respuesta hoy. ¿Qué haces?
+
+- **A** (score 3, balance +3): Junta abierta hoy con todas las tiendas, en persona y en línea, con Lorena y Octavio: lo que está decidido, lo que no y cuándo se va a saber. Sin promesas que no pueda cumplir. → Equipo +4, Consejo -1.
+- **B** (score 1, balance -3): Comunicado oficial por escrito de Personas: «No hay ninguna decisión tomada». Lo demás, por los canales formales. → Margen -1, Equipo -3, Consejo +1.
+- **C** (score 2, balance +1): Reunirme solo con Beto y los líderes informales de las tiendas, y pedirles que calmen al equipo a cambio de que estén en la mesa del plan. → Equipo +2, Clientes +1, Consejo -2.
+- **Sin respuesta** (balance -10): Margen -2, Equipo -6, Clientes -2.
+
+Respuesta: `pm-d7-equipo | ... | ...`
+

@@ -12,7 +12,7 @@
  */
 import { isCompany } from "./companies";
 
-export const CATALOG_VERSION = 2;
+export const CATALOG_VERSION = 3;
 
 export type CatalogStatus = "available" | "coming_soon" | "retired";
 
@@ -72,7 +72,7 @@ export const INDUSTRY_CATALOG: CatalogIndustry[] = [
   ind("retail", "Comercio y tiendas", "Inventario, ubicación y competir por cada peso del cliente.", [
     { id: "alba", name: "Tiendas Alba", line: "Tiendas de conveniencia", identity: "Dos mil tiendas y una guerra por cada esquina. Franquiciatarios con voz propia.", tension: "Un franquiciatario influyente encabeza una protesta por las nuevas comisiones.", status: "coming_soon", provisional: true },
     { id: "saenz", name: "Almacenes Sáenz", line: "Tiendas departamentales", identity: "Tienda departamental tradicional que pierde clientes jóvenes frente al comercio en línea.", tension: "Cerrar las tiendas del centro o invertir en renovarlas.", status: "coming_soon", provisional: true },
-    { id: "puntomadero", name: "Punto Madero", line: "Ferreterías y hogar", identity: "Cadena regional de ferreterías con clientes de toda la vida y poca tecnología.", tension: "Llega un competidor nacional a tres cuadras de la tienda principal.", status: "coming_soon", provisional: true },
+    { id: "puntomadero", name: "Punto Madero", line: "Ferreterías y hogar", identity: "Sesenta ferreterías y tiendas para el hogar en el noreste, con familia y fondo en el consejo y clientes de toda la vida.", tension: "Mundo Casa abre a tres cuadras, el margen baja y un cliente de obra pesa el 18% de la venta.", status: "available", provisional: true },
   ]),
   ind("tecnologia", "Tecnología y software", "Crecer rápido sin quemar la caja ni al equipo.", [
     { id: "kubit", name: "Kúbit", line: "Software para empresas", identity: "Empresa de software con producto querido, 14 meses de caja y un fondo de inversión impaciente en el consejo.", tension: "Un cliente vale el 22% de los ingresos y pide descuento y desarrollos a la medida.", status: "available", provisional: true },

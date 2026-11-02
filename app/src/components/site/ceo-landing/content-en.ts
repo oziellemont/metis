@@ -190,7 +190,7 @@ export const EN: Copy = {
     { q: "How much time do I need each day?", a: "A few minutes. You choose the hours when matters arrive." },
     { q: "How is it different from a course?", a: "There are no answers to memorize. You decide, the company responds and then you understand why." },
     { q: "Do I need to create an account or install anything?", a: "You don't install anything: it runs in the browser. To run your company you create an account with Google or your email, and your progress follows you to any device." },
-    { q: "Which industries are there?", a: "Consumer goods, auto parts, restaurants and software. You choose which one to start with." },
+    { q: "Which industries are there?", a: "Consumer goods, auto parts, restaurants, software and retail. You choose which one to start with." },
     { q: "Does it cost anything?", a: "Starting is free and no card is required." },
     { q: "What language is the simulator in?", a: "The simulator is in Spanish, with companies and people set in Mexico. This page is available in English and Spanish." },
   ],
