@@ -11,6 +11,7 @@ import { lessonById } from "@/lib/ceo/lessons";
 import type { Entry, Item, KpiKey, Option, Written } from "@/lib/ceo/types";
 import { MAX_CHARS, MIN_CHARS, textProblem, writtenEligible } from "@/lib/ceo/written";
 import { displayOptions } from "@/lib/ceo/option-order";
+import { decisionLesson } from "@/lib/ceo/learning";
 import { useCeo } from "./CeoProvider";
 import { competenciesOfItem } from "@/lib/ceo/mastery";
 import { competencyNames, helpBand } from "@/lib/ceo/profile";
@@ -366,6 +367,7 @@ function Outcome({ e, fresh, part }: { e: Entry; fresh: boolean; part: "resultad
       </>}
 
       {part === "aprendes" && <>
+      <LessonCard e={e} />
       {it.real && (
         <div className="rounded-2xl bg-gradient-to-br from-[#141735] to-[#2B1F8A] p-5 sm:p-6 text-white">
           <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-white/60"><Globe2 size={13} /> Lo que pasó en la vida real · {it.real.company}</div>
@@ -391,6 +393,39 @@ function Outcome({ e, fresh, part }: { e: Entry; fresh: boolean; part: "resultad
       </div>
       </>}
     </section>
+  );
+}
+
+/** Lo que deja la decisión: ganaste, sacrificaste, riesgo, principio y la próxima vez. Solo lectura. */
+function LessonCard({ e }: { e: Entry }) {
+  const c = useCeo();
+  const l = useMemo(() => decisionLesson(c.s, e, c.pack, c.now), [c.s, e, c.pack, c.now]);
+  if (!l) return null;
+  const Block = ({ title, items, tone }: { title: string; items: string[]; tone: string }) => (
+    <div>
+      <div className={clsx("text-[11px] font-semibold uppercase tracking-wider", tone)}>{title}</div>
+      {items.length ? <ul className="mt-1.5 space-y-1">{items.map((t, i) => <li key={i} className="text-sm text-ink leading-relaxed">{t}</li>)}</ul> : <p className="mt-1.5 text-sm text-slate-400">Nada relevante en esta decisión.</p>}
+    </div>
+  );
+  return (
+    <div className="card p-5 sm:p-6" data-testid="leccion-decision">
+      <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Lo que deja esta decisión</div>
+      <div className="mt-4 grid gap-4 sm:grid-cols-2">
+        <Block title="Lo que ganaste" items={l.gained} tone="text-indigo" />
+        <Block title="Lo que sacrificaste" items={l.sacrificed} tone="text-coral" />
+      </div>
+      {l.risks.length > 0 && <div className="mt-4 rounded-xl bg-amber-soft/60 px-4 py-3"><Block title="Riesgo que queda" items={l.risks} tone="text-slate-600" /></div>}
+      <div className="mt-4 pt-4 border-t border-slate-100">
+        <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Principio</div>
+        <p className="mt-1.5 text-sm text-ink leading-relaxed">{l.principle}</p>
+      </div>
+      {l.nextTime && (
+        <div className="mt-4">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">La próxima vez</div>
+          <p className="mt-1.5 text-sm text-slate-600 leading-relaxed">{l.nextTime}</p>
+        </div>
+      )}
+    </div>
   );
 }
 
