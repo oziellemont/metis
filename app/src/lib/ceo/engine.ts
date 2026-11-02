@@ -4,7 +4,7 @@
  */
 import type { Axis, CareerRun, CeoState, CrisisRating, CompanyPack, Decision, Entry, Item, KpiKey, Kpis, Option, Settings, Written } from "./types";
 import { COMPANIES, FIRST_COMPANY, LEGACY_ROTATION, companyById } from "./companies";
-import { DILEMMAS, dilemmaById, type Dilemma } from "./dilemmas";
+import { DILEMMAS, dilemmaById, sameSituation, type Dilemma } from "./dilemmas";
 import { changeEffect, simulate, type ChangeSim } from "./change";
 import { sanitizeDiagnostic, sanitizeProfile } from "./profile";
 import { CONTINUOUS_RULES_VERSION, LEGACY_RULES_VERSION, RULES_VERSION, isRulesVersion, ruleSet, tierRules } from "./rules";
@@ -512,7 +512,7 @@ export function dilemmaOfDay(s: CeoState, now = nowOf(s)): { d: Dilemma; done: b
   const answered = s.dilemmas ?? {};
   const todays = Object.entries(answered).find(([, v]) => dayKey(v.at, tz) === today);
   if (todays) { const d = dilemmaById(todays[0]); if (d) return { d, done: true }; }
-  const pool = dilemmasOpen(s, now).filter((d) => !answered[d.id]);
+  const pool = dilemmasOpen(s, now).filter((d) => !sameSituation(d.id).some((id) => answered[id]));
   if (!pool.length) return null;
   // Variedad: prioriza temas que has visto menos.
   const seen: Record<string, number> = {};
@@ -523,7 +523,7 @@ export function dilemmaOfDay(s: CeoState, now = nowOf(s)): { d: Dilemma; done: b
 }
 export function answerDilemma(s: CeoState, id: string, option: number, now = nowOf(s)): CeoState {
   const d = dilemmaById(id);
-  if (!d || !d.options[option] || s.dilemmas?.[id]) return s;
+  if (!d || !d.options[option] || sameSituation(id).some((x) => s.dilemmas?.[x])) return s;
   if (d.min > rankFor(s, now)) return s;
   return { ...s, dilemmas: { ...(s.dilemmas ?? {}), [id]: { option, at: now } }, lastActiveAt: now };
 }
