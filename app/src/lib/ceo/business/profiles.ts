@@ -132,10 +132,12 @@ export const PROFILES: Record<string, BusinessProfile> = {
     baselines: {
       establecida: { revenue: 25, grossMargin: 0.78, headcount: 180, costPerHead: 0.06, marketing: 3.5, otherFixed: 3, otherVar: 0.05, cash: 60, dso: 45, capexPct: 0.01, growth: 0.012, targetGrowth: 0.02, clients: 900 },
       pyme: { revenue: 1.5, grossMargin: 0.75, headcount: 18, costPerHead: 0.05, marketing: 0.15, otherFixed: 0.2, otherVar: 0.04, cash: 4, dso: 30, capexPct: 0.005, growth: 0.015, targetGrowth: 0.025, clients: 120 },
-      startup: { revenue: 2.5, grossMargin: 0.75, headcount: 45, costPerHead: 0.065, marketing: 0.8, otherFixed: 0.6, otherVar: 0, cash: 60, dso: 30, capexPct: 0.005, growth: 0.06, targetGrowth: 0.08, clients: 300 },
+      // Startup en operación (Serie B), del tamaño de Kúbit: $300 M de ingreso al año (factor de tamaño 1: los montos del caso no se tocan), 210 personas,
+      // quema de ≈ $9 M al mes y 14 meses de caja. Así el caso y el estado de resultados cuentan la misma historia.
+      startup: { revenue: 25, grossMargin: 0.74, headcount: 210, costPerHead: 0.075, marketing: 5.5, otherFixed: 4, otherVar: 0.06, cash: 126, dso: 40, capexPct: 0.005, growth: 0.025, targetGrowth: 0.035, clients: 950 },
     },
     metrics: [
-      { id: "mrr", label: "Ingreso recurrente mensual (MRR)", unit: "M", base: { establecida: 24, pyme: 1.4, startup: 2.4 }, better: "up", fromRevenue: 0.96, noise: 0, min: 0, max: 1e6, hint: "Suscripciones activas por mes." },
+      { id: "mrr", label: "Ingreso recurrente mensual (MRR)", unit: "M", base: { establecida: 24, pyme: 1.4, startup: 24 }, better: "up", fromRevenue: 0.96, noise: 0, min: 0, max: 1e6, hint: "Suscripciones activas por mes." },
       pct("churn", "Cancelaciones (churn mensual)", { establecida: 1.6, pyme: 2.2, startup: 2.8 }, 1.5, "down", { kpi: "clientes", k: -0.03 }, 0.05, "Clientes que cancelan en el mes."),
       pct("nrr", "Retención neta de ingresos (NRR)", { establecida: 104, pyme: 100, startup: 98 }, 110, "up", { kpi: "clientes", k: 0.2 }, 0.4, "Lo que hoy pagan los clientes de hace un año.", 200),
       { id: "cac_payback", label: "Recuperación del costo de adquisición", unit: "meses", base: { establecida: 14, pyme: 12, startup: 18 }, target: 12, better: "down", driver: { kpi: "margen", k: -0.1 }, noise: 0.3, min: 1, max: 60, hint: "Meses para recuperar lo que cuesta conseguir un cliente." },

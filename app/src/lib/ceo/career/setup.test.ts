@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { appointedByOf, buildSetup, canContinue, defaultArchetype, effectiveShort, nameExample, newCompanyId, previewPack, selectionForPack } from "./setup";
+import { DEFAULT_TYPE, OFFERED_ARCHETYPES, appointedByOf, buildSetup, canContinue, changeType, defaultArchetype, industriesForType, searchForType, sectorsForType, selectionForPackAndType, suggestionForPack, typeOpen, effectiveShort, nameExample, newCompanyId, previewPack, selectionForPack } from "./setup";
 import { isCompanyId, newCompanyProfile } from "./identity";
 import { TAXONOMY_VERSION } from "./taxonomy";
 
@@ -15,26 +15,77 @@ describe("onboarding de carrera continua · lógica pura", () => {
     expect(selectionForPack(undefined)).toEqual({});
   });
 
-  it("tipo por omisión: el primero con casos aprobados", () => {
+  it("tipo sugerido por industria: la establecida si se ofrece; si no, la startup", () => {
     expect(defaultArchetype("manufactura", "alimentos_bebidas")).toBe("establecida");
-    expect(defaultArchetype("tecnologia_informacion", "software_saas")).toBe("establecida");
+    expect(defaultArchetype("tecnologia_informacion", "software_saas")).toBe("startup");
     expect(defaultArchetype("comercio", "retail")).toBe("establecida");
     expect(defaultArchetype("transporte_almacenamiento", "logistica_distribucion")).toBeUndefined();
   });
 
   it("solo deja avanzar con combinaciones jugables", () => {
+    // Primero el tipo (solo startup o establecida), después una industria de ese tipo.
+    expect(canContinue("tipo", {})).toBe(false);
+    expect(canContinue("tipo", { archetype: "pyme" })).toBe(false);
+    expect(canContinue("tipo", { archetype: "startup" })).toBe(true);
+    expect(canContinue("tipo", { archetype: "establecida" })).toBe(true);
     expect(canContinue("industria", {})).toBe(false);
-    expect(canContinue("industria", { sectorId: "transporte_almacenamiento", industryId: "logistica_distribucion" })).toBe(false);
-    expect(canContinue("industria", { sectorId: "comercio", industryId: "retail" })).toBe(true);
-    expect(canContinue("industria", { sectorId: "tecnologia_informacion", industryId: "software_saas" })).toBe(true);
+    expect(canContinue("industria", { sectorId: "comercio", industryId: "retail" })).toBe(false);
+    expect(canContinue("industria", { archetype: "establecida", sectorId: "transporte_almacenamiento", industryId: "logistica_distribucion" })).toBe(false);
+    expect(canContinue("industria", { archetype: "establecida", sectorId: "comercio", industryId: "retail" })).toBe(true);
+    expect(canContinue("industria", { archetype: "startup", sectorId: "comercio", industryId: "retail" })).toBe(false);
+    expect(canContinue("industria", { archetype: "startup", sectorId: "tecnologia_informacion", industryId: "software_saas" })).toBe(true);
+    expect(canContinue("industria", { archetype: "establecida", sectorId: "tecnologia_informacion", industryId: "software_saas" })).toBe(false);
     expect(canContinue("industria", OK)).toBe(true);
-    expect(canContinue("tipo", { ...OK, archetype: "pyme" })).toBe(true);
-    expect(canContinue("tipo", { ...OK, archetype: "startup" })).toBe(false);
-    expect(canContinue("tipo", OK)).toBe(true);
+    expect(canContinue("industria", { ...OK, archetype: "pyme" })).toBe(false);
+    expect(canContinue("industria", { ...OK, archetype: "startup" })).toBe(false);
     expect(canContinue("nombre", { ...OK, displayName: "x" })).toBe(false);
     expect(canContinue("nombre", { ...OK, displayName: "Mi {empresa}" })).toBe(false);
     expect(canContinue("nombre", { ...OK, shortName: "<b>" })).toBe(false);
     expect(canContinue("nombre", OK)).toBe(true);
+  });
+
+  it("solo dos tipos al empezar: startup y establecida; cada uno muestra solo sus industrias", () => {
+    expect(OFFERED_ARCHETYPES).toEqual(["startup", "establecida"]);
+    expect(DEFAULT_TYPE).toBe("establecida");
+    expect(typeOpen("startup")).toBe(true);
+    expect(typeOpen("establecida")).toBe(true);
+    expect(typeOpen("pyme")).toBe(false);
+    expect(industriesForType("startup").map((i) => i.id)).toEqual(["software_saas"]);
+    expect(industriesForType("establecida").map((i) => i.id).sort()).toEqual(["alimentos_bebidas", "autopartes", "restaurantes", "retail"]);
+    expect(industriesForType("pyme")).toEqual([]);
+    expect(industriesForType(undefined)).toEqual([]);
+    // Los sectores solo traen las industrias del tipo; ninguno queda vacío.
+    expect(sectorsForType("startup").map((s) => s.id)).toEqual(["tecnologia_informacion"]);
+    for (const a of OFFERED_ARCHETYPES) for (const s of sectorsForType(a)) {
+      expect(s.industries.length, s.id).toBeGreaterThan(0);
+      for (const i of s.industries) expect(industriesForType(a).some((x) => x.id === i.id && x.sectorId === s.id)).toBe(true);
+    }
+    expect(sectorsForType("establecida").map((s) => s.id)).not.toContain("tecnologia_informacion");
+  });
+
+  it("la búsqueda por giro solo propone industrias del tipo elegido", () => {
+    expect(searchForType("software", "startup").map((h) => h.industryId)).toContain("software_saas");
+    expect(searchForType("software", "establecida")).toEqual([]);
+    expect(searchForType("ferreteria", "establecida").length + searchForType("tiendas", "establecida").length).toBeGreaterThan(0);
+    expect(searchForType("tiendas", "startup")).toEqual([]);
+    expect(searchForType("autopartes", "establecida").map((h) => h.industryId)).toContain("autopartes");
+  });
+
+  it("cambiar de tipo conserva la industria solo si existe para el nuevo tipo", () => {
+    const est = { archetype: "establecida" as const, sectorId: "comercio", industryId: "retail", specialty: "Omnicanal" };
+    expect(changeType(est, "establecida")).toEqual(est);
+    expect(changeType(est, "startup")).toEqual({ archetype: "startup" });
+    expect(changeType(est, "pyme")).toBe(est);
+    const st = { archetype: "startup" as const, sectorId: "tecnologia_informacion", industryId: "software_saas", displayName: "Nube" };
+    expect(changeType(st, "establecida")).toEqual({ archetype: "establecida", displayName: "Nube" });
+  });
+
+  it("la experiencia declarada sugiere industria y tipo coherentes", () => {
+    expect(selectionForPackAndType("cumbre", "establecida")).toEqual({ sectorId: "manufactura", industryId: "alimentos_bebidas" });
+    expect(selectionForPackAndType("cumbre", "startup")).toEqual({});
+    expect(suggestionForPack("kubit")).toEqual({ sectorId: "tecnologia_informacion", industryId: "software_saas", archetype: "startup" });
+    expect(suggestionForPack("puntomadero")).toEqual({ sectorId: "comercio", industryId: "retail", archetype: "establecida" });
+    expect(suggestionForPack("nada")).toEqual({});
   });
 
   it("nombre corto: el escrito o el calculado", () => {

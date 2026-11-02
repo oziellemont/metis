@@ -8,7 +8,7 @@ import { COMPANIES, FIRST_COMPANY, companyById } from "@/lib/ceo/companies";
 import { useCeo } from "./CeoProvider";
 import { track } from "@/lib/ceo/events";
 import { ArchetypeStep, IndustryStep, LetterStep, NameStep } from "./CompanySetup";
-import { buildSetup, defaultArchetype, newCompanyId, previewPack, selectionForPack, type SetupSelection } from "@/lib/ceo/career/setup";
+import { DEFAULT_TYPE, buildSetup, newCompanyId, previewPack, selectionForPackAndType, suggestionForPack, type SetupSelection } from "@/lib/ceo/career/setup";
 import { DiagnosticCases, DiagnosticOffer, ProfileQuestions, StartingPoint, TierChoice } from "./ProfileFlow";
 import { companyForIndustry, suggestTier, type InitialDiagnostic, type ProfessionalProfile } from "@/lib/ceo/profile";
 import { newState, rulesOf } from "@/lib/ceo/engine";
@@ -25,7 +25,7 @@ export function Onboarding() {
   const c = useCeo();
   const router = useRouter();
   const [step, setStep] = useState(0);
-  const [sel, setSel] = useState<SetupSelection>(() => { const s = selectionForPack(FIRST_COMPANY); return { ...s, archetype: defaultArchetype(s.sectorId, s.industryId) }; });
+  const [sel, setSel] = useState<SetupSelection>(() => ({ archetype: DEFAULT_TYPE, ...selectionForPackAndType(FIRST_COMPANY, DEFAULT_TYPE) }));
   const pk = previewPack(sel) ?? companyById(FIRST_COMPANY);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -48,7 +48,7 @@ export function Onboarding() {
   const toCompany = (pf?: ProfessionalProfile) => {
     const co = companyForIndustry(pf?.industry, COMPANIES.map((x) => x.id));
     // La experiencia declarada solo sugiere la industria, y solo si todavía no eligió nada distinto.
-    if (co && !sel.displayName) { const s = selectionForPack(co); setSel((p) => ({ ...p, ...s, archetype: defaultArchetype(s.sectorId, s.industryId), specialty: undefined })); }
+    if (co && !sel.displayName) { const s = suggestionForPack(co); if (s.archetype) setSel((p) => ({ ...p, ...s, specialty: undefined })); }
     setStep(2);
   };
   const afterProfile = (pf: ProfessionalProfile) => {
@@ -103,8 +103,8 @@ export function Onboarding() {
           </div>
         )}
 
-        {step === 2 && <IndustryStep sel={sel} setSel={setSel} onBack={() => { setPhase(diagnostic ? "start" : "q"); setStep(1); }} onNext={() => setStep(3)} />}
-        {step === 3 && <ArchetypeStep sel={sel} setSel={setSel} onBack={() => setStep(2)} onNext={() => setStep(4)} extra={offered > 0 ? <TierChoice tier={tier} setTier={setTier} offered={offered} names={[rulesOf(0).name, rulesOf(offered).name]} title="Exigencia de tu empresa" /> : null} />}
+        {step === 2 && <ArchetypeStep sel={sel} setSel={setSel} onBack={() => { setPhase(diagnostic ? "start" : "q"); setStep(1); }} onNext={() => setStep(3)} extra={offered > 0 ? <TierChoice tier={tier} setTier={setTier} offered={offered} names={[rulesOf(0).name, rulesOf(offered).name]} title="Exigencia de tu empresa" /> : null} />}
+        {step === 3 && <IndustryStep sel={sel} setSel={setSel} onBack={() => setStep(2)} onNext={() => setStep(4)} />}
         {step === 4 && <NameStep sel={sel} setSel={setSel} onBack={() => setStep(3)} onNext={() => setStep(5)} />}
         {step === 5 && <LetterStep sel={sel} name={name} onBack={() => setStep(4)} onNext={() => setStep(6)} />}
 

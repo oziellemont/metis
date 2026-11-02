@@ -99,7 +99,8 @@ describe("disponibilidad: «Próximamente» bloquea", () => {
     expect(isPlayableCombo("comercio", "retail", "pyme")).toBe(false);
     expect(isPlayableCombo("tecnologia_informacion", "software_saas")).toBe(true);
     expect(isPlayableCombo("tecnologia_informacion", "software_saas", "establecida")).toBe(true);
-    expect(isPlayableCombo("tecnologia_informacion", "software_saas", "startup")).toBe(false);
+    expect(isPlayableCombo("tecnologia_informacion", "software_saas", "startup")).toBe(true);
+    expect(isPlayableCombo("tecnologia_informacion", "software_saas", "pyme")).toBe(false);
     expect(isPlayableCombo("manufactura", "alimentos_bebidas", "establecida")).toBe(true);
     expect(isPlayableCombo("manufactura", "alimentos_bebidas", "startup")).toBe(false);
     expect(isPlayableCombo("manufactura", "electronica", "establecida")).toBe(false);
