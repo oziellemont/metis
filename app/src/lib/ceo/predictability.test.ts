@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { COMPANIES } from "./companies";
-import { withBank } from "./cases/bank";
+import { isBankId, withBank } from "./cases/bank";
 import { DILEMMAS } from "./dilemmas";
 import { RED_LINES } from "./editorial";
 import { PREDICTABILITY_RULES as P, checkCase, dilemmaCase, itemCase, replyContradictions, report, type PlainCase } from "./predictability";
@@ -35,11 +35,33 @@ describe("contenido actual: línea base (no debe empeorar)", () => {
   it("casos del banco y dilemas: los indicadores de predictibilidad no empeoran", () => {
     const b = report(bankCases());
     const d = report(DILEMMAS.map(dilemmaCase));
-    expect(b.longestBestRate).toBeLessThanOrEqual(0.97);
-    expect(b.medianLengthRatio).toBeLessThanOrEqual(1.7);
+    // Todos los casos (banco + propios). Antes de la tanda 1 del banco: 0.97 y 1.7.
+    expect(b.longestBestRate).toBeLessThanOrEqual(0.5);
+    expect(b.medianLengthRatio).toBeLessThanOrEqual(1.2);
     // Dilemas: la versión 1 medía 0.98; la versión 2 tiene sus propios criterios estrictos (abajo).
     expect(d.longestBestRate).toBeLessThanOrEqual(P.maxLongestBestRate);
     expect(replyContradictions(COMPANIES.flatMap((p) => withBank(p).items))).toEqual([]);
+  });
+});
+
+describe("banco de casos (tanda 1): la longitud ya no delata la respuesta", () => {
+  // Antes: el más largo era el mejor en 97% de los casos del banco; ahora queda cerca del azar (1 de 3).
+  const cases = () => bankCases().filter((c) => isBankId(c.id));
+  it("ni la opción más larga ni la más corta dan pistas", () => {
+    const r = report(cases());
+    expect(r.longestBestRate).toBeLessThanOrEqual(0.4);
+    expect(r.shortestBestRate).toBeLessThanOrEqual(0.4);
+    expect(r.shortestWorstRate).toBeLessThanOrEqual(0.4);
+    expect(r.lengthLift).toBeLessThanOrEqual(P.maxLengthLift);
+    expect(r.medianLengthRatio).toBeLessThanOrEqual(P.maxLengthRatio);
+    expect(r.markersBestRate).toBeLessThanOrEqual(P.maxMarkersBestRate);
+  });
+  it("opciones de largo parecido y sin caricaturas", () => {
+    for (const c of cases()) {
+      const k = checkCase(c);
+      expect(k.lengthRatio, c.id).toBeLessThanOrEqual(P.maxLengthRatio);
+      expect(k.caricatures, c.id).toEqual([]);
+    }
   });
 });
 

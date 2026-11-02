@@ -80,21 +80,21 @@ const ARCHETYPES_P1C: readonly Archetype[] = [
     dataTitle: "Lo que sabes hoy",
     options: [
       {
-        text: "Retiro preventivo de {lote} hoy mismo, con aviso público y a {clientes}, aunque la confirmación todavía no llegue.",
+        text: "Retiro preventivo de {lote} hoy, con aviso público y a {clientes}, sin esperar confirmación.",
         reply: ["Va. Arranco hoy y te paso el costo en la noche.", "Va a doler, pero nadie podrá decir que escondimos algo."],
         outcome: "Asumes el costo antes de tener certeza. Los clientes y el consejo ven a alguien que pone la seguridad primero.",
         effects: { caja: -6, margen: -3, clientes: 5, consejo: 3 }, style: { horizonte: 2, riesgo: -2, conflicto: 1 }, score: 3,
         stance: { ops: 1, cfo: -1, sales: -1, chair: 1 },
       },
       {
-        text: "Retiro dirigido: solo donde hay reportes, aviso discreto a {clientes} y una segunda prueba en 48 horas para decidir lo demás.",
+        text: "Retiro solo donde hay reportes, aviso discreto a {clientes} y una segunda prueba en 48 horas para decidir el resto.",
         reply: ["Lo dirigido lo arrancamos hoy.", "Si la segunda prueba sale mal, perdimos dos días. Lo dejo anotado."],
         outcome: "Contienes lo más probable sin parar todo. Si el problema era más grande, llegaste dos días tarde.",
         effects: { caja: -2, clientes: 2, consejo: -1 }, style: { riesgo: -1, foco: -1 }, score: 2,
         stance: { ops: 1, cfo: 1, sales: 1, chair: -1 },
       },
       {
-        text: "Esperar la confirmación antes de mover nada: retirar sin certeza asusta a {clientes} y nos puede costar el año.",
+        text: "Esperar la confirmación antes de mover nada: un retiro sin certeza asusta a {clientes} y nos puede costar el año.",
         reply: ["Entendido. Esperamos.", "Que conste que yo lo hubiera sacado hoy."],
         outcome: "Cuidas la caja mientras llega el dato. Si el problema era real, quedará claro que lo sabías.",
         effects: { caja: 2, margen: 1, clientes: -5, consejo: -3 }, style: { riesgo: 2, horizonte: -2, conflicto: -1 }, score: 1,
@@ -134,21 +134,21 @@ const ARCHETYPES_P1C: readonly Archetype[] = [
     dataTitle: "Finanzas te armó esto",
     options: [
       {
-        text: "Negociar con datos: le muestro lo que gana conmigo, ofrezco algo que a mí me cuesta poco y a él le vale mucho, y llevo listo mi plan B por si se va.",
+        text: "Negociar: le muestro con datos lo que gana conmigo, cedo algo que me cuesta poco y tengo listo mi plan B.",
         reply: ["Recibido. Revisemos su propuesta el jueves.", "Le adelanto que mis metas no cambian, pero los datos de rotación son interesantes."],
         outcome: "Cedes en lo barato, defiendes lo importante y el cliente ve que tienes alternativas.",
         effects: { margen: 2, consejo: 2, clientes: -1, caja: -1 }, style: { conflicto: 1, horizonte: 1 }, score: 3,
         stance: { client: -1, sales: 1, cfo: 1 },
       },
       {
-        text: "Aceptar lo que pide: su volumen sostiene la operación y no es momento de arriesgarlo.",
+        text: "Aceptar lo que pide: su volumen sostiene la operación y este año no podemos arriesgar ni una parte de esa venta.",
         reply: ["Excelente decisión. Así se construyen las relaciones de largo plazo.", "Le mando el anexo para firma."],
         outcome: "Conservas el volumen, pero el cliente aprendió que presionar funciona. El margen lo pagas tú.",
         effects: { clientes: 5, margen: -4, caja: -2 }, style: { riesgo: -2, conflicto: -2 }, score: 1,
         stance: { client: 2, sales: 1, cfo: -2 },
       },
       {
-        text: "Plantarme: o mantiene las condiciones o nos vamos, y aceleramos otros clientes para depender menos de él.",
+        text: "Mantener las condiciones aunque se vaya, y acelerar otros clientes para depender menos de él.",
         reply: ["Lamento que lo vea así.", "Tomaremos nuestras decisiones."],
         outcome: "Defiendes el margen y la dignidad del equipo, pero apuestas una parte grande de la venta.",
         effects: { margen: 2, equipo: 2, clientes: -6, consejo: -1 }, style: { riesgo: 2, conflicto: 2, horizonte: 1 }, score: 1,
@@ -187,21 +187,21 @@ const ARCHETYPES_P1C: readonly Archetype[] = [
     dataTitle: "Lo que se sabe",
     options: [
       {
-        text: "Investigo a fondo, rediseño la meta para que premie también calidad y permanencia, y lo explico yo mismo a todo el equipo.",
+        text: "Investigar a fondo, rediseñar la meta para que premie calidad y permanencia, y explicarlo yo al equipo.",
         reply: ["Gracias. Esto es lo que la gente necesitaba oír de ti.", "Te armo el calendario de sesiones esta semana."],
         outcome: "La meta deja de premiar el atajo. El trimestre se ve peor, pero el número vuelve a decir la verdad.",
         effects: { margen: -3, caja: -1, consejo: 3, clientes: 3 }, style: { horizonte: 2, conflicto: 1, estilo: 1 }, score: 3,
         stance: { people: 2, sales: -1, cfo: -1 },
       },
       {
-        text: "Despido a los responsables directos y dejo el esquema como está: funciona para vender.",
+        text: "Separar a los responsables directos y dejar el esquema de comisiones como está, porque es el que hace vender.",
         reply: ["Procedo.", "Te advierto: si la meta sigue igual, en seis meses vamos a estar aquí otra vez."],
         outcome: "Hay culpables, pero el incentivo que los empujó sigue intacto. El equipo aprende a esconderlo mejor.",
         effects: { margen: 2, consejo: 1, equipo: -4, clientes: -2 }, style: { conflicto: 2, estilo: -2, horizonte: -1 }, score: 0,
         stance: { people: -1, sales: 1, cfo: 1 },
       },
       {
-        text: "Pido una auditoría externa y congelo los bonos mientras tanto, sin anunciar nada hasta tener el reporte.",
+        text: "Pedir una auditoría externa y congelar todos los bonos mientras tanto, sin anunciar nada hasta tener el reporte.",
         reply: ["Contrato a la firma hoy.", "Los bonos congelados van a sacar ruido. Prepárate."],
         outcome: "Tienes hechos independientes, pero el silencio y los bonos congelados generan rumores.",
         effects: { caja: -2, equipo: -3, consejo: 2, clientes: 1 }, style: { riesgo: -2, conflicto: -1, foco: -1 }, score: 2,
@@ -240,21 +240,21 @@ const ARCHETYPES_P1C: readonly Archetype[] = [
     dataTitle: "Estado a esta hora",
     options: [
       {
-        text: "No pago. Activo la contingencia, operamos en manual, aviso a {clientes} lo que sé y lo que no sé, y reconstruimos desde respaldos.",
+        text: "No pagar: operar en manual, reconstruir desde los respaldos y avisar a {clientes} lo que sé y lo que todavía no.",
         reply: ["De acuerdo. Armo turnos para operar en papel.", "Te paso un mensaje para clientes en una hora: qué pasó, qué no sabemos y cuándo volvemos a escribir."],
         outcome: "Varios días caros y lentos, pero los clientes se enteran por ti y nadie te puede chantajear otra vez.",
         effects: { caja: -4, margen: -2, clientes: 2, consejo: 2 }, style: { horizonte: 2, riesgo: -1, conflicto: 1 }, score: 3,
         stance: { ops: 1, cfo: -1, client: 1, board: 1 },
       },
       {
-        text: "Pago el rescate para recuperar todo en horas y comunico solo cuando ya esté funcionando.",
+        text: "Pagar el rescate para recuperar todo en horas y comunicarlo cuando la operación ya esté funcionando.",
         reply: ["Ok. Consigo la forma de pago.", "Nadie nos garantiza que nos entreguen la llave ni que no vuelvan."],
         outcome: "Vuelves rápido, si cumplen. El consejo se entera después y queda la duda legal y de si volverán.",
         effects: { caja: -5, clientes: 3, consejo: -4 }, style: { riesgo: 2, horizonte: -2, conflicto: -1 }, score: 1,
         stance: { ops: 1, cfo: -2, client: 1, board: -2 },
       },
       {
-        text: "Contrato un equipo forense y no digo nada hacia afuera hasta conocer el alcance; adentro, silencio total.",
+        text: "Contratar un equipo forense y no decir nada hacia afuera ni hacia adentro hasta conocer el alcance.",
         reply: ["Entendido. Nadie habla.", "Los clientes ya están llamando. ¿Qué les decimos?"],
         outcome: "Ganas control técnico, pero los clientes y tu gente llenan el silencio con lo peor.",
         effects: { caja: -2, consejo: 2, clientes: -4, equipo: -2 }, style: { riesgo: -2, conflicto: -2, estilo: -1 }, score: 1,
@@ -294,21 +294,21 @@ const ARCHETYPES_P1C: readonly Archetype[] = [
     dataTitle: "Los números de la propuesta",
     options: [
       {
-        text: "Piloto primero: un solo frente durante tres meses, con métricas de éxito acordadas antes de empezar. Si funciona, escalo.",
+        text: "Un piloto de tres meses en un solo frente, con métricas de éxito acordadas antes; si funciona, escalo.",
         reply: ["Me parece prudente, aunque temo que la ventana se cierre.", "Dime qué métricas y te digo si el consejo las compra."],
         outcome: "Arriesgas poco y aprendes rápido. Algunos en el consejo sienten que perdiste impulso.",
         effects: { caja: -2, consejo: -2, margen: 1, equipo: 2 }, style: { riesgo: -1, horizonte: 1, estilo: 1 }, score: 3,
         stance: { board: -1, cfo: 1, ops: 1, chair: 1 },
       },
       {
-        text: "Vamos con todo: la ventana es ahora. Lanzamos completo con financiamiento.",
+        text: "Ir con todo ahora que la ventana está abierta: lanzar completo, con financiamiento, antes de que cierre este trimestre.",
         reply: ["¡Eso! Así se crece.", "Finanzas ya me escribió preocupada por la deuda. Te la dejo a ti."],
         outcome: "Si sale, das un salto. Si los datos o la operación fallan, lo vas a descubrir con todo el dinero ya puesto.",
         effects: { caja: -7, clientes: 5, consejo: 3, equipo: -3 }, style: { riesgo: 2, horizonte: 1, conflicto: 1 }, score: 1,
         stance: { board: 2, cfo: -2, ops: -1, chair: -1 },
       },
       {
-        text: "No ahora: primero arreglo la operación de hoy. Lo reevaluamos cuando cumplamos el plan del año.",
+        text: "Todavía no: primero cumplir el plan del año con la operación actual y volver a evaluarlo después, con datos.",
         reply: ["Entiendo, aunque no lo comparto.", "Que conste que la oportunidad no va a esperar."],
         outcome: "Proteges la caja y el foco. Quizá dejes pasar la oportunidad del año.",
         effects: { caja: 2, margen: 2, consejo: -3, clientes: -2 }, style: { riesgo: -2, foco: -1, horizonte: -1 }, score: 2,
@@ -347,21 +347,21 @@ const ARCHETYPES_P1C: readonly Archetype[] = [
     dataTitle: "El tamaño del problema",
     options: [
       {
-        text: "Subo lo necesario, escalonado, lo anuncio con anticipación y explico por qué; a los clientes clave se los digo en persona.",
+        text: "Subir lo necesario en dos etapas, con aviso previo por escrito; a los clientes clave se lo explico yo en persona.",
         reply: ["Me parece bien. Te armo el escalonado.", "Comercial va a necesitar un argumento claro. Lo preparamos juntos."],
         outcome: "Recuperas margen sin sorpresas. Algunos clientes se quejan, pero casi ninguno se siente engañado.",
         effects: { margen: 4, caja: 1, clientes: -2, equipo: -1 }, style: { horizonte: 1, conflicto: 1, estilo: 1 }, score: 3,
         stance: { cfo: 1, sales: 1, board: -1 },
       },
       {
-        text: "Subo todo de un golpe el lunes, sin aviso: la gente se acostumbra.",
+        text: "Subir todo de una vez el lunes, sin anuncio previo: recuperamos el margen de inmediato y sin ruido.",
         reply: ["Rápido y limpio en los números.", "Comercial va a recibir las llamadas. Yo no."],
         outcome: "El margen sube de inmediato y la confianza baja igual de rápido. Los clientes se enteran por la factura.",
         effects: { margen: 6, caja: 2, clientes: -7, consejo: -1 }, style: { riesgo: 2, conflicto: 2, estilo: -2, horizonte: -1 }, score: 0,
         stance: { cfo: 2, sales: -2, board: 1 },
       },
       {
-        text: "No subo: absorbo el costo este trimestre y busco ahorros internos.",
+        text: "No subir este trimestre: absorber el costo y buscar ahorros internos antes de tocar el precio.",
         reply: ["Lo intento, pero los ahorros no alcanzan para todo.", "El margen de este trimestre se va a ver mal."],
         outcome: "Cuidas a los clientes, pero el problema solo se aplaza y el margen paga la factura.",
         effects: { clientes: 3, margen: -4, consejo: -2 }, style: { riesgo: -1, conflicto: -2, foco: 1 }, score: 1,
@@ -400,21 +400,21 @@ const ARCHETYPES_P1C: readonly Archetype[] = [
     dataTitle: "La situación",
     options: [
       {
-        text: "Un solo ajuste, suficiente y bien hecho: lo anuncio yo, con razones y cifras, liquidación por encima de la ley y apoyo para recolocarse.",
+        text: "Un solo ajuste suficiente, anunciado por mí con cifras, con liquidación arriba de la ley y apoyo.",
         reply: ["Es lo más duro y lo más limpio.", "Te preparo los números de liquidación y el plan de apoyo."],
         outcome: "Duele una vez y se explica. Los que se quedan ven cómo trataste a los que se fueron.",
         effects: { margen: 3, consejo: 2, caja: -2, equipo: -3 }, style: { horizonte: 2, conflicto: 2 }, score: 3,
         stance: { cfo: 1, people: 1, frontline: -1 },
       },
       {
-        text: "Ajustes pequeños cada mes, sin anunciarlos, para no alarmar a nadie.",
+        text: "Ajustes pequeños cada mes, sin ningún anuncio general, para no alarmar a toda la empresa de golpe ni perder gente.",
         reply: ["Se puede hacer.", "Te aviso que la gente ya cuenta las sillas vacías."],
         outcome: "Nadie sabe cuándo le toca. El miedo se queda y los mejores son los primeros en irse.",
         effects: { caja: 2, margen: 1, equipo: -6 }, style: { conflicto: -2, riesgo: -1, horizonte: -1 }, score: 0,
         stance: { cfo: 1, people: -2, frontline: -2 },
       },
       {
-        text: "No recorto: congelo contrataciones, bajo los sueldos directivos empezando por el mío y apuesto a que la venta crezca.",
+        text: "No recortar: congelar contrataciones, bajar sueldos directivos empezando por el mío y apostar a la venta.",
         reply: ["Es un gesto que la gente va a valorar.", "Los números no cierran solo con eso. Te doy tres meses antes de volver a hablar."],
         outcome: "Ganas confianza y tiempo, pero si la venta no llega, el ajuste será más grande.",
         effects: { equipo: 4, caja: -3, consejo: -3 }, style: { riesgo: 1, conflicto: -1, foco: 2 }, score: 2,
@@ -453,21 +453,21 @@ const ARCHETYPES_P1C: readonly Archetype[] = [
     dataTitle: "Inventario y opciones",
     options: [
       {
-        text: "Ayudo al proveedor a recuperarse (ingeniería, gente y un anticipo) y en paralelo califico una segunda fuente para lo crítico.",
+        text: "Ayudar al proveedor con ingeniería y un anticipo, y calificar en paralelo una segunda fuente.",
         reply: ["Mando a dos ingenieros hoy.", "La segunda fuente tarda, pero ya era hora."],
         outcome: "Cuesta caja hoy, pero el proveedor vuelve antes y dejas de depender de uno solo.",
         effects: { caja: -4, margen: -1, clientes: 2, equipo: 1 }, style: { horizonte: 2, estilo: 1, riesgo: -1 }, score: 3,
         stance: { ops: 1, cfo: -1, client: 1 },
       },
       {
-        text: "Compro de emergencia a quien tenga, al precio que sea, para no fallarle a {cliente}.",
+        text: "Comprar de emergencia a quien tenga producto, al precio que sea, para no fallarle a {cliente}.",
         reply: ["Consigo lo que haya.", "Va a salir caro y la calidad no la conozco."],
         outcome: "Cumples a tiempo y pagas el sobreprecio. Cuando pase la urgencia, la fragilidad sigue igual.",
         effects: { margen: -5, caja: -2, clientes: 4 }, style: { horizonte: -2, riesgo: 1, conflicto: 1 }, score: 2,
         stance: { ops: -1, cfo: -2, client: 2 },
       },
       {
-        text: "Aviso a {cliente} que habrá retraso y aprovecho para renegociar con un proveedor más barato.",
+        text: "Avisar a {cliente} que habrá un retraso y aprovechar para negociar con un proveedor más barato.",
         reply: ["Ok, le escribo al cliente.", "Ojo: el cliente no va a olvidar este retraso."],
         outcome: "Cuidas el margen, pero le fallas al cliente justo cuando más te necesitaba.",
         effects: { margen: 3, caja: 1, clientes: -6, consejo: -1 }, style: { riesgo: 1, conflicto: -1, horizonte: -1 }, score: 1,
@@ -507,21 +507,21 @@ const ARCHETYPES_P1C: readonly Archetype[] = [
     dataTitle: "El mercado",
     options: [
       {
-        text: "La lanzo como unidad aparte, con presupuesto limitado, su propio equipo y permiso para competir contra lo actual.",
+        text: "Lanzarla como unidad aparte, con presupuesto limitado y su propio equipo, aunque llegue a competir con lo actual.",
         reply: ["Por fin. Te propongo quién la puede llevar.", "Va a haber fricción con el negocio actual; hay que protegerla."],
         outcome: "Arriesgas margen de hoy para no quedarte fuera mañana. El negocio actual se siente amenazado.",
         effects: { caja: -4, margen: -2, clientes: 3, consejo: 1 }, style: { horizonte: 2, riesgo: 1 }, score: 3,
         stance: { board: 2, chair: -1, cfo: -1 },
       },
       {
-        text: "La pruebo dentro del área actual, sin estructura propia, para no distraer al negocio que paga las cuentas.",
+        text: "Probarla dentro del área actual, sin estructura propia, para no distraer al negocio que paga las cuentas.",
         reply: ["Es algo.", "Aunque te advierto: dentro del área actual, lo nuevo siempre pierde contra lo urgente."],
         outcome: "Gastas poco y aprendes poco. Lo urgente le gana a lo nuevo casi siempre.",
         effects: { caja: -1, margen: 1, clientes: 1, equipo: -2 }, style: { riesgo: -1, foco: -1 }, score: 2,
         stance: { board: -1, chair: 1, cfo: 1 },
       },
       {
-        text: "La descarto por ahora: protejo el margen del negocio actual y la reviso dentro de un año.",
+        text: "Descartarla por ahora para proteger el margen del negocio actual, y revisarla dentro de un año.",
         reply: ["Como veas. Lo que funciona hoy no siempre funciona en un año.", "Un año es mucho tiempo en este mercado."],
         outcome: "El trimestre se ve bien. Si el mercado cambia rápido, llegarás tarde.",
         effects: { margen: 3, caja: 2, clientes: -3, consejo: -2 }, style: { horizonte: -2, riesgo: -2 }, score: 1,
@@ -560,21 +560,21 @@ const ARCHETYPES_P1C: readonly Archetype[] = [
     dataTitle: "Lo que pasó",
     options: [
       {
-        text: "Lo reconozco ante {afectado} sin rodeos, reparo el daño y hago una revisión sin culpables para arreglar el proceso que permitió el error.",
+        text: "Reconocerlo ante {afectado}, reparar el daño y revisar sin culpables el proceso que lo permitió.",
         reply: ["Gracias. Esto va a hacer que la gente avise antes, no que esconda.", "Te armo la revisión para el lunes."],
         outcome: "Pagas el daño y das la cara. El equipo aprende que avisar a tiempo es lo correcto.",
         effects: { caja: -3, consejo: -1, equipo: 3, clientes: 2 }, style: { horizonte: 2, estilo: 1, conflicto: 1 }, score: 3,
         stance: { ops: 1, people: 2, client: 1 },
       },
       {
-        text: "Lo arreglo en silencio y digo que fue una falla externa; adentro, sanción a la persona.",
+        text: "Arreglarlo en silencio, atribuirlo a una falla externa del sistema y sancionar a la persona de forma interna y discreta.",
         reply: ["Se hace.", "Te digo lo que va a pasar: la próxima vez nadie nos va a avisar."],
         outcome: "Hoy no pasa nada. Mañana la gente esconde los errores, y una mentira descubierta cuesta más que el error.",
         effects: { caja: -1, clientes: 1, equipo: -5 }, style: { conflicto: -2, estilo: -2 }, score: 0,
         stance: { ops: -1, people: -2, client: 1 },
       },
       {
-        text: "Lo reconozco ante {afectado}, pero la persona sale de la empresa: tiene que haber una consecuencia visible.",
+        text: "Reconocerlo ante {afectado} y que la persona salga de la empresa: tiene que haber una consecuencia visible.",
         reply: ["Entendido. Hablo con ella hoy.", "El equipo lo va a resentir: fue un error, no una falta."],
         outcome: "El afectado ve una consecuencia; tu gente aprende que equivocarse cuesta el trabajo.",
         effects: { clientes: 3, consejo: 2, equipo: -4, caja: -2 }, style: { conflicto: 2, estilo: -1, horizonte: -1 }, score: 1,
