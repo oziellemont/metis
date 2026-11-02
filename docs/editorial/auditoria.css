@@ -1,0 +1,24 @@
+@page { size: Letter; margin: 18mm 16mm 18mm 16mm; }
+body { font-family: Georgia, "Times New Roman", serif; color: #1d1d1f; font-size: 11.2pt; line-height: 1.55; }
+h1 { font-family: Helvetica, Arial, sans-serif; font-size: 26pt; margin: 0 0 6px; letter-spacing: -0.5px; }
+h2 { font-family: Helvetica, Arial, sans-serif; font-size: 16pt; border-bottom: 2px solid #1d1d1f; padding-bottom: 4px; margin-top: 30px; page-break-after: avoid; }
+h3 { font-family: Helvetica, Arial, sans-serif; font-size: 12.5pt; margin-top: 20px; page-break-after: avoid; color: #333; }
+p { margin: 0 0 10px; text-align: justify; }
+.cover { page-break-after: always; padding-top: 120px; }
+.cover .sub { font-family: Helvetica, Arial, sans-serif; font-size: 13pt; color: #555; }
+.cover .meta { margin-top: 60px; font-family: Helvetica, Arial, sans-serif; font-size: 10pt; color: #666; }
+.kpi { display: inline-block; width: 30%; margin: 6px 1%; padding: 10px; border: 1px solid #ccc; vertical-align: top; font-family: Helvetica, Arial, sans-serif; }
+.kpi b { display: block; font-size: 20pt; }
+.kpi span { font-size: 9pt; color: #555; }
+table { border-collapse: collapse; width: 100%; margin: 10px 0 16px; font-family: Helvetica, Arial, sans-serif; font-size: 9pt; page-break-inside: avoid; }
+th, td { border: 1px solid #bbb; padding: 5px 6px; text-align: left; vertical-align: top; }
+th { background: #eee; }
+td.bad { background: #f6dede; }
+td.ok { background: #e2f1e2; }
+figure { margin: 12px 0 18px; page-break-inside: avoid; text-align: center; }
+figure img { max-width: 78%; max-height: 360px; border: 1px solid #ccc; }
+figcaption { font-family: Helvetica, Arial, sans-serif; font-size: 9pt; color: #555; margin-top: 4px; }
+.box { border-left: 4px solid #1d1d1f; background: #f4f4f4; padding: 10px 14px; margin: 12px 0; page-break-inside: avoid; }
+.prio { font-family: Helvetica, Arial, sans-serif; font-weight: bold; font-size: 9pt; padding: 1px 6px; border-radius: 3px; color: #fff; }
+.p0 { background: #b3261e; } .p1 { background: #c77700; } .p2 { background: #44617b; }
+.pb { page-break-before: always; }

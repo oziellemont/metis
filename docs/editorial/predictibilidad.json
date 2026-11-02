@@ -1,0 +1,539 @@
+{
+ "reglas": {
+  "version": 1,
+  "maxLongestBestRate": 0.45,
+  "maxLengthLift": 0.1,
+  "maxPositionShare": 0.5,
+  "maxLengthRatio": 1.3,
+  "maxMarkersBestRate": 0.5,
+  "minReasonable": 2
+ },
+ "banco": {
+  "cases": 427,
+  "longestBestRate": 0.96,
+  "topChance": 0.342,
+  "lengthLift": 0.618,
+  "shortestBestRate": 0.009,
+  "shortestWorstRate": 0.583,
+  "worstPositionShare": [
+   0.27,
+   0.459,
+   0.27
+  ],
+  "uniqueBest": 426,
+  "uniqueLongestBestRate": 0.96,
+  "topPositionShare": [
+   0.463,
+   0.234,
+   0.303
+  ],
+  "chanceRate": 0.342,
+  "positionShare": [
+   0.462,
+   0.235,
+   0.303
+  ],
+  "markersBestRate": 0.274,
+  "caricatureRate": 0.016,
+  "fewReasonableRate": 0.326,
+  "dominantRate": 0,
+  "medianLengthRatio": 1.65,
+  "cleanRate": 0.002,
+  "flags": {
+   "largo": 409,
+   "desbalance_largo": 371,
+   "manual": 117,
+   "pocas_razonables": 139,
+   "mejor_unica": 139,
+   "caricatura": 7
+  }
+ },
+ "dilemas": {
+  "cases": 49,
+  "longestBestRate": 0.98,
+  "topChance": 0.25,
+  "lengthLift": 0.73,
+  "shortestBestRate": 0,
+  "shortestWorstRate": 0.082,
+  "worstPositionShare": [
+   0.231,
+   0.02,
+   0.446,
+   0.303
+  ],
+  "uniqueBest": 49,
+  "uniqueLongestBestRate": 0.98,
+  "topPositionShare": [
+   0.122,
+   0.878,
+   0,
+   0
+  ],
+  "chanceRate": 0.25,
+  "positionShare": [
+   0.122,
+   0.878,
+   0,
+   0
+  ],
+  "markersBestRate": 0.388,
+  "caricatureRate": 0.122,
+  "fewReasonableRate": 0.531,
+  "dominantRate": 1,
+  "medianLengthRatio": 3.11,
+  "cleanRate": 0,
+  "flags": {
+   "largo": 48,
+   "desbalance_largo": 48,
+   "dominante": 49,
+   "manual": 19,
+   "pocas_razonables": 26,
+   "mejor_unica": 26,
+   "caricatura": 6
+  }
+ },
+ "contradicciones": 127,
+ "muestraCasos": {
+  "cases": 12,
+  "longestBestRate": 0.667,
+  "topChance": 0.639,
+  "lengthLift": 0.028,
+  "shortestBestRate": 0.5,
+  "shortestWorstRate": 0.25,
+  "worstPositionShare": [
+   0.375,
+   0.25,
+   0.375
+  ],
+  "uniqueBest": 1,
+  "uniqueLongestBestRate": 0,
+  "topPositionShare": [
+   0.292,
+   0.417,
+   0.292
+  ],
+  "chanceRate": 0.333,
+  "positionShare": [
+   0,
+   1,
+   0
+  ],
+  "markersBestRate": 0,
+  "caricatureRate": 0,
+  "fewReasonableRate": 0,
+  "dominantRate": 0,
+  "medianLengthRatio": 1.11,
+  "cleanRate": 1,
+  "flags": {}
+ },
+ "muestraDilemas": {
+  "cases": 6,
+  "longestBestRate": 0.167,
+  "topChance": 0.5,
+  "lengthLift": -0.333,
+  "shortestBestRate": 0.333,
+  "shortestWorstRate": 0.167,
+  "worstPositionShare": [
+   0.333,
+   0.333,
+   0.167,
+   0.167
+  ],
+  "uniqueBest": 0,
+  "uniqueLongestBestRate": 0,
+  "topPositionShare": [
+   0.25,
+   0.25,
+   0.167,
+   0.333
+  ],
+  "chanceRate": 0.25,
+  "positionShare": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "markersBestRate": 0,
+  "caricatureRate": 0,
+  "fewReasonableRate": 0,
+  "dominantRate": 0,
+  "medianLengthRatio": 1.1,
+  "cleanRate": 1,
+  "flags": {}
+ },
+ "muestraContradicciones": 0,
+ "originales": {
+  "cases": 12,
+  "longestBestRate": 0.917,
+  "topChance": 0.333,
+  "lengthLift": 0.584,
+  "shortestBestRate": 0,
+  "shortestWorstRate": 0.5,
+  "worstPositionShare": [
+   0.75,
+   0,
+   0.25
+  ],
+  "uniqueBest": 12,
+  "uniqueLongestBestRate": 0.917,
+  "topPositionShare": [
+   0.083,
+   0.667,
+   0.25
+  ],
+  "chanceRate": 0.333,
+  "positionShare": [
+   0.083,
+   0.667,
+   0.25
+  ],
+  "markersBestRate": 0.667,
+  "caricatureRate": 0.083,
+  "fewReasonableRate": 0.167,
+  "dominantRate": 0,
+  "medianLengthRatio": 1.86,
+  "cleanRate": 0,
+  "flags": {
+   "largo": 11,
+   "desbalance_largo": 12,
+   "manual": 8,
+   "pocas_razonables": 2,
+   "mejor_unica": 2,
+   "caricatura": 1
+  }
+ },
+ "originalesDilemas": {
+  "cases": 6,
+  "longestBestRate": 1,
+  "topChance": 0.25,
+  "lengthLift": 0.75,
+  "shortestBestRate": 0,
+  "shortestWorstRate": 0.167,
+  "worstPositionShare": [
+   0.25,
+   0,
+   0.583,
+   0.167
+  ],
+  "uniqueBest": 6,
+  "uniqueLongestBestRate": 1,
+  "topPositionShare": [
+   0.167,
+   0.833,
+   0,
+   0
+  ],
+  "chanceRate": 0.25,
+  "positionShare": [
+   0.167,
+   0.833,
+   0,
+   0
+  ],
+  "markersBestRate": 0.833,
+  "caricatureRate": 0.167,
+  "fewReasonableRate": 0.333,
+  "dominantRate": 1,
+  "medianLengthRatio": 3.53,
+  "cleanRate": 0,
+  "flags": {
+   "largo": 6,
+   "desbalance_largo": 6,
+   "manual": 5,
+   "dominante": 6,
+   "caricatura": 1,
+   "pocas_razonables": 2,
+   "mejor_unica": 2
+  }
+ },
+ "porCaso": [
+  {
+   "id": "rd-d2-ana",
+   "source": "cumbre",
+   "bestIds": [
+    "b"
+   ],
+   "longestIsBest": false,
+   "lengthRatio": 1.11,
+   "bestPosition": 1,
+   "markersBest": false,
+   "caricatures": [],
+   "reasonable": 3,
+   "dominant": null,
+   "flags": []
+  },
+  {
+   "id": "rd-d5-credito",
+   "source": "cumbre",
+   "bestIds": [
+    "a",
+    "b"
+   ],
+   "longestIsBest": true,
+   "lengthRatio": 1.01,
+   "bestPosition": null,
+   "markersBest": false,
+   "caricatures": [],
+   "reasonable": 3,
+   "dominant": null,
+   "flags": []
+  },
+  {
+   "id": "rd-fn-d2-soldadores",
+   "source": "forja",
+   "bestIds": [
+    "b",
+    "c"
+   ],
+   "longestIsBest": true,
+   "lengthRatio": 1.07,
+   "bestPosition": null,
+   "markersBest": false,
+   "caricatures": [],
+   "reasonable": 3,
+   "dominant": null,
+   "flags": []
+  },
+  {
+   "id": "rd-fn-d4-recap",
+   "source": "forja",
+   "bestIds": [
+    "a",
+    "b"
+   ],
+   "longestIsBest": false,
+   "lengthRatio": 1.14,
+   "bestPosition": null,
+   "markersBest": false,
+   "caricatures": [],
+   "reasonable": 3,
+   "dominant": null,
+   "flags": []
+  },
+  {
+   "id": "rd-gb-d4-carne",
+   "source": "brasa",
+   "bestIds": [
+    "b",
+    "c"
+   ],
+   "longestIsBest": true,
+   "lengthRatio": 1.03,
+   "bestPosition": null,
+   "markersBest": false,
+   "caricatures": [],
+   "reasonable": 3,
+   "dominant": null,
+   "flags": []
+  },
+  {
+   "id": "rd-gb-d5-cdmx",
+   "source": "brasa",
+   "bestIds": [
+    "a",
+    "b"
+   ],
+   "longestIsBest": false,
+   "lengthRatio": 1.12,
+   "bestPosition": null,
+   "markersBest": false,
+   "caricatures": [],
+   "reasonable": 3,
+   "dominant": null,
+   "flags": []
+  },
+  {
+   "id": "rd-kb-d2-fuga",
+   "source": "kubit",
+   "bestIds": [
+    "a",
+    "c"
+   ],
+   "longestIsBest": false,
+   "lengthRatio": 1.11,
+   "bestPosition": null,
+   "markersBest": false,
+   "caricatures": [],
+   "reasonable": 3,
+   "dominant": null,
+   "flags": []
+  },
+  {
+   "id": "rd-kb-d5-ronda",
+   "source": "kubit",
+   "bestIds": [
+    "a",
+    "c"
+   ],
+   "longestIsBest": true,
+   "lengthRatio": 1.06,
+   "bestPosition": null,
+   "markersBest": false,
+   "caricatures": [],
+   "reasonable": 3,
+   "dominant": null,
+   "flags": []
+  },
+  {
+   "id": "rd-pm-d2-penasco",
+   "source": "puntomadero",
+   "bestIds": [
+    "b",
+    "c"
+   ],
+   "longestIsBest": true,
+   "lengthRatio": 1.16,
+   "bestPosition": null,
+   "markersBest": false,
+   "caricatures": [],
+   "reasonable": 3,
+   "dominant": null,
+   "flags": []
+  },
+  {
+   "id": "rd-pm-d5-oferta",
+   "source": "puntomadero",
+   "bestIds": [
+    "a",
+    "b"
+   ],
+   "longestIsBest": true,
+   "lengthRatio": 1.12,
+   "bestPosition": null,
+   "markersBest": false,
+   "caricatures": [],
+   "reasonable": 3,
+   "dominant": null,
+   "flags": []
+  },
+  {
+   "id": "rd-vl-d2-operadores",
+   "source": "vertice",
+   "bestIds": [
+    "a",
+    "c"
+   ],
+   "longestIsBest": true,
+   "lengthRatio": 1.05,
+   "bestPosition": null,
+   "markersBest": false,
+   "caricatures": [],
+   "reasonable": 3,
+   "dominant": null,
+   "flags": []
+  },
+  {
+   "id": "rd-vl-d4-deuda",
+   "source": "vertice",
+   "bestIds": [
+    "b",
+    "c"
+   ],
+   "longestIsBest": true,
+   "lengthRatio": 1.05,
+   "bestPosition": null,
+   "markersBest": false,
+   "caricatures": [],
+   "reasonable": 3,
+   "dominant": null,
+   "flags": []
+  },
+  {
+   "id": "rd-n3",
+   "source": "dilema",
+   "bestIds": [
+    "b",
+    "d"
+   ],
+   "longestIsBest": false,
+   "lengthRatio": 1.07,
+   "bestPosition": null,
+   "markersBest": false,
+   "caricatures": [],
+   "reasonable": 3,
+   "dominant": null,
+   "flags": []
+  },
+  {
+   "id": "rd-v5",
+   "source": "dilema",
+   "bestIds": [
+    "a",
+    "d"
+   ],
+   "longestIsBest": false,
+   "lengthRatio": 1.09,
+   "bestPosition": null,
+   "markersBest": false,
+   "caricatures": [],
+   "reasonable": 3,
+   "dominant": null,
+   "flags": []
+  },
+  {
+   "id": "rd-e2",
+   "source": "dilema",
+   "bestIds": [
+    "b",
+    "d"
+   ],
+   "longestIsBest": false,
+   "lengthRatio": 1.1,
+   "bestPosition": null,
+   "markersBest": false,
+   "caricatures": [],
+   "reasonable": 3,
+   "dominant": null,
+   "flags": []
+  },
+  {
+   "id": "rd-d5",
+   "source": "dilema",
+   "bestIds": [
+    "a",
+    "b"
+   ],
+   "longestIsBest": false,
+   "lengthRatio": 1.17,
+   "bestPosition": null,
+   "markersBest": false,
+   "caricatures": [],
+   "reasonable": 3,
+   "dominant": null,
+   "flags": []
+  },
+  {
+   "id": "rd-q3",
+   "source": "dilema",
+   "bestIds": [
+    "c",
+    "d"
+   ],
+   "longestIsBest": true,
+   "lengthRatio": 1.13,
+   "bestPosition": null,
+   "markersBest": false,
+   "caricatures": [],
+   "reasonable": 3,
+   "dominant": null,
+   "flags": []
+  },
+  {
+   "id": "rd-e4",
+   "source": "dilema",
+   "bestIds": [
+    "a",
+    "c"
+   ],
+   "longestIsBest": false,
+   "lengthRatio": 1.1,
+   "bestPosition": null,
+   "markersBest": false,
+   "caricatures": [],
+   "reasonable": 3,
+   "dominant": null,
+   "flags": []
+  }
+ ]
+}
