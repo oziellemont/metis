@@ -6,6 +6,7 @@ import { RED_LINES } from "./editorial";
 import { PREDICTABILITY_RULES as P, checkCase, dilemmaCase, itemCase, replyContradictions, report, type PlainCase } from "./predictability";
 import { SAMPLE_CASES, SAMPLE_DILEMMAS, sampleItem } from "./redesign/sample";
 import { JUDGMENT_DIMS, judge } from "./judgment";
+import { displayOptions } from "./option-order";
 
 const bankCases = () => COMPANIES.flatMap((p) => withBank(p).items.map((i) => itemCase(i, p.id, (RED_LINES[i.id] ?? []).map((r) => r.option))));
 const sampleCases = (): PlainCase[] => SAMPLE_CASES.map((c) => itemCase(sampleItem(c), c.company));
@@ -36,7 +37,7 @@ describe("contenido actual: línea base (no debe empeorar)", () => {
     const b = report(bankCases());
     const d = report(DILEMMAS.map(dilemmaCase));
     // Todos los casos (banco + propios). Antes de la tanda 1 del banco: 0.97 y 1.7.
-    expect(b.longestBestRate).toBeLessThanOrEqual(0.5);
+    expect(b.longestBestRate).toBeLessThanOrEqual(0.4);
     expect(b.medianLengthRatio).toBeLessThanOrEqual(1.2);
     // Dilemas: la versión 1 medía 0.98; la versión 2 tiene sus propios criterios estrictos (abajo).
     expect(d.longestBestRate).toBeLessThanOrEqual(P.maxLongestBestRate);
@@ -61,6 +62,37 @@ describe("banco de casos (tanda 1): la longitud ya no delata la respuesta", () =
       const k = checkCase(c);
       expect(k.lengthRatio, c.id).toBeLessThanOrEqual(P.maxLengthRatio);
       expect(k.caricatures, c.id).toEqual([]);
+    }
+  });
+});
+
+describe("casos propios de cada empresa (tanda 2): ni el largo ni la posición delatan la respuesta", () => {
+  // Antes: el más largo era el mejor en 92% de los 103 casos y la mejor salía primero en 65%.
+  const own = () => COMPANIES.flatMap((p) => withBank(p).items.filter((i) => !isBankId(i.id)).map((i) => ({ i, c: itemCase(i, p.id, (RED_LINES[i.id] ?? []).map((r) => r.option)) })));
+  it("el largo ya no da pistas", () => {
+    const r = report(own().map((x) => x.c));
+    expect(r.longestBestRate).toBeLessThanOrEqual(0.4);
+    expect(r.shortestBestRate).toBeLessThanOrEqual(0.4);
+    expect(r.shortestWorstRate).toBeLessThanOrEqual(0.4);
+    expect(r.lengthLift).toBeLessThanOrEqual(P.maxLengthLift);
+    expect(r.medianLengthRatio).toBeLessThanOrEqual(1.2);
+    expect(r.markersBestRate).toBeLessThanOrEqual(P.maxMarkersBestRate);
+  });
+  it("opciones de largo parecido y sin caricaturas", () => {
+    for (const { c } of own()) {
+      const k = checkCase(c);
+      expect(k.lengthRatio, c.id).toBeLessThanOrEqual(P.maxLengthRatio);
+      expect(k.caricatures, c.id).toEqual([]);
+    }
+  });
+  it("en pantalla la mejor opción no cae siempre en el mismo lugar, y el orden es estable", () => {
+    const three = own().filter((x) => x.i.options.length === 3);
+    const pos = [0, 0, 0];
+    for (const { i } of three) { const o = displayOptions(i); const mx = Math.max(...o.map((x) => x.score)); pos[o.findIndex((x) => x.score === mx)]++; }
+    for (const n of pos) expect(n / three.length).toBeLessThanOrEqual(P.maxPositionShare);
+    for (const { i } of own()) {
+      expect(displayOptions(i).map((o) => o.id)).toEqual(displayOptions(i).map((o) => o.id));
+      expect([...displayOptions(i)].map((o) => o.id).sort()).toEqual(i.options.map((o) => o.id).sort());
     }
   });
 });

@@ -10,6 +10,7 @@ import { entryRipples, moodOf, REL_START } from "@/lib/ceo/relations";
 import { lessonById } from "@/lib/ceo/lessons";
 import type { Entry, Item, KpiKey, Option, Written } from "@/lib/ceo/types";
 import { MAX_CHARS, MIN_CHARS, textProblem, writtenEligible } from "@/lib/ceo/written";
+import { displayOptions } from "@/lib/ceo/option-order";
 import { useCeo } from "./CeoProvider";
 import { competenciesOfItem } from "@/lib/ceo/mastery";
 import { competencyNames, helpBand } from "@/lib/ceo/profile";
@@ -134,7 +135,7 @@ export function CaseView({ id }: { id: string }) {
                 <div className="space-y-3">
                   <div className="rounded-2xl bg-white text-ink p-4">
                     <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Tu respuesta se acerca a</div>
-                    <p className="mt-1.5 text-[15px] font-medium leading-relaxed">{String.fromCharCode(65 + it.options.findIndex((o) => o.id === ev.option))}. {it.options.find((o) => o.id === ev.option)?.text}</p>
+                    <p className="mt-1.5 text-[15px] font-medium leading-relaxed">{String.fromCharCode(65 + displayOptions(it).findIndex((o) => o.id === ev.option))}. {it.options.find((o) => o.id === ev.option)?.text}</p>
                     <div className="mt-4 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wider text-slate-400"><span>Nota del mentor</span><QualityDots q={ev.quality} /></div>
                     <p className="mt-1.5 text-sm leading-relaxed">{ev.feedback}</p>
                   </div>
@@ -148,7 +149,7 @@ export function CaseView({ id }: { id: string }) {
             </div>
           ) : (<>
             <div className="mt-5 space-y-2.5">
-              {it.options.map((o, i) => <StageChoice key={o.id} on={picked === o.id} onClick={() => setPicked(o.id)} letter={String.fromCharCode(65 + i)}>{o.text}</StageChoice>)}
+              {displayOptions(it).map((o, i) => <StageChoice key={o.id} on={picked === o.id} onClick={() => setPicked(o.id)} letter={String.fromCharCode(65 + i)}>{o.text}</StageChoice>)}
             </div>
             <button disabled={!picked} onClick={confirm} className="btn bg-white text-ink hover:bg-white/90 w-full justify-center mt-5 py-3 text-base font-semibold disabled:opacity-40">Tomar la decisión <ArrowRight size={16} /></button>
           </>)}
@@ -316,7 +317,7 @@ function Outcome({ e, fresh, part }: { e: Entry; fresh: boolean; part: "resultad
   const outcome = expired ? it.expired.outcome : o?.outcome;
   const lesson = it.lesson ? lessonById(it.lesson) : undefined;
   const xp = o ? entryXp(c.s, e, runSpans(c.s, c.now)) : 0;
-  const myIdx = o ? it.options.findIndex((x) => x.id === o.id) : -1;
+  const myIdx = o ? displayOptions(it).findIndex((x) => x.id === o.id) : -1;
   const w = e.decision?.written;
 
   return (
