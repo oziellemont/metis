@@ -23,7 +23,7 @@ Indicadores: Caja, Margen, Equipo, Clientes, Consejo. «Score» (0–3) es qué 
 
 ## Botanas Cumbre
 
-### d1-bienvenida · Día 1 · Bienvenido a Cumbre. Mañana empiezas.
+### d1-bienvenida · Día 1 · Te damos la bienvenida a Cumbre. Mañana empiezas.
 
 **Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
 
@@ -319,11 +319,11 @@ Respuesta: `d7-sucesion | ... | ...`
 
 ## Forja Norte
 
-### fn-d1-carta · Día 1 · Bienvenido a Forja Norte. Esto es lo que esperamos.
+### fn-d1-carta · Día 1 · Te damos la bienvenida a Forja Norte. Esto es lo que esperamos.
 
 **Propuesta automática:** legacy. Jugable como contenido histórico, pero la opción preferida por el autor sigue siendo la que más conviene.
 
-**Caso:** Estimado Director: Bienvenido. Capital Sierra compró Forja Norte hace 18 meses y te elegimos para llevarla a la siguiente etapa. Seré directo, porque así trabajamos: el plan de inversión dice +4 puntos de margen EBITDA en 24 meses y vamos 1.5 puntos abajo. La planta es buena. La gente es buena. Pero la armadora nos tiene en amarillo en su scorecard, el OEE no pasa de 61% y los soldadores se nos van con la competencia de enfrente. En la sesión de consejo del mes que entra quiero ver tu plan. Antes de eso, dime cómo vas a usar tus primeras semanas. Alberto Zertuche Presidente del consejo · Socio director de Capital Sierra
+**Caso:** Estimado Director: Te damos la bienvenida. Capital Sierra compró Forja Norte hace 18 meses y te elegimos para llevarla a la siguiente etapa. Seré directo, porque así trabajamos: el plan de inversión dice +4 puntos de margen EBITDA en 24 meses y vamos 1.5 puntos abajo. La planta es buena. La gente es buena. Pero la armadora nos tiene en amarillo en su scorecard, el OEE no pasa de 61% y los soldadores se nos van con la competencia de enfrente. En la sesión de consejo del mes que entra quiero ver tu plan. Antes de eso, dime cómo vas a usar tus primeras semanas. Alberto Zertuche Presidente del consejo · Socio director de Capital Sierra
 
 **Pregunta:** ¿Cómo usas tus primeras semanas?
 
@@ -797,11 +797,11 @@ Respuesta: `gb-d7-consejo | ... | ...`
 
 ## Kúbit
 
-### kb-d1-carta · Día 1 · Bienvenido a Kúbit. Esto es lo que esperamos.
+### kb-d1-carta · Día 1 · Te damos la bienvenida a Kúbit. Esto es lo que esperamos.
 
 **Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
 
-**Caso:** Estimado Director: Bienvenido. En Andes Ventures lideramos la Serie B de Kúbit hace dos años y te elegimos para llevarla a la siguiente etapa. Seré directo: el ingreso recurrente creció 38% el año pasado, pero quemamos $9 M al mes y la caja alcanza para 14 meses. Emilio, el cofundador, dejó la dirección general para volver a producto. El equipo lo sigue viendo como su líder. Los clientes quieren el producto, pero Grupo Altamar pesa 22% del ingreso y lo sabe. En la sesión de consejo del mes que entra quiero ver tu plan: camino a la rentabilidad o a la Serie C. Antes de eso, dime cómo vas a usar tus primeras semanas. Rodrigo Ibarra Presidente del consejo · Socio de Andes Ventures
+**Caso:** Estimado Director: Te damos la bienvenida. En Andes Ventures lideramos la Serie B de Kúbit hace dos años y te elegimos para llevarla a la siguiente etapa. Seré directo: el ingreso recurrente creció 38% el año pasado, pero quemamos $9 M al mes y la caja alcanza para 14 meses. Emilio, el cofundador, dejó la dirección general para volver a producto. El equipo lo sigue viendo como su líder. Los clientes quieren el producto, pero Grupo Altamar pesa 22% del ingreso y lo sabe. En la sesión de consejo del mes que entra quiero ver tu plan: camino a la rentabilidad o a la Serie C. Antes de eso, dime cómo vas a usar tus primeras semanas. Rodrigo Ibarra Presidente del consejo · Socio de Andes Ventures
 
 **Pregunta:** ¿Cómo usas tus primeras semanas?
 
@@ -1051,11 +1051,11 @@ Respuesta: `kb-d7-equipo | ... | ...`
 
 ## Punto Madero
 
-### pm-d1-carta · Día 1 · Bienvenido a Punto Madero. Esto es lo que esperamos.
+### pm-d1-carta · Día 1 · Te damos la bienvenida a Punto Madero. Esto es lo que esperamos.
 
 **Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
 
-**Caso:** Estimado Director: Bienvenido. Mi padre fundó Punto Madero hace 41 años y es la primera vez que la familia pone a alguien de fuera al frente. Seré directo: vendemos $2,400 M al año en 60 tiendas, pero el margen bajó de 34% a 31% y la venta en mismas tiendas cayó 2%. Mundo Casa, la cadena nacional, abre 12 tiendas en la región este año. La primera queda a tres cuadras de nuestra tienda principal. Octavio, que dirigió la empresa de forma interina, conoce cada tienda y el equipo lo sigue viendo como su líder. Constructora Peñasco pesa 18% de la venta y lo sabe. En la sesión de consejo del mes que entra quiero ver tu plan. Antes de eso, dime cómo vas a usar tus primeras semanas. Esteban Garza Presidente del consejo
+**Caso:** Estimado Director: Te damos la bienvenida. Mi padre fundó Punto Madero hace 41 años y es la primera vez que la familia pone a alguien de fuera al frente. Seré directo: vendemos $2,400 M al año en 60 tiendas, pero el margen bajó de 34% a 31% y la venta en mismas tiendas cayó 2%. Mundo Casa, la cadena nacional, abre 12 tiendas en la región este año. La primera queda a tres cuadras de nuestra tienda principal. Octavio, que dirigió la empresa de forma interina, conoce cada tienda y el equipo lo sigue viendo como su líder. Constructora Peñasco pesa 18% de la venta y lo sabe. En la sesión de consejo del mes que entra quiero ver tu plan. Antes de eso, dime cómo vas a usar tus primeras semanas. Esteban Garza Presidente del consejo
 
 **Pregunta:** ¿Cómo usas tus primeras semanas?
 
@@ -1305,11 +1305,11 @@ Respuesta: `pm-d7-equipo | ... | ...`
 
 ## Vértice Logística
 
-### vl-d1-carta · Día 1 · Bienvenido a Vértice. Esto es lo que esperamos.
+### vl-d1-carta · Día 1 · Te damos la bienvenida a Vértice. Esto es lo que esperamos.
 
 **Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
 
-**Caso:** Estimado Director: Bienvenido. Mi padre fundó Vértice con tres camiones hace 38 años y es la primera vez que la familia pone a alguien de fuera al frente. Seré directo: facturamos $1,800 M al año con 420 tractocamiones y seis CEDIS, pero el margen de operación bajó de 9% a 6% y este año perdimos cuatro cuentas. Avante, el operador nacional, entra a la región con tarifas 12% abajo de las nuestras y una plataforma de rastreo que los clientes están pidiendo. Antonio, que dirigió la empresa de forma interina, conoce cada ruta y los operadores lo siguen viendo como su líder. Supermercados Almena pesa 20% de la venta y lo sabe. En la sesión de consejo del mes que entra quiero ver tu plan. Antes de eso, dime cómo vas a usar tus primeras semanas. Rodrigo Salinas Presidente del consejo
+**Caso:** Estimado Director: Te damos la bienvenida. Mi padre fundó Vértice con tres camiones hace 38 años y es la primera vez que la familia pone a alguien de fuera al frente. Seré directo: facturamos $1,800 M al año con 420 tractocamiones y seis CEDIS, pero el margen de operación bajó de 9% a 6% y este año perdimos cuatro cuentas. Avante, el operador nacional, entra a la región con tarifas 12% abajo de las nuestras y una plataforma de rastreo que los clientes están pidiendo. Antonio, que dirigió la empresa de forma interina, conoce cada ruta y los operadores lo siguen viendo como su líder. Supermercados Almena pesa 20% de la venta y lo sabe. En la sesión de consejo del mes que entra quiero ver tu plan. Antes de eso, dime cómo vas a usar tus primeras semanas. Rodrigo Salinas Presidente del consejo
 
 **Pregunta:** ¿Cómo usas tus primeras semanas?
 

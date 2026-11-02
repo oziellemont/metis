@@ -82,7 +82,7 @@ export function Onboarding() {
         {step === 0 && (
           <section key="s0" className="academy-in mt-10">
             <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-medium">Tu carrera como CEO empieza hoy</div>
-            <h1 className="mt-5 text-3xl sm:text-4xl font-semibold leading-tight">Felicidades. A partir de mañana eres Director General.</h1>
+            <h1 className="mt-5 text-3xl sm:text-4xl font-semibold leading-tight">Felicidades. A partir de mañana ocupas la Dirección General.</h1>
             <p className="mt-4 text-white/70 text-[15px] leading-relaxed">Aquí no vas a tomar un curso. Vas a dirigir una empresa. Durante el día te van a llegar correos, WhatsApps, reportes y juntas de tu equipo, de tus clientes y de tu consejo. Lo que decidas (y lo que dejes sin responder) tiene consecuencias. Tú eliges la industria, el tipo y el nombre de tu empresa. Es una sola, la diriges mes con mes, y cada periodo el consejo revisa cómo va.</p>
             <div className="mt-8 rounded-2xl bg-white text-ink p-5 sm:p-6 shadow-2xl">
               <div className="text-[11px] font-semibold uppercase tracking-wider text-indigo">Tu nombramiento</div>
@@ -141,7 +141,7 @@ export function Onboarding() {
           <section key="s7" className="academy-in mt-10">
             <div className="text-xs font-semibold uppercase tracking-wider text-mint">Antes de que suene tu teléfono</div>
             <h1 className="mt-2 text-3xl font-semibold leading-tight">¿Dónde te encuentra tu equipo?</h1>
-            <p className="mt-3 text-white/70 text-[15px]">Cada día te llegan de 2 a 4 asuntos a horas distintas. Casi todos tienen tiempo límite: como en la vida real, si no respondes, alguien decide por ti.</p>
+            <p className="mt-3 text-white/70 text-[15px]">Cada día te llegan de 2 a 4 asuntos a horas distintas; tu ritmo es cuántos te propones decidir. Casi todos tienen tiempo límite: como en la vida real, si no respondes, alguien decide por ti.</p>
             <div className="mt-6 rounded-2xl bg-white text-ink p-5 sm:p-6 space-y-4">
               <div><label className="label flex items-center gap-1.5"><Mail size={12} /> Correo</label><input className="input" type="email" placeholder="tu@correo.com" value={email} onChange={(e) => setEmail(e.target.value)} /></div>
               <div>

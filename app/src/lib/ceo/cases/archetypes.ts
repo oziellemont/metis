@@ -522,7 +522,7 @@ const ARCHETYPES_P1C: readonly Archetype[] = [
       },
       {
         text: "La descarto por ahora: protejo el margen del negocio actual y la reviso dentro de un año.",
-        reply: ["Muy bien. Lo que funciona no se toca.", "Un año es mucho tiempo en este mercado."],
+        reply: ["Como veas. Lo que funciona hoy no siempre funciona en un año.", "Un año es mucho tiempo en este mercado."],
         outcome: "El trimestre se ve bien. Si el mercado cambia rápido, llegarás tarde.",
         effects: { margen: 3, caja: 2, clientes: -3, consejo: -2 }, style: { horizonte: -2, riesgo: -2 }, score: 1,
         stance: { board: -2, chair: 2, cfo: 1 },

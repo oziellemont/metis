@@ -87,7 +87,7 @@ export const ARCHETYPES_P1D: readonly Archetype[] = [
       },
       {
         text: "El reporte oficial dice verde y no voy a desautorizar a mis directores por un mensaje de pasillo. Le pido que lo hable con su jefe.",
-        reply: ["Ok. Perdón por la molestia.", "Ya lo había hablado con él."],
+        reply: ["(Tarda en contestar.) Perdón por la molestia.", "Ya lo había hablado con él."],
         outcome: "Respetas la línea de mando. El problema sigue escondido hasta que el cliente lo encuentre, y quien te avisó no lo vuelve a hacer.",
         effects: { equipo: 1, consejo: 1, clientes: -4, margen: -1 }, style: { conflicto: -2, riesgo: 1, horizonte: -1 }, score: 0,
         stance: { frontline: -2, ops: 1 },
@@ -247,7 +247,7 @@ export const ARCHETYPES_P1D: readonly Archetype[] = [
       },
       {
         text: "Mantengo los sueldos y pongo un bono de permanencia solo para los mejores: así gasto donde más importa.",
-        reply: ["Ok. Lo armo.", "El resto lo va a notar."],
+        reply: ["Lo armo, aunque no me convence.", "El resto lo va a notar."],
         outcome: "Cuidas la caja y retienes a algunos. El resto se entera de quién sí recibió y la rotación sigue igual.",
         effects: { caja: 1, margen: 1, consejo: 1, equipo: -4 }, style: { riesgo: -1, conflicto: -1 }, score: 1,
         stance: { people: -2, cfo: 1, frontline: -2 },
@@ -346,7 +346,7 @@ export const ARCHETYPES_P1D: readonly Archetype[] = [
       },
       {
         text: "No quito nada: cada producto tiene un cliente que lo pide y perder ventas ahora sería un error.",
-        reply: ["Gracias. Mis clientes te lo van a agradecer.", "Operación sigue igual de apretada."],
+        reply: ["(Comercial lo celebra; Finanzas contesta seco.) Como veas.", "Operación sigue igual de apretada, y el margen también."],
         outcome: "No pierdes a nadie esta vez. La complejidad sigue comiéndose el margen y la atención del equipo.",
         effects: { clientes: 2, equipo: 1, margen: -3, caja: -1 }, style: { foco: -2, conflicto: -2 }, score: 1,
         stance: { cfo: -2, sales: 2, ops: -1 },
@@ -399,7 +399,7 @@ export const ARCHETYPES_P1D: readonly Archetype[] = [
       },
       {
         text: "Lo decido yo hoy: Comercial manda y Operación se adapta.",
-        reply: ["Ok. Lo ejecutamos.", "La próxima vez que algo cambie, te vamos a volver a preguntar a ti."],
+        reply: ["Como veas. Lo ejecutamos.", "La próxima vez que algo cambie, te vamos a volver a preguntar a ti."],
         outcome: "Terminas la discusión y el cliente lo nota pronto. El área que perdió obedece sin convencerse, y el problema vuelve con otra cara.",
         effects: { clientes: 2, consejo: 1, equipo: -3 }, style: { estilo: -2, foco: 1, conflicto: 2 }, score: 2,
         stance: { ops: -2, sales: 2 },

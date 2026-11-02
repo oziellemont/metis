@@ -38,7 +38,7 @@ describe("contenido actual: línea base (no debe empeorar)", () => {
     expect(b.longestBestRate).toBeLessThanOrEqual(0.97);
     expect(b.medianLengthRatio).toBeLessThanOrEqual(1.7);
     expect(d.longestBestRate).toBeLessThanOrEqual(0.98);
-    expect(replyContradictions(COMPANIES.flatMap((p) => withBank(p).items)).length).toBeLessThanOrEqual(127);
+    expect(replyContradictions(COMPANIES.flatMap((p) => withBank(p).items))).toEqual([]);
   });
 });
 

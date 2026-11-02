@@ -73,7 +73,7 @@ Opciones como `id:score:balance`. Un `!` marca una línea roja. «Vencer» es el
 
 | Día | Asunto | Tipo | Opciones | Vencer | Estado propuesto | Motivo |
 |---:|---|---|---|---:|---|---|
-| 1 | `d1-bienvenida` Bienvenido a Cumbre. Mañana empiezas. | base | a:3:+5 b:1:+1 c:1:0 | -6 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
+| 1 | `d1-bienvenida` Te damos la bienvenida a Cumbre. Mañana empiezas. | base | a:3:+5 b:1:+1 c:1:0 | -6 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
 | 1 | `d1-hector` Héctor Salinas | base | a:3:+5 b:2:+2 c:0:-3 | -6 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
 | 2 | `d2-supernorte` Condiciones comerciales 2027 · Botanas Cumbre | base | a:0:-10 b:3:+2 c:1:-7 | -21 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
 | 2 | `d2-ana` Pronóstico Q1 · versión final (22 láminas) | base | a:1:-1 b:3:+4 c:1:+1 | -3 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
@@ -98,7 +98,7 @@ Opciones como `id:score:balance`. Un `!` marca una línea roja. «Vencer» es el
 
 | Día | Asunto | Tipo | Opciones | Vencer | Estado propuesto | Motivo |
 |---:|---|---|---|---:|---|---|
-| 1 | `fn-d1-carta` Bienvenido a Forja Norte. Esto es lo que esperamos. | base | a:3:+3 b:1:+2 c:2:+1 | -7 | legacy | Jugable como contenido histórico, pero la opción preferida por el autor sigue siendo la que más conviene. |
+| 1 | `fn-d1-carta` Te damos la bienvenida a Forja Norte. Esto es lo que esperamos. | base | a:3:+3 b:1:+2 c:2:+1 | -7 | legacy | Jugable como contenido histórico, pero la opción preferida por el autor sigue siendo la que más conviene. |
 | 1 | `fn-d1-andon` Chuy Morales | base | a:2:+2 b:1:0 c:3:+3 | -5 | legacy | Jugable como contenido histórico, pero la opción preferida por el autor sigue siendo la que más conviene. |
 | 2 | `fn-d2-precio` Aurora Motors · Annual price reduction 2027 | base | a:0:-6 b:2:0 c:3:-2 | -13 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 | 2 | `fn-d2-soldadores` Fuga de soldadores · 7 en un mes | base | a:1:-1 b:3:-3 c:2:0 | -7 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
@@ -140,7 +140,7 @@ Opciones como `id:score:balance`. Un `!` marca una línea roja. «Vencer» es el
 
 | Día | Asunto | Tipo | Opciones | Vencer | Estado propuesto | Motivo |
 |---:|---|---|---|---:|---|---|
-| 1 | `kb-d1-carta` Bienvenido a Kúbit. Esto es lo que esperamos. | base | a:3:+3 b:1:+3 c:2:+1 | -7 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 1 | `kb-d1-carta` Te damos la bienvenida a Kúbit. Esto es lo que esperamos. | base | a:3:+3 b:1:+3 c:2:+1 | -7 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 | 1 | `kb-d1-guardia` Memo Paz | base | a:2:+2 b:1:0 c:3:+3 | -5 | legacy | Jugable como contenido histórico, pero la opción preferida por el autor sigue siendo la que más conviene. |
 | 2 | `kb-d2-altamar` Grupo Altamar · Renovación del contrato anual | base | a:0:-6 b:2:0 c:3:-2 | -9 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 | 2 | `kb-d2-fuga` Fuga de ingenieros · 9 en dos meses | base | a:1:-1 b:3:-3 c:2:0 | -7 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
@@ -162,7 +162,7 @@ Opciones como `id:score:balance`. Un `!` marca una línea roja. «Vencer» es el
 
 | Día | Asunto | Tipo | Opciones | Vencer | Estado propuesto | Motivo |
 |---:|---|---|---|---:|---|---|
-| 1 | `pm-d1-carta` Bienvenido a Punto Madero. Esto es lo que esperamos. | base | a:3:+3 b:1:+3 c:2:+1 | -7 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 1 | `pm-d1-carta` Te damos la bienvenida a Punto Madero. Esto es lo que esperamos. | base | a:3:+3 b:1:+3 c:2:+1 | -7 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 | 1 | `pm-d1-piso` Chuy Elizondo | base | a:2:+2 b:1:0 c:3:+3 | -5 | legacy | Jugable como contenido histórico, pero la opción preferida por el autor sigue siendo la que más conviene. |
 | 2 | `pm-d2-penasco` Constructora Peñasco · Condiciones para el próximo año | base | a:0:-6 b:2:0 c:3:-2 | -9 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 | 2 | `pm-d2-asesores` Se nos van los asesores expertos · 26 en dos meses | base | a:1:-1 b:3:-3 c:2:0 | -7 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
@@ -184,7 +184,7 @@ Opciones como `id:score:balance`. Un `!` marca una línea roja. «Vencer» es el
 
 | Día | Asunto | Tipo | Opciones | Vencer | Estado propuesto | Motivo |
 |---:|---|---|---|---:|---|---|
-| 1 | `vl-d1-carta` Bienvenido a Vértice. Esto es lo que esperamos. | base | a:3:+3 b:1:+3 c:2:+1 | -7 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 1 | `vl-d1-carta` Te damos la bienvenida a Vértice. Esto es lo que esperamos. | base | a:3:+3 b:1:+3 c:2:+1 | -7 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 | 1 | `vl-d1-patio` Lalo Rangel | base | a:2:+2 b:1:0 c:3:+3 | -5 | legacy | Jugable como contenido histórico, pero la opción preferida por el autor sigue siendo la que más conviene. |
 | 2 | `vl-d2-almena` Supermercados Almena · Condiciones para el próximo año | base | a:0:-6 b:2:0 c:3:-2 | -9 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 | 2 | `vl-d2-operadores` Se nos van los operadores · 40 en dos meses | base | a:1:-1 b:3:-3 c:2:0 | -7 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |

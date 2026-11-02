@@ -40,3 +40,45 @@ export function orgOf(pack: CompanyPack): { lead: CastId; team: CastId[] }[] {
     .filter((p) => p.reportsTo === "ceo" && p.id !== pack.roles.assistant)
     .map((p) => ({ lead: p.id, team: all.filter((x) => x.reportsTo === p.id).map((x) => x.id) }));
 }
+
+/**
+ * Agrupa líneas de diálogo por quien habla. Una línea «Héctor: «…»» se atribuye a Héctor aunque el
+ * nodo sea de Lucía; las líneas sin prefijo se quedan con quien abre el nodo. Así el encabezado de
+ * cada burbuja coincide con quien de verdad lo dice (auditoría: cita de Héctor bajo el nombre de Lucía).
+ */
+export function speakerGroups(pack: CompanyPack, who: CastId | undefined, lines: string[]): { who: CastId | undefined; lines: string[] }[] {
+  const byFirst = new Map<string, CastId>();
+  for (const id of Object.keys(pack.cast)) byFirst.set(firstName(pack, id).toLowerCase(), id);
+  const out: { who: CastId | undefined; lines: string[] }[] = [];
+  for (const raw of lines) {
+    const m = /^([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+):\s+(.*)$/s.exec(raw);
+    const id = m ? byFirst.get(m[1].toLowerCase()) : undefined;
+    const speaker = id ?? who;
+    const text = id && m ? m[2].replace(/^«(.*)»$/s, "$1") : raw;
+    const last = out[out.length - 1];
+    if (last && last.who === speaker) last.lines.push(text);
+    else out.push({ who: speaker, lines: [text] });
+  }
+  return out;
+}
+
+/** Nombre de pila del jugador para saludos («Mariana:»). Sin nombre: saludo neutro. */
+export function playerFirst(name: string | undefined | null): string {
+  return (name ?? "").trim().split(/\s+/)[0] ?? "";
+}
+
+/** Línea de saludo escrita para «el Director» (masculino): «Director:», «Estimado Director:», «Hola, Director:», «Querido amigo:». */
+export const GREETING_LINE = /^(Hola,\s+)?(?:(?:Estimad|Querid)[oa]\s+)?(?:Director(?:a)?(?: General)?|amig[oa])(\s+\([^)]{1,20}\))?\s*:\s*$/;
+
+/**
+ * Personaliza un párrafo para el jugador: el saludo genérico se vuelve «Mariana:» (o «Hola, Mariana:»),
+ * sin suponer género. Sin nombre, queda «Hola:». El resto del texto no se toca.
+ */
+export function personalizeText(t: string, name: string | undefined | null): string {
+  const m = GREETING_LINE.exec(t.trim());
+  if (!m) return t;
+  const first = playerFirst(name);
+  const note = m[2] ?? "";
+  if (!first) return `Hola${note}:`;
+  return m[1] ? `Hola, ${first}${note}:` : `${first}${note}:`;
+}

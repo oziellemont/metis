@@ -47,13 +47,14 @@ describe("entorno y herramientas de prueba", () => {
     expect(appEnvOf(undefined, "test")).toBe("development");
   });
 
-  it("producción sin configurar: igual que hoy (visible)", () => {
-    expect(testToolsVisible("production", undefined, false)).toBe(true);
+  it("producción sin configurar: ocultas para jugadores, visibles para el equipo mêtis", () => {
+    expect(testToolsVisible("production", undefined, false)).toBe(false);
+    expect(testToolsVisible("production", "oculto", false)).toBe(false);
+    expect(testToolsVisible("production", undefined, true)).toBe(true);
   });
 
-  it("producción 'oculto': solo con ?prueba=1", () => {
-    expect(testToolsVisible("production", "oculto", false)).toBe(false);
-    expect(testToolsVisible("production", "oculto", true)).toBe(true);
+  it("producción 'visible': interruptor global para mostrarlas", () => {
+    expect(testToolsVisible("production", "visible", false)).toBe(true);
   });
 
   it("preview y desarrollo: siempre visibles", () => {

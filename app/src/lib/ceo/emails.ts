@@ -9,7 +9,7 @@
  *
  * Sin dependencias de Next ni de "@/": se puede renderizar desde scripts (vista previa).
  */
-import { avatarHex, firstName as firstOfCast, personOf } from "./cast";
+import { avatarHex, firstName as firstOfCast, personOf, personalizeText } from "./cast";
 import { CUMBRE } from "./companies/cumbre";
 import type { CastId, CompanyPack, Entry, KpiKey, Kpis } from "./types";
 
@@ -87,7 +87,7 @@ function shell(o: Shell) {
 export function welcomeEmail(i: { pack?: CompanyPack; name: string; appUrl: string; windowStart: number; windowEnd: number; continuous?: boolean }): Mailable {
   const pk = packIn(i);
   const first = firstOf(i.name) || "Director";
-  const subject = `${first}, tu nombramiento como Director General de ${pk.name}`;
+  const subject = `${first}, tu nombramiento en la Dirección General de ${pk.name}`;
   const preheader = "A partir de mañana la silla es tuya. Esto es lo que sigue.";
   const steps = [
     ["1", "Tu equipo te escribe", `Entre las ${i.windowStart}:00 y las ${i.windowEnd}:00 te llegan de 2 a 4 asuntos al día: correos, WhatsApps, reportes y juntas.`],
@@ -102,7 +102,7 @@ export function welcomeEmail(i: { pack?: CompanyPack; name: string; appUrl: stri
   const body = `
     ${senderRow(pk, chair)}
     <div style="height:18px"></div>
-    <div style="font-family:${FONT};font-size:22px;line-height:30px;font-weight:600;color:${INK};margin:0 0 14px">Querido ${esc(first)}:</div>
+    <div style="font-family:${FONT};font-size:22px;line-height:30px;font-weight:600;color:${INK};margin:0 0 14px">${esc(first)}:</div>
     ${letter.map((t) => p(rich(t))).join("")}
     ${p(esc(pk.pitch), `font-size:13px;line-height:21px;color:${MUTED}`)}
     ${p(`— ${esc(firstOfCast(pk, chair))}`, `font-style:italic`)}
@@ -112,7 +112,7 @@ export function welcomeEmail(i: { pack?: CompanyPack; name: string; appUrl: stri
     </td></tr></table>
     ${button("Entrar a mi oficina", base(i.appUrl))}`;
   const html = shell({ pack: pk, preheader, title: subject, body, appUrl: i.appUrl, brand: true });
-  const text = `Querido ${first}:\n\n${letter.map(plain).join("\n\n")}\n— ${firstOfCast(pk, chair)}\n\nCómo funciona: tu equipo te escribe entre las ${i.windowStart}:00 y las ${i.windowEnd}:00; todo tiene plazo; ${i.continuous ? "el consejo te evalúa cada periodo" : "aprueba todos los rubros para ascender a otra empresa"}; aprende en mêtis Academy.\n\nEntrar: ${base(i.appUrl)}`;
+  const text = `${first}:\n\n${letter.map(plain).join("\n\n")}\n— ${firstOfCast(pk, chair)}\n\nCómo funciona: tu equipo te escribe entre las ${i.windowStart}:00 y las ${i.windowEnd}:00; todo tiene plazo; ${i.continuous ? "el consejo te evalúa cada periodo" : "aprueba todos los rubros para ascender a otra empresa"}; aprende en mêtis Academy.\n\nEntrar: ${base(i.appUrl)}`;
   return { subject, html, text, fromName: senderName(pk, chair), preheader };
 }
 
@@ -121,7 +121,8 @@ const CH_LABEL = { email: "Correo", whatsapp: "WhatsApp", reporte: "Reporte", ju
 
 export function caseEmail(i: { pack?: CompanyPack; name: string; appUrl: string; entry: Entry; streak: number; tz?: string }): Mailable {
   const pk = packIn(i);
-  const { item } = i.entry;
+  const raw = i.entry.item;
+  const item = { ...raw, body: raw.body.map((t) => personalizeText(t, i.name)), preview: personalizeText(raw.preview, i.name) };
   const who = firstOfCast(pk, item.from);
   const link = `${base(i.appUrl)}/caso/${item.id}`;
   const hrs = item.deadlineH ?? 24;
@@ -188,7 +189,8 @@ export function caseEmail(i: { pack?: CompanyPack; name: string; appUrl: string;
 // ────────────────────────────────────────────── 3 · Recordatorio: el asunto está por vencer (de tu asistente)
 export function reminderEmail(i: { pack?: CompanyPack; name: string; appUrl: string; entry: Entry; hoursLeft: number }): Mailable {
   const pk = packIn(i);
-  const { item } = i.entry;
+  const raw = i.entry.item;
+  const item = { ...raw, body: raw.body.map((t) => personalizeText(t, i.name)), preview: personalizeText(raw.preview, i.name) };
   const who = personOf(pk, item.from).name;
   const first = firstOf(i.name);
   const left = i.hoursLeft <= 1 ? "menos de una hora" : `${Math.round(i.hoursLeft)} horas`;
