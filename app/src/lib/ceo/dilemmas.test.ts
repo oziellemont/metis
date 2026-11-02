@@ -1,17 +1,37 @@
 import { describe, expect, it } from "vitest";
-import { DILEMMAS, THEMES, bestOf } from "./dilemmas";
+import { ALL_DILEMMAS, DILEMMAS, THEMES, answeredAs, bestOf, dilemmaById } from "./dilemmas";
+import { DILEMMAS_V1 } from "./dilemmas-v1";
 import { LESSONS, lessonById, rankOf, TRACKS, trackOf } from "./lessons";
 import { answerDilemma, dilemmaOfDay, newState, xpOf } from "./engine";
 
 describe("dilemas de personas", () => {
-  it("ids únicos, 4 opciones y una sola mejor respuesta", () => {
-    expect(new Set(DILEMMAS.map((d) => d.id)).size).toBe(DILEMMAS.length);
+  it("ids únicos, 4 opciones, al menos dos respuestas de criterio alto y cada opción dice qué cuesta", () => {
+    expect(new Set(ALL_DILEMMAS.map((d) => d.id)).size).toBe(ALL_DILEMMAS.length);
     for (const d of DILEMMAS) {
       expect(d.options.length).toBe(4);
-      expect(d.options.filter((o) => o.score === bestOf(d)).length).toBe(1);
+      expect(d.options.filter((o) => o.score === bestOf(d)).length, d.id).toBeGreaterThanOrEqual(2);
+      for (const o of d.options) expect((o.cost ?? "").length, d.id).toBeGreaterThan(10);
       expect(THEMES[d.theme]).toBeTruthy();
       if (d.lesson) expect(lessonById(d.lesson)).toBeTruthy();
     }
+  });
+  it("la versión 2 sustituye uno a uno a la versión 1, con el mismo tema y rango", () => {
+    expect(DILEMMAS.length).toBe(DILEMMAS_V1.length);
+    for (const d of DILEMMAS) {
+      const old = DILEMMAS_V1.find((x) => x.id === d.replaces)!;
+      expect(old, d.id).toBeTruthy();
+      expect([old.theme, old.min], d.id).toEqual([d.theme, d.min]);
+    }
+  });
+  it("las respuestas históricas (versión 1) se siguen calificando igual y no se repite la situación", () => {
+    const s = { ...newState(), startedAt: 1, name: "X" };
+    const now = Date.UTC(2026, 0, 10, 18);
+    const s1 = { ...s, dilemmas: { n1: { option: 1, at: now - 86_400_000 } } };
+    expect(dilemmaById("n1")!.options[1].score).toBe(3);
+    expect(xpOf(s1, now)).toBeGreaterThan(xpOf(s, now));
+    expect(answeredAs(s1.dilemmas, dilemmaById("n1-v2")!)).toEqual({ d: dilemmaById("n1"), option: 1 });
+    expect(answerDilemma(s1, "n1-v2", 0, now)).toBe(s1);
+    for (let k = 0; k < 30; k++) expect(dilemmaOfDay(s1, now + k * 86_400_000)?.d.id).not.toBe("n1-v2");
   });
   it("todos los temas tienen casos", () => {
     for (const t of Object.keys(THEMES)) expect(DILEMMAS.some((d) => d.theme === t)).toBe(true);

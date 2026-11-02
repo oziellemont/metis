@@ -37,8 +37,34 @@ describe("contenido actual: línea base (no debe empeorar)", () => {
     const d = report(DILEMMAS.map(dilemmaCase));
     expect(b.longestBestRate).toBeLessThanOrEqual(0.97);
     expect(b.medianLengthRatio).toBeLessThanOrEqual(1.7);
-    expect(d.longestBestRate).toBeLessThanOrEqual(0.98);
+    // Dilemas: la versión 1 medía 0.98; la versión 2 tiene sus propios criterios estrictos (abajo).
+    expect(d.longestBestRate).toBeLessThanOrEqual(P.maxLongestBestRate);
     expect(replyContradictions(COMPANIES.flatMap((p) => withBank(p).items))).toEqual([]);
+  });
+});
+
+describe("dilemas versión 2 (en producción): mismos criterios estrictos que la muestra", () => {
+  const cases = () => DILEMMAS.map(dilemmaCase);
+  it("la longitud no delata la respuesta y no hay posición favorita", () => {
+    const r = report(cases());
+    expect(r.lengthLift).toBeLessThanOrEqual(P.maxLengthLift);
+    expect(r.shortestBestRate - r.topChance).toBeLessThanOrEqual(P.maxLengthLift);
+    for (const share of r.topPositionShare) expect(share).toBeLessThanOrEqual(P.maxPositionShare);
+    expect(r.markersBestRate).toBeLessThanOrEqual(P.maxMarkersBestRate);
+  });
+  it("opciones de largo parecido, sin caricaturas, al menos dos razonables y ninguna dominante", () => {
+    for (const c of cases()) {
+      const k = checkCase(c);
+      expect(k.lengthRatio, c.id).toBeLessThanOrEqual(P.maxLengthRatio);
+      expect(k.caricatures, c.id).toEqual([]);
+      expect(k.reasonable, c.id).toBeGreaterThanOrEqual(P.minReasonable);
+      expect(k.dominant, c.id).toBeNull();
+    }
+  });
+  it("«la más larga es la mejor» por debajo del umbral y la peor no es siempre la más corta", () => {
+    const r = report(cases());
+    expect(r.longestBestRate).toBeLessThanOrEqual(P.maxLongestBestRate);
+    expect(r.shortestWorstRate).toBeLessThanOrEqual(0.5);
   });
 });
 

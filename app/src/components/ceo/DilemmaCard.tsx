@@ -9,7 +9,7 @@ import { lessonById } from "@/lib/ceo/lessons";
 import { useCeo } from "./CeoProvider";
 import { Stage, StageChoice, StepTitle } from "./Stage";
 
-const VERDICT = ["Arriesgado", "A medias", "Buen camino", "Lo que haría un gran líder"];
+const VERDICT = ["Arriesgado", "A medias", "Defendible", "Criterio sólido"];
 const VERDICT_CLS = ["bg-coral-soft text-coral", "bg-amber-soft text-amber", "bg-indigo-soft text-indigo", "bg-mint-soft text-sob"];
 
 /** Orden estable pero barajado de las opciones (que la mejor no quede siempre en el mismo lugar). */
@@ -43,6 +43,7 @@ export function DilemmaView({ d, picked, onPick, compact }: { d: Dilemma; picked
                     <div className="mt-2 academy-in">
                       <span className={clsx("chip text-[10px]", VERDICT_CLS[o.score])}>{VERDICT[o.score]}</span>
                       <p className="mt-1.5 text-xs text-slate-500 leading-relaxed">{o.why}</p>
+                      {o.cost && <p className="mt-1 text-xs text-slate-500 leading-relaxed"><b className="font-medium text-slate-600">Lo que cuesta:</b> {o.cost}</p>}
                     </div>
                   )}
                 </div>
@@ -110,7 +111,7 @@ export function DilemmaStage({ onClose, onLater }: { onClose: () => void; onLate
       )}
       {step === 2 && answered !== null && (
         <div>
-          <StepTitle eyebrow="Lo que aprendes" title={VERDICT[d.options[answered].score]} text={d.options[answered].why} />
+          <StepTitle eyebrow="Lo que aprendes" title={VERDICT[d.options[answered].score]} text={d.options[answered].cost ? `${d.options[answered].why} Lo que cuesta: ${d.options[answered].cost}` : d.options[answered].why} />
           <div className="mt-6 rounded-2xl bg-white text-ink p-4 sm:p-5">
             <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Cada opción, con su lectura</div>
             <ul className="mt-3 space-y-3">
@@ -123,6 +124,7 @@ export function DilemmaStage({ onClose, onLater }: { onClose: () => void; onLate
                       <span className={clsx("chip text-[10px] shrink-0", VERDICT_CLS[o.score])}>{VERDICT[o.score]}</span>
                     </div>
                     {i !== answered && <p className="mt-1.5 text-xs text-slate-500 leading-relaxed">{o.why}</p>}
+                    {o.cost && <p className="mt-1 text-xs text-slate-500 leading-relaxed"><b className="font-medium text-slate-600">Lo que cuesta:</b> {o.cost}</p>}
                   </li>
                 );
               })}
