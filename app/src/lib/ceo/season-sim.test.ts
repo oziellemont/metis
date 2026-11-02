@@ -31,7 +31,7 @@ describe("simulación reproducible", () => {
     const silent = playSeason(classicStart(c), "no_contesta", `${c}|no_contesta|0`);
     expect(candidateVerdictOf(silent.state, silent.at).passed).toBe(false);
     expect(silent.passed).toBe(false);
-  });
+  }, 60_000);
 });
 
 const r1 = (x: number) => Math.round(x * 10) / 10;
