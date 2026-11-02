@@ -141,10 +141,27 @@ export const PROFILES: Record<string, BusinessProfile> = {
       { id: "cac_payback", label: "Recuperación del costo de adquisición", unit: "meses", base: { establecida: 14, pyme: 12, startup: 18 }, target: 12, better: "down", driver: { kpi: "margen", k: -0.1 }, noise: 0.3, min: 1, max: 60, hint: "Meses para recuperar lo que cuesta conseguir un cliente." },
     ],
   },
+  retail: {
+    id: "retail",
+    clientsLabel: "Tickets al mes",
+    clientsHint: "Compras pagadas en el mes, en tienda y en línea.",
+    baselines: {
+      establecida: { revenue: 200, grossMargin: 0.31, headcount: 1400, costPerHead: 0.018, marketing: 3, otherFixed: 18, otherVar: 0.06, cash: 60, dso: 12, capexPct: 0.015, growth: 0.002, targetGrowth: 0.006, clients: 520000 },
+      pyme: { revenue: 5, grossMargin: 0.3, headcount: 45, costPerHead: 0.014, marketing: 0.08, otherFixed: 0.6, otherVar: 0.05, cash: 3, dso: 15, capexPct: 0.01, growth: 0.004, targetGrowth: 0.01, clients: 14000 },
+      startup: { revenue: 2, grossMargin: 0.45, headcount: 30, costPerHead: 0.035, marketing: 0.4, otherFixed: 0.3, otherVar: 0.12, cash: 20, dso: 3, capexPct: 0.01, growth: 0.05, targetGrowth: 0.07, clients: 6000 },
+    },
+    metrics: [
+      pct("mismas_tiendas", "Venta en mismas tiendas (anual)", { establecida: -2, pyme: 1, startup: 8 }, 4, "up", { kpi: "clientes", k: 0.15 }, 0.3, "Crecimiento de las tiendas con más de un año abiertas.", 50),
+      { id: "dias_inventario", label: "Días de inventario", unit: "dias", base: { establecida: 95, pyme: 110, startup: 60 }, target: 75, better: "down", driver: { kpi: "caja", k: -0.4 }, noise: 1, min: 10, max: 365, hint: "Cuántos días de venta tienes en anaquel y bodega. Más días = más caja atrapada." },
+      pct("exactitud", "Exactitud de inventario", { establecida: 88, pyme: 85, startup: 93 }, 97, "up", { kpi: "margen", k: 0.15 }, 0.4, "Lo que dice el sistema contra lo que hay en el anaquel."),
+      pct("en_linea", "Venta en línea", { establecida: 4, pyme: 2, startup: 70 }, 10, "up", { kpi: "clientes", k: 0.05 }, 0.2, "Parte de la venta que entra por la tienda en línea."),
+      pct("rotacion", "Rotación de asesores (anual)", { establecida: 48, pyme: 40, startup: 35 }, 30, "down", { kpi: "equipo", k: -0.7 }, 1, "Asesores de piso que se van en un año.", 300),
+    ],
+  },
 };
 
 /** Perfil por paquete (para empresas sin `metricProfileId` reconocido). */
-const BY_PACK: Record<string, string> = { cumbre: "alimentos", forja: "autopartes", brasa: "restaurantes", kubit: "saas" };
+const BY_PACK: Record<string, string> = { cumbre: "alimentos", forja: "autopartes", brasa: "restaurantes", kubit: "saas", puntomadero: "retail" };
 export function profileFor(metricProfileId: string | undefined, packId: string): BusinessProfile {
   return PROFILES[metricProfileId ?? ""] ?? PROFILES[BY_PACK[packId] ?? "alimentos"] ?? PROFILES.alimentos;
 }

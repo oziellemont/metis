@@ -15,9 +15,9 @@
  */
 
 /** Industria (etiqueta del catálogo) de cada paquete. La prueba la compara con taxonomy.ts. */
-export const PACK_INDUSTRY: Record<string, string> = { cumbre: "Alimentos y bebidas", forja: "Autopartes", brasa: "Restaurantes", kubit: "Software y SaaS" };
+export const PACK_INDUSTRY: Record<string, string> = { cumbre: "Alimentos y bebidas", forja: "Autopartes", brasa: "Restaurantes", kubit: "Software y SaaS", puntomadero: "Retail" };
 /** Especialidad con la que se escribió cada paquete: con ella no se cambia nada. */
-export const PACK_ORIGINAL_SPECIALTY: Record<string, string> = { cumbre: "Botanas y snacks", forja: "Estampado y soldadura", brasa: "Casual dining", kubit: "SaaS B2B" };
+export const PACK_ORIGINAL_SPECIALTY: Record<string, string> = { cumbre: "Botanas y snacks", forja: "Estampado y soldadura", brasa: "Casual dining", kubit: "SaaS B2B", puntomadero: "Hogar y ferretería" };
 
 export type LexRule = [from: string, to: string];
 
@@ -224,12 +224,28 @@ const SOFTWARE: Record<string, LexRule[]> = {
   "MarTech": saas("software de marketing y ventas digitales para empresas medianas", "plataforma de marketing y ventas"),
 };
 
+// ───────────────────────────────────────────── Retail (paquete Punto Madero)
+// Las tres frases del giro viven en companies/puntomadero.ts (PM_TAGLINE, PM_PITCH, PM_WHAT).
+const shop = (tagline: string, pitch: string, what: string): LexRule[] => [
+  ["Sesenta ferreterías y tiendas para el hogar con clientes de toda la vida. Un competidor nacional a tres cuadras.", tagline],
+  ["Punto Madero es una cadena regional de ferreterías y tiendas para el hogar", pitch],
+  ["Ferretería, materiales, pintura y artículos para el hogar", what],
+];
+const RETAIL: Record<string, LexRule[]> = {
+  "Tiendas especializadas": shop("Sesenta tiendas especializadas con clientes de toda la vida. Un competidor nacional a tres cuadras.", "Punto Madero es una cadena regional de tiendas especializadas", "Artículos especializados, asesoría y servicio en tienda"),
+  "Moda y accesorios": shop("Sesenta tiendas de moda y accesorios con clientes de toda la vida. Un competidor nacional a tres cuadras.", "Punto Madero es una cadena regional de tiendas de moda y accesorios", "Ropa, calzado y accesorios"),
+  "Electrónica de consumo": shop("Sesenta tiendas de electrónica con clientes de toda la vida. Un competidor nacional a tres cuadras.", "Punto Madero es una cadena regional de tiendas de electrónica de consumo", "Electrónica, cómputo, telefonía y línea blanca"),
+  "E-commerce DTC": shop("Una marca que vende directo en línea y en sesenta puntos de entrega, con clientes de toda la vida. Un competidor nacional en la misma colonia.", "Punto Madero es una marca regional que vende directo al consumidor en línea y en tiendas propias", "Productos de marca propia vendidos en línea y en tienda"),
+  "Omnicanal": shop("Sesenta tiendas y una tienda en línea con clientes de toda la vida. Un competidor nacional a tres cuadras.", "Punto Madero es una cadena regional omnicanal de tiendas para el hogar", "Artículos para el hogar en tienda, en línea y con entrega a domicilio"),
+};
+
 /** Especialidades que este módulo sabe escribir, por paquete (además de la original). */
 export function lexSpecialties(packId: string): string[] {
   if (packId === "cumbre") return Object.keys(FOOD).filter(Boolean);
   if (packId === "forja") return Object.keys(PARTS);
   if (packId === "brasa") return Object.keys(RESTAURANT);
   if (packId === "kubit") return Object.keys(SOFTWARE);
+  if (packId === "puntomadero") return Object.keys(RETAIL);
   return [];
 }
 
@@ -255,6 +271,7 @@ export function lexRules(packId: string, specialty: string | undefined): [RegExp
     else if (packId === "forja" && sp) raw = partsRules(PARTS[sp]);
     else if (packId === "brasa" && sp) raw = RESTAURANT[sp];
     else if (packId === "kubit" && sp) raw = SOFTWARE[sp];
+    else if (packId === "puntomadero" && sp) raw = RETAIL[sp];
   }
   const out = raw.map(([f, t]) => [new RegExp(`(?<![${L}])${esc(f)}(?![${L}])`, "gu"), t] as [RegExp, string]);
   COMPILED.set(key, out);

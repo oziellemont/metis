@@ -9,7 +9,7 @@ import type { CeoState } from "../types";
 const ID = "3f1c2a4b-5d6e-4f70-8a9b-0c1d2e3f4a5b";
 const BRAND = { name: "Casa Norte Alimentos", short: "Casa Norte" };
 /** Todas las formas fijas de los tres paquetes: ninguna puede quedar visible con el nombre del jugador. */
-const FIXED = ["Botanas Cumbre", "Forja Norte", "Grupo Brasa", "Cumbre", "Forja", "Brasa", "Brasas", "botanascumbre.mx", "forjanorte.mx", "grupobrasa.mx", "Kúbit", "kubit.mx"];
+const FIXED = ["Botanas Cumbre", "Forja Norte", "Grupo Brasa", "Cumbre", "Forja", "Brasa", "Brasas", "botanascumbre.mx", "forjanorte.mx", "grupobrasa.mx", "Kúbit", "kubit.mx", "Punto Madero", "puntomadero.mx"];
 
 function strings(x: unknown, out: string[] = []): string[] {
   if (typeof x === "string") out.push(x);

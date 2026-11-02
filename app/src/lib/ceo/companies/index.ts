@@ -7,10 +7,11 @@ import { CUMBRE } from "./cumbre";
 import { FORJA } from "./forja";
 import { BRASA } from "./brasa";
 import { KUBIT } from "./kubit";
+import { PUNTOMADERO } from "./puntomadero";
 import { withBank } from "../cases/bank";
 
 /** Empresas jugables (el orden es el del mapa de carrera). */
-export const COMPANIES: CompanyPack[] = [CUMBRE, FORJA, BRASA, KUBIT];
+export const COMPANIES: CompanyPack[] = [CUMBRE, FORJA, BRASA, KUBIT, PUNTOMADERO];
 export const FIRST_COMPANY = CUMBRE.id;
 /**
  * Rotación del modo por temporadas (legacy): las tres empresas fundacionales, fija.
