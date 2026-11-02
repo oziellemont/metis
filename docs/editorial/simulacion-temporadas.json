@@ -1,0 +1,2164 @@
+{
+ "generated": "rediseño criterio-vs-resultados",
+ "seeds": "`${empresa}|${estrategia}|${i}`",
+ "companies": {
+  "cumbre": {
+   "mas_larga": {
+    "label": "Siempre la opción más larga",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 2.9,
+    "nivelCriterio": "alto",
+    "cuadrante": "criterio_sin_resultado",
+    "kpis": {
+     "caja": 37,
+     "margen": 64,
+     "equipo": 100,
+     "clientes": 64,
+     "consejo": 95
+    },
+    "reasons": {
+     "insolvencia": 1,
+     "piso": 1
+    },
+    "puntosDesperdiciados": 4,
+    "cajaPagadaPorOpcionesDe3": -18,
+    "diagnostico": [
+     "No aprobaste: caja cerró en 37 (la línea es 50).",
+     "Caja bajó de 60 a 37 por tus decisiones (-18), los casos ejecutivos (-3), el proyecto de cambio (-2). Lo que más pesó: «Propuesta · Línea automatizada y crédito de $40 M» (-4), «Llamada perdida · Javier Ortiz (Planta)» (-3), «Junta · Revisión salarial con el sindicato» (-3).",
+     "En 7 de 14 decisiones elegiste caminos que cuestan caja y casi nunca uno que lo repusiera (0).",
+     "7 decisiones bien razonadas tenían un costo en caja que no compensaste después. El criterio era bueno; la suma de costos, no.",
+     "Tu estilo se cargó a apostar al largo plazo (12 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu criterio fue sólido, pero el resultado no alcanzó: buenas decisiones también tienen costos, y aquí se acumularon sin compensarse. Eso se aprende; no es lo mismo que decidir mal."
+    ]
+   },
+   "mas_corta": {
+    "label": "Siempre la opción más corta",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 0.8,
+    "nivelCriterio": "bajo",
+    "cuadrante": "ni_criterio_ni_resultado",
+    "kpis": {
+     "caja": 62,
+     "margen": 49,
+     "equipo": 43,
+     "clientes": 57,
+     "consejo": 46
+    },
+    "reasons": {
+     "objetivo": 1,
+     "salud": 1
+    },
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": 0,
+    "diagnostico": [
+     "No aprobaste: margen cerró en 49, equipo cerró en 43, consejo cerró en 46 (la línea es 50).",
+     "Margen bajó de 54 a 49 por los casos ejecutivos (-5). Lo que más pesó: «Junta · Revisión salarial con el sindicato» (-7), «Negociación SuperNorte» (-5), «Propuesta · Línea automatizada y crédito de $40 M» (-2).",
+     "Equipo bajó de 57 a 43 por tus decisiones (-19). Lo que más pesó: «Una última cosa antes de cerrar tus 90 días» (-6), «Héctor Salinas» (-5), «URGENTE · Renuncia de Héctor Salinas» (-4).",
+     "Consejo bajó de 62 a 46 por tus decisiones (-14), el proyecto de cambio (-2). Lo que más pesó: «Para tu sesión del jueves con el consejo» (-6), «Diego Garza» (-5), «Junta · Revisión salarial con el sindicato» (-4).",
+     "En 11 de 14 decisiones elegiste caminos que cuestan equipo y casi nunca uno que lo repusiera (3).",
+     "Ni el razonamiento ni el resultado alcanzaron: revisa los asuntos que más pesaron y qué alternativa defendible tenías."
+    ]
+   },
+   "azar": {
+    "label": "Al azar",
+    "reps": 30,
+    "actual": 10,
+    "candidato": 3.3,
+    "criterio": 1.7,
+    "nivelCriterio": "bajo",
+    "cuadrante": "ni_criterio_ni_resultado",
+    "kpis": {
+     "caja": 48.1,
+     "margen": 54.6,
+     "equipo": 62.6,
+     "clientes": 59.4,
+     "consejo": 63
+    },
+    "reasons": {
+     "objetivo": 13,
+     "salud": 27,
+     "linea_roja": 18,
+     "insolvencia": 4,
+     "piso": 4
+    },
+    "puntosDesperdiciados": 0.1,
+    "cajaPagadaPorOpcionesDe3": -6.8,
+    "diagnostico": [
+     "No aprobaste: equipo cerró en 48 (la línea es 50).",
+     "Equipo bajó de 57 a 48 por tus decisiones (-6), los casos ejecutivos (-4). Lo que más pesó: «Junta · Revisión salarial con el sindicato» (-8), «Una última cosa antes de cerrar tus 90 días» (-6), «Confidencial · Auditoría de gastos de Fernando Rocha» (-3).",
+     "Ni el razonamiento ni el resultado alcanzaron: revisa los asuntos que más pesaron y qué alternativa defendible tenías."
+    ]
+   },
+   "mejor_score": {
+    "label": "Siempre la que el feedback felicita (criterio más alto)",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 3,
+    "nivelCriterio": "alto",
+    "cuadrante": "criterio_sin_resultado",
+    "kpis": {
+     "caja": 38,
+     "margen": 62,
+     "equipo": 100,
+     "clientes": 75,
+     "consejo": 91
+    },
+    "reasons": {
+     "insolvencia": 1,
+     "piso": 1
+    },
+    "puntosDesperdiciados": 21,
+    "cajaPagadaPorOpcionesDe3": -18,
+    "diagnostico": [
+     "No aprobaste: caja cerró en 38 (la línea es 50).",
+     "Caja bajó de 60 a 38 por tus decisiones (-18), los casos ejecutivos (-2), el proyecto de cambio (-2). Lo que más pesó: «Propuesta · Línea automatizada y crédito de $40 M» (-4), «Llamada perdida · Javier Ortiz (Planta)» (-3), «Junta · Revisión salarial con el sindicato» (-3).",
+     "En 7 de 15 decisiones elegiste caminos que cuestan caja y casi nunca uno que lo repusiera (0).",
+     "7 decisiones bien razonadas tenían un costo en caja que no compensaste después. El criterio era bueno; la suma de costos, no.",
+     "Equipo llegó al tope y 21 puntos que le sumaste no contaron: esa inversión pudo ir a caja.",
+     "Tu criterio fue sólido, pero el resultado no alcanzó: buenas decisiones también tienen costos, y aquí se acumularon sin compensarse. Eso se aprende; no es lo mismo que decidir mal."
+    ]
+   },
+   "peor_score": {
+    "label": "Siempre la de criterio más bajo",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 0.3,
+    "nivelCriterio": "bajo",
+    "cuadrante": "ni_criterio_ni_resultado",
+    "kpis": {
+     "caja": 61,
+     "margen": 59,
+     "equipo": 1,
+     "clientes": 47,
+     "consejo": 38
+    },
+    "reasons": {
+     "consejo_perdido": 1,
+     "linea_roja": 1,
+     "objetivo": 1,
+     "piso": 1,
+     "salud": 1
+    },
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": 0,
+    "diagnostico": [
+     "No aprobaste: equipo cerró en 1, clientes cerró en 47, consejo cerró en 38 (la línea es 50).",
+     "Equipo bajó de 57 a 1 por tus decisiones (-57). Lo que más pesó: «Junta · Revisión salarial con el sindicato» (-8), «Llamada perdida · Javier Ortiz (Planta)» (-8), «Llamada perdida · Javier Ortiz (Planta)» (-6).",
+     "Clientes bajó de 64 a 47 por los casos ejecutivos (-12), tus decisiones (-5). Lo que más pesó: «URGENTE · Renuncia de Héctor Salinas» (-6), «Negociación SuperNorte» (-6), «Lote L-2291» (-6).",
+     "Consejo bajó de 62 a 38 por tus decisiones (-11), los casos ejecutivos (-11), el proyecto de cambio (-2). Lo que más pesó: «Lote L-2291» (-9), «Para tu sesión del jueves con el consejo» (-6), «Diego Garza» (-5).",
+     "En 14 de 15 decisiones elegiste caminos que cuestan equipo y casi nunca uno que lo repusiera (1).",
+     "Tu estilo se cargó a resolver lo inmediato (6 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu estilo se cargó a cuidar los números (9 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Ni el razonamiento ni el resultado alcanzaron: revisa los asuntos que más pesaron y qué alternativa defendible tenías."
+    ]
+   },
+   "mejor_efecto": {
+    "label": "Solo números: la de mejor efecto neto",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 3,
+    "nivelCriterio": "alto",
+    "cuadrante": "criterio_sin_resultado",
+    "kpis": {
+     "caja": 38,
+     "margen": 62,
+     "equipo": 100,
+     "clientes": 75,
+     "consejo": 91
+    },
+    "reasons": {
+     "insolvencia": 1,
+     "piso": 1
+    },
+    "puntosDesperdiciados": 21,
+    "cajaPagadaPorOpcionesDe3": -18,
+    "diagnostico": [
+     "No aprobaste: caja cerró en 38 (la línea es 50).",
+     "Caja bajó de 60 a 38 por tus decisiones (-18), los casos ejecutivos (-2), el proyecto de cambio (-2). Lo que más pesó: «Propuesta · Línea automatizada y crédito de $40 M» (-4), «Llamada perdida · Javier Ortiz (Planta)» (-3), «Junta · Revisión salarial con el sindicato» (-3).",
+     "En 7 de 15 decisiones elegiste caminos que cuestan caja y casi nunca uno que lo repusiera (0).",
+     "7 decisiones bien razonadas tenían un costo en caja que no compensaste después. El criterio era bueno; la suma de costos, no.",
+     "Equipo llegó al tope y 21 puntos que le sumaste no contaron: esa inversión pudo ir a caja.",
+     "Tu criterio fue sólido, pero el resultado no alcanzó: buenas decisiones también tienen costos, y aquí se acumularon sin compensarse. Eso se aprende; no es lo mismo que decidir mal."
+    ]
+   },
+   "siempre_A": {
+    "label": "Siempre la primera opción",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 2.4,
+    "nivelCriterio": "medio",
+    "cuadrante": "criterio_sin_resultado",
+    "kpis": {
+     "caja": 36,
+     "margen": 56,
+     "equipo": 92,
+     "clientes": 67,
+     "consejo": 88
+    },
+    "reasons": {
+     "insolvencia": 1,
+     "piso": 1
+    },
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": -7,
+    "diagnostico": [
+     "No aprobaste: caja cerró en 36 (la línea es 50).",
+     "Caja bajó de 60 a 36 por tus decisiones (-19), los casos ejecutivos (-3), el proyecto de cambio (-2). Lo que más pesó: «Diego Garza» (-9), «Llamada perdida · Javier Ortiz (Planta)» (-3), «Junta · Revisión salarial con el sindicato» (-3).",
+     "En 6 de 14 decisiones elegiste caminos que cuestan caja y casi nunca uno que lo repusiera (0).",
+     "3 decisiones bien razonadas tenían un costo en caja que no compensaste después. El criterio era bueno; la suma de costos, no.",
+     "Tu estilo se cargó a apostar al largo plazo (11 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu criterio fue sólido, pero el resultado no alcanzó: buenas decisiones también tienen costos, y aquí se acumularon sin compensarse. Eso se aprende; no es lo mismo que decidir mal."
+    ]
+   },
+   "no_contesta": {
+    "label": "No contesta nada",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 0,
+    "nivelCriterio": "bajo",
+    "cuadrante": "ni_criterio_ni_resultado",
+    "kpis": {
+     "caja": 57,
+     "margen": 48,
+     "equipo": 3,
+     "clientes": 54,
+     "consejo": 31
+    },
+    "reasons": {
+     "consejo_perdido": 1,
+     "objetivo": 1,
+     "piso": 1,
+     "salud": 1
+    },
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": 0,
+    "diagnostico": [
+     "No aprobaste: margen cerró en 48, equipo cerró en 3, consejo cerró en 31 (la línea es 50).",
+     "Margen bajó de 54 a 48 por lo que dejaste vencer (-6). Lo que más pesó: «Objetivos 2027 por área · no cuadran» (-4), «Propuesta · Línea automatizada y crédito de $40 M» (-2).",
+     "Equipo bajó de 57 a 3 por lo que dejaste vencer (-54). Lo que más pesó: «Llamada perdida · Javier Ortiz (Planta)» (-10), «Junta · Revisión salarial con el sindicato» (-9), «Llamada perdida · Javier Ortiz (Planta)» (-7).",
+     "Consejo bajó de 62 a 31 por lo que dejaste vencer (-31). Lo que más pesó: «Bienvenido a Cumbre. Mañana empiezas.» (-6), «Una última cosa antes de cerrar tus 90 días» (-6), «Diego Garza» (-4).",
+     "Dejaste vencer 15 asuntos. No responder también decide, y casi siempre mal.",
+     "Ni el razonamiento ni el resultado alcanzaron: revisa los asuntos que más pesaron y qué alternativa defendible tenías."
+    ]
+   },
+   "contesta_la_mitad": {
+    "label": "Contesta la mitad (al azar)",
+    "reps": 30,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 1.6,
+    "nivelCriterio": "bajo",
+    "cuadrante": "ni_criterio_ni_resultado",
+    "kpis": {
+     "caja": 48.2,
+     "margen": 53.1,
+     "equipo": 39.8,
+     "clientes": 54.3,
+     "consejo": 55.5
+    },
+    "reasons": {
+     "consejo_perdido": 2,
+     "linea_roja": 23,
+     "objetivo": 25,
+     "piso": 18,
+     "salud": 30,
+     "insolvencia": 2
+    },
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": -4.8,
+    "diagnostico": [
+     "No aprobaste: equipo cerró en 42, clientes cerró en 49, consejo cerró en 35 (la línea es 50).",
+     "Equipo bajó de 57 a 42 por lo que dejaste vencer (-22), los casos ejecutivos (-3). Lo que más pesó: «Llamada perdida · Javier Ortiz (Planta)» (-10), «Héctor Salinas» (-6), «Llamada perdida · Javier Ortiz (Planta)» (-6).",
+     "Clientes bajó de 64 a 49 por lo que dejaste vencer (-10), los casos ejecutivos (-3), tus decisiones (-2). Lo que más pesó: «URGENTE · Renuncia de Héctor Salinas» (-10), «Lote L-2291» (-6), «Confidencial · Auditoría de gastos de Fernando Rocha» (-4).",
+     "Consejo bajó de 62 a 35 por lo que dejaste vencer (-16), los casos ejecutivos (-9), tus decisiones (-7). Lo que más pesó: «Lote L-2291» (-9), «Bienvenido a Cumbre. Mañana empiezas.» (-6), «Para tu sesión del jueves con el consejo» (-6).",
+     "Dejaste vencer 5 asuntos. No responder también decide, y casi siempre mal.",
+     "Tu estilo se cargó a enfrentar el conflicto (7 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Ni el razonamiento ni el resultado alcanzaron: revisa los asuntos que más pesaron y qué alternativa defendible tenías."
+    ]
+   },
+   "director_equilibrado": {
+    "label": "Director equilibrado: opciones defendibles cuidando el indicador más débil",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 100,
+    "criterio": 2.9,
+    "nivelCriterio": "alto",
+    "cuadrante": "criterio_sin_resultado",
+    "kpis": {
+     "caja": 40,
+     "margen": 68,
+     "equipo": 100,
+     "clientes": 69,
+     "consejo": 88
+    },
+    "reasons": {},
+    "puntosDesperdiciados": 6,
+    "cajaPagadaPorOpcionesDe3": -16,
+    "diagnostico": [
+     "No aprobaste: caja cerró en 40 (la línea es 50).",
+     "Caja bajó de 60 a 40 por tus decisiones (-16), los casos ejecutivos (-2), el proyecto de cambio (-2). Lo que más pesó: «Propuesta · Línea automatizada y crédito de $40 M» (-4), «Llamada perdida · Javier Ortiz (Planta)» (-3), «Junta · Revisión salarial con el sindicato» (-3).",
+     "En 6 de 14 decisiones elegiste caminos que cuestan caja y casi nunca uno que lo repusiera (0).",
+     "6 decisiones bien razonadas tenían un costo en caja que no compensaste después. El criterio era bueno; la suma de costos, no.",
+     "Equipo llegó al tope y 6 puntos que le sumaste no contaron: esa inversión pudo ir a caja.",
+     "Tu criterio fue sólido, pero el resultado no alcanzó: buenas decisiones también tienen costos, y aquí se acumularon sin compensarse. Eso se aprende; no es lo mismo que decidir mal."
+    ]
+   },
+   "criterio_contextual": {
+    "label": "Criterio contextual (rúbrica nueva): lo mejor razonado leyendo el tablero",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 2.9,
+    "nivelCriterio": "alto",
+    "cuadrante": "criterio_sin_resultado",
+    "kpis": {
+     "caja": 38,
+     "margen": 68,
+     "equipo": 100,
+     "clientes": 69,
+     "consejo": 92
+    },
+    "reasons": {
+     "insolvencia": 1,
+     "piso": 1
+    },
+    "puntosDesperdiciados": 10,
+    "cajaPagadaPorOpcionesDe3": -18,
+    "diagnostico": [
+     "No aprobaste: caja cerró en 38 (la línea es 50).",
+     "Caja bajó de 60 a 38 por tus decisiones (-18), los casos ejecutivos (-2), el proyecto de cambio (-2). Lo que más pesó: «Propuesta · Línea automatizada y crédito de $40 M» (-4), «Llamada perdida · Javier Ortiz (Planta)» (-3), «Junta · Revisión salarial con el sindicato» (-3).",
+     "En 7 de 14 decisiones elegiste caminos que cuestan caja y casi nunca uno que lo repusiera (0).",
+     "7 decisiones bien razonadas tenían un costo en caja que no compensaste después. El criterio era bueno; la suma de costos, no.",
+     "Equipo llegó al tope y 10 puntos que le sumaste no contaron: esa inversión pudo ir a caja.",
+     "Tu criterio fue sólido, pero el resultado no alcanzó: buenas decisiones también tienen costos, y aquí se acumularon sin compensarse. Eso se aprende; no es lo mismo que decidir mal."
+    ]
+   },
+   "criterio_variado": {
+    "label": "Caminos variados: cualquier opción con criterio contextual alto, al azar",
+    "reps": 30,
+    "actual": 0,
+    "candidato": 56.7,
+    "criterio": 2.8,
+    "nivelCriterio": "alto",
+    "cuadrante": "criterio_sin_resultado",
+    "kpis": {
+     "caja": 41.7,
+     "margen": 63.7,
+     "equipo": 100,
+     "clientes": 71,
+     "consejo": 89
+    },
+    "reasons": {
+     "insolvencia": 13,
+     "piso": 13
+    },
+    "puntosDesperdiciados": 11,
+    "cajaPagadaPorOpcionesDe3": -16.5,
+    "diagnostico": [
+     "No aprobaste: caja cerró en 38 (la línea es 50).",
+     "Caja bajó de 60 a 38 por tus decisiones (-18), los casos ejecutivos (-2), el proyecto de cambio (-2). Lo que más pesó: «Propuesta · Línea automatizada y crédito de $40 M» (-4), «Llamada perdida · Javier Ortiz (Planta)» (-3), «Junta · Revisión salarial con el sindicato» (-3).",
+     "En 7 de 15 decisiones elegiste caminos que cuestan caja y casi nunca uno que lo repusiera (0).",
+     "7 decisiones bien razonadas tenían un costo en caja que no compensaste después. El criterio era bueno; la suma de costos, no.",
+     "Equipo llegó al tope y 21 puntos que le sumaste no contaron: esa inversión pudo ir a caja.",
+     "Tu criterio fue sólido, pero el resultado no alcanzó: buenas decisiones también tienen costos, y aquí se acumularon sin compensarse. Eso se aprende; no es lo mismo que decidir mal."
+    ]
+   }
+  },
+  "forja": {
+   "mas_larga": {
+    "label": "Siempre la opción más larga",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 2.8,
+    "nivelCriterio": "alto",
+    "cuadrante": "criterio_sin_resultado",
+    "kpis": {
+     "caja": 43,
+     "margen": 55,
+     "equipo": 95,
+     "clientes": 77,
+     "consejo": 68
+    },
+    "reasons": {
+     "linea_roja": 1,
+     "objetivo": 1
+    },
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": -19,
+    "diagnostico": [
+     "No aprobaste: caja cerró en 43 (la línea es 50).",
+     "Caja bajó de 64 a 43 por tus decisiones (-19), el proyecto de cambio (-2). Lo que más pesó: «Riesgo crítico · Fundiciones del Bajío» (-5), «Llamada perdida · Marcos Elizondo (Finanzas)» (-4), «Fuga de soldadores · 7 en un mes» (-2).",
+     "En 9 de 15 decisiones elegiste caminos que cuestan caja y casi nunca uno que lo repusiera (0).",
+     "9 decisiones bien razonadas tenían un costo en caja que no compensaste después. El criterio era bueno; la suma de costos, no.",
+     "Tu estilo se cargó a apostar al largo plazo (13 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu criterio fue sólido, pero el resultado no alcanzó: buenas decisiones también tienen costos, y aquí se acumularon sin compensarse. Eso se aprende; no es lo mismo que decidir mal."
+    ]
+   },
+   "mas_corta": {
+    "label": "Siempre la opción más corta",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 1.1,
+    "nivelCriterio": "bajo",
+    "cuadrante": "ni_criterio_ni_resultado",
+    "kpis": {
+     "caja": 26,
+     "margen": 54,
+     "equipo": 44,
+     "clientes": 80,
+     "consejo": 78
+    },
+    "reasons": {
+     "insolvencia": 1,
+     "objetivo": 1,
+     "piso": 1,
+     "salud": 1
+    },
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": 0,
+    "diagnostico": [
+     "No aprobaste: caja cerró en 26, equipo cerró en 44 (la línea es 50).",
+     "Caja bajó de 64 a 26 por tus decisiones (-36), el proyecto de cambio (-2). Lo que más pesó: «Riesgo crítico · Fundiciones del Bajío» (-8), «Propuesta del fondo · recapitalización» (-7), «Llamada perdida · Marcos Elizondo (Finanzas)» (-7).",
+     "Equipo bajó de 64 a 44 por tus decisiones (-21). Lo que más pesó: «Sesión de consejo · Cierre del trimestre» (-7), «Fuga de soldadores · 7 en un mes» (-5), «Bienvenido a Forja Norte. Esto es lo que esperamos.» (-3).",
+     "En 8 de 14 decisiones elegiste caminos que cuestan caja y casi nunca uno que lo repusiera (0).",
+     "En 8 de 14 decisiones elegiste caminos que cuestan equipo y casi nunca uno que lo repusiera (2).",
+     "Tu estilo se cargó a tomar riesgos (8 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Ni el razonamiento ni el resultado alcanzaron: revisa los asuntos que más pesaron y qué alternativa defendible tenías."
+    ]
+   },
+   "azar": {
+    "label": "Al azar",
+    "reps": 30,
+    "actual": 10,
+    "candidato": 0,
+    "criterio": 1.9,
+    "nivelCriterio": "medio",
+    "cuadrante": "criterio_sin_resultado",
+    "kpis": {
+     "caja": 42.6,
+     "margen": 56.2,
+     "equipo": 73.8,
+     "clientes": 69.3,
+     "consejo": 67.1
+    },
+    "reasons": {
+     "objetivo": 27,
+     "insolvencia": 6,
+     "piso": 6,
+     "salud": 13,
+     "linea_roja": 16
+    },
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": -6.4,
+    "diagnostico": [
+     "No aprobaste: caja cerró en 48, margen cerró en 46 (la línea es 50).",
+     "Caja bajó de 64 a 48 por tus decisiones (-14), el proyecto de cambio (-2). Lo que más pesó: «URGENTE · Aurora nos puso en contención nivel 1» (-4), «Llamada perdida · Marcos Elizondo (Finanzas)» (-4), «Junta · Aprobación de la pieza nueva (PPAP) vence el viernes» (-2).",
+     "Margen bajó de 60 a 46 por tus decisiones (-14). Lo que más pesó: «Aurora Motors · Annual price reduction 2027» (-8), «Riesgo crítico · Fundiciones del Bajío» (-5), «Junta · Aprobación de la pieza nueva (PPAP) vence el viernes» (-3).",
+     "En 7 de 14 decisiones elegiste caminos que cuestan caja y casi nunca uno que lo repusiera (1).",
+     "6 decisiones bien razonadas tenían un costo en caja y margen que no compensaste después. El criterio era bueno; la suma de costos, no.",
+     "Tu estilo se cargó a apostar al largo plazo (9 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu criterio fue sólido, pero el resultado no alcanzó: buenas decisiones también tienen costos, y aquí se acumularon sin compensarse. Eso se aprende; no es lo mismo que decidir mal."
+    ]
+   },
+   "mejor_score": {
+    "label": "Siempre la que el feedback felicita (criterio más alto)",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 3,
+    "nivelCriterio": "alto",
+    "cuadrante": "criterio_sin_resultado",
+    "kpis": {
+     "caja": 43,
+     "margen": 52,
+     "equipo": 100,
+     "clientes": 77,
+     "consejo": 71
+    },
+    "reasons": {
+     "objetivo": 1
+    },
+    "puntosDesperdiciados": 5,
+    "cajaPagadaPorOpcionesDe3": -19,
+    "diagnostico": [
+     "No aprobaste: caja cerró en 43 (la línea es 50).",
+     "Caja bajó de 64 a 43 por tus decisiones (-19), el proyecto de cambio (-2). Lo que más pesó: «Riesgo crítico · Fundiciones del Bajío» (-5), «Llamada perdida · Marcos Elizondo (Finanzas)» (-4), «Fuga de soldadores · 7 en un mes» (-2).",
+     "En 9 de 15 decisiones elegiste caminos que cuestan caja y casi nunca uno que lo repusiera (0).",
+     "9 decisiones bien razonadas tenían un costo en caja que no compensaste después. El criterio era bueno; la suma de costos, no.",
+     "Tu estilo se cargó a apostar al largo plazo (14 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu criterio fue sólido, pero el resultado no alcanzó: buenas decisiones también tienen costos, y aquí se acumularon sin compensarse. Eso se aprende; no es lo mismo que decidir mal."
+    ]
+   },
+   "peor_score": {
+    "label": "Siempre la de criterio más bajo",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 0.7,
+    "nivelCriterio": "bajo",
+    "cuadrante": "ni_criterio_ni_resultado",
+    "kpis": {
+     "caja": 40,
+     "margen": 55,
+     "equipo": 39,
+     "clientes": 65,
+     "consejo": 90
+    },
+    "reasons": {
+     "linea_roja": 1,
+     "objetivo": 1,
+     "piso": 1,
+     "salud": 1
+    },
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": 0,
+    "diagnostico": [
+     "No aprobaste: caja cerró en 40, equipo cerró en 39 (la línea es 50).",
+     "Caja bajó de 64 a 40 por tus decisiones (-22), el proyecto de cambio (-2). Lo que más pesó: «Propuesta del fondo · recapitalización» (-7), «Llamada perdida · Marcos Elizondo (Finanzas)» (-7), «Cotización · Plataforma SUV 2028 ($900 M en la vida del programa)» (-5).",
+     "Equipo bajó de 64 a 39 por tus decisiones (-31). Lo que más pesó: «Sesión de consejo · Cierre del trimestre» (-7), «Bienvenido a Forja Norte. Esto es lo que esperamos.» (-6), «Junta · Aprobación de la pieza nueva (PPAP) vence el viernes» (-6).",
+     "En 8 de 15 decisiones elegiste caminos que cuestan equipo y casi nunca uno que lo repusiera (1).",
+     "Tu estilo se cargó a resolver lo inmediato (8 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu estilo se cargó a tomar riesgos (9 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Ni el razonamiento ni el resultado alcanzaron: revisa los asuntos que más pesaron y qué alternativa defendible tenías."
+    ]
+   },
+   "mejor_efecto": {
+    "label": "Solo números: la de mejor efecto neto",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 2.7,
+    "nivelCriterio": "alto",
+    "cuadrante": "criterio_sin_resultado",
+    "kpis": {
+     "caja": 48,
+     "margen": 63,
+     "equipo": 92,
+     "clientes": 73,
+     "consejo": 76
+    },
+    "reasons": {
+     "linea_roja": 1,
+     "objetivo": 1
+    },
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": -13,
+    "diagnostico": [
+     "No aprobaste: caja cerró en 48 (la línea es 50).",
+     "Caja bajó de 64 a 48 por tus decisiones (-14), el proyecto de cambio (-2). Lo que más pesó: «Riesgo crítico · Fundiciones del Bajío» (-5), «Llamada perdida · Marcos Elizondo (Finanzas)» (-4), «Propuesta del fondo · recapitalización» (-2).",
+     "En 6 de 15 decisiones elegiste caminos que cuestan caja y casi nunca uno que lo repusiera (0).",
+     "5 decisiones bien razonadas tenían un costo en caja que no compensaste después. El criterio era bueno; la suma de costos, no.",
+     "Tu estilo se cargó a apostar al largo plazo (13 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu criterio fue sólido, pero el resultado no alcanzó: buenas decisiones también tienen costos, y aquí se acumularon sin compensarse. Eso se aprende; no es lo mismo que decidir mal."
+    ]
+   },
+   "siempre_A": {
+    "label": "Siempre la primera opción",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 2.1,
+    "nivelCriterio": "medio",
+    "cuadrante": "criterio_sin_resultado",
+    "kpis": {
+     "caja": 38,
+     "margen": 39,
+     "equipo": 100,
+     "clientes": 81,
+     "consejo": 71
+    },
+    "reasons": {
+     "insolvencia": 1,
+     "objetivo": 1,
+     "piso": 1
+    },
+    "puntosDesperdiciados": 6,
+    "cajaPagadaPorOpcionesDe3": -6,
+    "diagnostico": [
+     "No aprobaste: caja cerró en 38, margen cerró en 39 (la línea es 50).",
+     "Caja bajó de 64 a 38 por tus decisiones (-24), el proyecto de cambio (-2). Lo que más pesó: «Propuesta del fondo · recapitalización» (-7), «Cotización · Plataforma SUV 2028 ($900 M en la vida del programa)» (-5), «Riesgo crítico · Fundiciones del Bajío» (-5).",
+     "Margen bajó de 60 a 39 por tus decisiones (-21). Lo que más pesó: «Aurora Motors · Annual price reduction 2027» (-8), «Cotización · Plataforma SUV 2028 ($900 M en la vida del programa)» (-4), «Chuy Morales» (-3).",
+     "En 6 de 14 decisiones elegiste caminos que cuestan caja y casi nunca uno que lo repusiera (0).",
+     "En 8 de 14 decisiones elegiste caminos que cuestan margen y casi nunca uno que lo repusiera (1).",
+     "4 decisiones bien razonadas tenían un costo en caja y margen que no compensaste después. El criterio era bueno; la suma de costos, no.",
+     "Tu criterio fue sólido, pero el resultado no alcanzó: buenas decisiones también tienen costos, y aquí se acumularon sin compensarse. Eso se aprende; no es lo mismo que decidir mal."
+    ]
+   },
+   "no_contesta": {
+    "label": "No contesta nada",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 0,
+    "nivelCriterio": "bajo",
+    "cuadrante": "ni_criterio_ni_resultado",
+    "kpis": {
+     "caja": 52,
+     "margen": 40,
+     "equipo": 22,
+     "clientes": 34,
+     "consejo": 37
+    },
+    "reasons": {
+     "consejo_perdido": 1,
+     "objetivo": 1,
+     "piso": 1,
+     "salud": 1
+    },
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": 0,
+    "diagnostico": [
+     "No aprobaste: margen cerró en 40, equipo cerró en 22, clientes cerró en 34, consejo cerró en 37 (la línea es 50).",
+     "Margen bajó de 60 a 40 por lo que dejaste vencer (-20). Lo que más pesó: «Aurora Motors · Annual price reduction 2027» (-8), «Cotización · Plataforma SUV 2028 ($900 M en la vida del programa)» (-4), «Riesgo crítico · Fundiciones del Bajío» (-3).",
+     "Equipo bajó de 64 a 22 por lo que dejaste vencer (-42). Lo que más pesó: «Junta · Aprobación de la pieza nueva (PPAP) vence el viernes» (-6), «Confidencial · Denuncia contra el gerente del tercer turno» (-6), «Sesión de consejo · Cierre del trimestre» (-6).",
+     "Clientes bajó de 66 a 34 por lo que dejaste vencer (-32). Lo que más pesó: «Llamada perdida · Marcos Elizondo (Finanzas)» (-8), «Riesgo crítico · Fundiciones del Bajío» (-8), «URGENTE · Aurora nos puso en contención nivel 1» (-7).",
+     "Consejo bajó de 70 a 37 por lo que dejaste vencer (-33). Lo que más pesó: «Bienvenido a Forja Norte. Esto es lo que esperamos.» (-7), «Sesión de consejo · Cierre del trimestre» (-6), «Llamada perdida · Marcos Elizondo (Finanzas)» (-5).",
+     "Dejaste vencer 15 asuntos. No responder también decide, y casi siempre mal.",
+     "Ni el razonamiento ni el resultado alcanzaron: revisa los asuntos que más pesaron y qué alternativa defendible tenías."
+    ]
+   },
+   "contesta_la_mitad": {
+    "label": "Contesta la mitad (al azar)",
+    "reps": 30,
+    "actual": 3.3,
+    "candidato": 0,
+    "criterio": 1.9,
+    "nivelCriterio": "medio",
+    "cuadrante": "criterio_sin_resultado",
+    "kpis": {
+     "caja": 44.4,
+     "margen": 51.7,
+     "equipo": 50.1,
+     "clientes": 59,
+     "consejo": 64.6
+    },
+    "reasons": {
+     "salud": 30,
+     "objetivo": 23,
+     "piso": 17,
+     "linea_roja": 6,
+     "insolvencia": 6,
+     "consejo_perdido": 1
+    },
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": -4.9,
+    "diagnostico": [
+     "No aprobaste: consejo cerró en 49 (la línea es 50).",
+     "Consejo bajó de 70 a 49 por lo que dejaste vencer (-10), tus decisiones (-9), el proyecto de cambio (-2). Lo que más pesó: «Propuesta del fondo · recapitalización» (-6), «Bienvenido a Forja Norte. Esto es lo que esperamos.» (-5), «Llamada perdida · Marcos Elizondo (Finanzas)» (-5).",
+     "3 decisiones bien razonadas tenían un costo en consejo que no compensaste después. El criterio era bueno; la suma de costos, no.",
+     "Dejaste vencer 4 asuntos. No responder también decide, y casi siempre mal.",
+     "Tu estilo se cargó a apostar al largo plazo (6 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu criterio fue sólido, pero el resultado no alcanzó: buenas decisiones también tienen costos, y aquí se acumularon sin compensarse. Eso se aprende; no es lo mismo que decidir mal."
+    ]
+   },
+   "director_equilibrado": {
+    "label": "Director equilibrado: opciones defendibles cuidando el indicador más débil",
+    "reps": 1,
+    "actual": 100,
+    "candidato": 100,
+    "criterio": 2.6,
+    "nivelCriterio": "alto",
+    "cuadrante": "criterio_y_resultado",
+    "kpis": {
+     "caja": 54,
+     "margen": 62,
+     "equipo": 92,
+     "clientes": 63,
+     "consejo": 66
+    },
+    "reasons": {},
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": -7,
+    "diagnostico": [
+     "Aprobaste: los cinco indicadores cerraron en 50 o más.",
+     "Tu estilo se cargó a apostar al largo plazo (12 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu estilo se cargó a construir con otros (6 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu estilo se cargó a enfrentar el conflicto (10 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu criterio fue sólido y el negocio lo reflejó."
+    ]
+   },
+   "criterio_contextual": {
+    "label": "Criterio contextual (rúbrica nueva): lo mejor razonado leyendo el tablero",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 2.9,
+    "nivelCriterio": "alto",
+    "cuadrante": "criterio_sin_resultado",
+    "kpis": {
+     "caja": 45,
+     "margen": 53,
+     "equipo": 100,
+     "clientes": 71,
+     "consejo": 70
+    },
+    "reasons": {
+     "objetivo": 1
+    },
+    "puntosDesperdiciados": 5,
+    "cajaPagadaPorOpcionesDe3": -18,
+    "diagnostico": [
+     "No aprobaste: caja cerró en 45 (la línea es 50).",
+     "Caja bajó de 64 a 45 por tus decisiones (-17), el proyecto de cambio (-2). Lo que más pesó: «Riesgo crítico · Fundiciones del Bajío» (-5), «Llamada perdida · Marcos Elizondo (Finanzas)» (-4), «Fuga de soldadores · 7 en un mes» (-2).",
+     "En 8 de 15 decisiones elegiste caminos que cuestan caja y casi nunca uno que lo repusiera (1).",
+     "8 decisiones bien razonadas tenían un costo en caja que no compensaste después. El criterio era bueno; la suma de costos, no.",
+     "Tu estilo se cargó a apostar al largo plazo (14 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu criterio fue sólido, pero el resultado no alcanzó: buenas decisiones también tienen costos, y aquí se acumularon sin compensarse. Eso se aprende; no es lo mismo que decidir mal."
+    ]
+   },
+   "criterio_variado": {
+    "label": "Caminos variados: cualquier opción con criterio contextual alto, al azar",
+    "reps": 30,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 2.8,
+    "nivelCriterio": "alto",
+    "cuadrante": "criterio_sin_resultado",
+    "kpis": {
+     "caja": 44.9,
+     "margen": 56.1,
+     "equipo": 91.9,
+     "clientes": 72.1,
+     "consejo": 76
+    },
+    "reasons": {
+     "objetivo": 30
+    },
+    "puntosDesperdiciados": 1.2,
+    "cajaPagadaPorOpcionesDe3": -17.2,
+    "diagnostico": [
+     "No aprobaste: caja cerró en 45 (la línea es 50).",
+     "Caja bajó de 64 a 45 por tus decisiones (-17), el proyecto de cambio (-2). Lo que más pesó: «Riesgo crítico · Fundiciones del Bajío» (-5), «Llamada perdida · Marcos Elizondo (Finanzas)» (-4), «Fuga de soldadores · 7 en un mes» (-2).",
+     "En 8 de 15 decisiones elegiste caminos que cuestan caja y casi nunca uno que lo repusiera (1).",
+     "8 decisiones bien razonadas tenían un costo en caja que no compensaste después. El criterio era bueno; la suma de costos, no.",
+     "Tu estilo se cargó a apostar al largo plazo (14 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu criterio fue sólido, pero el resultado no alcanzó: buenas decisiones también tienen costos, y aquí se acumularon sin compensarse. Eso se aprende; no es lo mismo que decidir mal."
+    ]
+   }
+  },
+  "brasa": {
+   "mas_larga": {
+    "label": "Siempre la opción más larga",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 100,
+    "criterio": 2.8,
+    "nivelCriterio": "alto",
+    "cuadrante": "criterio_sin_resultado",
+    "kpis": {
+     "caja": 40,
+     "margen": 74,
+     "equipo": 66,
+     "clientes": 65,
+     "consejo": 84
+    },
+    "reasons": {},
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": -21,
+    "diagnostico": [
+     "No aprobaste: caja cerró en 40 (la línea es 50).",
+     "Caja bajó de 61 a 40 por tus decisiones (-19), el proyecto de cambio (-2). Lo que más pesó: «Las 6 sucursales de CDMX pierden dinero» (-5), «Llamada perdida · Maru (Brasa Andares)» (-4), «Propuesta · Socio preferente en Rappido» (-3).",
+     "En 9 de 14 decisiones elegiste caminos que cuestan caja y casi nunca uno que lo repusiera (1).",
+     "9 decisiones bien razonadas tenían un costo en caja que no compensaste después. El criterio era bueno; la suma de costos, no.",
+     "Tu estilo se cargó a apostar al largo plazo (13 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu criterio fue sólido, pero el resultado no alcanzó: buenas decisiones también tienen costos, y aquí se acumularon sin compensarse. Eso se aprende; no es lo mismo que decidir mal."
+    ]
+   },
+   "mas_corta": {
+    "label": "Siempre la opción más corta",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 1,
+    "nivelCriterio": "bajo",
+    "cuadrante": "ni_criterio_ni_resultado",
+    "kpis": {
+     "caja": 49,
+     "margen": 66,
+     "equipo": 51,
+     "clientes": 60,
+     "consejo": 45
+    },
+    "reasons": {
+     "salud": 1
+    },
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": 0,
+    "diagnostico": [
+     "No aprobaste: caja cerró en 49, consejo cerró en 45 (la línea es 50).",
+     "Caja bajó de 61 a 49 por tus decisiones (-10), el proyecto de cambio (-2). Lo que más pesó: «Las 6 sucursales de CDMX pierden dinero» (-8), «Ingeniería de menú · 72 platillos» (-4), «Llamada perdida · Maru (Brasa Andares)» (-2).",
+     "Consejo bajó de 64 a 45 por tus decisiones (-17), el proyecto de cambio (-2). Lo que más pesó: «Franquicias: tengo 10 interesados» (-5), «Te dejo las llaves de Brasa» (-4), «Las 6 sucursales de CDMX pierden dinero» (-3).",
+     "En 6 de 12 decisiones elegiste caminos que cuestan consejo y casi nunca uno que lo repusiera (2).",
+     "Ni el razonamiento ni el resultado alcanzaron: revisa los asuntos que más pesaron y qué alternativa defendible tenías."
+    ]
+   },
+   "azar": {
+    "label": "Al azar",
+    "reps": 30,
+    "actual": 36.7,
+    "candidato": 30,
+    "criterio": 1.8,
+    "nivelCriterio": "medio",
+    "cuadrante": "criterio_sin_resultado",
+    "kpis": {
+     "caja": 47.6,
+     "margen": 61.8,
+     "equipo": 63.3,
+     "clientes": 63,
+     "consejo": 67
+    },
+    "reasons": {
+     "salud": 20,
+     "objetivo": 1,
+     "linea_roja": 5,
+     "insolvencia": 1,
+     "piso": 1
+    },
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": -6.9,
+    "diagnostico": [
+     "No aprobaste: caja cerró en 41 (la línea es 50).",
+     "Caja bajó de 61 a 41 por tus decisiones (-18), el proyecto de cambio (-2). Lo que más pesó: «Las 6 sucursales de CDMX pierden dinero» (-5), «Ingeniería de menú · 72 platillos» (-4), «Maru Gutiérrez» (-2).",
+     "En 8 de 12 decisiones elegiste caminos que cuestan caja y casi nunca uno que lo repusiera (1).",
+     "4 decisiones bien razonadas tenían un costo en caja que no compensaste después. El criterio era bueno; la suma de costos, no.",
+     "Tu estilo se cargó a apostar al largo plazo (7 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu criterio fue sólido, pero el resultado no alcanzó: buenas decisiones también tienen costos, y aquí se acumularon sin compensarse. Eso se aprende; no es lo mismo que decidir mal."
+    ]
+   },
+   "mejor_score": {
+    "label": "Siempre la que el feedback felicita (criterio más alto)",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 2.9,
+    "nivelCriterio": "alto",
+    "cuadrante": "criterio_sin_resultado",
+    "kpis": {
+     "caja": 38,
+     "margen": 69,
+     "equipo": 78,
+     "clientes": 66,
+     "consejo": 80
+    },
+    "reasons": {
+     "insolvencia": 1,
+     "piso": 1
+    },
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": -21,
+    "diagnostico": [
+     "No aprobaste: caja cerró en 38 (la línea es 50).",
+     "Caja bajó de 61 a 38 por tus decisiones (-21), el proyecto de cambio (-2). Lo que más pesó: «Las 6 sucursales de CDMX pierden dinero» (-5), «Llamada perdida · Maru (Brasa Andares)» (-4), «Propuesta · Socio preferente en Rappido» (-3).",
+     "En 9 de 14 decisiones elegiste caminos que cuestan caja y casi nunca uno que lo repusiera (0).",
+     "9 decisiones bien razonadas tenían un costo en caja que no compensaste después. El criterio era bueno; la suma de costos, no.",
+     "Tu estilo se cargó a apostar al largo plazo (13 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu criterio fue sólido, pero el resultado no alcanzó: buenas decisiones también tienen costos, y aquí se acumularon sin compensarse. Eso se aprende; no es lo mismo que decidir mal."
+    ]
+   },
+   "peor_score": {
+    "label": "Siempre la de criterio más bajo",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 0.6,
+    "nivelCriterio": "bajo",
+    "cuadrante": "ni_criterio_ni_resultado",
+    "kpis": {
+     "caja": 50,
+     "margen": 63,
+     "equipo": 41,
+     "clientes": 60,
+     "consejo": 52
+    },
+    "reasons": {
+     "linea_roja": 1,
+     "salud": 1
+    },
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": 0,
+    "diagnostico": [
+     "No aprobaste: equipo cerró en 41 (la línea es 50).",
+     "Equipo bajó de 56 a 41 por tus decisiones (-21). Lo que más pesó: «Te dejo las llaves de Brasa» (-6), «Caso de Ramiro Peña (Brasa Providencia)» (-5), «Maru Gutiérrez» (-4).",
+     "En 6 de 12 decisiones elegiste caminos que cuestan consejo y casi nunca uno que lo repusiera (1).",
+     "Ni el razonamiento ni el resultado alcanzaron: revisa los asuntos que más pesaron y qué alternativa defendible tenías."
+    ]
+   },
+   "mejor_efecto": {
+    "label": "Solo números: la de mejor efecto neto",
+    "reps": 1,
+    "actual": 100,
+    "candidato": 100,
+    "criterio": 2.4,
+    "nivelCriterio": "medio",
+    "cuadrante": "criterio_y_resultado",
+    "kpis": {
+     "caja": 51,
+     "margen": 55,
+     "equipo": 78,
+     "clientes": 74,
+     "consejo": 81
+    },
+    "reasons": {},
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": -15,
+    "diagnostico": [
+     "Aprobaste: los cinco indicadores cerraron en 50 o más.",
+     "En 6 de 14 decisiones elegiste caminos que cuestan caja y casi nunca uno que lo repusiera (2).",
+     "Tu estilo se cargó a apostar al largo plazo (11 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu estilo se cargó a enfrentar el conflicto (7 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu criterio fue sólido y el negocio lo reflejó."
+    ]
+   },
+   "siempre_A": {
+    "label": "Siempre la primera opción",
+    "reps": 1,
+    "actual": 100,
+    "candidato": 100,
+    "criterio": 2.5,
+    "nivelCriterio": "alto",
+    "cuadrante": "criterio_y_resultado",
+    "kpis": {
+     "caja": 51,
+     "margen": 61,
+     "equipo": 75,
+     "clientes": 69,
+     "consejo": 78
+    },
+    "reasons": {},
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": -15,
+    "diagnostico": [
+     "Aprobaste: los cinco indicadores cerraron en 50 o más.",
+     "En 6 de 14 decisiones elegiste caminos que cuestan caja y casi nunca uno que lo repusiera (2).",
+     "Tu estilo se cargó a apostar al largo plazo (12 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu estilo se cargó a enfrentar el conflicto (8 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu criterio fue sólido y el negocio lo reflejó."
+    ]
+   },
+   "no_contesta": {
+    "label": "No contesta nada",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 0,
+    "nivelCriterio": "bajo",
+    "cuadrante": "ni_criterio_ni_resultado",
+    "kpis": {
+     "caja": 55,
+     "margen": 47,
+     "equipo": 46,
+     "clientes": 53,
+     "consejo": 40
+    },
+    "reasons": {
+     "objetivo": 1,
+     "salud": 1
+    },
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": 0,
+    "diagnostico": [
+     "No aprobaste: margen cerró en 47, equipo cerró en 46, consejo cerró en 40 (la línea es 50).",
+     "Margen bajó de 56 a 47 por lo que dejaste vencer (-9). Lo que más pesó: «El precio de la carne subió 14%» (-5), «Ingeniería de menú · 72 platillos» (-2), «Las 6 sucursales de CDMX pierden dinero» (-2).",
+     "Equipo bajó de 56 a 46 por lo que dejaste vencer (-10). Lo que más pesó: «Maru Gutiérrez» (-5), «Caso de Ramiro Peña (Brasa Providencia)» (-4), «Ingeniería de menú · 72 platillos» (-1).",
+     "Consejo bajó de 64 a 40 por lo que dejaste vencer (-24). Lo que más pesó: «Te dejo las llaves de Brasa» (-6), «Franquicias: tengo 10 interesados» (-5), «Llamada perdida · Maru (Brasa Andares)» (-4).",
+     "Dejaste vencer 12 asuntos. No responder también decide, y casi siempre mal.",
+     "Ni el razonamiento ni el resultado alcanzaron: revisa los asuntos que más pesaron y qué alternativa defendible tenías."
+    ]
+   },
+   "contesta_la_mitad": {
+    "label": "Contesta la mitad (al azar)",
+    "reps": 30,
+    "actual": 26.7,
+    "candidato": 10,
+    "criterio": 1.7,
+    "nivelCriterio": "bajo",
+    "cuadrante": "ni_criterio_ni_resultado",
+    "kpis": {
+     "caja": 51.3,
+     "margen": 62.3,
+     "equipo": 57.1,
+     "clientes": 57.2,
+     "consejo": 57.7
+    },
+    "reasons": {
+     "salud": 27,
+     "linea_roja": 7,
+     "objetivo": 3,
+     "piso": 1
+    },
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": -5.4,
+    "diagnostico": [
+     "No aprobaste: caja cerró en 41 (la línea es 50).",
+     "Caja bajó de 61 a 41 por tus decisiones (-15), lo que dejaste vencer (-3), el proyecto de cambio (-2). Lo que más pesó: «Las 6 sucursales de CDMX pierden dinero» (-8), «Ingeniería de menú · 72 platillos» (-4), «Llamada perdida · Maru (Brasa Andares)» (-3).",
+     "En 4 de 9 decisiones elegiste caminos que cuestan caja y casi nunca uno que lo repusiera (1).",
+     "Dejaste vencer 3 asuntos. No responder también decide, y casi siempre mal.",
+     "Ni el razonamiento ni el resultado alcanzaron: revisa los asuntos que más pesaron y qué alternativa defendible tenías."
+    ]
+   },
+   "director_equilibrado": {
+    "label": "Director equilibrado: opciones defendibles cuidando el indicador más débil",
+    "reps": 1,
+    "actual": 100,
+    "candidato": 100,
+    "criterio": 2.5,
+    "nivelCriterio": "alto",
+    "cuadrante": "criterio_y_resultado",
+    "kpis": {
+     "caja": 50,
+     "margen": 63,
+     "equipo": 72,
+     "clientes": 59,
+     "consejo": 69
+    },
+    "reasons": {},
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": -4,
+    "diagnostico": [
+     "Aprobaste: los cinco indicadores cerraron en 50 o más.",
+     "Tu estilo se cargó a apostar al largo plazo (7 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu criterio fue sólido y el negocio lo reflejó."
+    ]
+   },
+   "criterio_contextual": {
+    "label": "Criterio contextual (rúbrica nueva): lo mejor razonado leyendo el tablero",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 100,
+    "criterio": 2.9,
+    "nivelCriterio": "alto",
+    "cuadrante": "criterio_sin_resultado",
+    "kpis": {
+     "caja": 41,
+     "margen": 67,
+     "equipo": 75,
+     "clientes": 66,
+     "consejo": 78
+    },
+    "reasons": {},
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": -19,
+    "diagnostico": [
+     "No aprobaste: caja cerró en 41 (la línea es 50).",
+     "Caja bajó de 61 a 41 por tus decisiones (-18), el proyecto de cambio (-2). Lo que más pesó: «Las 6 sucursales de CDMX pierden dinero» (-5), «Llamada perdida · Maru (Brasa Andares)» (-4), «Propuesta · Socio preferente en Rappido» (-3).",
+     "En 8 de 14 decisiones elegiste caminos que cuestan caja y casi nunca uno que lo repusiera (1).",
+     "8 decisiones bien razonadas tenían un costo en caja que no compensaste después. El criterio era bueno; la suma de costos, no.",
+     "Tu estilo se cargó a apostar al largo plazo (13 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu criterio fue sólido, pero el resultado no alcanzó: buenas decisiones también tienen costos, y aquí se acumularon sin compensarse. Eso se aprende; no es lo mismo que decidir mal."
+    ]
+   },
+   "criterio_variado": {
+    "label": "Caminos variados: cualquier opción con criterio contextual alto, al azar",
+    "reps": 30,
+    "actual": 16.7,
+    "candidato": 90,
+    "criterio": 2.7,
+    "nivelCriterio": "alto",
+    "cuadrante": "criterio_sin_resultado",
+    "kpis": {
+     "caja": 45.1,
+     "margen": 67.3,
+     "equipo": 75.5,
+     "clientes": 64.8,
+     "consejo": 74.9
+    },
+    "reasons": {
+     "insolvencia": 3,
+     "piso": 3
+    },
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": -17,
+    "diagnostico": [
+     "No aprobaste: caja cerró en 41 (la línea es 50).",
+     "Caja bajó de 61 a 41 por tus decisiones (-18), el proyecto de cambio (-2). Lo que más pesó: «Las 6 sucursales de CDMX pierden dinero» (-5), «Llamada perdida · Maru (Brasa Andares)» (-4), «Maru Gutiérrez» (-2).",
+     "En 8 de 13 decisiones elegiste caminos que cuestan caja y casi nunca uno que lo repusiera (0).",
+     "7 decisiones bien razonadas tenían un costo en caja que no compensaste después. El criterio era bueno; la suma de costos, no.",
+     "Tu estilo se cargó a apostar al largo plazo (11 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu criterio fue sólido, pero el resultado no alcanzó: buenas decisiones también tienen costos, y aquí se acumularon sin compensarse. Eso se aprende; no es lo mismo que decidir mal."
+    ]
+   }
+  },
+  "kubit": {
+   "mas_larga": {
+    "label": "Siempre la opción más larga",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 2.9,
+    "nivelCriterio": "alto",
+    "cuadrante": "criterio_sin_resultado",
+    "kpis": {
+     "caja": 49,
+     "margen": 50,
+     "equipo": 97,
+     "clientes": 78,
+     "consejo": 71
+    },
+    "reasons": {
+     "objetivo": 1
+    },
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": -12,
+    "diagnostico": [
+     "No aprobaste: caja cerró en 49 (la línea es 50).",
+     "Caja bajó de 58 a 49 por tus decisiones (-7), el proyecto de cambio (-2). Lo que más pesó: «Riesgo crítico · DataNorte, nuestro centro de datos en México» (-5), «Fuga de ingenieros · 9 en dos meses» (-2), «Junta · Grupo Ferrán firma el viernes si la integración ya existe» (-2).",
+     "En 6 de 15 decisiones elegiste caminos que cuestan caja y casi nunca uno que lo repusiera (2).",
+     "En 9 de 15 decisiones elegiste caminos que cuestan margen y casi nunca uno que lo repusiera (1).",
+     "6 decisiones bien razonadas tenían un costo en caja que no compensaste después. El criterio era bueno; la suma de costos, no.",
+     "Tu criterio fue sólido, pero el resultado no alcanzó: buenas decisiones también tienen costos, y aquí se acumularon sin compensarse. Eso se aprende; no es lo mismo que decidir mal."
+    ]
+   },
+   "mas_corta": {
+    "label": "Siempre la opción más corta",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 1.4,
+    "nivelCriterio": "bajo",
+    "cuadrante": "ni_criterio_ni_resultado",
+    "kpis": {
+     "caja": 36,
+     "margen": 49,
+     "equipo": 63,
+     "clientes": 78,
+     "consejo": 58
+    },
+    "reasons": {
+     "insolvencia": 1,
+     "objetivo": 1,
+     "piso": 1,
+     "salud": 1
+    },
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": 0,
+    "diagnostico": [
+     "No aprobaste: caja cerró en 36, margen cerró en 49 (la línea es 50).",
+     "Caja bajó de 58 a 36 por tus decisiones (-20), el proyecto de cambio (-2). Lo que más pesó: «Riesgo crítico · DataNorte, nuestro centro de datos en México» (-8), «Propuesta del fondo · deuda de riesgo» (-6), «Fuga de ingenieros · 9 en dos meses» (-4).",
+     "Margen bajó de 62 a 49 por tus decisiones (-13). Lo que más pesó: «Grupo Altamar · Renovación del contrato anual» (-8), «Memo Paz» (-3), «Fuga de ingenieros · 9 en dos meses» (-2).",
+     "En 6 de 14 decisiones elegiste caminos que cuestan caja y casi nunca uno que lo repusiera (2).",
+     "En 7 de 14 decisiones elegiste caminos que cuestan margen y casi nunca uno que lo repusiera (2).",
+     "Tu estilo se cargó a decidir tú solo (6 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Ni el razonamiento ni el resultado alcanzaron: revisa los asuntos que más pesaron y qué alternativa defendible tenías."
+    ]
+   },
+   "azar": {
+    "label": "Al azar",
+    "reps": 30,
+    "actual": 46.7,
+    "candidato": 46.7,
+    "criterio": 1.9,
+    "nivelCriterio": "medio",
+    "cuadrante": "criterio_y_resultado",
+    "kpis": {
+     "caja": 52.1,
+     "margen": 57.5,
+     "equipo": 65.8,
+     "clientes": 69.6,
+     "consejo": 68.7
+    },
+    "reasons": {
+     "salud": 11,
+     "objetivo": 9,
+     "insolvencia": 2,
+     "piso": 2
+    },
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": -4.1,
+    "diagnostico": [
+     "Aprobaste: los cinco indicadores cerraron en 50 o más.",
+     "Tu estilo se cargó a apostar al largo plazo (9 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu estilo se cargó a construir con otros (7 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu criterio fue sólido y el negocio lo reflejó."
+    ]
+   },
+   "mejor_score": {
+    "label": "Siempre la que el feedback felicita (criterio más alto)",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 3,
+    "nivelCriterio": "alto",
+    "cuadrante": "criterio_sin_resultado",
+    "kpis": {
+     "caja": 48,
+     "margen": 51,
+     "equipo": 100,
+     "clientes": 75,
+     "consejo": 71
+    },
+    "reasons": {
+     "objetivo": 1
+    },
+    "puntosDesperdiciados": 3,
+    "cajaPagadaPorOpcionesDe3": -13,
+    "diagnostico": [
+     "No aprobaste: caja cerró en 48 (la línea es 50).",
+     "Caja bajó de 58 a 48 por tus decisiones (-8), el proyecto de cambio (-2). Lo que más pesó: «Riesgo crítico · DataNorte, nuestro centro de datos en México» (-5), «Fuga de ingenieros · 9 en dos meses» (-2), «Junta · Grupo Ferrán firma el viernes si la integración ya existe» (-2).",
+     "En 7 de 15 decisiones elegiste caminos que cuestan caja y casi nunca uno que lo repusiera (2).",
+     "En 8 de 15 decisiones elegiste caminos que cuestan margen y casi nunca uno que lo repusiera (1).",
+     "7 decisiones bien razonadas tenían un costo en caja que no compensaste después. El criterio era bueno; la suma de costos, no.",
+     "Tu criterio fue sólido, pero el resultado no alcanzó: buenas decisiones también tienen costos, y aquí se acumularon sin compensarse. Eso se aprende; no es lo mismo que decidir mal."
+    ]
+   },
+   "peor_score": {
+    "label": "Siempre la de criterio más bajo",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 0.7,
+    "nivelCriterio": "bajo",
+    "cuadrante": "ni_criterio_ni_resultado",
+    "kpis": {
+     "caja": 60,
+     "margen": 62,
+     "equipo": 27,
+     "clientes": 57,
+     "consejo": 88
+    },
+    "reasons": {
+     "piso": 1,
+     "salud": 1
+    },
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": 0,
+    "diagnostico": [
+     "No aprobaste: equipo cerró en 27 (la línea es 50).",
+     "Equipo bajó de 62 a 27 por tus decisiones (-41). Lo que más pesó: «Sesión de consejo · Cierre del trimestre» (-7), «Bienvenido a Kúbit. Esto es lo que esperamos.» (-6), «Junta · Grupo Ferrán firma el viernes si la integración ya existe» (-6).",
+     "En 10 de 15 decisiones elegiste caminos que cuestan equipo y casi nunca uno que lo repusiera (1).",
+     "Tu estilo se cargó a resolver lo inmediato (7 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu estilo se cargó a cuidar los números (9 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Ni el razonamiento ni el resultado alcanzaron: revisa los asuntos que más pesaron y qué alternativa defendible tenías."
+    ]
+   },
+   "mejor_efecto": {
+    "label": "Solo números: la de mejor efecto neto",
+    "reps": 1,
+    "actual": 100,
+    "candidato": 100,
+    "criterio": 2.4,
+    "nivelCriterio": "alto",
+    "cuadrante": "criterio_y_resultado",
+    "kpis": {
+     "caja": 62,
+     "margen": 60,
+     "equipo": 87,
+     "clientes": 66,
+     "consejo": 78
+    },
+    "reasons": {},
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": -2,
+    "diagnostico": [
+     "Aprobaste: los cinco indicadores cerraron en 50 o más.",
+     "Tu estilo se cargó a apostar al largo plazo (12 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu estilo se cargó a construir con otros (8 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu estilo se cargó a enfrentar el conflicto (8 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu criterio fue sólido y el negocio lo reflejó."
+    ]
+   },
+   "siempre_A": {
+    "label": "Siempre la primera opción",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 2.1,
+    "nivelCriterio": "medio",
+    "cuadrante": "criterio_sin_resultado",
+    "kpis": {
+     "caja": 43,
+     "margen": 43,
+     "equipo": 100,
+     "clientes": 82,
+     "consejo": 64
+    },
+    "reasons": {
+     "objetivo": 1
+    },
+    "puntosDesperdiciados": 4,
+    "cajaPagadaPorOpcionesDe3": -6,
+    "diagnostico": [
+     "No aprobaste: caja cerró en 43, margen cerró en 43 (la línea es 50).",
+     "Caja bajó de 58 a 43 por tus decisiones (-13), el proyecto de cambio (-2). Lo que más pesó: «Propuesta del fondo · deuda de riesgo» (-6), «Riesgo crítico · DataNorte, nuestro centro de datos en México» (-5), «Fuga de ingenieros · 9 en dos meses» (-4).",
+     "Margen bajó de 62 a 43 por tus decisiones (-19). Lo que más pesó: «Grupo Altamar · Renovación del contrato anual» (-8), «Memo Paz» (-3), «Fuga de ingenieros · 9 en dos meses» (-2).",
+     "En 8 de 14 decisiones elegiste caminos que cuestan margen y casi nunca uno que lo repusiera (1).",
+     "En 9 de 14 decisiones elegiste caminos que cuestan consejo y casi nunca uno que lo repusiera (3).",
+     "4 decisiones bien razonadas tenían un costo en caja y margen que no compensaste después. El criterio era bueno; la suma de costos, no.",
+     "Tu criterio fue sólido, pero el resultado no alcanzó: buenas decisiones también tienen costos, y aquí se acumularon sin compensarse. Eso se aprende; no es lo mismo que decidir mal."
+    ]
+   },
+   "no_contesta": {
+    "label": "No contesta nada",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 0,
+    "nivelCriterio": "bajo",
+    "cuadrante": "ni_criterio_ni_resultado",
+    "kpis": {
+     "caja": 48,
+     "margen": 55,
+     "equipo": 12,
+     "clientes": 37,
+     "consejo": 37
+    },
+    "reasons": {
+     "consejo_perdido": 1,
+     "objetivo": 1,
+     "piso": 1,
+     "salud": 1
+    },
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": 0,
+    "diagnostico": [
+     "No aprobaste: caja cerró en 48, equipo cerró en 12, clientes cerró en 37, consejo cerró en 37 (la línea es 50).",
+     "Caja bajó de 58 a 48 por lo que dejaste vencer (-10). Lo que más pesó: «Propuesta del fondo · deuda de riesgo» (-4), «URGENTE · Seis horas sin plataforma en cierre de mes» (-3), «Serie C · Dos propuestas sobre la mesa» (-3).",
+     "Equipo bajó de 62 a 12 por lo que dejaste vencer (-50). Lo que más pesó: «Llamada perdida · Andrea Quiroga (Finanzas)» (-8), «Junta · Grupo Ferrán firma el viernes si la integración ya existe» (-6), «Confidencial · Denuncia contra el gerente regional de ventas» (-6).",
+     "Clientes bajó de 66 a 37 por lo que dejaste vencer (-29). Lo que más pesó: «Riesgo crítico · DataNorte, nuestro centro de datos en México» (-8), «URGENTE · Seis horas sin plataforma en cierre de mes» (-7), «Grupo Altamar · Renovación del contrato anual» (-6).",
+     "Consejo bajó de 68 a 37 por lo que dejaste vencer (-31). Lo que más pesó: «Bienvenido a Kúbit. Esto es lo que esperamos.» (-7), «Sesión de consejo · Cierre del trimestre» (-6), «Propuesta del fondo · deuda de riesgo» (-4).",
+     "Dejaste vencer 15 asuntos. No responder también decide, y casi siempre mal.",
+     "Ni el razonamiento ni el resultado alcanzaron: revisa los asuntos que más pesaron y qué alternativa defendible tenías."
+    ]
+   },
+   "contesta_la_mitad": {
+    "label": "Contesta la mitad (al azar)",
+    "reps": 30,
+    "actual": 3.3,
+    "candidato": 0,
+    "criterio": 1.9,
+    "nivelCriterio": "medio",
+    "cuadrante": "criterio_sin_resultado",
+    "kpis": {
+     "caja": 50.4,
+     "margen": 60.1,
+     "equipo": 44.3,
+     "clientes": 57.8,
+     "consejo": 62.8
+    },
+    "reasons": {
+     "salud": 30,
+     "objetivo": 18,
+     "insolvencia": 3,
+     "piso": 12,
+     "consejo_perdido": 1
+    },
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": -3,
+    "diagnostico": [
+     "No aprobaste: consejo cerró en 49 (la línea es 50).",
+     "Consejo bajó de 68 a 49 por tus decisiones (-15), lo que dejaste vencer (-2), el proyecto de cambio (-2). Lo que más pesó: «Propuesta del fondo · deuda de riesgo» (-6), «Bienvenido a Kúbit. Esto es lo que esperamos.» (-5), «Grupo Altamar · Renovación del contrato anual» (-3).",
+     "4 decisiones bien razonadas tenían un costo en consejo que no compensaste después. El criterio era bueno; la suma de costos, no.",
+     "Tu estilo se cargó a apostar al largo plazo (11 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu estilo se cargó a construir con otros (6 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu criterio fue sólido, pero el resultado no alcanzó: buenas decisiones también tienen costos, y aquí se acumularon sin compensarse. Eso se aprende; no es lo mismo que decidir mal."
+    ]
+   },
+   "director_equilibrado": {
+    "label": "Director equilibrado: opciones defendibles cuidando el indicador más débil",
+    "reps": 1,
+    "actual": 100,
+    "candidato": 100,
+    "criterio": 2.7,
+    "nivelCriterio": "alto",
+    "cuadrante": "criterio_y_resultado",
+    "kpis": {
+     "caja": 54,
+     "margen": 62,
+     "equipo": 92,
+     "clientes": 62,
+     "consejo": 75
+    },
+    "reasons": {},
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": -6,
+    "diagnostico": [
+     "Aprobaste: los cinco indicadores cerraron en 50 o más.",
+     "Tu estilo se cargó a apostar al largo plazo (12 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu estilo se cargó a construir con otros (8 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu estilo se cargó a enfrentar el conflicto (7 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu criterio fue sólido y el negocio lo reflejó."
+    ]
+   },
+   "criterio_contextual": {
+    "label": "Criterio contextual (rúbrica nueva): lo mejor razonado leyendo el tablero",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 2.9,
+    "nivelCriterio": "alto",
+    "cuadrante": "criterio_sin_resultado",
+    "kpis": {
+     "caja": 49,
+     "margen": 54,
+     "equipo": 100,
+     "clientes": 74,
+     "consejo": 63
+    },
+    "reasons": {
+     "objetivo": 1
+    },
+    "puntosDesperdiciados": 3,
+    "cajaPagadaPorOpcionesDe3": -13,
+    "diagnostico": [
+     "No aprobaste: caja cerró en 49 (la línea es 50).",
+     "Caja bajó de 58 a 49 por tus decisiones (-7), el proyecto de cambio (-2). Lo que más pesó: «Riesgo crítico · DataNorte, nuestro centro de datos en México» (-5), «Fuga de ingenieros · 9 en dos meses» (-2), «Junta · Grupo Ferrán firma el viernes si la integración ya existe» (-2).",
+     "En 7 de 15 decisiones elegiste caminos que cuestan caja y casi nunca uno que lo repusiera (2).",
+     "En 7 de 15 decisiones elegiste caminos que cuestan margen y casi nunca uno que lo repusiera (2).",
+     "7 decisiones bien razonadas tenían un costo en caja que no compensaste después. El criterio era bueno; la suma de costos, no.",
+     "Tu criterio fue sólido, pero el resultado no alcanzó: buenas decisiones también tienen costos, y aquí se acumularon sin compensarse. Eso se aprende; no es lo mismo que decidir mal."
+    ]
+   },
+   "criterio_variado": {
+    "label": "Caminos variados: cualquier opción con criterio contextual alto, al azar",
+    "reps": 30,
+    "actual": 60,
+    "candidato": 60,
+    "criterio": 2.7,
+    "nivelCriterio": "alto",
+    "cuadrante": "criterio_y_resultado",
+    "kpis": {
+     "caja": 51.3,
+     "margen": 57.7,
+     "equipo": 90.7,
+     "clientes": 68.2,
+     "consejo": 68.8
+    },
+    "reasons": {
+     "objetivo": 12
+    },
+    "puntosDesperdiciados": 0.2,
+    "cajaPagadaPorOpcionesDe3": -10,
+    "diagnostico": [
+     "Aprobaste: los cinco indicadores cerraron en 50 o más.",
+     "Tu estilo se cargó a apostar al largo plazo (12 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu estilo se cargó a construir con otros (8 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu estilo se cargó a enfrentar el conflicto (8 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu criterio fue sólido y el negocio lo reflejó."
+    ]
+   }
+  },
+  "puntomadero": {
+   "mas_larga": {
+    "label": "Siempre la opción más larga",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 2.9,
+    "nivelCriterio": "alto",
+    "cuadrante": "criterio_sin_resultado",
+    "kpis": {
+     "caja": 51,
+     "margen": 48,
+     "equipo": 100,
+     "clientes": 72,
+     "consejo": 65
+    },
+    "reasons": {
+     "objetivo": 1
+    },
+    "puntosDesperdiciados": 3,
+    "cajaPagadaPorOpcionesDe3": -13,
+    "diagnostico": [
+     "No aprobaste: margen cerró en 48 (la línea es 50).",
+     "Margen bajó de 56 a 48 por tus decisiones (-8). Lo que más pesó: «Junta · ¿Anunciamos entrega el mismo día?» (-3), «Constructora Peñasco · Condiciones para el próximo año» (-2), «Confidencial · Denuncia contra el gerente regional» (-2).",
+     "En 7 de 15 decisiones elegiste caminos que cuestan caja y casi nunca uno que lo repusiera (2).",
+     "En 7 de 15 decisiones elegiste caminos que cuestan margen y casi nunca uno que lo repusiera (2).",
+     "7 decisiones bien razonadas tenían un costo en margen que no compensaste después. El criterio era bueno; la suma de costos, no.",
+     "Tu criterio fue sólido, pero el resultado no alcanzó: buenas decisiones también tienen costos, y aquí se acumularon sin compensarse. Eso se aprende; no es lo mismo que decidir mal."
+    ]
+   },
+   "mas_corta": {
+    "label": "Siempre la opción más corta",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 1.4,
+    "nivelCriterio": "bajo",
+    "cuadrante": "ni_criterio_ni_resultado",
+    "kpis": {
+     "caja": 38,
+     "margen": 43,
+     "equipo": 63,
+     "clientes": 76,
+     "consejo": 60
+    },
+    "reasons": {
+     "insolvencia": 1,
+     "objetivo": 1,
+     "piso": 1,
+     "salud": 1
+    },
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": 0,
+    "diagnostico": [
+     "No aprobaste: caja cerró en 38, margen cerró en 43 (la línea es 50).",
+     "Caja bajó de 60 a 38 por tus decisiones (-20), el proyecto de cambio (-2). Lo que más pesó: «Riesgo crítico · Industrias Ocampo, el fabricante de nuestra marca propia» (-8), «Propuesta para el consejo · crédito para abrir tiendas» (-6), «Se nos van los asesores expertos · 26 en dos meses» (-4).",
+     "Margen bajó de 56 a 43 por tus decisiones (-13). Lo que más pesó: «Constructora Peñasco · Condiciones para el próximo año» (-8), «Chuy Elizondo» (-3), «Se nos van los asesores expertos · 26 en dos meses» (-2).",
+     "En 6 de 14 decisiones elegiste caminos que cuestan caja y casi nunca uno que lo repusiera (2).",
+     "En 7 de 14 decisiones elegiste caminos que cuestan margen y casi nunca uno que lo repusiera (2).",
+     "Tu estilo se cargó a decidir tú solo (6 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Ni el razonamiento ni el resultado alcanzaron: revisa los asuntos que más pesaron y qué alternativa defendible tenías."
+    ]
+   },
+   "azar": {
+    "label": "Al azar",
+    "reps": 30,
+    "actual": 33.3,
+    "candidato": 46.7,
+    "criterio": 2,
+    "nivelCriterio": "bajo",
+    "cuadrante": "ni_criterio_ni_resultado",
+    "kpis": {
+     "caja": 50.9,
+     "margen": 52,
+     "equipo": 67.5,
+     "clientes": 68.5,
+     "consejo": 72.2
+    },
+    "reasons": {
+     "objetivo": 11,
+     "piso": 3,
+     "insolvencia": 1,
+     "salud": 10
+    },
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": -4.9,
+    "diagnostico": [
+     "No aprobaste: margen cerró en 39 (la línea es 50).",
+     "Margen bajó de 56 a 39 por tus decisiones (-17). Lo que más pesó: «Constructora Peñasco · Condiciones para el próximo año» (-8), «Chuy Elizondo» (-3), «Junta · ¿Anunciamos entrega el mismo día?» (-3).",
+     "En 6 de 15 decisiones elegiste caminos que cuestan margen y casi nunca uno que lo repusiera (1).",
+     "Ni el razonamiento ni el resultado alcanzaron: revisa los asuntos que más pesaron y qué alternativa defendible tenías."
+    ]
+   },
+   "mejor_score": {
+    "label": "Siempre la que el feedback felicita (criterio más alto)",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 3,
+    "nivelCriterio": "alto",
+    "cuadrante": "criterio_sin_resultado",
+    "kpis": {
+     "caja": 50,
+     "margen": 45,
+     "equipo": 98,
+     "clientes": 73,
+     "consejo": 66
+    },
+    "reasons": {
+     "objetivo": 1
+    },
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": -13,
+    "diagnostico": [
+     "No aprobaste: margen cerró en 45 (la línea es 50).",
+     "Margen bajó de 56 a 45 por tus decisiones (-11). Lo que más pesó: «Junta · ¿Anunciamos entrega el mismo día?» (-3), «Constructora Peñasco · Condiciones para el próximo año» (-2), «Confidencial · Denuncia contra el gerente regional» (-2).",
+     "En 7 de 15 decisiones elegiste caminos que cuestan caja y casi nunca uno que lo repusiera (2).",
+     "En 8 de 15 decisiones elegiste caminos que cuestan margen y casi nunca uno que lo repusiera (1).",
+     "8 decisiones bien razonadas tenían un costo en margen que no compensaste después. El criterio era bueno; la suma de costos, no.",
+     "Tu criterio fue sólido, pero el resultado no alcanzó: buenas decisiones también tienen costos, y aquí se acumularon sin compensarse. Eso se aprende; no es lo mismo que decidir mal."
+    ]
+   },
+   "peor_score": {
+    "label": "Siempre la de criterio más bajo",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 0.7,
+    "nivelCriterio": "bajo",
+    "cuadrante": "ni_criterio_ni_resultado",
+    "kpis": {
+     "caja": 62,
+     "margen": 56,
+     "equipo": 22,
+     "clientes": 55,
+     "consejo": 83
+    },
+    "reasons": {
+     "piso": 1,
+     "salud": 1
+    },
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": 0,
+    "diagnostico": [
+     "No aprobaste: equipo cerró en 22 (la línea es 50).",
+     "Equipo bajó de 62 a 22 por tus decisiones (-41). Lo que más pesó: «Sesión de consejo · Cierre del trimestre» (-7), «Bienvenido a Punto Madero. Esto es lo que esperamos.» (-6), «Junta · ¿Anunciamos entrega el mismo día?» (-6).",
+     "En 10 de 15 decisiones elegiste caminos que cuestan equipo y casi nunca uno que lo repusiera (1).",
+     "Tu estilo se cargó a resolver lo inmediato (7 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu estilo se cargó a cuidar los números (9 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Ni el razonamiento ni el resultado alcanzaron: revisa los asuntos que más pesaron y qué alternativa defendible tenías."
+    ]
+   },
+   "mejor_efecto": {
+    "label": "Solo números: la de mejor efecto neto",
+    "reps": 1,
+    "actual": 100,
+    "candidato": 100,
+    "criterio": 2.4,
+    "nivelCriterio": "alto",
+    "cuadrante": "criterio_y_resultado",
+    "kpis": {
+     "caja": 64,
+     "margen": 54,
+     "equipo": 87,
+     "clientes": 64,
+     "consejo": 80
+    },
+    "reasons": {},
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": -2,
+    "diagnostico": [
+     "Aprobaste: los cinco indicadores cerraron en 50 o más.",
+     "Tu estilo se cargó a apostar al largo plazo (12 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu estilo se cargó a construir con otros (8 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu estilo se cargó a enfrentar el conflicto (8 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu criterio fue sólido y el negocio lo reflejó."
+    ]
+   },
+   "siempre_A": {
+    "label": "Siempre la primera opción",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 2.1,
+    "nivelCriterio": "medio",
+    "cuadrante": "criterio_sin_resultado",
+    "kpis": {
+     "caja": 45,
+     "margen": 37,
+     "equipo": 100,
+     "clientes": 80,
+     "consejo": 66
+    },
+    "reasons": {
+     "objetivo": 1,
+     "piso": 1
+    },
+    "puntosDesperdiciados": 4,
+    "cajaPagadaPorOpcionesDe3": -6,
+    "diagnostico": [
+     "No aprobaste: caja cerró en 45, margen cerró en 37 (la línea es 50).",
+     "Caja bajó de 60 a 45 por tus decisiones (-13), el proyecto de cambio (-2). Lo que más pesó: «Propuesta para el consejo · crédito para abrir tiendas» (-6), «Riesgo crítico · Industrias Ocampo, el fabricante de nuestra marca propia» (-5), «Se nos van los asesores expertos · 26 en dos meses» (-4).",
+     "Margen bajó de 56 a 37 por tus decisiones (-19). Lo que más pesó: «Constructora Peñasco · Condiciones para el próximo año» (-8), «Chuy Elizondo» (-3), «Se nos van los asesores expertos · 26 en dos meses» (-2).",
+     "En 8 de 14 decisiones elegiste caminos que cuestan margen y casi nunca uno que lo repusiera (1).",
+     "En 9 de 14 decisiones elegiste caminos que cuestan consejo y casi nunca uno que lo repusiera (3).",
+     "4 decisiones bien razonadas tenían un costo en caja y margen que no compensaste después. El criterio era bueno; la suma de costos, no.",
+     "Tu criterio fue sólido, pero el resultado no alcanzó: buenas decisiones también tienen costos, y aquí se acumularon sin compensarse. Eso se aprende; no es lo mismo que decidir mal."
+    ]
+   },
+   "no_contesta": {
+    "label": "No contesta nada",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 0,
+    "nivelCriterio": "bajo",
+    "cuadrante": "ni_criterio_ni_resultado",
+    "kpis": {
+     "caja": 50,
+     "margen": 49,
+     "equipo": 12,
+     "clientes": 35,
+     "consejo": 39
+    },
+    "reasons": {
+     "consejo_perdido": 1,
+     "objetivo": 1,
+     "piso": 1,
+     "salud": 1
+    },
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": 0,
+    "diagnostico": [
+     "No aprobaste: margen cerró en 49, equipo cerró en 12, clientes cerró en 35, consejo cerró en 39 (la línea es 50).",
+     "Margen bajó de 56 a 49 por lo que dejaste vencer (-7). Lo que más pesó: «Riesgo crítico · Industrias Ocampo, el fabricante de nuestra marca propia» (-3), «Se nos van los asesores expertos · 26 en dos meses» (-2), «Beto Castañeda» (-2).",
+     "Equipo bajó de 62 a 12 por lo que dejaste vencer (-50). Lo que más pesó: «Llamada perdida · Claudia Leal (Finanzas)» (-8), «Junta · ¿Anunciamos entrega el mismo día?» (-6), «Confidencial · Denuncia contra el gerente regional» (-6).",
+     "Clientes bajó de 64 a 35 por lo que dejaste vencer (-29). Lo que más pesó: «Riesgo crítico · Industrias Ocampo, el fabricante de nuestra marca propia» (-8), «URGENTE · Se cayó una tarima en la tienda principal» (-7), «Constructora Peñasco · Condiciones para el próximo año» (-6).",
+     "Consejo bajó de 70 a 39 por lo que dejaste vencer (-31). Lo que más pesó: «Bienvenido a Punto Madero. Esto es lo que esperamos.» (-7), «Sesión de consejo · Cierre del trimestre» (-6), «Propuesta para el consejo · crédito para abrir tiendas» (-4).",
+     "Dejaste vencer 15 asuntos. No responder también decide, y casi siempre mal.",
+     "Ni el razonamiento ni el resultado alcanzaron: revisa los asuntos que más pesaron y qué alternativa defendible tenías."
+    ]
+   },
+   "contesta_la_mitad": {
+    "label": "Contesta la mitad (al azar)",
+    "reps": 30,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 1.8,
+    "nivelCriterio": "medio",
+    "cuadrante": "criterio_sin_resultado",
+    "kpis": {
+     "caja": 52.9,
+     "margen": 54.2,
+     "equipo": 37.3,
+     "clientes": 57.5,
+     "consejo": 66.5
+    },
+    "reasons": {
+     "piso": 16,
+     "salud": 29,
+     "objetivo": 12,
+     "insolvencia": 1
+    },
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": -3.9,
+    "diagnostico": [
+     "No aprobaste: equipo cerró en 31 (la línea es 50).",
+     "Equipo bajó de 62 a 31 por lo que dejaste vencer (-24), tus decisiones (-13). Lo que más pesó: «Llamada perdida · Claudia Leal (Finanzas)» (-8), «Sesión de consejo · Cierre del trimestre» (-7), «Junta · ¿Anunciamos entrega el mismo día?» (-6).",
+     "En 6 de 10 decisiones elegiste caminos que cuestan equipo y casi nunca uno que lo repusiera (2).",
+     "Dejaste vencer 5 asuntos. No responder también decide, y casi siempre mal.",
+     "Tu criterio fue sólido, pero el resultado no alcanzó: buenas decisiones también tienen costos, y aquí se acumularon sin compensarse. Eso se aprende; no es lo mismo que decidir mal."
+    ]
+   },
+   "director_equilibrado": {
+    "label": "Director equilibrado: opciones defendibles cuidando el indicador más débil",
+    "reps": 1,
+    "actual": 100,
+    "candidato": 100,
+    "criterio": 2.6,
+    "nivelCriterio": "alto",
+    "cuadrante": "criterio_y_resultado",
+    "kpis": {
+     "caja": 54,
+     "margen": 62,
+     "equipo": 91,
+     "clientes": 65,
+     "consejo": 65
+    },
+    "reasons": {},
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": -7,
+    "diagnostico": [
+     "Aprobaste: los cinco indicadores cerraron en 50 o más.",
+     "Tu estilo se cargó a apostar al largo plazo (12 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu estilo se cargó a construir con otros (7 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu estilo se cargó a enfrentar el conflicto (9 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu criterio fue sólido y el negocio lo reflejó."
+    ]
+   },
+   "criterio_contextual": {
+    "label": "Criterio contextual (rúbrica nueva): lo mejor razonado leyendo el tablero",
+    "reps": 1,
+    "actual": 100,
+    "candidato": 100,
+    "criterio": 2.9,
+    "nivelCriterio": "alto",
+    "cuadrante": "criterio_y_resultado",
+    "kpis": {
+     "caja": 52,
+     "margen": 53,
+     "equipo": 100,
+     "clientes": 65,
+     "consejo": 66
+    },
+    "reasons": {},
+    "puntosDesperdiciados": 5,
+    "cajaPagadaPorOpcionesDe3": -12,
+    "diagnostico": [
+     "Aprobaste: los cinco indicadores cerraron en 50 o más.",
+     "En 6 de 15 decisiones elegiste caminos que cuestan caja y casi nunca uno que lo repusiera (2).",
+     "Tu estilo se cargó a apostar al largo plazo (13 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu estilo se cargó a cuidar a las personas (7 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu criterio fue sólido y el negocio lo reflejó."
+    ]
+   },
+   "criterio_variado": {
+    "label": "Caminos variados: cualquier opción con criterio contextual alto, al azar",
+    "reps": 30,
+    "actual": 73.3,
+    "candidato": 80,
+    "criterio": 2.6,
+    "nivelCriterio": "alto",
+    "cuadrante": "criterio_y_resultado",
+    "kpis": {
+     "caja": 51,
+     "margen": 55.6,
+     "equipo": 85.1,
+     "clientes": 65.6,
+     "consejo": 69.5
+    },
+    "reasons": {
+     "objetivo": 4,
+     "salud": 2
+    },
+    "puntosDesperdiciados": 0.2,
+    "cajaPagadaPorOpcionesDe3": -11.5,
+    "diagnostico": [
+     "Aprobaste: los cinco indicadores cerraron en 50 o más.",
+     "En 6 de 15 decisiones elegiste caminos que cuestan caja y casi nunca uno que lo repusiera (2).",
+     "Tu estilo se cargó a apostar al largo plazo (12 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu estilo se cargó a construir con otros (10 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu criterio fue sólido y el negocio lo reflejó."
+    ]
+   }
+  },
+  "vertice": {
+   "mas_larga": {
+    "label": "Siempre la opción más larga",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 2.9,
+    "nivelCriterio": "alto",
+    "cuadrante": "criterio_sin_resultado",
+    "kpis": {
+     "caja": 49,
+     "margen": 46,
+     "equipo": 100,
+     "clientes": 72,
+     "consejo": 65
+    },
+    "reasons": {
+     "objetivo": 1
+    },
+    "puntosDesperdiciados": 1,
+    "cajaPagadaPorOpcionesDe3": -13,
+    "diagnostico": [
+     "No aprobaste: caja cerró en 49, margen cerró en 46 (la línea es 50).",
+     "Caja bajó de 58 a 49 por tus decisiones (-7), el proyecto de cambio (-2). Lo que más pesó: «Riesgo crítico · Sistemas Lumbre, el proveedor de nuestro sistema de almacén» (-5), «Se nos van los operadores · 40 en dos meses» (-2), «Junta · ¿Prometemos rastreo en tiempo real y ventanas de una hora?» (-2).",
+     "Margen bajó de 54 a 46 por tus decisiones (-8). Lo que más pesó: «Junta · ¿Prometemos rastreo en tiempo real y ventanas de una hora?» (-3), «Supermercados Almena · Condiciones para el próximo año» (-2), «Confidencial · Denuncia contra el gerente regional» (-2).",
+     "En 7 de 15 decisiones elegiste caminos que cuestan caja y casi nunca uno que lo repusiera (2).",
+     "En 7 de 15 decisiones elegiste caminos que cuestan margen y casi nunca uno que lo repusiera (2).",
+     "10 decisiones bien razonadas tenían un costo en caja y margen que no compensaste después. El criterio era bueno; la suma de costos, no.",
+     "Tu criterio fue sólido, pero el resultado no alcanzó: buenas decisiones también tienen costos, y aquí se acumularon sin compensarse. Eso se aprende; no es lo mismo que decidir mal."
+    ]
+   },
+   "mas_corta": {
+    "label": "Siempre la opción más corta",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 1.4,
+    "nivelCriterio": "bajo",
+    "cuadrante": "ni_criterio_ni_resultado",
+    "kpis": {
+     "caja": 36,
+     "margen": 46,
+     "equipo": 61,
+     "clientes": 70,
+     "consejo": 61
+    },
+    "reasons": {
+     "insolvencia": 1,
+     "objetivo": 1,
+     "piso": 1,
+     "salud": 1
+    },
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": 0,
+    "diagnostico": [
+     "No aprobaste: caja cerró en 36, margen cerró en 46 (la línea es 50).",
+     "Caja bajó de 58 a 36 por tus decisiones (-20), el proyecto de cambio (-2). Lo que más pesó: «Riesgo crítico · Sistemas Lumbre, el proveedor de nuestro sistema de almacén» (-8), «Propuesta para el consejo · crédito para renovar flota y abrir CEDIS» (-6), «Se nos van los operadores · 40 en dos meses» (-4).",
+     "Margen bajó de 54 a 46 por tus decisiones (-8). Lo que más pesó: «Supermercados Almena · Condiciones para el próximo año» (-8), «Lalo Rangel» (-3), «Se nos van los operadores · 40 en dos meses» (-2).",
+     "En 6 de 14 decisiones elegiste caminos que cuestan caja y casi nunca uno que lo repusiera (2).",
+     "Tu estilo se cargó a decidir tú solo (6 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Ni el razonamiento ni el resultado alcanzaron: revisa los asuntos que más pesaron y qué alternativa defendible tenías."
+    ]
+   },
+   "azar": {
+    "label": "Al azar",
+    "reps": 30,
+    "actual": 13.3,
+    "candidato": 30,
+    "criterio": 1.9,
+    "nivelCriterio": "bajo",
+    "cuadrante": "ni_criterio_ni_resultado",
+    "kpis": {
+     "caja": 48.9,
+     "margen": 52.8,
+     "equipo": 64.9,
+     "clientes": 64.7,
+     "consejo": 69.3
+    },
+    "reasons": {
+     "salud": 19,
+     "objetivo": 9,
+     "piso": 4,
+     "insolvencia": 2
+    },
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": -4.5,
+    "diagnostico": [
+     "No aprobaste: caja cerró en 43 (la línea es 50).",
+     "Caja bajó de 58 a 43 por tus decisiones (-13), el proyecto de cambio (-2). Lo que más pesó: «Riesgo crítico · Sistemas Lumbre, el proveedor de nuestro sistema de almacén» (-8), «Se nos van los operadores · 40 en dos meses» (-4), «Llamada perdida · Patricio Lozano (Finanzas)» (-3).",
+     "Tu estilo se cargó a apostar al largo plazo (9 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Ni el razonamiento ni el resultado alcanzaron: revisa los asuntos que más pesaron y qué alternativa defendible tenías."
+    ]
+   },
+   "mejor_score": {
+    "label": "Siempre la que el feedback felicita (criterio más alto)",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 3,
+    "nivelCriterio": "alto",
+    "cuadrante": "criterio_sin_resultado",
+    "kpis": {
+     "caja": 48,
+     "margen": 43,
+     "equipo": 96,
+     "clientes": 73,
+     "consejo": 66
+    },
+    "reasons": {
+     "objetivo": 1
+    },
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": -13,
+    "diagnostico": [
+     "No aprobaste: caja cerró en 48, margen cerró en 43 (la línea es 50).",
+     "Caja bajó de 58 a 48 por tus decisiones (-8), el proyecto de cambio (-2). Lo que más pesó: «Riesgo crítico · Sistemas Lumbre, el proveedor de nuestro sistema de almacén» (-5), «Se nos van los operadores · 40 en dos meses» (-2), «Junta · ¿Prometemos rastreo en tiempo real y ventanas de una hora?» (-2).",
+     "Margen bajó de 54 a 43 por tus decisiones (-11). Lo que más pesó: «Junta · ¿Prometemos rastreo en tiempo real y ventanas de una hora?» (-3), «Supermercados Almena · Condiciones para el próximo año» (-2), «Confidencial · Denuncia contra el gerente regional» (-2).",
+     "En 7 de 15 decisiones elegiste caminos que cuestan caja y casi nunca uno que lo repusiera (2).",
+     "En 8 de 15 decisiones elegiste caminos que cuestan margen y casi nunca uno que lo repusiera (1).",
+     "11 decisiones bien razonadas tenían un costo en caja y margen que no compensaste después. El criterio era bueno; la suma de costos, no.",
+     "Tu criterio fue sólido, pero el resultado no alcanzó: buenas decisiones también tienen costos, y aquí se acumularon sin compensarse. Eso se aprende; no es lo mismo que decidir mal."
+    ]
+   },
+   "peor_score": {
+    "label": "Siempre la de criterio más bajo",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 0.7,
+    "nivelCriterio": "bajo",
+    "cuadrante": "ni_criterio_ni_resultado",
+    "kpis": {
+     "caja": 60,
+     "margen": 54,
+     "equipo": 20,
+     "clientes": 55,
+     "consejo": 83
+    },
+    "reasons": {
+     "piso": 1,
+     "salud": 1
+    },
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": 0,
+    "diagnostico": [
+     "No aprobaste: equipo cerró en 20 (la línea es 50).",
+     "Equipo bajó de 60 a 20 por tus decisiones (-41). Lo que más pesó: «Sesión de consejo · Cierre del trimestre» (-7), «Bienvenido a Vértice. Esto es lo que esperamos.» (-6), «Junta · ¿Prometemos rastreo en tiempo real y ventanas de una hora?» (-6).",
+     "En 10 de 15 decisiones elegiste caminos que cuestan equipo y casi nunca uno que lo repusiera (1).",
+     "Tu estilo se cargó a resolver lo inmediato (7 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu estilo se cargó a cuidar los números (9 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Ni el razonamiento ni el resultado alcanzaron: revisa los asuntos que más pesaron y qué alternativa defendible tenías."
+    ]
+   },
+   "mejor_efecto": {
+    "label": "Solo números: la de mejor efecto neto",
+    "reps": 1,
+    "actual": 100,
+    "candidato": 100,
+    "criterio": 2.4,
+    "nivelCriterio": "alto",
+    "cuadrante": "criterio_y_resultado",
+    "kpis": {
+     "caja": 62,
+     "margen": 52,
+     "equipo": 85,
+     "clientes": 64,
+     "consejo": 80
+    },
+    "reasons": {},
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": -2,
+    "diagnostico": [
+     "Aprobaste: los cinco indicadores cerraron en 50 o más.",
+     "Tu estilo se cargó a apostar al largo plazo (12 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu estilo se cargó a construir con otros (8 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu estilo se cargó a enfrentar el conflicto (8 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu criterio fue sólido y el negocio lo reflejó."
+    ]
+   },
+   "siempre_A": {
+    "label": "Siempre la primera opción",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 2.1,
+    "nivelCriterio": "medio",
+    "cuadrante": "criterio_sin_resultado",
+    "kpis": {
+     "caja": 43,
+     "margen": 35,
+     "equipo": 100,
+     "clientes": 80,
+     "consejo": 66
+    },
+    "reasons": {
+     "objetivo": 1,
+     "piso": 1
+    },
+    "puntosDesperdiciados": 2,
+    "cajaPagadaPorOpcionesDe3": -6,
+    "diagnostico": [
+     "No aprobaste: caja cerró en 43, margen cerró en 35 (la línea es 50).",
+     "Caja bajó de 58 a 43 por tus decisiones (-13), el proyecto de cambio (-2). Lo que más pesó: «Propuesta para el consejo · crédito para renovar flota y abrir CEDIS» (-6), «Riesgo crítico · Sistemas Lumbre, el proveedor de nuestro sistema de almacén» (-5), «Se nos van los operadores · 40 en dos meses» (-4).",
+     "Margen bajó de 54 a 35 por tus decisiones (-19). Lo que más pesó: «Supermercados Almena · Condiciones para el próximo año» (-8), «Lalo Rangel» (-3), «Se nos van los operadores · 40 en dos meses» (-2).",
+     "En 8 de 14 decisiones elegiste caminos que cuestan margen y casi nunca uno que lo repusiera (1).",
+     "En 9 de 14 decisiones elegiste caminos que cuestan consejo y casi nunca uno que lo repusiera (3).",
+     "4 decisiones bien razonadas tenían un costo en caja y margen que no compensaste después. El criterio era bueno; la suma de costos, no.",
+     "Tu criterio fue sólido, pero el resultado no alcanzó: buenas decisiones también tienen costos, y aquí se acumularon sin compensarse. Eso se aprende; no es lo mismo que decidir mal."
+    ]
+   },
+   "no_contesta": {
+    "label": "No contesta nada",
+    "reps": 1,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 0,
+    "nivelCriterio": "bajo",
+    "cuadrante": "ni_criterio_ni_resultado",
+    "kpis": {
+     "caja": 48,
+     "margen": 47,
+     "equipo": 10,
+     "clientes": 35,
+     "consejo": 39
+    },
+    "reasons": {
+     "consejo_perdido": 1,
+     "objetivo": 1,
+     "piso": 1,
+     "salud": 1
+    },
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": 0,
+    "diagnostico": [
+     "No aprobaste: caja cerró en 48, margen cerró en 47, equipo cerró en 10, clientes cerró en 35, consejo cerró en 39 (la línea es 50).",
+     "Caja bajó de 58 a 48 por lo que dejaste vencer (-10). Lo que más pesó: «Propuesta para el consejo · crédito para renovar flota y abrir CEDIS» (-4), «URGENTE · Una unidad se quedó sin frenos en la carretera a Saltillo» (-3), «Avante quiere comprarnos · y hay otra opción» (-3).",
+     "Margen bajó de 54 a 47 por lo que dejaste vencer (-7). Lo que más pesó: «Riesgo crítico · Sistemas Lumbre, el proveedor de nuestro sistema de almacén» (-3), «Se nos van los operadores · 40 en dos meses» (-2), «Pepe Medina» (-2).",
+     "Equipo bajó de 60 a 10 por lo que dejaste vencer (-50). Lo que más pesó: «Llamada perdida · Patricio Lozano (Finanzas)» (-8), «Junta · ¿Prometemos rastreo en tiempo real y ventanas de una hora?» (-6), «Confidencial · Denuncia contra el gerente regional» (-6).",
+     "Clientes bajó de 64 a 35 por lo que dejaste vencer (-29). Lo que más pesó: «Riesgo crítico · Sistemas Lumbre, el proveedor de nuestro sistema de almacén» (-8), «URGENTE · Una unidad se quedó sin frenos en la carretera a Saltillo» (-7), «Supermercados Almena · Condiciones para el próximo año» (-6).",
+     "Consejo bajó de 70 a 39 por lo que dejaste vencer (-31). Lo que más pesó: «Bienvenido a Vértice. Esto es lo que esperamos.» (-7), «Sesión de consejo · Cierre del trimestre» (-6), «Propuesta para el consejo · crédito para renovar flota y abrir CEDIS» (-4).",
+     "Dejaste vencer 15 asuntos. No responder también decide, y casi siempre mal.",
+     "Ni el razonamiento ni el resultado alcanzaron: revisa los asuntos que más pesaron y qué alternativa defendible tenías."
+    ]
+   },
+   "contesta_la_mitad": {
+    "label": "Contesta la mitad (al azar)",
+    "reps": 30,
+    "actual": 0,
+    "candidato": 0,
+    "criterio": 1.9,
+    "nivelCriterio": "bajo",
+    "cuadrante": "ni_criterio_ni_resultado",
+    "kpis": {
+     "caja": 50.1,
+     "margen": 50.9,
+     "equipo": 40.1,
+     "clientes": 57.3,
+     "consejo": 66.8
+    },
+    "reasons": {
+     "objetivo": 17,
+     "piso": 16,
+     "salud": 30
+    },
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": -3.4,
+    "diagnostico": [
+     "No aprobaste: equipo cerró en 18, clientes cerró en 49 (la línea es 50).",
+     "Equipo bajó de 60 a 18 por lo que dejaste vencer (-33), tus decisiones (-15). Lo que más pesó: «Bienvenido a Vértice. Esto es lo que esperamos.» (-6), «Junta · ¿Prometemos rastreo en tiempo real y ventanas de una hora?» (-6), «Confidencial · Denuncia contra el gerente regional» (-6).",
+     "Clientes bajó de 64 a 49 por lo que dejaste vencer (-14), tus decisiones (-1). Lo que más pesó: «URGENTE · Una unidad se quedó sin frenos en la carretera a Saltillo» (-7), «Riesgo crítico · Sistemas Lumbre, el proveedor de nuestro sistema de almacén» (-4), «Mi renuncia» (-3).",
+     "En 4 de 8 decisiones elegiste caminos que cuestan equipo y casi nunca uno que lo repusiera (1).",
+     "Dejaste vencer 7 asuntos. No responder también decide, y casi siempre mal.",
+     "Tu estilo se cargó a cuidar los números (5 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Ni el razonamiento ni el resultado alcanzaron: revisa los asuntos que más pesaron y qué alternativa defendible tenías."
+    ]
+   },
+   "director_equilibrado": {
+    "label": "Director equilibrado: opciones defendibles cuidando el indicador más débil",
+    "reps": 1,
+    "actual": 100,
+    "candidato": 100,
+    "criterio": 2.6,
+    "nivelCriterio": "alto",
+    "cuadrante": "criterio_y_resultado",
+    "kpis": {
+     "caja": 50,
+     "margen": 59,
+     "equipo": 87,
+     "clientes": 63,
+     "consejo": 70
+    },
+    "reasons": {},
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": -5,
+    "diagnostico": [
+     "Aprobaste: los cinco indicadores cerraron en 50 o más.",
+     "Tu estilo se cargó a apostar al largo plazo (12 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu estilo se cargó a construir con otros (6 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu estilo se cargó a enfrentar el conflicto (9 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu criterio fue sólido y el negocio lo reflejó."
+    ]
+   },
+   "criterio_contextual": {
+    "label": "Criterio contextual (rúbrica nueva): lo mejor razonado leyendo el tablero",
+    "reps": 1,
+    "actual": 100,
+    "candidato": 100,
+    "criterio": 2.9,
+    "nivelCriterio": "alto",
+    "cuadrante": "criterio_y_resultado",
+    "kpis": {
+     "caja": 50,
+     "margen": 51,
+     "equipo": 100,
+     "clientes": 65,
+     "consejo": 66
+    },
+    "reasons": {},
+    "puntosDesperdiciados": 3,
+    "cajaPagadaPorOpcionesDe3": -12,
+    "diagnostico": [
+     "Aprobaste: los cinco indicadores cerraron en 50 o más.",
+     "En 6 de 15 decisiones elegiste caminos que cuestan caja y casi nunca uno que lo repusiera (2).",
+     "Tu estilo se cargó a apostar al largo plazo (13 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu estilo se cargó a cuidar a las personas (7 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu criterio fue sólido y el negocio lo reflejó."
+    ]
+   },
+   "criterio_variado": {
+    "label": "Caminos variados: cualquier opción con criterio contextual alto, al azar",
+    "reps": 30,
+    "actual": 26.7,
+    "candidato": 66.7,
+    "criterio": 2.6,
+    "nivelCriterio": "alto",
+    "cuadrante": "criterio_y_resultado",
+    "kpis": {
+     "caja": 48.4,
+     "margen": 54.2,
+     "equipo": 85.3,
+     "clientes": 62.8,
+     "consejo": 69
+    },
+    "reasons": {
+     "salud": 6,
+     "objetivo": 4
+    },
+    "puntosDesperdiciados": 0,
+    "cajaPagadaPorOpcionesDe3": -12.6,
+    "diagnostico": [
+     "Aprobaste: los cinco indicadores cerraron en 50 o más.",
+     "En 6 de 15 decisiones elegiste caminos que cuestan caja y casi nunca uno que lo repusiera (2).",
+     "Tu estilo se cargó a apostar al largo plazo (11 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu estilo se cargó a construir con otros (9 decisiones). Es una fortaleza hasta que la situación pide lo contrario.",
+     "Tu criterio fue sólido y el negocio lo reflejó."
+    ]
+   }
+  }
+ }
+}
