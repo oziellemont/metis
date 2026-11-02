@@ -11,7 +11,7 @@ import { ArrowRight, BookOpen, Check, FileText, HelpCircle, Lock, Pause, Play, S
 import { useCeo } from "./CeoProvider";
 import { Stage, StageChoice, StepTitle } from "./Stage";
 import { Avatar, ChannelChip, Delta } from "./ui";
-import { personOf } from "@/lib/ceo/cast";
+import { personOf, speakerGroups } from "@/lib/ceo/cast";
 import { KPI_LABEL, brandedEpisode, brandedOutcome, episodeSeasonXp, seasonEpisodesOf, seasonRunOf } from "@/lib/ceo/engine";
 import { lessonById } from "@/lib/ceo/lessons";
 import { episodeSpec } from "@/lib/ceo/episodes/catalog";
@@ -207,6 +207,12 @@ function Bubble({ who, children, me }: { who?: Parameters<typeof Avatar>[0]["id"
   );
 }
 
+/** Varias líneas, cada grupo bajo el nombre de quien de verdad lo dice. */
+function Said({ who, lines }: { who?: Parameters<typeof Avatar>[0]["id"]; lines: string[] }) {
+  const c = useCeo();
+  return <>{speakerGroups(c.pack, who, lines).map((g, i) => <Bubble key={i} who={g.who}>{g.lines.map((p, k) => <p key={k}>{p}</p>)}</Bubble>)}</>;
+}
+
 /** Una jugada ya hecha: lo que dijiste y lo que te respondieron. */
 function TurnView({ spec, t }: { spec: EpisodeSpec; t: EpisodeRun["turns"][number] }) {
   return (
@@ -217,7 +223,7 @@ function TurnView({ spec, t }: { spec: EpisodeSpec; t: EpisodeRun["turns"][numbe
         {t.terms && <p className="mt-1 text-white/80 text-xs">{Object.entries(t.terms).map(([k, v]) => `${spec.terms[k]?.label ?? k}: ${v} ${spec.terms[k]?.unit ?? ""}`).join(" · ")}</p>}
       </Bubble>
       {t.interpretation && <p className="text-right text-[11px] text-white/50">Con tus palabras: {t.interpretation.feedback}{t.interpretation.extras ? ` · Fuera del caso: ${t.interpretation.extras}` : ""}</p>}
-      <Bubble who={spec.nodes[t.node]?.who}>{t.reply.map((p, k) => <p key={k}>{p}</p>)}</Bubble>
+      <Said who={spec.nodes[t.node]?.who} lines={t.reply} />
     </div>
   );
 }
@@ -230,7 +236,7 @@ function History({ spec, run }: { spec: EpisodeSpec; run: EpisodeRun }) {
       <div className="mt-5 space-y-4">
         {run.turns.map((t, i) => (
           <div key={i} className="space-y-2">
-            {t.said?.length ? <Bubble who={spec.nodes[t.node]?.who}>{t.said.map((p, k) => <p key={k}>{p}</p>)}</Bubble> : null}
+            {t.said?.length ? <Said who={spec.nodes[t.node]?.who} lines={t.said} /> : null}
             <TurnView spec={spec} t={t} />
           </div>
         ))}
@@ -415,7 +421,7 @@ function Decision({ spec, run, act }: { spec: EpisodeSpec; run: EpisodeRun; act:
       </div>
       {last && <div className="mt-4"><TurnView spec={spec} t={last} /></div>}
       <div className="mt-4 space-y-3">
-        <Bubble who={node.who}>{say.map((p, i) => <p key={i}>{p}</p>)}</Bubble>
+        <Said who={node.who} lines={say} />
         {reveal.map((b) => <Facts key={b.title} title={b.title} rows={b.rows} />)}
       </div>
       <h2 className="mt-6 text-xl sm:text-2xl font-semibold leading-snug">{node.ask}</h2>

@@ -70,7 +70,7 @@ function Intro({ onStart }: { onStart: () => void }) {
         <div className="relative">
           <div className="text-[11px] font-semibold uppercase tracking-wider text-white/60">Requisito para {STAGES[4].name}</div>
           <h1 className="mt-2 text-2xl sm:text-3xl font-semibold leading-tight">Junta ante el Consejo</h1>
-          <p className="mt-3 text-white/80 leading-relaxed max-w-2xl">Antes de nombrarte Director General, el consejo de {c.pack.name} quiere verte en la sala. Tres momentos, uno detrás de otro. Lo que digas en uno se queda en el acta y pesa en el siguiente.</p>
+          <p className="mt-3 text-white/80 leading-relaxed max-w-2xl">Antes de confirmarte en la Dirección General, el consejo de {c.pack.name} quiere verte en la sala. Tres momentos, uno detrás de otro. Lo que digas en uno se queda en el acta y pesa en el siguiente.</p>
           <div className="mt-5 grid grid-cols-3 gap-3 max-w-lg">
             <Stat k="Momentos" v={String(STEPS.length)} />
             <Stat k="Duración" v="10 min" />

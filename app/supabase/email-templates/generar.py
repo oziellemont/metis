@@ -13,17 +13,22 @@ INK, INDIGO, SLATE, MUTED, CANVAS = "#171A3A", "#4F3FE0", "#475569", "#94A3B8", 
 FONT = "Poppins,'Segoe UI',Helvetica,Arial,sans-serif"
 
 
-CEO_SITE = "https://metisalign.app"
-# Desde dónde pide el enlace la app de mêtis CEO (ver CeoSettings → emailRedirectTo).
+CEO_SITE = "https://metis.ceo"
+# Cómo se reconoce a un jugador de mêtis CEO:
+#  1) se registró desde la app CEO (signUp manda data.app = "ceo"; queda en .Data del usuario), o
+#  2) el enlace se pidió desde un dominio CEO (lista exacta, por compatibilidad con cuentas viejas).
+# Antes solo existía (2) con metisalign.app; desde la mudanza a metis.ceo el correo salía con la marca de mêtis.
 CEO_REDIRECTS = [
+    "https://metis.ceo/auth/callback?next=/ceo",
+    "https://www.metis.ceo/auth/callback?next=/ceo",
+    "https://metis.ceo/auth/callback?next=%2Fceo%2Fempezar",
+    "https://www.metis.ceo/auth/callback?next=%2Fceo%2Fempezar",
     "https://metisalign.app/auth/callback?next=/ceo",
     "https://www.metisalign.app/auth/callback?next=/ceo",
-    "https://www.metisalign.mx/auth/callback?next=/ceo",
-    "https://metisalign.mx/auth/callback?next=/ceo",
 ]
-CEO_IF = "{{ if eq .RedirectTo " + " ".join(f'"{u}"' for u in CEO_REDIRECTS) + " }}"
+CEO_IF = '{{ if or (eq (print .Data.app) "ceo") (eq .RedirectTo ' + " ".join(f'"{u}"' for u in CEO_REDIRECTS) + ") }}"
 CEO_FOOTER = (f'<strong style="color:{SLATE}">mêtis CEO</strong> · Entrena como CEO dirigiendo una empresa simulada<br>'
-              f'<a href="{CEO_SITE}" style="color:{MUTED};text-decoration:underline">metisalign.app</a> · '
+              f'<a href="{CEO_SITE}" style="color:{MUTED};text-decoration:underline">metis.ceo</a> · '
               f'<a href="mailto:{CONTACT}" style="color:{MUTED};text-decoration:underline">{CONTACT}</a>')
 
 
@@ -164,21 +169,21 @@ TEMPLATES = [
 ]
 
 
-# Versión mêtis CEO de las plantillas que usa metisalign.app (registro y enlace de acceso).
+# Versión mêtis CEO de las plantillas de metis.ceo (registro y enlace de acceso).
 # Supabase manda UNA plantilla por tipo; el archivo final lleva las dos y elige con {{ if }} según desde dónde se pidió.
 B = 'style="color:#171A3A"'
 CEO = {
     "1-confirmar-registro.html": {
-        "preheader": "Un clic y empiezas tu primer día como Director General.",
+        "preheader": "Un clic y empiezas tu primer día en la Dirección General.",
         "title": "Confirma tu correo y toma la silla",
-        "body": f"Estás a un clic de dirigir <strong {B}>Botanas Cumbre</strong> en <strong {B}>mêtis CEO</strong>. Confirma que <strong {B}>{{{{ .Email }}}}</strong> es tu correo: ahí te escribirá tu equipo cada día y ahí te llegarán tus recordatorios. Tu avance queda guardado y entra al ranking.",
+        "body": f"Estás a un clic de tomar la Dirección General de tu empresa en <strong {B}>mêtis CEO</strong>. Confirma que <strong {B}>{{{{ .Email }}}}</strong> es tu correo: ahí te escribirá tu equipo cada día y ahí te llegarán tus recordatorios. Tu avance queda guardado en tu cuenta.",
         "button": "Confirmar y entrar a mi oficina",
         "note": "Este enlace vence en 24 horas. " + SAFE,
     },
     "3-enlace-de-acceso.html": {
         "preheader": "Tu equipo te espera. Entra con un clic, sin contraseña.",
         "title": "Tu oficina te espera",
-        "body": f"Recibimos una solicitud para entrar a <strong {B}>mêtis CEO</strong> con <strong {B}>{{{{ .Email }}}}</strong>. Da clic en el botón y vuelves a tu oficina de Botanas Cumbre con todo tu avance, sin contraseña.",
+        "body": f"Recibimos una solicitud para entrar a <strong {B}>mêtis CEO</strong> con <strong {B}>{{{{ .Email }}}}</strong>. Da clic en el botón y vuelves a tu oficina con todo tu avance, sin contraseña.",
         "button": "Entrar a mi oficina",
         "note": "Por seguridad, este enlace sirve una sola vez y vence en 1 hora. " + SAFE,
     },
@@ -208,7 +213,7 @@ def main() -> None:
         variants = [(" · versión mêtis" if t["file"] in CEO else "", layout(t["preheader"], t["title"], t["body"], t["button"], t["url"], t["note"]))]
         if t["file"] in CEO:
             c = CEO[t["file"]]
-            variants.insert(0, (" · versión mêtis CEO (metisalign.app)", layout(c["preheader"], c["title"], c["body"], c["button"], t["url"], c["note"], ceo=True)))
+            variants.insert(0, (" · versión mêtis CEO (metis.ceo)", layout(c["preheader"], c["title"], c["body"], c["button"], t["url"], c["note"], ceo=True)))
         for label, html in variants:
             srcdoc = demo(html).replace(chr(38), chr(38) + "amp;").replace(chr(34), chr(38) + "quot;")
             previews.append(f'<section><h2>{t["supabase"]}{label}</h2><p><b>Asunto:</b> {t["subject"]} &nbsp;·&nbsp; <b>Archivo:</b> {t["file"]}</p>'

@@ -58,7 +58,8 @@ export function until(ts: number, now: number) {
   return h < 24 ? `${h} h ${m % 60 ? `${m % 60} min` : ""}`.trim() : `${Math.round(h / 24)} d`;
 }
 export function clock(ts: number, tz?: string) {
-  return new Intl.DateTimeFormat("es-MX", { hour: "numeric", minute: "2-digit", timeZone: tz }).format(new Date(ts));
+  try { return new Intl.DateTimeFormat("es-MX", { hour: "numeric", minute: "2-digit", timeZone: tz || "America/Monterrey" }).format(new Date(ts)); }
+  catch { return new Intl.DateTimeFormat("es-MX", { hour: "numeric", minute: "2-digit", timeZone: "America/Monterrey" }).format(new Date(ts)); }
 }
 
 export function Flame({ on, size = 18, white }: { on: boolean; size?: number; white?: boolean }) {

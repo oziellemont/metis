@@ -13,9 +13,9 @@ export const ONBOARDING_VERSION = 1;
 
 /** Meta diaria flexible de decisiones (no es un deber: no castiga si no se cumple). */
 export const DAILY_GOALS = [
-  { value: 1, id: "tranquilo", label: "Tranquilo", hint: "1 decisión al día" },
-  { value: 2, id: "constante", label: "Constante", hint: "2 decisiones al día", recommended: true },
-  { value: 3, id: "intensivo", label: "Intensivo", hint: "3 decisiones al día" },
+  { value: 1, id: "tranquilo", label: "Tranquilo", hint: "Meta: 1 decisión al día" },
+  { value: 2, id: "constante", label: "Constante", hint: "Meta: 2 decisiones al día", recommended: true },
+  { value: 3, id: "intensivo", label: "Intensivo", hint: "Meta: 3 decisiones al día" },
 ] as const;
 export type DailyDecisionGoal = (typeof DAILY_GOALS)[number]["value"];
 export const DEFAULT_DAILY_GOAL: DailyDecisionGoal = 2;

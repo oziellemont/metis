@@ -224,11 +224,17 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
       setReady(true);
     })();
     try {
-      const q = new URLSearchParams(window.location.search).get("prueba");
-      if (q === "1") localStorage.setItem(KEY + ":prueba", "1");
-      if (q === "0") localStorage.removeItem(KEY + ":prueba");
+      // Herramientas de prueba: en producción solo para el equipo mêtis (metis.is_platform_admin, solo lectura).
+      try { localStorage.removeItem(KEY + ":prueba"); } catch { /* ignore */ }
       const env = appEnvOf(process.env.NEXT_PUBLIC_VERCEL_ENV, process.env.NODE_ENV);
-      setTestTools(testToolsVisible(env, process.env.NEXT_PUBLIC_CEO_TEST_TOOLS, localStorage.getItem(KEY + ":prueba") === "1"));
+      setTestTools(testToolsVisible(env, process.env.NEXT_PUBLIC_CEO_TEST_TOOLS, false));
+      if (env === "production" && sb) {
+        void sb.auth.getSession().then(async (r) => {
+          if (!r.data.session) return;
+          const { data } = await sb.schema("metis").rpc("is_platform_admin");
+          if (alive && data === true) setTestTools(true);
+        }).catch(() => { /* sin permiso: se quedan ocultas */ });
+      }
     } catch { /* ignore */ }
     const t = setInterval(() => setTick(Date.now()), 10_000);
     const vis = () => document.visibilityState === "visible" && setTick(Date.now());

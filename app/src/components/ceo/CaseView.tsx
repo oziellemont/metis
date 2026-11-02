@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
 import { ArrowLeft, ArrowRight, BookOpen, CheckCheck, PenLine, ListChecks, Clock, Globe2, Lightbulb, PhoneMissed, Play, Quote, XCircle } from "lucide-react";
-import { firstName, personOf } from "@/lib/ceo/cast";
+import { firstName, personOf, personalizeText } from "@/lib/ceo/cast";
 import { effectOf, entryXp, nextLessonXp } from "@/lib/ceo/engine";
 import { runSpans } from "@/lib/ceo/pausetime";
 import { entryRipples, moodOf, REL_START } from "@/lib/ceo/relations";
@@ -164,6 +164,7 @@ export function CaseView({ id }: { id: string }) {
 function Header({ it, at, now }: { it: Item; at: number; now: number }) {
   const c = useCeo();
   const p = personOf(c.pack, it.from);
+  const tz = c.s.settings.tz || "America/Monterrey";
   return (
     <div className="flex items-start gap-3">
       <Avatar id={it.from} size={44} />
@@ -171,7 +172,7 @@ function Header({ it, at, now }: { it: Item; at: number; now: number }) {
         <div className="flex flex-wrap items-center gap-2"><span className="font-semibold text-ink">{p.name}</span><ChannelChip c={it.channel} /></div>
         <div className="text-xs text-slate-500">{p.role}</div>
       </div>
-      <span className="text-[11px] text-slate-400 whitespace-nowrap">{clock(at)}{now - at > 86_400_000 ? ` · ${new Date(at).toLocaleDateString("es-MX", { day: "numeric", month: "short" })}` : ""}</span>
+      <span className="text-[11px] text-slate-400 whitespace-nowrap">{clock(at, tz)}{now - at > 86_400_000 ? ` · ${new Date(at).toLocaleDateString("es-MX", { day: "numeric", month: "short", timeZone: tz })}` : ""}</span>
     </div>
   );
 }
@@ -186,7 +187,7 @@ function Mail({ e }: { e: Entry }) {
         <div className="mt-1 text-xs text-slate-400">Para: {c.s.name || "Director General"} &lt;direccion@{c.pack.domain}&gt;</div>
       </div>
       <div className="px-5 sm:px-6 py-5 space-y-3 text-[15px] leading-relaxed text-slate-700">
-        {e.item.body.map((p, i) => <p key={i} className="whitespace-pre-line">{p}</p>)}
+        {e.item.body.map((p, i) => <p key={i} className="whitespace-pre-line">{personalizeText(p, c.s.name)}</p>)}
       </div>
     </div>
   );
@@ -209,9 +210,9 @@ function WhatsApp({ e }: { e: Entry }) {
         <ChannelChip c="whatsapp" className="ml-auto" />
       </div>
       <div className="bg-[#ECE5DD] px-3 sm:px-5 py-5 space-y-2 min-h-[180px]" style={{ backgroundImage: "radial-gradient(rgba(0,0,0,.035) 1px, transparent 1px)", backgroundSize: "14px 14px" }}>
-        <div className="text-center"><span className="chip bg-white/80 text-slate-500 text-[11px]">{clock(e.arrivesAt)}</span></div>
+        <div className="text-center"><span className="chip bg-white/80 text-slate-500 text-[11px]">{clock(e.arrivesAt, c.s.settings.tz || "America/Monterrey")}</span></div>
         {e.item.body.slice(0, shown).map((m, i) => (
-          <div key={i} className="max-w-[85%] rounded-2xl rounded-tl-md bg-white px-3.5 py-2 text-[15px] text-ink shadow-sm academy-in">{m}</div>
+          <div key={i} className="max-w-[85%] rounded-2xl rounded-tl-md bg-white px-3.5 py-2 text-[15px] text-ink shadow-sm academy-in">{personalizeText(m, c.s.name)}</div>
         ))}
         {shown < e.item.body.length && <div className="w-14 rounded-2xl bg-white px-3 py-2.5 flex gap-1"><span className="h-1.5 w-1.5 rounded-full bg-slate-400 animate-bounce" /><span className="h-1.5 w-1.5 rounded-full bg-slate-400 animate-bounce [animation-delay:.15s]" /><span className="h-1.5 w-1.5 rounded-full bg-slate-400 animate-bounce [animation-delay:.3s]" /></div>}
         {e.option && (
@@ -234,7 +235,7 @@ function Call({ e }: { e: Entry }) {
       <div className="bg-gradient-to-br from-[#2A1B1F] to-[#4A1F26] text-white px-5 py-6 text-center">
         <Avatar id={e.item.from} size={64} className="mx-auto ring-4 ring-white/10" />
         <div className="mt-3 font-semibold">{personOf(c.pack, e.item.from).name}</div>
-        <div className="text-xs text-white/60 inline-flex items-center gap-1.5 mt-1"><PhoneMissed size={12} className="text-coral" /> Llamada perdida · {clock(e.arrivesAt)}</div>
+        <div className="text-xs text-white/60 inline-flex items-center gap-1.5 mt-1"><PhoneMissed size={12} className="text-coral" /> Llamada perdida · {clock(e.arrivesAt, c.s.settings.tz || "America/Monterrey")}</div>
       </div>
       <div className="p-5 sm:p-6">
         <button onClick={() => setPlay(true)} className={clsx("w-full flex items-center gap-3 rounded-2xl p-3 transition-colors", play ? "bg-slate-50" : "bg-indigo-soft hover:bg-indigo-soft/70")}>
@@ -243,7 +244,7 @@ function Call({ e }: { e: Entry }) {
           <span className="text-xs text-slate-500 tabular-nums">{voice.replace(/[^0-9:]/g, "") || "0:45"}</span>
         </button>
         {!play && <p className="mt-2 text-center text-xs text-slate-400">Toca para escuchar el mensaje de voz</p>}
-        {play && <div className="mt-4 space-y-3 text-[15px] leading-relaxed text-slate-700 academy-in">{rest.map((p, i) => <p key={i} className="italic">{p}</p>)}</div>}
+        {play && <div className="mt-4 space-y-3 text-[15px] leading-relaxed text-slate-700 academy-in">{rest.map((p, i) => <p key={i} className="italic">{personalizeText(p, c.s.name)}</p>)}</div>}
       </div>
     </div>
   );
@@ -263,7 +264,7 @@ function Meeting({ e }: { e: Entry }) {
       <div className="px-5 sm:px-6 pt-5 pb-4 border-b border-slate-100">
         <Header it={e.item} at={e.arrivesAt} now={c.now} />
         <h1 className="mt-4 text-lg sm:text-xl font-semibold text-ink leading-snug">{e.item.subject}</h1>
-        {e.item.body.map((p, i) => <p key={i} className="mt-2 text-sm text-slate-500">{p}</p>)}
+        {e.item.body.map((p, i) => <p key={i} className="mt-2 text-sm text-slate-500">{personalizeText(p, c.s.name)}</p>)}
       </div>
       <div className="px-5 sm:px-6 py-5 space-y-4">
         {lines.slice(0, shown).map((l, i) => (

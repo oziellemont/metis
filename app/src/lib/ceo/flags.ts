@@ -52,15 +52,16 @@ export function resolveFlags({ global, player, aiConsent = false, aiEnvEnabled =
 }
 
 /**
- * Herramientas de prueba (adelantar el reloj).
+ * Herramientas de prueba (adelantar el reloj, abrir episodios, reiniciar).
  *  - Preview y desarrollo: siempre visibles.
- *  - Producción: según NEXT_PUBLIC_CEO_TEST_TOOLS. Por defecto "visible" (como hoy),
- *    para no cambiar nada a los jugadores sin aprobación. "oculto" las esconde salvo
- *    que el jugador abra la app con ?prueba=1 (se recuerda en ese dispositivo).
+ *  - Producción: OCULTAS por defecto (rompen la ficción y el ritmo). Se ven solo si:
+ *      · la cuenta es del equipo mêtis (metis.platform_admins), o
+ *      · NEXT_PUBLIC_CEO_TEST_TOOLS = "visible" (interruptor global para volver a mostrarlas).
+ *    ?prueba=1 ya no basta por sí solo en producción: cualquiera podía activarlo.
  */
-export function testToolsVisible(env: AppEnv, setting: string | undefined | null, unlocked: boolean): boolean {
+export function testToolsVisible(env: AppEnv, setting: string | undefined | null, staff: boolean): boolean {
   if (env !== "production") return true;
   const s = (setting ?? "").trim().toLowerCase();
-  if (s === "oculto" || s === "hidden") return unlocked;
-  return true;
+  if (s === "visible") return true;
+  return staff;
 }

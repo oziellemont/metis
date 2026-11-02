@@ -1,4 +1,4 @@
-{{ if eq .RedirectTo "https://metisalign.app/auth/callback?next=/ceo" "https://www.metisalign.app/auth/callback?next=/ceo" "https://www.metisalign.mx/auth/callback?next=/ceo" "https://metisalign.mx/auth/callback?next=/ceo" }}
+{{ if or (eq (print .Data.app) "ceo") (eq .RedirectTo "https://metis.ceo/auth/callback?next=/ceo" "https://www.metis.ceo/auth/callback?next=/ceo" "https://metis.ceo/auth/callback?next=%2Fceo%2Fempezar" "https://www.metis.ceo/auth/callback?next=%2Fceo%2Fempezar" "https://metisalign.app/auth/callback?next=/ceo" "https://www.metisalign.app/auth/callback?next=/ceo") }}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -13,7 +13,7 @@
     <tr><td align="center" style="padding:32px 16px">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:560px">
         <tr><td style="padding:0 4px 18px">
-          <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td valign="middle"><a href="https://metisalign.app" target="_blank"><img src="https://www.metisalign.mx/brand/logo-horizontal-2000.png" width="120" height="35" alt="mêtis" style="display:block;border:0;width:120px;height:35px"></a></td><td valign="middle" style="padding-left:8px"><span style="display:inline-block;padding:4px 9px;border-radius:999px;background:#171A3A;color:#ffffff;font-family:Poppins,'Segoe UI',Helvetica,Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px">CEO</span></td></tr></table>
+          <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td valign="middle"><a href="https://metis.ceo" target="_blank"><img src="https://www.metisalign.mx/brand/logo-horizontal-2000.png" width="120" height="35" alt="mêtis" style="display:block;border:0;width:120px;height:35px"></a></td><td valign="middle" style="padding-left:8px"><span style="display:inline-block;padding:4px 9px;border-radius:999px;background:#171A3A;color:#ffffff;font-family:Poppins,'Segoe UI',Helvetica,Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px">CEO</span></td></tr></table>
         </td></tr>
         <tr><td bgcolor="#ffffff" style="border-radius:20px;border:1px solid #E8EAF4;overflow:hidden">
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -21,7 +21,7 @@
             <tr><td style="padding:32px 32px 30px">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr><td style="font-family:Poppins,'Segoe UI',Helvetica,Arial,sans-serif;font-size:22px;line-height:30px;font-weight:600;color:#171A3A;padding:0 0 12px">Tu oficina te espera</td></tr>
-                <tr><td style="font-family:Poppins,'Segoe UI',Helvetica,Arial,sans-serif;font-size:15px;line-height:24px;color:#475569;padding:0 0 18px">Recibimos una solicitud para entrar a <strong style="color:#171A3A">mêtis CEO</strong> con <strong style="color:#171A3A">{{ .Email }}</strong>. Da clic en el botón y vuelves a tu oficina de Botanas Cumbre con todo tu avance, sin contraseña.</td></tr>
+                <tr><td style="font-family:Poppins,'Segoe UI',Helvetica,Arial,sans-serif;font-size:15px;line-height:24px;color:#475569;padding:0 0 18px">Recibimos una solicitud para entrar a <strong style="color:#171A3A">mêtis CEO</strong> con <strong style="color:#171A3A">{{ .Email }}</strong>. Da clic en el botón y vuelves a tu oficina con todo tu avance, sin contraseña.</td></tr>
               <tr><td style="padding:8px 0 4px">
                 <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
                   <td bgcolor="#4F3FE0" style="border-radius:12px">
@@ -41,7 +41,7 @@
           Por seguridad, este enlace sirve una sola vez y vence en 1 hora. Si no fuiste tú, ignora este correo: tu cuenta sigue segura y no se hará ningún cambio.
         </td></tr>
         <tr><td style="padding:14px 8px 0;font-family:Poppins,'Segoe UI',Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;color:#94A3B8">
-          <strong style="color:#475569">mêtis CEO</strong> · Entrena como CEO dirigiendo una empresa simulada<br><a href="https://metisalign.app" style="color:#94A3B8;text-decoration:underline">metisalign.app</a> · <a href="mailto:hola@metisalign.mx" style="color:#94A3B8;text-decoration:underline">hola@metisalign.mx</a>
+          <strong style="color:#475569">mêtis CEO</strong> · Entrena como CEO dirigiendo una empresa simulada<br><a href="https://metis.ceo" style="color:#94A3B8;text-decoration:underline">metis.ceo</a> · <a href="mailto:hola@metisalign.mx" style="color:#94A3B8;text-decoration:underline">hola@metisalign.mx</a>
         </td></tr>
       </table>
     </td></tr>
