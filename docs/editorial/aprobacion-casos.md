@@ -31,9 +31,9 @@ Indicadores: Caja, Margen, Equipo, Clientes, Consejo. «Score» (0–3) es qué 
 
 **Pregunta:** ¿Cómo usas tus primeros 30 días?
 
-- **A** (score 3, balance +5): Escuchar primero: 1 a 1 con los 12 líderes clave, dos turnos completos en la planta y visitas a los 5 clientes más grandes. Plan hasta el día 30. → Equipo +5, Clientes +3, Consejo -3.
-- **B** (score 1, balance +1): Llegar con fuerza: en la primera semana anuncio 5 prioridades y 2 victorias rápidas para que todos vean que hay rumbo. → Equipo -4, Consejo +5.
-- **C** (score 1, balance 0): Perfil bajo: me encierro con Finanzas a entender los números a fondo antes de hablar con nadie. → Caja +1, Margen +3, Equipo -3, Clientes -1.
+- **A** (score 3, balance +5): Recorrer antes de decidir: sentarme con los 12 líderes clave, dos turnos en planta y los 5 clientes mayores; propuesta al día 30. → Equipo +5, Clientes +3, Consejo -3.
+- **B** (score 1, balance +1): Llegar con fuerza: en la primera semana anuncio 5 prioridades y 2 victorias rápidas, para que todos vean desde ya que hay rumbo. → Equipo -4, Consejo +5.
+- **C** (score 1, balance 0): Perfil bajo: me encierro con Finanzas a entender los números a fondo antes de hablar con nadie; opinar sin cifras es solo improvisar. → Caja +1, Margen +3, Equipo -3, Clientes -1.
 - **Sin respuesta** (balance -6): Consejo -6.
 
 Respuesta: `d1-bienvenida | ... | ...`
@@ -46,9 +46,9 @@ Respuesta: `d1-bienvenida | ... | ...`
 
 **Pregunta:** Héctor está dolido y te está midiendo. ¿Qué le contestas?
 
-- **A** (score 3, balance +5): «Héctor, hoy mismo te invito a comer. Quiero entender qué le preocupa a tu equipo y qué te importa a ti. Nada se mueve sin que lo platiquemos.» → Margen -2, Equipo +5, Clientes +2.
-- **B** (score 2, balance +2): «Héctor, te agradezco. La revisión va porque el esquema premia volumen con descuento y nos está comiendo el margen. Te comparto el análisis el lunes.» → Margen +3, Equipo -2, Consejo +1.
-- **C** (score 0, balance -3): No contestar hoy. Le pido a Mariana (Personas) que lo atienda y le explique el proceso. → Caja +1, Margen +2, Equipo -5, Clientes -1.
+- **A** (score 3, balance +5): «Héctor, hoy te invito a comer. Quiero entender qué le preocupa a tu equipo y qué te importa a ti; nada se mueve sin platicarlo.» → Margen -2, Equipo +5, Clientes +2.
+- **B** (score 2, balance +2): «Héctor, gracias. La revisión va porque el esquema premia volumen con descuento y nos come el margen. Te comparto el análisis el lunes.» → Margen +3, Equipo -2, Consejo +1.
+- **C** (score 0, balance -3): Dejar la respuesta para después y pedirle a Mariana (Personas) que lo atienda hoy y le explique con calma el proceso de revisión. → Caja +1, Margen +2, Equipo -5, Clientes -1.
 - **Sin respuesta** (balance -6): Equipo -6.
 
 Respuesta: `d1-hector | ... | ...`
@@ -61,8 +61,8 @@ Respuesta: `d1-hector | ... | ...`
 
 **Pregunta:** ¿Cómo respondes a SuperNorte?
 
-- **A** (score 0, balance -10): Aceptar. Es el 31% de las ventas y no puedo arriesgarme en mi primer mes. → Caja -6, Margen -8, Clientes +4.
-- **B** (score 3, balance +2): Pedir una reunión con datos: nuestra rotación es 1.4× la de la competencia. Propongo invertir 1.5 puntos en promociones conjuntas atadas a volumen y mantener 60 días. → Caja -1, Margen -2, Clientes +2, Consejo +3.
+- **A** (score 0, balance -10): Aceptar sus condiciones. Es el 31% de las ventas y en mi primer mes no puedo arriesgar la relación con el cliente más grande que tenemos. → Caja -6, Margen -8, Clientes +4.
+- **B** (score 3, balance +2): Pedir reunión: nuestra rotación es 1.4× la de la competencia. Ofrezco 1.5 puntos en promociones atadas a volumen y sostener 60 días. → Caja -1, Margen -2, Clientes +2, Consejo +3.
 - **C** (score 1, balance -7): Responder firme: si nos aprietan, sacamos producto y apostamos por tiendas de conveniencia. No vamos a regalar margen. → Margen +3, Clientes -8, Consejo -2.
 - **Sin respuesta** (balance -21): Caja -8, Margen -9, Consejo -4.
 
@@ -76,9 +76,9 @@ Respuesta: `d2-supernorte | ... | ...`
 
 **Pregunta:** Ana trabajó mucho, pero no te sirve así. ¿Qué haces?
 
-- **A** (score 1, balance -1): Responder rápido: «Ana, esto no sirve para un consejo. Necesito 3 láminas con conclusión. Para mañana.» → Equipo -4, Consejo +3.
-- **B** (score 3, balance +4): Sentarme 20 minutos con ella: reconocer el trabajo, enseñarle a empezar por el final (¿qué tiene que decidir el consejo?) y pedirle una página con su recomendación. → Equipo +5, Consejo -1.
-- **C** (score 1, balance +1): Agradecerle y armar yo mismo la presentación esta noche. Es más rápido. → Equipo -1, Consejo +2.
+- **A** (score 1, balance -1): Responderle rápido y claro: «Ana, así no sirve para un consejo. Necesito 3 láminas con conclusión. Para mañana.» → Equipo -4, Consejo +3.
+- **B** (score 3, balance +4): Sentarme 20 minutos con ella: enseñarle a empezar por el final, por lo que el consejo debe decidir, y pedirle una página. → Equipo +5, Consejo -1.
+- **C** (score 1, balance +1): Agradecerle y armar yo mismo la presentación esta noche. Es más rápido y el consejo no puede esperar otra versión. → Equipo -1, Consejo +2.
 - **Sin respuesta** (balance -3): Equipo -3.
 
 Respuesta: `d2-ana | ... | ...`
@@ -105,9 +105,9 @@ Respuesta: `c-hector-aliado | ... | ...`
 
 **Pregunta:** ¿Qué le dices a Javier?
 
-- **A** (score 3, balance +3): Parar la línea ya. Reparamos, y yo llamo a SuperNorte para avisar del retraso y proponer entrega parcial. Ese mismo día voy a la planta a hablar con Toño y el turno. → Caja -3, Equipo +8, Clientes -2.
-- **B** (score 0, balance -3): Que le sigan con cuidado hasta el lunes y que reparen el fin de semana siguiente. Que pongan a alguien vigilando el tostador. → Caja +1, Equipo -6, Clientes +2. Línea roja: Seguir operando un equipo con riesgo de accidente ya identificado.
-- **C** (score 1, balance -1): Que Javier decida: él conoce la planta mejor que yo. Que me avise qué resolvió. → Caja -2, Equipo +3, Clientes -1, Consejo -1.
+- **A** (score 3, balance +3): Parar la línea ya y reparar. Yo llamo a SuperNorte para avisar del retraso y ofrecer entrega parcial, y voy a la planta con Toño. → Caja -3, Equipo +8, Clientes -2.
+- **B** (score 0, balance -3): Que sigan con cuidado hasta el lunes y reparen el fin de semana siguiente, con alguien vigilando el tostador durante todo el turno. → Caja +1, Equipo -6, Clientes +2. Línea roja: Seguir operando un equipo con riesgo de accidente ya identificado.
+- **C** (score 1, balance -1): Que decida Javier: conoce la planta mejor que yo y está ahí. Le pido que me avise qué resolvió y qué necesita de mí. → Caja -2, Equipo +3, Clientes -1, Consejo -1.
 - **Sin respuesta** (balance -7): Equipo -7.
 
 Respuesta: `d3-planta | ... | ...`
@@ -120,9 +120,9 @@ Respuesta: `d3-planta | ... | ...`
 
 **Pregunta:** El hijo del fundador quiere $6 M. ¿Qué le respondes?
 
-- **A** (score 1, balance -4): Luz verde. La idea es buena, el mercado crece y tiene el respaldo de Don Ramiro. → Caja -9, Equipo +2, Consejo +3.
-- **B** (score 3, balance +2): Sí, pero como piloto: $800 mil, 30 tiendas de Monterrey, 8 semanas. Si rota y no se come a la línea tradicional, escalamos con todo. Tú lo lideras. → Caja -2, Equipo +3, Consejo +1.
-- **C** (score 1, balance -6): No por ahora. Primero hay que arreglar el margen del negocio actual. → Caja +1, Equipo -2, Consejo -5.
+- **A** (score 1, balance -4): Luz verde completa. La idea es buena, el mercado de la línea premium crece y tiene el respaldo de Don Ramiro. → Caja -9, Equipo +2, Consejo +3.
+- **B** (score 3, balance +2): Sí, como piloto: $800 mil, 30 tiendas de Monterrey, 8 semanas. Si rota sin comerse la línea tradicional, escalamos. Tú lo lideras. → Caja -2, Equipo +3, Consejo +1.
+- **C** (score 1, balance -6): No por ahora. Primero hay que arreglar el margen del negocio actual; con 9.8% no hay espacio para apuestas nuevas. → Caja +1, Equipo -2, Consejo -5.
 - **Sin respuesta** (balance -4): Consejo -4.
 
 Respuesta: `d3-diego | ... | ...`
@@ -135,9 +135,9 @@ Respuesta: `d3-diego | ... | ...`
 
 **Pregunta:** ¿Qué haces con la renuncia de Héctor?
 
-- **A** (score 3, balance +3): Ir hoy a verlo en persona. Reconocer mi error, escuchar y hacerle una contraoferta que incluya lo que de verdad le importa. → Caja -2, Equipo +3, Clientes +2.
+- **A** (score 3, balance +3): Ir hoy a verlo en persona: admitir mi error, oírlo y hacerle una contraoferta con lo que de verdad le importa. → Caja -2, Equipo +3, Clientes +2.
 - **B** (score 2, balance -4): Aceptar la renuncia, blindar las 3 cadenas con visitas mías esta semana y ascender a su mejor vendedor como interino. → Caja +2, Equipo -3, Clientes -3.
-- **C** (score 0, balance -9): Igualar la oferta de Bocadi con más dinero. Que se quede a como dé lugar. → Equipo -4, Clientes -6, Consejo +1.
+- **C** (score 0, balance -9): Igualar la oferta de Bocadi con más dinero. Que se quede a como dé lugar: perderlo ahora nos cuesta las tres cadenas. → Equipo -4, Clientes -6, Consejo +1.
 - **Sin respuesta** (balance -16): Equipo -6, Clientes -10.
 
 Respuesta: `c-hector-renuncia | ... | ...`
@@ -150,9 +150,9 @@ Respuesta: `c-hector-renuncia | ... | ...`
 
 **Pregunta:** ¿Cómo armas los objetivos de 2027?
 
-- **A** (score 3, balance +7): Definir con el comité UNA meta para la empresa (la MEGA), bajarla en cascada a líneas de acción y que cada director tenga indicadores que la empujen. El bono depende de su scorecard y del resultado de la empresa. → Margen +5, Equipo -2, Consejo +4.
-- **B** (score 0, balance -2): Que cada director mantenga sus objetivos; ellos conocen su área. Yo nada más reviso que estén retadores. → Margen -4, Equipo +3, Consejo -1.
-- **C** (score 1, balance 0): Pongo yo los objetivos de cada área este fin de semana y los comunico el lunes. → Caja +2, Margen +2, Equipo -4.
+- **A** (score 3, balance +7): Definir con el comité UNA meta para la empresa y bajarla en cascada: cada director con indicadores que la empujen y bono atado a ambos. → Margen +5, Equipo -2, Consejo +4.
+- **B** (score 0, balance -2): Que cada director mantenga sus objetivos: ellos conocen su área mejor que nadie. Yo nada más reviso que estén retadores. → Margen -4, Equipo +3, Consejo -1.
+- **C** (score 1, balance 0): Pongo yo los objetivos de cada área este fin de semana y los comunico el lunes, para no perder un mes en discusiones. → Caja +2, Margen +2, Equipo -4.
 - **Sin respuesta** (balance -6): Margen -4, Consejo -2.
 
 Respuesta: `d4-objetivos | ... | ...`
@@ -165,9 +165,9 @@ Respuesta: `d4-objetivos | ... | ...`
 
 **Pregunta:** Roberto espera tu respuesta en la mesa.
 
-- **A** (score 3, balance +4): «Roberto, ofrezco 5% fijo y un bono trimestral de hasta 4% si bajamos la merma de 4.8% a 3%. Lo que ahorramos en merma, lo repartimos. Y lo medimos juntos, con un tablero que ustedes también ven.» → Caja -3, Margen +2, Equipo +5.
-- **B** (score 1, balance -3): «Roberto, les damos 9%. Esta gente lo merece y no quiero empezar con un conflicto.» → Margen -7, Equipo +8, Consejo -4.
-- **C** (score 0, balance -5): «La inflación fue 4.5%. Ofrecemos 4.5% y es nuestra última oferta. La ley y el contrato están de nuestro lado.» → Caja +1, Margen +3, Equipo -8, Consejo -1.
+- **A** (score 3, balance +4): «Roberto, ofrezco 5% fijo y un bono trimestral de hasta 4% si bajamos la merma de 4.8% a 3%. Lo medimos con un tablero que ustedes ven.» → Caja -3, Margen +2, Equipo +5.
+- **B** (score 1, balance -3): «Roberto, les damos 9%. Esta gente lo merece, el año fue duro para todos y no quiero empezar mi gestión con un conflicto.» → Margen -7, Equipo +8, Consejo -4.
+- **C** (score 0, balance -5): «La inflación fue 4.5%. Ofrecemos 4.5% y es nuestra última oferta. La ley y el contrato colectivo están de nuestro lado.» → Caja +1, Margen +3, Equipo -8, Consejo -1.
 - **Sin respuesta** (balance -12): Equipo -9, Consejo -3.
 
 Respuesta: `d4-sindicato | ... | ...`
@@ -180,8 +180,8 @@ Respuesta: `d4-sindicato | ... | ...`
 
 **Pregunta:** Perdiste medio anaquel. ¿Qué haces?
 
-- **A** (score 3, balance +2): Llamar a Sofía, reconocer que fui demasiado duro y volver con la propuesta de promociones atadas a volumen y los datos de rotación. → Margen -2, Clientes +3, Consejo +1.
-- **B** (score 1, balance -2): Sostener la postura y acelerar la entrada a tiendas de conveniencia, aunque haya que dar descuentos ahí. → Caja +2, Clientes -4.
+- **A** (score 3, balance +2): Llamar a Sofía, admitir que fui demasiado duro y volver con la propuesta de promociones atadas a volumen y la rotación. → Margen -2, Clientes +3, Consejo +1.
+- **B** (score 1, balance -2): Sostener la postura y acelerar la entrada a tiendas de conveniencia, aunque haya que dar descuentos ahí para entrar rápido. → Caja +2, Clientes -4.
 - **Sin respuesta** (balance -5): Clientes -5.
 
 Respuesta: `c-supernorte-castigo | ... | ...`
@@ -194,9 +194,9 @@ Respuesta: `c-supernorte-castigo | ... | ...`
 
 **Pregunta:** ¿Qué recomiendas al consejo?
 
-- **A** (score 1, balance -2): Tomar los $40 M completos. El VPN es positivo y el que no invierte se queda atrás. → Caja -2, Margen +4, Equipo -3, Consejo -1.
-- **B** (score 3, balance +3): Hacer la fase 1 con flujo propio ($18 M) y preparar la fase 2 según resultados. A las 22 personas de empaque las reubicamos en las vacantes que dejó la rotación y las capacitamos para operar la línea nueva. → Caja -4, Margen +1, Equipo +3, Consejo +3.
-- **C** (score 1, balance 0): Posponerlo un año hasta que el negocio esté más estable. → Caja +4, Margen -2, Equipo -2.
+- **A** (score 1, balance -2): Tomar los $40 M completos. El VPN es positivo, la tasa es buena y el que no invierte a tiempo se queda atrás. → Caja -2, Margen +4, Equipo -3, Consejo -1.
+- **B** (score 3, balance +3): Fase 1 con flujo propio ($18 M) y la fase 2 según resultados. Las 22 personas de empaque pasan a vacantes y se capacitan en la línea nueva. → Caja -4, Margen +1, Equipo +3, Consejo +3.
+- **C** (score 1, balance 0): Posponerlo un año, hasta que el negocio esté más estable y el margen recuperado nos deje invertir sin deuda. → Caja +4, Margen -2, Equipo -2.
 - **Sin respuesta** (balance -4): Margen -2, Consejo -2.
 
 Respuesta: `d5-credito | ... | ...`
@@ -209,7 +209,7 @@ Respuesta: `d5-credito | ... | ...`
 
 **Pregunta:** ¿Con qué abres tu primera sesión de consejo?
 
-- **A** (score 3, balance +4): «Cumbre puede volver a 13% de margen en 3 años sin dejar de ser Cumbre. Para eso hoy les pido tres decisiones. Les explico por qué.» → Equipo -2, Consejo +6.
+- **A** (score 3, balance +4): «Cumbre puede volver a 13% de margen en 3 años sin dejar de ser Cumbre. Hoy les pido tres decisiones y les explico por qué.» → Equipo -2, Consejo +6.
 - **B** (score 1, balance 0): «Les agradezco la confianza. Quiero contarles todo lo que he hecho en estas semanas: me reuní con 40 personas, visité 5 clientes…» → Equipo +2, Consejo -2.
 - **C** (score 0, balance -5): «La empresa está peor de lo que me dijeron. El margen cayó 4 puntos en la administración anterior y hay que cambiar casi todo.» → Margen +2, Equipo -1, Consejo -6.
 - **Sin respuesta** (balance -4): Consejo -4.
@@ -224,7 +224,7 @@ Respuesta: `d5-consejo | ... | ...`
 
 **Pregunta:** Ana quiere presentar ante el consejo. ¿Qué decides?
 
-- **A** (score 3, balance +4): «Sí. Ensayamos mañana 15 minutos. Yo te presento y tú cierras con tu recomendación.» → Equipo +5, Consejo -1.
+- **A** (score 3, balance +4): «Sí. Mañana ensayamos 15 minutos. Yo te presento ante el consejo y tú cierras con tu recomendación.» → Equipo +5, Consejo -1.
 - **B** (score 2, balance +2): «Gran trabajo, Ana. Esta vez lo presento yo porque es mi primer consejo; pero le voy a decir a todos que fue tuyo.» → Equipo -1, Consejo +3.
 - **Sin respuesta** (balance -2): Equipo -2.
 
@@ -238,7 +238,7 @@ Respuesta: `c-ana-brilla | ... | ...`
 
 **Pregunta:** ¿Qué haces ahora?
 
-- **A** (score 3, balance -1): Ir hoy al hospital y luego a la planta. Asumir públicamente la responsabilidad, parar la línea 2 hasta repararla y crear con el sindicato una comisión de seguridad con poder para detener cualquier línea. → Caja -3, Equipo +4, Consejo -2.
+- **A** (score 3, balance -1): Ir hoy al hospital y a la planta, asumir la responsabilidad, parar la línea 2 y crear con el sindicato una comisión que pueda detener líneas. → Caja -3, Equipo +4, Consejo -2.
 - **B** (score 0, balance -9): Que Jurídico y Personas atiendan la inspección y a la familia de Toño. Yo me mantengo al margen para no complicar el tema legal. → Caja +2, Equipo -8, Consejo -3.
 - **Sin respuesta** (balance -17): Caja -3, Equipo -10, Consejo -4.
 
@@ -252,9 +252,9 @@ Respuesta: `c-planta-accidente | ... | ...`
 
 **Pregunta:** ¿Qué decides con Fernando?
 
-- **A** (score 3, balance +4): Aplicar la política: baja con respeto y en privado, sin exhibirlo, recuperando el monto. Yo mismo explico al equipo comercial que aquí la integridad no depende de cuánto vendes. → Equipo +5, Clientes -4, Consejo +3.
-- **B** (score 0, balance -5): Darle una segunda oportunidad en privado: que devuelva el dinero, firme un acta y no se habla más del tema. → Margen +2, Equipo -6, Clientes +1, Consejo -2. Línea roja: Encubrir un fraude comprobado a cambio de ventas.
-- **C** (score 1, balance -2): Que lo decida su jefe directo en Comercial. Es su equipo. → Equipo -3, Clientes +2, Consejo -1.
+- **A** (score 3, balance +4): Aplicar la política: baja discreta y respetuosa, recuperar el monto y decirle yo al equipo que la integridad no depende de ventas. → Equipo +5, Clientes -4, Consejo +3.
+- **B** (score 0, balance -5): Darle una segunda oportunidad: que devuelva el dinero y firme un acta. Es el mejor vendedor del equipo y un error no borra diez años. → Margen +2, Equipo -6, Clientes +1, Consejo -2. Línea roja: Encubrir un fraude comprobado a cambio de ventas.
+- **C** (score 1, balance -2): Que lo decida su jefe directo en Comercial: es su equipo, conoce el caso y no quiero saltarme la línea de mando. → Equipo -3, Clientes +2, Consejo -1.
 - **Sin respuesta** (balance -5): Equipo -5.
 
 Respuesta: `d6-gastos | ... | ...`
@@ -268,8 +268,8 @@ Respuesta: `d6-gastos | ... | ...`
 **Pregunta:** ¿Cuál es tu primera jugada para cambiar la cultura?
 
 - **A** (score 0, balance -3): Lanzar una campaña de valores renovados: carteles, video del director y un evento de lanzamiento con toda la empresa. → Caja -1, Equipo -3, Consejo +1.
-- **B** (score 3, balance +6): Cambiar rituales: revisiones 1 a 1 mensuales de cada líder con su equipo, contar en cada junta mensual una historia de alguien que dijo «no» y tuvo razón, y empezar yo pidiendo retroalimentación en público. → Caja -2, Equipo +7, Consejo +1.
-- **C** (score 2, balance 0): Hablar con Don Ramiro para pedirle que deje de entrar a las decisiones operativas. Es el origen del problema. → Equipo +3, Consejo -3.
+- **B** (score 3, balance +6): Cambiar rituales: en cada junta, la historia de alguien que dijo «no» y tuvo razón; y ser yo el primero en pedir que me corrijan. → Caja -2, Equipo +7, Consejo +1.
+- **C** (score 2, balance 0): Hablar con Don Ramiro para pedirle que deje de entrar a las decisiones operativas: ahí está el origen del problema. → Equipo +3, Consejo -3.
 - **Sin respuesta** (balance -5): Equipo -5.
 
 Respuesta: `d6-clima | ... | ...`
@@ -282,8 +282,8 @@ Respuesta: `d6-clima | ... | ...`
 
 **Pregunta:** ¿Qué haces?
 
-- **A** (score 3, balance +1): Hablar con ella hoy: reconocer su trabajo con nombre y apellido y preguntarle qué la haría quedarse. Si se va, que se vaya bien. → Equipo +2, Consejo -1.
-- **B** (score 1, balance -1): Que Personas le haga una contraoferta de sueldo. → Equipo -2, Consejo +1.
+- **A** (score 3, balance +1): Hablar con ella hoy, agradecerle su trabajo con nombre y apellido y preguntarle qué la haría quedarse. → Equipo +2, Consejo -1.
+- **B** (score 1, balance -1): Que Personas le haga hoy una contraoferta de sueldo competitiva; si se va por dinero, eso lo resuelve rápido. → Equipo -2, Consejo +1.
 - **Sin respuesta** (balance -3): Equipo -3.
 
 Respuesta: `c-ana-renuncia | ... | ...`
@@ -296,8 +296,8 @@ Respuesta: `c-ana-renuncia | ... | ...`
 
 **Pregunta:** ¿Qué sigue para Cumbre Selección?
 
-- **A** (score 3, balance +8): Escalar por etapas: 300 tiendas del noreste en el Q2, con el mismo tablero. Diego lo sigue liderando y me presenta cada mes. → Caja -3, Margen +4, Clientes +3, Consejo +4.
-- **B** (score 1, balance +1): Lanzamiento nacional inmediato con los $6 M originales. → Caja -2, Margen +2, Equipo +2, Consejo -1.
+- **A** (score 3, balance +8): Escalar a 300 tiendas del noreste en el Q2 con el mismo tablero. Diego lo sigue liderando y me presenta cada mes. → Caja -3, Margen +4, Clientes +3, Consejo +4.
+- **B** (score 1, balance +1): Lanzamiento nacional inmediato con los $6 M originales: el piloto ya funcionó y la competencia no nos va a esperar. → Caja -2, Margen +2, Equipo +2, Consejo -1.
 - **Sin respuesta** (balance -4): Equipo -2, Consejo -2.
 
 Respuesta: `c-piloto | ... | ...`
@@ -310,9 +310,9 @@ Respuesta: `c-piloto | ... | ...`
 
 **Pregunta:** El fundador te pide tu opinión sobre su hijo. ¿Qué le recomiendas?
 
-- **A** (score 3, balance +8): «Don Ramiro, Diego tiene talento. Propongo un plan de 12 meses con metas claras y un mentor fuera de la familia. Que compita en igualdad con un candidato interno y uno externo, y que el consejo decida con evidencia.» → Caja -1, Equipo +3, Consejo +6.
-- **B** (score 0, balance -4): «Sí, Diego está listo. Tiene la visión que necesitamos.» → Equipo -6, Consejo +2.
-- **C** (score 1, balance -1): «Con todo respeto, no. Mezclar familia y dirección nos va a costar. Busquemos a alguien de fuera.» → Equipo +1, Consejo -2.
+- **A** (score 3, balance +8): «Diego tiene talento. Propongo 12 meses con metas claras, un mentor externo, y que compita con un candidato interno y uno externo.» → Caja -1, Equipo +3, Consejo +6.
+- **B** (score 0, balance -4): «Sí, Diego está listo. Tiene la visión que necesitamos, conoce la casa desde niño y el equipo joven ya lo sigue.» → Equipo -6, Consejo +2.
+- **C** (score 1, balance -1): «Con todo respeto, no. Mezclar familia y dirección nos va a costar caro. Busquemos a alguien de fuera de la familia.» → Equipo +1, Consejo -2.
 - **Sin respuesta** (balance -6): Consejo -6.
 
 Respuesta: `d7-sucesion | ... | ...`
@@ -327,7 +327,7 @@ Respuesta: `d7-sucesion | ... | ...`
 
 **Pregunta:** ¿Cómo usas tus primeras semanas?
 
-- **A** (score 3, balance +3): Piso de planta primero: tres turnos completos en las líneas, 1 a 1 con los supervisores y una visita al cliente para escuchar su queja de frente. El plan, al día 45. → Equipo +6, Clientes +2, Consejo -5.
+- **A** (score 3, balance +3): Piso de planta primero: tres turnos en las líneas, sentarme con los supervisores y oír la queja del cliente de frente. Propuesta al día 45. → Equipo +6, Clientes +2, Consejo -5.
 - **B** (score 1, balance +2): Plan de 100 días desde ya: congelar contrataciones, renegociar con 20 proveedores y meter un programa de reducción de costos con metas semanales. → Margen +3, Equipo -6, Clientes -1, Consejo +6.
 - **C** (score 2, balance +1): Primero el cliente: me voy una semana a la planta de Aurora en Saltillo para entender qué les duele y qué necesitamos para salir de amarillo. → Caja -1, Equipo -3, Clientes +5.
 - **Sin respuesta** (balance -7): Consejo -7.
@@ -343,8 +343,8 @@ Respuesta: `fn-d1-carta | ... | ...`
 **Pregunta:** Un supervisor te escribe por encima de su director. ¿Qué le contestas?
 
 - **A** (score 2, balance +2): «Chuy, el cordón se queda. Cada paro se investiga hasta la causa raíz y yo hablo mañana con Ramón. Si esta semana sacamos menos piezas, lo asumo yo.» → Margen -3, Equipo +3, Clientes +3, Consejo -1.
-- **B** (score 1, balance 0): «Chuy, gracias por avisarme. Esto lo tiene que decidir Ramón: es tu jefe y conoce la planta. Platícalo con él y yo lo respaldo.» → Margen +3, Equipo -3, Clientes -1, Consejo +1.
-- **C** (score 3, balance +3): «Chuy, mañana a las 7 nos vemos tú, Ramón, Laura y yo en la línea 3. Regla temporal: el cordón se queda, pero el líder de celda tiene 60 segundos para resolver o la línea sigue y la pieza se aparta para revisión.» → Margen -1, Equipo +2, Clientes +1, Consejo +1.
+- **B** (score 1, balance 0): «Chuy, gracias por avisarme. Esto lo tiene que decidir Ramón: es tu jefe directo y conoce la planta. Platícalo con él y yo lo respaldo.» → Margen +3, Equipo -3, Clientes -1, Consejo +1.
+- **C** (score 3, balance +3): «Chuy, mañana a las 7 en la línea 3 con Ramón y Laura. El cordón se queda, pero el líder de celda tiene 60 segundos o la pieza se aparta.» → Margen -1, Equipo +2, Clientes +1, Consejo +1.
 - **Sin respuesta** (balance -5): Equipo -4, Clientes -1.
 
 Respuesta: `fn-d1-andon | ... | ...`
@@ -357,9 +357,9 @@ Respuesta: `fn-d1-andon | ... | ...`
 
 **Pregunta:** ¿Cómo respondes a la armadora?
 
-- **A** (score 0, balance -6): Aceptar el 5%. Lo importante es ganar la plataforma 2028; ahí recuperamos. → Margen -8, Clientes +5, Consejo -3.
+- **A** (score 0, balance -6): Aceptar el 5% completo. Lo importante es ganar la plataforma 2028; ahí recuperamos el margen con volumen y años de contrato. → Margen -8, Clientes +5, Consejo -3.
 - **B** (score 2, balance 0): Aceptar el 3% contractual e invocar la cláusula de acero con los datos: no damos el 2% adicional y pedimos aplicar el índice hacia adelante. → Margen +3, Clientes -5, Consejo +2.
-- **C** (score 3, balance -2): Aceptar el 3% y ofrecer llegar al 2% restante con un taller conjunto de rediseño (VA/VE) con sus ingenieros: los ahorros que encontremos se reparten 50/50. → Caja -1, Margen -2, Equipo -2, Clientes +2, Consejo +1.
+- **C** (score 3, balance -2): Aceptar el 3% y buscar el 2% restante en un taller de rediseño (VA/VE) con sus ingenieros; los ahorros se reparten 50/50. → Caja -1, Margen -2, Equipo -2, Clientes +2, Consejo +1.
 - **Sin respuesta** (balance -13): Margen -8, Clientes -1, Consejo -4.
 
 Respuesta: `fn-d2-precio | ... | ...`
@@ -372,9 +372,9 @@ Respuesta: `fn-d2-precio | ... | ...`
 
 **Pregunta:** ¿Qué camino tomas?
 
-- **A** (score 1, balance -1): Bono de retención para los 40 y transporte desde la colonia. Hay que parar la sangría ya. → Caja -4, Margen -2, Equipo +5.
-- **B** (score 3, balance -3): Escuela interna con plan de carrera: aprendiz, soldador, certificado y líder de celda, con sueldo que sube en cada escalón. Mientras tanto aguantamos con tiempo extra. → Caja -2, Equipo +2, Clientes -2, Consejo -1.
-- **C** (score 2, balance 0): Robotizar dos celdas: dependemos menos de un perfil escaso y el costo por pieza baja. → Caja -1, Margen +3, Equipo -5, Consejo +3.
+- **A** (score 1, balance -1): Bono de retención para los 40 y transporte desde la colonia. Hay que parar la sangría ya; lo demás puede esperar unos meses. → Caja -4, Margen -2, Equipo +5.
+- **B** (score 3, balance -3): Escuela interna: aprendiz, soldador, certificado y líder de celda, con sueldo que sube en cada escalón. Mientras, tiempo extra. → Caja -2, Equipo +2, Clientes -2, Consejo -1.
+- **C** (score 2, balance 0): Robotizar dos celdas: dependemos menos de un perfil escaso, el costo por pieza baja y la calidad de la soldadura se vuelve estable. → Caja -1, Margen +3, Equipo -5, Consejo +3.
 - **Sin respuesta** (balance -7): Margen -2, Equipo -5.
 
 Respuesta: `fn-d2-soldadores | ... | ...`
@@ -387,7 +387,7 @@ Respuesta: `fn-d2-soldadores | ... | ...`
 
 **Pregunta:** ¿Cómo respondes a la contención?
 
-- **A** (score 3, balance +1): Asumirlo de frente: Laura y un equipo se van hoy a la planta de Aurora a sortear con nuestra gente, el 8D lo presento yo y el cordón de la línea 3 regresa mañana. → Caja -3, Margen -2, Equipo +3, Clientes +3.
+- **A** (score 3, balance +1): Dar la cara: Laura y un equipo van hoy a Aurora a sortear con nuestra gente, el 8D lo presento yo y el cordón regresa mañana. → Caja -3, Margen -2, Equipo +3, Clientes +3.
 - **B** (score 1, balance -5): Contener sin ruido: contratar a una empresa de sorteo, pagar el cargo y que Calidad entregue el 8D. No hay que hacer de esto un drama. → Caja -4, Equipo -2, Clientes +1.
 - **C** (score 0, balance -8): Pelear el cargo con datos: el defecto es 0.3% del lote y el plano tiene tolerancia ambigua. Sorteamos en nuestra planta, no en la suya. → Margen +1, Clientes -7, Consejo -2.
 - **Sin respuesta** (balance -11): Caja -4, Clientes -7.
@@ -404,7 +404,7 @@ Respuesta: `fn-c-escape | ... | ...`
 
 - **A** (score 2, balance -4): Pedir a Aurora 3 semanas de prórroga con los datos reales: Cpk 1.1 hoy, troquel nuevo en camino e inspección al 100% mientras tanto. → Margen -1, Equipo +3, Clientes -4, Consejo -2.
 - **B** (score 0, balance 0): Entregar el viernes con la corrida del fin de semana e inspección al 100% interna mientras llega el troquel. Laura no tiene que firmar; firmo yo. → Equipo -6, Clientes +4, Consejo +2. Línea roja: Saltarse la firma de Calidad y entregar sin declarar la capacidad real.
-- **C** (score 3, balance -2): Entregar a tiempo, pero declarando la verdad: PPAP con Cpk 1.1, solicitud formal de aprobación provisional con inspección al 100% y fecha del troquel nuevo. → Caja -2, Margen -3, Equipo +2, Clientes +1.
+- **C** (score 3, balance -2): Entregar a tiempo y declarar la verdad: Cpk 1.1, solicitud de aprobación provisional con inspección al 100% y fecha del troquel. → Caja -2, Margen -3, Equipo +2, Clientes +1.
 - **Sin respuesta** (balance -8): Equipo -6, Consejo -2.
 
 Respuesta: `fn-d3-ppap | ... | ...`
@@ -417,8 +417,8 @@ Respuesta: `fn-d3-ppap | ... | ...`
 
 **Pregunta:** ¿Qué haces con lo que logró la línea 3?
 
-- **A** (score 3, balance +6): Llevar el sistema a toda la planta en 60 días, con la regla de 60 segundos. Que Chuy y su equipo lo enseñen a los demás supervisores, con reconocimiento público. → Caja -1, Margen -1, Equipo +5, Clientes +3.
-- **B** (score 2, balance +2): Felicitarlos y consolidar primero la línea 3 tres meses más antes de llevarlo a las demás. → Equipo +2, Clientes -1, Consejo +1.
+- **A** (score 3, balance +6): Llevarlo a toda la planta en 60 días, con la regla de 60 segundos, y que Chuy y su equipo lo enseñen a los demás supervisores. → Caja -1, Margen -1, Equipo +5, Clientes +3.
+- **B** (score 2, balance +2): Felicitarlos y consolidar primero la línea 3 tres meses más, hasta que el sistema aguante sin ellos, antes de llevarlo a las demás. → Equipo +2, Clientes -1, Consejo +1.
 - **Sin respuesta** (balance -1): Equipo -1.
 
 Respuesta: `fn-c-kaizen | ... | ...`
@@ -431,8 +431,8 @@ Respuesta: `fn-c-kaizen | ... | ...`
 
 **Pregunta:** ¿Qué le respondes a la socia del fondo?
 
-- **A** (score 1, balance -1): «Regina, lo entiendo y lo apoyo. Es su dinero y la empresa lo aguanta. Ajustaremos la inversión para la plataforma.» → Caja -7, Clientes -1, Consejo +7.
-- **B** (score 3, balance +1): «Propongo una versión escalonada: $150 M ahora y el resto si ganamos la plataforma y el margen sube 2 puntos. Así no comprometemos el crecimiento que les va a dar el mejor retorno.» → Caja -2, Margen +1, Consejo +2.
+- **A** (score 1, balance -1): «Regina, lo entiendo y lo apoyo. Es su dinero, la empresa lo aguanta y ya esperaron mucho. Ajustaremos la inversión para la plataforma.» → Caja -7, Clientes -1, Consejo +7.
+- **B** (score 3, balance +1): «Propongo hacerlo escalonado: $150 M ahora y el resto si ganamos la plataforma y el margen sube 2 puntos. Así protegemos su retorno.» → Caja -2, Margen +1, Consejo +2.
 - **C** (score 2, balance -2): «Con todo respeto, no. Con la plataforma 2028 en juego, endeudarnos para pagar dividendos es poner en riesgo la empresa. Lo voy a decir así en el consejo.» → Caja +1, Equipo +1, Clientes +2, Consejo -6.
 - **Sin respuesta** (balance -9): Caja -5, Consejo -4.
 
@@ -446,9 +446,9 @@ Respuesta: `fn-d4-recap | ... | ...`
 
 **Pregunta:** Tus dos directores están en guerra. ¿Qué haces?
 
-- **A** (score 3, balance +3): Sentarlos juntos conmigo esta semana. Definir quién puede parar qué y con qué criterio, y cambiar sus bonos: los dos se miden con piezas buenas a la primera (producción y calidad juntas). → Margen -1, Equipo +4, Clientes +1, Consejo -1.
-- **B** (score 1, balance -2): Respaldar a Ramón: Calidad solo para si la pieza está fuera de tolerancia. El programa del mes es prioridad. → Margen +3, Equipo -3, Clientes -3, Consejo +1.
-- **C** (score 1, balance -2): Respaldar a Laura públicamente: la calidad no se negocia. Ramón tiene que ajustar su programa. → Margen -2, Equipo -3, Clientes +3.
+- **A** (score 3, balance +3): Sentarlos juntos conmigo esta semana, definir quién puede parar qué y con qué criterio, y medir a los dos con piezas buenas a la primera. → Margen -1, Equipo +4, Clientes +1, Consejo -1.
+- **B** (score 1, balance -2): Respaldar a Ramón: Calidad solo detiene si la pieza está fuera de tolerancia. El programa del mes es prioridad y Aurora no espera a nadie. → Margen +3, Equipo -3, Clientes -3, Consejo +1.
+- **C** (score 1, balance -2): Respaldar a Laura ante todos: la calidad no se negocia y un escape más nos cuesta el cliente. Ramón tiene que ajustar su programa. → Margen -2, Equipo -3, Clientes +3.
 - **Sin respuesta** (balance -7): Equipo -5, Clientes -2.
 
 Respuesta: `fn-d4-pleito | ... | ...`
@@ -462,8 +462,8 @@ Respuesta: `fn-d4-pleito | ... | ...`
 **Pregunta:** ¿Qué decides en las próximas horas?
 
 - **A** (score 2, balance -5): No pagar. Restaurar desde respaldos, operar en manual con tiempo extra y avisar hoy a Aurora con un plan de embarques priorizado. → Caja -2, Equipo -2, Clientes -3, Consejo +2.
-- **B** (score 0, balance -10): Pagar rápido para recuperar los sistemas en horas. El costo de parar a Aurora es mucho mayor. → Caja -7, Clientes +2, Consejo -5.
-- **C** (score 3, balance -2): Contratar hoy una firma de respuesta a incidentes, denunciar ante las autoridades y avisar al consejo. Operar en manual mientras ellos evalúan si se puede recuperar sin pagar. → Caja -4, Margen -1, Clientes -1, Consejo +4.
+- **B** (score 0, balance -10): Pagar rápido para recuperar los sistemas en horas. El costo de parar a Aurora, con multas por línea detenida, es mucho mayor. → Caja -7, Clientes +2, Consejo -5.
+- **C** (score 3, balance -2): Contratar hoy una firma de respuesta a incidentes, denunciar y avisar al consejo; operar en manual mientras evalúan si se recupera sin pagar. → Caja -4, Margen -1, Clientes -1, Consejo +4.
 - **Sin respuesta** (balance -16): Caja -3, Clientes -8, Consejo -5.
 
 Respuesta: `fn-d5-ciber | ... | ...`
@@ -476,9 +476,9 @@ Respuesta: `fn-d5-ciber | ... | ...`
 
 **Pregunta:** ¿Con qué estrategia cotizas?
 
-- **A** (score 1, balance -1): Al precio objetivo. Ganar la plataforma asegura la planta seis años; el margen lo sacamos con productividad. → Caja -5, Margen -4, Clientes +6, Consejo +2.
-- **B** (score 2, balance -4): Con margen sano (11%) y una propuesta técnica fuerte. Si no la ganamos, buscamos clientes nuevos para no depender 72% de Aurora. → Caja +1, Margen +2, Clientes -4, Consejo -3.
-- **C** (score 3, balance 0): Proponer que Aurora pague el herramental (que queda a su nombre) y cotizar con 8%. Menos inversión nuestra a cambio de un margen intermedio. → Caja -1, Margen +1, Clientes +2, Consejo -2.
+- **A** (score 1, balance -1): Al precio objetivo. Ganar la plataforma asegura la planta seis años; el margen lo sacamos con productividad durante el contrato. → Caja -5, Margen -4, Clientes +6, Consejo +2.
+- **B** (score 2, balance -4): Con margen sano (11%) y una propuesta técnica fuerte. Si no la ganamos, buscamos clientes nuevos para no depender del 72% de Aurora. → Caja +1, Margen +2, Clientes -4, Consejo -3.
+- **C** (score 3, balance 0): Pedir que Aurora pague el herramental, que queda a su nombre, y cotizar con 8%: menos inversión nuestra por un margen intermedio. → Caja -1, Margen +1, Clientes +2, Consejo -2.
 - **Sin respuesta** (balance -7): Margen -4, Consejo -3.
 
 Respuesta: `fn-d5-plataforma | ... | ...`
@@ -491,8 +491,8 @@ Respuesta: `fn-d5-plataforma | ... | ...`
 
 **Pregunta:** Tu directora de Calidad renuncia. ¿Qué haces?
 
-- **A** (score 3, balance -1): Verla hoy: reconocer que me equivoqué, notificar a Aurora la capacidad real y pedirle que se quede para liderar la corrección. → Equipo +4, Clientes -3, Consejo -2.
-- **B** (score 1, balance -1): Aceptar la renuncia y ascender a Karla (ingeniera de calidad de proveedores) como directora interina. → Margen +2, Equipo -2, Clientes -1. Línea roja: Mantener oculto al cliente un riesgo de calidad conocido.
+- **A** (score 3, balance -1): Verla hoy, admitir que me equivoqué, notificar a Aurora la capacidad real y pedirle que se quede a liderar la corrección. → Equipo +4, Clientes -3, Consejo -2.
+- **B** (score 1, balance -1): Aceptar la renuncia y ascender a Karla, ingeniera de calidad de proveedores que conoce a Aurora, como directora interina. → Margen +2, Equipo -2, Clientes -1. Línea roja: Mantener oculto al cliente un riesgo de calidad conocido.
 - **Sin respuesta** (balance -7): Equipo -4, Clientes -3.
 
 Respuesta: `fn-c-laura | ... | ...`
@@ -505,9 +505,9 @@ Respuesta: `fn-c-laura | ... | ...`
 
 **Pregunta:** ¿Qué haces con el proveedor?
 
-- **A** (score 3, balance -3): Dar el anticipo con garantía sobre sus moldes, un interventor nuestro revisando su caja cada semana y arrancar ya la aprobación de un segundo proveedor. → Caja -5, Clientes +3, Consejo -1.
+- **A** (score 3, balance -3): Anticipo con garantía sobre sus moldes y un interventor nuestro revisando su caja cada semana; en paralelo, aprobar un segundo proveedor. → Caja -5, Clientes +3, Consejo -1.
 - **B** (score 1, balance -5): No arriesgar caja en un proveedor que se cae: traer piezas de Asia por avión mientras se aprueba otro proveedor nacional. → Caja +1, Margen -5, Clientes -2, Consejo +1.
-- **C** (score 2, balance -4): Comprar la fundición. Integrar hacia atrás nos da control del insumo más crítico. → Caja -8, Margen +2, Equipo -1, Consejo +3.
+- **C** (score 2, balance -4): Comprar la fundición. Integrar hacia atrás nos da control del insumo más crítico y deja de depender de la salud de un tercero. → Caja -8, Margen +2, Equipo -1, Consejo +3.
 - **Sin respuesta** (balance -11): Margen -3, Clientes -8.
 
 Respuesta: `fn-d6-proveedor | ... | ...`
@@ -522,7 +522,7 @@ Respuesta: `fn-d6-proveedor | ... | ...`
 
 - **A** (score 3, balance +3): Suspenderlo con goce de sueldo mientras una firma externa investiga, proteger a quienes denunciaron y que Ramón cubra el turno. → Margen -2, Equipo +4, Consejo +1.
 - **B** (score 0, balance -7): Que siga trabajando mientras se investiga, pero cambiar de turno a quienes denunciaron e investigarlo internamente con Personas. → Margen +1, Equipo -6, Consejo -2. Línea roja: Mover a quienes denunciaron acoso: represalia contra denunciantes.
-- **C** (score 1, balance -3): Despedirlo de inmediato. Con tres denuncias no hay nada que investigar. → Caja -3, Equipo +3, Consejo -3.
+- **C** (score 1, balance -3): Despedirlo de inmediato. Con tres denuncias coincidentes no hay nada que investigar y cada día que sigue ahí es un riesgo. → Caja -3, Equipo +3, Consejo -3.
 - **Sin respuesta** (balance -8): Equipo -6, Consejo -2.
 
 Respuesta: `fn-d6-denuncia | ... | ...`
@@ -535,8 +535,8 @@ Respuesta: `fn-d6-denuncia | ... | ...`
 
 **Pregunta:** ¿Cómo integras a la primera generación?
 
-- **A** (score 3, balance +2): Acompañados 3 meses: cada aprendiz con un soldador senior y un bono para los mentores. → Caja -1, Equipo +4, Clientes -1.
-- **B** (score 1, balance -1): Directo a las celdas críticas. Ya están certificados y la planta los necesita hoy. → Margen -1, Equipo -2, Clientes +2.
+- **A** (score 3, balance +2): Acompañados 3 meses: cada aprendiz junto a un soldador senior en su celda, y un bono para los mentores que lo hagan bien. → Caja -1, Equipo +4, Clientes -1.
+- **B** (score 1, balance -1): Directo a las celdas críticas. Ya están certificados, la planta los necesita hoy y aprenden más haciendo que mirando. → Margen -1, Equipo -2, Clientes +2.
 - **Sin respuesta** (balance -2): Equipo -2.
 
 Respuesta: `fn-c-escuela | ... | ...`
@@ -549,7 +549,7 @@ Respuesta: `fn-c-escuela | ... | ...`
 
 **Pregunta:** El consejo espera tu recomendación.
 
-- **A** (score 3, balance +3): «Les pido 90 días: plan de mejora de la línea 1 con metas semanales (OEE de 48% a 65%) y concentrarla en repuestos de alto margen. Si no llegamos, yo mismo propongo el cierre.» → Margen +1, Equipo +4, Consejo -2.
+- **A** (score 3, balance +3): «Les pido 90 días: subir el OEE de la línea 1 de 48% a 65% y enfocarla en repuestos de alto margen. Si no llegamos, propongo el cierre.» → Margen +1, Equipo +4, Consejo -2.
 - **B** (score 1, balance -1): «Estoy de acuerdo. Cerramos la línea 1 con un proceso digno: indemnización completa, apoyo para recolocación y los repuestos se pasan a la línea 2.» → Margen +2, Equipo -7, Clientes -2, Consejo +6.
 - **C** (score 2, balance -3): «No recomiendo cerrar. Reubiquemos a las 60 personas en el arranque de la plataforma nueva y mantengamos la línea 1 solo para repuestos, aunque cueste margen este año.» → Caja -1, Margen -2, Equipo +5, Consejo -5.
 - **Sin respuesta** (balance -12): Equipo -6, Consejo -6.
@@ -564,8 +564,8 @@ Respuesta: `fn-d7-consejo | ... | ...`
 
 **Pregunta:** El sindicato quiere una respuesta hoy. ¿Qué haces?
 
-- **A** (score 3, balance +3): Ir hoy a la planta con Teresa y Ramón y hablar con los tres turnos: decir lo que está decidido, lo que no y cuándo se va a saber. Sin promesas que no pueda cumplir. → Equipo +4, Consejo -1.
-- **B** (score 1, balance -3): Comunicado oficial por escrito de Personas: «No hay ninguna decisión tomada». Lo demás, por los canales formales. → Margen -1, Equipo -3, Consejo +1.
+- **A** (score 3, balance +3): Ir hoy a la planta con Teresa y Ramón y hablar con los tres turnos: qué está decidido, qué no y cuándo se sabrá. Sin promesas. → Equipo +4, Consejo -1.
+- **B** (score 1, balance -3): Comunicado oficial por escrito de Personas: «No hay ninguna decisión tomada». Lo demás, por los canales formales con el sindicato. → Margen -1, Equipo -3, Consejo +1.
 - **C** (score 2, balance +1): Reunirme solo con Fermín, en privado, y pedirle que calme a la gente a cambio de que el sindicato esté en la mesa del plan de la línea 1. → Equipo +2, Clientes +1, Consejo -2.
 - **Sin respuesta** (balance -11): Margen -3, Equipo -6, Clientes -2.
 
@@ -581,7 +581,7 @@ Respuesta: `fn-d7-sindicato | ... | ...`
 
 **Pregunta:** ¿Por dónde empiezas?
 
-- **A** (score 3, balance +3): Dos semanas trabajando turnos en 6 sucursales (cocina, piso y caja) antes de cualquier decisión. → Equipo +6, Clientes +1, Consejo -4.
+- **A** (score 3, balance +3): Dos semanas trabajando turnos en 6 sucursales, en cocina, piso y caja, antes de tomar cualquier decisión de fondo. → Equipo +6, Clientes +1, Consejo -4.
 - **B** (score 1, balance +1): Atacar el prime cost de inmediato: renegociar con proveedores de carne y ajustar plantillas por sucursal según el tráfico. → Caja +2, Margen +5, Equipo -6.
 - **C** (score 2, balance +2): Empezar por el cliente: 1,500 encuestas, visitas de cliente incógnito y escuchar las reseñas de las 34 sucursales. → Caja -1, Equipo -1, Clientes +4.
 - **Sin respuesta** (balance -6): Consejo -6.
@@ -596,8 +596,8 @@ Respuesta: `gb-d1-carta | ... | ...`
 
 **Pregunta:** ¿Qué respondes a la app?
 
-- **A** (score 0, balance 0): Aceptar. Las apps son el futuro y estar primero en la lista vale el punto extra. → Caja +1, Margen -6, Clientes +5.
-- **B** (score 3, balance -2): Rechazar la exclusividad y empujar nuestro canal propio: pedido directo con 10% de descuento y entrega con repartidores propios en las 8 sucursales de más pedidos. → Caja -3, Margen +2, Clientes -2, Consejo +1.
+- **A** (score 0, balance 0): Aceptar la exclusividad. Las apps son el futuro del canal y estar primero en la lista vale de sobra el punto extra. → Caja +1, Margen -6, Clientes +5.
+- **B** (score 3, balance -2): Rechazar la exclusividad y empujar el canal propio: pedido directo con 10% menos y repartidores nuestros en las 8 sucursales top. → Caja -3, Margen +2, Clientes -2, Consejo +1.
 - **C** (score 2, balance 0): Contrapropuesta: sin exclusividad, comisión de 27% y menú solo para apps con precios 12% más altos que en el restaurante. → Margen +3, Clientes -3.
 - **Sin respuesta** (balance -2): Clientes -2.
 
@@ -611,9 +611,9 @@ Respuesta: `gb-d1-app | ... | ...`
 
 **Pregunta:** ¿Qué haces con el menú?
 
-- **A** (score 3, balance +3): Quitar los 18 «perros», reformular la arrachera (porción y guarnición) con subida de precio de 6% y promover las estrellas en la carta. → Margen +5, Equipo +2, Clientes -2, Consejo -2.
-- **B** (score 2, balance +4): Quitar los 18 platillos «perros» y dejar intacta la arrachera. Es la identidad de la marca. → Margen +2, Equipo +2, Clientes -1, Consejo +1.
-- **C** (score 1, balance -6): Nuevo menú completo de 40 platillos, con nuevo concepto y nueva carta en 8 semanas. → Caja -4, Margen +3, Equipo -3, Clientes -3, Consejo +1.
+- **A** (score 3, balance +3): Quitar los 18 «perros», rediseñar la arrachera (porción y guarnición) subiéndola 6% y destacar las estrellas en la carta. → Margen +5, Equipo +2, Clientes -2, Consejo -2.
+- **B** (score 2, balance +4): Quitar los 18 platillos «perros» y dejar intacta la arrachera: es la identidad de la marca y lo que la gente viene a pedir. → Margen +2, Equipo +2, Clientes -1, Consejo +1.
+- **C** (score 1, balance -6): Nuevo menú completo de 40 platillos, con nuevo concepto y nueva carta en 8 semanas, para relanzar la marca de una vez. → Caja -4, Margen +3, Equipo -3, Clientes -3, Consejo +1.
 - **Sin respuesta** (balance -3): Margen -2, Equipo -1.
 
 Respuesta: `gb-d2-menu | ... | ...`
@@ -626,9 +626,9 @@ Respuesta: `gb-d2-menu | ... | ...`
 
 **Pregunta:** ¿Qué decides?
 
-- **A** (score 2, balance +1): Política para todo el grupo: 20% de las propinas para cocina, transparente y con la nómina. Anunciado por mí en cada sucursal, empezando por Andares el viernes. → Margen -1, Equipo +3, Clientes -1.
-- **B** (score 0, balance -3): Que lo resuelva Maru en Andares como mejor le funcione. Cada sucursal es distinta. → Margen +3, Equipo -4, Clientes -2.
-- **C** (score 2, balance -1): Subir el sueldo base de cocina 12% en todo el grupo y dejar las propinas como están. → Caja -2, Margen -5, Equipo +6.
+- **A** (score 2, balance +1): Política para todo el grupo: 20% de las propinas para cocina, visible en la nómina. Lo anuncio yo en cada sucursal, desde Andares. → Margen -1, Equipo +3, Clientes -1.
+- **B** (score 0, balance -3): Que lo resuelva Maru en Andares como mejor le funcione. Cada sucursal es distinta y ella conoce a su gente mejor que nadie. → Margen +3, Equipo -4, Clientes -2.
+- **C** (score 2, balance -1): Subir el sueldo base de cocina 12% en todo el grupo y dejar las propinas como están, para no abrir un pleito con los meseros del piso. → Caja -2, Margen -5, Equipo +6.
 - **Sin respuesta** (balance -8): Equipo -5, Clientes -3.
 
 Respuesta: `gb-d2-propinas | ... | ...`
@@ -641,8 +641,8 @@ Respuesta: `gb-d2-propinas | ... | ...`
 
 **Pregunta:** La app te baja en la lista. ¿Qué haces?
 
-- **A** (score 3, balance -3): Sostener la estrategia: invertir en el canal propio (programa de lealtad, código en cada bolsa de entrega) y aguantar la caída 3 meses. → Caja -2, Margen +2, Clientes -3.
-- **B** (score 2, balance 0): Abrir con la app de la competencia (Kómelo) y repartir los pedidos entre dos plataformas. → Margen -1, Clientes +1.
+- **A** (score 3, balance -3): Sostener la estrategia: programa de lealtad y código en cada bolsa de entrega para el canal propio; aguantar la caída 3 meses. → Caja -2, Margen +2, Clientes -3.
+- **B** (score 2, balance 0): Abrir con la app de la competencia (Kómelo) y repartir los pedidos entre dos plataformas, para no depender de ninguna. → Margen -1, Clientes +1.
 - **Sin respuesta** (balance -4): Clientes -4.
 
 Respuesta: `gb-c-app-guerra | ... | ...`
@@ -655,9 +655,9 @@ Respuesta: `gb-c-app-guerra | ... | ...`
 
 **Pregunta:** ¿Qué haces hoy?
 
-- **A** (score 3, balance -1): Cerrar Andares hoy, pedir disculpas públicas con mi nombre, pagar los gastos médicos y abrir una revisión de inocuidad en las 34 cocinas con un tercero. → Caja -4, Margen -2, Equipo +1, Clientes +3, Consejo +1.
+- **A** (score 3, balance -1): Cerrar Andares hoy, disculparme con mi nombre, pagar los gastos médicos y que un tercero revise la inocuidad de las 34 cocinas. → Caja -4, Margen -2, Equipo +1, Clientes +3, Consejo +1.
 - **B** (score 0, balance -7): Seguir abiertos sin la salsa, sanitizar la cocina esta noche y responder en redes con un comunicado de la marca. No hay que alimentar el escándalo. → Caja +1, Clientes -6, Consejo -2. Línea roja: Seguir abiertos tras un brote de intoxicación sin dar la cara.
-- **C** (score 2, balance -4): Cerrar Andares 48 horas, cooperar con Sanidad y no decir nada públicamente hasta tener el resultado del laboratorio. → Caja -2, Clientes -3, Consejo +1.
+- **C** (score 2, balance -4): Cerrar Andares 48 horas, cooperar con Sanidad y no hacer declaraciones hasta tener el resultado del laboratorio en la mano. → Caja -2, Clientes -3, Consejo +1.
 - **Sin respuesta** (balance -15): Caja -3, Clientes -8, Consejo -4.
 
 Respuesta: `gb-d3-brote | ... | ...`
@@ -670,9 +670,9 @@ Respuesta: `gb-d3-brote | ... | ...`
 
 **Pregunta:** ¿Qué le respondes a la cofundadora?
 
-- **A** (score 1, balance +2): Apoyar las 20 franquicias: es dinero sin inversión y el mercado nos está esperando. → Caja +6, Equipo -2, Clientes -4, Consejo +2.
-- **B** (score 3, balance +2): Sí, pero en dos fases: primero el manual, la cocina central y un equipo de supervisión; después 4 franquicias piloto en 12 meses, con los mejores 2 de tus 10 inversionistas. → Caja -2, Clientes +1, Consejo +3.
-- **C** (score 1, balance -3): No a las franquicias. Primero hay que arreglar las 34 que tenemos. → Caja +1, Equipo +1, Consejo -5.
+- **A** (score 1, balance +2): Apoyar las 20 franquicias: es crecimiento sin inversión nuestra, los inversionistas ya están y el mercado del Bajío nos está esperando. → Caja +6, Equipo -2, Clientes -4, Consejo +2.
+- **B** (score 3, balance +2): Sí, en dos fases: primero manual, cocina central y supervisión; luego 4 franquicias piloto en 12 meses con 2 de tus inversionistas. → Caja -2, Clientes +1, Consejo +3.
+- **C** (score 1, balance -3): No a las franquicias por ahora. Primero hay que arreglar las 34 sucursales que tenemos; si no, copiamos los problemas. → Caja +1, Equipo +1, Consejo -5.
 - **Sin respuesta** (balance -5): Consejo -5.
 
 Respuesta: `gb-d3-franquicia | ... | ...`
@@ -686,7 +686,7 @@ Respuesta: `gb-d3-franquicia | ... | ...`
 **Pregunta:** ¿Qué haces con los clientes que extrañan los platillos?
 
 - **A** (score 3, balance +2): Un «platillo de la casa» rotativo cada mes con los favoritos que salieron, sin regresarlos al menú. → Margen -1, Clientes +3.
-- **B** (score 1, balance -1): Nada. Cualquier cambio tiene quejas al principio; en dos meses nadie se acuerda. → Margen +1, Clientes -2.
+- **B** (score 1, balance -1): Mantener el menú como quedó. Cualquier cambio trae quejas al principio; en dos meses la mayoría ya se acostumbró. → Margen +1, Clientes -2.
 - **Sin respuesta** (balance -1): Clientes -1.
 
 Respuesta: `gb-c-cocinas | ... | ...`
@@ -699,8 +699,8 @@ Respuesta: `gb-c-cocinas | ... | ...`
 
 **Pregunta:** ¿Qué haces con el costo de la carne?
 
-- **A** (score 2, balance 0): Subir precios 6% en todo el menú y comunicarlo como «precio justo» en la carta. → Margen +4, Clientes -4.
-- **B** (score 3, balance +3): Contrato a 12 meses con el proveedor alterno, después de una prueba ciega de la carne con Andrés y 50 clientes. → Caja -1, Margen +2, Equipo +1, Consejo +1.
+- **A** (score 2, balance 0): Subir precios 6% en todo el menú y comunicarlo como «precio justo» en la carta; el cliente entiende que la carne subió. → Margen +4, Clientes -4.
+- **B** (score 3, balance +3): Contrato a 12 meses con el proveedor alterno, después de una cata ciega de su carne con Andrés y 50 clientes. → Caja -1, Margen +2, Equipo +1, Consejo +1.
 - **C** (score 1, balance -6): Absorber el costo por ahora. No es momento de subir precios con la crisis de Andares tan reciente. → Margen -6, Clientes +2, Consejo -2.
 - **Sin respuesta** (balance -5): Margen -5.
 
@@ -714,9 +714,9 @@ Respuesta: `gb-d4-carne | ... | ...`
 
 **Pregunta:** ¿Qué decides con el gerente estrella?
 
-- **A** (score 3, balance +4): Plan de 60 días con coach externo y metas de clima y rotación. Si no cambia, sale. Y desde ya, el bono de todos los gerentes se mide con ventas y con rotación. → Margen -1, Equipo +4, Consejo +1.
-- **B** (score 2, balance +2): Separarlo ahora. Tres quejas son suficientes y el mensaje tiene que ser claro. → Margen -3, Equipo +3, Clientes +2.
-- **C** (score 0, balance -4): Hablar con él en privado y pedirle que cambie. Sus números hablan por él. → Margen +1, Equipo -5.
+- **A** (score 3, balance +4): 60 días con coach externo y metas de clima y rotación; si no cambia, sale. Y el bono de todo gerente se mide también con rotación. → Margen -1, Equipo +4, Consejo +1.
+- **B** (score 2, balance +2): Separarlo ahora. Tres quejas formales son suficientes y el mensaje para los demás gerentes tiene que ser claro. → Margen -3, Equipo +3, Clientes +2.
+- **C** (score 0, balance -4): Hablar con él a solas y pedirle que cambie. Sus números hablan por él y perderlo nos costaría la mejor sucursal. → Margen +1, Equipo -5.
 - **Sin respuesta** (balance -4): Equipo -4.
 
 Respuesta: `gb-d4-gerente | ... | ...`
@@ -730,8 +730,8 @@ Respuesta: `gb-d4-gerente | ... | ...`
 **Pregunta:** ¿Qué haces con CDMX?
 
 - **A** (score 3, balance -2): Cerrar las 4 peores, pagar la penalización y concentrar a los mejores gerentes del grupo en las 2 con potencial. → Caja -5, Margen +4, Equipo -2, Consejo +1.
-- **B** (score 2, balance -4): Darles 6 meses con un plan de recuperación: menú adaptado a CDMX, nuevo gerente regional y marketing local. → Caja -4, Equipo +2, Consejo -2.
-- **C** (score 1, balance -9): Cerrar las 6. Hay que enfocarse en Jalisco y el Bajío, donde la marca es fuerte. → Caja -8, Margen +5, Equipo -3, Consejo -3.
+- **B** (score 2, balance -4): Darles 6 meses con un plan de recuperación: menú adaptado a CDMX, un nuevo gerente regional y marketing local más agresivo. → Caja -4, Equipo +2, Consejo -2.
+- **C** (score 1, balance -9): Cerrar las 6. Hay que enfocarse en Jalisco y el Bajío, donde la marca es fuerte y cada peso rinde más. → Caja -8, Margen +5, Equipo -3, Consejo -3.
 - **Sin respuesta** (balance -5): Caja -3, Margen -2.
 
 Respuesta: `gb-d5-cdmx | ... | ...`
@@ -744,8 +744,8 @@ Respuesta: `gb-d5-cdmx | ... | ...`
 
 **Pregunta:** ¿Qué haces con el franquiciatario?
 
-- **A** (score 3, balance +1): Mandar a Andrés una semana a León, exigir el proveedor y las porciones del contrato, y escribir el manual que nos faltaba antes de abrir otra. → Caja -2, Clientes +2, Consejo +1.
-- **B** (score 1, balance -2): Quitarle la franquicia. La marca no se negocia. → Caja -3, Clientes +4, Consejo -3.
+- **A** (score 3, balance +1): Mandar a Andrés una semana a León, exigir el proveedor y las porciones del contrato y escribir el manual antes de abrir otra. → Caja -2, Clientes +2, Consejo +1.
+- **B** (score 1, balance -2): Quitarle la franquicia este mes. La marca no se negocia y los demás franquiciatarios tienen que ver la consecuencia. → Caja -3, Clientes +4, Consejo -3.
 - **Sin respuesta** (balance -5): Clientes -5.
 
 Respuesta: `gb-c-franquicia-mala | ... | ...`
@@ -758,9 +758,9 @@ Respuesta: `gb-c-franquicia-mala | ... | ...`
 
 **Pregunta:** ¿Lanzas la marca virtual?
 
-- **A** (score 3, balance -1): Piloto en 2 cocinas durante 8 semanas, con la regla de que nunca afecte el tiempo de salida en el restaurante. → Caja -1, Margen +1, Equipo -1.
-- **B** (score 1, balance -5): Lanzar en las 6 cocinas ya. La oportunidad está ahora. → Caja -2, Margen +2, Equipo -3, Clientes -2.
-- **C** (score 1, balance 0): No. Primero hay que arreglar el negocio principal. → Equipo +1, Consejo -1.
+- **A** (score 3, balance -1): Probar 8 semanas en 2 cocinas, con la regla de que nunca afecte el tiempo de salida en el restaurante. → Caja -1, Margen +1, Equipo -1.
+- **B** (score 1, balance -5): Lanzar en las 6 cocinas ya. La oportunidad está ahora y en un año el mercado estará lleno de marcas virtuales. → Caja -2, Margen +2, Equipo -3, Clientes -2.
+- **C** (score 1, balance 0): No por ahora. Primero hay que arreglar el negocio principal; las cocinas apenas sacan los tiempos del salón. → Equipo +1, Consejo -1.
 - **Sin respuesta** (balance -1): Consejo -1.
 
 Respuesta: `gb-d6-dark | ... | ...`
@@ -773,9 +773,9 @@ Respuesta: `gb-d6-dark | ... | ...`
 
 **Pregunta:** Los dos fundadores esperan tu respuesta.
 
-- **A** (score 3, balance +5): «Antes de decidir quién vende qué, necesitamos un protocolo familiar y un consejo con dos independientes. Les propongo hacerlo en 90 días y después decidir con información.» → Caja -1, Equipo +1, Consejo +5.
-- **B** (score 1, balance -1): «Recomiendo buscar al fondo. Brasa necesita capital y profesionalización, y el tiempo corre.» → Caja +2, Consejo -3.
-- **C** (score 1, balance -2): «Recomiendo crecer con recursos propios. La marca es su mayor activo y un fondo la puede presionar.» → Equipo +1, Consejo -3.
+- **A** (score 3, balance +5): «Antes de decidir quién vende qué, propongo un protocolo familiar y un consejo con dos independientes en 90 días; luego decidimos.» → Caja -1, Equipo +1, Consejo +5.
+- **B** (score 1, balance -1): «Recomiendo buscar al fondo. Brasa necesita capital y profesionalización, y el tiempo corre en contra de los dos.» → Caja +2, Consejo -3.
+- **C** (score 1, balance -2): «Recomiendo crecer con recursos propios. La marca es su mayor activo y un fondo la puede presionar para crecer de más.» → Equipo +1, Consejo -3.
 - **Sin respuesta** (balance -4): Consejo -4.
 
 Respuesta: `gb-d6-sucesion | ... | ...`
@@ -788,9 +788,9 @@ Respuesta: `gb-d6-sucesion | ... | ...`
 
 **Pregunta:** ¿Cuál es tu apuesta principal para Brasa?
 
-- **A** (score 3, balance +5): «Rentabilidad de las sucursales actuales antes que crecimiento: prime cost menor a 60%, canal propio y la mejor experiencia de la región. Crecer después, con sistema.» → Caja -2, Margen +2, Equipo +1, Consejo +4.
-- **B** (score 2, balance +1): «Crecimiento: 30 sucursales más en 3 años entre propias y franquicias, con un fondo como socio.» → Caja +1, Equipo -2, Consejo +2.
-- **C** (score 0, balance -2): Presentar los cinco frentes en los que trabajamos, con el avance de cada uno. → Equipo +1, Consejo -3.
+- **A** (score 3, balance +5): «Rentabilidad antes que crecimiento: prime cost bajo 60%, canal propio y la mejor experiencia de la región. Crecer después.» → Caja -2, Margen +2, Equipo +1, Consejo +4.
+- **B** (score 2, balance +1): «Crecimiento: 30 sucursales más en 3 años entre propias y franquicias, con un fondo como socio para financiarlo.» → Caja +1, Equipo -2, Consejo +2.
+- **C** (score 0, balance -2): Presentar los cinco frentes en los que trabajamos, con el avance de cada uno, para que sea el consejo quien elija las prioridades. → Equipo +1, Consejo -3.
 - **Sin respuesta** (balance -4): Consejo -4.
 
 Respuesta: `gb-d7-consejo | ... | ...`
@@ -805,7 +805,7 @@ Respuesta: `gb-d7-consejo | ... | ...`
 
 **Pregunta:** ¿Cómo usas tus primeras semanas?
 
-- **A** (score 3, balance +3): Escuchar primero: 30 llamadas con clientes (empezando por Altamar), una conversación a solas con cada director y una semana sentado con soporte. El plan, al día 45. → Equipo +5, Clientes +3, Consejo -5.
+- **A** (score 3, balance +3): Antes de decidir: 30 llamadas con clientes (primero Altamar), una plática a solas con cada director y una semana en soporte. Propuesta al día 45. → Equipo +5, Clientes +3, Consejo -5.
 - **B** (score 1, balance +3): Plan de 100 días desde ya: congelar contrataciones, recortar 15% del gasto que no es esencial y una meta semanal de quema. → Caja +4, Equipo -6, Clientes -1, Consejo +6.
 - **C** (score 2, balance +1): Primero el cliente que más pesa: una semana con Grupo Altamar para entender qué les duele y asegurar la renovación. → Caja -1, Equipo -3, Clientes +5.
 - **Sin respuesta** (balance -7): Consejo -7.
@@ -820,9 +820,9 @@ Respuesta: `kb-d1-carta | ... | ...`
 
 **Pregunta:** Un líder de equipo te escribe por encima de su director. ¿Qué le contestas?
 
-- **A** (score 2, balance +2): «Memo, la revisión se queda. Mañana hablo con Emilio. Si la entrega de Altamar se retrasa unos días, lo asumo yo.» → Margen -3, Equipo +3, Clientes +3, Consejo -1.
-- **B** (score 1, balance 0): «Memo, gracias por avisarme. Esto lo tiene que decidir Emilio: es tu jefe y conoce el producto mejor que nadie. Platícalo con él y yo lo respaldo.» → Margen +3, Equipo -3, Clientes -1, Consejo +1.
-- **C** (score 3, balance +3): «Memo, mañana a las 9 nos vemos Emilio, Renata, tú y yo. Regla temporal: revisión obligatoria para todo lo que toca dinero o datos de clientes; lo demás sale con revisión ligera y se puede revertir en un clic.» → Margen -1, Equipo +2, Clientes +1, Consejo +1.
+- **A** (score 2, balance +2): «Memo, la revisión se queda. Mañana hablo con Emilio. Si la entrega de Altamar se retrasa unos días por esto, lo asumo yo.» → Margen -3, Equipo +3, Clientes +3, Consejo -1.
+- **B** (score 1, balance 0): «Memo, gracias por avisarme. Esto lo decide Emilio: es tu jefe y conoce el producto. Platícalo con él y yo lo respaldo.» → Margen +3, Equipo -3, Clientes -1, Consejo +1.
+- **C** (score 3, balance +3): «Memo, mañana a las 9 con Emilio y Renata. Revisión obligatoria en lo que toca dinero o datos de clientes; lo demás, ligera y reversible.» → Margen -1, Equipo +2, Clientes +1, Consejo +1.
 - **Sin respuesta** (balance -5): Equipo -4, Clientes -1.
 
 Respuesta: `kb-d1-guardia | ... | ...`
@@ -835,9 +835,9 @@ Respuesta: `kb-d1-guardia | ... | ...`
 
 **Pregunta:** ¿Cómo respondes a tu cliente más grande?
 
-- **A** (score 0, balance -6): Aceptar todo. Lo importante es ganar las 14 empresas del grupo; ahí recuperamos. → Margen -8, Clientes +5, Consejo -3.
+- **A** (score 0, balance -6): Aceptar todo lo que pide. Lo importante es ganar las 14 empresas del grupo; ahí recuperamos el margen con volumen. → Margen -8, Clientes +5, Consejo -3.
 - **B** (score 2, balance 0): Renovar a precio de lista con el ajuste por inflación del contrato. Los desarrollos a la medida se cotizan aparte. → Margen +3, Clientes -5, Consejo +2.
-- **C** (score 3, balance -2): Mantener el precio y meter al producto, con fecha, lo que también sirve a otros clientes (la integración con ERP); el tablero propio se cotiza. A cambio, un piloto en tres empresas más del grupo. → Caja -1, Margen -2, Equipo -2, Clientes +2, Consejo +1.
+- **C** (score 3, balance -2): Mantener el precio y meter al producto, con fecha, la integración con ERP que sirve a todos, a cambio de un piloto en tres empresas más. → Caja -1, Margen -2, Equipo -2, Clientes +2, Consejo +1.
 - **Sin respuesta** (balance -9): Clientes -6, Consejo -3.
 
 Respuesta: `kb-d2-altamar | ... | ...`
@@ -850,9 +850,9 @@ Respuesta: `kb-d2-altamar | ... | ...`
 
 **Pregunta:** ¿Qué camino tomas?
 
-- **A** (score 1, balance -1): Bono de retención y ajuste de sueldo para los 40 clave. Hay que parar la fuga ya. → Caja -4, Margen -2, Equipo +5.
-- **B** (score 3, balance -3): Academia interna con plan de carrera: junior, ingeniero, senior y líder, con sueldo que sube en cada escalón. Mientras tanto aguantamos con lo que hay. → Caja -2, Equipo +2, Clientes -2, Consejo -1.
-- **C** (score 2, balance 0): Subcontratar un equipo en el extranjero para lo que no es el corazón del producto. Dependemos menos de un perfil escaso. → Caja -1, Margen +3, Equipo -5, Consejo +3.
+- **A** (score 1, balance -1): Bono de retención y ajuste de sueldo para los 40 clave. Hay que parar la fuga ya; lo demás puede esperar unos meses. → Caja -4, Margen -2, Equipo +5.
+- **B** (score 3, balance -3): Academia interna: junior, ingeniero, senior y líder, con sueldo que sube en cada escalón. Mientras, aguantamos con lo que hay. → Caja -2, Equipo +2, Clientes -2, Consejo -1.
+- **C** (score 2, balance 0): Subcontratar un equipo en el extranjero para lo que no es el corazón del producto. Dependemos menos de un perfil escaso y caro. → Caja -1, Margen +3, Equipo -5, Consejo +3.
 - **Sin respuesta** (balance -7): Margen -2, Equipo -5.
 
 Respuesta: `kb-d2-fuga | ... | ...`
@@ -865,9 +865,9 @@ Respuesta: `kb-d2-fuga | ... | ...`
 
 **Pregunta:** ¿Cómo respondes a la caída?
 
-- **A** (score 3, balance +1): Asumirlo de frente: hoy llamo a los 20 clientes más afectados, el reporte de causa raíz lo presento yo, los créditos se aplican sin que los pidan y la revisión obligatoria regresa mañana. → Caja -3, Margen -2, Equipo +3, Clientes +3.
+- **A** (score 3, balance +1): Dar la cara: hoy llamo a los 20 clientes más afectados, presento yo la causa raíz, los créditos van sin pedirlos y la revisión regresa. → Caja -3, Margen -2, Equipo +3, Clientes +3.
 - **B** (score 1, balance -3): Contener sin ruido: créditos solo a quien los pida, soporte responde con un mensaje estándar y Producto entrega el reporte. → Margen +1, Equipo -2, Clientes -2.
-- **C** (score 0, balance -6): Defender los datos: fueron 6 horas en un mes con 99.2% de disponibilidad, y el contrato garantiza 99%. No damos créditos extra. → Caja +1, Margen +2, Clientes -7, Consejo -2.
+- **C** (score 0, balance -6): Defender los datos: fueron 6 horas en un mes con 99.2% de disponibilidad, y el contrato garantiza 99%. No damos créditos extra a nadie. → Caja +1, Margen +2, Clientes -7, Consejo -2.
 - **Sin respuesta** (balance -10): Caja -3, Clientes -7.
 
 Respuesta: `kb-c-caida | ... | ...`
@@ -880,9 +880,9 @@ Respuesta: `kb-c-caida | ... | ...`
 
 **Pregunta:** La sala espera tu decisión.
 
-- **A** (score 2, balance -4): Decirle a Ferrán la verdad y proponer firmar en 8 semanas, cuando la integración esté lista. → Margen -1, Equipo +3, Clientes -4, Consejo -2.
+- **A** (score 2, balance -4): Decirle a Ferrán la verdad y proponer firmar en 8 semanas, cuando la integración esté lista y probada con sus propios datos. → Margen -1, Equipo +3, Clientes -4, Consejo -2.
 - **B** (score 0, balance 0): Firmar el viernes confirmando que la integración funciona; mientras, la operamos a mano sin que el cliente lo note. → Equipo -6, Clientes +4, Consejo +2.
-- **C** (score 3, balance -2): Firmar el viernes diciendo la verdad: integración en 8 semanas por contrato, operación manual mientras tanto y un descuento si no llega a tiempo. → Caja -2, Margen -3, Equipo +2, Clientes +1.
+- **C** (score 3, balance -2): Firmar el viernes con la verdad: integración en 8 semanas por contrato, operación manual mientras y descuento si no llega. → Caja -2, Margen -3, Equipo +2, Clientes +1.
 - **Sin respuesta** (balance -8): Equipo -6, Consejo -2.
 
 Respuesta: `kb-d3-demo | ... | ...`
@@ -895,8 +895,8 @@ Respuesta: `kb-d3-demo | ... | ...`
 
 **Pregunta:** ¿Qué haces con lo que logró el equipo de Memo?
 
-- **A** (score 3, balance +6): Llevarlo a todos los equipos en 60 días. Que Memo y su equipo lo enseñen a los demás, con reconocimiento público. → Caja -1, Margen -1, Equipo +5, Clientes +3.
-- **B** (score 2, balance +2): Felicitarlos y consolidarlo tres meses más en infraestructura antes de llevarlo a los demás. → Equipo +2, Clientes -1, Consejo +1.
+- **A** (score 3, balance +6): Llevarlo a todos los equipos en 60 días y que Memo y su equipo lo enseñen a los demás, con su nombre por delante. → Caja -1, Margen -1, Equipo +5, Clientes +3.
+- **B** (score 2, balance +2): Felicitarlos y consolidarlo tres meses más en infraestructura, hasta que aguante sin ellos, antes de llevarlo a los demás. → Equipo +2, Clientes -1, Consejo +1.
 - **Sin respuesta** (balance -1): Equipo -1.
 
 Respuesta: `kb-c-mejora | ... | ...`
@@ -909,9 +909,9 @@ Respuesta: `kb-c-mejora | ... | ...`
 
 **Pregunta:** ¿Qué le respondes a la socia del fondo?
 
-- **A** (score 1, balance +1): «Valeria, lo apoyo completo: tomamos la deuda y contratamos a los 30 vendedores.» → Caja -6, Clientes +1, Consejo +6.
-- **B** (score 3, balance +3): «Propongo tomar la mitad como colchón, sin la cláusula de crecimiento, y contratar vendedores por etapas: 10 ahora y el resto si el costo de conseguir un cliente se recupera en menos de 14 meses.» → Caja +2, Margen -1, Consejo +2.
-- **C** (score 2, balance -2): «Con todo respeto, no. Endeudarnos con una condición de crecimiento que hoy no cumplimos es poner en riesgo la empresa. Llegamos a equilibrio con lo que tenemos.» → Caja +3, Margen +2, Clientes -1, Consejo -6.
+- **A** (score 1, balance +1): «Valeria, lo apoyo completo: tomamos la deuda y contratamos a los 30 vendedores. Sin ventas nuevas no hay equilibrio que valga.» → Caja -6, Clientes +1, Consejo +6.
+- **B** (score 3, balance +3): «Propongo la mitad como colchón, sin cláusula de crecimiento, y vendedores por tandas: 10 ahora, el resto si el cliente se paga en 14 meses.» → Caja +2, Margen -1, Consejo +2.
+- **C** (score 2, balance -2): «Con todo respeto, no. Endeudarnos con una condición de crecimiento que hoy no cumplimos pone en riesgo la empresa.» → Caja +3, Margen +2, Clientes -1, Consejo -6.
 - **Sin respuesta** (balance -8): Caja -4, Consejo -4.
 
 Respuesta: `kb-d4-deuda | ... | ...`
@@ -924,9 +924,9 @@ Respuesta: `kb-d4-deuda | ... | ...`
 
 **Pregunta:** Tu cofundador y tu directora de clientes están en guerra. ¿Qué haces?
 
-- **A** (score 3, balance +3): Sentarlos juntos conmigo esta semana. Definir qué es urgente y con qué criterio, y cambiar sus bonos: los dos se miden con la retención neta de ingreso (lo que siguen pagando los clientes de hace un año). → Margen -1, Equipo +4, Clientes +1, Consejo -1.
-- **B** (score 1, balance -2): Respaldar a Emilio: solo es urgente si la plataforma está caída. La entrega del trimestre es prioridad. → Margen +3, Equipo -3, Clientes -3, Consejo +1.
-- **C** (score 1, balance -2): Respaldar a Renata en público: el cliente que paga no espera. Emilio tiene que ajustar su plan. → Margen -2, Equipo -3, Clientes +3.
+- **A** (score 3, balance +3): Sentarlos juntos conmigo esta semana, definir qué es urgente y con qué criterio, y medir a los dos con la retención neta de ingreso. → Margen -1, Equipo +4, Clientes +1, Consejo -1.
+- **B** (score 1, balance -2): Respaldar a Emilio: solo es urgente si la plataforma está caída. La entrega del trimestre es prioridad y ya va atrasada. → Margen +3, Equipo -3, Clientes -3, Consejo +1.
+- **C** (score 1, balance -2): Respaldar a Renata ante el comité: el cliente que paga no espera. Emilio tiene que ajustar su plan del trimestre. → Margen -2, Equipo -3, Clientes +3.
 - **Sin respuesta** (balance -7): Equipo -5, Clientes -2.
 
 Respuesta: `kb-d4-pleito | ... | ...`
@@ -939,9 +939,9 @@ Respuesta: `kb-d4-pleito | ... | ...`
 
 **Pregunta:** ¿Qué decides en las próximas horas?
 
-- **A** (score 2, balance 0): Pagar la nómina completa con la otra cuenta, repartir lo que quede en dos bancos distintos y avisar hoy al equipo y a los clientes con lo que sabemos y lo que no. → Caja -3, Equipo +3, Clientes +1, Consejo -1.
+- **A** (score 2, balance 0): Pagar la nómina completa con la otra cuenta, repartir el resto en dos bancos y avisar hoy al equipo y a los clientes lo que sabemos. → Caja -3, Equipo +3, Clientes +1, Consejo -1.
 - **B** (score 0, balance -7): No decir nada hasta saber más. Pagar solo la mitad de la nómina por si acaso y explicar que fue un error del sistema. → Caja +2, Equipo -6, Consejo -3.
-- **C** (score 3, balance +3): Llamar hoy al consejo para pedir una línea puente de los inversionistas, pagar la nómina completa, avisar al equipo con hechos y armar con Andrea un plan de 30 días con la caja disponible. → Caja -1, Margen -1, Equipo +2, Consejo +3.
+- **C** (score 3, balance +3): Pedir hoy al consejo una línea puente, pagar la nómina completa, avisar al equipo con hechos y armar con Andrea un plan de 30 días. → Caja -1, Margen -1, Equipo +2, Consejo +3.
 - **Sin respuesta** (balance -12): Equipo -8, Consejo -4.
 
 Respuesta: `kb-d5-banco | ... | ...`
@@ -954,8 +954,8 @@ Respuesta: `kb-d5-banco | ... | ...`
 
 **Pregunta:** ¿Con qué camino llegas al consejo?
 
-- **A** (score 1, balance +1): La ronda grande. Con $400 M crecemos sin frenar y le ganamos el mercado a la competencia. → Caja +6, Margen -2, Equipo -4, Consejo +1.
-- **B** (score 2, balance -2): Sin ronda: recortamos 25% del gasto y llegamos a equilibrio con lo propio. → Caja +1, Margen +4, Equipo -5, Consejo -2.
+- **A** (score 1, balance +1): La ronda grande. Con $400 M crecemos sin frenar y le ganamos el mercado a la competencia antes de que se consolide. → Caja +6, Margen -2, Equipo -4, Consejo +1.
+- **B** (score 2, balance -2): Sin ronda: recortamos 25% del gasto y llegamos a equilibrio con lo propio, sin diluir a los socios ni deberle a nadie. → Caja +1, Margen +4, Equipo -5, Consejo -2.
 - **C** (score 3, balance +1): La ronda interna con la meta de equilibrio en 12 meses: crecemos menos, pero con mejores números y sin castigar al equipo. → Caja +3, Equipo -1, Clientes -2, Consejo +1.
 - **Sin respuesta** (balance -6): Caja -3, Consejo -3.
 
@@ -969,8 +969,8 @@ Respuesta: `kb-d5-ronda | ... | ...`
 
 **Pregunta:** Tu directora de Éxito del Cliente renuncia. ¿Qué haces?
 
-- **A** (score 3, balance -1): Verla hoy: reconocer que me equivoqué, decirle a Ferrán la verdad esta semana y pedirle que se quede para liderar la corrección. → Equipo +4, Clientes -3, Consejo -2.
-- **B** (score 1, balance -1): Aceptar la renuncia y nombrar a Itzel (gerente de soporte) directora interina. → Margen +2, Equipo -2, Clientes -1.
+- **A** (score 3, balance -1): Verla hoy, admitir que me equivoqué, decirle a Ferrán la verdad esta semana y pedirle que se quede a corregirlo. → Equipo +4, Clientes -3, Consejo -2.
+- **B** (score 1, balance -1): Aceptar la renuncia y nombrar a Itzel, gerente de soporte que conoce a fondo a los clientes, como directora interina. → Margen +2, Equipo -2, Clientes -1.
 - **Sin respuesta** (balance -7): Equipo -4, Clientes -3.
 
 Respuesta: `kb-c-renata | ... | ...`
@@ -983,9 +983,9 @@ Respuesta: `kb-c-renata | ... | ...`
 
 **Pregunta:** ¿Qué haces con el proveedor?
 
-- **A** (score 3, balance -3): Dar el anticipo con garantía sobre sus equipos, una persona nuestra revisando su caja cada semana y arrancar ya la migración a un segundo proveedor en México. → Caja -5, Clientes +3, Consejo -1.
+- **A** (score 3, balance -3): Anticipo con garantía sobre sus equipos y alguien nuestro revisando su caja cada semana; en paralelo, migrar a un segundo proveedor. → Caja -5, Clientes +3, Consejo -1.
 - **B** (score 1, balance -2): No arriesgar caja en un proveedor que se cae: pedir a los 120 clientes permiso para moverlos temporalmente a una nube extranjera. → Caja +1, Clientes -4, Consejo +1.
-- **C** (score 2, balance -4): Comprar DataNorte. Controlar la infraestructura más crítica nos protege y puede ser un negocio aparte. → Caja -8, Margen +2, Equipo -1, Consejo +3.
+- **C** (score 2, balance -4): Comprar DataNorte. Controlar la infraestructura más crítica nos protege y además puede ser un negocio aparte y rentable. → Caja -8, Margen +2, Equipo -1, Consejo +3.
 - **Sin respuesta** (balance -11): Margen -3, Clientes -8.
 
 Respuesta: `kb-d6-centro | ... | ...`
@@ -999,8 +999,8 @@ Respuesta: `kb-d6-centro | ... | ...`
 **Pregunta:** ¿Qué decides mientras se investiga?
 
 - **A** (score 3, balance +3): Suspenderlo con goce de sueldo mientras una firma externa investiga, proteger a quienes denunciaron y que Bruno atienda sus cuentas. → Margen -2, Equipo +4, Consejo +1.
-- **B** (score 0, balance -7): Que siga trabajando mientras se investiga, pero cambiar de equipo a quienes denunciaron y que Personas lo investigue internamente. → Margen +1, Equipo -6, Consejo -2.
-- **C** (score 1, balance -3): Despedirlo de inmediato. Con tres denuncias no hay nada que investigar. → Caja -3, Equipo +3, Consejo -3.
+- **B** (score 0, balance -7): Que siga trabajando mientras se investiga, pero cambiar de equipo a quienes denunciaron y que Personas lo investigue internamente, sin ruido. → Margen +1, Equipo -6, Consejo -2.
+- **C** (score 1, balance -3): Despedirlo de inmediato. Con tres denuncias coincidentes no hay nada que investigar y cada día que sigue es un riesgo. → Caja -3, Equipo +3, Consejo -3.
 - **Sin respuesta** (balance -8): Equipo -6, Consejo -2.
 
 Respuesta: `kb-d6-denuncia | ... | ...`
@@ -1013,7 +1013,7 @@ Respuesta: `kb-d6-denuncia | ... | ...`
 
 **Pregunta:** ¿Cómo integras a la primera generación?
 
-- **A** (score 3, balance +2): Acompañados 3 meses: cada junior en pareja con un senior y un bono para los mentores. → Caja -1, Equipo +4, Clientes -1.
+- **A** (score 3, balance +2): Acompañados 3 meses: cada junior en pareja con un senior, y un bono para los mentores que lo hagan bien. → Caja -1, Equipo +4, Clientes -1.
 - **B** (score 1, balance -1): Directo a la entrega del trimestre. Ya terminaron la academia y el equipo los necesita hoy. → Margen -1, Equipo -2, Clientes +2.
 - **Sin respuesta** (balance -2): Equipo -2.
 
@@ -1027,7 +1027,7 @@ Respuesta: `kb-c-academia | ... | ...`
 
 **Pregunta:** El consejo espera tu recomendación.
 
-- **A** (score 3, balance +3): «Les pido 90 días: bajar la quema de $9 M a $6 M recortando lo que no son personas (nube, oficinas, herramientas) y congelando contrataciones, con metas semanales. Si no llegamos, yo mismo propongo el recorte.» → Margen +1, Equipo +4, Consejo -2.
+- **A** (score 3, balance +3): «Les pido 90 días para bajar la quema de $9 M a $6 M sin tocar personas. Si no llegamos, yo mismo propongo el recorte.» → Margen +1, Equipo +4, Consejo -2.
 - **B** (score 1, balance -1): «Estoy de acuerdo. Recortamos con un proceso digno: indemnización completa, apoyo para recolocarse y un plan para que soporte no se caiga.» → Margen +2, Equipo -7, Clientes -2, Consejo +6.
 - **C** (score 2, balance -3): «No recomiendo tocar Éxito del Cliente. Recortamos solo contrataciones nuevas y marketing, aunque la quema baje más lento.» → Caja -1, Margen -2, Equipo +5, Consejo -5.
 - **Sin respuesta** (balance -12): Equipo -6, Consejo -6.
@@ -1042,7 +1042,7 @@ Respuesta: `kb-d7-consejo | ... | ...`
 
 **Pregunta:** El equipo quiere una respuesta hoy. ¿Qué haces?
 
-- **A** (score 3, balance +3): Junta abierta hoy con todos, en persona y en línea, con Carmen y Emilio: lo que está decidido, lo que no y cuándo se va a saber. Sin promesas que no pueda cumplir. → Equipo +4, Consejo -1.
+- **A** (score 3, balance +3): Junta abierta hoy con todos, en persona y en línea, con Carmen y Emilio: qué está decidido, qué no y cuándo se sabrá. → Equipo +4, Consejo -1.
 - **B** (score 1, balance -3): Comunicado oficial por escrito de Personas: «No hay ninguna decisión tomada». Lo demás, por los canales formales. → Margen -1, Equipo -3, Consejo +1.
 - **C** (score 2, balance +1): Reunirme solo con Joel y los líderes informales, y pedirles que calmen al equipo a cambio de que estén en la mesa del plan. → Equipo +2, Clientes +1, Consejo -2.
 - **Sin respuesta** (balance -10): Margen -2, Equipo -6, Clientes -2.
@@ -1059,7 +1059,7 @@ Respuesta: `kb-d7-equipo | ... | ...`
 
 **Pregunta:** ¿Cómo usas tus primeras semanas?
 
-- **A** (score 3, balance +3): Escuchar primero: visitar 20 tiendas (empezando por la principal), una conversación a solas con cada director y una semana atendiendo en piso. El plan, al día 45. → Equipo +5, Clientes +3, Consejo -5.
+- **A** (score 3, balance +3): Antes de decidir: visitar 20 tiendas (primero la principal), una plática a solas con cada director y una semana atendiendo en piso. Propuesta al día 45. → Equipo +5, Clientes +3, Consejo -5.
 - **B** (score 1, balance +3): Plan de 100 días desde ya: congelar contrataciones, recortar 15% del gasto que no es esencial y bajar precios en las 200 marcas que más compara la gente. → Caja +4, Equipo -6, Clientes -1, Consejo +6.
 - **C** (score 2, balance +1): Primero el cliente que más pesa: una semana con Constructora Peñasco para entender qué les duele y asegurar sus compras del año. → Caja -1, Equipo -3, Clientes +5.
 - **Sin respuesta** (balance -7): Consejo -7.
@@ -1074,9 +1074,9 @@ Respuesta: `pm-d1-carta | ... | ...`
 
 **Pregunta:** Un gerente de tienda te escribe por encima de su director. ¿Qué le contestas?
 
-- **A** (score 2, balance +2): «Chuy, los pasillos se cierran cuando baja una tarima. Mañana hablo con Octavio. Si la temporada se retrasa unos días, lo asumo yo.» → Margen -3, Equipo +3, Clientes +3, Consejo -1.
-- **B** (score 1, balance 0): «Chuy, gracias por avisarme. Esto lo tiene que decidir Octavio: es tu jefe y conoce las tiendas mejor que nadie. Platícalo con él y yo lo respaldo.» → Margen +3, Equipo -3, Clientes -1, Consejo +1.
-- **C** (score 3, balance +3): «Chuy, mañana a las 9 nos vemos Octavio, Mónica, tú y yo. Regla temporal: en horario de tienda solo se baja tarima con el pasillo cerrado y una persona cuidando; lo pesado se surte de noche con horas extra pagadas.» → Margen -1, Equipo +2, Clientes +1, Consejo +1.
+- **A** (score 2, balance +2): «Chuy, los pasillos se cierran cuando baja una tarima. Mañana mismo hablo con Octavio. Si la temporada se retrasa unos días, lo asumo yo.» → Margen -3, Equipo +3, Clientes +3, Consejo -1.
+- **B** (score 1, balance 0): «Chuy, gracias por avisarme. Esto lo decide Octavio: es tu jefe y conoce las tiendas. Platícalo con él y yo lo respaldo.» → Margen +3, Equipo -3, Clientes -1, Consejo +1.
+- **C** (score 3, balance +3): «Chuy, mañana a las 9 con Octavio y Mónica. Tarima de día solo con pasillo cerrado y alguien cuidando; lo pesado, de noche y pagado.» → Margen -1, Equipo +2, Clientes +1, Consejo +1.
 - **Sin respuesta** (balance -5): Equipo -4, Clientes -1.
 
 Respuesta: `pm-d1-piso | ... | ...`
@@ -1089,9 +1089,9 @@ Respuesta: `pm-d1-piso | ... | ...`
 
 **Pregunta:** ¿Cómo respondes a tu cliente más grande?
 
-- **A** (score 0, balance -6): Aceptar todo. Lo importante es ganar los nueve desarrollos; ahí recuperamos. → Margen -8, Clientes +5, Consejo -3.
+- **A** (score 0, balance -6): Aceptar todo lo que pide. Lo importante es ganar los nueve desarrollos; ahí recuperamos el margen con volumen. → Margen -8, Clientes +5, Consejo -3.
 - **B** (score 2, balance 0): Mantener precio de lista con el ajuste por inflación del contrato y crédito a 30 días. La entrega en obra se cobra aparte. → Margen +3, Clientes -5, Consejo +2.
-- **C** (score 3, balance -2): Mantener el precio y crear un programa de entrega programada en obra que sirva a todos los constructores; crédito a 60 días con garantía. A cambio, surtir tres de los nueve desarrollos como prueba. → Caja -1, Margen -2, Equipo -2, Clientes +2, Consejo +1.
+- **C** (score 3, balance -2): Mantener precio y crear entrega programada en obra para todos los constructores, con crédito a 60 días garantizado; tres desarrollos de prueba. → Caja -1, Margen -2, Equipo -2, Clientes +2, Consejo +1.
 - **Sin respuesta** (balance -9): Clientes -6, Consejo -3.
 
 Respuesta: `pm-d2-penasco | ... | ...`
@@ -1104,8 +1104,8 @@ Respuesta: `pm-d2-penasco | ... | ...`
 
 **Pregunta:** ¿Qué camino tomas?
 
-- **A** (score 1, balance -1): Bono de permanencia y ajuste de sueldo para los 120 asesores expertos. Hay que parar la fuga ya. → Caja -4, Margen -2, Equipo +5.
-- **B** (score 3, balance -3): Escuela de asesores con plan de carrera: auxiliar, asesor, asesor experto y jefe de piso, con sueldo que sube en cada escalón. Mientras tanto aguantamos con lo que hay. → Caja -2, Equipo +2, Clientes -2, Consejo -1.
+- **A** (score 1, balance -1): Bono de permanencia y ajuste de sueldo para los 120 asesores expertos. Hay que parar la fuga ya; lo demás puede esperar unos meses. → Caja -4, Margen -2, Equipo +5.
+- **B** (score 3, balance -3): Escuela de asesores: auxiliar, asesor, experto y jefe de piso, con sueldo que sube en cada escalón. Mientras, aguantamos. → Caja -2, Equipo +2, Clientes -2, Consejo -1.
 - **C** (score 2, balance 0): Personal de piso por agencia para lo que no requiere experiencia. Dependemos menos de un perfil escaso. → Caja -1, Margen +3, Equipo -5, Consejo +3.
 - **Sin respuesta** (balance -7): Margen -2, Equipo -5.
 
@@ -1119,7 +1119,7 @@ Respuesta: `pm-d2-asesores | ... | ...`
 
 **Pregunta:** ¿Cómo respondes al accidente?
 
-- **A** (score 3, balance +1): Asumirlo de frente: hoy visito a la clienta, el reporte de causa lo presento yo, cubrimos todos sus gastos sin que los pida y el cierre de pasillos regresa mañana en las 60 tiendas. → Caja -3, Margen -2, Equipo +3, Clientes +3.
+- **A** (score 3, balance +1): Dar la cara: hoy visito a la clienta, presento yo la causa, cubrimos sus gastos sin que los pida y el cierre de pasillos regresa en 60 tiendas. → Caja -3, Margen -2, Equipo +3, Clientes +3.
 - **B** (score 1, balance -3): Contener sin ruido: el seguro atiende a la clienta, redes responde con un mensaje estándar y Operaciones entrega el reporte. → Margen +1, Equipo -2, Clientes -2.
 - **C** (score 0, balance -6): Defender los datos: fue un incidente en 900 maniobras semanales y tenemos un índice de accidentes por debajo de la industria. No cambiamos nada. → Caja +1, Margen +2, Clientes -7, Consejo -2.
 - **Sin respuesta** (balance -10): Caja -3, Clientes -7.
@@ -1134,7 +1134,7 @@ Respuesta: `pm-c-tarima | ... | ...`
 
 **Pregunta:** La sala espera tu decisión.
 
-- **A** (score 2, balance -4): No anunciarlo este año. Decir la verdad (entrega en dos días) y lanzar el mismo día en 8 semanas, cuando funcione. → Margen -1, Equipo +3, Clientes -4, Consejo -2.
+- **A** (score 2, balance -4): No anunciarlo este año. Decir la verdad (entrega en dos días) y lanzar el mismo día en 8 semanas, cuando funcione bien. → Margen -1, Equipo +3, Clientes -4, Consejo -2.
 - **B** (score 0, balance 0): Anunciar entrega el mismo día en toda la región; lo que no salga, lo cubrimos a mano y con taxis sin que el cliente lo note. → Equipo -6, Clientes +4, Consejo +2.
 - **C** (score 3, balance -2): Anunciar lo que sí podemos cumplir: el mismo día solo en las 4 tiendas grandes, 48 horas en las demás y un cupón automático si no llega a tiempo. → Caja -2, Margen -3, Equipo +2, Clientes +1.
 - **Sin respuesta** (balance -8): Equipo -6, Consejo -2.
@@ -1149,8 +1149,8 @@ Respuesta: `pm-d3-entrega | ... | ...`
 
 **Pregunta:** ¿Qué haces con lo que logró el equipo de Chuy?
 
-- **A** (score 3, balance +6): Llevarlo a las 60 tiendas en 60 días. Que Chuy y su equipo lo enseñen a los demás, con reconocimiento público. → Caja -1, Margen -1, Equipo +5, Clientes +3.
-- **B** (score 2, balance +2): Felicitarlos y consolidarlo tres meses más en la tienda principal antes de llevarlo a las demás. → Equipo +2, Clientes -1, Consejo +1.
+- **A** (score 3, balance +6): Llevarlo a las 60 tiendas en 60 días y que Chuy y su equipo lo enseñen a los demás, con su nombre por delante. → Caja -1, Margen -1, Equipo +5, Clientes +3.
+- **B** (score 2, balance +2): Felicitarlos y consolidarlo tres meses más en la tienda principal, hasta que aguante sin ellos, antes de llevarlo a las demás. → Equipo +2, Clientes -1, Consejo +1.
 - **Sin respuesta** (balance -1): Equipo -1.
 
 Respuesta: `pm-c-mejora | ... | ...`
@@ -1163,9 +1163,9 @@ Respuesta: `pm-c-mejora | ... | ...`
 
 **Pregunta:** ¿Qué le respondes a la consejera?
 
-- **A** (score 1, balance +1): «Inés, lo apoyo completo: tomamos el crédito y abrimos las 15 tiendas.» → Caja -6, Clientes +1, Consejo +6.
+- **A** (score 1, balance +1): «Inés, lo apoyo completo: tomamos el crédito y abrimos las 15 tiendas. Si no crecemos ahora, Mundo Casa ocupa esas plazas.» → Caja -6, Clientes +1, Consejo +6.
 - **B** (score 3, balance +3): «Propongo tomar la mitad y abrir por etapas: 5 tiendas ahora y el resto si las primeras llegan a su meta de venta en 12 meses.» → Caja +2, Margen -1, Consejo +2.
-- **C** (score 2, balance -2): «Con todo respeto, no. Endeudarnos casi hasta el límite del banco mientras nuestras tiendas venden menos es poner en riesgo la empresa. Primero arreglamos las que tenemos.» → Caja +3, Margen +2, Clientes -1, Consejo -6.
+- **C** (score 2, balance -2): «Con todo respeto, no. Endeudarnos casi al límite mientras las tiendas venden menos pone en riesgo la empresa. Primero, las que hay.» → Caja +3, Margen +2, Clientes -1, Consejo -6.
 - **Sin respuesta** (balance -8): Caja -4, Consejo -4.
 
 Respuesta: `pm-d4-deuda | ... | ...`
@@ -1178,9 +1178,9 @@ Respuesta: `pm-d4-deuda | ... | ...`
 
 **Pregunta:** Tus dos directores de venta están en guerra. ¿Qué haces?
 
-- **A** (score 3, balance +3): Sentarlos juntos conmigo esta semana. Definir qué pedido es urgente y con qué criterio, y cambiar sus bonos: los dos se miden con la venta total del cliente, en tienda y en línea. → Margen -1, Equipo +4, Clientes +1, Consejo -1.
-- **B** (score 1, balance -2): Respaldar a Octavio: la gente de piso es para el piso. Tienda en línea se las arregla con su propio personal. → Margen +3, Equipo -3, Clientes -3, Consejo +1.
-- **C** (score 1, balance -2): Respaldar a Mónica en público: el cliente en línea no espera. Octavio tiene que ajustar sus turnos. → Margen -2, Equipo -3, Clientes +3.
+- **A** (score 3, balance +3): Sentarlos juntos conmigo esta semana, definir qué pedido es urgente y con qué criterio, y medir a los dos con la venta total del cliente. → Margen -1, Equipo +4, Clientes +1, Consejo -1.
+- **B** (score 1, balance -2): Respaldar a Octavio: la gente de piso es para el piso. Tienda en línea tiene que resolver con su propio personal. → Margen +3, Equipo -3, Clientes -3, Consejo +1.
+- **C** (score 1, balance -2): Respaldar a Mónica ante el comité: el cliente en línea no espera. Octavio tiene que ajustar sus turnos de piso. → Margen -2, Equipo -3, Clientes +3.
 - **Sin respuesta** (balance -7): Equipo -5, Clientes -2.
 
 Respuesta: `pm-d4-pleito | ... | ...`
@@ -1193,9 +1193,9 @@ Respuesta: `pm-d4-pleito | ... | ...`
 
 **Pregunta:** ¿Qué decides en las próximas horas?
 
-- **A** (score 2, balance 0): Pagar la nómina completa con la otra cuenta, pedir al abogado que ofrezca una garantía por lo reclamado y avisar hoy al equipo y a los proveedores con lo que sabemos y lo que no. → Caja -3, Equipo +3, Clientes +1, Consejo -1.
+- **A** (score 2, balance 0): Pagar la nómina con la otra cuenta, que el abogado ofrezca garantía por lo reclamado y avisar hoy al equipo y a los proveedores lo que sabemos. → Caja -3, Equipo +3, Clientes +1, Consejo -1.
 - **B** (score 0, balance -7): No decir nada hasta saber más. Pagar solo la mitad de la nómina por si acaso y explicar que fue un error del banco. → Caja +2, Equipo -6, Consejo -3.
-- **C** (score 3, balance +3): Llamar hoy al consejo para pedir una línea de crédito puente de los accionistas, pagar la nómina completa, avisar al equipo con hechos y armar con Claudia un plan de 30 días con la caja disponible. → Caja -1, Margen -1, Equipo +2, Consejo +3.
+- **C** (score 3, balance +3): Pedir hoy al consejo una línea puente de los accionistas, pagar la nómina completa, avisar con hechos y armar con Claudia un plan de 30 días. → Caja -1, Margen -1, Equipo +2, Consejo +3.
 - **Sin respuesta** (balance -12): Equipo -8, Consejo -4.
 
 Respuesta: `pm-d5-embargo | ... | ...`
@@ -1208,9 +1208,9 @@ Respuesta: `pm-d5-embargo | ... | ...`
 
 **Pregunta:** ¿Con qué camino llegas al consejo?
 
-- **A** (score 1, balance +1): Vender a Mundo Casa. La familia recibe dinero hoy y la competencia deja de ser una amenaza. → Caja +6, Margen -2, Equipo -4, Consejo +1.
-- **B** (score 2, balance -2): Sin socio nuevo: recortamos 25% del gasto y competimos con lo propio. → Caja +1, Margen +4, Equipo -5, Consejo -2.
-- **C** (score 3, balance +1): El capital de Capital Norte con la meta de margen en 12 meses: crecemos menos, pero con mejores números y sin vender la empresa. → Caja +3, Equipo -1, Clientes -2, Consejo +1.
+- **A** (score 1, balance +1): Vender a Mundo Casa. La familia recibe dinero hoy y dejamos de pelear contra un competidor con más espalda. → Caja +6, Margen -2, Equipo -4, Consejo +1.
+- **B** (score 2, balance -2): Sin socio nuevo: recortamos 25% del gasto y competimos con lo propio, sin diluir a la familia ni venderle a nadie. → Caja +1, Margen +4, Equipo -5, Consejo -2.
+- **C** (score 3, balance +1): El capital de Capital Norte con meta de margen en 12 meses: crecemos menos, con mejores números y sin vender. → Caja +3, Equipo -1, Clientes -2, Consejo +1.
 - **Sin respuesta** (balance -6): Caja -3, Consejo -3.
 
 Respuesta: `pm-d5-oferta | ... | ...`
@@ -1223,8 +1223,8 @@ Respuesta: `pm-d5-oferta | ... | ...`
 
 **Pregunta:** Tu directora de Experiencia del Cliente renuncia. ¿Qué haces?
 
-- **A** (score 3, balance -1): Verla hoy: reconocer que me equivoqué, corregir el anuncio esta semana, compensar a los clientes afectados y pedirle que se quede para liderar la corrección. → Equipo +4, Clientes -3, Consejo -2.
-- **B** (score 1, balance -1): Aceptar la renuncia y nombrar a Karla (gerente del centro de atención) directora interina. → Margen +2, Equipo -2, Clientes -1.
+- **A** (score 3, balance -1): Verla hoy, admitir que me equivoqué, corregir el anuncio esta semana, compensar a los clientes y pedirle que se quede. → Equipo +4, Clientes -3, Consejo -2.
+- **B** (score 1, balance -1): Aceptar la renuncia y nombrar a Karla, gerente del centro de atención que conoce cada queja de clientes, como directora interina. → Margen +2, Equipo -2, Clientes -1.
 - **Sin respuesta** (balance -7): Equipo -4, Clientes -3.
 
 Respuesta: `pm-c-monica | ... | ...`
@@ -1237,7 +1237,7 @@ Respuesta: `pm-c-monica | ... | ...`
 
 **Pregunta:** ¿Qué haces con el proveedor?
 
-- **A** (score 3, balance -3): Dar el anticipo con garantía sobre su maquinaria, una persona nuestra revisando su caja cada semana y arrancar ya el desarrollo de un segundo fabricante. → Caja -5, Clientes +3, Consejo -1.
+- **A** (score 3, balance -3): Anticipo con garantía sobre su maquinaria y alguien nuestro revisando su caja cada semana; en paralelo, desarrollar un segundo fabricante. → Caja -5, Clientes +3, Consejo -1.
 - **B** (score 1, balance -2): No arriesgar caja en un proveedor que se cae: importar productos parecidos y pedir a los clientes de obra que acepten el cambio. → Caja +1, Clientes -4, Consejo +1.
 - **C** (score 2, balance -4): Comprar Industrias Ocampo. Controlar la fábrica de nuestra marca propia nos protege y puede ser un negocio aparte. → Caja -8, Margen +2, Equipo -1, Consejo +3.
 - **Sin respuesta** (balance -11): Margen -3, Clientes -8.
@@ -1253,8 +1253,8 @@ Respuesta: `pm-d6-proveedor | ... | ...`
 **Pregunta:** ¿Qué decides mientras se investiga?
 
 - **A** (score 3, balance +3): Suspenderlo con goce de sueldo mientras una firma externa investiga, proteger a quienes denunciaron y que Octavio atienda la región. → Margen -2, Equipo +4, Consejo +1.
-- **B** (score 0, balance -7): Que siga trabajando mientras se investiga, pero cambiar de tienda a quienes denunciaron y que Personas lo investigue internamente. → Margen +1, Equipo -6, Consejo -2.
-- **C** (score 1, balance -3): Despedirlo de inmediato. Con tres denuncias no hay nada que investigar. → Caja -3, Equipo +3, Consejo -3.
+- **B** (score 0, balance -7): Que siga trabajando mientras se investiga, pero cambiar de tienda a quienes denunciaron y que Personas lo investigue internamente, sin ruido. → Margen +1, Equipo -6, Consejo -2.
+- **C** (score 1, balance -3): Despedirlo de inmediato. Con tres denuncias coincidentes no hay nada que investigar y cada día que sigue es un riesgo. → Caja -3, Equipo +3, Consejo -3.
 - **Sin respuesta** (balance -8): Equipo -6, Consejo -2.
 
 Respuesta: `pm-d6-denuncia | ... | ...`
@@ -1268,7 +1268,7 @@ Respuesta: `pm-d6-denuncia | ... | ...`
 **Pregunta:** ¿Cómo integras a la primera generación?
 
 - **A** (score 3, balance +2): Acompañadas 3 meses: cada asesor nuevo en pareja con un experto y un bono para los mentores. → Caja -1, Equipo +4, Clientes -1.
-- **B** (score 1, balance -1): Directo a piso. Ya terminaron la escuela y las tiendas las necesitan hoy. → Margen -1, Equipo -2, Clientes +2.
+- **B** (score 1, balance -1): Directo a piso. Ya terminaron la escuela, las tiendas los necesitan hoy y aprenden más atendiendo que mirando. → Margen -1, Equipo -2, Clientes +2.
 - **Sin respuesta** (balance -2): Equipo -2.
 
 Respuesta: `pm-c-escuela | ... | ...`
@@ -1281,7 +1281,7 @@ Respuesta: `pm-c-escuela | ... | ...`
 
 **Pregunta:** El consejo espera tu recomendación.
 
-- **A** (score 3, balance +3): «Les pido 90 días: bajar el gasto $50 M renegociando rentas, cerrando solo las 4 tiendas sin remedio y reubicando a su gente, con metas semanales. Si no llegamos, yo mismo propongo el resto.» → Margen +1, Equipo +4, Consejo -2.
+- **A** (score 3, balance +3): «Les pido 90 días para bajar $50 M: rentas renegociadas y cerrar solo las 4 tiendas sin remedio. Si no llegamos, propongo yo el resto.» → Margen +1, Equipo +4, Consejo -2.
 - **B** (score 1, balance -1): «Estoy de acuerdo. Cerramos con un proceso digno: indemnización completa, apoyo para recolocarse y un plan para que los clientes de esas zonas no se vayan.» → Margen +2, Equipo -7, Clientes -2, Consejo +6.
 - **C** (score 2, balance -3): «No recomiendo tocar a los asesores ni cerrar tiendas. Recortamos solo contrataciones nuevas y publicidad, aunque el ahorro llegue más lento.» → Caja -1, Margen -2, Equipo +5, Consejo -5.
 - **Sin respuesta** (balance -12): Equipo -6, Consejo -6.
@@ -1296,7 +1296,7 @@ Respuesta: `pm-d7-consejo | ... | ...`
 
 **Pregunta:** El equipo quiere una respuesta hoy. ¿Qué haces?
 
-- **A** (score 3, balance +3): Junta abierta hoy con todas las tiendas, en persona y en línea, con Lorena y Octavio: lo que está decidido, lo que no y cuándo se va a saber. Sin promesas que no pueda cumplir. → Equipo +4, Consejo -1.
+- **A** (score 3, balance +3): Junta abierta hoy con todas las tiendas, en persona y en línea, con Lorena y Octavio: qué está decidido, qué no y cuándo se sabrá. → Equipo +4, Consejo -1.
 - **B** (score 1, balance -3): Comunicado oficial por escrito de Personas: «No hay ninguna decisión tomada». Lo demás, por los canales formales. → Margen -1, Equipo -3, Consejo +1.
 - **C** (score 2, balance +1): Reunirme solo con Beto y los líderes informales de las tiendas, y pedirles que calmen al equipo a cambio de que estén en la mesa del plan. → Equipo +2, Clientes +1, Consejo -2.
 - **Sin respuesta** (balance -10): Margen -2, Equipo -6, Clientes -2.
@@ -1313,7 +1313,7 @@ Respuesta: `pm-d7-equipo | ... | ...`
 
 **Pregunta:** ¿Cómo usas tus primeras semanas?
 
-- **A** (score 3, balance +3): Escuchar primero: recorrer los seis CEDIS, hacer una ruta completa de copiloto con un operador y una conversación a solas con cada director. El plan, al día 45. → Equipo +5, Clientes +3, Consejo -5.
+- **A** (score 3, balance +3): Antes de decidir: recorrer los seis CEDIS, una ruta de copiloto con un operador y una plática a solas con cada director. Propuesta al día 45. → Equipo +5, Clientes +3, Consejo -5.
 - **B** (score 1, balance +3): Plan de 100 días desde ya: congelar contrataciones, recortar 15% del gasto que no es esencial y bajar tarifas a las 30 cuentas que Avante está visitando. → Caja +4, Equipo -6, Clientes -1, Consejo +6.
 - **C** (score 2, balance +1): Primero el cliente que más pesa: una semana con Supermercados Almena para entender qué les duele y asegurar su contrato del año. → Caja -1, Equipo -3, Clientes +5.
 - **Sin respuesta** (balance -7): Consejo -7.
@@ -1329,8 +1329,8 @@ Respuesta: `vl-d1-carta | ... | ...`
 **Pregunta:** Un gerente te escribe por encima de su director. ¿Qué le contestas?
 
 - **A** (score 2, balance +2): «Lalo, ninguna unidad sale sin revisión. Mañana hablo con Antonio. Si la temporada se retrasa unos días, lo asumo yo.» → Margen -3, Equipo +3, Clientes +3, Consejo -1.
-- **B** (score 1, balance 0): «Lalo, gracias por avisarme. Esto lo tiene que decidir Antonio: es tu jefe y conoce la flota mejor que nadie. Platícalo con él y yo lo respaldo.» → Margen +3, Equipo -3, Clientes -1, Consejo +1.
-- **C** (score 3, balance +3): «Lalo, mañana a las 7 nos vemos Antonio, Gabriela, tú y yo. Regla temporal: la revisión se hace en 10 minutos con una lista corta y un mecánico más por turno; lo que falle, no sale.» → Margen -1, Equipo +2, Clientes +1, Consejo +1.
+- **B** (score 1, balance 0): «Lalo, gracias por avisarme. Esto lo decide Antonio: es tu jefe y conoce la flota. Platícalo con él y yo lo respaldo.» → Margen +3, Equipo -3, Clientes -1, Consejo +1.
+- **C** (score 3, balance +3): «Lalo, mañana a las 7 con Antonio y Gabriela. Revisión de 10 minutos con lista corta y un mecánico más por turno; lo que falle, no sale.» → Margen -1, Equipo +2, Clientes +1, Consejo +1.
 - **Sin respuesta** (balance -5): Equipo -4, Clientes -1.
 
 Respuesta: `vl-d1-patio | ... | ...`
@@ -1343,9 +1343,9 @@ Respuesta: `vl-d1-patio | ... | ...`
 
 **Pregunta:** ¿Cómo respondes a tu cliente más grande?
 
-- **A** (score 0, balance -6): Aceptar todo. Lo importante es ganar los tres CEDIS nuevos; ahí recuperamos. → Margen -8, Clientes +5, Consejo -3.
+- **A** (score 0, balance -6): Aceptar todo lo que pide. Lo importante es ganar los tres CEDIS nuevos; ahí recuperamos el margen con volumen. → Margen -8, Clientes +5, Consejo -3.
 - **B** (score 2, balance 0): Mantener la tarifa con el ajuste por diésel del contrato y pago a 30 días. Las penalizaciones, solo si también hay bono por cumplir. → Margen +3, Clientes -5, Consejo +2.
-- **C** (score 3, balance -2): Proponer otra cosa: 4% menos de tarifa a cambio de un contrato de tres años, pago a 45 días y penalización por entrega tarde con bono por cumplir arriba de 97%. Y pedir la operación de un CEDIS nuevo como piloto. → Caja -1, Margen -2, Equipo -2, Clientes +2, Consejo +1.
+- **C** (score 3, balance -2): Ofrecer 4% menos por un contrato de tres años, pago a 45 días, penalización con bono arriba de 97% y un CEDIS nuevo de prueba. → Caja -1, Margen -2, Equipo -2, Clientes +2, Consejo +1.
 - **Sin respuesta** (balance -9): Clientes -6, Consejo -3.
 
 Respuesta: `vl-d2-almena | ... | ...`
@@ -1359,7 +1359,7 @@ Respuesta: `vl-d2-almena | ... | ...`
 **Pregunta:** ¿Qué camino tomas?
 
 - **A** (score 1, balance -1): Bono de permanencia y ajuste de sueldo para los 250 operadores con experiencia. Hay que parar la fuga ya. → Caja -4, Margen -2, Equipo +5.
-- **B** (score 3, balance -3): Escuela de operadores con plan de carrera: ayudante, operador sencillo, operador de quinta rueda e instructor, con sueldo que sube en cada escalón. Mientras tanto aguantamos con lo que hay. → Caja -2, Equipo +2, Clientes -2, Consejo -1.
+- **B** (score 3, balance -3): Escuela de operadores: ayudante, sencillo, quinta rueda e instructor, con sueldo que sube en cada escalón. Mientras, aguantamos. → Caja -2, Equipo +2, Clientes -2, Consejo -1.
 - **C** (score 2, balance 0): Subcontratar transportistas independientes para las rutas que no son críticas. Dependemos menos de un perfil escaso. → Caja -1, Margen +3, Equipo -5, Consejo +3.
 - **Sin respuesta** (balance -7): Margen -2, Equipo -5.
 
@@ -1373,7 +1373,7 @@ Respuesta: `vl-d2-operadores | ... | ...`
 
 **Pregunta:** ¿Cómo respondes al accidente?
 
-- **A** (score 3, balance +1): Asumirlo de frente: hoy visito al conductor, el reporte de causa lo presento yo, cubrimos todos sus gastos sin que los pida y la revisión de salida regresa mañana en los seis CEDIS. → Caja -3, Margen -2, Equipo +3, Clientes +3.
+- **A** (score 3, balance +1): Dar la cara: hoy visito al conductor, presento yo la causa, cubrimos sus gastos sin que los pida y la revisión de salida regresa. → Caja -3, Margen -2, Equipo +3, Clientes +3.
 - **B** (score 1, balance -3): Contener sin ruido: el seguro atiende al conductor, redes responde con un mensaje estándar y Operaciones entrega el reporte. → Margen +1, Equipo -2, Clientes -2.
 - **C** (score 0, balance -6): Defender los datos: fue un incidente en miles de viajes al mes y nuestro índice de accidentes está por debajo de la industria. No cambiamos nada. → Caja +1, Margen +2, Clientes -7, Consejo -2.
 - **Sin respuesta** (balance -10): Caja -3, Clientes -7.
@@ -1390,7 +1390,7 @@ Respuesta: `vl-c-frenos | ... | ...`
 
 - **A** (score 2, balance -4): No prometerlo en esta licitación. Ofrecer lo que hoy cumplimos (ventanas de cuatro horas) y lanzar el rastreo en 8 semanas, cuando funcione. → Margen -1, Equipo +3, Clientes -4, Consejo -2.
 - **B** (score 0, balance 0): Prometer rastreo en tiempo real y ventanas de una hora en toda la región; lo que no se pueda, lo cubrimos por teléfono sin que el cliente lo note. → Equipo -6, Clientes +4, Consejo +2.
-- **C** (score 3, balance -2): Prometer lo que sí podemos cumplir: ventanas de una hora con rastreo en las 3 rutas metropolitanas que ya tienen GPS, cuatro horas en las demás y un crédito automático si llegamos tarde. → Caja -2, Margen -3, Equipo +2, Clientes +1.
+- **C** (score 3, balance -2): Prometer lo que sí cumplimos: ventanas de una hora en las 3 rutas con GPS, cuatro horas en las demás y crédito automático si fallamos. → Caja -2, Margen -3, Equipo +2, Clientes +1.
 - **Sin respuesta** (balance -8): Equipo -6, Consejo -2.
 
 Respuesta: `vl-d3-rastreo | ... | ...`
@@ -1403,8 +1403,8 @@ Respuesta: `vl-d3-rastreo | ... | ...`
 
 **Pregunta:** ¿Qué haces con lo que logró el equipo de Lalo?
 
-- **A** (score 3, balance +6): Llevarlo a los seis CEDIS en 60 días. Que Lalo y su equipo lo enseñen a los demás, con reconocimiento público. → Caja -1, Margen -1, Equipo +5, Clientes +3.
-- **B** (score 2, balance +2): Felicitarlos y consolidarlo tres meses más en Apodaca antes de llevarlo a los demás. → Equipo +2, Clientes -1, Consejo +1.
+- **A** (score 3, balance +6): Llevarlo a los seis CEDIS en 60 días y que Lalo y su equipo lo enseñen a los demás, con su nombre por delante. → Caja -1, Margen -1, Equipo +5, Clientes +3.
+- **B** (score 2, balance +2): Felicitarlos y consolidarlo tres meses más en Apodaca, hasta que aguante sin ellos, antes de llevarlo a los demás. → Equipo +2, Clientes -1, Consejo +1.
 - **Sin respuesta** (balance -1): Equipo -1.
 
 Respuesta: `vl-c-mejora | ... | ...`
@@ -1417,9 +1417,9 @@ Respuesta: `vl-c-mejora | ... | ...`
 
 **Pregunta:** ¿Qué le respondes a la consejera?
 
-- **A** (score 1, balance +1): «Elena, lo apoyo completo: tomamos el crédito, compramos las unidades y abrimos los dos CEDIS.» → Caja -6, Clientes +1, Consejo +6.
+- **A** (score 1, balance +1): «Elena, lo apoyo completo: tomamos el crédito, compramos las unidades y abrimos los dos CEDIS antes que Avante.» → Caja -6, Clientes +1, Consejo +6.
 - **B** (score 3, balance +3): «Propongo tomar la mitad y crecer por etapas: 60 unidades y un CEDIS ahora, y el resto si llega a su meta de ocupación en 12 meses.» → Caja +2, Margen -1, Consejo +2.
-- **C** (score 2, balance -2): «Con todo respeto, no. Endeudarnos casi hasta el límite del banco mientras perdemos cuentas es poner en riesgo la empresa. Primero llenamos la flota que tenemos.» → Caja +3, Margen +2, Clientes -1, Consejo -6.
+- **C** (score 2, balance -2): «Con todo respeto, no. Endeudarnos casi al límite mientras perdemos cuentas pone en riesgo la empresa. Primero llenamos la flota que ya tenemos.» → Caja +3, Margen +2, Clientes -1, Consejo -6.
 - **Sin respuesta** (balance -8): Caja -4, Consejo -4.
 
 Respuesta: `vl-d4-deuda | ... | ...`
@@ -1432,9 +1432,9 @@ Respuesta: `vl-d4-deuda | ... | ...`
 
 **Pregunta:** Tus dos directores de operación están en guerra. ¿Qué haces?
 
-- **A** (score 3, balance +3): Sentarlos juntos conmigo esta semana. Definir qué entrega es urgente y con qué criterio, y cambiar sus bonos: los dos se miden con el cumplimiento total al cliente y la utilidad de cada ruta. → Margen -1, Equipo +4, Clientes +1, Consejo -1.
-- **B** (score 1, balance -2): Respaldar a Antonio: las unidades programadas no se tocan. Los CEDIS se arreglan con su propio reparto. → Margen +3, Equipo -3, Clientes -3, Consejo +1.
-- **C** (score 1, balance -2): Respaldar a Gabriela en público: el cliente que ya reclamó no espera. Antonio tiene que ajustar sus rutas. → Margen -2, Equipo -3, Clientes +3.
+- **A** (score 3, balance +3): Sentarlos juntos esta semana, definir qué entrega es urgente y medir a los dos con cumplimiento y utilidad por ruta. → Margen -1, Equipo +4, Clientes +1, Consejo -1.
+- **B** (score 1, balance -2): Respaldar a Antonio: las unidades programadas no se tocan. Los CEDIS tienen que arreglarse con su propio reparto. → Margen +3, Equipo -3, Clientes -3, Consejo +1.
+- **C** (score 1, balance -2): Respaldar a Gabriela ante el comité: el cliente que ya reclamó no espera más. Antonio tiene que ajustar sus rutas. → Margen -2, Equipo -3, Clientes +3.
 - **Sin respuesta** (balance -7): Equipo -5, Clientes -2.
 
 Respuesta: `vl-d4-pleito | ... | ...`
@@ -1447,9 +1447,9 @@ Respuesta: `vl-d4-pleito | ... | ...`
 
 **Pregunta:** ¿Qué decides en las próximas horas?
 
-- **A** (score 2, balance 0): Pagar la nómina completa con la otra cuenta, pedir al abogado que ofrezca una garantía por lo reclamado y avisar hoy al equipo y a los proveedores de diésel con lo que sabemos y lo que no. → Caja -3, Equipo +3, Clientes +1, Consejo -1.
+- **A** (score 2, balance 0): Pagar la nómina con la otra cuenta, que el abogado ofrezca garantía por lo reclamado y avisar hoy al equipo y al proveedor de diésel. → Caja -3, Equipo +3, Clientes +1, Consejo -1.
 - **B** (score 0, balance -7): No decir nada hasta saber más. Pagar solo la mitad de la nómina por si acaso y explicar que fue un error del banco. → Caja +2, Equipo -6, Consejo -3.
-- **C** (score 3, balance +3): Llamar hoy al consejo para pedir una línea de crédito puente de los accionistas, pagar la nómina completa, avisar al equipo con hechos y armar con Patricio un plan de 30 días con la caja disponible. → Caja -1, Margen -1, Equipo +2, Consejo +3.
+- **C** (score 3, balance +3): Pedir hoy al consejo una línea puente de los accionistas, pagar la nómina completa, avisar con hechos y armar con Patricio un plan de 30 días. → Caja -1, Margen -1, Equipo +2, Consejo +3.
 - **Sin respuesta** (balance -12): Equipo -8, Consejo -4.
 
 Respuesta: `vl-d5-embargo | ... | ...`
@@ -1462,9 +1462,9 @@ Respuesta: `vl-d5-embargo | ... | ...`
 
 **Pregunta:** ¿Con qué camino llegas al consejo?
 
-- **A** (score 1, balance +1): Vender a Avante. La familia recibe dinero hoy y la competencia deja de ser una amenaza. → Caja +6, Margen -2, Equipo -4, Consejo +1.
-- **B** (score 2, balance -2): Sin socio nuevo: recortamos 25% del gasto y competimos con lo propio. → Caja +1, Margen +4, Equipo -5, Consejo -2.
-- **C** (score 3, balance +1): El capital de Golfo Capital con la meta de margen en 12 meses: crecemos menos, pero con mejores números y sin vender la empresa. → Caja +3, Equipo -1, Clientes -2, Consejo +1.
+- **A** (score 1, balance +1): Vender a Avante. La familia recibe dinero hoy y dejamos de pelear contra un competidor con más espalda. → Caja +6, Margen -2, Equipo -4, Consejo +1.
+- **B** (score 2, balance -2): Sin socio nuevo: recortamos 25% del gasto y competimos con lo propio, sin diluir a la familia ni venderle a nadie. → Caja +1, Margen +4, Equipo -5, Consejo -2.
+- **C** (score 3, balance +1): El capital de Golfo Capital con meta de margen en 12 meses: crecemos menos, con mejores números y sin vender. → Caja +3, Equipo -1, Clientes -2, Consejo +1.
 - **Sin respuesta** (balance -6): Caja -3, Consejo -3.
 
 Respuesta: `vl-d5-oferta | ... | ...`
@@ -1477,8 +1477,8 @@ Respuesta: `vl-d5-oferta | ... | ...`
 
 **Pregunta:** Tu directora de Servicio a Clientes renuncia. ¿Qué haces?
 
-- **A** (score 3, balance -1): Verla hoy: reconocer que me equivoqué, renegociar las ventanas con el cliente esta semana, compensar lo que fallamos y pedirle que se quede para liderar la corrección. → Equipo +4, Clientes -3, Consejo -2.
-- **B** (score 1, balance -1): Aceptar la renuncia y nombrar a Nayeli (jefa de la torre de control) directora interina. → Margen +2, Equipo -2, Clientes -1.
+- **A** (score 3, balance -1): Verla hoy, admitir que me equivoqué, renegociar las ventanas esta semana, compensar lo fallado y pedirle que se quede. → Equipo +4, Clientes -3, Consejo -2.
+- **B** (score 1, balance -1): Aceptar la renuncia y nombrar a Nayeli, jefa de la torre de control que conoce cada ruta, como directora interina. → Margen +2, Equipo -2, Clientes -1.
 - **Sin respuesta** (balance -7): Equipo -4, Clientes -3.
 
 Respuesta: `vl-c-gaby | ... | ...`
@@ -1491,9 +1491,9 @@ Respuesta: `vl-c-gaby | ... | ...`
 
 **Pregunta:** ¿Qué haces con el proveedor?
 
-- **A** (score 3, balance -3): Dar el anticipo con el código del sistema en garantía, una persona nuestra revisando su caja cada semana y arrancar ya un plan para tener un segundo proveedor. → Caja -5, Clientes +3, Consejo -1.
-- **B** (score 1, balance -2): No arriesgar caja en un proveedor que se cae: migrar a un sistema internacional y pedir a los clientes que rehagan su conexión. → Caja +1, Clientes -4, Consejo +1.
-- **C** (score 2, balance -4): Comprar Sistemas Lumbre. Controlar el sistema nos protege y puede ser un negocio aparte. → Caja -8, Margen +2, Equipo -1, Consejo +3.
+- **A** (score 3, balance -3): Anticipo con el código del sistema en garantía y alguien nuestro revisando su caja cada semana; en paralelo, un segundo proveedor. → Caja -5, Clientes +3, Consejo -1.
+- **B** (score 1, balance -2): No arriesgar caja en un proveedor que se cae: migrar a un sistema internacional y pedir a los clientes que rehagan su conexión con nosotros. → Caja +1, Clientes -4, Consejo +1.
+- **C** (score 2, balance -4): Comprar Sistemas Lumbre. Controlar el sistema del que dependen los clientes nos protege y puede ser un negocio aparte. → Caja -8, Margen +2, Equipo -1, Consejo +3.
 - **Sin respuesta** (balance -11): Margen -3, Clientes -8.
 
 Respuesta: `vl-d6-sistema | ... | ...`
@@ -1507,8 +1507,8 @@ Respuesta: `vl-d6-sistema | ... | ...`
 **Pregunta:** ¿Qué decides mientras se investiga?
 
 - **A** (score 3, balance +3): Suspenderlo con goce de sueldo mientras una firma externa investiga, proteger a quienes denunciaron y que Antonio atienda la región. → Margen -2, Equipo +4, Consejo +1.
-- **B** (score 0, balance -7): Que siga trabajando mientras se investiga, pero cambiar de CEDIS a quienes denunciaron y que Personas lo investigue internamente. → Margen +1, Equipo -6, Consejo -2.
-- **C** (score 1, balance -3): Despedirlo de inmediato. Con tres denuncias no hay nada que investigar. → Caja -3, Equipo +3, Consejo -3.
+- **B** (score 0, balance -7): Que siga trabajando mientras se investiga, pero cambiar de CEDIS a quienes denunciaron y que Personas lo investigue internamente, sin ruido. → Margen +1, Equipo -6, Consejo -2.
+- **C** (score 1, balance -3): Despedirlo de inmediato. Con tres denuncias coincidentes no hay nada que investigar y cada día que sigue es un riesgo. → Caja -3, Equipo +3, Consejo -3.
 - **Sin respuesta** (balance -8): Equipo -6, Consejo -2.
 
 Respuesta: `vl-d6-denuncia | ... | ...`
@@ -1522,7 +1522,7 @@ Respuesta: `vl-d6-denuncia | ... | ...`
 **Pregunta:** ¿Cómo integras a la primera generación?
 
 - **A** (score 3, balance +2): Acompañadas 3 meses: cada operador nuevo en pareja con uno experto y un bono para los instructores. → Caja -1, Equipo +4, Clientes -1.
-- **B** (score 1, balance -1): Directo a carretera. Ya tienen licencia y los camiones parados no ganan. → Margen -1, Equipo -2, Clientes +2.
+- **B** (score 1, balance -1): Directo a carretera. Ya tienen licencia, los camiones parados no ganan y aprenden más manejando que mirando. → Margen -1, Equipo -2, Clientes +2.
 - **Sin respuesta** (balance -2): Equipo -2.
 
 Respuesta: `vl-c-escuela | ... | ...`
@@ -1535,7 +1535,7 @@ Respuesta: `vl-c-escuela | ... | ...`
 
 **Pregunta:** El consejo espera tu recomendación.
 
-- **A** (score 3, balance +3): «Les pido 90 días: bajar el gasto $45 M renegociando rentas y diésel, consolidando un CEDIS en otro y reubicando a su gente, con metas semanales. Si no llegamos, yo mismo propongo el resto.» → Margen +1, Equipo +4, Consejo -2.
+- **A** (score 3, balance +3): «Les pido 90 días para bajar $45 M: rentas, diésel y un CEDIS consolidado en otro. Si no llegamos, yo mismo propongo el resto.» → Margen +1, Equipo +4, Consejo -2.
 - **B** (score 1, balance -1): «Estoy de acuerdo. Cerramos con un proceso digno: indemnización completa, apoyo para recolocarse y un plan para que los clientes de esos CEDIS no se vayan.» → Margen +2, Equipo -7, Clientes -2, Consejo +6.
 - **C** (score 2, balance -3): «No recomiendo cerrar CEDIS ni tocar a los operadores. Recortamos solo contrataciones nuevas y gasto administrativo, aunque el ahorro llegue más lento.» → Caja -1, Margen -2, Equipo +5, Consejo -5.
 - **Sin respuesta** (balance -12): Equipo -6, Consejo -6.
@@ -1550,7 +1550,7 @@ Respuesta: `vl-d7-consejo | ... | ...`
 
 **Pregunta:** El equipo quiere una respuesta hoy. ¿Qué haces?
 
-- **A** (score 3, balance +3): Junta abierta hoy con todos los patios, en persona y en línea, con Rocío y Antonio: lo que está decidido, lo que no y cuándo se va a saber. Sin promesas que no pueda cumplir. → Equipo +4, Consejo -1.
+- **A** (score 3, balance +3): Junta abierta hoy con todos los patios, en persona y en línea, con Rocío y Antonio: qué está decidido, qué no y cuándo se sabrá. → Equipo +4, Consejo -1.
 - **B** (score 1, balance -3): Comunicado oficial por escrito de Personas: «No hay ninguna decisión tomada». Lo demás, por los canales formales. → Margen -1, Equipo -3, Consejo +1.
 - **C** (score 2, balance +1): Reunirme solo con Pepe y los líderes informales de los patios, y pedirles que calmen al equipo a cambio de que estén en la mesa del plan. → Equipo +2, Clientes +1, Consejo -2.
 - **Sin respuesta** (balance -10): Margen -2, Equipo -6, Clientes -2.
