@@ -120,7 +120,7 @@ const SECTOR_DATA: SectorSeed[] = [
     { id: "agencias_automotrices", label: "Agencias y refacciones automotrices", aliases: ["agencia de autos", "refacciones"] },
   ] },
   { id: "transporte_almacenamiento", label: "Transporte y almacenamiento", family: "logistica", focus: true, industries: [
-    { id: "logistica_distribucion", label: "Logística y distribución", aliases: ["logistica", "distribucion", "3pl", "4pl", "cedis", "almacen", "bodega", "operador logistico", "ultima milla", "fulfillment", "transporte de carga", "fletes"], metric: "logistica", focus: true, specialties: ["Operador 3PL", "Transporte terrestre de carga", "Almacenes y CEDIS", "Última milla", "Cadena fría", "Fulfillment de e-commerce"] },
+    { id: "logistica_distribucion", label: "Logística y distribución", aliases: ["logistica", "distribucion", "3pl", "4pl", "cedis", "almacen", "bodega", "operador logistico", "ultima milla", "fulfillment", "transporte de carga", "fletes"], pack: "vertice", archetypes: ["establecida"], metric: "logistica", focus: true, specialties: ["Operador 3PL", "Transporte terrestre de carga", "Almacenes y CEDIS", "Última milla", "Cadena fría", "Fulfillment de e-commerce"] },
     { id: "comercio_exterior", label: "Logística internacional y aduanas", aliases: ["aduanas", "comercio exterior", "agente aduanal"] },
     { id: "transporte_pasajeros", label: "Transporte de pasajeros y movilidad", aliases: ["movilidad", "flotillas", "autobuses"] },
     { id: "maritimo_aereo", label: "Transporte marítimo, aéreo y ferroviario", aliases: ["maritimo", "carga aerea", "ferroviario"] },

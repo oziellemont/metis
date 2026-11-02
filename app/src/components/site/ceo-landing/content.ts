@@ -260,7 +260,7 @@ export const FAQ: { q: string; a: string }[] = [
   { q: "¿Cuánto tiempo necesito al día?", a: "Unos minutos. Tú eliges el horario en que llegan los asuntos." },
   { q: "¿En qué se diferencia de un curso?", a: "No hay respuestas que memorizar. Decides, la empresa responde y después entiendes por qué." },
   { q: "¿Tengo que crear una cuenta o instalar algo?", a: "No instalas nada: funciona en el navegador. Para dirigir tu empresa creas una cuenta con Google o con tu correo, y tu avance te sigue a cualquier dispositivo." },
-  { q: "¿Qué industrias hay?", a: "Consumo masivo, autopartes, restaurantes, software y retail. Eliges con cuál empezar." },
+  { q: "¿Qué industrias hay?", a: "Consumo masivo, autopartes, restaurantes, software, retail, logística y distribución. Eliges con cuál empezar." },
   { q: "¿Tiene costo?", a: "Empezar es gratis y no pide tarjeta." },
 ];
 

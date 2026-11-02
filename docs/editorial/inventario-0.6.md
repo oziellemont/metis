@@ -1,17 +1,17 @@
-# mêtis CEO · Inventario editorial de los 86 asuntos y veredicto sombra
+# mêtis CEO · Inventario editorial de los 103 asuntos y veredicto sombra
 
 Clasificador editorial v1 · Veredicto sombra v0. Reporte generado por código a partir del contenido actual; no cambia ningún resultado de partidas, XP ni veredicto en producción.
 
 ## 1. Resumen
 
-De los 86 asuntos (64 base y 22 consecuencias), el clasificador propone:
+De los 103 asuntos (77 base y 26 consecuencias), el clasificador propone:
 
 | Estado | Asuntos | % |
 |---|---:|---:|
-| approved (propuesta, falta firma humana) | 16 | 19 % |
-| legacy (se conserva como histórico) | 18 | 21 % |
-| needsRewrite (reescribir) | 38 | 44 % |
-| restrictedEthics (obligación ética o de seguridad) | 14 | 16 % |
+| approved (propuesta, falta firma humana) | 21 | 20 % |
+| legacy (se conserva como histórico) | 21 | 20 % |
+| needsRewrite (reescribir) | 44 | 43 % |
+| restrictedEthics (obligación ética o de seguridad) | 17 | 17 % |
 
 Ningún asunto queda aprobado de forma definitiva: «approved» es una propuesta automática que requiere la aprobación de Oziel (tabla `EDITORIAL_REVIEW` en `editorial.ts`).
 
@@ -22,6 +22,7 @@ Ningún asunto queda aprobado de forma definitiva: «approved» es una propuesta
 | Grupo Brasa | 4 | 4 | 6 | 1 |
 | Kúbit | 5 | 3 | 6 | 3 |
 | Punto Madero | 5 | 3 | 6 | 3 |
+| Vértice Logística | 5 | 3 | 6 | 3 |
 
 ## 2. Auditoría de `score` frente a efectos
 
@@ -34,18 +35,19 @@ Balance neto promedio (suma de los cinco indicadores, sin multiplicadores de niv
 | Grupo Brasa | -3.20 (5) | -2.67 (12) | +0.09 (11) | +1.36 (14) | 0.55 |
 | Kúbit | -5.20 (5) | -1.00 (14) | -0.75 (12) | +1.35 (17) | 0.60 |
 | Punto Madero | -5.20 (5) | -1.00 (14) | -0.75 (12) | +1.35 (17) | 0.60 |
+| Vértice Logística | -5.20 (5) | -1.00 (14) | -0.75 (12) | +1.35 (17) | 0.60 |
 
 Hallazgos por asunto (un asunto puede tener varios):
 
 | Hallazgo | Asuntos |
 |---|---:|
 | Una opción gana o empata en los cinco indicadores frente a todas las demás. | 0 |
-| La opción con score más alto también es la de mejor balance de indicadores. | 63 |
-| La opción con score más alto gana por una ventaja clara: se adivina la preferencia del autor. | 46 |
-| La opción con score 0 es la que peor le va a la empresa. | 27 |
+| La opción con score más alto también es la de mejor balance de indicadores. | 73 |
+| La opción con score más alto gana por una ventaja clara: se adivina la preferencia del autor. | 53 |
+| La opción con score 0 es la que peor le va a la empresa. | 31 |
 | Hay una opción sin ningún costo visible. | 0 |
-| Solo una opción queda cerca de la mejor; las demás no son defendibles por números. | 48 |
-| No responder castiga más que cualquier opción. | 76 |
+| Solo una opción queda cerca de la mejor; las demás no son defendibles por números. | 55 |
+| No responder castiga más que cualquier opción. | 93 |
 | Una opción cruza una línea roja (se analiza, no se presenta como alternativa legítima). | 6 |
 
 Umbrales: ventaja «obvia» ≥ 3 puntos netos; una opción es «defendible» si queda a 2 puntos o menos de la mejor.
@@ -178,23 +180,45 @@ Opciones como `id:score:balance`. Un `!` marca una línea roja. «Vencer» es el
 | 7 | `pm-d7-consejo` Sesión de consejo · Cierre del trimestre | base | a:3:+3 b:1:-1 c:2:-3 | -12 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
 | 7 | `pm-d7-equipo` Beto Castañeda | base | a:3:+3 b:1:-3 c:2:+1 | -10 | legacy | Jugable como contenido histórico, pero la opción preferida por el autor sigue siendo la que más conviene. |
 
+### Vértice Logística
+
+| Día | Asunto | Tipo | Opciones | Vencer | Estado propuesto | Motivo |
+|---:|---|---|---|---:|---|---|
+| 1 | `vl-d1-carta` Bienvenido a Vértice. Esto es lo que esperamos. | base | a:3:+3 b:1:+3 c:2:+1 | -7 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 1 | `vl-d1-patio` Lalo Rangel | base | a:2:+2 b:1:0 c:3:+3 | -5 | legacy | Jugable como contenido histórico, pero la opción preferida por el autor sigue siendo la que más conviene. |
+| 2 | `vl-d2-almena` Supermercados Almena · Condiciones para el próximo año | base | a:0:-6 b:2:0 c:3:-2 | -9 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 2 | `vl-d2-operadores` Se nos van los operadores · 40 en dos meses | base | a:1:-1 b:3:-3 c:2:0 | -7 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 3 | `vl-c-frenos` URGENTE · Una unidad se quedó sin frenos en la carretera a Saltillo | consecuencia | a:3:+1 b:1:-3 c:0:-6 | -10 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
+| 3 | `vl-d3-rastreo` Junta · ¿Prometemos rastreo en tiempo real y ventanas de una hora? | base | a:2:-4 b:0:0 c:3:-2 | -8 | restrictedEthics | Tema de ética o seguridad sin opción de línea roja. Revisar que el feedback no sea sermón. |
+| 4 | `vl-c-mejora` Lalo Rangel | consecuencia | a:3:+6 b:2:+2 | -1 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
+| 4 | `vl-d4-deuda` Propuesta para el consejo · crédito para renovar flota y abrir CEDIS | base | a:1:+1 b:3:+3 c:2:-2 | -8 | legacy | Jugable como contenido histórico, pero la opción preferida por el autor sigue siendo la que más conviene. |
+| 4 | `vl-d4-pleito` Antonio Leija | base | a:3:+3 b:1:-2 c:1:-2 | -7 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
+| 5 | `vl-d5-embargo` Llamada perdida · Patricio Lozano (Finanzas) | base | a:2:0 b:0:-7 c:3:+3 | -12 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
+| 5 | `vl-d5-oferta` Avante quiere comprarnos · y hay otra opción | base | a:1:+1 b:2:-2 c:3:+1 | -6 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 5 | `vl-c-gaby` Mi renuncia | consecuencia | a:3:-1 b:1:-1 | -7 | restrictedEthics | Tema de ética o seguridad sin opción de línea roja. Revisar que el feedback no sea sermón. |
+| 6 | `vl-d6-sistema` Riesgo crítico · Sistemas Lumbre, el proveedor de nuestro sistema de almacén | base | a:3:-3 b:1:-2 c:2:-4 | -11 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 6 | `vl-d6-denuncia` Confidencial · Denuncia contra el gerente regional | base | a:3:+3 b:0:-7 c:1:-3 | -8 | restrictedEthics | Tema de ética o seguridad sin opción de línea roja. Revisar que el feedback no sea sermón. |
+| 6 | `vl-c-escuela` Rocío Guajardo | consecuencia | a:3:+2 b:1:-1 | -2 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
+| 7 | `vl-d7-consejo` Sesión de consejo · Cierre del trimestre | base | a:3:+3 b:1:-1 c:2:-3 | -12 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
+| 7 | `vl-d7-equipo` Pepe Medina | base | a:3:+3 b:1:-3 c:2:+1 | -10 | legacy | Jugable como contenido histórico, pero la opción preferida por el autor sigue siendo la que más conviene. |
+
 ## 5. Veredicto sombra
 
 El veredicto actual exige los cinco indicadores sobre la línea del nivel y 80 % de asuntos respondidos. El veredicto sombra (propuesta v0, no validada) corre en paralelo, nadie lo ve y no se guarda en la carrera:
 
 1. Límites críticos no compensables: caja < 30 (insolvencia), consejo < 30 (el consejo ya no te sostiene) o haber elegido una opción de línea roja.
-2. Objetivos de temporada por empresa: Botanas Cumbre: margen y equipo sobre la línea («Recuperar margen sin romper la planta.»); Forja Norte: clientes y caja sobre la línea («Cumplir a la armadora y generar caja para el fondo.»); Grupo Brasa: margen y clientes sobre la línea («Defender el margen frente a las apps sin perder clientes.»); Kúbit: caja y clientes sobre la línea («Alargar la caja hasta la siguiente ronda sin perder a los clientes que quieren el producto.»); Punto Madero: margen y clientes sobre la línea («Recuperar margen frente a Mundo Casa sin perder a los clientes de toda la vida.»).
+2. Objetivos de temporada por empresa: Botanas Cumbre: margen y equipo sobre la línea («Recuperar margen sin romper la planta.»); Forja Norte: clientes y caja sobre la línea («Cumplir a la armadora y generar caja para el fondo.»); Grupo Brasa: margen y clientes sobre la línea («Defender el margen frente a las apps sin perder clientes.»); Kúbit: caja y clientes sobre la línea («Alargar la caja hasta la siguiente ronda sin perder a los clientes que quieren el producto.»); Punto Madero: margen y clientes sobre la línea («Recuperar margen frente a Mundo Casa sin perder a los clientes de toda la vida.»); Vértice Logística: margen y clientes sobre la línea («Recuperar margen frente a Avante sin dejar de cumplirle a las cuentas grandes.»).
 3. Desempeño integral: salud promedio sobre la línea, en lugar de exigir cada indicador por separado.
 4. Dejar vencer asuntos no reprueba por sí solo: con menos de 50 % respondido el resultado es «sin evidencia suficiente».
 
-Población: 180 partidas reproducibles (semilla fija) en las tres empresas, nivel 0, con seis estilos de juego (cuidadoso, preferido por el autor, mixto, azar, deja vencer, peor balance) y tres planes de cambio.
+Población: 216 partidas reproducibles (semilla fija) en las tres empresas, nivel 0, con seis estilos de juego (cuidadoso, preferido por el autor, mixto, azar, deja vencer, peor balance) y tres planes de cambio.
 
 | | Sombra: aprobado | Sombra: reprobado | Sombra: sin evidencia | Total |
 |---|---:|---:|---:|---:|
-| Actual: aprobó | 38 | 3 | 0 | 41 |
-| Actual: reprobó | 50 | 87 | 2 | 139 |
+| Actual: aprobó | 46 | 3 | 0 | 49 |
+| Actual: reprobó | 53 | 112 | 2 | 167 |
 
-Coinciden en 71 % de las partidas. Aprobación actual: 23 %; sombra: 49 %.
+Coinciden en 74 % de las partidas. Aprobación actual: 23 %; sombra: 46 %.
 
 Motivos de reprobación en sombra (una partida puede tener varios):
 
@@ -203,8 +227,8 @@ Motivos de reprobación en sombra (una partida puede tener varios):
 | Insolvencia (caja) | 0 |
 | Consejo perdido | 0 |
 | Eligió una línea roja | 26 |
-| No cumplió un objetivo de temporada | 72 |
-| Salud integral bajo la línea | 16 |
+| No cumplió un objetivo de temporada | 93 |
+| Salud integral bajo la línea | 23 |
 
 Por empresa y estilo de juego (aprobadas actual / sombra, de cada grupo):
 
@@ -215,6 +239,7 @@ Por empresa y estilo de juego (aprobadas actual / sombra, de cada grupo):
 | Grupo Brasa | 6 / 6 de 6 | 0 / 6 de 6 | 0 / 6 de 6 | 1 / 2 de 6 | 0 / 3 de 6 | 0 / 0 de 6 |
 | Kúbit | 6 / 6 de 6 | 0 / 0 de 6 | 3 / 3 de 6 | 1 / 2 de 6 | 0 / 2 de 6 | 0 / 6 de 6 |
 | Punto Madero | 6 / 6 de 6 | 0 / 0 de 6 | 0 / 1 de 6 | 2 / 3 de 6 | 0 / 0 de 6 | 0 / 6 de 6 |
+| Vértice Logística | 6 / 6 de 6 | 0 / 0 de 6 | 1 / 1 de 6 | 1 / 2 de 6 | 0 / 0 de 6 | 0 / 2 de 6 |
 
 Estilos: best = cuidadoso (cuida la línea en cada decisión); score = siempre la opción preferida por el autor; mixed = la preferida 60 % de las veces y al azar el resto; random = al azar; lazy = deja vencer cerca del 40 %; worst = siempre la de peor balance.
 

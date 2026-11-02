@@ -32,6 +32,7 @@ const FORJA_NOTE = "Fabricante de 1,100 personas, propiedad de un fondo y con 72
 const KUBIT_NOTE = "Startup de software en Serie B (210 personas, fondo de capital de riesgo en el consejo, 14 meses de caja). Se ofrece como startup; las empresas creadas antes como establecida la siguen jugando igual.";
 const STARTUP_EST: readonly CompanyArchetype[] = ["startup", "establecida"];
 const PUNTOMADERO_NOTE = "Cadena de 60 tiendas con 1,400 personas, familia y fondo en el consejo y 18% de la venta en un cliente de obra: una PYME o una startup necesita otra versión del caso.";
+const VERTICE_NOTE = "Operador logístico de 1,600 personas con 420 tractocamiones y seis CEDIS, familia y fondo en el consejo y 20% de la venta en un cliente: una PYME o una startup necesita otra versión del caso.";
 const BRASA_NOTE = "Cadena de 34 sucursales: una PYME de restaurantes (una o dos sucursales) necesita otra versión del caso.";
 const EPISODE_NOTE = "Los montos se calculan dentro del caso (reglas y respuestas); todavía no se escalan por tamaño.";
 
@@ -130,6 +131,23 @@ export const CASE_TAGS: Readonly<Record<string, CaseTag>> = Object.freeze({
   "pm-c-escuela": f(EST, { note: PUNTOMADERO_NOTE }),
   "pm-d7-consejo": f(EST, { note: PUNTOMADERO_NOTE }),
   "pm-d7-equipo": f(EST, { note: PUNTOMADERO_NOTE }),
+  "vl-d1-carta": p(EST, { note: VERTICE_NOTE }),
+  "vl-d1-patio": f(EST, { note: VERTICE_NOTE }),
+  "vl-d2-almena": p(EST, { note: VERTICE_NOTE }),
+  "vl-d2-operadores": f(EST, { note: VERTICE_NOTE }),
+  "vl-c-frenos": f(EST, { note: VERTICE_NOTE }),
+  "vl-d3-rastreo": p(EST, { note: VERTICE_NOTE }),
+  "vl-c-mejora": f(EST, { note: VERTICE_NOTE }),
+  "vl-d4-deuda": u(EST, { note: VERTICE_NOTE }),
+  "vl-d4-pleito": u(EST, { note: VERTICE_NOTE }),
+  "vl-d5-embargo": u(EST, { note: VERTICE_NOTE }),
+  "vl-d5-oferta": p(EST, { note: VERTICE_NOTE }),
+  "vl-c-gaby": u(EST, { note: VERTICE_NOTE }),
+  "vl-d6-sistema": f(EST, { note: VERTICE_NOTE }),
+  "vl-d6-denuncia": u(EST, { note: VERTICE_NOTE }),
+  "vl-c-escuela": f(EST, { note: VERTICE_NOTE }),
+  "vl-d7-consejo": f(EST, { note: VERTICE_NOTE }),
+  "vl-d7-equipo": f(EST, { note: VERTICE_NOTE }),
 });
 
 /** Etiquetas de los casos ejecutivos (por id de episodio). */

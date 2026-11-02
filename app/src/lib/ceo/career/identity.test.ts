@@ -25,7 +25,9 @@ describe("identidad de la empresa", () => {
     expect(newCompanyProfile({ ...base, sectorId: "tecnologia_informacion", industryId: "software_saas", archetype: "pyme" }, 2)).toBeNull();
     expect(newCompanyProfile({ ...base, sectorId: "comercio", industryId: "retail", displayName: "Ferretera del Norte" }, 2)?.contentPackId).toBe("puntomadero");
     expect(newCompanyProfile({ ...base, sectorId: "comercio", industryId: "retail", archetype: "pyme" }, 2)).toBeNull();
-    expect(newCompanyProfile({ ...base, sectorId: "transporte_almacenamiento", industryId: "logistica_distribucion" }, 2)).toBeNull();
+    expect(newCompanyProfile({ ...base, sectorId: "transporte_almacenamiento", industryId: "logistica_distribucion", displayName: "Fletes del Norte" }, 2)?.contentPackId).toBe("vertice");
+    expect(newCompanyProfile({ ...base, sectorId: "transporte_almacenamiento", industryId: "logistica_distribucion", archetype: "startup" }, 2)).toBeNull();
+    expect(newCompanyProfile({ ...base, sectorId: "comercio", industryId: "farmacias" }, 2)).toBeNull();
     expect(newCompanyProfile({ ...base, sectorId: "restaurantes_alimentos" }, 2)).toBeNull();
     expect(newCompanyProfile({ ...base, archetype: "fundador" }, 2)).toBeNull();
     expect(newCompanyProfile({ ...base, companyId: "no-uuid" }, 2)).toBeNull();

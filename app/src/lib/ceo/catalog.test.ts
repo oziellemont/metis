@@ -5,9 +5,9 @@ import { CATALOG_VERSION, COMING_SOON_LABEL, INDUSTRY_CATALOG, catalogCompanyByI
 const all = INDUSTRY_CATALOG.flatMap((i) => i.companies);
 
 describe("catálogo de industrias", () => {
-  it("tiene versión y 8 industrias iniciales con 3 empresas cada una (sin límite fijo en el código)", () => {
+  it("tiene versión y 9 industrias iniciales con 3 empresas cada una (sin límite fijo en el código)", () => {
     expect(CATALOG_VERSION).toBeGreaterThanOrEqual(1);
-    expect(INDUSTRY_CATALOG).toHaveLength(8);
+    expect(INDUSTRY_CATALOG).toHaveLength(9);
     for (const i of INDUSTRY_CATALOG) expect(i.companies.length).toBeGreaterThanOrEqual(3);
   });
 
@@ -18,9 +18,9 @@ describe("catálogo de industrias", () => {
     for (const id of [...ids, ...INDUSTRY_CATALOG.map((i) => i.id)]) expect(id).toMatch(/^[a-z]+$/);
   });
 
-  it("solo son jugables las fundacionales, Kúbit y Punto Madero, y coinciden con los paquetes construidos", () => {
+  it("solo son jugables las fundacionales, Kúbit, Punto Madero y Vértice, y coinciden con los paquetes construidos", () => {
     const playable = all.filter((c) => isPlayable(c.id)).map((c) => c.id).sort();
-    expect(playable).toEqual(["brasa", "cumbre", "forja", "kubit", "puntomadero"]);
+    expect(playable).toEqual(["brasa", "cumbre", "forja", "kubit", "puntomadero", "vertice"]);
     expect(playable).toEqual(COMPANIES.map((c) => c.id).sort());
     for (const c of all.filter((x) => x.foundational)) expect(c.status).toBe("available");
   });
@@ -70,6 +70,8 @@ describe("validación del par industria–empresa (servidor)", () => {
   it("acepta solo empresas jugables de esa industria", () => {
     expect(validateHome("consumo", "cumbre")).toEqual({ ok: true });
     expect(validateHome("manufactura", "forja")).toEqual({ ok: true });
+    expect(validateHome("logistica", "vertice")).toEqual({ ok: true });
+    expect(validateHome("logistica", "polar")).toEqual({ ok: false, reason: "no_jugable" });
     expect(validateHome("consumo", "forja")).toEqual({ ok: false, reason: "no_pertenece" });
     expect(validateHome("consumo", "sierraysal")).toEqual({ ok: false, reason: "no_jugable" });
     expect(validateHome("salud", "sanrafael")).toEqual({ ok: false, reason: "no_jugable" });

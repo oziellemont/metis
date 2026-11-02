@@ -16,15 +16,15 @@ const T0 = Date.UTC(2026, 9, 5, 15, 0, 0);
 const all = inventory();
 
 describe("0.6 inventario editorial", () => {
-  it("clasifica los 86 asuntos, cada uno con un estado válido y un motivo", () => {
-    expect(all).toHaveLength(86);
+  it("clasifica los 103 asuntos, cada uno con un estado válido y un motivo", () => {
+    expect(all).toHaveLength(103);
     expect(all.length).toBe(COMPANIES.reduce((a, c) => a + c.items.length, 0));
     for (const a of all) {
       expect(EDITORIAL_STATUSES).toContain(a.status);
       expect(a.reason.length).toBeGreaterThan(20);
     }
     const c = countBy(all);
-    expect(Object.values(c).reduce((x, y) => x + y, 0)).toBe(86);
+    expect(Object.values(c).reduce((x, y) => x + y, 0)).toBe(103);
   });
 
   it("reproduce el hallazgo C1 de la auditoría (score alto = más rentable)", () => {
@@ -101,7 +101,7 @@ describe("0.6 inventario editorial", () => {
 
   it("el CSV trae una fila por asunto", () => {
     const csv = itemsCsv(all).trim().split("\n");
-    expect(csv).toHaveLength(87);
+    expect(csv).toHaveLength(104);
     expect(csv[0]).toContain("estado");
   });
 });
@@ -178,10 +178,10 @@ describe("0.6 veredicto sombra", () => {
  * Regenera el reporte revisable. NO corre en la suite normal:
  *   EDITORIAL_REPORT=1 npx vitest run src/lib/ceo/editorial.test.ts
  */
-it("el paquete de aprobación incluye los 86 asuntos con su formato de respuesta y está al día", () => {
+it("el paquete de aprobación incluye los 103 asuntos con su formato de respuesta y está al día", () => {
   const md = approvalPacket();
-  expect((md.match(/^### /gm) ?? []).length).toBe(86);
-  expect((md.match(/^Respuesta: `/gm) ?? []).length).toBe(86);
+  expect((md.match(/^### /gm) ?? []).length).toBe(103);
+  expect((md.match(/^Respuesta: `/gm) ?? []).length).toBe(103);
   expect(md).not.toMatch(/undefined|NaN/);
   expect(readFileSync(join(__dirname, "..", "..", "..", "..", "docs", "editorial", "aprobacion-casos.md"), "utf8")).toBe(md);
 });

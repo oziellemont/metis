@@ -70,7 +70,7 @@ export function selectionForPackAndType(packId: string | undefined, a: CompanyAr
 }
 
 /** Nombres de ejemplo por paquete (solo de placeholder; nunca se usan solos). */
-const NAME_EXAMPLES: Record<string, string> = { cumbre: "Alimentos Sierra Norte", forja: "Metalúrgica Valle Alto", brasa: "Fogón Regio", kubit: "Nube Regia Software", puntomadero: "Ferretera del Norte" };
+const NAME_EXAMPLES: Record<string, string> = { cumbre: "Alimentos Sierra Norte", forja: "Metalúrgica Valle Alto", brasa: "Fogón Regio", kubit: "Nube Regia Software", puntomadero: "Ferretera del Norte", vertice: "Transportes Cerro Alto" };
 export const nameExample = (packId: string | undefined): string => (packId && NAME_EXAMPLES[packId]) || "Grupo Horizonte";
 
 /** Nombre corto que se usará: el escrito (si es válido) o el calculado del nombre completo. */

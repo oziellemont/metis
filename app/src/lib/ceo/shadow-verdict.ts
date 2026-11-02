@@ -38,6 +38,7 @@ export const SEASON_OBJECTIVES: Record<string, { kpis: KpiKey[]; text: string }>
   brasa: { kpis: ["margen", "clientes"], text: "Defender el margen frente a las apps sin perder clientes." },
   kubit: { kpis: ["caja", "clientes"], text: "Alargar la caja hasta la siguiente ronda sin perder a los clientes que quieren el producto." },
   puntomadero: { kpis: ["margen", "clientes"], text: "Recuperar margen frente a Mundo Casa sin perder a los clientes de toda la vida." },
+  vertice: { kpis: ["margen", "clientes"], text: "Recuperar margen frente a Avante sin dejar de cumplirle a las cuentas grandes." },
 };
 
 export type ShadowOutcome = "aprobado" | "reprobado" | "sin_evidencia";

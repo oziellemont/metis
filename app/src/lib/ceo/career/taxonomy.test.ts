@@ -85,7 +85,7 @@ describe("desplegables dependientes", () => {
 describe("disponibilidad: «Próximamente» bloquea", () => {
   it("solo es jugable lo que tiene paquete existente, métricas y un tipo soportado", () => {
     const playable = all.filter((i) => i.availability === "available");
-    expect(playable.map((i) => i.contentPackId).sort()).toEqual(["brasa", "cumbre", "forja", "kubit", "puntomadero"]);
+    expect(playable.map((i) => i.contentPackId).sort()).toEqual(["brasa", "cumbre", "forja", "kubit", "puntomadero", "vertice"]);
     for (const i of playable) {
       expect(COMPANIES.some((c) => c.id === i.contentPackId)).toBe(true);
       expect(i.metricProfileId).toBeTruthy();
@@ -94,7 +94,9 @@ describe("disponibilidad: «Próximamente» bloquea", () => {
   });
 
   it("una combinación sin contenido no pasa", () => {
-    expect(isPlayableCombo("transporte_almacenamiento", "logistica_distribucion")).toBe(false);
+    expect(isPlayableCombo("comercio", "farmacias")).toBe(false);
+    expect(isPlayableCombo("transporte_almacenamiento", "logistica_distribucion", "establecida")).toBe(true);
+    expect(isPlayableCombo("transporte_almacenamiento", "comercio_exterior", "establecida")).toBe(false);
     expect(isPlayableCombo("comercio", "retail", "establecida")).toBe(true);
     expect(isPlayableCombo("comercio", "retail", "pyme")).toBe(false);
     expect(isPlayableCombo("tecnologia_informacion", "software_saas")).toBe(true);
@@ -117,7 +119,8 @@ describe("disponibilidad: «Próximamente» bloquea", () => {
     expect(sectorById("manufactura")?.availability).toBe("available");
     expect(sectorById("restaurantes_alimentos")?.availability).toBe("available");
     expect(sectorById("comercio")?.availability).toBe("available");
-    expect(sectorById("transporte_almacenamiento")?.availability).toBe("coming_soon");
+    expect(sectorById("transporte_almacenamiento")?.availability).toBe("available");
+    expect(sectorById("salud")?.availability).toBe("coming_soon");
     expect(sectorById("mineria")?.availability).toBe("coming_soon");
   });
 });

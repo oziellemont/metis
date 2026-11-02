@@ -15,9 +15,9 @@
  */
 
 /** Industria (etiqueta del catálogo) de cada paquete. La prueba la compara con taxonomy.ts. */
-export const PACK_INDUSTRY: Record<string, string> = { cumbre: "Alimentos y bebidas", forja: "Autopartes", brasa: "Restaurantes", kubit: "Software y SaaS", puntomadero: "Retail" };
+export const PACK_INDUSTRY: Record<string, string> = { cumbre: "Alimentos y bebidas", forja: "Autopartes", brasa: "Restaurantes", kubit: "Software y SaaS", puntomadero: "Retail", vertice: "Logística y distribución" };
 /** Especialidad con la que se escribió cada paquete: con ella no se cambia nada. */
-export const PACK_ORIGINAL_SPECIALTY: Record<string, string> = { cumbre: "Botanas y snacks", forja: "Estampado y soldadura", brasa: "Casual dining", kubit: "SaaS B2B", puntomadero: "Hogar y ferretería" };
+export const PACK_ORIGINAL_SPECIALTY: Record<string, string> = { cumbre: "Botanas y snacks", forja: "Estampado y soldadura", brasa: "Casual dining", kubit: "SaaS B2B", puntomadero: "Hogar y ferretería", vertice: "Operador 3PL" };
 
 export type LexRule = [from: string, to: string];
 
@@ -239,6 +239,21 @@ const RETAIL: Record<string, LexRule[]> = {
   "Omnicanal": shop("Sesenta tiendas y una tienda en línea con clientes de toda la vida. Un competidor nacional a tres cuadras.", "Punto Madero es una cadena regional omnicanal de tiendas para el hogar", "Artículos para el hogar en tienda, en línea y con entrega a domicilio"),
 };
 
+// ───────────────────────────────────────────── Logística (paquete Vértice)
+// Las tres frases del giro viven en companies/vertice.ts (VL_TAGLINE, VL_PITCH, VL_WHAT).
+const haul = (tagline: string, pitch: string, what: string): LexRule[] => [
+  ["Un operador logístico integral con 420 tractocamiones y seis CEDIS. Un competidor nacional que entra cobrando 12% menos.", tagline],
+  ["Vértice Logística es un operador logístico integral del noreste", pitch],
+  ["Transporte de carga, almacenaje en CEDIS y distribución para cadenas y fabricantes", what],
+];
+const LOGISTICS: Record<string, LexRule[]> = {
+  "Transporte terrestre de carga": haul("Una transportista con 420 tractocamiones y seis patios. Un competidor nacional que entra cobrando 12% menos.", "Vértice Logística es una transportista de carga terrestre del noreste", "Fletes completos y consolidados para cadenas y fabricantes"),
+  "Almacenes y CEDIS": haul("Seis CEDIS y una flota propia de 420 tractocamiones. Un competidor nacional que entra cobrando 12% menos.", "Vértice Logística es un operador de almacenes y CEDIS del noreste", "Almacenaje, preparación de pedidos y distribución desde CEDIS para cadenas y fabricantes"),
+  "Última milla": haul("Una red de entregas a domicilio y a tienda con seis bases y 420 unidades. Un competidor nacional que entra cobrando 12% menos.", "Vértice Logística es una red de entregas de última milla del noreste", "Entregas a domicilio y a tienda para cadenas y tiendas en línea"),
+  "Cadena fría": haul("Un operador de cadena fría con 420 unidades refrigeradas y seis CEDIS con cámaras. Un competidor nacional que entra cobrando 12% menos.", "Vértice Logística es un operador de cadena fría del noreste", "Transporte refrigerado y almacenaje a temperatura controlada para alimentos y farmacéuticas"),
+  "Fulfillment de e-commerce": haul("Seis centros de fulfillment y una flota de 420 unidades para tiendas en línea. Un competidor nacional que entra cobrando 12% menos.", "Vértice Logística es un operador de fulfillment para comercio electrónico del noreste", "Almacenaje, empaque y envío de pedidos en línea para marcas y cadenas"),
+};
+
 /** Especialidades que este módulo sabe escribir, por paquete (además de la original). */
 export function lexSpecialties(packId: string): string[] {
   if (packId === "cumbre") return Object.keys(FOOD).filter(Boolean);
@@ -246,6 +261,7 @@ export function lexSpecialties(packId: string): string[] {
   if (packId === "brasa") return Object.keys(RESTAURANT);
   if (packId === "kubit") return Object.keys(SOFTWARE);
   if (packId === "puntomadero") return Object.keys(RETAIL);
+  if (packId === "vertice") return Object.keys(LOGISTICS);
   return [];
 }
 
@@ -272,6 +288,7 @@ export function lexRules(packId: string, specialty: string | undefined): [RegExp
     else if (packId === "brasa" && sp) raw = RESTAURANT[sp];
     else if (packId === "kubit" && sp) raw = SOFTWARE[sp];
     else if (packId === "puntomadero" && sp) raw = RETAIL[sp];
+    else if (packId === "vertice" && sp) raw = LOGISTICS[sp];
   }
   const out = raw.map(([f, t]) => [new RegExp(`(?<![${L}])${esc(f)}(?![${L}])`, "gu"), t] as [RegExp, string]);
   COMPILED.set(key, out);
