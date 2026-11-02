@@ -96,8 +96,8 @@ describe.each(COMBOS)("auditoría de casos · %s", (_n, sectorId, industryId, ar
 });
 
 describe("auditoría de casos · combinaciones", () => {
-  it("jugables hoy: alimentos (PYME y establecida), autopartes, restaurantes, software y retail (establecida)", () => {
-    expect(COMBOS.map(([, , i, a]) => `${i}/${a}`).sort()).toEqual(["alimentos_bebidas/establecida", "alimentos_bebidas/pyme", "autopartes/establecida", "restaurantes/establecida", "retail/establecida", "software_saas/establecida"]);
+  it("jugables hoy: alimentos (PYME y establecida), autopartes, restaurantes y retail (establecida), software (startup y establecida)", () => {
+    expect(COMBOS.map(([, , i, a]) => `${i}/${a}`).sort()).toEqual(["alimentos_bebidas/establecida", "alimentos_bebidas/pyme", "autopartes/establecida", "restaurantes/establecida", "retail/establecida", "software_saas/establecida", "software_saas/startup"]);
   });
   it("una industria solo ofrece un tipo si TODOS sus casos base caben (sin huecos en la temporada)", () => {
     for (const [, sectorId, industryId, a] of COMBOS) {

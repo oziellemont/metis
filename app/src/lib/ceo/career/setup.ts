@@ -1,13 +1,14 @@
 /**
  * mêtis CEO · Carrera continua · lógica pura del onboarding nuevo (P0-B3).
- * Sector → industria → tipo de empresa → nombre → carta de nombramiento.
+ * Tipo de empresa (startup o establecida) → sector e industria (solo las que tienen casos para ese tipo) → nombre →
+ * carta de nombramiento.
  * Sin React: la pantalla solo pinta lo que sale de aquí.
  */
 import { companyById } from "../companies";
 import type { CompanyPack } from "../types";
 import { brandPack } from "./template";
 import { cleanName, exposureOfPack, isCompanyId, newCompanyProfile, shortNameOf } from "./identity";
-import { ARCHETYPES, SECTORS, TAXONOMY_VERSION, archetypeAvailability, industryOf, isPlayableCombo, type CompanyArchetype } from "./taxonomy";
+import { ARCHETYPES, SECTORS, TAXONOMY_VERSION, industryOf, isOfferedCombo, isPlayableCombo, searchIndustries, OFFERED_TYPES, type CompanyArchetype, type Industry, type Sector, type Suggestion } from "./taxonomy";
 
 export interface SetupSelection {
   sectorId?: string;
@@ -25,10 +26,47 @@ export function selectionForPack(packId: string | undefined): SetupSelection {
   return {};
 }
 
-/** Tipo sugerido: la establecida si la industria la tiene (es la de contenido más completo); si no, el primero disponible. */
+/** Tipo sugerido para una industria: la establecida si se ofrece; si no, la startup. */
 export function defaultArchetype(sectorId: string | undefined, industryId: string | undefined): CompanyArchetype | undefined {
-  if (archetypeAvailability(sectorId, industryId, "establecida") === "available") return "establecida";
-  return ARCHETYPES.find((a) => archetypeAvailability(sectorId, industryId, a.id) === "available")?.id;
+  return (["establecida", "startup"] as const).find((a) => isOfferedCombo(sectorId, industryId, a));
+}
+
+// ───────────────────────────────────────────── primero el tipo, luego la industria
+/** Tipos que se ofrecen al crear una empresa (ver OFFERED_TYPES en taxonomy.ts). */
+export const OFFERED_ARCHETYPES: readonly CompanyArchetype[] = OFFERED_TYPES;
+export const isOfferedArchetype = (a: unknown): a is CompanyArchetype => OFFERED_ARCHETYPES.includes(a as CompanyArchetype);
+/** Tipo con el que arranca el onboarding: el que tiene más industrias con casos. */
+export const DEFAULT_TYPE: CompanyArchetype = "establecida";
+
+/** Industrias con casos aprobados para este tipo (las únicas que se muestran al elegirlo). */
+export const industriesForType = (a: CompanyArchetype | undefined): Industry[] =>
+  a ? SECTORS.flatMap((s) => s.industries.filter((i) => isOfferedCombo(s.id, i.id, a))) : [];
+/** Sectores con al menos una industria para este tipo, cada uno solo con esas industrias. */
+export const sectorsForType = (a: CompanyArchetype | undefined): Sector[] =>
+  SECTORS.map((s) => ({ ...s, industries: s.industries.filter((i) => !!a && isOfferedCombo(s.id, i.id, a)) })).filter((s) => s.industries.length > 0);
+/** ¿Este tipo ya tiene al menos una industria con casos? */
+export const typeOpen = (a: CompanyArchetype | undefined): boolean => isOfferedArchetype(a) && industriesForType(a).length > 0;
+/** Búsqueda por giro, solo entre las industrias del tipo elegido. */
+export const searchForType = (q: string, a: CompanyArchetype | undefined, limit = 6): Suggestion[] =>
+  searchIndustries(q, 40).filter((h) => !!a && isOfferedCombo(h.sectorId, h.industryId, a)).slice(0, limit);
+
+/** Cambiar de tipo: conserva la industria si también existe para el nuevo tipo; si no, la limpia. */
+export function changeType(sel: SetupSelection, a: CompanyArchetype): SetupSelection {
+  if (!isOfferedArchetype(a)) return sel;
+  if (isOfferedCombo(sel.sectorId, sel.industryId, a)) return { ...sel, archetype: a };
+  const { sectorId: _s, industryId: _i, specialty: _e, ...rest } = sel;
+  return { ...rest, archetype: a };
+}
+/** Sugerencia por experiencia declarada: la industria de ese paquete con un tipo que sí la tiene. */
+export function suggestionForPack(packId: string | undefined): SetupSelection {
+  const s = selectionForPack(packId);
+  const archetype = defaultArchetype(s.sectorId, s.industryId);
+  return archetype ? { ...s, archetype } : {};
+}
+/** Preselección por experiencia declarada: solo si esa industria existe para el tipo elegido. */
+export function selectionForPackAndType(packId: string | undefined, a: CompanyArchetype | undefined): SetupSelection {
+  const s = selectionForPack(packId);
+  return a && isOfferedCombo(s.sectorId, s.industryId, a) ? s : {};
 }
 
 /** Nombres de ejemplo por paquete (solo de placeholder; nunca se usan solos). */
@@ -44,12 +82,12 @@ export function effectiveShort(displayName: string | undefined, shortName: strin
   return typed ?? shortNameOf(name);
 }
 
-export type SetupStep = "industria" | "tipo" | "nombre";
-/** ¿Se puede pasar al siguiente paso con lo elegido? */
+export type SetupStep = "tipo" | "industria" | "nombre";
+/** ¿Se puede pasar al siguiente paso con lo elegido? Orden: tipo → industria → nombre. */
 export function canContinue(step: SetupStep, sel: SetupSelection): boolean {
-  if (step === "industria") return isPlayableCombo(sel.sectorId, sel.industryId);
-  if (step === "tipo") return !!sel.archetype && isPlayableCombo(sel.sectorId, sel.industryId, sel.archetype);
-  return canContinue("tipo", sel) && !!effectiveShort(sel.displayName, sel.shortName);
+  if (step === "tipo") return typeOpen(sel.archetype);
+  if (step === "industria") return canContinue("tipo", sel) && isOfferedCombo(sel.sectorId, sel.industryId, sel.archetype);
+  return canContinue("industria", sel) && !!effectiveShort(sel.displayName, sel.shortName);
 }
 
 /** Id nuevo de empresa (uuid v4). Usa crypto.randomUUID si existe; si no, getRandomValues. */

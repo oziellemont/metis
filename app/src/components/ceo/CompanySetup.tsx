@@ -1,16 +1,16 @@
 "use client";
 /**
  * Carrera continua · pasos del onboarding para crear tu empresa (P0-B3):
- * sector e industria (con búsqueda) → tipo de empresa → nombre → carta de nombramiento.
+ * tipo de empresa (startup o establecida) → sector e industria de ese tipo (con búsqueda) → nombre → carta.
  * Toda la lógica vive en lib/ceo/career (setup.ts, taxonomy.ts, identity.ts); aquí solo se pinta.
  */
 import { useMemo, useState } from "react";
 import clsx from "clsx";
 import { ArrowRight, Building2, Check, Lock, Search } from "lucide-react";
 import { personOf } from "@/lib/ceo/cast";
-import { ARCHETYPES, INDUSTRY_PLACEHOLDER, SECTORS, archetypeAvailability, availabilityLabel, changeSector, industriesOf, industryOf, searchIndustries, sectorById } from "@/lib/ceo/career/taxonomy";
+import { ARCHETYPES, INDUSTRY_PLACEHOLDER, availabilityLabel, industryOf } from "@/lib/ceo/career/taxonomy";
 import { NAME_MAX } from "@/lib/ceo/career/identity";
-import { appointedByOf, canContinue, defaultArchetype, effectiveShort, nameExample, previewPack, type SetupSelection } from "@/lib/ceo/career/setup";
+import { OFFERED_ARCHETYPES, appointedByOf, canContinue, changeType, effectiveShort, industriesForType, nameExample, previewPack, searchForType, sectorsForType, typeOpen, type SetupSelection } from "@/lib/ceo/career/setup";
 import { Avatar, CompanyMark } from "./ui";
 
 type Sel = SetupSelection;
@@ -25,67 +25,100 @@ const Nav = ({ onBack, onNext, ok, label = "Continuar" }: { onBack: () => void; 
 
 const Soon = ({ dark }: { dark?: boolean }) => <span className={clsx("chip text-[10px] shrink-0", dark ? "bg-slate-100 text-slate-500" : "bg-white/10 text-white/60")}><Lock size={10} className="mr-1" />{availabilityLabel("coming_soon")}</span>;
 
-// ───────────────────────────────────────────── 1 · sector e industria
-export function IndustryStep({ sel, setSel, onBack, onNext }: StepProps) {
-  const [q, setQ] = useState("");
-  const hits = useMemo(() => searchIndustries(q, 6), [q]);
-  const pick = (sectorId: string, industryId?: string) => setSel((s) => {
-    const n = changeSector(s, sectorId);
-    const ind = industryId ?? n.industryId;
-    return { ...s, ...n, industryId: ind, archetype: defaultArchetype(sectorId, ind), specialty: s.industryId === ind ? s.specialty : undefined };
-  });
-  const sector = sectorById(sel.sectorId);
-  const list = industriesOf(sel.sectorId);
-  const ind = industryOf(sel.sectorId, sel.industryId);
+// ───────────────────────────────────────────── 1 · tipo de empresa (primero)
+export function ArchetypeStep({ sel, setSel, onBack, onNext, extra }: StepProps & { extra?: React.ReactNode }) {
   return (
     <section className="academy-in mt-10">
       <div className="text-xs font-semibold uppercase tracking-wider text-mint">Tu empresa · 1 de 4</div>
+      <h1 className="mt-2 text-3xl font-semibold leading-tight">¿Qué tipo de empresa vas a dirigir?</h1>
+      <p className="mt-3 text-white/70 text-[15px] leading-relaxed">No la fundaste: te nombran para dirigirla. El tipo cambia quién te nombra, cuánta estructura hay y qué tan ajustados están los recursos. Después solo verás las industrias que tienen casos para ese tipo.</p>
+      <div role="radiogroup" aria-label="Tipo de empresa" className="mt-6 space-y-3">
+        {OFFERED_ARCHETYPES.map((id) => {
+          const a = ARCHETYPES.find((x) => x.id === id)!;
+          const inds = industriesForType(id);
+          const open = typeOpen(id), on = sel.archetype === id;
+          return (
+            <button key={id} type="button" role="radio" aria-checked={on} disabled={!open} onClick={() => setSel((s) => changeType(s, id))}
+              className={clsx("w-full text-left rounded-2xl p-4 sm:p-5 flex gap-4 items-start transition-all border-2", on ? "bg-white text-ink border-white shadow-2xl" : open ? "bg-white/5 border-white/10 hover:bg-white/10" : "bg-white/[.03] border-white/5 text-white/40 cursor-not-allowed")}>
+              <span className="flex-1 min-w-0">
+                <span className="flex flex-wrap items-center gap-2"><span className="font-semibold">{a.label}</span>{!open && <Soon />}</span>
+                <span className={clsx("block text-sm mt-1", on ? "text-slate-600" : "text-white/60")}>{a.hint}</span>
+                <span className={clsx("block text-xs mt-1", on ? "text-slate-500" : "text-white/40")}>{a.appointedBy}</span>
+                {open && <span className={clsx("block text-xs mt-2", on ? "text-indigo" : "text-mint/80")}>{inds.length === 1 ? "1 industria" : `${inds.length} industrias`}: {inds.map((i) => i.label).join(", ")}</span>}
+              </span>
+              {on && <span className="h-6 w-6 rounded-full bg-indigo text-white grid place-items-center shrink-0"><Check size={14} strokeWidth={3} /></span>}
+            </button>
+          );
+        })}
+      </div>
+      {extra}
+      <Nav onBack={onBack} onNext={onNext} ok={canContinue("tipo", sel)} />
+    </section>
+  );
+}
+
+// ───────────────────────────────────────────── 2 · sector e industria (solo las del tipo elegido)
+export function IndustryStep({ sel, setSel, onBack, onNext }: StepProps) {
+  const [q, setQ] = useState("");
+  const a = sel.archetype;
+  const hits = useMemo(() => searchForType(q, a, 6), [q, a]);
+  const sectors = useMemo(() => sectorsForType(a), [a]);
+  const pick = (sectorId: string, industryId?: string) => setSel((s) => {
+    const sec = sectors.find((x) => x.id === sectorId);
+    if (!sec) return s;
+    const ind = industryId ?? (sec.industries.length === 1 ? sec.industries[0].id : sec.industries.some((i) => i.id === s.industryId) && s.sectorId === sectorId ? s.industryId : undefined);
+    return { ...s, sectorId, industryId: ind, specialty: s.industryId === ind ? s.specialty : undefined };
+  });
+  const sector = sectors.find((x) => x.id === sel.sectorId);
+  const ind = industryOf(sel.sectorId, sel.industryId);
+  const typeLabel = ARCHETYPES.find((x) => x.id === a)?.label ?? "";
+  return (
+    <section className="academy-in mt-10">
+      <div className="text-xs font-semibold uppercase tracking-wider text-mint">Tu empresa · 2 de 4 · {typeLabel}</div>
       <h1 className="mt-2 text-3xl font-semibold leading-tight">¿En qué industria vas a dirigir?</h1>
-      <p className="mt-3 text-white/70 text-[15px] leading-relaxed">Vas a dirigir una sola empresa, la tuya, mes con mes. La industria define su idioma, sus números y sus dilemas.</p>
+      <p className="mt-3 text-white/70 text-[15px] leading-relaxed">Solo ves las industrias que tienen casos para una empresa {a === "startup" ? "startup" : "establecida"}. La industria define su idioma, sus números y sus dilemas.</p>
 
       <div className="mt-6 rounded-2xl bg-white text-ink p-5 sm:p-6 space-y-4">
         <div>
           <label className="label flex items-center gap-1.5" htmlFor="ind-q"><Search size={12} /> Buscar por giro</label>
-          <input id="ind-q" className="input" placeholder="Ej. botanas, autopartes, restaurante" value={q} onChange={(e) => setQ(e.target.value)} />
+          <input id="ind-q" className="input" placeholder="Ej. botanas, software, ferretería" value={q} onChange={(e) => setQ(e.target.value)} />
           {hits.length > 0 && (
             <ul className="mt-2 divide-y divide-slate-100 rounded-xl border border-slate-100">
               {hits.map((h) => (
                 <li key={`${h.sectorId}/${h.industryId}`} className="flex items-center gap-3 px-3 py-2">
                   <span className="flex-1 min-w-0"><span className="block text-sm font-medium truncate">{h.label}</span><span className="block text-[11px] text-slate-500 truncate">{h.sectorLabel}</span></span>
-                  {h.availability === "available"
-                    ? <button type="button" onClick={() => { pick(h.sectorId, h.industryId); setQ(""); }} className="chip bg-indigo-soft text-indigo px-3 py-1 text-xs font-medium">Usar</button>
-                    : <Soon dark />}
+                  <button type="button" onClick={() => { pick(h.sectorId, h.industryId); setQ(""); }} className="chip bg-indigo-soft text-indigo px-3 py-1 text-xs font-medium">Usar</button>
                 </li>
               ))}
             </ul>
           )}
-          {q.trim().length >= 2 && !hits.length && <p className="mt-2 text-xs text-slate-500">Sin coincidencias. Elige el sector en la lista.</p>}
+          {q.trim().length >= 2 && !hits.length && <p className="mt-2 text-xs text-slate-500">Ese giro todavía no tiene casos para este tipo de empresa. Elige uno de la lista.</p>}
         </div>
         <div>
           <label className="label" htmlFor="ind-sector">Sector</label>
-          <select id="ind-sector" className="input" value={sel.sectorId ?? ""} onChange={(e) => pick(e.target.value)}>
+          <select id="ind-sector" className="input" value={sector ? sector.id : ""} onChange={(e) => pick(e.target.value)}>
             <option value="" disabled>Elige un sector</option>
-            {SECTORS.map((s) => <option key={s.id} value={s.id}>{s.label}{s.availability === "coming_soon" ? ` · ${availabilityLabel("coming_soon")}` : ""}</option>)}
+            {sectors.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
           </select>
         </div>
         <div>
           <label className="label" htmlFor="ind-ind">Industria</label>
           {!sector ? <div className="input text-slate-400">{INDUSTRY_PLACEHOLDER}</div> : (
             <div id="ind-ind" role="radiogroup" aria-label="Industria" className="grid gap-2 sm:grid-cols-2">
-              {list.map((i) => {
-                const on = i.id === sel.industryId, open = i.availability === "available";
+              {sector.industries.map((i) => {
+                const on = i.id === sel.industryId;
                 return (
-                  <button key={i.id} type="button" role="radio" aria-checked={on} disabled={!open} onClick={() => pick(i.sectorId, i.id)}
-                    className={clsx("text-left rounded-xl border px-3 py-2.5 flex items-center gap-2 text-sm transition-colors", on ? "border-indigo bg-indigo-soft/60" : open ? "border-slate-200 hover:border-indigo/40" : "border-slate-100 text-slate-400 cursor-not-allowed")}>
+                  <button key={i.id} type="button" role="radio" aria-checked={on} onClick={() => pick(i.sectorId, i.id)}
+                    className={clsx("text-left rounded-xl border px-3 py-2.5 flex items-center gap-2 text-sm transition-colors", on ? "border-indigo bg-indigo-soft/60" : "border-slate-200 hover:border-indigo/40")}>
                     <span className="flex-1 min-w-0 truncate">{i.label}</span>
-                    {on ? <Check size={14} className="text-indigo" strokeWidth={3} /> : !open && <Soon dark />}
+                    {on && <Check size={14} className="text-indigo" strokeWidth={3} />}
                   </button>
                 );
               })}
             </div>
           )}
         </div>
-        {ind && ind.availability === "available" && ind.specialties.length > 0 && (
+        {ind && canContinue("industria", sel) && ind.specialties.length > 0 && (
           <div>
             <label className="label" htmlFor="ind-spec">Especialidad (opcional)</label>
             <select id="ind-spec" className="input" value={sel.specialty ?? ""} onChange={(e) => setSel((s) => ({ ...s, specialty: e.target.value || undefined }))}>
@@ -96,35 +129,6 @@ export function IndustryStep({ sel, setSel, onBack, onNext }: StepProps) {
         )}
       </div>
       <Nav onBack={onBack} onNext={onNext} ok={canContinue("industria", sel)} />
-    </section>
-  );
-}
-
-// ───────────────────────────────────────────── 2 · tipo de empresa
-export function ArchetypeStep({ sel, setSel, onBack, onNext, extra }: StepProps & { extra?: React.ReactNode }) {
-  return (
-    <section className="academy-in mt-10">
-      <div className="text-xs font-semibold uppercase tracking-wider text-mint">Tu empresa · 2 de 4</div>
-      <h1 className="mt-2 text-3xl font-semibold leading-tight">¿Qué tipo de empresa?</h1>
-      <p className="mt-3 text-white/70 text-[15px] leading-relaxed">No la fundaste: te nombran para dirigirla. El tipo cambia quién te nombra, cuánta estructura hay y qué tan ajustados están los recursos.</p>
-      <div role="radiogroup" aria-label="Tipo de empresa" className="mt-6 space-y-3">
-        {ARCHETYPES.map((a) => {
-          const open = archetypeAvailability(sel.sectorId, sel.industryId, a.id) === "available", on = sel.archetype === a.id;
-          return (
-            <button key={a.id} type="button" role="radio" aria-checked={on} disabled={!open} onClick={() => setSel((s) => ({ ...s, archetype: a.id }))}
-              className={clsx("w-full text-left rounded-2xl p-4 sm:p-5 flex gap-4 items-start transition-all border-2", on ? "bg-white text-ink border-white shadow-2xl" : open ? "bg-white/5 border-white/10 hover:bg-white/10" : "bg-white/[.03] border-white/5 text-white/40 cursor-not-allowed")}>
-              <span className="flex-1 min-w-0">
-                <span className="flex flex-wrap items-center gap-2"><span className="font-semibold">{a.label}</span>{!open && <Soon />}</span>
-                <span className={clsx("block text-sm mt-1", on ? "text-slate-600" : "text-white/60")}>{a.hint}</span>
-                <span className={clsx("block text-xs mt-1", on ? "text-slate-500" : "text-white/40")}>{a.appointedBy}</span>
-              </span>
-              {on && <span className="h-6 w-6 rounded-full bg-indigo text-white grid place-items-center shrink-0"><Check size={14} strokeWidth={3} /></span>}
-            </button>
-          );
-        })}
-      </div>
-      {extra}
-      <Nav onBack={onBack} onNext={onNext} ok={canContinue("tipo", sel)} />
     </section>
   );
 }

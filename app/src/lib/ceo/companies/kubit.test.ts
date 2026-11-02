@@ -8,13 +8,13 @@ import { catalogCompanyById, isPlayable } from "../catalog";
 import { SEASON_OBJECTIVES } from "../shadow-verdict";
 
 describe("Kúbit · software (P1-E)", () => {
-  it("es jugable: registrada, en el catálogo y en la taxonomía (solo establecida)", () => {
+  it("es jugable: registrada, en el catálogo y en la taxonomía (se ofrece como startup; la establecida ya creada sigue jugando)", () => {
     expect(COMPANIES.map((c) => c.id)).toContain("kubit");
     expect(companyById("kubit")).toBe(KUBIT);
     expect(isPlayable("kubit")).toBe(true);
     expect(catalogCompanyById("kubit")?.provisional).toBe(true);
     expect(isPlayableCombo("tecnologia_informacion", "software_saas", "establecida")).toBe(true);
-    expect(isPlayableCombo("tecnologia_informacion", "software_saas", "startup")).toBe(false);
+    expect(isPlayableCombo("tecnologia_informacion", "software_saas", "startup")).toBe(true);
     expect(isPlayableCombo("tecnologia_informacion", "software_saas", "pyme")).toBe(false);
   });
 

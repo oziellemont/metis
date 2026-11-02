@@ -22,6 +22,11 @@ export const ARCHETYPES = [
   { id: "establecida", label: "Establecida", appointedBy: "Te nombra el consejo.", hint: "Mediana, con operación predecible y mandos formales. No es gigante." },
 ] as const;
 export type CompanyArchetype = (typeof ARCHETYPES)[number]["id"];
+/**
+ * Tipos que se ofrecen al crear una empresa: solo startup y establecida (decisión de Oziel, nov-2026). La PYME sigue
+ * siendo válida para las empresas ya creadas (se leen, se reproducen y se juegan igual), pero ya no se ofrece.
+ */
+export const OFFERED_TYPES = ["startup", "establecida"] as const;
 export const isArchetype = (v: unknown): v is CompanyArchetype => ARCHETYPES.some((a) => a.id === v);
 
 /** Familias operativas: plantillas compartidas de métricas y casos (doc P0 §3.1 punto 7). */
@@ -33,8 +38,10 @@ export interface IndustrySeed {
   aliases?: string[];
   /** Paquete de contenido con casos aprobados (cumbre, forja, brasa…). Sin paquete = no jugable. */
   pack?: string;
-  /** Tipos con contenido aprobado para esta industria. */
+  /** Tipos con contenido aprobado para esta industria (el motor los acepta; incluye los de empresas ya creadas). */
   archetypes?: CompanyArchetype[];
+  /** Tipos que se OFRECEN al crear una empresa nueva (startup o establecida). Sin dato: los de `archetypes` que se ofrecen. */
+  offer?: CompanyArchetype[];
   /** Perfil de métricas propio de la industria (no se muestran KPI de inventario en SaaS, etc.). */
   metric?: string;
   /** Industria del foco de lanzamiento (decisión de Oziel). */
@@ -60,6 +67,8 @@ export interface Industry {
   contentPackId?: string;
   metricProfileId?: string;
   supportedArchetypes: CompanyArchetype[];
+  /** Tipos que se ofrecen hoy al crear una empresa (subconjunto de `supportedArchetypes`, solo startup/establecida). */
+  offeredArchetypes: CompanyArchetype[];
   availability: Availability;
   focus: boolean;
   specialties: string[];
@@ -78,7 +87,7 @@ export interface Sector {
    Restaurantes pertenece a «servicios de preparación de alimentos», no a manufactura. Las ramas finas viven en `specialties`. */
 const SECTOR_DATA: SectorSeed[] = [
   { id: "manufactura", label: "Manufactura", family: "produccion", focus: true, industries: [
-    { id: "alimentos_bebidas", label: "Alimentos y bebidas", aliases: ["alimentos", "bebidas", "snacks", "botanas", "lacteos", "panaderia", "refrescos", "consumo masivo", "food"], pack: "cumbre", archetypes: ["pyme", "establecida"], metric: "alimentos", focus: true, specialties: ["Botanas y snacks", "Panadería y galletas", "Lácteos", "Bebidas no alcohólicas", "Salsas y condimentos", "Alimentos congelados", "Café"] },
+    { id: "alimentos_bebidas", label: "Alimentos y bebidas", aliases: ["alimentos", "bebidas", "snacks", "botanas", "lacteos", "panaderia", "refrescos", "consumo masivo", "food"], pack: "cumbre", archetypes: ["pyme", "establecida"], offer: ["establecida"], metric: "alimentos", focus: true, specialties: ["Botanas y snacks", "Panadería y galletas", "Lácteos", "Bebidas no alcohólicas", "Salsas y condimentos", "Alimentos congelados", "Café"] },
     { id: "autopartes", label: "Autopartes", aliases: ["autopartes", "auto parts", "tier 1", "proveedor automotriz", "automotriz"], pack: "forja", archetypes: ["establecida"], metric: "autopartes", focus: true, specialties: ["Estampado y soldadura", "Inyección de plástico automotriz", "Arneses eléctricos", "Frenos y suspensión", "Interiores"] },
     { id: "manufactura_general", label: "Manufactura industrial general", aliases: ["manufactura", "fabrica", "planta", "industrial", "maquila", "metalmecanica", "plasticos", "empaques"], metric: "manufactura", focus: true, specialties: ["Metalmecánica", "Plásticos y empaques", "Maquinaria y equipo", "Manufactura por contrato", "Muebles y mobiliario"] },
     { id: "electronica", label: "Electrónica y componentes", aliases: ["electronica", "semiconductores"] },
@@ -94,7 +103,7 @@ const SECTOR_DATA: SectorSeed[] = [
     { id: "catering", label: "Catering y comedores industriales", aliases: ["catering", "comedor industrial"] },
   ] },
   { id: "tecnologia_informacion", label: "Tecnología e información", family: "tecnologia", focus: true, industries: [
-    { id: "software_saas", label: "Software y SaaS", aliases: ["saas", "software", "b2b", "software as a service", "plataforma", "startup de software"], pack: "kubit", archetypes: ["establecida"], metric: "saas", focus: true, specialties: ["SaaS B2B", "Software vertical", "Software industrial", "HRTech", "MarTech"] },
+    { id: "software_saas", label: "Software y SaaS", aliases: ["saas", "software", "b2b", "software as a service", "plataforma", "startup de software"], pack: "kubit", archetypes: ["startup", "establecida"], offer: ["startup"], metric: "saas", focus: true, specialties: ["SaaS B2B", "Software vertical", "Software industrial", "HRTech", "MarTech"] },
     { id: "inteligencia_artificial", label: "Inteligencia artificial aplicada", aliases: ["ia", "ai", "machine learning"] },
     { id: "ciberseguridad", label: "Ciberseguridad", aliases: ["cyber", "seguridad informatica"] },
     { id: "aplicaciones_consumo", label: "Aplicaciones de consumo", aliases: ["app", "apps", "b2c"] },
@@ -177,6 +186,7 @@ const toIndustry = (s: SectorSeed, i: IndustrySeed): Industry => {
   return {
     id: i.id, sectorId: s.id, label: i.label, family: s.family, aliases: i.aliases ?? [],
     contentPackId: i.pack, metricProfileId: i.metric, supportedArchetypes: supported,
+    offeredArchetypes: supported.filter((a) => (OFFERED_TYPES as readonly string[]).includes(a) && (!i.offer || i.offer.includes(a))),
     availability: supported.length ? "available" : "coming_soon", focus: !!i.focus, specialties: i.specialties ?? [],
   };
 };
@@ -211,6 +221,12 @@ export function isPlayableCombo(sectorId: string | undefined, industryId: string
   const ind = industryOf(sectorId, industryId);
   if (!ind || ind.availability !== "available") return false;
   return archetype === undefined ? true : isArchetype(archetype) && ind.supportedArchetypes.includes(archetype);
+}
+
+/** ¿Se ofrece hoy esta combinación al crear una empresa nueva? (Más estricto que isPlayableCombo.) */
+export function isOfferedCombo(sectorId: string | undefined, industryId: string | undefined, archetype: string | undefined): boolean {
+  const ind = industryOf(sectorId, industryId);
+  return !!ind && ind.availability === "available" && isArchetype(archetype) && ind.offeredArchetypes.includes(archetype);
 }
 
 /** Estado de un tipo de empresa dentro de una industria (para la tarjeta del paso 3). */
