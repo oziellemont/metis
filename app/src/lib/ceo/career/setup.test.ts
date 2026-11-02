@@ -19,7 +19,8 @@ describe("onboarding de carrera continua · lógica pura", () => {
     expect(defaultArchetype("manufactura", "alimentos_bebidas")).toBe("establecida");
     expect(defaultArchetype("tecnologia_informacion", "software_saas")).toBe("startup");
     expect(defaultArchetype("comercio", "retail")).toBe("establecida");
-    expect(defaultArchetype("transporte_almacenamiento", "logistica_distribucion")).toBeUndefined();
+    expect(defaultArchetype("transporte_almacenamiento", "logistica_distribucion")).toBe("establecida");
+    expect(defaultArchetype("comercio", "farmacias")).toBeUndefined();
   });
 
   it("solo deja avanzar con combinaciones jugables", () => {
@@ -30,7 +31,9 @@ describe("onboarding de carrera continua · lógica pura", () => {
     expect(canContinue("tipo", { archetype: "establecida" })).toBe(true);
     expect(canContinue("industria", {})).toBe(false);
     expect(canContinue("industria", { sectorId: "comercio", industryId: "retail" })).toBe(false);
-    expect(canContinue("industria", { archetype: "establecida", sectorId: "transporte_almacenamiento", industryId: "logistica_distribucion" })).toBe(false);
+    expect(canContinue("industria", { archetype: "establecida", sectorId: "comercio", industryId: "farmacias" })).toBe(false);
+    expect(canContinue("industria", { archetype: "establecida", sectorId: "transporte_almacenamiento", industryId: "logistica_distribucion" })).toBe(true);
+    expect(canContinue("industria", { archetype: "startup", sectorId: "transporte_almacenamiento", industryId: "logistica_distribucion" })).toBe(false);
     expect(canContinue("industria", { archetype: "establecida", sectorId: "comercio", industryId: "retail" })).toBe(true);
     expect(canContinue("industria", { archetype: "startup", sectorId: "comercio", industryId: "retail" })).toBe(false);
     expect(canContinue("industria", { archetype: "startup", sectorId: "tecnologia_informacion", industryId: "software_saas" })).toBe(true);
@@ -51,7 +54,7 @@ describe("onboarding de carrera continua · lógica pura", () => {
     expect(typeOpen("establecida")).toBe(true);
     expect(typeOpen("pyme")).toBe(false);
     expect(industriesForType("startup").map((i) => i.id)).toEqual(["software_saas"]);
-    expect(industriesForType("establecida").map((i) => i.id).sort()).toEqual(["alimentos_bebidas", "autopartes", "restaurantes", "retail"]);
+    expect(industriesForType("establecida").map((i) => i.id).sort()).toEqual(["alimentos_bebidas", "autopartes", "logistica_distribucion", "restaurantes", "retail"]);
     expect(industriesForType("pyme")).toEqual([]);
     expect(industriesForType(undefined)).toEqual([]);
     // Los sectores solo traen las industrias del tipo; ninguno queda vacío.

@@ -12,7 +12,7 @@
  */
 import { isCompany } from "./companies";
 
-export const CATALOG_VERSION = 3;
+export const CATALOG_VERSION = 4;
 
 export type CatalogStatus = "available" | "coming_soon" | "retired";
 
@@ -78,6 +78,11 @@ export const INDUSTRY_CATALOG: CatalogIndustry[] = [
     { id: "kubit", name: "Kúbit", line: "Software para empresas", identity: "Empresa de software con producto querido, 14 meses de caja y un fondo de inversión impaciente en el consejo.", tension: "Un cliente vale el 22% de los ingresos y pide descuento y desarrollos a la medida.", status: "available", provisional: true },
     { id: "farosistemas", name: "Faro Sistemas", line: "Servicios de tecnología", identity: "Consultora rentable que vive de proyectos. Buen talento, poca recurrencia.", tension: "Su mejor equipo recibe ofertas de una empresa extranjera.", status: "coming_soon", provisional: true },
     { id: "cauce", name: "Cauce Digital", line: "Pagos en línea", identity: "Plataforma de pagos para comercios pequeños. Crece rápido y opera en un sector regulado.", tension: "Un incidente de seguridad obliga a decidir qué y cuándo comunicar.", status: "coming_soon", provisional: true },
+  ]),
+  ind("logistica", "Log\u00edstica y transporte", "Di\u00e9sel, operadores que escasean y clientes que miden cada entrega al minuto.", [
+    { id: "vertice", name: "V\u00e9rtice Log\u00edstica", line: "Operador log\u00edstico", identity: "Operador del noreste con 420 tractocamiones y seis CEDIS. Cuentas grandes, flota envejecida y un consejo con fondo.", tension: "Un competidor nacional entra cobrando 12% menos y la cuenta m\u00e1s grande pide igualar la tarifa.", status: "available", provisional: true },
+    { id: "ultimotramo", name: "\u00daltimo Tramo", line: "Entregas de \u00faltima milla", identity: "Red de repartidores para tiendas en l\u00ednea en tres ciudades. Mucho volumen, poco margen por paquete.", tension: "El cliente m\u00e1s grande quiere entregas el mismo d\u00eda sin pagar m\u00e1s.", status: "coming_soon", provisional: true },
+    { id: "polar", name: "Fr\u00edo Polar", line: "Cadena fr\u00eda", identity: "Almacenes refrigerados y transporte de perecederos para farmac\u00e9uticas y alimentos.", tension: "Una falla de temperatura obliga a decidir si se avisa al cliente antes de que lo descubra.", status: "coming_soon", provisional: true },
   ]),
   ind("salud", "Hospitales y servicios de salud", "Calidad médica, aseguradoras que presionan y decisiones con personas de por medio.", [
     { id: "sanrafael", name: "Hospital San Rafael", line: "Hospital privado", identity: "Hospital con prestigio y médicos que también son accionistas. La inflación médica no da tregua.", tension: "La aseguradora más grande exige tarifas más bajas o retira a sus pacientes.", status: "coming_soon", provisional: true },

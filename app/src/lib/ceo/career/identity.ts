@@ -133,6 +133,13 @@ const PACK_EXPOSURE: Record<string, CompanyExposure> = {
     buyCurrencies: ["MXN", "USD"],
     sellCurrencies: ["MXN"],
   },
+  vertice: {
+    baseCity: "Apodaca, N.L.",
+    sites: [{ kind: "centro_distribucion", city: "Apodaca, N.L." }, { kind: "centro_distribucion", city: "Saltillo, Coah." }, { kind: "centro_distribucion", city: "Querétaro, Qro." }, { kind: "oficina", city: "Monterrey, N.L." }],
+    suppliers: [{ what: "Diésel y casetas", region: "Nuevo León y Coahuila" }, { what: "Tractocamiones y refacciones", region: "Coahuila y Texas, EE. UU." }],
+    buyCurrencies: ["MXN", "USD"],
+    sellCurrencies: ["MXN"],
+  },
 };
 export const exposureOfPack = (packId: string): CompanyExposure => {
   const e = PACK_EXPOSURE[packId];

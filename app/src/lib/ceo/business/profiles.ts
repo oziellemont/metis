@@ -160,10 +160,27 @@ export const PROFILES: Record<string, BusinessProfile> = {
       pct("rotacion", "Rotación de asesores (anual)", { establecida: 48, pyme: 40, startup: 35 }, 30, "down", { kpi: "equipo", k: -0.7 }, 1, "Asesores de piso que se van en un año.", 300),
     ],
   },
+  logistica: {
+    id: "logistica",
+    clientsLabel: "Cuentas activas",
+    clientsHint: "Cadenas y fabricantes con contrato vigente de transporte o almacenaje.",
+    baselines: {
+      establecida: { revenue: 150, grossMargin: 0.3, headcount: 1600, costPerHead: 0.022, marketing: 0.6, otherFixed: 12, otherVar: 0.07, cash: 55, dso: 45, capexPct: 0.04, growth: 0.002, targetGrowth: 0.006, clients: 140 },
+      pyme: { revenue: 6, grossMargin: 0.26, headcount: 70, costPerHead: 0.018, marketing: 0.03, otherFixed: 0.5, otherVar: 0.06, cash: 3, dso: 40, capexPct: 0.03, growth: 0.004, targetGrowth: 0.01, clients: 25 },
+      startup: { revenue: 4, grossMargin: 0.22, headcount: 60, costPerHead: 0.035, marketing: 0.3, otherFixed: 0.5, otherVar: 0.1, cash: 30, dso: 35, capexPct: 0.02, growth: 0.04, targetGrowth: 0.06, clients: 40 },
+    },
+    metrics: [
+      pct("otif", "Entregas completas y a tiempo (OTIF)", { establecida: 93, pyme: 88, startup: 85 }, 97, "up", { kpi: "clientes", k: 0.15 }, 0.4, "Pedidos que llegan completos y en la ventana pactada."),
+      pct("ocupacion", "Ocupaci\u00f3n de la flota", { establecida: 78, pyme: 72, startup: 65 }, 85, "up", { kpi: "margen", k: 0.15 }, 0.5, "Tiempo que los tractocamiones est\u00e1n cargados y rodando."),
+      pct("km_vacio", "Kil\u00f3metros en vac\u00edo", { establecida: 24, pyme: 28, startup: 30 }, 15, "down", { kpi: "margen", k: -0.12 }, 0.4, "Kil\u00f3metros que la flota recorre sin carga. Cada uno cuesta di\u00e9sel y no cobra."),
+      pct("exactitud", "Exactitud de inventario en CEDIS", { establecida: 97, pyme: 94, startup: 95 }, 99.5, "up", { kpi: "clientes", k: 0.05 }, 0.2, "Lo que dice el sistema contra lo que hay en el rack."),
+      pct("rotacion", "Rotaci\u00f3n de operadores (anual)", { establecida: 70, pyme: 60, startup: 80 }, 40, "down", { kpi: "equipo", k: -0.8 }, 1, "Operadores que se van en un a\u00f1o. Cada vacante es un cami\u00f3n parado.", 300),
+    ],
+  },
 };
 
 /** Perfil por paquete (para empresas sin `metricProfileId` reconocido). */
-const BY_PACK: Record<string, string> = { cumbre: "alimentos", forja: "autopartes", brasa: "restaurantes", kubit: "saas", puntomadero: "retail" };
+const BY_PACK: Record<string, string> = { cumbre: "alimentos", forja: "autopartes", brasa: "restaurantes", kubit: "saas", puntomadero: "retail", vertice: "logistica" };
 export function profileFor(metricProfileId: string | undefined, packId: string): BusinessProfile {
   return PROFILES[metricProfileId ?? ""] ?? PROFILES[BY_PACK[packId] ?? "alimentos"] ?? PROFILES.alimentos;
 }

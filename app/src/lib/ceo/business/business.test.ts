@@ -121,6 +121,8 @@ describe("motor de negocio · métricas por industria", () => {
     expect(ids("alimentos")).not.toMatch(/mrr|churn|suscrip/);
     expect(ids("autopartes")).not.toMatch(/mrr|ticket/);
     expect(ids("restaurantes")).not.toMatch(/mrr|ppm|oee/);
+    expect(ids("logistica")).not.toMatch(/mrr|churn|ticket|suscrip/);
+    expect(ids("logistica")).toMatch(/otif/);
   });
   it("las cifras de la establecida coinciden con la ficha del paquete", () => {
     expect(PROFILES.alimentos.baselines.establecida.revenue * 12).toBeCloseTo(410, -1);
@@ -128,6 +130,7 @@ describe("motor de negocio · métricas por industria", () => {
     expect(PROFILES.autopartes.baselines.establecida.revenue * 12).toBeCloseTo(2300, -1);
     expect(PROFILES.restaurantes.baselines.establecida.revenue * 12).toBeCloseTo(980, -1);
     expect(PROFILES.restaurantes.baselines.establecida.headcount).toBe(1450);
+    expect(PROFILES.logistica.baselines.establecida.revenue * 12).toBeCloseTo(1800, -1);
   });
 });
 

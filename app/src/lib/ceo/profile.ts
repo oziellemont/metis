@@ -62,7 +62,7 @@ export const INDUSTRIES = [
   { id: "tecnologia", label: "Tecnología", company: "kubit" },
   { id: "salud", label: "Salud" },
   { id: "construccion", label: "Construcción e inmobiliario" },
-  { id: "logistica", label: "Logística" },
+  { id: "logistica", label: "Logística", company: "vertice" },
   { id: "educacion", label: "Educación" },
   { id: "social", label: "Gobierno y sector social" },
   { id: "otra", label: "Otra" },

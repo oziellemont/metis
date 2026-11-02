@@ -1303,3 +1303,257 @@ Respuesta: `pm-d7-consejo | ... | ...`
 
 Respuesta: `pm-d7-equipo | ... | ...`
 
+## Vértice Logística
+
+### vl-d1-carta · Día 1 · Bienvenido a Vértice. Esto es lo que esperamos.
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Estimado Director: Bienvenido. Mi padre fundó Vértice con tres camiones hace 38 años y es la primera vez que la familia pone a alguien de fuera al frente. Seré directo: facturamos $1,800 M al año con 420 tractocamiones y seis CEDIS, pero el margen de operación bajó de 9% a 6% y este año perdimos cuatro cuentas. Avante, el operador nacional, entra a la región con tarifas 12% abajo de las nuestras y una plataforma de rastreo que los clientes están pidiendo. Antonio, que dirigió la empresa de forma interina, conoce cada ruta y los operadores lo siguen viendo como su líder. Supermercados Almena pesa 20% de la venta y lo sabe. En la sesión de consejo del mes que entra quiero ver tu plan. Antes de eso, dime cómo vas a usar tus primeras semanas. Rodrigo Salinas Presidente del consejo
+
+**Pregunta:** ¿Cómo usas tus primeras semanas?
+
+- **A** (score 3, balance +3): Escuchar primero: recorrer los seis CEDIS, hacer una ruta completa de copiloto con un operador y una conversación a solas con cada director. El plan, al día 45. → Equipo +5, Clientes +3, Consejo -5.
+- **B** (score 1, balance +3): Plan de 100 días desde ya: congelar contrataciones, recortar 15% del gasto que no es esencial y bajar tarifas a las 30 cuentas que Avante está visitando. → Caja +4, Equipo -6, Clientes -1, Consejo +6.
+- **C** (score 2, balance +1): Primero el cliente que más pesa: una semana con Supermercados Almena para entender qué les duele y asegurar su contrato del año. → Caja -1, Equipo -3, Clientes +5.
+- **Sin respuesta** (balance -7): Consejo -7.
+
+Respuesta: `vl-d1-carta | ... | ...`
+
+### vl-d1-patio · Día 1 · Lalo Rangel
+
+**Propuesta automática:** legacy. Jugable como contenido histórico, pero la opción preferida por el autor sigue siendo la que más conviene.
+
+**Caso:** Buenas noches. Disculpa que te escriba directo, soy Lalo, gerente del patio y CEDIS de Apodaca. Antonio dijo que a partir de mañana las unidades salen sin la revisión de salida (frenos, llantas y luces) para ganar un viaje más al día. Dice que son 20 minutos por camión y que la temporada no espera. Los operadores me preguntan si entonces ya pueden salir sin firmar la revisión. Yo nomás quiero saber qué les digo
+
+**Pregunta:** Un gerente te escribe por encima de su director. ¿Qué le contestas?
+
+- **A** (score 2, balance +2): «Lalo, ninguna unidad sale sin revisión. Mañana hablo con Antonio. Si la temporada se retrasa unos días, lo asumo yo.» → Margen -3, Equipo +3, Clientes +3, Consejo -1.
+- **B** (score 1, balance 0): «Lalo, gracias por avisarme. Esto lo tiene que decidir Antonio: es tu jefe y conoce la flota mejor que nadie. Platícalo con él y yo lo respaldo.» → Margen +3, Equipo -3, Clientes -1, Consejo +1.
+- **C** (score 3, balance +3): «Lalo, mañana a las 7 nos vemos Antonio, Gabriela, tú y yo. Regla temporal: la revisión se hace en 10 minutos con una lista corta y un mecánico más por turno; lo que falle, no sale.» → Margen -1, Equipo +2, Clientes +1, Consejo +1.
+- **Sin respuesta** (balance -5): Equipo -4, Clientes -1.
+
+Respuesta: `vl-d1-patio | ... | ...`
+
+### vl-d2-almena · Día 2 · Supermercados Almena · Condiciones para el próximo año
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Estimado Director: Estamos por cerrar el presupuesto del próximo año. Para renovar con Vértice necesitamos 10% menos de tarifa, pago a 90 días (hoy es a 30) y una penalización por cada entrega que llegue fuera de su ventana. Le recuerdo que el próximo trimestre decidiremos quién opera nuestros tres CEDIS nuevos. Avante ya nos presentó propuesta. Su disposición en esta negociación será considerada. Quedo atento a su respuesta esta semana. Ricardo Hinojosa Director de Logística · Supermercados Almena
+
+**Pregunta:** ¿Cómo respondes a tu cliente más grande?
+
+- **A** (score 0, balance -6): Aceptar todo. Lo importante es ganar los tres CEDIS nuevos; ahí recuperamos. → Margen -8, Clientes +5, Consejo -3.
+- **B** (score 2, balance 0): Mantener la tarifa con el ajuste por diésel del contrato y pago a 30 días. Las penalizaciones, solo si también hay bono por cumplir. → Margen +3, Clientes -5, Consejo +2.
+- **C** (score 3, balance -2): Proponer otra cosa: 4% menos de tarifa a cambio de un contrato de tres años, pago a 45 días y penalización por entrega tarde con bono por cumplir arriba de 97%. Y pedir la operación de un CEDIS nuevo como piloto. → Caja -1, Margen -2, Equipo -2, Clientes +2, Consejo +1.
+- **Sin respuesta** (balance -9): Clientes -6, Consejo -3.
+
+Respuesta: `vl-d2-almena | ... | ...`
+
+### vl-d2-operadores · Día 2 · Se nos van los operadores · 40 en dos meses
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Director: En dos meses se fueron 40 operadores de quinta rueda con experiencia. Treinta se fueron a Avante, que les ofrece 18% más para arrancar sus rutas en la región. Un operador que maneja seguro en carretera y cuida la unidad tarda un año en formarse. Hoy tenemos 35 camiones parados por falta de operador y los clientes lo notan. Te pongo tres caminos con números. Rocío
+
+**Pregunta:** ¿Qué camino tomas?
+
+- **A** (score 1, balance -1): Bono de permanencia y ajuste de sueldo para los 250 operadores con experiencia. Hay que parar la fuga ya. → Caja -4, Margen -2, Equipo +5.
+- **B** (score 3, balance -3): Escuela de operadores con plan de carrera: ayudante, operador sencillo, operador de quinta rueda e instructor, con sueldo que sube en cada escalón. Mientras tanto aguantamos con lo que hay. → Caja -2, Equipo +2, Clientes -2, Consejo -1.
+- **C** (score 2, balance 0): Subcontratar transportistas independientes para las rutas que no son críticas. Dependemos menos de un perfil escaso. → Caja -1, Margen +3, Equipo -5, Consejo +3.
+- **Sin respuesta** (balance -7): Margen -2, Equipo -5.
+
+Respuesta: `vl-d2-operadores | ... | ...`
+
+### vl-c-frenos · Día 3 · consecuencia · URGENTE · Una unidad se quedó sin frenos en la carretera a Saltillo
+
+**Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
+
+**Caso:** Director: Lo que temíamos. Ayer, en la bajada de la carretera a Saltillo, una de nuestras unidades se quedó sin frenos y alcanzó a un auto. El conductor resultó con un golpe en el hombro. En la revisión que siguió, la autoridad detuvo tres unidades más. Ricardo Hinojosa me escribió, textual: «Nuestra mercancía viaja en esos camiones. Si esto vuelve a pasar, cambiamos de operador». Piden un reporte de causa en 24 horas. La salida sin revisión era parte del plan para llegar a la temporada. Gabriela Ochoa Directora de Servicio a Clientes y CEDIS
+
+**Pregunta:** ¿Cómo respondes al accidente?
+
+- **A** (score 3, balance +1): Asumirlo de frente: hoy visito al conductor, el reporte de causa lo presento yo, cubrimos todos sus gastos sin que los pida y la revisión de salida regresa mañana en los seis CEDIS. → Caja -3, Margen -2, Equipo +3, Clientes +3.
+- **B** (score 1, balance -3): Contener sin ruido: el seguro atiende al conductor, redes responde con un mensaje estándar y Operaciones entrega el reporte. → Margen +1, Equipo -2, Clientes -2.
+- **C** (score 0, balance -6): Defender los datos: fue un incidente en miles de viajes al mes y nuestro índice de accidentes está por debajo de la industria. No cambiamos nada. → Caja +1, Margen +2, Clientes -7, Consejo -2.
+- **Sin respuesta** (balance -10): Caja -3, Clientes -7.
+
+Respuesta: `vl-c-frenos | ... | ...`
+
+### vl-d3-rastreo · Día 3 · Junta · ¿Prometemos rastreo en tiempo real y ventanas de una hora?
+
+**Propuesta automática:** etica. Tema de ética o seguridad sin opción de línea roja. Revisar que el feedback no sea sermón.
+
+**Caso:** Sala de juntas, 8:00. Mauricio (Comercial), Antonio (Operaciones y Flota) y Gabriela (Servicio a Clientes y CEDIS). Una cadena de comercio en línea abre licitación para toda su distribución en el noreste. Avante ya ofreció rastreo en tiempo real y ventanas de una hora. Mauricio Cárdenas: Si ofrecemos rastreo en tiempo real y ventanas de una hora, calculo $60 M de venta nueva al año. Avante ya lo ofrece. Si no lo decimos, perdemos la licitación. Gabriela Ochoa: Hoy solo 60% de la flota trae GPS que funcione y la torre de control no está lista. Si prometemos ventanas de una hora, en tres semanas tengo cientos de entregas tarde y yo soy la que da la cara. No voy a sostener eso. Antonio Leija: En ocho semanas pongo GPS en toda la flota si me dejan parar unidades por turnos. Mientras, podemos dar seguimiento por teléfono con los operadores. Mauricio Cárdenas: Todos en la industria prometen así, Gabriela. ¿Qué decidimos, Director?
+
+**Pregunta:** La sala espera tu decisión.
+
+- **A** (score 2, balance -4): No prometerlo en esta licitación. Ofrecer lo que hoy cumplimos (ventanas de cuatro horas) y lanzar el rastreo en 8 semanas, cuando funcione. → Margen -1, Equipo +3, Clientes -4, Consejo -2.
+- **B** (score 0, balance 0): Prometer rastreo en tiempo real y ventanas de una hora en toda la región; lo que no se pueda, lo cubrimos por teléfono sin que el cliente lo note. → Equipo -6, Clientes +4, Consejo +2.
+- **C** (score 3, balance -2): Prometer lo que sí podemos cumplir: ventanas de una hora con rastreo en las 3 rutas metropolitanas que ya tienen GPS, cuatro horas en las demás y un crédito automático si llegamos tarde. → Caja -2, Margen -3, Equipo +2, Clientes +1.
+- **Sin respuesta** (balance -8): Equipo -6, Consejo -2.
+
+Respuesta: `vl-d3-rastreo | ... | ...`
+
+### vl-c-mejora · Día 4 · consecuencia · Lalo Rangel
+
+**Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
+
+**Caso:** ¡Buenas noticias! Con la revisión de salida y un análisis sin culpables de cada falla encontramos la causa: un lote de balatas de un proveedor nuevo se desgastaba al doble de rápido y nadie lo cruzaba con los kilómetros. Ya lo cambiamos. Este mes las fallas bajaron de 9 a 1 y, como ahora revisamos la presión de las llantas en cada salida, el diésel rinde 4% más. Los otros gerentes de CEDIS quieren saber si esto se va a hacer en todos
+
+**Pregunta:** ¿Qué haces con lo que logró el equipo de Lalo?
+
+- **A** (score 3, balance +6): Llevarlo a los seis CEDIS en 60 días. Que Lalo y su equipo lo enseñen a los demás, con reconocimiento público. → Caja -1, Margen -1, Equipo +5, Clientes +3.
+- **B** (score 2, balance +2): Felicitarlos y consolidarlo tres meses más en Apodaca antes de llevarlo a los demás. → Equipo +2, Clientes -1, Consejo +1.
+- **Sin respuesta** (balance -1): Equipo -1.
+
+Respuesta: `vl-c-mejora | ... | ...`
+
+### vl-d4-deuda · Día 4 · Propuesta para el consejo · crédito para renovar flota y abrir CEDIS
+
+**Propuesta automática:** legacy. Jugable como contenido histórico, pero la opción preferida por el autor sigue siendo la que más conviene.
+
+**Caso:** Hola: Te escribo antes de que lo veas en el orden del día. Golfo Capital propone tomar $350 M de crédito para comprar 120 tractocamiones nuevos y abrir dos CEDIS en Querétaro y el Bajío, antes que Avante. El banco presta con las unidades y los CEDIS como garantía. Nos da capacidad y le cierra el paso a la competencia. Quiero tu opinión honesta, no tu aprobación. Elena Quiroga Consejera · Golfo Capital
+
+**Pregunta:** ¿Qué le respondes a la consejera?
+
+- **A** (score 1, balance +1): «Elena, lo apoyo completo: tomamos el crédito, compramos las unidades y abrimos los dos CEDIS.» → Caja -6, Clientes +1, Consejo +6.
+- **B** (score 3, balance +3): «Propongo tomar la mitad y crecer por etapas: 60 unidades y un CEDIS ahora, y el resto si llega a su meta de ocupación en 12 meses.» → Caja +2, Margen -1, Consejo +2.
+- **C** (score 2, balance -2): «Con todo respeto, no. Endeudarnos casi hasta el límite del banco mientras perdemos cuentas es poner en riesgo la empresa. Primero llenamos la flota que tenemos.» → Caja +3, Margen +2, Clientes -1, Consejo -6.
+- **Sin respuesta** (balance -8): Caja -4, Consejo -4.
+
+Respuesta: `vl-d4-deuda | ... | ...`
+
+### vl-d4-pleito · Día 4 · Antonio Leija
+
+**Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
+
+**Caso:** Te lo digo claro porque ya no aguanto. Gabriela me pidió esta semana 14 veces unidades y operadores para entregas «urgentes» de sus CEDIS. Saqué 20 camiones de rutas programadas. Así no llego a la meta de kilómetros ni de ocupación. O Gabriela deja de quitarme unidades, o yo no respondo por la temporada. Llevo 28 años en esta empresa. Tú sabrás.
+
+**Pregunta:** Tus dos directores de operación están en guerra. ¿Qué haces?
+
+- **A** (score 3, balance +3): Sentarlos juntos conmigo esta semana. Definir qué entrega es urgente y con qué criterio, y cambiar sus bonos: los dos se miden con el cumplimiento total al cliente y la utilidad de cada ruta. → Margen -1, Equipo +4, Clientes +1, Consejo -1.
+- **B** (score 1, balance -2): Respaldar a Antonio: las unidades programadas no se tocan. Los CEDIS se arreglan con su propio reparto. → Margen +3, Equipo -3, Clientes -3, Consejo +1.
+- **C** (score 1, balance -2): Respaldar a Gabriela en público: el cliente que ya reclamó no espera. Antonio tiene que ajustar sus rutas. → Margen -2, Equipo -3, Clientes +3.
+- **Sin respuesta** (balance -7): Equipo -5, Clientes -2.
+
+Respuesta: `vl-d4-pleito | ... | ...`
+
+### vl-d5-embargo · Día 5 · Llamada perdida · Patricio Lozano (Finanzas)
+
+**Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
+
+**Caso:** Mensaje de voz · 0:51 «Es urgente. Por la demanda de un transportista que nos subcontrataba, un juez ordenó embargar las cuentas donde tenemos el 70% de la caja, unos $140 M. Están congeladas desde hoy en la mañana.» «La nómina de 1,600 personas sale en tres días: $30 M. En la otra cuenta tenemos $55 M y el diésel de la semana se paga el viernes. El abogado dice que el embargo es excesivo, pero nadie sabe cuándo lo levantan. Ya hay rumores en los patios. Necesito que me digas qué hacemos.»
+
+**Pregunta:** ¿Qué decides en las próximas horas?
+
+- **A** (score 2, balance 0): Pagar la nómina completa con la otra cuenta, pedir al abogado que ofrezca una garantía por lo reclamado y avisar hoy al equipo y a los proveedores de diésel con lo que sabemos y lo que no. → Caja -3, Equipo +3, Clientes +1, Consejo -1.
+- **B** (score 0, balance -7): No decir nada hasta saber más. Pagar solo la mitad de la nómina por si acaso y explicar que fue un error del banco. → Caja +2, Equipo -6, Consejo -3.
+- **C** (score 3, balance +3): Llamar hoy al consejo para pedir una línea de crédito puente de los accionistas, pagar la nómina completa, avisar al equipo con hechos y armar con Patricio un plan de 30 días con la caja disponible. → Caja -1, Margen -1, Equipo +2, Consejo +3.
+- **Sin respuesta** (balance -12): Equipo -8, Consejo -4.
+
+Respuesta: `vl-d5-embargo | ... | ...`
+
+### vl-d5-oferta · Día 5 · Avante quiere comprarnos · y hay otra opción
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Director: Tenemos dos caminos sobre la mesa y necesito tu postura antes del consejo. Avante ofrece comprar el 100% de Vértice a una valuación 30% menor de la que esperaba la familia, y cerraría los CEDIS que se enciman con los suyos. Golfo Capital ofrece meter $250 M más a cambio de 15% adicional, si llegamos a la meta de margen en 12 meses. Patricio Lozano Director de Finanzas
+
+**Pregunta:** ¿Con qué camino llegas al consejo?
+
+- **A** (score 1, balance +1): Vender a Avante. La familia recibe dinero hoy y la competencia deja de ser una amenaza. → Caja +6, Margen -2, Equipo -4, Consejo +1.
+- **B** (score 2, balance -2): Sin socio nuevo: recortamos 25% del gasto y competimos con lo propio. → Caja +1, Margen +4, Equipo -5, Consejo -2.
+- **C** (score 3, balance +1): El capital de Golfo Capital con la meta de margen en 12 meses: crecemos menos, pero con mejores números y sin vender la empresa. → Caja +3, Equipo -1, Clientes -2, Consejo +1.
+- **Sin respuesta** (balance -6): Caja -3, Consejo -3.
+
+Respuesta: `vl-d5-oferta | ... | ...`
+
+### vl-c-gaby · Día 5 · consecuencia · Mi renuncia
+
+**Propuesta automática:** etica. Tema de ética o seguridad sin opción de línea roja. Revisar que el feedback no sea sermón.
+
+**Caso:** Director: Le presento mi renuncia con efecto en 30 días. No voy a seguir en una empresa donde se promete lo que no se puede cumplir. Llevamos 1,800 entregas fuera de ventana desde que arrancó la cuenta y el cliente ya nos aplicó la primera penalización. No quiero estar aquí para explicarlo. Le dejo documentado todo lo que está abierto. Le deseo suerte. Gabriela Ochoa
+
+**Pregunta:** Tu directora de Servicio a Clientes renuncia. ¿Qué haces?
+
+- **A** (score 3, balance -1): Verla hoy: reconocer que me equivoqué, renegociar las ventanas con el cliente esta semana, compensar lo que fallamos y pedirle que se quede para liderar la corrección. → Equipo +4, Clientes -3, Consejo -2.
+- **B** (score 1, balance -1): Aceptar la renuncia y nombrar a Nayeli (jefa de la torre de control) directora interina. → Margen +2, Equipo -2, Clientes -1.
+- **Sin respuesta** (balance -7): Equipo -4, Clientes -3.
+
+Respuesta: `vl-c-gaby | ... | ...`
+
+### vl-d6-sistema · Día 6 · Riesgo crítico · Sistemas Lumbre, el proveedor de nuestro sistema de almacén
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Director: Sistemas Lumbre, la empresa que desarrolló y mantiene el sistema con el que operan nuestros seis CEDIS, está en problemas de caja. Su dueño nos pidió $10 M por adelantado o deja de dar soporte en 3 semanas. Ese sistema es el que se conecta con los pedidos de nuestros clientes y es lo que Avante no tiene tan bien resuelto. Migrar a otro toma unos 4 meses. Hoy no tenemos respaldo. Mauricio Cárdenas Director Comercial
+
+**Pregunta:** ¿Qué haces con el proveedor?
+
+- **A** (score 3, balance -3): Dar el anticipo con el código del sistema en garantía, una persona nuestra revisando su caja cada semana y arrancar ya un plan para tener un segundo proveedor. → Caja -5, Clientes +3, Consejo -1.
+- **B** (score 1, balance -2): No arriesgar caja en un proveedor que se cae: migrar a un sistema internacional y pedir a los clientes que rehagan su conexión. → Caja +1, Clientes -4, Consejo +1.
+- **C** (score 2, balance -4): Comprar Sistemas Lumbre. Controlar el sistema nos protege y puede ser un negocio aparte. → Caja -8, Margen +2, Equipo -1, Consejo +3.
+- **Sin respuesta** (balance -11): Margen -3, Clientes -8.
+
+Respuesta: `vl-d6-sistema | ... | ...`
+
+### vl-d6-denuncia · Día 6 · Confidencial · Denuncia contra el gerente regional
+
+**Propuesta automática:** etica. Tema de ética o seguridad sin opción de línea roja. Revisar que el feedback no sea sermón.
+
+**Caso:** Director (confidencial): Por la línea de denuncia anónima llegaron tres reportes de acoso contra Ernesto Villalobos, gerente regional del Bajío. Es la región con mejores números y Antonio lo considera su sucesor. Una de las auxiliares de almacén pidió cambio de CEDIS «por motivos personales» hace un mes. Una investigación externa toma unas 3 semanas. Necesito saber cómo procedemos mientras tanto. Rocío Guajardo Directora de Personas
+
+**Pregunta:** ¿Qué decides mientras se investiga?
+
+- **A** (score 3, balance +3): Suspenderlo con goce de sueldo mientras una firma externa investiga, proteger a quienes denunciaron y que Antonio atienda la región. → Margen -2, Equipo +4, Consejo +1.
+- **B** (score 0, balance -7): Que siga trabajando mientras se investiga, pero cambiar de CEDIS a quienes denunciaron y que Personas lo investigue internamente. → Margen +1, Equipo -6, Consejo -2.
+- **C** (score 1, balance -3): Despedirlo de inmediato. Con tres denuncias no hay nada que investigar. → Caja -3, Equipo +3, Consejo -3.
+- **Sin respuesta** (balance -8): Equipo -6, Consejo -2.
+
+Respuesta: `vl-d6-denuncia | ... | ...`
+
+### vl-c-escuela · Día 6 · consecuencia · Rocío Guajardo
+
+**Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
+
+**Caso:** ¡Director! Primera generación de la escuela de operadores: 30 personas con licencia federal. Antonio quiere mandarlas ya solas a carretera porque tiene camiones parados. Los operadores con experiencia piden 3 meses más con ellas de copiloto en rutas largas. ¿Qué hacemos?
+
+**Pregunta:** ¿Cómo integras a la primera generación?
+
+- **A** (score 3, balance +2): Acompañadas 3 meses: cada operador nuevo en pareja con uno experto y un bono para los instructores. → Caja -1, Equipo +4, Clientes -1.
+- **B** (score 1, balance -1): Directo a carretera. Ya tienen licencia y los camiones parados no ganan. → Margen -1, Equipo -2, Clientes +2.
+- **Sin respuesta** (balance -2): Equipo -2.
+
+Respuesta: `vl-c-escuela | ... | ...`
+
+### vl-d7-consejo · Día 7 · Sesión de consejo · Cierre del trimestre
+
+**Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
+
+**Caso:** Sala de consejo, 9:00. Rodrigo Salinas preside. Elena Quiroga y Patricio Lozano en la mesa. Tu primer cierre de trimestre. Rodrigo Salinas: Vamos al punto. Dos CEDIS no cubren su costo. Proponemos cerrarlos y recortar 280 puestos, sobre todo operadores y auxiliares. Ahorro: $75 M al año. Patricio Lozano: (en voz baja) El ahorro es real. Pero esos dos CEDIS atienden a clientes que también nos compran transporte. Si se van, perdemos más venta de la que ahorramos. Elena Quiroga: Queremos escuchar tu recomendación, no solo tu opinión.
+
+**Pregunta:** El consejo espera tu recomendación.
+
+- **A** (score 3, balance +3): «Les pido 90 días: bajar el gasto $45 M renegociando rentas y diésel, consolidando un CEDIS en otro y reubicando a su gente, con metas semanales. Si no llegamos, yo mismo propongo el resto.» → Margen +1, Equipo +4, Consejo -2.
+- **B** (score 1, balance -1): «Estoy de acuerdo. Cerramos con un proceso digno: indemnización completa, apoyo para recolocarse y un plan para que los clientes de esos CEDIS no se vayan.» → Margen +2, Equipo -7, Clientes -2, Consejo +6.
+- **C** (score 2, balance -3): «No recomiendo cerrar CEDIS ni tocar a los operadores. Recortamos solo contrataciones nuevas y gasto administrativo, aunque el ahorro llegue más lento.» → Caja -1, Margen -2, Equipo +5, Consejo -5.
+- **Sin respuesta** (balance -12): Equipo -6, Consejo -6.
+
+Respuesta: `vl-d7-consejo | ... | ...`
+
+### vl-d7-equipo · Día 7 · Pepe Medina
+
+**Propuesta automática:** legacy. Jugable como contenido histórico, pero la opción preferida por el autor sigue siendo la que más conviene.
+
+**Caso:** Buenas, soy Pepe, operador de quinta rueda en Apodaca. Disculpa que te escriba directo. Ya circula en el chat de los operadores una foto de lo que se habló en el consejo sobre cerrar dos CEDIS y recortar 280 puestos. La gente quiere saber HOY qué va a pasar. Cinco de los mejores operadores ya fueron a entrevista a Avante.
+
+**Pregunta:** El equipo quiere una respuesta hoy. ¿Qué haces?
+
+- **A** (score 3, balance +3): Junta abierta hoy con todos los patios, en persona y en línea, con Rocío y Antonio: lo que está decidido, lo que no y cuándo se va a saber. Sin promesas que no pueda cumplir. → Equipo +4, Consejo -1.
+- **B** (score 1, balance -3): Comunicado oficial por escrito de Personas: «No hay ninguna decisión tomada». Lo demás, por los canales formales. → Margen -1, Equipo -3, Consejo +1.
+- **C** (score 2, balance +1): Reunirme solo con Pepe y los líderes informales de los patios, y pedirles que calmen al equipo a cambio de que estén en la mesa del plan. → Equipo +2, Clientes +1, Consejo -2.
+- **Sin respuesta** (balance -10): Margen -2, Equipo -6, Clientes -2.
+
+Respuesta: `vl-d7-equipo | ... | ...`
+
