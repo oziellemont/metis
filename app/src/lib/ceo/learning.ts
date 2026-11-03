@@ -15,6 +15,7 @@ import { firstName } from "./cast";
 import { CONCEPT_LESSON, caseConceptOf } from "./concepts";
 import { displayOptions } from "./option-order";
 import { timeline } from "./season-report";
+import { situationRubric, type SituationRubric } from "./rubric";
 import type { CeoState, CompanyPack, Entry, KpiKey, Kpis, Option } from "./types";
 
 export interface LessonChip { text: string; kind: "kpi" | "persona" | "otro" }
@@ -37,6 +38,8 @@ export interface DecisionLesson {
   /** Nota de dirección del caso (se conserva para la bitácora y como respaldo del concepto). */
   principle: string;
   otherPath: OtherPath | null;
+  /** Rúbrica contextual (solo decisiones tomadas): qué se evaluó, por qué y qué tan fundamentada estuvo. */
+  rubric: SituationRubric | null;
 }
 
 const clamp = (n: number) => Math.max(0, Math.min(100, Math.round(n)));
@@ -93,7 +96,9 @@ export function decisionLesson(s: CeoState, e: Entry, pack: CompanyPack, now: nu
 
   const cc = caseConceptOf(it.id);
   const learned = cc ? { name: cc.def.name, applied: cc.applied, definition: cc.def.definition, lesson: CONCEPT_LESSON[cc.concept] ?? it.lesson ?? null } : { name: null, applied: it.bitacora.nota, definition: null, lesson: it.lesson ?? null };
-  return { gained, sacrificed, risks: [...below, ...near, ...other], learned, principle: it.bitacora.nota, otherPath: otherPathOf(s, e, eff, before, line, label) };
+  const v = rulesVersionOf(s);
+  const rubric = o ? situationRubric({ item: it, chosen: o, effects: Object.fromEntries(it.options.map((x) => [x.id, scaled(x.effects, s.tier, v)])), board: before, line, label, name }) : null;
+  return { gained, sacrificed, risks: [...below, ...near, ...other], learned, principle: it.bitacora.nota, otherPath: otherPathOf(s, e, eff, before, line, label), rubric };
 }
 
 /**

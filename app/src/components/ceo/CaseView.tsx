@@ -435,6 +435,15 @@ function LessonCard({ e }: { e: Entry }) {
           {l.risks.length > 1 && !more && <button onClick={() => setMore(true)} className="mt-1 text-xs font-medium text-indigo">Ver {l.risks.length - 1} más</button>}
         </div>
       )}
+      {l.rubric && (
+        <div className="mt-4 pt-4 border-t border-slate-100" data-testid="criterio-contextual">
+          <div className="flex items-center justify-between gap-3">
+            <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Tu criterio en esta situación</div>
+            <span className={clsx("chip text-xs", l.rubric.band === "bien" ? "bg-mint-soft text-sob" : l.rubric.band === "parcial" ? "bg-amber-soft text-ink" : "bg-coral-soft text-coral")}>{l.rubric.bandLabel}</span>
+          </div>
+          <p className="mt-1.5 text-sm text-slate-600 leading-relaxed">{l.rubric.summary}</p>
+        </div>
+      )}
       <div className="mt-4 pt-4 border-t border-slate-100" data-testid="lo-que-aprendiste">
         <div className="text-[11px] font-semibold uppercase tracking-wider text-indigo">Lo que aprendiste</div>
         {l.learned.name && <div className="mt-1 font-semibold text-ink">{l.learned.name}</div>}
@@ -456,6 +465,24 @@ function LessonCard({ e }: { e: Entry }) {
               <p className="mt-1.5 text-sm text-slate-600 leading-relaxed">{p.tradeoff}{p.whenSense ? ` ${p.whenSense}` : ""}</p>
               <p className="mt-1.5 text-sm text-slate-500 leading-relaxed"><span className="font-medium text-slate-600">Qué habría pasado:</span> {p.outcome}</p>
               <p className="mt-2 text-xs text-slate-400">No es la respuesta correcta: es otra estrategia, con su propio costo, para comparar.</p>
+            </div>
+          )}
+          {l.rubric && (
+            <div data-testid="criterio-detalle">
+              <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Qué se evaluó y por qué</div>
+              <ul className="mt-2 space-y-2">
+                {l.rubric.dims.map((d) => (
+                  <li key={d.dim} className="text-sm leading-relaxed">
+                    <div className="flex items-center justify-between gap-3"><b className="text-ink">{d.name}</b><span className="inline-flex gap-1" aria-label={`${d.level} de 2`}>{[1, 2].map((i) => <span key={i} className={clsx("h-1.5 w-4 rounded-full", i <= d.level ? "bg-indigo" : "bg-slate-200")} />)}</span></div>
+                    <p className="text-slate-500">{d.why} {d.note}</p>
+                  </li>
+                ))}
+              </ul>
+              {l.rubric.skipped.length > 0 && (
+                <div className="mt-3 rounded-xl bg-slate-50 px-4 py-3 text-[13px] text-slate-500 leading-relaxed">
+                  <b className="text-slate-600">No se evaluó aquí:</b> {l.rubric.skipped.map((x) => `${x.name} (${x.why.replace(/\.$/, "").toLowerCase()})`).join("; ")}.
+                </div>
+              )}
             </div>
           )}
           {l.learned.definition && (
