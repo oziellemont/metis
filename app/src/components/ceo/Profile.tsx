@@ -160,12 +160,12 @@ function MyLeadership() {
   const L: Leadership = useMemo(() => leadershipOf(c.s, c.now), [c.s, c.now]);
   const pk = c.pack;
   const tone: Record<Leadership["competencies"][number]["band"], string> = {
-    fortaleza: "bg-mint-soft text-sob", en_desarrollo: "bg-indigo-soft text-indigo", por_reforzar: "bg-coral-soft text-coral", preliminar: "bg-slate-100 text-slate-500", sin_evidencia: "bg-slate-50 text-slate-400",
+    fortaleza: "bg-mint-soft text-sob", en_desarrollo: "bg-indigo-soft text-indigo", por_desarrollar: "bg-coral-soft text-coral", tendencia: "bg-slate-100 text-slate-600", sin_evidencia: "bg-slate-50 text-slate-400",
   };
   return (
     <section id="liderazgo" data-testid="mi-liderazgo" className="card p-5 sm:p-6">
       <h2 className="font-semibold text-ink">Mi liderazgo</h2>
-      <p className="text-xs text-slate-400 mt-1">Basado solo en lo que hiciste en {pk.short}: {L.decisions} decisiones{L.expired ? ` y ${L.expired} asuntos vencidos` : ""}. Tres lecturas separadas: cómo prefieres decidir, qué tan bien lo haces y cómo va la empresa.</p>
+      <p className="text-xs text-slate-400 mt-1">Basado solo en lo que hiciste: {L.decisions} decisiones en este periodo{L.expired ? ` y ${L.expired} asuntos vencidos` : ""}{L.periods > 1 ? `; las competencias suman ${L.decisionsAll} decisiones de ${L.periods} periodos` : ""}. Tres lecturas separadas: cómo prefieres decidir, qué tan bien lo haces y cómo va la empresa. La lectura cambia con lo que vayas haciendo.</p>
 
       <div data-testid="liderazgo-preferencias" className="mt-5">
         <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">1 · Preferencias · estilo, no calificación</div>
@@ -184,10 +184,11 @@ function MyLeadership() {
           {L.competencies.map((d) => (
             <li key={d.dim} data-band={d.band} className="py-2.5">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="text-sm font-semibold text-ink">{d.name} <span className="font-normal text-xs text-slate-400">· {d.n} {d.n === 1 ? "situación" : "situaciones"}</span></span>
+                <span className="text-sm font-semibold text-ink">{d.name} <span className="font-normal text-xs text-slate-400">· {d.n} {d.n === 1 ? "situación" : "situaciones"}{d.areas ? ` · ${d.areas} ${d.areas === 1 ? "área" : "áreas"}` : ""}</span></span>
                 <span className={clsx("chip text-[10px]", tone[d.band])}>{d.bandLabel}</span>
               </div>
               <div className="text-[11.5px] text-slate-500">{d.question}</div>
+              <div data-testid="liderazgo-evidencia" className="mt-0.5 text-[11.5px] text-slate-500">{d.why}{d.change ? ` Este periodo, comparado con los anteriores: ${d.change === "mejora" ? "mejoró" : d.change === "baja" ? "bajó" : "se mantiene"}.` : ""}</div>
               {d.best && <div className="mt-1 text-[12px] text-slate-600">Lo mostraste en <Link className="text-indigo hover:underline" href={`/ceo/caso/${d.best.item}`}>«{d.best.subject}»</Link>: {d.best.note}</div>}
               {d.weakest && <div className="mt-0.5 text-[12px] text-slate-600">Faltó en <Link className="text-indigo hover:underline" href={`/ceo/caso/${d.weakest.item}`}>«{d.weakest.subject}»</Link>: {d.weakest.note}</div>}
             </li>

@@ -145,6 +145,8 @@ export function evidenceOf(s: CeoState, now = nowOf(s)): Evidence[] {
       const d = r.decisions?.[it.id];
       // Del banco de casos solo cuenta lo que te llegó y decidiste (el catálogo trae todos los posibles).
       if (!d && isBankId(it.id)) continue;
+      // Un asunto que no existía con las reglas de ese periodo no le pudo llegar (no cuenta como vencido).
+      if (!d && it.since && (r.rulesVersion ?? 1) < it.since) continue;
       const comps = competenciesOfItem(it);
       if (!comps.length) continue;
       if (d) {

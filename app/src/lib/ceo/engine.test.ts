@@ -414,7 +414,7 @@ describe("carrera continua · identidad y reglas v4", () => {
   it("al cerrar el periodo sigue en LA MISMA empresa, apruebe o no; la exigencia sigue a la etapa (P1-B)", () => {
     const good = finish(own(), best);
     expect(seasonDoneOf(good.s, good.t)).toBe(true);
-    const next = advance(good.s, good.t);
+    const next = advance(good.s, good.t, CONTINUOUS_RULES_VERSION);
     expect(next.company).toBe("cumbre");
     expect(next.companyProfile?.companyId).toBe(CID);
     // el primer mes es la llegada: siempre pasa a «Estabilizar» y la exigencia sube un nivel
@@ -423,8 +423,8 @@ describe("carrera continua · identidad y reglas v4", () => {
     expect(next.rulesVersion).toBe(CONTINUOUS_RULES_VERSION);
     expect(next.career).toHaveLength(1);
     expect(next.decisions).toEqual({});
-    // aunque el cliente mande la versión de temporadas, el periodo nuevo sigue en v4
-    expect(advance(good.s, good.t, 3).rulesVersion).toBe(CONTINUOUS_RULES_VERSION);
+    // el diario de antes de v6 (cierre sin versión continua) sigue abriendo periodos v4: reproducir no cambia el pasado
+    expect(advance(good.s, good.t, 3).rulesVersion).toBe(4);
     const bad = finish(own(), worst, "skip");
     const again = advance(bad.s, bad.t);
     expect(again.company).toBe("cumbre");

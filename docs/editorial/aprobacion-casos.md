@@ -317,13 +317,118 @@ Respuesta: `c-piloto | ... | ...`
 
 Respuesta: `d7-sucesion | ... | ...`
 
+### d2-mantenimiento · Día 2 · Mantenimiento mayor de la envasadora de la línea 1
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Jefe, le mando el reporte que me pidió. La envasadora de la línea 1 ya cumplió sus horas: el fabricante pide mantenimiento mayor cada 6,000 horas y vamos en 6,400. Hacerlo bien es parar la línea 4 días. Pero entramos a temporada alta y el pedido de SuperNorte crece 20 % las próximas 8 semanas. Lucía dice que la caja está justa. No le voy a decir que va a fallar, porque no lo sé. Le digo lo que dice el técnico: si esperamos a enero, lo más probable es que baje el rendimiento, y hay una probabilidad real de que se rompa en plena temporada.
+
+**Pregunta:** ¿Qué hacemos con la envasadora?
+
+- **A** (score 3, balance -2): Hacer el mantenimiento mayor ahora: parar la línea 1 cuatro días y recuperar el volumen con sábados antes del pico de SuperNorte. → Caja -3, Margen -1, Equipo +2.
+- **B** (score 1, balance +2): Posponerlo a enero, después de la temporada alta. Mientras, que mantenimiento revise la máquina cada turno y avise al primer síntoma. → Caja +2, Equipo -1, Clientes +1.
+- **C** (score 2, balance 0): Cambiar solo las mordazas de sellado este fin de semana, que causan la mayoría de los paros, y dejar el mantenimiento mayor para enero. → Caja -1, Clientes +1.
+- **Sin respuesta** (balance -2): Equipo -2.
+
+Respuesta: `d2-mantenimiento | ... | ...`
+
+### c-mant-sabados · Día 4 · consecuencia · Javier Ortiz
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Jefe, la envasadora quedó como nueva: 84 % de rendimiento, mejor que antes de pararla. El problema es que para recuperar los 4 días necesitamos 3 sábados seguidos. Roberto dice que la gente ya está cansada y que, si son obligatorios, lo lleva a la comisión mixta. Y SuperNorte no espera: si no llegamos, son entregas incompletas.
+
+**Pregunta:** ¿Cómo recuperas el volumen?
+
+- **A** (score 3, balance -1): Sábados voluntarios con pago doble y comida, rotando para que nadie trabaje los tres. Se lo platico yo a Roberto antes de anunciarlo. → Caja -2, Equipo +2, Clientes -1.
+- **B** (score 1, balance -1): Tres sábados obligatorios para todo el turno: es temporada alta y el contrato lo permite. Se paga lo que marca la ley. → Caja -1, Equipo -3, Clientes +3.
+- **C** (score 2, balance -1): Maquilar en otra planta la mitad de lo que falta y cubrir el resto con un solo sábado voluntario, sin cansar al turno. → Caja -3, Equipo +1, Clientes +1.
+- **Sin respuesta** (balance -3): Clientes -3.
+
+Respuesta: `c-mant-sabados | ... | ...`
+
+### c-mant-falla · Día 4 · consecuencia · Llamada perdida · Javier Ortiz (Planta)
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Mensaje de voz · 0:44 «Jefe, se nos paró la envasadora de la línea 1. Se rompió el eje de las mordazas, justo lo que temía el técnico. La refacción viene de Italia.» «Tenemos tres caminos y ninguno es barato. Usted dígame.»
+
+**Pregunta:** La envasadora falló. ¿Qué haces?
+
+- **A** (score 3, balance -3): Traer la refacción por avión, hacer de una vez el mantenimiento mayor completo y llamar yo a SuperNorte para avisar del retraso. → Caja -4, Equipo +2, Clientes -1.
+- **B** (score 1, balance -2): Soldar el eje en el taller para arrancar mañana y pedir la refacción por barco. Que la línea 2 cubra lo más urgente de SuperNorte. → Caja +1, Equipo -2, Clientes -1.
+- **C** (score 2, balance -4): Pedir la refacción por avión sin el mantenimiento completo, y mover el pedido a la línea 2 con turnos extra para no fallarle a SuperNorte. → Caja -3, Equipo -2, Clientes +1.
+- **Sin respuesta** (balance -4): Equipo -2, Clientes -2.
+
+Respuesta: `c-mant-falla | ... | ...`
+
+### c-mant-rendimiento · Día 4 · consecuencia · La línea 1 está perdiendo rendimiento
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Jefe, la envasadora no se ha parado, pero cada semana trabaja peor. El rendimiento bajó de 82 % a 74 % y la merma de empaque se duplicó. Para cumplirle a SuperNorte estamos metiendo horas extra entre semana. El técnico no puede decir si va a fallar. Dice que cada semana que pasa la probabilidad sube.
+
+**Pregunta:** ¿Qué haces con la línea 1?
+
+- **A** (score 3, balance -3): Hacer ya el mantenimiento mayor aunque sea temporada alta, y negociar con SuperNorte entregas parciales durante esos cuatro días. → Caja -3, Equipo +2, Clientes -2.
+- **B** (score 1, balance -3): Aguantar hasta enero con horas extra y que Calidad revise cada lote, para no fallarle a SuperNorte en su temporada más fuerte. → Margen -2, Equipo -2, Clientes +1.
+- **C** (score 2, balance -1): Cambiar las mordazas de sellado este fin de semana para frenar la merma, y dejar el mantenimiento mayor completo para enero. → Caja -1, Margen +1, Equipo -1.
+- **Sin respuesta** (balance -4): Margen -2, Equipo -2.
+
+Respuesta: `c-mant-rendimiento | ... | ...`
+
+### c-mant-queja · Día 5 · consecuencia · Incumplimiento de nivel de servicio
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Director: En las últimas tres semanas su nivel de servicio bajó a 86 % y en 12 tiendas encontramos empaques mal sellados en anaquel. Tuvimos que retirarlos. Nuestra política es clara: penalización de 3 % sobre lo facturado del periodo y revisión del espacio en anaquel para el siguiente trimestre. Necesito saber hoy qué va a hacer para que no vuelva a pasar. Sofía Leal
+
+**Pregunta:** SuperNorte reclama. ¿Qué le respondes?
+
+- **A** (score 3, balance 0): Aceptar la penalización, explicarle a Sofía la falla de la envasadora con datos y comprometer la reparación de fondo con un reporte semanal. → Caja -3, Clientes +2, Consejo +1.
+- **B** (score 2, balance 0): Pedirle que condone la penalización a cambio de una promoción pagada por nosotros en sus tiendas durante el próximo mes. → Margen -2, Clientes +2.
+- **C** (score 1, balance -2): Disputar la penalización: el sellado pasó nuestras pruebas, y el daño pudo ocurrir en su centro de distribución. → Caja +2, Clientes -4.
+- **Sin respuesta** (balance -6): Caja -3, Clientes -3.
+
+Respuesta: `c-mant-queja | ... | ...`
+
+### c-mant-inversion · Día 6 · consecuencia · La envasadora: reconstruir o reemplazar
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Te paso el diagnóstico del fabricante sobre la envasadora de la línea 1. La soldadura dañó la flecha y el desgaste llegó a la estructura: el mantenimiento mayor que costaba $1.8 M ya no alcanza. Hay dos caminos serios y uno para comprar tiempo. Cualquiera sale más caro que lo que nos ahorramos al posponer. Te lo digo sin reproche: es la cuenta. Para el consejo necesito tu decisión y cómo la vas a explicar.
+
+**Pregunta:** ¿Qué propones al consejo?
+
+- **A** (score 3, balance -3): Reconstruirla con el fabricante, contarle al consejo que posponer el mantenimiento fue mi error y proponer un programa preventivo para las tres líneas. → Caja -5, Consejo +2.
+- **B** (score 2, balance -3): Comprar la envasadora nueva con crédito y rentar una mientras llega: dejamos de parchar de una vez y ganamos capacidad para crecer. → Caja -3, Margen -2, Clientes +2.
+- **C** (score 1, balance -2): Rentar una envasadora tres meses y decidir la inversión en enero, con los números del año cerrado y otra cotización en la mano. → Caja +1, Margen -2, Consejo -1.
+- **Sin respuesta** (balance -5): Margen -2, Consejo -3.
+
+Respuesta: `c-mant-inversion | ... | ...`
+
+### c-mant-dosificador · Día 5 · consecuencia · Javier Ortiz
+
+**Propuesta automática:** etica. Tema de ética o seguridad sin opción de línea roja. Revisar que el feedback no sea sermón.
+
+**Caso:** Jefe, las mordazas nuevas jalan perfecto: no se nos ha vuelto a parar la línea. Pero salió otra cosa. El dosificador, que no tocamos, está llenando disparejo. En la auditoría de hoy, 1 de cada 20 empaques traía menos contenido del que dice la etiqueta. Ya separé el lote. Lo que no sé es cuánto salió así en las últimas dos semanas.
+
+**Pregunta:** ¿Qué haces con lo que ya salió?
+
+- **A** (score 3, balance 0): Calibrar hoy, avisarle a SuperNorte qué lotes pueden venir bajos y reponerles sin costo lo enviado en esas dos semanas. → Caja -3, Clientes +2, Consejo +1.
+- **B** (score 1, balance -2): Calibrar hoy y reforzar el muestreo. Lo enviado está dentro de la tolerancia promedio y nadie se ha quejado: no se retira. → Caja +1, Equipo -1, Clientes -2.
+- **C** (score 2, balance -1): Calibrar hoy y que Calidad mida una muestra grande de lo enviado antes de decidir si se repone; en 48 horas lo resolvemos. → Caja -1, Equipo +1, Clientes -1.
+- **Sin respuesta** (balance -3): Equipo -1, Clientes -2.
+
+Respuesta: `c-mant-dosificador | ... | ...`
+
 ## Forja Norte
 
 ### fn-d1-carta · Día 1 · Te damos la bienvenida a Forja Norte. Esto es lo que esperamos.
 
 **Propuesta automática:** legacy. Jugable como contenido histórico, pero la opción preferida por el autor sigue siendo la que más conviene.
 
-**Caso:** Estimado Director: Te damos la bienvenida. Capital Sierra compró Forja Norte hace 18 meses y te elegimos para llevarla a la siguiente etapa. Seré directo, porque así trabajamos: el plan de inversión dice +4 puntos de margen EBITDA en 24 meses y vamos 1.5 puntos abajo. La planta es buena. La gente es buena. Pero la armadora nos tiene en amarillo en su scorecard, el OEE no pasa de 61% y los soldadores se nos van con la competencia de enfrente. En la sesión de consejo del mes que entra quiero ver tu plan. Antes de eso, dime cómo vas a usar tus primeras semanas. Alberto Zertuche Presidente del consejo · Socio director de Capital Sierra
+**Caso:** Estimado Director: Te damos la bienvenida. Capital Sierra compró Forja Norte hace 18 meses y te elegimos para llevarla a la siguiente etapa. Seré directo, porque así trabajamos: el plan de inversión dice +4 puntos de margen EBITDA en 24 meses y vamos 1.5 puntos abajo. La planta es buena. La gente es buena. Pero la armadora nos tiene en amarillo en su scorecard, el OEE no pasa de 61% y los soldadores se nos van con la competencia de enfrente. Te lo encargo en dos frases: cumplirle a la armadora y generar caja para el fondo. Con eso te vamos a evaluar. Cada peso que gastes tiene que poder explicarse con una de esas dos cosas. En la sesión de consejo del mes que entra quiero ver tu plan. Antes de eso, dime cómo vas a usar tus primeras semanas. Alberto Zertuche Presidente del consejo · Socio director de Capital Sierra
 
 **Pregunta:** ¿Cómo usas tus primeras semanas?
 

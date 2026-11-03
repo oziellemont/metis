@@ -26,7 +26,7 @@ import { onboardingFromState, onboardingSignature } from "@/lib/ceo/onboarding";
 import { mergeStates, planSave, SYNC_POLL_MS, withServerPrefs, type ServerPrefs } from "@/lib/ceo/sync";
 import { claimLegacy, finishImport, importIdFor, kvOf, legacyOwners, LEGACY_KEY, ownerKey, planImport, readClaim, readLegacy, readOwner, writeOwner, type ImportPlan } from "@/lib/ceo/import";
 import { playerRow } from "@/lib/ceo/player-row";
-import { RULES_VERSION } from "@/lib/ceo/rules";
+import { CONTINUOUS_RULES_VERSION, RULES_VERSION } from "@/lib/ceo/rules";
 import { flushOnce, logAction } from "@/lib/ceo/journal-client";
 import { blockedOnVacation, type GameAction } from "@/lib/ceo/replay";
 import { actEpisode, restartEpisode as restartEpisodeFn } from "@/lib/ceo/episodes/catalog";
@@ -449,7 +449,7 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
       if (!setup) return n;
       const own = setupFn(n, setup, t);
       if (own === n) return n;
-      log(own, { type: "setupCompany", at: t, ...setup });
+      log(own, { type: "setupCompany", at: t, ...setup, rulesVersion: own.rulesVersion });
       return own;
     });
     seen.current = null;
@@ -472,7 +472,7 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
   const startQuietDay = useCallback(() => { play((p) => { const at = nowOf(p); const until = quietUntil(at, p.settings.tz); return { n: quietFn(pinArrived(p, at), at, until), a: { type: "quiet", at, until } }; }); setTick(Date.now()); }, [play]);
   const markReturnSeen = useCallback(() => setS((p) => ({ ...markReturnSeenFn(p, nowOf(p)), savedAt: Date.now() })), []);
   const skipNext = useCallback(() => { setS((p) => ({ ...skipToNext(p), savedAt: Date.now() })); setTick(Date.now()); }, []);
-  const advance = useCallback(() => { play((p) => { const at = nowOf(p); return { n: advanceFn(p, at, RULES_VERSION), a: { type: "advance", at, rulesVersion: RULES_VERSION } }; }); seen.current = null; setTick(Date.now()); }, [play]);
+  const advance = useCallback(() => { play((p) => { const at = nowOf(p); const rv = isContinuous(p) ? CONTINUOUS_RULES_VERSION : RULES_VERSION; return { n: advanceFn(p, at, rv), a: { type: "advance", at, rulesVersion: rv } }; }); seen.current = null; setTick(Date.now()); }, [play]);
   const signReport = useCallback((period: number, option: "a" | "b" | null) => {
     if (option) play((p) => { const at = nowOf(p); return { n: allocateFn(p, period, option, at), a: { type: "allocate", at, period, option } }; });
     play((p) => { const at = nowOf(p); return { n: closePeriodFn(p, period, at), a: { type: "closePeriod", at, period } }; });

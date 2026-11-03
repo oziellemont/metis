@@ -20,7 +20,7 @@ describe("auditoría de casos · etiquetas", () => {
     const ids = COMPANIES.flatMap((c) => c.items.map((i) => i.id));
     expect(ids.filter((id) => !CASE_TAGS[id])).toEqual([]);
     expect(Object.keys(CASE_TAGS).filter((id) => !ids.includes(id))).toEqual([]);
-    expect(ids).toHaveLength(103);
+    expect(ids).toHaveLength(110); // 103 + 7 de la cadena de mantenimiento de Cumbre (v6)
   });
   it("cada caso ejecutivo de una temporada tiene etiqueta", () => {
     const eps = Object.values(SEASON_EPISODES).flat().map((x) => x.episode);
@@ -33,12 +33,12 @@ describe("auditoría de casos · etiquetas", () => {
       if (t.archetypes.length < 2) expect(t.note, id).toBeTruthy();
     }
   });
-  it("la clasificación: universal 32, de familia 47, del paquete 27 (con 3 casos ejecutivos; P0-A §5.1 más Kúbit, Punto Madero y Vértice)", () => {
+  it("la clasificación: universal 32, de familia 54 (47 + cadena de mantenimiento), del paquete 27 (con 3 casos ejecutivos; P0-A §5.1 más Kúbit, Punto Madero y Vértice)", () => {
     const n = (scope: string) => Object.values(CASE_TAGS).filter((t) => t.scope === scope).length;
-    expect([n("universal"), n("familia"), n("paquete") + Object.keys(EPISODE_TAGS).length]).toEqual([32, 47, 27]);
+    expect([n("universal"), n("familia"), n("paquete") + Object.keys(EPISODE_TAGS).length]).toEqual([32, 54, 27]);
     const by = (pack: string, scope: string) => COMPANIES.find((c) => c.id === pack)!.items.filter((i) => CASE_TAGS[i.id].scope === scope).length;
     expect([by("cumbre", "universal"), by("forja", "universal"), by("brasa", "universal")]).toEqual([10, 5, 2]);
-    expect([by("cumbre", "familia"), by("forja", "familia"), by("brasa", "familia")]).toEqual([6, 8, 9]);
+    expect([by("cumbre", "familia"), by("forja", "familia"), by("brasa", "familia")]).toEqual([13, 8, 9]);
   });
   it("una consecuencia es compatible solo donde su detonador también lo es", () => {
     for (const c of COMPANIES) for (const it of c.items) if (it.trigger) {
@@ -125,6 +125,7 @@ describe("auditoría de casos · combinaciones", () => {
     expect(seasonEpisodesOf(s)).toEqual([]);
     const ids = seasonItems(s).map((i) => i.id);
     expect(ids).toContain("d2-supernorte");
-    expect(ids).toHaveLength(20);
+    // 20 de siempre + 7 de la cadena de mantenimiento (solo en periodos v6; las consecuencias llegan según el camino).
+    expect(ids).toHaveLength(27);
   });
 });

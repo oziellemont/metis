@@ -13,6 +13,7 @@
  * Cada acción replica, una a una, lo que hacen las acciones de `CeoProvider`.
  */
 import type { CeoState, CastId, LeverId, Settings, Written } from "./types";
+import { LEGACY_CONTINUOUS_RULES_VERSION } from "./rules";
 import { H, LEGACY_RULES_VERSION, advance, aliasOf, answerDilemma, decide, kpis, newState, openSeasonEpisode, pinArrived, renameCompany, setupCompany, switchCompany } from "./engine";
 import { closeChange, playLever, startChange } from "./relations";
 import { crisisAccess, playCrisis, recordCrisis } from "./crisis";
@@ -48,7 +49,7 @@ export type GameAction =
   | { type: "episodeOpen"; at: number; id: string; mode?: "estandar" | "flexible" }
   | { type: "episode"; at: number; id: string; act: EpisodeAction }
   /** Carrera continua (P0-B2): crear la empresa del jugador y cambiarle el nombre (conserva su id). */
-  | { type: "setupCompany"; at: number; companyId: string; sectorId: string; industryId: string; archetype: string; displayName: string; shortName?: string; specialty?: string }
+  | { type: "setupCompany"; at: number; companyId: string; sectorId: string; industryId: string; archetype: string; displayName: string; shortName?: string; specialty?: string; rulesVersion?: number }
   | { type: "renameCompany"; at: number; displayName: string; shortName?: string }
   /** Negocio (P0-D): aprobar una opción de la propuesta del reporte del mes, y firmar ese reporte. */
   | { type: "allocate"; at: number; period: number; option: "a" | "b" }
@@ -97,7 +98,7 @@ export function applyAction(s: CeoState, a: GameAction): { state: CeoState; appl
     case "quiet": n = startQuietDay(s, a.at, a.until); break;
     case "episodeOpen": n = openSeasonEpisode(s, a.id, a.at, a.mode); break;
     case "episode": n = a.act && a.act.at === a.at ? actEpisode(s, a.id, a.act).state : s; break;
-    case "setupCompany": n = setupCompany(s, { companyId: a.companyId, sectorId: a.sectorId, industryId: a.industryId, archetype: a.archetype, displayName: a.displayName, shortName: a.shortName, specialty: a.specialty }, a.at); break;
+    case "setupCompany": n = setupCompany(s, { companyId: a.companyId, sectorId: a.sectorId, industryId: a.industryId, archetype: a.archetype, displayName: a.displayName, shortName: a.shortName, specialty: a.specialty }, a.at, a.rulesVersion ?? LEGACY_CONTINUOUS_RULES_VERSION); break;
     case "renameCompany": n = renameCompany(s, a.displayName, a.shortName, a.at); break;
     case "allocate": n = allocate(s, a.period, a.option, a.at); break;
     case "closePeriod": n = closePeriod(s, a.period, a.at); break;

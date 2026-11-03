@@ -7,7 +7,7 @@ import { COMPANIES, FIRST_COMPANY, LEGACY_ROTATION, companyById } from "./compan
 import { DILEMMAS, dilemmaById, sameSituation, type Dilemma } from "./dilemmas";
 import { changeEffect, simulate, type ChangeSim } from "./change";
 import { sanitizeDiagnostic, sanitizeProfile } from "./profile";
-import { CONTINUOUS_RULES_VERSION, LEGACY_RULES_VERSION, RULES_VERSION, isRulesVersion, ruleSet, tierRules } from "./rules";
+import { CONTINUOUS_RULES_VERSION, LEGACY_CONTINUOUS_RULES_VERSION, LEGACY_RULES_VERSION, RULES_VERSION, isRulesVersion, ruleSet, tierRules } from "./rules";
 import { newCompanyProfile, renameProfile, sanitizeCompanyProfile, type NewCompanyInput } from "./career/identity";
 import { isDisplayCurrency } from "./career/money";
 import { TAXONOMY_VERSION, type CompanyArchetype } from "./career/taxonomy";
@@ -263,7 +263,9 @@ export function seasonEpisodesOf(s: Pick<CeoState, "company" | "rulesVersion"> &
  */
 export function seasonItems(s: Pick<CeoState, "company" | "rulesVersion"> & StageInput): Item[] {
   const pack = packOf(s);
-  let items = compatibleItems(pack.items.filter((i) => !isBankId(i.id)), companyTypeOf(s));
+  const v = rulesVersionOf(s);
+  // Asuntos nuevos (con `since`) solo en periodos de esa versión: un periodo que ya empezó no cambia.
+  let items = compatibleItems(pack.items.filter((i) => !isBankId(i.id) && !(i.since && v < i.since)), companyTypeOf(s));
   // Carrera continua (P1-B): la carta de llegada y lo del primer día solo tienen sentido al tomar el mando.
   if (companyStageOf(s).idx > 0) {
     const first = new Set(items.filter((i) => i.day <= 1).map((i) => i.id));
@@ -382,9 +384,19 @@ export function episodeEffectOf(s: CeoState, e: EpisodeEntry): Partial<Kpis> {
 /** ¿Este mensaje existe para este jugador? (Las consecuencias sólo llegan si se cumplió su detonador.) */
 export function isActive(s: CeoState, it: Item, now: number): boolean {
   if (!it.trigger) return true;
+  if (it.trigger.roll && !inRoll(s, it.trigger.item, it.trigger.roll)) return false;
   const r = resolution(s, it.trigger.item, now);
   return r !== null && it.trigger.options.includes(r);
 }
+/**
+ * Azar estable (0…1) de un detonador en este periodo. No depende del nombre ni de la hora a la que decidas:
+ * solo de cuándo empezó el periodo y de qué asunto se trata. Así la misma partida siempre se reproduce igual.
+ */
+export const rollOf = (s: Pick<CeoState, "startedAt">, itemId: string): number => rand01(`${s.startedAt ?? 0}|${itemId}|azar`);
+export const inRoll = (s: Pick<CeoState, "startedAt">, itemId: string, [from, to]: [number, number]): boolean => {
+  const r = rollOf(s, itemId);
+  return r >= from && r < to;
+};
 
 export function entries(s: CeoState, now = nowOf(s)): Entry[] {
   if (!s.startedAt) return [];
@@ -446,7 +458,7 @@ export function cashFlowOf(s: CeoState, before: Kpis): number {
   const R = ruleSet(rulesVersionOf(s)).v5;
   if (!R || !changeSimOf(s)?.done) return 0;
   const line = rulesFor(s).passLine;
-  return Math.max(R.cashFlow.min, Math.min(R.cashFlow.max, Math.round((before.margen - line) / R.cashFlow.perPoints)));
+  return Math.max(R.cashFlow.min, Math.min(R.cashFlow.max, (R.cashFlow.base ?? 0) + Math.round((before.margen - line) / R.cashFlow.perPoints)));
 }
 
 /** Indicadores que el consejo encargó (y la caja): la rúbrica V5 los considera en riesgo antes. */
@@ -959,7 +971,9 @@ export function advance(s: CeoState, now = nowOf(s), rulesVersion: number = RULE
   const career = [...(s.career ?? []), run];
   const after = { ...s, career };
   if (isContinuous(s)) {
-    const v = ruleSet(rulesVersion).career === "continua" ? rulesVersion : CONTINUOUS_RULES_VERSION;
+    // El periodo nuevo usa la versión continua que manda quien cierra (la app manda la vigente). Si no manda una
+    // versión continua (jugadas registradas antes de v6), sigue en v4: reproducir el diario nunca cambia el pasado.
+    const v = ruleSet(rulesVersion).career === "continua" ? rulesVersion : LEGACY_CONTINUOUS_RULES_VERSION;
     // Revisión del consejo (P1-B): sin despido ni game over. Si aprueba y ya cumpliste los meses, la empresa pasa
     // de etapa; la exigencia sigue a la etapa y nunca baja.
     const st = companyStageOf(after);
@@ -1015,14 +1029,16 @@ export function switchCompany(s: CeoState, company: string, now = nowOf(s)): Ceo
 /**
  * Crea la empresa del jugador y empieza la carrera continua (P0-B2).
  * Solo antes de la primera decisión del periodo (igual que cambiar de empresa) y solo una vez: después se renombra.
- * La combinación sector/industria/tipo debe tener casos aprobados. El periodo nuevo usa las reglas v4.
+ * La combinación sector/industria/tipo debe tener casos aprobados. El periodo nuevo usa las reglas continuas vigentes
+ * (v6); una jugada registrada sin versión (anterior a v6) abre v4.
  */
-export function setupCompany(s: CeoState, input: Omit<NewCompanyInput, "at">, now = nowOf(s)): CeoState {
+export function setupCompany(s: CeoState, input: Omit<NewCompanyInput, "at">, now = nowOf(s), rulesVersion: number = CONTINUOUS_RULES_VERSION): CeoState {
   if (s.companyProfile || Object.keys(s.decisions).length) return s;
   const profile = newCompanyProfile({ ...input, at: now }, TAXONOMY_VERSION);
   if (!profile) return s;
   // Los supuestos del negocio se congelan al crear la empresa (como las reglas de una temporada).
-  return { ...fresh(s, profile.contentPackId, s.tier, now, undefined, CONTINUOUS_RULES_VERSION), careerMode: "continua", companyProfile: profile, business: { assumptionsVersion: ASSUMPTIONS_VERSION, allocations: [] } };
+  const v = ruleSet(rulesVersion).career === "continua" ? rulesVersion : LEGACY_CONTINUOUS_RULES_VERSION;
+  return { ...fresh(s, profile.contentPackId, s.tier, now, undefined, v), careerMode: "continua", companyProfile: profile, business: { assumptionsVersion: ASSUMPTIONS_VERSION, allocations: [] } };
 }
 /** Cambia el nombre de la empresa. Conserva `companyId`, decisiones, periodo y todo lo demás. */
 export function renameCompany(s: CeoState, displayName: string, shortName: string | undefined, now = nowOf(s)): CeoState {

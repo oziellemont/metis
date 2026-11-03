@@ -53,14 +53,15 @@ export interface RuleSet {
   /**
    * Motor y veredicto V5 (desde v5). Sin este bloque = motor y veredicto anteriores (cinco indicadores ≥ línea).
    *  - cashFlow: al cierre, el margen se convierte en caja: cada `perPoints` puntos de margen sobre la línea suman
-   *    1 de caja (y por debajo restan), entre `min` y `max`. Un negocio rentable genera efectivo.
+   *    1 de caja (y por debajo restan), entre `min` y `max`. Un negocio rentable genera efectivo. `base` (desde v6):
+   *    caja que genera la operación en un mes normal, antes del margen (sin dato = 0).
    *  - verdict: resultado del negocio con límites críticos (insolvencia, consejo, línea roja), objetivos del consejo,
    *    piso por indicador y salud promedio; más el criterio: proporción mínima de asuntos bien razonados.
    *  - mandateMargin: en la rúbrica, los indicadores que el consejo encargó (y la caja) se consideran «en riesgo»
    *    desde esta distancia a la línea.
    */
   v5?: {
-    cashFlow: { perPoints: number; min: number; max: number };
+    cashFlow: { perPoints: number; min: number; max: number; base?: number };
     verdict: { insolvency: number; boardLost: number; floorBelowLine: number; healthAboveLine: number; minJudgment: number };
     mandateMargin: number;
   };
@@ -156,15 +157,47 @@ const V5: RuleSet = Object.freeze({
   }),
 }) as RuleSet;
 
+/**
+ * Versión 6 · motor y veredicto V5 en la carrera continua. Igual que v5 en todo (veredicto por encargo del consejo,
+ * salud y criterio; flujo de caja al cierre; alertas), con la carrera continua de v4 (una sola empresa que persiste).
+ * Solo la usan los periodos que EMPIEZAN después de publicarse: el periodo en curso conserva la versión con que
+ * empezó (v4) y los periodos cerrados se siguen leyendo con la suya. Nada se recalifica.
+ * Tres ajustes sobre v5, calibrados con la simulación de carrera continua (docs/editorial/simulacion-temporadas.json):
+ *  - La línea del consejo se queda en 50 en todas las etapas (la exigencia de la etapa sigue subiendo: los golpes pegan
+ *    más fuerte, las buenas noticias rinden menos y los plazos se acortan). Con la línea subiendo cada etapa, un buen
+ *    director reprobaba al tercer mes aunque decidiera igual de bien.
+ *  - Cada mes arranca del tablero de la empresa, pero llegan los casos del banco y varios cuestan caja. Aquí la operación
+ *    genera 2 de caja al mes y el margen suma 1 más por cada 2 puntos sobre la línea (entre −5 y +10).
+ *  - Salud promedio con 8 puntos de holgura sobre la línea (v5 pide 12).
+ * Lo demás no cambia: insolvencia, consejo, línea roja, encargo del consejo, piso y 60 % de criterio.
+ */
+const V6: RuleSet = Object.freeze({
+  ...V5,
+  version: 6,
+  career: "continua",
+  tier: Object.freeze({ ...V5.tier, passPerTier: 0 }),
+  v5: Object.freeze({
+    cashFlow: Object.freeze({ perPoints: 2, min: -5, max: 10, base: 2 }),
+    verdict: Object.freeze({ insolvency: 40, boardLost: 40, floorBelowLine: 10, healthAboveLine: 8, minJudgment: 0.6 }),
+    mandateMargin: 12,
+  }),
+}) as RuleSet;
+
 /** Reglas de todas las partidas guardadas antes de que existiera `rulesVersion`. */
 export const LEGACY_RULES_VERSION = 1;
 /** Versión con la que empiezan las temporadas nuevas. */
 export const RULES_VERSION = 5;
-/** Versión con la que empiezan los periodos de la carrera continua. */
-export const CONTINUOUS_RULES_VERSION = 4;
+/** Versión con la que empiezan los periodos de la carrera continua (desde v6: veredicto V5). */
+export const CONTINUOUS_RULES_VERSION = 6;
+/**
+ * Versión de los periodos continuos registrados SIN versión explícita (jugadas anteriores a v6). Así, al reproducir
+ * el diario de una carrera, un cierre o una empresa creada antes de v6 sigue abriendo periodos v4: nada cambia en
+ * retrospectiva.
+ */
+export const LEGACY_CONTINUOUS_RULES_VERSION = 4;
 
 /** Todas las versiones publicadas. Las pruebas pueden registrar una versión simulada. */
-export const RULESETS: Record<number, RuleSet> = { 1: V1, 2: V2, 3: V3, 4: V4, 5: V5 };
+export const RULESETS: Record<number, RuleSet> = { 1: V1, 2: V2, 3: V3, 4: V4, 5: V5, 6: V6 };
 
 export const isRulesVersion = (v: unknown): v is number => typeof v === "number" && Number.isInteger(v) && v >= 1;
 /** ¿Este código conoce esa versión? (una partida guardada por una versión más nueva de la app no lo sería). */
