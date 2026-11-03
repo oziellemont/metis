@@ -12,6 +12,7 @@ import type { Entry, Item, KpiKey, Option, Written } from "@/lib/ceo/types";
 import { MAX_CHARS, MIN_CHARS, textProblem, writtenEligible } from "@/lib/ceo/written";
 import { displayOptions } from "@/lib/ceo/option-order";
 import { decisionLesson } from "@/lib/ceo/learning";
+import { continuityOf } from "@/lib/ceo/continuity";
 import { useCeo } from "./CeoProvider";
 import { competenciesOfItem } from "@/lib/ceo/mastery";
 import { competencyNames, helpBand } from "@/lib/ceo/profile";
@@ -103,6 +104,7 @@ export function CaseView({ id }: { id: string }) {
           <div className="text-ink">
             {it.data ? <DataCard d={it.data} /> : <Recap it={it} />}
           </div>
+          <Continuity itemId={it.id} />
         </>
       )}
 
@@ -597,4 +599,23 @@ function Ripples({ e, fresh }: { e: Entry; fresh: boolean }) {
 /** Calidad de una respuesta escrita (0–3) en puntos sobrios. */
 function QualityDots({ q }: { q: number }) {
   return <span className="inline-flex items-center gap-1" title={`Calidad ${q} de 3`} aria-label={`Calidad ${q} de 3`}>{[1, 2, 3].map((i) => <span key={i} className={clsx("h-1.5 w-4 rounded-full", i <= q ? "bg-indigo" : "bg-slate-200")} />)}</span>;
+}
+
+/** Lo que viene de antes: decisiones anteriores que tocan este asunto (solo hechos que el motor ya aplicó). */
+function Continuity({ itemId }: { itemId: string }) {
+  const c = useCeo();
+  const k = useMemo(() => continuityOf(c.s, itemId, c.now), [c.s, itemId, c.now]);
+  if (!k.links.length) return null;
+  return (
+    <section data-testid="continuidad" className="mt-5 rounded-2xl bg-white/5 ring-1 ring-white/10 p-4 sm:p-5 text-white">
+      <div className="text-xs font-semibold uppercase tracking-wider text-mint">Lo que viene de antes</div>
+      <ul className="mt-2 space-y-2.5">
+        {k.links.map((l) => (
+          <li key={l.kind + l.from} data-kind={l.kind} className="text-sm leading-relaxed text-white/85">
+            {l.text} <Link href={`/ceo/caso/${l.from}`} className="text-mint/90 underline-offset-2 hover:underline text-xs whitespace-nowrap">Ver el asunto</Link>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
 }

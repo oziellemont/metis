@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import clsx from "clsx";
 import { Award, Briefcase, Lock, Pencil, ShieldCheck } from "lucide-react";
@@ -8,6 +8,7 @@ import { STAGES } from "@/lib/ceo/journey";
 import { countAtLeast } from "@/lib/ceo/mastery";
 import { firstName } from "@/lib/ceo/cast";
 import { useCeo } from "./CeoProvider";
+import { leadershipOf, type Leadership } from "@/lib/ceo/leadership";
 import { track } from "@/lib/ceo/events";
 import { Avatar, Flame, rel } from "./ui";
 import { CompetencyBars, StageTrack } from "./Journey";
@@ -116,6 +117,8 @@ export function Profile() {
         </div>
       </section>
 
+      <MyLeadership />
+
       <section className="card p-5 sm:p-6">
         <h2 className="font-semibold text-ink">Insignias</h2>
         <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -148,5 +151,57 @@ export function Profile() {
         </ul>
       </section>
     </div>
+  );
+}
+
+/** Mi liderazgo: preferencias, competencias y resultados, cada uno con su evidencia y sin mezclarse. */
+function MyLeadership() {
+  const c = useCeo();
+  const L: Leadership = useMemo(() => leadershipOf(c.s, c.now), [c.s, c.now]);
+  const pk = c.pack;
+  const tone: Record<Leadership["competencies"][number]["band"], string> = {
+    fortaleza: "bg-mint-soft text-sob", en_desarrollo: "bg-indigo-soft text-indigo", por_reforzar: "bg-coral-soft text-coral", preliminar: "bg-slate-100 text-slate-500", sin_evidencia: "bg-slate-50 text-slate-400",
+  };
+  return (
+    <section id="liderazgo" data-testid="mi-liderazgo" className="card p-5 sm:p-6">
+      <h2 className="font-semibold text-ink">Mi liderazgo</h2>
+      <p className="text-xs text-slate-400 mt-1">Basado solo en lo que hiciste en {pk.short}: {L.decisions} decisiones{L.expired ? ` y ${L.expired} asuntos vencidos` : ""}. Tres lecturas separadas: cómo prefieres decidir, qué tan bien lo haces y cómo va la empresa.</p>
+
+      <div data-testid="liderazgo-preferencias" className="mt-5">
+        <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">1 · Preferencias · estilo, no calificación</div>
+        <p className="mt-1 text-sm text-ink">{L.summary.preferencias}</p>
+        <ul className="mt-2 grid gap-1.5 sm:grid-cols-2">
+          {L.preferences.filter((p) => p.n > 0).map((p) => (
+            <li key={p.axis} className="rounded-xl bg-slate-50 px-3 py-2 text-[12px] text-slate-600"><b className="text-ink font-semibold">{p.left} / {p.right}.</b> {p.text}</li>
+          ))}
+        </ul>
+      </div>
+
+      <div data-testid="liderazgo-competencias" className="mt-6">
+        <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">2 · Competencias · medidas solo donde la situación las pedía</div>
+        <p className="mt-1 text-sm text-ink">{L.summary.competencias}</p>
+        <ul className="mt-2 divide-y divide-slate-100">
+          {L.competencies.map((d) => (
+            <li key={d.dim} data-band={d.band} className="py-2.5">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="text-sm font-semibold text-ink">{d.name} <span className="font-normal text-xs text-slate-400">· {d.n} {d.n === 1 ? "situación" : "situaciones"}</span></span>
+                <span className={clsx("chip text-[10px]", tone[d.band])}>{d.bandLabel}</span>
+              </div>
+              <div className="text-[11.5px] text-slate-500">{d.question}</div>
+              {d.best && <div className="mt-1 text-[12px] text-slate-600">Lo mostraste en <Link className="text-indigo hover:underline" href={`/ceo/caso/${d.best.item}`}>«{d.best.subject}»</Link>: {d.best.note}</div>}
+              {d.weakest && <div className="mt-0.5 text-[12px] text-slate-600">Faltó en <Link className="text-indigo hover:underline" href={`/ceo/caso/${d.weakest.item}`}>«{d.weakest.subject}»</Link>: {d.weakest.note}</div>}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div data-testid="liderazgo-resultados" className="mt-6">
+        <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">3 · Resultados de la empresa · aparte del criterio</div>
+        <p className="mt-1 text-sm text-ink">{L.summary.resultados}</p>
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {L.results.map((r) => <span key={r.kpi} className="chip bg-slate-50 text-[11px] text-slate-600">{pk.kpiLabel[r.kpi]} {r.start} → <b className="text-ink">{r.now}</b></span>)}
+        </div>
+      </div>
+    </section>
   );
 }
