@@ -16,6 +16,6 @@ export function renderJob(job: Job, s: CeoState, name: string, appUrl: string, r
     case "digest": return digestEmail({ pack, name, appUrl, ...job.data });
     case "streak": return streakEmail({ pack, name, appUrl, streak: job.streak, pending: job.pending, lessonId: job.lessonId, lessonTitle: job.lessonTitle });
     case "nudge": return nudgeEmail({ pack, name, appUrl, days: job.days, pending: job.pending });
-    case "season": return seasonEmail({ pack, name, appUrl, health: job.health, xp: job.xp, level: job.level, archetype: job.archetype, archetypeText: job.archetypeText, decisions: job.decisions, bestStreak: job.bestStreak, passed: job.passed, passLine: job.passLine, kpis: job.kpis, continuous: isContinuous(s) });
+    case "season": return seasonEmail({ pack, name, appUrl, health: job.health, xp: job.xp, level: job.level, archetype: job.archetype, archetypeText: job.archetypeText, decisions: job.decisions, bestStreak: job.bestStreak, passed: job.passed, passLine: job.passLine, kpis: job.kpis, why: job.why, continuous: isContinuous(s) });
   }
 }

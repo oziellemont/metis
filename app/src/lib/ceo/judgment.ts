@@ -10,8 +10,10 @@
  * Leer el tablero ES criterio ejecutivo: elegir un camino defendible que hunde el indicador que ya está en riesgo,
  * habiendo otro igual de defendible que no lo hace, no es buen criterio aunque el argumento sea impecable.
  */
-import { KPI_KEYS } from "./engine";
 import type { KpiKey, Kpis } from "./types";
+
+/** Mismo orden que el motor (se define aquí para no depender de él). */
+const KPI_KEYS: KpiKey[] = ["caja", "margen", "equipo", "clientes", "consejo"];
 
 export type JudgmentDim = "analiza" | "consulta" | "anticipa" | "negocia" | "ejecuta" | "prioriza";
 export const JUDGMENT_DIMS: JudgmentDim[] = ["analiza", "consulta", "anticipa", "negocia", "ejecuta", "prioriza"];
@@ -46,13 +48,18 @@ export function authoredFromScore(score: number): AuthoredJudgment {
 export interface ContextOption { id: string; score: number; effects: Partial<Kpis> }
 
 /** Dimensión contextual: qué hace la opción con lo que el tablero dice que está en riesgo, frente a las alternativas. */
-export function prioritizes(o: ContextOption, all: ContextOption[], board: Kpis, line: number): 0 | 1 | 2 {
+/**
+ * `mandate` (reglas V5): indicadores que el consejo encargó (y la caja). Para esos, «en riesgo» empieza antes
+ * (`mandateMargin`): leer el tablero incluye saber qué te pidieron cuidar.
+ */
+export function prioritizes(o: ContextOption, all: ContextOption[], board: Kpis, line: number, mandate: KpiKey[] = [], mandateMargin = 0): 0 | 1 | 2 {
   const R = JUDGMENT_RULES;
-  const atRisk = (k: KpiKey, x: ContextOption) => (x.effects[k] ?? 0) < 0 && board[k] + (x.effects[k] ?? 0) < line + R.riskMargin;
+  const margin = (k: KpiKey) => (mandate.includes(k) ? Math.max(R.riskMargin, mandateMargin) : R.riskMargin);
+  const atRisk = (k: KpiKey, x: ContextOption) => (x.effects[k] ?? 0) < 0 && board[k] + (x.effects[k] ?? 0) < line + margin(k);
   const hurts = KPI_KEYS.filter((k) => atRisk(k, o));
   const defensible = all.filter((x) => x !== o && x.score >= 2);
   if (hurts.length && defensible.some((x) => !KPI_KEYS.some((k) => atRisk(k, x)))) return 0;
-  const repairs = KPI_KEYS.some((k) => (o.effects[k] ?? 0) > 0 && board[k] < line + R.riskMargin);
+  const repairs = KPI_KEYS.some((k) => (o.effects[k] ?? 0) > 0 && board[k] < line + margin(k));
   const pos = KPI_KEYS.reduce((a, k) => a + Math.max(0, o.effects[k] ?? 0), 0);
   const wasted = KPI_KEYS.reduce((a, k) => a + (board[k] >= R.saturation ? Math.max(0, o.effects[k] ?? 0) : 0), 0);
   if (repairs && !hurts.length) return 2;

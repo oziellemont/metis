@@ -30,7 +30,7 @@ export type Job =
   | { key: string; kind: "digest"; data: Digest; at?: number }
   | { key: string; kind: "streak"; streak: number; pending: number; lessonId?: string; lessonTitle?: string }
   | { key: string; kind: "nudge"; days: number; pending: Entry[] }
-  | { key: string; kind: "season"; health: number; xp: number; level: string; archetype: string; archetypeText: string; decisions: number; bestStreak: number; passed: boolean; passLine: number; kpis: Kpis };
+  | { key: string; kind: "season"; health: number; xp: number; level: string; archetype: string; archetypeText: string; decisions: number; bestStreak: number; passed: boolean; passLine: number; kpis: Kpis; why?: string[] };
 
 export interface Digest {
   day: number; seasonDays: number; kpis: Kpis; kpiDelta: Kpis; health: number; streak: number; xp: number; level: string;
@@ -146,7 +146,7 @@ export function jobsFor(s: CeoState, sent: Sent, real: number, opts: { plan?: bo
   const seasonKey = (s.career ?? []).length ? `season:${s.company}:${(s.career ?? []).length}` : "season";
   if (seasonDone && !sent[seasonKey]) {
     const k = kpis(s, now), xp = xpOf(s, now), pr = profileOf(s, now), v = verdictOf(s, now);
-    jobs.push({ key: seasonKey, kind: "season", health: healthOf(k), xp, level: STAGES[stageOf(s)].name, archetype: pr.archetype.name, archetypeText: pr.archetype.text, decisions: pr.decisions, bestStreak: st.best, passed: v.passed, passLine: v.passLine, kpis: k });
+    jobs.push({ key: seasonKey, kind: "season", health: healthOf(k), xp, level: STAGES[stageOf(s)].name, archetype: pr.archetype.name, archetypeText: pr.archetype.text, decisions: pr.decisions, bestStreak: st.best, passed: v.passed, passLine: v.passLine, kpis: k, ...(v.v5 ? { why: v.v5.why } : {}) });
   }
 
   // Si ya hay un asunto nuevo o un resumen, el recordatorio de racha sobra (no saturar).

@@ -14,8 +14,9 @@ import { EPISODES, actEpisode } from "./episodes/catalog";
 import { applyEpisode, strategiesFor, type EpisodeAction } from "./episodes/engine";
 import type { EpisodeRun } from "./episodes/contracts";
 import { closeChange, playLever, startChange } from "./relations";
-import type { CeoState, ChangeMove, CompanyPack, Kpis, Option } from "./types";
+import type { CeoState, ChangeMove, CompanyPack, KpiKey, Kpis, Option } from "./types";
 import { contextualJudgment } from "./judgment";
+import { SEASON_OBJECTIVES } from "./shadow-verdict";
 
 /** Lunes 5-oct-2026, 09:00 en Monterrey. Mismo arranque que las partidas doradas. */
 export const SIM_T0 = Date.UTC(2026, 9, 5, 15, 0, 0);
@@ -54,6 +55,22 @@ function contextual(os: Option[], c: PickCtx): string {
   for (let i = 1; i < os.length; i++) if (key(i) > key(best)) best = i;
   return os[best].id;
 }
+/**
+ * Criterio y tablero: entre las opciones con criterio contextual ≥ 2 (bien razonadas leyendo el tablero), la que deja
+ * mejor los indicadores que el consejo encargó y la caja. Es lo que haría un director que razona bien Y cuida su encargo.
+ */
+function judgedBalanced(os: Option[], c: PickCtx): string {
+  const k0 = kpis(c.s, c.t), line = rulesFor(c.s).passLine;
+  const pool = os.filter((o) => contextualJudgment(o, os, k0, line).level >= 2);
+  const focus = [...new Set<KpiKey>(["caja", ...(SEASON_OBJECTIVES[c.s.company]?.kpis ?? [])])];
+  let pick = (pool[0] ?? os[0]).id, bv = -1e9;
+  for (const o of pool.length ? pool : os) {
+    const k = kpis(decide(c.s, c.itemId, o.id, c.t), c.t);
+    const v = Math.min(...focus.map((x) => k[x] - line)) * 10 + Math.min(...KPI_KEYS.map((x) => k[x] - line)) * 3 + KPI_KEYS.reduce((a, x) => a + Math.min(k[x], 90), 0) / 50;
+    if (v > bv) { bv = v; pick = o.id; }
+  }
+  return pick;
+}
 /** Varios caminos: al azar entre las opciones con criterio contextual ≥ 2 (prueba que no hay una sola ruta). */
 function contextualMix(os: Option[], c: PickCtx): string {
   const k = kpis(c.s, c.t), line = rulesFor(c.s).passLine;
@@ -75,6 +92,7 @@ export const STRATEGIES: Record<string, { label: string; pick: Picker; reps: num
   contesta_la_mitad: { label: "Contesta la mitad (al azar)", pick: (os, c) => (c.r() < 0.5 ? null : os[Math.floor(c.r() * os.length)].id), reps: 40 },
   director_equilibrado: { label: "Director equilibrado: opciones defendibles cuidando el indicador más débil", pick: (os, c) => balanced(os, c), reps: 1 },
   criterio_contextual: { label: "Criterio contextual (rúbrica nueva): lo mejor razonado leyendo el tablero", pick: (os, c) => contextual(os, c), reps: 1 },
+  criterio_y_tablero: { label: "Criterio y tablero: bien razonada y cuidando el encargo del consejo y la caja", pick: (os, c) => judgedBalanced(os, c), reps: 1 },
   criterio_variado: { label: "Caminos variados: cualquier opción con criterio contextual alto, al azar", pick: (os, c) => contextualMix(os, c), reps: 40 },
 };
 

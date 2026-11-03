@@ -35,8 +35,8 @@ const started = (over: Partial<CeoState> = {}): CeoState => ({ ...newState(), na
 describe("reglas v2 («XP v3») para temporadas nuevas", () => {
   it("las temporadas nuevas empiezan con v2; lo guardado sin versión sigue en v1", () => {
     // Desde P0 la vigente es v3 (v2 + casos ejecutivos); v2 sigue publicada para las temporadas que empezaron con ella.
-    expect(RULES_VERSION).toBe(3);
-    expect(newState().rulesVersion).toBe(3);
+    expect(RULES_VERSION).toBe(5);
+    expect(newState().rulesVersion).toBe(5);
     const { rulesVersion: _, ...old } = newState();
     expect(rulesVersionOf(migrate(old))).toBe(LEGACY_RULES_VERSION);
   });

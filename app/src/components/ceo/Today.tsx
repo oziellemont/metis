@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import clsx from "clsx";
 import { ArrowRight, BookOpen, Briefcase, Check, Clock, Coffee, FastForward, Flag, Hourglass, Trophy } from "lucide-react";
 import { KPI_KEYS } from "@/lib/ceo/engine";
@@ -19,6 +19,7 @@ import { Avatar, Bar, ChannelChip, Delta, Flame, rel, until } from "./ui";
 import { STAGES } from "@/lib/ceo/journey";
 import { presenterOf } from "@/lib/ceo/business/report";
 import { COMPANY_STAGES } from "@/lib/ceo/career/identity";
+import { alertsAt } from "@/lib/ceo/season-report";
 
 export function Today() {
   const c = useCeo();
@@ -39,6 +40,12 @@ export function Today() {
   const nextLesson = open.find((l) => !c.s.lessons[l.id] && c.entries.some((e) => e.item.lesson === l.id && e.status !== "futuro")) ?? open.find((l) => !c.s.lessons[l.id]);
 
   const passed = KPI_KEYS.filter((k) => v.approved[k]).length;
+  // Avisos de tendencia: lo que se está desgastando, antes de que sea tarde (máximo dos, los más graves).
+  const alerts = useMemo(() => {
+    if (c.seasonDone) return [];
+    const rank = { critico: 0, riesgo: 1, aviso: 2 } as const;
+    return alertsAt(c.s, c.now).filter((a) => a.kind !== "saturacion" || a.level !== "aviso").sort((a, b) => rank[a.level] - rank[b.level]).slice(0, 2);
+  }, [c.s, c.now, c.seasonDone]);
   const j = c.journey;
   const jPct = j.total ? Math.round((j.met / j.total) * 100) : 100;
   const greeting = c.seasonDone
@@ -173,6 +180,13 @@ export function Today() {
                 </div>
               ))}
             </div>
+            {alerts.length > 0 && (
+              <ul data-testid="alertas-tendencia" className="mt-3.5 space-y-1.5">
+                {alerts.map((a) => (
+                  <li key={a.kpi + a.kind} data-level={a.level} className={clsx("rounded-xl px-3 py-2 text-[12px] leading-snug", a.level === "critico" ? "bg-coral-soft/60 text-ink" : a.level === "riesgo" ? "bg-amber-50 text-ink" : "bg-slate-50 text-slate-600")}>{a.text}</li>
+                ))}
+              </ul>
+            )}
             <Link href="/ceo/empresa" className="mt-3.5 inline-flex items-center gap-1 text-xs font-semibold text-indigo">{c.continuous ? "Ver números completos en Empresa" : "Ver tu empresa"} <ArrowRight size={13} /></Link>
           </section>
 

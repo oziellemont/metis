@@ -43,7 +43,8 @@ const arrivalOf = (s: CeoState, id: string) => episodeEntries(s, s.startedAt!).f
 
 describe("casos ejecutivos · publicados", () => {
   it("los tres están aprobados, son de Botanas Cumbre y tienen día de llegada", () => {
-    expect(RULES_VERSION).toBe(3);
+    expect(RULES_VERSION).toBe(5);
+    expect(ruleSet(5).episodes).toEqual(ruleSet(3).episodes);
     expect(ruleSet(3).episodes).toEqual({ xpDecision: 20, xpClose: 40, required: true });
     expect(ruleSet(2).episodes).toBeUndefined();
     for (const x of SEASON_EPISODES.cumbre) {

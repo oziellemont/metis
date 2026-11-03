@@ -20,6 +20,9 @@ import { industryLongFor } from "./career/lexicon";
 import { ASSUMPTIONS_VERSION, sanitizeBusiness } from "./business/model";
 import { sanitizeEpisodes } from "./episodes/engine";
 import { EPISODES, SEASON_EPISODES, openEpisode as openEpisodeRaw } from "./episodes/catalog";
+import { authoredFromScore, judge, prioritizes, type ContextOption } from "./judgment";
+import { SEASON_OBJECTIVES } from "./objectives";
+import { isRedLine } from "./editorial";
 import type { EpisodeRun, EpisodeSpec } from "./episodes/contracts";
 import { activeMs, extendDeadline, onVacation, runSpans, sanitizeCadence, shiftArrival, shiftDaysOf, spansOf, type Span } from "./pausetime";
 
@@ -430,7 +433,46 @@ export function kpis(s: CeoState, now = nowOf(s)): Kpis {
   }
   const ce = changeKpiEffect(s);
   for (const key of Object.keys(ce) as KpiKey[]) k[key] = clamp(k[key] + (ce[key] ?? 0));
+  const cf = cashFlowOf(s, k);
+  if (cf) k.caja = clamp(k.caja + cf);
   return k;
+}
+
+/**
+ * Reglas V5: al cierre (cuando el proyecto de cambio terminó), el margen se convierte en caja.
+ * Recibe los indicadores ANTES de este paso. 0 si las reglas no son V5 o la temporada no ha cerrado.
+ */
+export function cashFlowOf(s: CeoState, before: Kpis): number {
+  const R = ruleSet(rulesVersionOf(s)).v5;
+  if (!R || !changeSimOf(s)?.done) return 0;
+  const line = rulesFor(s).passLine;
+  return Math.max(R.cashFlow.min, Math.min(R.cashFlow.max, Math.round((before.margen - line) / R.cashFlow.perPoints)));
+}
+
+/** Indicadores que el consejo encargó (y la caja): la rúbrica V5 los considera en riesgo antes. */
+export function mandateOf(s: Pick<CeoState, "company" | "rulesVersion">): { kpis: KpiKey[]; margin: number } {
+  const R = ruleSet(rulesVersionOf(s)).v5;
+  if (!R) return { kpis: [], margin: 0 };
+  return { kpis: [...new Set<KpiKey>(["caja", ...(SEASON_OBJECTIVES[s.company]?.kpis ?? [])])], margin: R.mandateMargin };
+}
+
+/** Criterio de la temporada (V5): asuntos bien razonados (nivel ≥ 2 de la rúbrica contextual) sobre asuntos cerrados. */
+export function judgmentShareOf(s: CeoState, now = nowOf(s)): { good: number; total: number; ratio: number } {
+  const k = { ...packOf(s).kpiStart };
+  const line = rulesFor(s).passLine, v = rulesVersionOf(s), m = mandateOf(s);
+  let good = 0, total = 0;
+  for (const e of entries(s, now)) {
+    if (e.status !== "decidido" && e.status !== "vencido") continue;
+    total++;
+    if (e.status === "decidido" && e.option) {
+      const os: ContextOption[] = e.item.options.map((o) => ({ id: o.id, score: o.score, effects: scaled(o.effects, s.tier, v) }));
+      const me = os.find((o) => o.id === e.option!.id);
+      if (me && judge(authoredFromScore(me.score), prioritizes(me, os, k, line, m.kpis, m.margin)).level >= 2) good++;
+    }
+    const eff = effectOf(s, e);
+    for (const key of Object.keys(eff) as KpiKey[]) k[key] = clamp(k[key] + (eff[key] ?? 0));
+  }
+  return { good, total, ratio: total ? good / total : 0 };
 }
 
 // ───────────────────────────── proyecto de cambio
@@ -828,6 +870,20 @@ export interface Verdict {
   answered: number;
   answeredOk: boolean;
   passed: boolean;
+  /** Veredicto V5 (solo temporadas con reglas v5): resultado del negocio + criterio, con razones en lenguaje llano. */
+  v5?: VerdictV5;
+}
+export type V5Reason = "insolvencia" | "consejo_perdido" | "linea_roja" | "objetivo" | "piso" | "salud" | "criterio";
+export interface VerdictV5 {
+  reasons: V5Reason[];
+  why: string[];
+  objectives: { kpi: KpiKey; value: number; ok: boolean }[];
+  objectiveText: string;
+  floor: number;
+  healthMin: number;
+  judgment: { good: number; total: number; ratio: number; min: number };
+  cashFlow: number;
+  business: boolean;
 }
 export function verdictOf(s: CeoState, now = nowOf(s)): Verdict {
   const k = kpis(s, now);
@@ -837,7 +893,34 @@ export function verdictOf(s: CeoState, now = nowOf(s)): Verdict {
   const approved = Object.fromEntries(KPI_KEYS.map((x) => [x, k[x] >= r.passLine])) as Record<KpiKey, boolean>;
   const allApproved = KPI_KEYS.every((x) => approved[x]);
   const answeredOk = answered >= r.minAnswered;
-  return { kpis: k, health: healthOf(k), passLine: r.passLine, approved, allApproved, answered, answeredOk, passed: allApproved && answeredOk };
+  const R5 = ruleSet(rulesVersionOf(s)).v5;
+  if (!R5) return { kpis: k, health: healthOf(k), passLine: r.passLine, approved, allApproved, answered, answeredOk, passed: allApproved && answeredOk };
+  const v5 = verdictV5(s, now, k, r.passLine, R5);
+  return { kpis: k, health: healthOf(k), passLine: r.passLine, approved, allApproved, answered, answeredOk, passed: v5.reasons.length === 0, v5 };
+}
+
+function verdictV5(s: CeoState, now: number, k: Kpis, line: number, R5: NonNullable<ReturnType<typeof ruleSet>["v5"]>): VerdictV5 {
+  const C = R5.verdict;
+  const reasons: V5Reason[] = [];
+  const why: string[] = [];
+  const L = KPI_LABEL;
+  if (k.caja < C.insolvency) { reasons.push("insolvencia"); why.push(`La caja cerró en ${k.caja}: zona de insolvencia (menos de ${C.insolvency}). Ningún otro indicador compensa quedarse sin dinero.`); }
+  if (k.consejo < C.boardLost) { reasons.push("consejo_perdido"); why.push(`El consejo cerró en ${k.consejo}: ya no te sostiene (menos de ${C.boardLost}).`); }
+  const red = entries(s, now).filter((e) => e.status === "decidido" && e.decision && isRedLine(e.item.id, e.decision.option));
+  if (red.length) { reasons.push("linea_roja"); why.push(`Cruzaste una línea roja en «${red[0].item.subject}»: seguridad, fraude, represalia u ocultar un riesgo al cliente no se compensan con resultados.`); }
+  const obj = SEASON_OBJECTIVES[s.company];
+  const objectives = (obj?.kpis ?? []).map((x) => ({ kpi: x, value: k[x], ok: k[x] >= line }));
+  for (const o of objectives.filter((x) => !x.ok)) why.push(`${L[o.kpi]} era uno de los dos objetivos que te encargó el consejo y cerró en ${o.value} (línea ${line}).`);
+  if (objectives.some((o) => !o.ok)) reasons.push("objetivo");
+  const floor = line - C.floorBelowLine;
+  const under = KPI_KEYS.filter((x) => k[x] < floor && !(x === "caja" && k.caja < C.insolvency) && !(x === "consejo" && k.consejo < C.boardLost));
+  if (under.length) { reasons.push("piso"); why.push(`${under.map((x) => `${L[x]} (${k[x]})`).join(", ")} quedó por debajo del piso de ${floor}: sacrificaste un indicador por completo.`); }
+  const health = healthOf(k), healthMin = line + C.healthAboveLine;
+  if (health < healthMin) { reasons.push("salud"); why.push(`La salud promedio de la empresa cerró en ${health}; se pide ${healthMin} o más.`); }
+  const business = reasons.length === 0;
+  const j = judgmentShareOf(s, now);
+  if (j.ratio < C.minJudgment) { reasons.push("criterio"); why.push(`${j.good} de ${j.total} asuntos estuvieron bien razonados (${Math.round(j.ratio * 100)} %); se pide al menos ${Math.round(C.minJudgment * 100)} %. Los que dejaste vencer cuentan como no razonados.`); }
+  return { reasons, why, objectives, objectiveText: obj?.text ?? "", floor, healthMin, judgment: { ...j, min: C.minJudgment }, cashFlow: cashFlowOf(s, k), business };
 }
 
 /** Siguiente empresa: aleatoria entre las que no has aprobado (estable por jugador). */
