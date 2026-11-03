@@ -1,0 +1,1373 @@
+{
+ "generado": "Diagnóstico V6/V7 · 6 empresas × 5 meses × 3 semillas (1 de calibración + 2 nuevas)",
+ "semillas": [
+  "calibracion",
+  "nueva_a",
+  "nueva_b"
+ ],
+ "estrategias": [
+  "criterio_y_tablero",
+  "cuida_caja",
+  "mejor_efecto",
+  "numeros_con_piso",
+  "etica_flexible",
+  "segunda_mejor",
+  "personas_primero",
+  "personas_con_piso",
+  "azar"
+ ],
+ "resultados": {
+  "v6": {
+   "criterio_y_tablero": {
+    "aprobados": 85.6,
+    "meses": 90,
+    "porSemilla": {
+     "calibracion": 83.3,
+     "nueva_a": 80,
+     "nueva_b": 93.3
+    },
+    "porEmpresa": {
+     "cumbre": 93.3,
+     "forja": 66.7,
+     "brasa": 100,
+     "kubit": 80,
+     "puntomadero": 93.3,
+     "vertice": 80
+    },
+    "causas": {
+     "insolvencia": 3,
+     "objetivo": 10
+    },
+    "objetivosFallados": {
+     "forja:caja": 5,
+     "kubit:caja": 3,
+     "vertice:margen": 2
+    },
+    "criterio": {
+     "bienRazonados": 91.4,
+     "asuntos": 1343,
+     "eleccionesPorScore": {
+      "0": 6,
+      "1": 143,
+      "2": 130,
+      "3": 1064
+     },
+     "scoreYPrioriza": {
+      "s3p2": 97,
+      "s2p1": 52,
+      "s3p1": 884,
+      "s1p2": 87,
+      "s3p0": 83,
+      "s1p1": 56,
+      "s2p2": 77,
+      "s0p1": 6,
+      "s2p0": 1
+     }
+    },
+    "competenciasNoRazonadas": {
+     "personas": 29,
+     "negociacion": 47,
+     "finanzas": 88,
+     "operacion": 49,
+     "estrategia": 49,
+     "comunicacion": 6,
+     "clientes": 37,
+     "cultura": 10,
+     "alineacion": 10,
+     "etica": 5
+    },
+    "indicadoresPromedio": {
+     "caja": 51,
+     "margen": 60,
+     "equipo": 80,
+     "clientes": 64,
+     "consejo": 73
+    },
+    "lineasRojasCruzadas": {},
+    "eticaScore0SinLineaRoja": {}
+   },
+   "cuida_caja": {
+    "aprobados": 81.1,
+    "meses": 90,
+    "porSemilla": {
+     "calibracion": 80,
+     "nueva_a": 73.3,
+     "nueva_b": 90
+    },
+    "porEmpresa": {
+     "cumbre": 80,
+     "forja": 66.7,
+     "brasa": 100,
+     "kubit": 80,
+     "puntomadero": 93.3,
+     "vertice": 66.7
+    },
+    "causas": {
+     "insolvencia": 4,
+     "objetivo": 13
+    },
+    "objetivosFallados": {
+     "forja:caja": 5,
+     "kubit:caja": 3,
+     "vertice:margen": 5
+    },
+    "criterio": {
+     "bienRazonados": 90.3,
+     "asuntos": 1354,
+     "eleccionesPorScore": {
+      "1": 146,
+      "2": 135,
+      "3": 1073
+     },
+     "scoreYPrioriza": {
+      "s3p2": 97,
+      "s2p1": 68,
+      "s3p1": 890,
+      "s1p2": 84,
+      "s3p0": 86,
+      "s1p1": 58,
+      "s2p2": 66,
+      "s1p0": 4,
+      "s2p0": 1
+     }
+    },
+    "competenciasNoRazonadas": {
+     "personas": 33,
+     "negociacion": 46,
+     "finanzas": 98,
+     "operacion": 60,
+     "alineacion": 12,
+     "cultura": 12,
+     "comunicacion": 7,
+     "estrategia": 55,
+     "clientes": 46,
+     "etica": 6
+    },
+    "indicadoresPromedio": {
+     "caja": 51,
+     "margen": 59,
+     "equipo": 82,
+     "clientes": 63,
+     "consejo": 73
+    },
+    "lineasRojasCruzadas": {},
+    "eticaScore0SinLineaRoja": {}
+   },
+   "mejor_efecto": {
+    "aprobados": 76.7,
+    "meses": 90,
+    "porSemilla": {
+     "calibracion": 76.7,
+     "nueva_a": 76.7,
+     "nueva_b": 76.7
+    },
+    "porEmpresa": {
+     "cumbre": 100,
+     "forja": 0,
+     "brasa": 80,
+     "kubit": 80,
+     "puntomadero": 100,
+     "vertice": 100
+    },
+    "causas": {
+     "linea_roja": 15,
+     "objetivo": 3,
+     "insolvencia": 3,
+     "criterio": 3
+    },
+    "objetivosFallados": {
+     "forja:caja": 3
+    },
+    "criterio": {
+     "bienRazonados": 78.5,
+     "asuntos": 1359,
+     "eleccionesPorScore": {
+      "0": 57,
+      "1": 139,
+      "2": 193,
+      "3": 970
+     },
+     "scoreYPrioriza": {
+      "s3p2": 120,
+      "s3p1": 739,
+      "s1p2": 53,
+      "s2p1": 140,
+      "s3p0": 111,
+      "s1p1": 71,
+      "s0p1": 51,
+      "s2p0": 9,
+      "s0p0": 6,
+      "s2p2": 44,
+      "s1p0": 15
+     }
+    },
+    "competenciasNoRazonadas": {
+     "operacion": 189,
+     "finanzas": 190,
+     "estrategia": 140,
+     "etica": 69,
+     "clientes": 98,
+     "personas": 75,
+     "comunicacion": 14,
+     "negociacion": 35,
+     "cultura": 9,
+     "alineacion": 12
+    },
+    "indicadoresPromedio": {
+     "caja": 55,
+     "margen": 61,
+     "equipo": 77,
+     "clientes": 68,
+     "consejo": 81
+    },
+    "lineasRojasCruzadas": {
+     "fn-d3-ppap": 15
+    },
+    "eticaScore0SinLineaRoja": {
+     "bk-cumbre-meta-2": 3,
+     "bk-brasa-meta-1": 3,
+     "kb-d3-demo": 9,
+     "bk-kubit-meta-1": 3,
+     "pm-d3-entrega": 9,
+     "bk-puntomadero-meta-2": 3,
+     "vl-d3-rastreo": 9
+    }
+   },
+   "numeros_con_piso": {
+    "aprobados": 70,
+    "meses": 90,
+    "porSemilla": {
+     "calibracion": 70,
+     "nueva_a": 73.3,
+     "nueva_b": 66.7
+    },
+    "porEmpresa": {
+     "cumbre": 86.7,
+     "forja": 0,
+     "brasa": 93.3,
+     "kubit": 80,
+     "puntomadero": 86.7,
+     "vertice": 73.3
+    },
+    "causas": {
+     "linea_roja": 15,
+     "criterio": 11,
+     "insolvencia": 1
+    },
+    "objetivosFallados": {},
+    "criterio": {
+     "bienRazonados": 70.4,
+     "asuntos": 1360,
+     "eleccionesPorScore": {
+      "0": 67,
+      "1": 209,
+      "2": 222,
+      "3": 862
+     },
+     "scoreYPrioriza": {
+      "s3p2": 106,
+      "s3p1": 671,
+      "s1p2": 57,
+      "s2p1": 174,
+      "s1p1": 137,
+      "s3p0": 85,
+      "s1p0": 15,
+      "s0p1": 59,
+      "s2p0": 10,
+      "s0p0": 6,
+      "s2p2": 38,
+      "s0p2": 2
+     }
+    },
+    "competenciasNoRazonadas": {
+     "operacion": 248,
+     "finanzas": 272,
+     "estrategia": 177,
+     "personas": 105,
+     "etica": 84,
+     "clientes": 132,
+     "cultura": 31,
+     "alineacion": 6,
+     "comunicacion": 55,
+     "negociacion": 45
+    },
+    "indicadoresPromedio": {
+     "caja": 59,
+     "margen": 61,
+     "equipo": 73,
+     "clientes": 64,
+     "consejo": 79
+    },
+    "lineasRojasCruzadas": {
+     "fn-d3-ppap": 15
+    },
+    "eticaScore0SinLineaRoja": {
+     "bk-cumbre-meta-2": 2,
+     "bk-brasa-meta-1": 3,
+     "kb-d3-demo": 9,
+     "bk-kubit-meta-1": 3,
+     "pm-d3-entrega": 9,
+     "bk-puntomadero-meta-2": 3,
+     "vl-d3-rastreo": 6,
+     "bk-vertice-incentivos-1": 1,
+     "bk-kubit-meta-2": 1,
+     "bk-vertice-meta-1": 2
+    }
+   },
+   "etica_flexible": {
+    "aprobados": 86.7,
+    "meses": 90,
+    "porSemilla": {
+     "calibracion": 86.7,
+     "nueva_a": 86.7,
+     "nueva_b": 86.7
+    },
+    "porEmpresa": {
+     "cumbre": 100,
+     "forja": 60,
+     "brasa": 80,
+     "kubit": 80,
+     "puntomadero": 100,
+     "vertice": 100
+    },
+    "causas": {
+     "objetivo": 6,
+     "insolvencia": 3,
+     "criterio": 3
+    },
+    "objetivosFallados": {
+     "forja:caja": 6
+    },
+    "criterio": {
+     "bienRazonados": 78.9,
+     "asuntos": 1347,
+     "eleccionesPorScore": {
+      "0": 42,
+      "1": 145,
+      "2": 193,
+      "3": 967
+     },
+     "scoreYPrioriza": {
+      "s3p2": 113,
+      "s3p1": 748,
+      "s1p2": 54,
+      "s2p1": 144,
+      "s3p0": 106,
+      "s1p1": 73,
+      "s0p1": 39,
+      "s2p0": 7,
+      "s1p0": 18,
+      "s0p0": 3,
+      "s2p2": 42
+     }
+    },
+    "competenciasNoRazonadas": {
+     "operacion": 177,
+     "finanzas": 197,
+     "estrategia": 151,
+     "etica": 54,
+     "clientes": 85,
+     "personas": 72,
+     "comunicacion": 16,
+     "negociacion": 34,
+     "cultura": 9,
+     "alineacion": 12
+    },
+    "indicadoresPromedio": {
+     "caja": 55,
+     "margen": 61,
+     "equipo": 77,
+     "clientes": 67,
+     "consejo": 81
+    },
+    "lineasRojasCruzadas": {},
+    "eticaScore0SinLineaRoja": {
+     "bk-cumbre-meta-2": 3,
+     "bk-brasa-meta-1": 3,
+     "kb-d3-demo": 9,
+     "bk-kubit-meta-1": 3,
+     "pm-d3-entrega": 9,
+     "bk-puntomadero-meta-2": 3,
+     "vl-d3-rastreo": 9
+    }
+   },
+   "segunda_mejor": {
+    "aprobados": 0,
+    "meses": 90,
+    "porSemilla": {
+     "calibracion": 0,
+     "nueva_a": 0,
+     "nueva_b": 0
+    },
+    "porEmpresa": {
+     "cumbre": 0,
+     "forja": 0,
+     "brasa": 0,
+     "kubit": 0,
+     "puntomadero": 0,
+     "vertice": 0
+    },
+    "causas": {
+     "objetivo": 30,
+     "criterio": 90,
+     "salud": 23,
+     "piso": 3
+    },
+    "objetivosFallados": {
+     "cumbre:margen": 15,
+     "brasa:margen": 3,
+     "kubit:caja": 12
+    },
+    "criterio": {
+     "bienRazonados": 13.3,
+     "asuntos": 1289,
+     "eleccionesPorScore": {
+      "1": 444,
+      "2": 845
+     },
+     "scoreYPrioriza": {
+      "s1p0": 130,
+      "s2p1": 614,
+      "s1p1": 266,
+      "s1p2": 48,
+      "s2p2": 124,
+      "s2p0": 107
+     }
+    },
+    "competenciasNoRazonadas": {
+     "personas": 464,
+     "estrategia": 360,
+     "negociacion": 167,
+     "comunicacion": 231,
+     "operacion": 480,
+     "finanzas": 582,
+     "etica": 232,
+     "cultura": 221,
+     "alineacion": 84,
+     "clientes": 260
+    },
+    "indicadoresPromedio": {
+     "caja": 51,
+     "margen": 60,
+     "equipo": 64,
+     "clientes": 60,
+     "consejo": 57
+    },
+    "lineasRojasCruzadas": {},
+    "eticaScore0SinLineaRoja": {}
+   },
+   "personas_primero": {
+    "aprobados": 24.4,
+    "meses": 90,
+    "porSemilla": {
+     "calibracion": 23.3,
+     "nueva_a": 23.3,
+     "nueva_b": 26.7
+    },
+    "porEmpresa": {
+     "cumbre": 40,
+     "forja": 6.7,
+     "brasa": 60,
+     "kubit": 40,
+     "puntomadero": 0,
+     "vertice": 0
+    },
+    "causas": {
+     "insolvencia": 21,
+     "objetivo": 59,
+     "salud": 3,
+     "piso": 3
+    },
+    "objetivosFallados": {
+     "cumbre:margen": 3,
+     "forja:caja": 14,
+     "brasa:margen": 3,
+     "kubit:caja": 9,
+     "puntomadero:margen": 15,
+     "vertice:margen": 15
+    },
+    "criterio": {
+     "bienRazonados": 99.1,
+     "asuntos": 1359,
+     "eleccionesPorScore": {
+      "2": 45,
+      "3": 1314
+     },
+     "scoreYPrioriza": {
+      "s3p2": 146,
+      "s3p1": 976,
+      "s3p0": 192,
+      "s2p2": 33,
+      "s2p0": 3,
+      "s2p1": 9
+     }
+    },
+    "competenciasNoRazonadas": {
+     "personas": 12,
+     "cultura": 12
+    },
+    "indicadoresPromedio": {
+     "caja": 43,
+     "margen": 52,
+     "equipo": 90,
+     "clientes": 72,
+     "consejo": 77
+    },
+    "lineasRojasCruzadas": {},
+    "eticaScore0SinLineaRoja": {}
+   },
+   "personas_con_piso": {
+    "aprobados": 80,
+    "meses": 90,
+    "porSemilla": {
+     "calibracion": 76.7,
+     "nueva_a": 83.3,
+     "nueva_b": 80
+    },
+    "porEmpresa": {
+     "cumbre": 93.3,
+     "forja": 20,
+     "brasa": 100,
+     "kubit": 66.7,
+     "puntomadero": 100,
+     "vertice": 100
+    },
+    "causas": {
+     "insolvencia": 1,
+     "objetivo": 17
+    },
+    "objetivosFallados": {
+     "forja:caja": 12,
+     "kubit:caja": 5
+    },
+    "criterio": {
+     "bienRazonados": 94.2,
+     "asuntos": 1354,
+     "eleccionesPorScore": {
+      "1": 131,
+      "2": 126,
+      "3": 1097
+     },
+     "scoreYPrioriza": {
+      "s3p2": 105,
+      "s2p1": 30,
+      "s3p1": 899,
+      "s1p2": 86,
+      "s3p0": 93,
+      "s1p1": 40,
+      "s2p2": 93,
+      "s2p0": 3,
+      "s1p0": 5
+     }
+    },
+    "competenciasNoRazonadas": {
+     "personas": 20,
+     "negociacion": 19,
+     "finanzas": 58,
+     "operacion": 38,
+     "cultura": 10,
+     "estrategia": 42,
+     "etica": 5,
+     "clientes": 14,
+     "comunicacion": 10,
+     "alineacion": 3
+    },
+    "indicadoresPromedio": {
+     "caja": 51,
+     "margen": 59,
+     "equipo": 82,
+     "clientes": 64,
+     "consejo": 74
+    },
+    "lineasRojasCruzadas": {},
+    "eticaScore0SinLineaRoja": {}
+   },
+   "azar": {
+    "aprobados": 3.7,
+    "meses": 270,
+    "porSemilla": {
+     "calibracion": 3.3,
+     "nueva_a": 3.3,
+     "nueva_b": 4.4
+    },
+    "porEmpresa": {
+     "cumbre": 4.4,
+     "forja": 2.2,
+     "brasa": 6.7,
+     "kubit": 4.4,
+     "puntomadero": 4.4,
+     "vertice": 0
+    },
+    "causas": {
+     "salud": 68,
+     "criterio": 247,
+     "insolvencia": 40,
+     "linea_roja": 60,
+     "objetivo": 116,
+     "piso": 20
+    },
+    "objetivosFallados": {
+     "cumbre:margen": 15,
+     "cumbre:equipo": 12,
+     "forja:caja": 31,
+     "forja:clientes": 3,
+     "kubit:caja": 16,
+     "puntomadero:margen": 15,
+     "vertice:margen": 22,
+     "kubit:clientes": 1,
+     "puntomadero:clientes": 4,
+     "brasa:margen": 2
+    },
+    "criterio": {
+     "bienRazonados": 41.7,
+     "asuntos": 4023,
+     "eleccionesPorScore": {
+      "0": 541,
+      "1": 1271,
+      "2": 839,
+      "3": 1372
+     },
+     "scoreYPrioriza": {
+      "s3p2": 225,
+      "s0p1": 385,
+      "s1p0": 342,
+      "s3p1": 1024,
+      "s1p1": 774,
+      "s2p1": 578,
+      "s0p0": 91,
+      "s3p0": 123,
+      "s1p2": 155,
+      "s0p2": 65,
+      "s2p2": 151,
+      "s2p0": 110
+     }
+    },
+    "competenciasNoRazonadas": {
+     "personas": 1045,
+     "negociacion": 377,
+     "comunicacion": 596,
+     "etica": 470,
+     "operacion": 870,
+     "cultura": 484,
+     "estrategia": 742,
+     "finanzas": 1107,
+     "alineacion": 196,
+     "clientes": 518
+    },
+    "indicadoresPromedio": {
+     "caja": 49,
+     "margen": 55,
+     "equipo": 61,
+     "clientes": 65,
+     "consejo": 69
+    },
+    "lineasRojasCruzadas": {
+     "d6-gastos": 15,
+     "d3-planta": 13,
+     "fn-d6-denuncia": 10,
+     "fn-d3-ppap": 15,
+     "fn-c-laura": 11,
+     "gb-d3-brote": 16
+    },
+    "eticaScore0SinLineaRoja": {
+     "c-planta-accidente": 7,
+     "bk-cumbre-meta-1": 4,
+     "fn-d5-ciber": 15,
+     "bk-forja-incentivos-1": 5,
+     "bk-brasa-meta-1": 1,
+     "bk-brasa-incentivos-1": 3,
+     "kb-d3-demo": 17,
+     "bk-kubit-incentivos-1": 2,
+     "bk-kubit-meta-1": 3,
+     "kb-d6-denuncia": 10,
+     "bk-kubit-incentivos-2": 2,
+     "bk-kubit-meta-2": 2,
+     "pm-d3-entrega": 17,
+     "pm-d6-denuncia": 18,
+     "bk-puntomadero-incentivos-1": 3,
+     "vl-d6-denuncia": 12,
+     "vl-d3-rastreo": 20,
+     "bk-vertice-meta-1": 5,
+     "bk-cumbre-incentivos-1": 3,
+     "bk-forja-meta-1": 2,
+     "bk-cumbre-incentivos-2": 1,
+     "bk-puntomadero-meta-1": 2,
+     "bk-vertice-incentivos-1": 1
+    }
+   }
+  },
+  "v7": {
+   "criterio_y_tablero": {
+    "aprobados": 93.3,
+    "meses": 90,
+    "porSemilla": {
+     "calibracion": 90,
+     "nueva_a": 93.3,
+     "nueva_b": 96.7
+    },
+    "porEmpresa": {
+     "cumbre": 93.3,
+     "forja": 80,
+     "brasa": 100,
+     "kubit": 86.7,
+     "puntomadero": 100,
+     "vertice": 100
+    },
+    "causas": {
+     "insolvencia": 1,
+     "objetivo": 5
+    },
+    "objetivosFallados": {
+     "forja:caja": 3,
+     "kubit:caja": 2
+    },
+    "criterio": {
+     "bienRazonados": 90.7,
+     "asuntos": 1456,
+     "eleccionesPorScore": {
+      "0": 6,
+      "1": 168,
+      "2": 135,
+      "3": 1147
+     },
+     "scoreYPrioriza": {
+      "s3p2": 119,
+      "s2p1": 62,
+      "s3p1": 928,
+      "s1p2": 102,
+      "s3p0": 100,
+      "s1p1": 65,
+      "s2p2": 72,
+      "s0p1": 6,
+      "s2p0": 1,
+      "s1p0": 1
+     }
+    },
+    "competenciasNoRazonadas": {
+     "personas": 23,
+     "negociacion": 52,
+     "finanzas": 112,
+     "operacion": 56,
+     "estrategia": 69,
+     "comunicacion": 8,
+     "clientes": 48,
+     "cultura": 12,
+     "etica": 5,
+     "alineacion": 5
+    },
+    "indicadoresPromedio": {
+     "caja": 52,
+     "margen": 61,
+     "equipo": 80,
+     "clientes": 63,
+     "consejo": 72
+    },
+    "lineasRojasCruzadas": {},
+    "eticaScore0SinLineaRoja": {}
+   },
+   "cuida_caja": {
+    "aprobados": 90,
+    "meses": 90,
+    "porSemilla": {
+     "calibracion": 90,
+     "nueva_a": 86.7,
+     "nueva_b": 93.3
+    },
+    "porEmpresa": {
+     "cumbre": 80,
+     "forja": 80,
+     "brasa": 100,
+     "kubit": 86.7,
+     "puntomadero": 100,
+     "vertice": 93.3
+    },
+    "causas": {
+     "insolvencia": 4,
+     "objetivo": 5
+    },
+    "objetivosFallados": {
+     "forja:caja": 3,
+     "kubit:caja": 2
+    },
+    "criterio": {
+     "bienRazonados": 90.5,
+     "asuntos": 1467,
+     "eleccionesPorScore": {
+      "1": 182,
+      "2": 141,
+      "3": 1144
+     },
+     "scoreYPrioriza": {
+      "s3p2": 113,
+      "s2p1": 65,
+      "s3p1": 943,
+      "s1p2": 111,
+      "s3p0": 88,
+      "s1p1": 71,
+      "s2p2": 72,
+      "s2p0": 4
+     }
+    },
+    "competenciasNoRazonadas": {
+     "personas": 35,
+     "negociacion": 52,
+     "finanzas": 114,
+     "operacion": 56,
+     "alineacion": 7,
+     "cultura": 19,
+     "comunicacion": 6,
+     "estrategia": 60,
+     "clientes": 52,
+     "etica": 4
+    },
+    "indicadoresPromedio": {
+     "caja": 53,
+     "margen": 61,
+     "equipo": 80,
+     "clientes": 63,
+     "consejo": 73
+    },
+    "lineasRojasCruzadas": {},
+    "eticaScore0SinLineaRoja": {}
+   },
+   "mejor_efecto": {
+    "aprobados": 26.7,
+    "meses": 90,
+    "porSemilla": {
+     "calibracion": 26.7,
+     "nueva_a": 26.7,
+     "nueva_b": 26.7
+    },
+    "porEmpresa": {
+     "cumbre": 80,
+     "forja": 0,
+     "brasa": 80,
+     "kubit": 0,
+     "puntomadero": 0,
+     "vertice": 0
+    },
+    "causas": {
+     "linea_roja": 66,
+     "objetivo": 9,
+     "criterio": 10
+    },
+    "objetivosFallados": {
+     "forja:caja": 3,
+     "puntomadero:margen": 3,
+     "vertice:margen": 3
+    },
+    "criterio": {
+     "bienRazonados": 74.9,
+     "asuntos": 1472,
+     "eleccionesPorScore": {
+      "0": 72,
+      "1": 187,
+      "2": 199,
+      "3": 1014
+     },
+     "scoreYPrioriza": {
+      "s3p2": 165,
+      "s3p1": 733,
+      "s1p2": 50,
+      "s2p1": 153,
+      "s3p0": 116,
+      "s1p1": 101,
+      "s0p1": 59,
+      "s2p0": 8,
+      "s0p0": 12,
+      "s2p2": 38,
+      "s1p0": 36,
+      "s0p2": 1
+     }
+    },
+    "competenciasNoRazonadas": {
+     "operacion": 234,
+     "finanzas": 265,
+     "estrategia": 154,
+     "etica": 78,
+     "clientes": 150,
+     "personas": 84,
+     "comunicacion": 6,
+     "negociacion": 66,
+     "cultura": 15
+    },
+    "indicadoresPromedio": {
+     "caja": 59,
+     "margen": 59,
+     "equipo": 79,
+     "clientes": 65,
+     "consejo": 82
+    },
+    "lineasRojasCruzadas": {
+     "bk-cumbre-meta-2": 3,
+     "fn-d3-ppap": 15,
+     "bk-brasa-meta-1": 3,
+     "kb-d3-demo": 15,
+     "bk-kubit-meta-1": 3,
+     "pm-d3-entrega": 15,
+     "vl-d3-rastreo": 15
+    },
+    "eticaScore0SinLineaRoja": {}
+   },
+   "numeros_con_piso": {
+    "aprobados": 27.8,
+    "meses": 90,
+    "porSemilla": {
+     "calibracion": 26.7,
+     "nueva_a": 26.7,
+     "nueva_b": 30
+    },
+    "porEmpresa": {
+     "cumbre": 80,
+     "forja": 0,
+     "brasa": 66.7,
+     "kubit": 0,
+     "puntomadero": 0,
+     "vertice": 20
+    },
+    "causas": {
+     "linea_roja": 60,
+     "criterio": 16,
+     "insolvencia": 1
+    },
+    "objetivosFallados": {},
+    "criterio": {
+     "bienRazonados": 70.3,
+     "asuntos": 1470,
+     "eleccionesPorScore": {
+      "0": 71,
+      "1": 241,
+      "2": 229,
+      "3": 929
+     },
+     "scoreYPrioriza": {
+      "s3p2": 145,
+      "s3p1": 692,
+      "s1p2": 56,
+      "s2p1": 172,
+      "s1p1": 144,
+      "s3p0": 92,
+      "s1p0": 41,
+      "s0p1": 51,
+      "s2p0": 9,
+      "s0p0": 12,
+      "s2p2": 48,
+      "s0p2": 8
+     }
+    },
+    "competenciasNoRazonadas": {
+     "operacion": 251,
+     "finanzas": 305,
+     "estrategia": 171,
+     "personas": 114,
+     "etica": 90,
+     "clientes": 170,
+     "cultura": 35,
+     "alineacion": 1,
+     "comunicacion": 35,
+     "negociacion": 74
+    },
+    "indicadoresPromedio": {
+     "caja": 62,
+     "margen": 59,
+     "equipo": 78,
+     "clientes": 63,
+     "consejo": 80
+    },
+    "lineasRojasCruzadas": {
+     "bk-cumbre-meta-2": 2,
+     "fn-d3-ppap": 15,
+     "bk-brasa-meta-1": 3,
+     "kb-d3-demo": 15,
+     "bk-kubit-meta-1": 2,
+     "pm-d3-entrega": 15,
+     "vl-d3-rastreo": 8,
+     "bk-brasa-meta-2": 2
+    },
+    "eticaScore0SinLineaRoja": {}
+   },
+   "etica_flexible": {
+    "aprobados": 72.2,
+    "meses": 90,
+    "porSemilla": {
+     "calibracion": 73.3,
+     "nueva_a": 70,
+     "nueva_b": 73.3
+    },
+    "porEmpresa": {
+     "cumbre": 93.3,
+     "forja": 40,
+     "brasa": 100,
+     "kubit": 80,
+     "puntomadero": 40,
+     "vertice": 80
+    },
+    "causas": {
+     "objetivo": 24,
+     "insolvencia": 1
+    },
+    "objetivosFallados": {
+     "forja:caja": 9,
+     "kubit:caja": 3,
+     "puntomadero:margen": 9,
+     "vertice:clientes": 3
+    },
+    "criterio": {
+     "bienRazonados": 82.2,
+     "asuntos": 1421,
+     "eleccionesPorScore": {
+      "0": 3,
+      "1": 175,
+      "2": 208,
+      "3": 1035
+     },
+     "scoreYPrioriza": {
+      "s3p2": 136,
+      "s3p1": 807,
+      "s1p2": 69,
+      "s2p1": 133,
+      "s3p0": 92,
+      "s1p1": 74,
+      "s2p2": 64,
+      "s2p0": 11,
+      "s0p0": 3,
+      "s1p0": 32
+     }
+    },
+    "competenciasNoRazonadas": {
+     "operacion": 132,
+     "finanzas": 214,
+     "estrategia": 134,
+     "etica": 12,
+     "clientes": 84,
+     "comunicacion": 10,
+     "negociacion": 53,
+     "personas": 63,
+     "cultura": 9,
+     "alineacion": 6
+    },
+    "indicadoresPromedio": {
+     "caja": 55,
+     "margen": 59,
+     "equipo": 81,
+     "clientes": 66,
+     "consejo": 82
+    },
+    "lineasRojasCruzadas": {},
+    "eticaScore0SinLineaRoja": {}
+   },
+   "segunda_mejor": {
+    "aprobados": 0,
+    "meses": 90,
+    "porSemilla": {
+     "calibracion": 0,
+     "nueva_a": 0,
+     "nueva_b": 0
+    },
+    "porEmpresa": {
+     "cumbre": 0,
+     "forja": 0,
+     "brasa": 0,
+     "kubit": 0,
+     "puntomadero": 0,
+     "vertice": 0
+    },
+    "causas": {
+     "objetivo": 29,
+     "criterio": 90,
+     "salud": 24,
+     "piso": 3
+    },
+    "objetivosFallados": {
+     "cumbre:margen": 15,
+     "kubit:caja": 12,
+     "brasa:margen": 2
+    },
+    "criterio": {
+     "bienRazonados": 14.2,
+     "asuntos": 1388,
+     "eleccionesPorScore": {
+      "1": 444,
+      "2": 944
+     },
+     "scoreYPrioriza": {
+      "s1p0": 131,
+      "s2p1": 662,
+      "s1p1": 267,
+      "s1p2": 46,
+      "s2p2": 151,
+      "s2p0": 131
+     }
+    },
+    "competenciasNoRazonadas": {
+     "personas": 473,
+     "estrategia": 391,
+     "negociacion": 183,
+     "comunicacion": 242,
+     "operacion": 514,
+     "finanzas": 652,
+     "etica": 231,
+     "cultura": 228,
+     "alineacion": 95,
+     "clientes": 303
+    },
+    "indicadoresPromedio": {
+     "caja": 50,
+     "margen": 61,
+     "equipo": 64,
+     "clientes": 61,
+     "consejo": 57
+    },
+    "lineasRojasCruzadas": {},
+    "eticaScore0SinLineaRoja": {}
+   },
+   "personas_primero": {
+    "aprobados": 40,
+    "meses": 90,
+    "porSemilla": {
+     "calibracion": 40,
+     "nueva_a": 40,
+     "nueva_b": 40
+    },
+    "porEmpresa": {
+     "cumbre": 40,
+     "forja": 40,
+     "brasa": 60,
+     "kubit": 60,
+     "puntomadero": 0,
+     "vertice": 40
+    },
+    "causas": {
+     "insolvencia": 24,
+     "objetivo": 45,
+     "salud": 3
+    },
+    "objetivosFallados": {
+     "cumbre:margen": 3,
+     "forja:caja": 9,
+     "brasa:margen": 3,
+     "kubit:caja": 6,
+     "puntomadero:margen": 15,
+     "vertice:margen": 9
+    },
+    "criterio": {
+     "bienRazonados": 99.2,
+     "asuntos": 1503,
+     "eleccionesPorScore": {
+      "2": 42,
+      "3": 1461
+     },
+     "scoreYPrioriza": {
+      "s3p2": 186,
+      "s3p1": 1081,
+      "s3p0": 194,
+      "s2p2": 30,
+      "s2p0": 3,
+      "s2p1": 9
+     }
+    },
+    "competenciasNoRazonadas": {
+     "personas": 12,
+     "cultura": 12
+    },
+    "indicadoresPromedio": {
+     "caja": 43,
+     "margen": 52,
+     "equipo": 90,
+     "clientes": 73,
+     "consejo": 78
+    },
+    "lineasRojasCruzadas": {},
+    "eticaScore0SinLineaRoja": {}
+   },
+   "personas_con_piso": {
+    "aprobados": 90,
+    "meses": 90,
+    "porSemilla": {
+     "calibracion": 90,
+     "nueva_a": 90,
+     "nueva_b": 90
+    },
+    "porEmpresa": {
+     "cumbre": 93.3,
+     "forja": 80,
+     "brasa": 100,
+     "kubit": 73.3,
+     "puntomadero": 100,
+     "vertice": 93.3
+    },
+    "causas": {
+     "insolvencia": 2,
+     "objetivo": 7
+    },
+    "objetivosFallados": {
+     "forja:caja": 3,
+     "kubit:caja": 4
+    },
+    "criterio": {
+     "bienRazonados": 94,
+     "asuntos": 1477,
+     "eleccionesPorScore": {
+      "1": 143,
+      "2": 128,
+      "3": 1206
+     },
+     "scoreYPrioriza": {
+      "s3p2": 130,
+      "s2p1": 44,
+      "s3p1": 965,
+      "s1p2": 101,
+      "s3p0": 111,
+      "s1p1": 42,
+      "s2p2": 81,
+      "s2p0": 3
+     }
+    },
+    "competenciasNoRazonadas": {
+     "personas": 22,
+     "negociacion": 29,
+     "finanzas": 68,
+     "operacion": 41,
+     "estrategia": 43,
+     "comunicacion": 5,
+     "cultura": 10,
+     "etica": 4,
+     "clientes": 27,
+     "alineacion": 3
+    },
+    "indicadoresPromedio": {
+     "caja": 51,
+     "margen": 59,
+     "equipo": 82,
+     "clientes": 65,
+     "consejo": 75
+    },
+    "lineasRojasCruzadas": {},
+    "eticaScore0SinLineaRoja": {}
+   },
+   "azar": {
+    "aprobados": 3.7,
+    "meses": 270,
+    "porSemilla": {
+     "calibracion": 2.2,
+     "nueva_a": 3.3,
+     "nueva_b": 5.6
+    },
+    "porEmpresa": {
+     "cumbre": 2.2,
+     "forja": 8.9,
+     "brasa": 6.7,
+     "kubit": 2.2,
+     "puntomadero": 2.2,
+     "vertice": 0
+    },
+    "causas": {
+     "salud": 57,
+     "criterio": 243,
+     "insolvencia": 32,
+     "linea_roja": 177,
+     "objetivo": 101,
+     "piso": 15
+    },
+    "objetivosFallados": {
+     "cumbre:margen": 15,
+     "cumbre:equipo": 12,
+     "forja:caja": 20,
+     "brasa:margen": 4,
+     "kubit:caja": 17,
+     "kubit:clientes": 2,
+     "puntomadero:margen": 18,
+     "puntomadero:clientes": 1,
+     "vertice:margen": 13,
+     "brasa:clientes": 1,
+     "vertice:clientes": 2
+    },
+    "criterio": {
+     "bienRazonados": 42.9,
+     "asuntos": 4364,
+     "eleccionesPorScore": {
+      "0": 537,
+      "1": 1344,
+      "2": 985,
+      "3": 1498
+     },
+     "scoreYPrioriza": {
+      "s3p2": 257,
+      "s0p1": 387,
+      "s1p0": 354,
+      "s3p1": 1126,
+      "s1p1": 792,
+      "s2p1": 678,
+      "s0p0": 89,
+      "s3p0": 115,
+      "s1p2": 198,
+      "s0p2": 61,
+      "s2p2": 178,
+      "s2p0": 129
+     }
+    },
+    "competenciasNoRazonadas": {
+     "personas": 1073,
+     "negociacion": 420,
+     "comunicacion": 578,
+     "etica": 492,
+     "operacion": 953,
+     "cultura": 485,
+     "estrategia": 806,
+     "finanzas": 1255,
+     "alineacion": 211,
+     "clientes": 611
+    },
+    "indicadoresPromedio": {
+     "caja": 51,
+     "margen": 56,
+     "equipo": 62,
+     "clientes": 64,
+     "consejo": 68
+    },
+    "lineasRojasCruzadas": {
+     "d6-gastos": 15,
+     "d3-planta": 13,
+     "bk-cumbre-meta-1": 4,
+     "c-mant-dosificador": 2,
+     "fn-d3-ppap": 18,
+     "fn-c-laura": 9,
+     "fn-d6-denuncia": 22,
+     "bk-forja-meta-1": 3,
+     "gb-d3-brote": 12,
+     "bk-brasa-error-1": 2,
+     "bk-brasa-meta-1": 2,
+     "bk-brasa-meta-2": 1,
+     "kb-d3-demo": 20,
+     "kb-d5-banco": 15,
+     "kb-d6-denuncia": 13,
+     "pm-d6-denuncia": 18,
+     "pm-d3-entrega": 10,
+     "pm-d5-embargo": 9,
+     "vl-d5-embargo": 20,
+     "vl-d3-rastreo": 16,
+     "vl-d6-denuncia": 17,
+     "bk-vertice-meta-1": 6,
+     "bk-cumbre-error-1": 3,
+     "bk-forja-error-1": 3,
+     "bk-kubit-error-1": 3,
+     "bk-puntomadero-error-1": 2,
+     "bk-brasa-error-2": 1,
+     "bk-kubit-meta-1": 1,
+     "bk-kubit-meta-2": 1
+    },
+    "eticaScore0SinLineaRoja": {
+     "c-planta-accidente": 7,
+     "bk-forja-incentivos-1": 2,
+     "fn-d5-ciber": 16,
+     "bk-kubit-incentivos-1": 2,
+     "bk-puntomadero-incentivos-1": 4,
+     "bk-cumbre-incentivos-1": 3,
+     "bk-vertice-incentivos-1": 2,
+     "bk-cumbre-incentivos-2": 1,
+     "bk-brasa-incentivos-1": 1
+    }
+   }
+  }
+ }
+}

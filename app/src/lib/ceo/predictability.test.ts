@@ -2,13 +2,13 @@ import { describe, expect, it } from "vitest";
 import { COMPANIES } from "./companies";
 import { isBankId, withBank } from "./cases/bank";
 import { DILEMMAS } from "./dilemmas";
-import { RED_LINES } from "./editorial";
+import { redLinesOf } from "./editorial";
 import { PREDICTABILITY_RULES as P, checkCase, dilemmaCase, itemCase, replyContradictions, report, type PlainCase } from "./predictability";
 import { SAMPLE_CASES, SAMPLE_DILEMMAS, sampleItem } from "./redesign/sample";
 import { JUDGMENT_DIMS, judge } from "./judgment";
 import { displayOptions } from "./option-order";
 
-const bankCases = () => COMPANIES.flatMap((p) => withBank(p).items.map((i) => itemCase(i, p.id, (RED_LINES[i.id] ?? []).map((r) => r.option))));
+const bankCases = () => COMPANIES.flatMap((p) => withBank(p).items.map((i) => itemCase(i, p.id, redLinesOf(i.id).map((r) => r.option))));
 const sampleCases = (): PlainCase[] => SAMPLE_CASES.map((c) => itemCase(sampleItem(c), c.company));
 const sampleDilemmas = (): PlainCase[] => SAMPLE_DILEMMAS.map(dilemmaCase);
 
@@ -68,7 +68,7 @@ describe("banco de casos (tanda 1): la longitud ya no delata la respuesta", () =
 
 describe("casos propios de cada empresa (tanda 2): ni el largo ni la posición delatan la respuesta", () => {
   // Antes: el más largo era el mejor en 92% de los 103 casos y la mejor salía primero en 65%.
-  const own = () => COMPANIES.flatMap((p) => withBank(p).items.filter((i) => !isBankId(i.id)).map((i) => ({ i, c: itemCase(i, p.id, (RED_LINES[i.id] ?? []).map((r) => r.option)) })));
+  const own = () => COMPANIES.flatMap((p) => withBank(p).items.filter((i) => !isBankId(i.id)).map((i) => ({ i, c: itemCase(i, p.id, redLinesOf(i.id).map((r) => r.option)) })));
   it("el largo ya no da pistas", () => {
     const r = report(own().map((x) => x.c));
     expect(r.longestBestRate).toBeLessThanOrEqual(0.4);

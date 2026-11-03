@@ -17,15 +17,15 @@ const all = inventory();
 
 describe("0.6 inventario editorial", () => {
   // 103 asuntos originales + 7 de la cadena de mantenimiento de Cumbre (consecuencias diferidas, v6).
-  it("clasifica los 110 asuntos, cada uno con un estado válido y un motivo", () => {
-    expect(all).toHaveLength(110);
+  it("clasifica los 130 asuntos, cada uno con un estado válido y un motivo", () => {
+    expect(all).toHaveLength(130);
     expect(all.length).toBe(COMPANIES.reduce((a, c) => a + c.items.length, 0));
     for (const a of all) {
       expect(EDITORIAL_STATUSES).toContain(a.status);
       expect(a.reason.length).toBeGreaterThan(20);
     }
     const c = countBy(all);
-    expect(Object.values(c).reduce((x, y) => x + y, 0)).toBe(110);
+    expect(Object.values(c).reduce((x, y) => x + y, 0)).toBe(130);
   });
 
   it("reproduce el hallazgo C1 de la auditoría (score alto = más rentable)", () => {
@@ -103,7 +103,7 @@ describe("0.6 inventario editorial", () => {
 
   it("el CSV trae una fila por asunto", () => {
     const csv = itemsCsv(all).trim().split("\n");
-    expect(csv).toHaveLength(111);
+    expect(csv).toHaveLength(131);
     expect(csv[0]).toContain("estado");
   });
 });
@@ -180,10 +180,10 @@ describe("0.6 veredicto sombra", () => {
  * Regenera el reporte revisable. NO corre en la suite normal:
  *   EDITORIAL_REPORT=1 npx vitest run src/lib/ceo/editorial.test.ts
  */
-it("el paquete de aprobación incluye los 110 asuntos con su formato de respuesta y está al día", () => {
+it("el paquete de aprobación incluye los 130 asuntos con su formato de respuesta y está al día", () => {
   const md = approvalPacket();
-  expect((md.match(/^### /gm) ?? []).length).toBe(110);
-  expect((md.match(/^Respuesta: `/gm) ?? []).length).toBe(110);
+  expect((md.match(/^### /gm) ?? []).length).toBe(130);
+  expect((md.match(/^Respuesta: `/gm) ?? []).length).toBe(130);
   expect(md).not.toMatch(/undefined|NaN/);
   expect(readFileSync(join(__dirname, "..", "..", "..", "..", "docs", "editorial", "aprobacion-casos.md"), "utf8")).toBe(md);
 });

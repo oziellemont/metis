@@ -1,28 +1,28 @@
-# mêtis CEO · Inventario editorial de los 110 asuntos y veredicto sombra
+# mêtis CEO · Inventario editorial de los 130 asuntos y veredicto sombra
 
 Clasificador editorial v1 · Veredicto sombra v0. Reporte generado por código a partir del contenido actual; no cambia ningún resultado de partidas, XP ni veredicto en producción.
 
 ## 1. Resumen
 
-De los 110 asuntos (78 base y 32 consecuencias), el clasificador propone:
+De los 130 asuntos (83 base y 47 consecuencias), el clasificador propone:
 
 | Estado | Asuntos | % |
 |---|---:|---:|
-| approved (propuesta, falta firma humana) | 27 | 25 % |
-| legacy (se conserva como histórico) | 21 | 19 % |
-| needsRewrite (reescribir) | 44 | 40 % |
-| restrictedEthics (obligación ética o de seguridad) | 18 | 16 % |
+| approved (propuesta, falta firma humana) | 47 | 36 % |
+| legacy (se conserva como histórico) | 21 | 16 % |
+| needsRewrite (reescribir) | 41 | 32 % |
+| restrictedEthics (obligación ética o de seguridad) | 21 | 16 % |
 
 Ningún asunto queda aprobado de forma definitiva: «approved» es una propuesta automática que requiere la aprobación de Oziel (tabla `EDITORIAL_REVIEW` en `editorial.ts`).
 
 | Empresa | approved | legacy | needsRewrite | restrictedEthics |
 |---|---:|---:|---:|---:|
 | Botanas Cumbre | 6 | 2 | 15 | 4 |
-| Forja Norte | 2 | 6 | 5 | 4 |
-| Grupo Brasa | 4 | 4 | 6 | 1 |
-| Kúbit | 5 | 3 | 6 | 3 |
-| Punto Madero | 5 | 3 | 6 | 3 |
-| Vértice Logística | 5 | 3 | 6 | 3 |
+| Forja Norte | 6 | 6 | 5 | 4 |
+| Grupo Brasa | 8 | 4 | 6 | 1 |
+| Kúbit | 9 | 3 | 5 | 4 |
+| Punto Madero | 9 | 3 | 5 | 4 |
+| Vértice Logística | 9 | 3 | 5 | 4 |
 
 ## 2. Auditoría de `score` frente a efectos
 
@@ -31,11 +31,11 @@ Balance neto promedio (suma de los cinco indicadores, sin multiplicadores de niv
 | Empresa | score 0 | score 1 | score 2 | score 3 | Correlación score–balance |
 |---|---:|---:|---:|---:|---:|
 | Botanas Cumbre | -5.27 (11) | -1.38 (26) | -0.91 (11) | +2.52 (27) | 0.68 |
-| Forja Norte | -6.20 (5) | -1.71 (14) | -1.33 (12) | +0.88 (17) | 0.59 |
-| Grupo Brasa | -3.20 (5) | -2.67 (12) | +0.09 (11) | +1.36 (14) | 0.55 |
-| Kúbit | -5.20 (5) | -1.00 (14) | -0.75 (12) | +1.35 (17) | 0.60 |
-| Punto Madero | -5.20 (5) | -1.00 (14) | -0.75 (12) | +1.35 (17) | 0.60 |
-| Vértice Logística | -5.20 (5) | -1.00 (14) | -0.75 (12) | +1.35 (17) | 0.60 |
+| Forja Norte | -6.20 (5) | -1.17 (18) | -0.81 (16) | +0.81 (21) | 0.53 |
+| Grupo Brasa | -3.20 (5) | -2.12 (16) | +0.13 (15) | +1.11 (18) | 0.53 |
+| Kúbit | -5.20 (5) | -0.67 (18) | -0.62 (16) | +1.19 (21) | 0.54 |
+| Punto Madero | -5.20 (5) | -0.78 (18) | -0.56 (16) | +1.19 (21) | 0.56 |
+| Vértice Logística | -5.20 (5) | -0.78 (18) | -0.50 (16) | +1.14 (21) | 0.56 |
 
 Hallazgos por asunto (un asunto puede tener varios):
 
@@ -46,9 +46,9 @@ Hallazgos por asunto (un asunto puede tener varios):
 | La opción con score más alto gana por una ventaja clara: se adivina la preferencia del autor. | 53 |
 | La opción con score 0 es la que peor le va a la empresa. | 31 |
 | Hay una opción sin ningún costo visible. | 0 |
-| Solo una opción queda cerca de la mejor; las demás no son defendibles por números. | 55 |
-| No responder castiga más que cualquier opción. | 98 |
-| Una opción cruza una línea roja (se analiza, no se presenta como alternativa legítima). | 6 |
+| Solo una opción queda cerca de la mejor; las demás no son defendibles por números. | 58 |
+| No responder castiga más que cualquier opción. | 117 |
+| Una opción cruza una línea roja (se analiza, no se presenta como alternativa legítima). | 16 |
 
 Umbrales: ventaja «obvia» ≥ 3 puntos netos; una opción es «defendible» si queda a 2 puntos o menos de la mejor.
 
@@ -56,14 +56,26 @@ Umbrales: ventaja «obvia» ≥ 3 puntos netos; una opción es «defendible» si
 
 Opciones que se analizan como consecuencia y nunca deben presentarse como alternativa legítima. Lista editorial a confirmar por revisión humana.
 
-| Asunto | Opción | Por qué |
-|---|---|---|
-| d3-planta | b | Seguir operando un equipo con riesgo de accidente ya identificado. |
-| d6-gastos | b | Encubrir un fraude comprobado a cambio de ventas. |
-| fn-d3-ppap | b | Saltarse la firma de Calidad y entregar sin declarar la capacidad real. |
-| fn-c-laura | b | Mantener oculto al cliente un riesgo de calidad conocido. |
-| fn-d6-denuncia | b | Mover a quienes denunciaron acoso: represalia contra denunciantes. |
-| gb-d3-brote | b | Seguir abiertos tras un brote de intoxicación sin dar la cara. |
+| Asunto | Opción | Desde reglas | Por qué |
+|---|---|---|---|
+| d3-planta | b | todas | Seguir operando un equipo con riesgo de accidente ya identificado. |
+| d6-gastos | b | todas | Encubrir un fraude comprobado a cambio de ventas. |
+| fn-d3-ppap | b | todas | Saltarse la firma de Calidad y entregar sin declarar la capacidad real. |
+| fn-c-laura | b | todas | Mantener oculto al cliente un riesgo de calidad conocido. |
+| fn-d6-denuncia | b | todas | Mover a quienes denunciaron acoso: represalia contra denunciantes. |
+| gb-d3-brote | b | todas | Seguir abiertos tras un brote de intoxicación sin dar la cara. |
+| kb-d3-demo | b | 7 | Firmar ante el cliente que una integración funciona cuando no existe, y ocultarlo operándola a mano. |
+| pm-d3-entrega | b | 7 | Anunciar a los clientes un servicio que no se puede cumplir y encubrir la diferencia. |
+| vl-d3-rastreo | b | 7 | Prometer en una licitación una capacidad que no existe y encubrir la diferencia. |
+| kb-d6-denuncia | b | 7 | Mover a quienes denunciaron acoso: represalia contra denunciantes. |
+| pm-d6-denuncia | b | 7 | Mover a quienes denunciaron acoso: represalia contra denunciantes. |
+| vl-d6-denuncia | b | 7 | Mover a quienes denunciaron acoso: represalia contra denunciantes. |
+| kb-d5-banco | b | 7 | Retener media nómina y dar al equipo una explicación falsa. |
+| pm-d5-embargo | b | 7 | Retener media nómina y dar al equipo una explicación falsa. |
+| vl-d5-embargo | b | 7 | Retener media nómina y dar al equipo una explicación falsa. |
+| c-mant-dosificador | b | 7 | Saber que se envió producto con menos contenido del etiquetado y no avisar al cliente ni reponer. |
+| banco: bk-*-meta-* | b | 7 | Mantener la fecha después de que avisan que solo se llega haciendo trampa (pruebas, registros o seguridad). |
+| banco: bk-*-error-* | b | 7 | Ocultar un error propio al afectado y atribuirlo a una falla externa. |
 
 ## 4. Inventario asunto por asunto
 
@@ -99,7 +111,7 @@ Opciones como `id:score:balance`. Un `!` marca una línea roja. «Vencer» es el
 | 4 | `c-mant-rendimiento` La línea 1 está perdiendo rendimiento | consecuencia | a:3:-3 b:1:-3 c:2:-1 | -4 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 | 5 | `c-mant-queja` Incumplimiento de nivel de servicio | consecuencia | a:3:0 b:2:0 c:1:-2 | -6 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 | 6 | `c-mant-inversion` La envasadora: reconstruir o reemplazar | consecuencia | a:3:-3 b:2:-3 c:1:-2 | -5 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
-| 5 | `c-mant-dosificador` Javier Ortiz | consecuencia | a:3:0 b:1:-2 c:2:-1 | -3 | restrictedEthics | Tema de ética o seguridad sin opción de línea roja. Revisar que el feedback no sea sermón. |
+| 5 | `c-mant-dosificador` Javier Ortiz | consecuencia | a:3:0 b:1:-2! c:2:-1 | -3 | restrictedEthics | Obligación ética o de seguridad. Es válido que tenga una respuesta clara; la opción que cruza la línea roja debe mostrarse como consecuencia, no como alternativa. |
 
 ### Forja Norte
 
@@ -122,6 +134,10 @@ Opciones como `id:score:balance`. Un `!` marca una línea roja. «Vencer» es el
 | 6 | `fn-c-escuela` Teresa Galván | consecuencia | a:3:+2 b:1:-1 | -2 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
 | 7 | `fn-d7-consejo` Sesión de consejo · Cierre del trimestre | base | a:3:+3 b:1:-1 c:2:-3 | -12 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
 | 7 | `fn-d7-sindicato` Fermín Treviño | base | a:3:+3 b:1:-3 c:2:+1 | -11 | legacy | Jugable como contenido histórico, pero la opción preferida por el autor sigue siendo la que más conviene. |
+| 2 | `fn-d2-inventario` 41 días de inventario: la caja está en el almacén | base | a:3:+2 b:1:+2 c:2:+2 | -3 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 4 | `fn-c-inv-lineas` Chuy Morales | consecuencia | a:3:+1 b:2:+2 c:1:+2 | -2 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 4 | `fn-c-inv-faltante` Llamada perdida · Ing. Ramón Villarreal | consecuencia | a:3:-1 b:2:-1 c:1:-1 | -8 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 5 | `fn-c-inv-factoraje` Aurora Motors · Supplier financial review | consecuencia | a:3:0 b:2:0 c:1:0 | -4 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 
 ### Grupo Brasa
 
@@ -142,6 +158,10 @@ Opciones como `id:score:balance`. Un `!` marca una línea roja. «Vencer» es el
 | 6 | `gb-d6-dark` Propuesta · Marca virtual solo para apps | base | a:3:-1 b:1:-5 c:1:0 | -1 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 | 6 | `gb-d6-sucesion` Comida con los hermanos Arce | base | a:3:+5 b:1:-1 c:1:-2 | -4 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
 | 7 | `gb-d7-consejo` Para tu primer consejo como director | base | a:3:+5 b:2:+1 c:0:-2 | -4 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
+| 2 | `gb-d2-proveedor` Proveedor de res: 14 % más barato | base | a:3:+1 b:1:+1 c:2:+1 | -2 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 4 | `gb-c-prov-piloto` Resultados de la prueba ciega de res | consecuencia | a:3:+1 b:2:+1 c:1:-1 | -2 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 4 | `gb-c-prov-resenas` Maru Gutiérrez | consecuencia | a:3:-1 b:2:-1 c:1:-1 | -4 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 5 | `gb-c-prov-contrato` El proveedor de res acepta… con condiciones | consecuencia | a:3:0 b:2:0 c:1:-1 | -2 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 
 ### Kúbit
 
@@ -152,18 +172,22 @@ Opciones como `id:score:balance`. Un `!` marca una línea roja. «Vencer» es el
 | 2 | `kb-d2-altamar` Grupo Altamar · Renovación del contrato anual | base | a:0:-6 b:2:0 c:3:-2 | -9 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 | 2 | `kb-d2-fuga` Fuga de ingenieros · 9 en dos meses | base | a:1:-1 b:3:-3 c:2:0 | -7 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 | 3 | `kb-c-caida` URGENTE · Seis horas sin plataforma en cierre de mes | consecuencia | a:3:+1 b:1:-3 c:0:-6 | -10 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
-| 3 | `kb-d3-demo` Junta · Grupo Ferrán firma el viernes si la integración ya existe | base | a:2:-4 b:0:0 c:3:-2 | -8 | restrictedEthics | Tema de ética o seguridad sin opción de línea roja. Revisar que el feedback no sea sermón. |
+| 3 | `kb-d3-demo` Junta · Grupo Ferrán firma el viernes si la integración ya existe | base | a:2:-4 b:0:0! c:3:-2 | -8 | restrictedEthics | Obligación ética o de seguridad. Es válido que tenga una respuesta clara; la opción que cruza la línea roja debe mostrarse como consecuencia, no como alternativa. |
 | 4 | `kb-c-mejora` Memo Paz | consecuencia | a:3:+6 b:2:+2 | -1 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
 | 4 | `kb-d4-deuda` Propuesta del fondo · deuda de riesgo | base | a:1:+1 b:3:+3 c:2:-2 | -8 | legacy | Jugable como contenido histórico, pero la opción preferida por el autor sigue siendo la que más conviene. |
 | 4 | `kb-d4-pleito` Emilio Salinas | base | a:3:+3 b:1:-2 c:1:-2 | -7 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
-| 5 | `kb-d5-banco` Llamada perdida · Andrea Quiroga (Finanzas) | base | a:2:0 b:0:-7 c:3:+3 | -12 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
+| 5 | `kb-d5-banco` Llamada perdida · Andrea Quiroga (Finanzas) | base | a:2:0 b:0:-7! c:3:+3 | -12 | restrictedEthics | Obligación ética o de seguridad. Es válido que tenga una respuesta clara; la opción que cruza la línea roja debe mostrarse como consecuencia, no como alternativa. |
 | 5 | `kb-d5-ronda` Serie C · Dos propuestas sobre la mesa | base | a:1:+1 b:2:-2 c:3:+1 | -6 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 | 5 | `kb-c-renata` Mi renuncia | consecuencia | a:3:-1 b:1:-1 | -7 | restrictedEthics | Tema de ética o seguridad sin opción de línea roja. Revisar que el feedback no sea sermón. |
 | 6 | `kb-d6-centro` Riesgo crítico · DataNorte, nuestro centro de datos en México | base | a:3:-3 b:1:-2 c:2:-4 | -11 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
-| 6 | `kb-d6-denuncia` Confidencial · Denuncia contra el gerente regional de ventas | base | a:3:+3 b:0:-7 c:1:-3 | -8 | restrictedEthics | Tema de ética o seguridad sin opción de línea roja. Revisar que el feedback no sea sermón. |
+| 6 | `kb-d6-denuncia` Confidencial · Denuncia contra el gerente regional de ventas | base | a:3:+3 b:0:-7! c:1:-3 | -8 | restrictedEthics | Obligación ética o de seguridad. Es válido que tenga una respuesta clara; la opción que cruza la línea roja debe mostrarse como consecuencia, no como alternativa. |
 | 6 | `kb-c-academia` Carmen Olvera | consecuencia | a:3:+2 b:1:-1 | -2 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
 | 7 | `kb-d7-consejo` Sesión de consejo · Cierre del trimestre | base | a:3:+3 b:1:-1 c:2:-3 | -12 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
 | 7 | `kb-d7-equipo` Joel Navarro | base | a:3:+3 b:1:-3 c:2:+1 | -10 | legacy | Jugable como contenido histórico, pero la opción preferida por el autor sigue siendo la que más conviene. |
+| 2 | `kb-d2-nube` La factura de la nube subió 40 % | base | a:3:+2 b:1:+3 c:2:+1 | -2 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 4 | `kb-c-nube-consumo` Guillermo «Memo» Paz | consecuencia | a:3:+1 b:1:+1 c:2:0 | -1 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 4 | `kb-c-nube-caida` Llamada perdida · Renata Cruz (Éxito del Cliente) | consecuencia | a:3:-1 b:2:-2 c:1:-1 | -5 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 5 | `kb-c-nube-compromiso` Pregunta antes del consejo: el compromiso con la nube | consecuencia | a:3:0 b:2:0 c:1:-1 | -3 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 
 ### Punto Madero
 
@@ -174,18 +198,22 @@ Opciones como `id:score:balance`. Un `!` marca una línea roja. «Vencer» es el
 | 2 | `pm-d2-penasco` Constructora Peñasco · Condiciones para el próximo año | base | a:0:-6 b:2:0 c:3:-2 | -9 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 | 2 | `pm-d2-asesores` Se nos van los asesores expertos · 26 en dos meses | base | a:1:-1 b:3:-3 c:2:0 | -7 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 | 3 | `pm-c-tarima` URGENTE · Se cayó una tarima en la tienda principal | consecuencia | a:3:+1 b:1:-3 c:0:-6 | -10 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
-| 3 | `pm-d3-entrega` Junta · ¿Anunciamos entrega el mismo día? | base | a:2:-4 b:0:0 c:3:-2 | -8 | restrictedEthics | Tema de ética o seguridad sin opción de línea roja. Revisar que el feedback no sea sermón. |
+| 3 | `pm-d3-entrega` Junta · ¿Anunciamos entrega el mismo día? | base | a:2:-4 b:0:0! c:3:-2 | -8 | restrictedEthics | Obligación ética o de seguridad. Es válido que tenga una respuesta clara; la opción que cruza la línea roja debe mostrarse como consecuencia, no como alternativa. |
 | 4 | `pm-c-mejora` Chuy Elizondo | consecuencia | a:3:+6 b:2:+2 | -1 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
 | 4 | `pm-d4-deuda` Propuesta para el consejo · crédito para abrir tiendas | base | a:1:+1 b:3:+3 c:2:-2 | -8 | legacy | Jugable como contenido histórico, pero la opción preferida por el autor sigue siendo la que más conviene. |
 | 4 | `pm-d4-pleito` Octavio Ríos | base | a:3:+3 b:1:-2 c:1:-2 | -7 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
-| 5 | `pm-d5-embargo` Llamada perdida · Claudia Leal (Finanzas) | base | a:2:0 b:0:-7 c:3:+3 | -12 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
+| 5 | `pm-d5-embargo` Llamada perdida · Claudia Leal (Finanzas) | base | a:2:0 b:0:-7! c:3:+3 | -12 | restrictedEthics | Obligación ética o de seguridad. Es válido que tenga una respuesta clara; la opción que cruza la línea roja debe mostrarse como consecuencia, no como alternativa. |
 | 5 | `pm-d5-oferta` Mundo Casa quiere comprarnos · y hay otra opción | base | a:1:+1 b:2:-2 c:3:+1 | -6 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 | 5 | `pm-c-monica` Mi renuncia | consecuencia | a:3:-1 b:1:-1 | -7 | restrictedEthics | Tema de ética o seguridad sin opción de línea roja. Revisar que el feedback no sea sermón. |
 | 6 | `pm-d6-proveedor` Riesgo crítico · Industrias Ocampo, el fabricante de nuestra marca propia | base | a:3:-3 b:1:-2 c:2:-4 | -11 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
-| 6 | `pm-d6-denuncia` Confidencial · Denuncia contra el gerente regional | base | a:3:+3 b:0:-7 c:1:-3 | -8 | restrictedEthics | Tema de ética o seguridad sin opción de línea roja. Revisar que el feedback no sea sermón. |
+| 6 | `pm-d6-denuncia` Confidencial · Denuncia contra el gerente regional | base | a:3:+3 b:0:-7! c:1:-3 | -8 | restrictedEthics | Obligación ética o de seguridad. Es válido que tenga una respuesta clara; la opción que cruza la línea roja debe mostrarse como consecuencia, no como alternativa. |
 | 6 | `pm-c-escuela` Lorena Cantú | consecuencia | a:3:+2 b:1:-1 | -2 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
 | 7 | `pm-d7-consejo` Sesión de consejo · Cierre del trimestre | base | a:3:+3 b:1:-1 c:2:-3 | -12 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
 | 7 | `pm-d7-equipo` Beto Castañeda | base | a:3:+3 b:1:-3 c:2:+1 | -10 | legacy | Jugable como contenido histórico, pero la opción preferida por el autor sigue siendo la que más conviene. |
+| 2 | `pm-d2-temporada` $64 M de mercancía de temporada sin vender | base | a:3:+1 b:1:+2 c:2:+1 | -3 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 4 | `pm-c-temp-compras` La rebaja funcionó. El problema estaba antes | consecuencia | a:3:+1 b:1:+1 c:2:-1 | -1 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 4 | `pm-c-temp-guerra` Octavio Ríos | consecuencia | a:3:0 b:1:-1 c:2:0 | -3 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 5 | `pm-c-temp-bodega` El proveedor cambió la línea | consecuencia | a:3:0 b:2:0 c:1:-2 | -3 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 
 ### Vértice Logística
 
@@ -196,18 +224,22 @@ Opciones como `id:score:balance`. Un `!` marca una línea roja. «Vencer» es el
 | 2 | `vl-d2-almena` Supermercados Almena · Condiciones para el próximo año | base | a:0:-6 b:2:0 c:3:-2 | -9 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 | 2 | `vl-d2-operadores` Se nos van los operadores · 40 en dos meses | base | a:1:-1 b:3:-3 c:2:0 | -7 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 | 3 | `vl-c-frenos` URGENTE · Una unidad se quedó sin frenos en la carretera a Saltillo | consecuencia | a:3:+1 b:1:-3 c:0:-6 | -10 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
-| 3 | `vl-d3-rastreo` Junta · ¿Prometemos rastreo en tiempo real y ventanas de una hora? | base | a:2:-4 b:0:0 c:3:-2 | -8 | restrictedEthics | Tema de ética o seguridad sin opción de línea roja. Revisar que el feedback no sea sermón. |
+| 3 | `vl-d3-rastreo` Junta · ¿Prometemos rastreo en tiempo real y ventanas de una hora? | base | a:2:-4 b:0:0! c:3:-2 | -8 | restrictedEthics | Obligación ética o de seguridad. Es válido que tenga una respuesta clara; la opción que cruza la línea roja debe mostrarse como consecuencia, no como alternativa. |
 | 4 | `vl-c-mejora` Lalo Rangel | consecuencia | a:3:+6 b:2:+2 | -1 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
 | 4 | `vl-d4-deuda` Propuesta para el consejo · crédito para renovar flota y abrir CEDIS | base | a:1:+1 b:3:+3 c:2:-2 | -8 | legacy | Jugable como contenido histórico, pero la opción preferida por el autor sigue siendo la que más conviene. |
 | 4 | `vl-d4-pleito` Antonio Leija | base | a:3:+3 b:1:-2 c:1:-2 | -7 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
-| 5 | `vl-d5-embargo` Llamada perdida · Patricio Lozano (Finanzas) | base | a:2:0 b:0:-7 c:3:+3 | -12 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
+| 5 | `vl-d5-embargo` Llamada perdida · Patricio Lozano (Finanzas) | base | a:2:0 b:0:-7! c:3:+3 | -12 | restrictedEthics | Obligación ética o de seguridad. Es válido que tenga una respuesta clara; la opción que cruza la línea roja debe mostrarse como consecuencia, no como alternativa. |
 | 5 | `vl-d5-oferta` Avante quiere comprarnos · y hay otra opción | base | a:1:+1 b:2:-2 c:3:+1 | -6 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 | 5 | `vl-c-gaby` Mi renuncia | consecuencia | a:3:-1 b:1:-1 | -7 | restrictedEthics | Tema de ética o seguridad sin opción de línea roja. Revisar que el feedback no sea sermón. |
 | 6 | `vl-d6-sistema` Riesgo crítico · Sistemas Lumbre, el proveedor de nuestro sistema de almacén | base | a:3:-3 b:1:-2 c:2:-4 | -11 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
-| 6 | `vl-d6-denuncia` Confidencial · Denuncia contra el gerente regional | base | a:3:+3 b:0:-7 c:1:-3 | -8 | restrictedEthics | Tema de ética o seguridad sin opción de línea roja. Revisar que el feedback no sea sermón. |
+| 6 | `vl-d6-denuncia` Confidencial · Denuncia contra el gerente regional | base | a:3:+3 b:0:-7! c:1:-3 | -8 | restrictedEthics | Obligación ética o de seguridad. Es válido que tenga una respuesta clara; la opción que cruza la línea roja debe mostrarse como consecuencia, no como alternativa. |
 | 6 | `vl-c-escuela` Rocío Guajardo | consecuencia | a:3:+2 b:1:-1 | -2 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
 | 7 | `vl-d7-consejo` Sesión de consejo · Cierre del trimestre | base | a:3:+3 b:1:-1 c:2:-3 | -12 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
 | 7 | `vl-d7-equipo` Pepe Medina | base | a:3:+3 b:1:-3 c:2:+1 | -10 | legacy | Jugable como contenido histórico, pero la opción preferida por el autor sigue siendo la que más conviene. |
+| 2 | `vl-d2-diesel` El diésel subió 12 % y los contratos no | base | a:3:0 b:1:+2 c:2:0 | -3 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 4 | `vl-c-diesel-formula` Supermercados Almena · Recargo por combustible | consecuencia | a:3:+1 b:1:0 c:2:+1 | -2 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 4 | `vl-c-diesel-licitacion` Llamada perdida · Mauricio Cárdenas (Comercial) | consecuencia | a:3:0 b:1:-1 c:2:0 | -5 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 5 | `vl-c-diesel-telemetria` José «Pepe» Medina | consecuencia | a:3:0 b:1:-1 c:2:0 | -3 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 
 ## 5. Veredicto sombra
 

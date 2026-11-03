@@ -5,6 +5,7 @@ import clsx from "clsx";
 import { ArrowRight, BookOpen, Briefcase, Check, Clock, Coffee, FastForward, Flag, Hourglass, Trophy } from "lucide-react";
 import { KPI_KEYS, closedRunsOf } from "@/lib/ceo/engine";
 import { CONTINUOUS_RULES_VERSION } from "@/lib/ceo/rules";
+import { ETHICS_AUDIT_RULES } from "@/lib/ceo/editorial";
 import { firstName, personOf } from "@/lib/ceo/cast";
 import { LESSONS } from "@/lib/ceo/lessons";
 import { useCeo } from "./CeoProvider";
@@ -50,7 +51,10 @@ export function Today() {
   // V5/V6 · el encargo y las reglas se ven ANTES de decidir: nadie reprueba por una regla que no conocía.
   const mandate = v.v5 && !c.seasonDone ? v.v5 : null;
   const prevRun = c.continuous ? closedRunsOf(c.s).at(-1) : undefined;
-  const newRules = !!mandate && c.s.rulesVersion === CONTINUOUS_RULES_VERSION && !!prevRun && (prevRun.rulesVersion ?? 1) < CONTINUOUS_RULES_VERSION;
+  // Aviso de cambio de reglas al pasar de un periodo a otro: de v4 a la evaluación V5 (v6+), o de v6 a la auditoría ética (v7).
+  const curV = c.s.rulesVersion ?? 1, prevV = prevRun?.rulesVersion ?? 1;
+  const newRules = !!mandate && !!prevRun && curV >= 6 && curV <= CONTINUOUS_RULES_VERSION && prevV < 6;
+  const ethicsRules = !!mandate && !!prevRun && curV >= ETHICS_AUDIT_RULES && prevV >= 6 && prevV < ETHICS_AUDIT_RULES;
   const j = c.journey;
   const jPct = j.total ? Math.round((j.met / j.total) * 100) : 100;
   const greeting = c.seasonDone
@@ -117,6 +121,11 @@ export function Today() {
           {newRules && (
             <p data-testid="aviso-reglas-nuevas" className="mb-3 rounded-xl bg-indigo-soft/50 px-3.5 py-2.5 text-[13px] text-ink">
               <b>Desde este mes el consejo evalúa de otra forma.</b> Ya no basta con tener los cinco indicadores en la línea: revisa tu encargo, la salud de la empresa y qué tan bien razonas. Tus meses anteriores conservan la evaluación que ya recibiste.
+            </p>
+          )}
+          {ethicsRules && (
+            <p data-testid="aviso-lineas-rojas" className="mb-3 rounded-xl bg-indigo-soft/50 px-3.5 py-2.5 text-[13px] text-ink">
+              <b>Desde este mes hay más líneas rojas.</b> Prometerle a un cliente algo que no existe y encubrirlo, mover a quien denuncia, darle al equipo una explicación falsa, mantener una fecha que solo se cumple haciendo trampa u ocultar un error culpando a otro ya no se compensan con buenos números. Tus meses anteriores conservan su evaluación.
             </p>
           )}
           <div className="flex items-baseline justify-between gap-2"><h2 className="font-semibold text-ink text-sm">Con qué te va a evaluar el consejo {c.continuous ? "este mes" : "esta temporada"}</h2><Link href="/ceo/carrera" className="shrink-0 text-[11px] font-semibold text-indigo">Detalle →</Link></div>

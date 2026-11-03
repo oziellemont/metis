@@ -5,6 +5,7 @@
  * una ronda a la baja y el recorte que propone el consejo. Personas, empresas y fondos son ficticios.
  */
 import type { CompanyPack, Item } from "../types";
+import { CADENA_KUBIT } from "./kubit-cadena";
 
 const ITEMS: Item[] = [
   // ═══════════════════════════════ DÍA 1 · El consejo y el código
@@ -480,5 +481,5 @@ export const KUBIT: CompanyPack = {
       { id: "joel", start: 14, likes: ["entrevista", "townhall"], dislikes: ["incentivos"], secret: "«Detener un lanzamiento suena bien hasta que culpan al ingeniero. Si me garantizas que nadie se castiga por frenar, el equipo apoya.»" },
     ],
   },
-  items: ITEMS,
+  items: [...ITEMS, ...CADENA_KUBIT],
 };

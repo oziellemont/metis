@@ -8,7 +8,7 @@ import { replay } from "./replay";
 import { KPI_KEYS, KPI_LABEL } from "./engine";
 import { personOf } from "./cast";
 import {
-  EDITORIAL_STATUSES, EDITORIAL_THRESHOLDS, EDITORIAL_VERSION, FINDING_TEXT, RED_LINES, countBy, inventory, scoreAudit,
+  BANK_RED_LINES, EDITORIAL_STATUSES, EDITORIAL_THRESHOLDS, EDITORIAL_VERSION, FINDING_TEXT, RED_LINES, countBy, inventory, scoreAudit,
   type EditorialStatus, type Finding, type ItemAudit,
 } from "./editorial";
 import { SEASON_OBJECTIVES, SHADOW_RULES, SHADOW_VERDICT_VERSION, compare, shadowVerdictOf, type ShadowComparison, type ShadowVerdict } from "./shadow-verdict";
@@ -96,9 +96,10 @@ export function reportMarkdown(pop: PopulationGame[], audits: ItemAudit[] = inve
   L.push("");
   L.push("Opciones que se analizan como consecuencia y nunca deben presentarse como alternativa legítima. Lista editorial a confirmar por revisión humana.");
   L.push("");
-  L.push("| Asunto | Opción | Por qué |");
-  L.push("|---|---|---|");
-  for (const [id, rs] of Object.entries(RED_LINES)) for (const r of rs) L.push(`| ${id} | ${r.option} | ${esc(r.why)} |`);
+  L.push("| Asunto | Opción | Desde reglas | Por qué |");
+  L.push("|---|---|---|---|");
+  for (const [id, rs] of Object.entries(RED_LINES)) for (const r of rs) L.push(`| ${id} | ${r.option} | ${r.since ?? "todas"} | ${esc(r.why)} |`);
+  for (const [arch, rs] of Object.entries(BANK_RED_LINES)) for (const r of rs) L.push(`| banco: bk-*-${arch}-* | ${r.option} | ${r.since ?? "todas"} | ${esc(r.why)} |`);
   L.push("");
 
   L.push("## 4. Inventario asunto por asunto");

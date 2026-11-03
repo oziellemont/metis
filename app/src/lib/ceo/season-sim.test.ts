@@ -94,7 +94,7 @@ it.runIf(process.env.SIM_REPORT === "1")("genera el reporte V6 (temporadas v5 + 
         verdictOf(r.state, r.at).v5?.reasons.forEach((x) => (rsn[x] = (rsn[x] ?? 0) + 1));
       }
       season[name][p.id] = { pass: r1((100 * pass) / n), reasons: rsn };
-      for (const [v, rv] of [["v6", CONTINUOUS_RULES_VERSION], ["v4", LEGACY_CONTINUOUS_RULES_VERSION]] as const) {
+      for (const [v, rv] of [["v6", 6], ["v4", LEGACY_CONTINUOUS_RULES_VERSION]] as const) {
         const pm = Array(MONTHS).fill(0); const cr: Record<string, number> = {};
         for (let i = 0; i < n; i++) {
           playCareer(p.id, name, MONTHS, `${p.id}|${name}|${i}`, rv).months.forEach((m, k) => {

@@ -36,14 +36,52 @@ export const EDITORIAL_THRESHOLDS = Object.freeze({
  * contra quien denuncia, inocuidad). Se analizan como consecuencia, nunca como alternativa legítima.
  * Lista editorial: la revisión humana puede agregar o quitar.
  */
-export const RED_LINES: Record<string, { option: string; why: string }[]> = {
+export interface RedLine {
+  option: string;
+  why: string;
+  /**
+   * Desde qué versión de reglas cuenta en el veredicto. Sin dato = desde siempre. Las que se agregan después llevan
+   * versión: un periodo jugado con reglas anteriores se sigue calificando como se calificó (nada se recalifica).
+   */
+  since?: number;
+}
+/** Versión de reglas desde la que cuentan las líneas rojas de la auditoría ética de noviembre de 2026. */
+export const ETHICS_AUDIT_RULES = 7;
+const E7 = ETHICS_AUDIT_RULES;
+export const RED_LINES: Record<string, RedLine[]> = {
   "d3-planta": [{ option: "b", why: "Seguir operando un equipo con riesgo de accidente ya identificado." }],
   "d6-gastos": [{ option: "b", why: "Encubrir un fraude comprobado a cambio de ventas." }],
   "fn-d3-ppap": [{ option: "b", why: "Saltarse la firma de Calidad y entregar sin declarar la capacidad real." }],
   "fn-c-laura": [{ option: "b", why: "Mantener oculto al cliente un riesgo de calidad conocido." }],
   "fn-d6-denuncia": [{ option: "b", why: "Mover a quienes denunciaron acoso: represalia contra denunciantes." }],
   "gb-d3-brote": [{ option: "b", why: "Seguir abiertos tras un brote de intoxicación sin dar la cara." }],
+  // Auditoría ética (v7): conductas que la estrategia «solo números» elegía sin reprobar.
+  "kb-d3-demo": [{ option: "b", why: "Firmar ante el cliente que una integración funciona cuando no existe, y ocultarlo operándola a mano.", since: E7 }],
+  "pm-d3-entrega": [{ option: "b", why: "Anunciar a los clientes un servicio que no se puede cumplir y encubrir la diferencia.", since: E7 }],
+  "vl-d3-rastreo": [{ option: "b", why: "Prometer en una licitación una capacidad que no existe y encubrir la diferencia.", since: E7 }],
+  "kb-d6-denuncia": [{ option: "b", why: "Mover a quienes denunciaron acoso: represalia contra denunciantes.", since: E7 }],
+  "pm-d6-denuncia": [{ option: "b", why: "Mover a quienes denunciaron acoso: represalia contra denunciantes.", since: E7 }],
+  "vl-d6-denuncia": [{ option: "b", why: "Mover a quienes denunciaron acoso: represalia contra denunciantes.", since: E7 }],
+  "kb-d5-banco": [{ option: "b", why: "Retener media nómina y dar al equipo una explicación falsa.", since: E7 }],
+  "pm-d5-embargo": [{ option: "b", why: "Retener media nómina y dar al equipo una explicación falsa.", since: E7 }],
+  "vl-d5-embargo": [{ option: "b", why: "Retener media nómina y dar al equipo una explicación falsa.", since: E7 }],
+  "c-mant-dosificador": [{ option: "b", why: "Saber que se envió producto con menos contenido del etiquetado y no avisar al cliente ni reponer.", since: E7 }],
 };
+/**
+ * Líneas rojas de los casos del banco, por arquetipo (la letra de cada opción no cambia con el giro: el orden en
+ * pantalla sí). Aplican en todas las industrias que usan el arquetipo.
+ */
+export const BANK_RED_LINES: Record<string, RedLine[]> = {
+  meta: [{ option: "b", why: "Mantener la fecha después de que avisan que solo se llega haciendo trampa (pruebas, registros o seguridad).", since: E7 }],
+  error: [{ option: "b", why: "Ocultar un error propio al afectado y atribuirlo a una falla externa.", since: E7 }],
+};
+/** Líneas rojas de un asunto (propio o del banco), todas las versiones. */
+export function redLinesOf(itemId: string): RedLine[] {
+  if (RED_LINES[itemId]) return RED_LINES[itemId];
+  if (!itemId.startsWith("bk-")) return [];
+  const parts = itemId.slice(3).split("-");
+  return parts.length === 3 ? BANK_RED_LINES[parts[1]] ?? [] : [];
+}
 
 /** Quien aprueba los casos (decisión de Oziel, 29-oct-2026: un solo aprobador, apoyado en su asesoría). */
 export const EDITORIAL_APPROVER = "Oziel";
@@ -115,7 +153,7 @@ function dominantOf(opts: Option[]): string | null {
 
 export function auditItem(pack: CompanyPack, item: Item): ItemAudit {
   const t = EDITORIAL_THRESHOLDS;
-  const red = RED_LINES[item.id] ?? [];
+  const red = redLinesOf(item.id);
   const options: OptionAudit[] = item.options.map((o) => ({
     id: o.id, score: o.score, net: netOf(o.effects), negatives: negativesOf(o.effects),
     ...(red.find((r) => r.option === o.id) ? { redLine: red.find((r) => r.option === o.id)!.why } : {}),
@@ -206,4 +244,9 @@ export function countBy(audits: ItemAudit[]): Record<EditorialStatus, number> {
 }
 
 /** ¿Esta opción cruza una línea roja? (para el veredicto sombra). */
-export const isRedLine = (itemId: string, optionId: string) => (RED_LINES[itemId] ?? []).some((r) => r.option === optionId);
+/**
+ * ¿Esta opción cruza una línea roja? Con `rulesVersion`, solo cuentan las vigentes en esa versión (el veredicto de un
+ * periodo usa la versión con que empezó). Sin versión, todas (vista editorial).
+ */
+export const isRedLine = (itemId: string, optionId: string, rulesVersion?: number) =>
+  redLinesOf(itemId).some((r) => r.option === optionId && (rulesVersion === undefined || !r.since || rulesVersion >= r.since));
