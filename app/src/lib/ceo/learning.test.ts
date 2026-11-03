@@ -2,14 +2,18 @@ import { describe, expect, it } from "vitest";
 import { effectOf, entries, packOf } from "./engine";
 import { playSeason, classicStart } from "./season-sim";
 import { decisionLesson } from "./learning";
+import { ARCHETYPE_CONCEPTS, CASE_CONCEPTS, CONCEPTS, caseConceptOf } from "./concepts";
+import { COMPANIES } from "./companies";
+import { bankItems } from "./cases/bank";
 import type { KpiKey } from "./types";
 
-const BANNED = /\b(correcta|incorrecta|equivocad[oa]|la mejor opción|la respuesta buena)\b/i;
-const COMPANIES = ["cumbre", "forja", "brasa", "kubit", "puntomadero", "vertice"];
+const BANNED = /\b(correcta|incorrecta|equivocad[oa]|la mejor opción|la respuesta buena|libro)\b/i;
+const GENERIC = /un buen líder debe|es importante considerar|siempre hay que/i;
+const COMPANY_IDS = ["cumbre", "forja", "brasa", "kubit", "puntomadero", "vertice"];
 
-describe("lo que deja cada decisión (aprendizaje)", () => {
-  for (const c of COMPANIES) {
-    it(`${c}: cada asunto cerrado explica ganancias, costos, riesgo, principio y alternativa sin calificar`, () => {
+describe("lo que deja cada decisión (aprendizaje V2)", () => {
+  for (const c of COMPANY_IDS) {
+    it(`${c}: cada asunto cerrado explica ganancias, costos, riesgo, concepto y otro camino sin calificar`, () => {
       for (const strat of ["azar", "mejor_score", "peor_score", "contesta_la_mitad"]) {
         const r = playSeason(classicStart(c), strat, `${c}|aprende|${strat}`);
         const pack = packOf(r.state);
@@ -21,37 +25,59 @@ describe("lo que deja cada decisión (aprendizaje)", () => {
           expect(l.principle).toBe(e.item.bitacora.nota);
           // Lo ganado y lo sacrificado coinciden con el efecto oficial del motor.
           const eff = effectOf(r.state, e);
+          const g = l.gained.map((x) => x.text), sc = l.sacrificed.map((x) => x.text);
           for (const k of Object.keys(eff) as KpiKey[]) {
             const d = eff[k] ?? 0;
-            if (d > 0) expect(l.gained.join(" ")).toContain(`${pack.kpiLabel[k]} +${d}`);
-            if (d < 0) expect(l.sacrificed.join(" ")).toContain(`${pack.kpiLabel[k]} ${d}`);
+            if (d > 0) expect(g).toContain(`${pack.kpiLabel[k]} +${d}`);
+            if (d < 0) expect(sc).toContain(`${pack.kpiLabel[k]} ${d}`);
           }
-          const all = [...l.gained, ...l.sacrificed, ...l.risks, l.nextTime ?? ""].join(" ");
+          // Piezas cortas: la tarjeta se lee de un vistazo.
+          for (const t of [...g, ...sc]) expect(t.length).toBeLessThanOrEqual(42);
+          // Siempre hay concepto concreto con nombre (todos los casos lo tienen asignado).
+          expect(l.learned.name).toBeTruthy();
+          // Siempre hay otro camino (cualquier otra opción, no solo las recomendadas), distinto al elegido.
+          expect(l.otherPath).not.toBeNull();
+          if (e.option) expect(l.otherPath!.option).not.toBe(e.option.text.trim());
+          const all = [...g, ...sc, ...l.risks, l.otherPath!.tradeoff, l.otherPath!.whenSense ?? "", l.learned.applied].join(" ");
           expect(all).not.toMatch(BANNED);
-          // La alternativa nunca repite la opción elegida.
-          if (e.option && l.nextTime) expect(l.nextTime).not.toContain(e.option.text.trim());
-          if (l.nextTime) expect(l.nextTime).not.toMatch(/««|»»/);
-          if (e.status === "vencido") expect(l.sacrificed.join(" ")).toMatch(/iniciativa/);
+          if (e.status === "vencido") expect(sc.join(" ")).toMatch(/iniciativa/);
         }
       }
     });
   }
+});
 
-  it("casi siempre ofrece una alternativa defendible para comparar", () => {
-    let total = 0, withAlt = 0;
-    for (const c of COMPANIES) {
-      const r = playSeason(classicStart(c), "azar", `${c}|alt`);
-      for (const e of entries(r.state, r.at).filter((x) => x.status === "decidido")) {
-        total++;
-        if (decisionLesson(r.state, e, packOf(r.state), r.at)?.nextTime) withAlt++;
-      }
+describe("conceptos de dirección por caso", () => {
+  it("los 103 casos propios y todos los arquetipos del banco enseñan un concepto concreto", () => {
+    const missing: string[] = [];
+    for (const p of COMPANIES) {
+      for (const it of [...p.items, ...bankItems(p)]) if (!caseConceptOf(it.id)) missing.push(it.id);
     }
-    expect(withAlt / total).toBeGreaterThan(0.7);
+    expect(missing).toEqual([]);
   });
+  it("cada concepto asignado existe, tiene definición y la aplicación no es genérica", () => {
+    for (const cc of [...Object.values(CASE_CONCEPTS), ...Object.values(ARCHETYPE_CONCEPTS)]) {
+      const c = CONCEPTS[cc.concept];
+      expect(c, cc.concept).toBeTruthy();
+      expect(c.definition.length).toBeGreaterThan(80);
+      expect(cc.applied.length).toBeGreaterThan(80);
+      expect(cc.applied).not.toMatch(GENERIC);
+      expect(`${c.definition} ${cc.applied}`).not.toMatch(BANNED);
+    }
+  });
+  it("no hay casos asignados que no existan (evita conceptos huérfanos)", () => {
+    const ids = new Set(COMPANIES.flatMap((p) => p.items.map((i) => i.id)));
+    for (const id of Object.keys(CASE_CONCEPTS)) expect(ids.has(id), id).toBe(true);
+  });
+  it("hay variedad: el catálogo cubre finanzas, estrategia, negociación y personas", () => {
+    const used = new Set([...Object.values(CASE_CONCEPTS), ...Object.values(ARCHETYPE_CONCEPTS)].map((x) => x.concept));
+    for (const k of ["costo_oportunidad", "liquidez", "apalancamiento", "batna", "piramide", "goodhart", "piloto", "hundidos"]) expect(used.has(k), k).toBe(true);
+    expect(used.size).toBeGreaterThanOrEqual(40);
+  });
+});
 
-  it("un asunto que no se ha cerrado no tiene lección", () => {
-    const s = classicStart("cumbre")();
-    const e = entries(s, s.startedAt ?? Date.now())[0];
-    if (e) expect(decisionLesson(s, { ...e, status: "pendiente" }, packOf(s))).toBeNull();
-  });
+it("un asunto que no se ha cerrado no tiene lección", () => {
+  const s = classicStart("cumbre")();
+  const e = entries(s, s.startedAt ?? Date.now())[0];
+  if (e) expect(decisionLesson(s, { ...e, status: "pendiente" }, packOf(s))).toBeNull();
 });
