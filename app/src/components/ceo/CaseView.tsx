@@ -396,33 +396,72 @@ function Outcome({ e, fresh, part }: { e: Entry; fresh: boolean; part: "resultad
   );
 }
 
-/** Lo que deja la decisión: ganaste, sacrificaste, riesgo, principio y la próxima vez. Solo lectura. */
+/**
+ * Lo que deja la decisión (V2): ligera a primera vista y con detalle al tocar.
+ * Ganaste / Sacrificaste en piezas cortas, un riesgo pendiente, un concepto concreto y «Explorar otro camino».
+ * Solo lectura: no cambia puntajes, efectos ni XP.
+ */
 function LessonCard({ e }: { e: Entry }) {
   const c = useCeo();
   const l = useMemo(() => decisionLesson(c.s, e, c.pack, c.now), [c.s, e, c.pack, c.now]);
+  const [open, setOpen] = useState(false);
+  const [more, setMore] = useState(false);
   if (!l) return null;
-  const Block = ({ title, items, tone }: { title: string; items: string[]; tone: string }) => (
-    <div>
-      <div className={clsx("text-[11px] font-semibold uppercase tracking-wider", tone)}>{title}</div>
-      {items.length ? <ul className="mt-1.5 space-y-1">{items.map((t, i) => <li key={i} className="text-sm text-ink leading-relaxed">{t}</li>)}</ul> : <p className="mt-1.5 text-sm text-slate-400">Nada relevante en esta decisión.</p>}
+  const Chips = ({ title, items, tone }: { title: string; items: { text: string }[]; tone: string }) => (
+    <div className="min-w-0">
+      <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">{title}</div>
+      <div className="mt-2 flex flex-wrap gap-1.5">
+        {items.length ? items.map((t, i) => <span key={i} className={clsx("chip px-2.5 py-1 text-[13px]", tone)}>{t.text}</span>) : <span className="text-sm text-slate-400">Nada relevante</span>}
+      </div>
     </div>
   );
+  const p = l.otherPath;
   return (
     <div className="card p-5 sm:p-6" data-testid="leccion-decision">
-      <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Lo que deja esta decisión</div>
-      <div className="mt-4 grid gap-4 sm:grid-cols-2">
-        <Block title="Lo que ganaste" items={l.gained} tone="text-indigo" />
-        <Block title="Lo que sacrificaste" items={l.sacrificed} tone="text-coral" />
+      <div className="flex items-center justify-between gap-3">
+        <h3 className="font-semibold text-ink">Lo que deja esta decisión</h3>
+        <span className="chip bg-mint-soft text-sob gap-1 text-xs"><CheckCheck size={13} /> Completada</span>
       </div>
-      {l.risks.length > 0 && <div className="mt-4 rounded-xl bg-amber-soft/60 px-4 py-3"><Block title="Riesgo que queda" items={l.risks} tone="text-slate-600" /></div>}
-      <div className="mt-4 pt-4 border-t border-slate-100">
-        <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Principio</div>
-        <p className="mt-1.5 text-sm text-ink leading-relaxed">{l.principle}</p>
+      <div className="mt-4 grid gap-4 grid-cols-2">
+        <Chips title="Ganaste" items={l.gained} tone="bg-indigo-soft text-indigo" />
+        <Chips title="Sacrificaste" items={l.sacrificed} tone="bg-coral-soft text-coral" />
       </div>
-      {l.nextTime && (
-        <div className="mt-4">
-          <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">La próxima vez</div>
-          <p className="mt-1.5 text-sm text-slate-600 leading-relaxed">{l.nextTime}</p>
+      {l.risks.length > 0 && (
+        <div className="mt-4 rounded-xl bg-amber-soft/60 px-4 py-3" data-testid="riesgo-pendiente">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Riesgo pendiente</div>
+          <p className="mt-1 text-sm text-ink leading-relaxed">{l.risks[0]}</p>
+          {more && l.risks.slice(1).map((r, i) => <p key={i} className="mt-1 text-sm text-ink leading-relaxed">{r}</p>)}
+          {l.risks.length > 1 && !more && <button onClick={() => setMore(true)} className="mt-1 text-xs font-medium text-indigo">Ver {l.risks.length - 1} más</button>}
+        </div>
+      )}
+      <div className="mt-4 pt-4 border-t border-slate-100" data-testid="lo-que-aprendiste">
+        <div className="text-[11px] font-semibold uppercase tracking-wider text-indigo">Lo que aprendiste</div>
+        {l.learned.name && <div className="mt-1 font-semibold text-ink">{l.learned.name}</div>}
+        <p className="mt-1 text-sm text-slate-600 leading-relaxed">{l.learned.applied}</p>
+      </div>
+      {(p || l.learned.definition) && (
+        <button onClick={() => setOpen((v) => !v)} className="mt-4 w-full flex items-center justify-between rounded-xl bg-slate-50 hover:bg-slate-100 px-4 py-3 text-sm font-medium text-ink transition-colors" aria-expanded={open} data-testid="explorar-otro-camino">
+          <span>{open ? "Ocultar" : "Explorar otro camino"}</span>
+          <ArrowRight size={15} className={clsx("transition-transform", open && "rotate-90")} />
+        </button>
+      )}
+      {open && (
+        <div className="mt-3 space-y-4 academy-in">
+          {p && (
+            <div data-testid="otro-camino">
+              <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Otro camino posible</div>
+              <p className="mt-1.5 text-sm text-ink leading-relaxed">También podías: <span className="font-medium">{p.option.replace(/^«|»$/g, "")}</span></p>
+              <p className="mt-1.5 text-sm text-slate-600 leading-relaxed">{p.tradeoff}{p.whenSense ? ` ${p.whenSense}` : ""}</p>
+              <p className="mt-1.5 text-sm text-slate-500 leading-relaxed"><span className="font-medium text-slate-600">Qué habría pasado:</span> {p.outcome}</p>
+              <p className="mt-2 text-xs text-slate-400">No es la respuesta correcta: es otra estrategia, con su propio costo, para comparar.</p>
+            </div>
+          )}
+          {l.learned.definition && (
+            <div className="rounded-xl bg-indigo-soft/40 px-4 py-3">
+              <div className="text-[11px] font-semibold uppercase tracking-wider text-indigo">El concepto</div>
+              <p className="mt-1 text-sm text-ink leading-relaxed"><b>{l.learned.name}:</b> {l.learned.definition}</p>
+            </div>
+          )}
         </div>
       )}
     </div>
