@@ -65,6 +65,36 @@ export const CONCEPTS: Record<string, Concept> = Object.fromEntries([
   C("aversion_perdida", "Aversión a la pérdida", "Las personas sienten más perder algo que ganar algo equivalente. Un cambio que quita algo querido genera rechazo aunque convenga; una salida parcial reduce la sensación de pérdida sin deshacer el cambio."),
 ].map((c) => [c.id, c]));
 
+/**
+ * Lección de Academy que explica a fondo cada concepto (la teoría detrás de lo que el caso puso en práctica).
+ * Solo navegación: no cambia puntajes, XP ni el desbloqueo de lecciones.
+ */
+export const CONCEPT_LESSON: Record<string, string> = {
+  costo_oportunidad: "finanzas", apalancamiento: "finanzas", etapas: "finanzas", estructura_capital: "finanzas",
+  liquidez: "finanzas-2",
+  concentracion: "estrategia-2", pareto: "estrategia-2", menu: "estrategia-2", estrategia_elegir: "estrategia-2",
+  guerra_precios: "estrategia", elasticidad: "estrategia", plataformas: "estrategia",
+  batna: "negociacion", intereses: "negociacion", integrativa: "negociacion",
+  juego_repetido: "negociacion-2", equidad: "negociacion-2",
+  piramide: "comunicacion",
+  recorte_unico: "comunicacion-2", comunicacion_cambio: "comunicacion-2",
+  visibilidad: "personas", motivacion: "personas",
+  mentoria: "personas-2", escalar_sistema: "personas-2",
+  sucesion: "personas-3", talento_interno: "personas-3",
+  seguridad_psicologica: "equipos",
+  cascada: "alineacion", silos: "alineacion",
+  goodhart: "alineacion-2",
+  piloto: "innovacion", innovador: "innovacion", escalar_mejora: "innovacion",
+  hundidos: "innovacion-2", premortem: "innovacion-2", aversion_perdida: "innovacion-2",
+  tolera: "cultura", rituales: "cultura", calidad_fuente: "cultura",
+  cultura_justa: "cultura-2",
+  debido_proceso: "conversaciones-2",
+  diagnostico: "mentalidad-2",
+  adaptativo: "mentalidad",
+  crisis_com: "crisis", irreversible: "crisis", respuesta_incidentes: "crisis", proveedor_unico: "crisis",
+  consejo_gob: "consejo", cortoplacismo: "consejo", expectativas: "consejo", protocolo_familiar: "consejo",
+};
+
 export interface CaseConcept { concept: string; applied: string }
 const A = (concept: string, applied: string): CaseConcept => ({ concept, applied });
 

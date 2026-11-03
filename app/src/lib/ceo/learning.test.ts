@@ -2,7 +2,8 @@ import { describe, expect, it } from "vitest";
 import { effectOf, entries, packOf } from "./engine";
 import { playSeason, classicStart } from "./season-sim";
 import { decisionLesson } from "./learning";
-import { ARCHETYPE_CONCEPTS, CASE_CONCEPTS, CONCEPTS, caseConceptOf } from "./concepts";
+import { ARCHETYPE_CONCEPTS, CASE_CONCEPTS, CONCEPTS, CONCEPT_LESSON, caseConceptOf } from "./concepts";
+import { LESSONS, lessonById } from "./lessons";
 import { COMPANIES } from "./companies";
 import { bankItems } from "./cases/bank";
 import type { KpiKey } from "./types";
@@ -80,4 +81,33 @@ it("un asunto que no se ha cerrado no tiene lección", () => {
   const s = classicStart("cumbre")();
   const e = entries(s, s.startedAt ?? Date.now())[0];
   if (e) expect(decisionLesson(s, { ...e, status: "pendiente" }, packOf(s))).toBeNull();
+});
+
+describe("cada concepto lleva a su lección de Academy", () => {
+  it("todos los conceptos tienen una lección que existe, y no sobran entradas", () => {
+    for (const id of Object.keys(CONCEPTS)) expect(lessonById(CONCEPT_LESSON[id] ?? ""), id).toBeTruthy();
+    for (const id of Object.keys(CONCEPT_LESSON)) expect(CONCEPTS[id], id).toBeTruthy();
+  });
+  it("los conceptos se reparten en muchas lecciones (no todo apunta a una sola)", () => {
+    const used = new Set(Object.values(CONCEPT_LESSON));
+    expect(used.size).toBeGreaterThanOrEqual(18);
+    expect(used.size / LESSONS.length).toBeGreaterThan(0.7);
+  });
+  it("conceptos clave van a la lección que los explica", () => {
+    expect(CONCEPT_LESSON.liquidez).toBe("finanzas-2");
+    expect(CONCEPT_LESSON.apalancamiento).toBe("finanzas");
+    expect(CONCEPT_LESSON.hundidos).toBe("innovacion-2");
+    expect(CONCEPT_LESSON.batna).toBe("negociacion");
+    expect(CONCEPT_LESSON.goodhart).toBe("alineacion-2");
+    expect(CONCEPT_LESSON.piramide).toBe("comunicacion");
+    expect(CONCEPT_LESSON.crisis_com).toBe("crisis");
+  });
+  it("la tarjeta de cada decisión trae su lección", () => {
+    for (const c of COMPANY_IDS) {
+      const r = playSeason(classicStart(c), "azar", `${c}|academy`);
+      const pack = packOf(r.state);
+      const closed = entries(r.state, r.at).filter((e) => e.status === "decidido" || e.status === "vencido");
+      for (const e of closed) expect(lessonById(decisionLesson(r.state, e, pack, r.at)!.learned.lesson ?? ""), e.item.id).toBeTruthy();
+    }
+  });
 });
