@@ -4,6 +4,7 @@
  * ingeniería de menú). Personas, marcas y plataformas son ficticias.
  */
 import type { CompanyPack, Item } from "../types";
+import { CADENA_BRASA } from "./brasa-cadena";
 
 const ITEMS: Item[] = [
   // ═══════════════════════════════ DÍA 1
@@ -421,5 +422,5 @@ export const BRASA: CompanyPack = {
       { id: "paty", start: 40, likes: ["ejemplo"], secret: "«Don Ignacio me pregunta todo a mí. Si me tienes al tanto, le hablo bien de ti.»" },
     ],
   },
-  items: ITEMS,
+  items: [...ITEMS, ...CADENA_BRASA],
 };

@@ -6,6 +6,7 @@
  * consejo. Personas, empresas y fondos son ficticios.
  */
 import type { CompanyPack, Item } from "../types";
+import { CADENA_PUNTOMADERO } from "./puntomadero-cadena";
 
 /** Frases que dicen el giro original (el vocabulario por especialidad las cambia; ver career/lexicon.ts). */
 export const PM_TAGLINE = "Sesenta ferreterías y tiendas para el hogar con clientes de toda la vida. Un competidor nacional a tres cuadras.";
@@ -486,5 +487,5 @@ export const PUNTOMADERO: CompanyPack = {
       { id: "beto", start: 14, likes: ["entrevista", "townhall"], dislikes: ["incentivos"], secret: "«Frenar una promoción suena bien hasta que culpan al gerente. Si me garantizas que nadie se castiga por frenar, las tiendas apoyan.»" },
     ],
   },
-  items: ITEMS,
+  items: [...ITEMS, ...CADENA_PUNTOMADERO],
 };

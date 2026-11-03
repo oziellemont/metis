@@ -4,6 +4,7 @@
  * proveedor único en quiebra, recapitalización de un fondo). Personas, empresas y armadoras son ficticias.
  */
 import type { CompanyPack, Item } from "../types";
+import { CADENA_FORJA } from "./forja-cadena";
 
 const ITEMS: Item[] = [
   // ═══════════════════════════════ DÍA 1 · El fondo y la línea
@@ -484,5 +485,5 @@ export const FORJA: CompanyPack = {
       { id: "fermin", start: 14, likes: ["entrevista", "townhall"], dislikes: ["incentivos"], secret: "«Parar la línea suena bien hasta que culpan al operador. Si me garantizas que nadie se castiga por parar, el sindicato apoya.»" },
     ],
   },
-  items: ITEMS,
+  items: [...ITEMS, ...CADENA_FORJA],
 };

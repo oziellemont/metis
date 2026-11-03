@@ -918,8 +918,8 @@ function verdictV5(s: CeoState, now: number, k: Kpis, line: number, R5: NonNulla
   const L = KPI_LABEL;
   if (k.caja < C.insolvency) { reasons.push("insolvencia"); why.push(`La caja cerró en ${k.caja}: zona de insolvencia (menos de ${C.insolvency}). Ningún otro indicador compensa quedarse sin dinero.`); }
   if (k.consejo < C.boardLost) { reasons.push("consejo_perdido"); why.push(`El consejo cerró en ${k.consejo}: ya no te sostiene (menos de ${C.boardLost}).`); }
-  const red = entries(s, now).filter((e) => e.status === "decidido" && e.decision && isRedLine(e.item.id, e.decision.option));
-  if (red.length) { reasons.push("linea_roja"); why.push(`Cruzaste una línea roja en «${red[0].item.subject}»: seguridad, fraude, represalia u ocultar un riesgo al cliente no se compensan con resultados.`); }
+  const red = entries(s, now).filter((e) => e.status === "decidido" && e.decision && isRedLine(e.item.id, e.decision.option, rulesVersionOf(s)));
+  if (red.length) { reasons.push("linea_roja"); why.push(`Cruzaste una línea roja en «${red[0].item.subject}»: seguridad, fraude, represalia, engañar u ocultarle un riesgo al cliente no se compensan con resultados.`); }
   const obj = SEASON_OBJECTIVES[s.company];
   const objectives = (obj?.kpis ?? []).map((x) => ({ kpi: x, value: k[x], ok: k[x] >= line }));
   for (const o of objectives.filter((x) => !x.ok)) why.push(`${L[o.kpi]} era uno de los dos objetivos que te encargó el consejo y cerró en ${o.value} (línea ${line}).`);

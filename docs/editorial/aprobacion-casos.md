@@ -409,15 +409,15 @@ Respuesta: `c-mant-inversion | ... | ...`
 
 ### c-mant-dosificador · Día 5 · consecuencia · Javier Ortiz
 
-**Propuesta automática:** etica. Tema de ética o seguridad sin opción de línea roja. Revisar que el feedback no sea sermón.
+**Propuesta automática:** etica. Obligación ética o de seguridad. Es válido que tenga una respuesta clara; la opción que cruza la línea roja debe mostrarse como consecuencia, no como alternativa.
 
 **Caso:** Jefe, las mordazas nuevas jalan perfecto: no se nos ha vuelto a parar la línea. Pero salió otra cosa. El dosificador, que no tocamos, está llenando disparejo. En la auditoría de hoy, 1 de cada 20 empaques traía menos contenido del que dice la etiqueta. Ya separé el lote. Lo que no sé es cuánto salió así en las últimas dos semanas.
 
 **Pregunta:** ¿Qué haces con lo que ya salió?
 
 - **A** (score 3, balance 0): Calibrar hoy, avisarle a SuperNorte qué lotes pueden venir bajos y reponerles sin costo lo enviado en esas dos semanas. → Caja -3, Clientes +2, Consejo +1.
-- **B** (score 1, balance -2): Calibrar hoy y reforzar el muestreo. Lo enviado está dentro de la tolerancia promedio y nadie se ha quejado: no se retira. → Caja +1, Equipo -1, Clientes -2.
-- **C** (score 2, balance -1): Calibrar hoy y que Calidad mida una muestra grande de lo enviado antes de decidir si se repone; en 48 horas lo resolvemos. → Caja -1, Equipo +1, Clientes -1.
+- **B** (score 1, balance -2): Calibrar hoy, reforzar el muestreo y no decirle nada a SuperNorte de lo que ya salió: el promedio queda dentro de tolerancia y nadie se ha quejado. → Caja +1, Equipo -1, Clientes -2. Línea roja: Saber que se envió producto con menos contenido del etiquetado y no avisar al cliente ni reponer.
+- **C** (score 2, balance -1): Calibrar hoy, avisarle ya a SuperNorte que esos lotes están en revisión y que Calidad mida una muestra grande; en 48 horas le digo cuánto se repone. → Caja -1, Equipo +1, Clientes -1.
 - **Sin respuesta** (balance -3): Equipo -1, Clientes -2.
 
 Respuesta: `c-mant-dosificador | ... | ...`
@@ -676,6 +676,66 @@ Respuesta: `fn-d7-consejo | ... | ...`
 
 Respuesta: `fn-d7-sindicato | ... | ...`
 
+### fn-d2-inventario · Día 2 · 41 días de inventario: la caja está en el almacén
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Director: cerramos el mes con 41 días de inventario; la meta del fondo es 25. Son cerca de $190 M parados en materia prima, piezas en proceso y producto terminado. Zertuche preguntó en el comité por qué la caja no sube si vendemos más. Ramón dice que el colchón existe porque Aurora cambia su programa cada semana y nadie quiere ser el proveedor que le para la línea. Las dos cosas son ciertas. Te pongo tres caminos. Ninguno es gratis.
+
+**Pregunta:** ¿Cómo liberas la caja atrapada en inventario?
+
+- **A** (score 3, balance +2): Bajar a 30 días en ocho semanas con los equipos de cada línea; Calidad cuida las piezas críticas de Aurora. → Caja +2, Margen -1, Equipo +2, Consejo -1.
+- **B** (score 1, balance +2): Congelar compras de materia prima tres semanas y producir con lo que hay, para que el fondo vea la caja este mes. → Caja +4, Equipo -1, Clientes -2, Consejo +1.
+- **C** (score 2, balance +2): Adelantar caja con factoraje de las facturas de Aurora y bajar el inventario despacio, sin mover la producción. → Caja +3, Margen -2, Equipo +1.
+- **Sin respuesta** (balance -3): Caja -1, Consejo -2.
+
+Respuesta: `fn-d2-inventario | ... | ...`
+
+### fn-c-inv-lineas · Día 4 · consecuencia · Chuy Morales
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Director, buenas noticias de la línea 3: en tres semanas bajamos de 41 a 31 días de inventario sin un solo faltante. Encontramos $12 M en piezas de un modelo que Aurora ya no pide. Y la gente propone hacerlo en las otras cuatro líneas. Nomás una cosa: el bono de Ramón y de los supervisores se paga por piezas producidas, no por inventario. Así nadie va a querer producir menos.
+
+**Pregunta:** ¿Cómo sigues?
+
+- **A** (score 3, balance +1): Llevarlo a las cinco líneas y cambiar el bono: mitad por entregas a tiempo y mitad por días de inventario. → Caja +3, Margen -1, Equipo -2, Consejo +1.
+- **B** (score 2, balance +2): Llevarlo a las cinco líneas sin tocar el bono todavía, y revisar los incentivos con Teresa en enero. → Caja +2, Margen -1, Equipo +1.
+- **C** (score 1, balance +2): Dejar la línea 3 como ejemplo y usar los $11 M liberados para adelantar el pago al fondo este trimestre. → Caja +1, Equipo -2, Consejo +3.
+- **Sin respuesta** (balance -2): Equipo -2.
+
+Respuesta: `fn-c-inv-lineas | ... | ...`
+
+### fn-c-inv-faltante · Día 4 · consecuencia · Llamada perdida · Ing. Ramón Villarreal
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Mensaje de voz · 0:51 «Director, Aurora adelantó dos días el programa de la SUV y nos falta materia prima para una pieza crítica. El proveedor la puede traer, pero no antes del jueves. Si no surtimos el miércoles, les paramos la línea.» «Necesito que usted decida ya.»
+
+**Pregunta:** Aurora puede quedarse sin piezas. ¿Qué haces?
+
+- **A** (score 3, balance -1): Pagar el flete aéreo, descongelar las compras críticas y llamarle yo a Greg hoy para avisarle del riesgo. → Caja -3, Equipo +1, Clientes +1.
+- **B** (score 2, balance -1): Pedirle a Aurora mover dos días su programa y ofrecer pagar nosotros sus horas extra si hacen falta. → Caja +1, Clientes -2.
+- **C** (score 1, balance -1): Surtir parcial el miércoles con lo que haya y meter tres turnos extra el fin de semana para completar. → Caja +2, Equipo -2, Clientes -1.
+- **Sin respuesta** (balance -8): Caja -4, Clientes -4.
+
+Respuesta: `fn-c-inv-faltante | ... | ...`
+
+### fn-c-inv-factoraje · Día 5 · consecuencia · Aurora Motors · Supplier financial review
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Estimado Director: Nuestro departamento de Tesorería recibió el aviso de cesión de sus facturas a un banco. Es la primera vez que Forja Norte lo hace en ocho años. Para la evaluación de proveedores de la plataforma 2028 necesitamos sus estados financieros del trimestre y una explicación de su situación de liquidez antes del viernes. Greg Holloway Purchasing Manager · Aurora Motors México
+
+**Pregunta:** Aurora pregunta por tu liquidez. ¿Qué le respondes?
+
+- **A** (score 3, balance 0): Mandar los estados financieros y explicar que el factoraje es temporal mientras bajamos inventario. → Caja -1, Margen -1, Clientes +1, Consejo +1.
+- **B** (score 2, balance 0): Cancelar el factoraje este mes para que no lleguen más avisos y cubrir el hueco con el crédito del banco. → Caja -1, Margen +1, Clientes +1, Consejo -1.
+- **C** (score 1, balance 0): Responder que es práctica normal de tesorería y no mandar estados financieros hasta que lo pida el contrato. → Caja +1, Margen +1, Clientes -2.
+- **Sin respuesta** (balance -4): Clientes -3, Consejo -1.
+
+Respuesta: `fn-c-inv-factoraje | ... | ...`
+
 ## Grupo Brasa
 
 ### gb-d1-carta · Día 1 · Te dejo las llaves de Brasa
@@ -900,6 +960,66 @@ Respuesta: `gb-d6-sucesion | ... | ...`
 
 Respuesta: `gb-d7-consejo | ... | ...`
 
+### gb-d2-proveedor · Día 2 · Proveedor de res: 14 % más barato
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Te paso el análisis que me pediste. La res es el 38 % de nuestro costo de insumos y encontré un proveedor de Sonora 14 % más barato que el actual. Con eso el prime cost baja casi dos puntos. Andrés probó la muestra y dice que está bien, pero que no es igual: el marmoleo varía más de lote a lote y al proveedor no lo conocemos en temporada alta. El proveedor actual lleva 11 años con nosotros y nunca nos ha fallado un fin de semana.
+
+**Pregunta:** ¿Cambias de proveedor de res?
+
+- **A** (score 3, balance +1): Hacer una prueba ciega en cuatro sucursales tres semanas, con calificación de comensales y merma, antes de decidir. → Margen -1, Equipo +1, Clientes +1.
+- **B** (score 1, balance +1): Cambiar en las 34 sucursales desde el lunes: el margen es el encargo del consejo y la muestra pasó. → Margen +3, Equipo -1, Clientes -1.
+- **C** (score 2, balance +1): Llevarle la cotización al proveedor actual y pedirle igualar al menos la mitad del ahorro por volumen anual. → Caja -1, Margen +1, Clientes +1.
+- **Sin respuesta** (balance -2): Margen -1, Consejo -1.
+
+Respuesta: `gb-d2-proveedor | ... | ...`
+
+### gb-c-prov-piloto · Día 4 · consecuencia · Resultados de la prueba ciega de res
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Te paso los resultados de la prueba ciega. En tres sucursales la calificación de los comensales quedó igual y la merma bajó un poco. En Andares, la que más vende cortes premium, la calificación del rib eye bajó de 4.7 a 4.3. Maru dice que los clientes frecuentes sí lo notaron. Fer quiere cambiar en todas. Yo propongo otra cosa. Tú decides.
+
+**Pregunta:** ¿Cómo usas los resultados?
+
+- **A** (score 3, balance +1): Cambiar en cortes de uso diario y dejar los premium con el proveedor actual; medir calificación cada semana. → Caja -1, Margen +2, Equipo -1, Clientes +1.
+- **B** (score 2, balance +1): Cambiar todo en las 34 sucursales: tres de cuatro no notaron nada y Andares puede ajustar su cocción. → Margen +3, Clientes -2.
+- **C** (score 1, balance -1): Quedarse con el proveedor actual en todo: un punto de calificación en Andares vale más que el ahorro. → Margen -1, Equipo -1, Clientes +1.
+- **Sin respuesta** (balance -2): Margen -1, Equipo -1.
+
+Respuesta: `gb-c-prov-piloto | ... | ...`
+
+### gb-c-prov-resenas · Día 4 · consecuencia · Maru Gutiérrez
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Director, en Andares nos están llegando reseñas de carne dura. Ya van 23 esta semana en las apps. Y el sábado el proveedor nuevo no completó el pedido: nos faltó rib eye en 6 sucursales en la noche más fuerte. Sara dice que la calificación general bajó de 4.5 a 4.2. Los gerentes me preguntan qué les digo a los clientes.
+
+**Pregunta:** La calidad se está notando. ¿Qué haces?
+
+- **A** (score 3, balance -1): Regresar los cortes premium al proveedor anterior, aunque cueste 3 % más, y responder cada reseña con una invitación. → Caja -1, Margen -2, Clientes +2.
+- **B** (score 2, balance -1): Quedarse con el proveedor nuevo, exigirle por contrato calidad y entregas, y darle un mes para corregir. → Margen +1, Clientes -2.
+- **C** (score 1, balance -1): Mantener al proveedor y lanzar una promoción en apps para subir la calificación mientras se estabiliza. → Margen -1, Equipo -1, Clientes +1.
+- **Sin respuesta** (balance -4): Equipo -1, Clientes -3.
+
+Respuesta: `gb-c-prov-resenas | ... | ...`
+
+### gb-c-prov-contrato · Día 5 · consecuencia · El proveedor de res acepta… con condiciones
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** El proveedor actual aceptó bajar 8 % el precio, más de lo que esperaba. La condición: contrato de un año, volumen mínimo y 20 % de anticipo del primer trimestre. Dice que con la res tan volátil no puede bajar sin asegurar el volumen. Don Ignacio quiere firmar porque es «el de siempre». Lourdes pregunta qué pasa si en marzo abrimos menos sucursales de las previstas.
+
+**Pregunta:** ¿Firmas el contrato anual?
+
+- **A** (score 3, balance 0): Firmar con el volumen mínimo en 85 % y el anticipo en dos pagos; negociar esos dos puntos antes de aceptar. → Caja -2, Margen +2, Equipo -1, Consejo +1.
+- **B** (score 2, balance 0): Firmar tal como lo propone: es el proveedor de siempre y el descuento es mejor de lo esperado. → Caja -3, Margen +2, Consejo +1.
+- **C** (score 1, balance -1): No firmar: usar el 8 % como piso y volver a pedirle al proveedor nuevo una prueba en cuatro sucursales. → Caja +1, Margen -1, Consejo -1.
+- **Sin respuesta** (balance -2): Margen -1, Consejo -1.
+
+Respuesta: `gb-c-prov-contrato | ... | ...`
+
 ## Kúbit
 
 ### kb-d1-carta · Día 1 · Te damos la bienvenida a Kúbit. Esto es lo que esperamos.
@@ -979,14 +1099,14 @@ Respuesta: `kb-c-caida | ... | ...`
 
 ### kb-d3-demo · Día 3 · Junta · Grupo Ferrán firma el viernes si la integración ya existe
 
-**Propuesta automática:** etica. Tema de ética o seguridad sin opción de línea roja. Revisar que el feedback no sea sermón.
+**Propuesta automática:** etica. Obligación ética o de seguridad. Es válido que tenga una respuesta clara; la opción que cruza la línea roja debe mostrarse como consecuencia, no como alternativa.
 
 **Caso:** Sala de juntas, 8:00. Bruno (Comercial), Emilio (Producto) y Renata (Éxito del Cliente). Grupo Ferrán, el prospecto más grande del año, firma el viernes si la plataforma ya se conecta con su banco. Bruno Medina: Ferrán son $24 M al año. Firma el viernes si le confirmamos que la integración con su banco ya funciona. La competencia se lo está prometiendo. Renata Cruz: La integración no existe. Si firmamos diciendo que ya está, en tres meses tengo a otro cliente enojado y yo soy la que da la cara. No voy a sostener eso. Emilio Salinas: En seis semanas la tengo si me dejan concentrar al equipo. Mientras, la podemos hacer a mano con un archivo diario. Bruno Medina: Todos en la industria venden así, Renata. ¿Qué decidimos, Director?
 
 **Pregunta:** La sala espera tu decisión.
 
 - **A** (score 2, balance -4): Decirle a Ferrán la verdad y proponer firmar en 8 semanas, cuando la integración esté lista y probada con sus propios datos. → Margen -1, Equipo +3, Clientes -4, Consejo -2.
-- **B** (score 0, balance 0): Firmar el viernes confirmando que la integración funciona; mientras, la operamos a mano sin que el cliente lo note. → Equipo -6, Clientes +4, Consejo +2.
+- **B** (score 0, balance 0): Firmar el viernes confirmando que la integración funciona; mientras, la operamos a mano sin que el cliente lo note. → Equipo -6, Clientes +4, Consejo +2. Línea roja: Firmar ante el cliente que una integración funciona cuando no existe, y ocultarlo operándola a mano.
 - **C** (score 3, balance -2): Firmar el viernes con la verdad: integración en 8 semanas por contrato, operación manual mientras y descuento si no llega. → Caja -2, Margen -3, Equipo +2, Clientes +1.
 - **Sin respuesta** (balance -8): Equipo -6, Consejo -2.
 
@@ -1038,14 +1158,14 @@ Respuesta: `kb-d4-pleito | ... | ...`
 
 ### kb-d5-banco · Día 5 · Llamada perdida · Andrea Quiroga (Finanzas)
 
-**Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
+**Propuesta automática:** etica. Obligación ética o de seguridad. Es válido que tenga una respuesta clara; la opción que cruza la línea roja debe mostrarse como consecuencia, no como alternativa.
 
 **Caso:** Mensaje de voz · 0:48 «Es urgente. La autoridad intervino el banco donde tenemos el 70% de la caja, unos $90 M. Las cuentas están congeladas desde hoy en la mañana.» «La nómina de 210 personas sale en tres días: $14 M. En la otra cuenta tenemos $38 M. Nadie sabe todavía si los depósitos grandes se van a recuperar completos ni cuándo. Ya hay rumores en redes. Necesito que me digas qué hacemos.»
 
 **Pregunta:** ¿Qué decides en las próximas horas?
 
 - **A** (score 2, balance 0): Pagar la nómina completa con la otra cuenta, repartir el resto en dos bancos y avisar hoy al equipo y a los clientes lo que sabemos. → Caja -3, Equipo +3, Clientes +1, Consejo -1.
-- **B** (score 0, balance -7): No decir nada hasta saber más. Pagar solo la mitad de la nómina por si acaso y explicar que fue un error del sistema. → Caja +2, Equipo -6, Consejo -3.
+- **B** (score 0, balance -7): No decir nada hasta saber más. Pagar solo la mitad de la nómina por si acaso y explicar que fue un error del sistema. → Caja +2, Equipo -6, Consejo -3. Línea roja: Retener media nómina y dar al equipo una explicación falsa.
 - **C** (score 3, balance +3): Pedir hoy al consejo una línea puente, pagar la nómina completa, avisar al equipo con hechos y armar con Andrea un plan de 30 días. → Caja -1, Margen -1, Equipo +2, Consejo +3.
 - **Sin respuesta** (balance -12): Equipo -8, Consejo -4.
 
@@ -1097,14 +1217,14 @@ Respuesta: `kb-d6-centro | ... | ...`
 
 ### kb-d6-denuncia · Día 6 · Confidencial · Denuncia contra el gerente regional de ventas
 
-**Propuesta automática:** etica. Tema de ética o seguridad sin opción de línea roja. Revisar que el feedback no sea sermón.
+**Propuesta automática:** etica. Obligación ética o de seguridad. Es válido que tenga una respuesta clara; la opción que cruza la línea roja debe mostrarse como consecuencia, no como alternativa.
 
 **Caso:** Director (confidencial): Por la línea de denuncia anónima llegaron tres reportes de acoso contra Rafael Ugalde, gerente regional de ventas. Es el equipo con mejores números y Bruno lo considera su sucesor. Una de las vendedoras pidió cambio de equipo «por motivos personales» hace un mes. Una investigación externa toma unas 3 semanas. Necesito saber cómo procedemos mientras tanto. Carmen Olvera Directora de Personas
 
 **Pregunta:** ¿Qué decides mientras se investiga?
 
 - **A** (score 3, balance +3): Suspenderlo con goce de sueldo mientras una firma externa investiga, proteger a quienes denunciaron y que Bruno atienda sus cuentas. → Margen -2, Equipo +4, Consejo +1.
-- **B** (score 0, balance -7): Que siga trabajando mientras se investiga, pero cambiar de equipo a quienes denunciaron y que Personas lo investigue internamente, sin ruido. → Margen +1, Equipo -6, Consejo -2.
+- **B** (score 0, balance -7): Que siga trabajando mientras se investiga, pero cambiar de equipo a quienes denunciaron y que Personas lo investigue internamente, sin ruido. → Margen +1, Equipo -6, Consejo -2. Línea roja: Mover a quienes denunciaron acoso: represalia contra denunciantes.
 - **C** (score 1, balance -3): Despedirlo de inmediato. Con tres denuncias coincidentes no hay nada que investigar y cada día que sigue es un riesgo. → Caja -3, Equipo +3, Consejo -3.
 - **Sin respuesta** (balance -8): Equipo -6, Consejo -2.
 
@@ -1153,6 +1273,66 @@ Respuesta: `kb-d7-consejo | ... | ...`
 - **Sin respuesta** (balance -10): Margen -2, Equipo -6, Clientes -2.
 
 Respuesta: `kb-d7-equipo | ... | ...`
+
+### kb-d2-nube · Día 2 · La factura de la nube subió 40 %
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Director: la factura de infraestructura en la nube subió 40 % en seis meses. Ya es nuestro segundo gasto después de la nómina y nos quita casi un mes de caja al año. Memo dice que hay mucho desperdicio: servidores encendidos que nadie usa y copias que se duplican. Emilio quiere aprovechar para cambiar de proveedor, que es más barato. Te pongo los tres caminos que tenemos.
+
+**Pregunta:** ¿Qué haces con el costo de la nube?
+
+- **A** (score 3, balance +2): Optimizar por etapas con el equipo de guardia: apagar lo que no se usa y medir cada semana cuánto bajamos. → Caja +2, Equipo -1, Clientes +1.
+- **B** (score 1, balance +3): Migrar toda la plataforma al proveedor más barato en un solo fin de semana, antes del próximo cierre. → Caja +3, Equipo +1, Clientes -1.
+- **C** (score 2, balance +1): Firmar tres años con el proveedor actual por 30 % de descuento, pagando el primer año por adelantado. → Caja -2, Margen +2, Clientes +1.
+- **Sin respuesta** (balance -2): Caja -2.
+
+Respuesta: `kb-d2-nube | ... | ...`
+
+### kb-c-nube-consumo · Día 4 · consecuencia · Guillermo «Memo» Paz
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Director, en tres semanas ya bajamos 18 % la factura sin una sola caída. Y encontramos algo: los reportes a la medida de Grupo Altamar consumen la tercera parte de toda la infraestructura. Corren cada hora, aunque ellos los ven una vez al día. Altamar paga lo mismo que cualquier cliente de su tamaño. Bruno dice que no le toquemos nada antes de la renovación.
+
+**Pregunta:** ¿Qué haces con el consumo de Altamar?
+
+- **A** (score 3, balance +1): Proponerle a Hernán correr sus reportes una vez al día sin costo, o cada hora con un cargo por uso. → Caja +2, Equipo +1, Clientes -1, Consejo -1.
+- **B** (score 1, balance +1): Cambiar los reportes de Altamar a una vez al día sin avisar: el contrato no promete que sean cada hora. → Caja +3, Clientes -2.
+- **C** (score 2, balance 0): Dejar los reportes de Altamar como están hasta la renovación y seguir optimizando todo lo demás. → Margen -1, Clientes +1.
+- **Sin respuesta** (balance -1): Margen -1.
+
+Respuesta: `kb-c-nube-consumo | ... | ...`
+
+### kb-c-nube-caida · Día 4 · consecuencia · Llamada perdida · Renata Cruz (Éxito del Cliente)
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Mensaje de voz · 0:47 «Director, desde la migración la plataforma se cae casi cada tarde, justo en el cierre de mes de los clientes. Itzel tiene 140 tickets abiertos y tres clientes grandes ya pidieron hablar con usted.» «Memo dice que puede regresar al proveedor anterior en 48 horas, pero perdemos el ahorro y pagamos los dos este mes.»
+
+**Pregunta:** La plataforma se cae en el cierre de mes. ¿Qué haces?
+
+- **A** (score 3, balance -1): Regresar al proveedor anterior en 48 horas, llamar yo a los tres clientes grandes y dar un crédito por las caídas. → Caja -3, Equipo +1, Clientes +1.
+- **B** (score 2, balance -2): Quedarse en el proveedor nuevo, poner a todo ingeniería a estabilizar dos semanas y avisar a los clientes del plan. → Caja +1, Equipo -1, Clientes -2.
+- **C** (score 1, balance -1): Quedarse, estabilizar con calma y que Soporte responda los tickets sin llamadas de la dirección. → Caja +2, Clientes -3.
+- **Sin respuesta** (balance -5): Equipo -1, Clientes -4.
+
+Respuesta: `kb-c-nube-caida | ... | ...`
+
+### kb-c-nube-compromiso · Día 5 · consecuencia · Pregunta antes del consejo: el compromiso con la nube
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Director: Revisando el material del consejo vi un pago anticipado de $26 M a la nube que no estaba en el plan. Nos quita dos meses de caja justo antes de salir a levantar la Serie C. Entiendo el descuento. Lo que necesito es saber cómo vamos a explicar la caja a los fondos que vamos a visitar. Valeria Contreras
+
+**Pregunta:** ¿Cómo respondes al consejo?
+
+- **A** (score 3, balance 0): Presentarle al consejo el ahorro y la caja con dos escenarios, y el plan para recuperar esos dos meses. → Caja -1, Equipo -1, Consejo +2.
+- **B** (score 2, balance 0): Ofrecer a clientes anuales 5 % de descuento por pagar por adelantado, para reponer la caja este trimestre. → Caja +3, Margen -2, Clientes -1.
+- **C** (score 1, balance -1): Renegociar con el proveedor a un año, con menos descuento y una penalización por cambiar el contrato. → Caja +1, Margen -1, Consejo -1.
+- **Sin respuesta** (balance -3): Consejo -3.
+
+Respuesta: `kb-c-nube-compromiso | ... | ...`
 
 ## Punto Madero
 
@@ -1233,14 +1413,14 @@ Respuesta: `pm-c-tarima | ... | ...`
 
 ### pm-d3-entrega · Día 3 · Junta · ¿Anunciamos entrega el mismo día?
 
-**Propuesta automática:** etica. Tema de ética o seguridad sin opción de línea roja. Revisar que el feedback no sea sermón.
+**Propuesta automática:** etica. Obligación ética o de seguridad. Es válido que tenga una respuesta clara; la opción que cruza la línea roja debe mostrarse como consecuencia, no como alternativa.
 
 **Caso:** Sala de juntas, 8:00. Diego (Comercial), Octavio (Operaciones y Tiendas) y Mónica (Experiencia del Cliente y Tienda en Línea). Mundo Casa anuncia entrega el mismo día. Faltan tres semanas para El Buen Fin. Diego Villarreal: Si anunciamos entrega el mismo día en El Buen Fin, calculo $60 M de venta en línea extra. Mundo Casa ya lo promete. Si no lo decimos, perdemos la temporada. Mónica Saldívar: Hoy entregamos en dos o tres días y el inventario en línea no es exacto. Si anunciamos el mismo día, en tres semanas tengo miles de clientes enojados y yo soy la que da la cara. No voy a sostener eso. Octavio Ríos: En ocho semanas lo tengo en las tiendas grandes si me dejan apartar gente y camionetas. Mientras, podemos sacar pedidos a mano desde la tienda principal. Diego Villarreal: Todos en la industria anuncian así, Mónica. ¿Qué decidimos, Director?
 
 **Pregunta:** La sala espera tu decisión.
 
 - **A** (score 2, balance -4): No anunciarlo este año. Decir la verdad (entrega en dos días) y lanzar el mismo día en 8 semanas, cuando funcione bien. → Margen -1, Equipo +3, Clientes -4, Consejo -2.
-- **B** (score 0, balance 0): Anunciar entrega el mismo día en toda la región; lo que no salga, lo cubrimos a mano y con taxis sin que el cliente lo note. → Equipo -6, Clientes +4, Consejo +2.
+- **B** (score 0, balance 0): Anunciar entrega el mismo día en toda la región; lo que no salga, lo cubrimos a mano y con taxis sin que el cliente lo note. → Equipo -6, Clientes +4, Consejo +2. Línea roja: Anunciar a los clientes un servicio que no se puede cumplir y encubrir la diferencia.
 - **C** (score 3, balance -2): Anunciar lo que sí podemos cumplir: el mismo día solo en las 4 tiendas grandes, 48 horas en las demás y un cupón automático si no llega a tiempo. → Caja -2, Margen -3, Equipo +2, Clientes +1.
 - **Sin respuesta** (balance -8): Equipo -6, Consejo -2.
 
@@ -1292,14 +1472,14 @@ Respuesta: `pm-d4-pleito | ... | ...`
 
 ### pm-d5-embargo · Día 5 · Llamada perdida · Claudia Leal (Finanzas)
 
-**Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
+**Propuesta automática:** etica. Obligación ética o de seguridad. Es válido que tenga una respuesta clara; la opción que cruza la línea roja debe mostrarse como consecuencia, no como alternativa.
 
 **Caso:** Mensaje de voz · 0:48 «Es urgente. Por la demanda de un exproveedor de transporte, un juez ordenó embargar las cuentas donde tenemos el 70% de la caja, unos $150 M. Están congeladas desde hoy en la mañana.» «La nómina de 1,400 personas sale en tres días: $28 M. En la otra cuenta tenemos $60 M. El abogado dice que el embargo es excesivo, pero nadie sabe cuándo lo levantan. Ya hay rumores en las tiendas. Necesito que me digas qué hacemos.»
 
 **Pregunta:** ¿Qué decides en las próximas horas?
 
 - **A** (score 2, balance 0): Pagar la nómina con la otra cuenta, que el abogado ofrezca garantía por lo reclamado y avisar hoy al equipo y a los proveedores lo que sabemos. → Caja -3, Equipo +3, Clientes +1, Consejo -1.
-- **B** (score 0, balance -7): No decir nada hasta saber más. Pagar solo la mitad de la nómina por si acaso y explicar que fue un error del banco. → Caja +2, Equipo -6, Consejo -3.
+- **B** (score 0, balance -7): No decir nada hasta saber más. Pagar solo la mitad de la nómina por si acaso y explicar que fue un error del banco. → Caja +2, Equipo -6, Consejo -3. Línea roja: Retener media nómina y dar al equipo una explicación falsa.
 - **C** (score 3, balance +3): Pedir hoy al consejo una línea puente de los accionistas, pagar la nómina completa, avisar con hechos y armar con Claudia un plan de 30 días. → Caja -1, Margen -1, Equipo +2, Consejo +3.
 - **Sin respuesta** (balance -12): Equipo -8, Consejo -4.
 
@@ -1351,14 +1531,14 @@ Respuesta: `pm-d6-proveedor | ... | ...`
 
 ### pm-d6-denuncia · Día 6 · Confidencial · Denuncia contra el gerente regional
 
-**Propuesta automática:** etica. Tema de ética o seguridad sin opción de línea roja. Revisar que el feedback no sea sermón.
+**Propuesta automática:** etica. Obligación ética o de seguridad. Es válido que tenga una respuesta clara; la opción que cruza la línea roja debe mostrarse como consecuencia, no como alternativa.
 
 **Caso:** Director (confidencial): Por la línea de denuncia anónima llegaron tres reportes de acoso contra Raúl Benavides, gerente regional de la zona sur. Es la región con mejores números y Octavio lo considera su sucesor. Una de las cajeras pidió cambio de tienda «por motivos personales» hace un mes. Una investigación externa toma unas 3 semanas. Necesito saber cómo procedemos mientras tanto. Lorena Cantú Directora de Personas
 
 **Pregunta:** ¿Qué decides mientras se investiga?
 
 - **A** (score 3, balance +3): Suspenderlo con goce de sueldo mientras una firma externa investiga, proteger a quienes denunciaron y que Octavio atienda la región. → Margen -2, Equipo +4, Consejo +1.
-- **B** (score 0, balance -7): Que siga trabajando mientras se investiga, pero cambiar de tienda a quienes denunciaron y que Personas lo investigue internamente, sin ruido. → Margen +1, Equipo -6, Consejo -2.
+- **B** (score 0, balance -7): Que siga trabajando mientras se investiga, pero cambiar de tienda a quienes denunciaron y que Personas lo investigue internamente, sin ruido. → Margen +1, Equipo -6, Consejo -2. Línea roja: Mover a quienes denunciaron acoso: represalia contra denunciantes.
 - **C** (score 1, balance -3): Despedirlo de inmediato. Con tres denuncias coincidentes no hay nada que investigar y cada día que sigue es un riesgo. → Caja -3, Equipo +3, Consejo -3.
 - **Sin respuesta** (balance -8): Equipo -6, Consejo -2.
 
@@ -1407,6 +1587,66 @@ Respuesta: `pm-d7-consejo | ... | ...`
 - **Sin respuesta** (balance -10): Margen -2, Equipo -6, Clientes -2.
 
 Respuesta: `pm-d7-equipo | ... | ...`
+
+### pm-d2-temporada · Día 2 · $64 M de mercancía de temporada sin vender
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Director: cerró la temporada y nos quedaron $64 M de mercancía sin vender, entre bodega y anaquel. Es casi el doble que el año pasado. Claudia quiere convertirla en caja ya. Octavio dice que si rematamos fuerte, los clientes aprenden a esperar descuentos. Yo creo que una parte se puede guardar para la próxima temporada. Te dejo los números para que decidas.
+
+**Pregunta:** ¿Qué haces con la mercancía que no se vendió?
+
+- **A** (score 3, balance +1): Rebajar por etapas tienda por tienda según su venta: 15 %, luego 30 % y lo que quede al outlet. → Caja +2, Margen -1, Equipo -1, Clientes +1.
+- **B** (score 1, balance +2): Rematar todo al 40 % en las 60 tiendas este fin de semana y convertirlo en caja de una vez. → Caja +4, Margen -3, Clientes +1.
+- **C** (score 2, balance +1): Guardar en bodega lo que no pasa de moda y rebajar solo lo que sí, para venderlo completo la próxima temporada. → Caja -2, Margen +2, Equipo +1.
+- **Sin respuesta** (balance -3): Caja -2, Margen -1.
+
+Respuesta: `pm-d2-temporada | ... | ...`
+
+### pm-c-temp-compras · Día 4 · consecuencia · La rebaja funcionó. El problema estaba antes
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** La rebaja escalonada va mejor de lo esperado: en tres semanas recuperamos el 62 % del costo y las tiendas casi no tocaron el 30 %. Pero al cruzar los datos vimos por qué sobró tanto: los compradores pidieron igual para las 60 tiendas, con base en la temporada pasada. Las tiendas de la sierra vendieron la mitad que las de la ciudad. Chuy y Beto dicen que los gerentes sabían qué se iba a vender en su tienda, pero nadie les preguntó.
+
+**Pregunta:** ¿Cómo compras la próxima temporada?
+
+- **A** (score 3, balance +1): Que cada gerente proponga su pedido con datos de su tienda y que Compras lo consolide y negocie. → Caja -1, Margen +1, Equipo +1, Clientes +1, Consejo -1.
+- **B** (score 1, balance +1): Comprar 30 % menos en todas las tiendas para no volver a quedarnos con sobrante. → Caja +3, Clientes -2.
+- **C** (score 2, balance -1): Contratar un sistema de pronóstico por tienda y que los compradores lo usen desde esta temporada. → Caja -1, Margen +1, Equipo -1.
+- **Sin respuesta** (balance -1): Margen -1.
+
+Respuesta: `pm-c-temp-compras | ... | ...`
+
+### pm-c-temp-guerra · Día 4 · consecuencia · Octavio Ríos
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Director, Mundo Casa respondió al remate con 50 % en la misma mercancía y lo está anunciando en radio. En tienda, los clientes ya preguntan cuándo es nuestro siguiente remate y la venta a precio completo bajó 9 % esta semana. Don Esteban me pidió que igualemos. Yo quiero saber qué piensa usted.
+
+**Pregunta:** Mundo Casa respondió. ¿Igualas?
+
+- **A** (score 3, balance 0): No igualar: terminar el remate como se anunció y competir con asesoría, entrega a domicilio y garantía. → Margen +1, Equipo +1, Clientes -1, Consejo -1.
+- **B** (score 1, balance -1): Igualar el 50 % en las 60 tiendas y anunciarlo esta misma semana para no perder ni un cliente. → Margen -3, Clientes +1, Consejo +1.
+- **C** (score 2, balance 0): Igualar solo en las 12 tiendas que tienen a Mundo Casa enfrente y mantener el precio en las demás. → Margen -1, Equipo -1, Clientes +2.
+- **Sin respuesta** (balance -3): Margen -2, Clientes -1.
+
+Respuesta: `pm-c-temp-guerra | ... | ...`
+
+### pm-c-temp-bodega · Día 5 · consecuencia · El proveedor cambió la línea
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Director, el proveedor presentó su línea nueva y cambió diseño y empaque. Lo que guardamos en bodega ya se ve de la temporada pasada. Mundo Casa va a tener la línea nueva desde el primer día. Si ponemos lo guardado a precio completo, no se va a vender. Inés preguntó en el consejo por qué seguimos pagando bodega por mercancía que vale menos.
+
+**Pregunta:** Lo guardado vale menos. ¿Qué haces?
+
+- **A** (score 3, balance 0): Venderla a un mayorista esta semana, reconocer la pérdida ante el consejo y ajustar cómo decidimos guardar. → Caja +2, Margen -3, Consejo +1.
+- **B** (score 2, balance 0): Venderla en tienda junto a la línea nueva, con 25 % de descuento como «precio especial». → Caja +2, Margen -1, Clientes -1.
+- **C** (score 1, balance -2): Guardarla un año más: los diseños regresan y así no reconocemos la pérdida este trimestre. → Caja -2, Margen +1, Consejo -1.
+- **Sin respuesta** (balance -3): Caja -2, Consejo -1.
+
+Respuesta: `pm-c-temp-bodega | ... | ...`
 
 ## Vértice Logística
 
@@ -1487,14 +1727,14 @@ Respuesta: `vl-c-frenos | ... | ...`
 
 ### vl-d3-rastreo · Día 3 · Junta · ¿Prometemos rastreo en tiempo real y ventanas de una hora?
 
-**Propuesta automática:** etica. Tema de ética o seguridad sin opción de línea roja. Revisar que el feedback no sea sermón.
+**Propuesta automática:** etica. Obligación ética o de seguridad. Es válido que tenga una respuesta clara; la opción que cruza la línea roja debe mostrarse como consecuencia, no como alternativa.
 
 **Caso:** Sala de juntas, 8:00. Mauricio (Comercial), Antonio (Operaciones y Flota) y Gabriela (Servicio a Clientes y CEDIS). Una cadena de comercio en línea abre licitación para toda su distribución en el noreste. Avante ya ofreció rastreo en tiempo real y ventanas de una hora. Mauricio Cárdenas: Si ofrecemos rastreo en tiempo real y ventanas de una hora, calculo $60 M de venta nueva al año. Avante ya lo ofrece. Si no lo decimos, perdemos la licitación. Gabriela Ochoa: Hoy solo 60% de la flota trae GPS que funcione y la torre de control no está lista. Si prometemos ventanas de una hora, en tres semanas tengo cientos de entregas tarde y yo soy la que da la cara. No voy a sostener eso. Antonio Leija: En ocho semanas pongo GPS en toda la flota si me dejan parar unidades por turnos. Mientras, podemos dar seguimiento por teléfono con los operadores. Mauricio Cárdenas: Todos en la industria prometen así, Gabriela. ¿Qué decidimos, Director?
 
 **Pregunta:** La sala espera tu decisión.
 
 - **A** (score 2, balance -4): No prometerlo en esta licitación. Ofrecer lo que hoy cumplimos (ventanas de cuatro horas) y lanzar el rastreo en 8 semanas, cuando funcione. → Margen -1, Equipo +3, Clientes -4, Consejo -2.
-- **B** (score 0, balance 0): Prometer rastreo en tiempo real y ventanas de una hora en toda la región; lo que no se pueda, lo cubrimos por teléfono sin que el cliente lo note. → Equipo -6, Clientes +4, Consejo +2.
+- **B** (score 0, balance 0): Prometer rastreo en tiempo real y ventanas de una hora en toda la región; lo que no se pueda, lo cubrimos por teléfono sin que el cliente lo note. → Equipo -6, Clientes +4, Consejo +2. Línea roja: Prometer en una licitación una capacidad que no existe y encubrir la diferencia.
 - **C** (score 3, balance -2): Prometer lo que sí cumplimos: ventanas de una hora en las 3 rutas con GPS, cuatro horas en las demás y crédito automático si fallamos. → Caja -2, Margen -3, Equipo +2, Clientes +1.
 - **Sin respuesta** (balance -8): Equipo -6, Consejo -2.
 
@@ -1546,14 +1786,14 @@ Respuesta: `vl-d4-pleito | ... | ...`
 
 ### vl-d5-embargo · Día 5 · Llamada perdida · Patricio Lozano (Finanzas)
 
-**Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
+**Propuesta automática:** etica. Obligación ética o de seguridad. Es válido que tenga una respuesta clara; la opción que cruza la línea roja debe mostrarse como consecuencia, no como alternativa.
 
 **Caso:** Mensaje de voz · 0:51 «Es urgente. Por la demanda de un transportista que nos subcontrataba, un juez ordenó embargar las cuentas donde tenemos el 70% de la caja, unos $140 M. Están congeladas desde hoy en la mañana.» «La nómina de 1,600 personas sale en tres días: $30 M. En la otra cuenta tenemos $55 M y el diésel de la semana se paga el viernes. El abogado dice que el embargo es excesivo, pero nadie sabe cuándo lo levantan. Ya hay rumores en los patios. Necesito que me digas qué hacemos.»
 
 **Pregunta:** ¿Qué decides en las próximas horas?
 
 - **A** (score 2, balance 0): Pagar la nómina con la otra cuenta, que el abogado ofrezca garantía por lo reclamado y avisar hoy al equipo y al proveedor de diésel. → Caja -3, Equipo +3, Clientes +1, Consejo -1.
-- **B** (score 0, balance -7): No decir nada hasta saber más. Pagar solo la mitad de la nómina por si acaso y explicar que fue un error del banco. → Caja +2, Equipo -6, Consejo -3.
+- **B** (score 0, balance -7): No decir nada hasta saber más. Pagar solo la mitad de la nómina por si acaso y explicar que fue un error del banco. → Caja +2, Equipo -6, Consejo -3. Línea roja: Retener media nómina y dar al equipo una explicación falsa.
 - **C** (score 3, balance +3): Pedir hoy al consejo una línea puente de los accionistas, pagar la nómina completa, avisar con hechos y armar con Patricio un plan de 30 días. → Caja -1, Margen -1, Equipo +2, Consejo +3.
 - **Sin respuesta** (balance -12): Equipo -8, Consejo -4.
 
@@ -1605,14 +1845,14 @@ Respuesta: `vl-d6-sistema | ... | ...`
 
 ### vl-d6-denuncia · Día 6 · Confidencial · Denuncia contra el gerente regional
 
-**Propuesta automática:** etica. Tema de ética o seguridad sin opción de línea roja. Revisar que el feedback no sea sermón.
+**Propuesta automática:** etica. Obligación ética o de seguridad. Es válido que tenga una respuesta clara; la opción que cruza la línea roja debe mostrarse como consecuencia, no como alternativa.
 
 **Caso:** Director (confidencial): Por la línea de denuncia anónima llegaron tres reportes de acoso contra Ernesto Villalobos, gerente regional del Bajío. Es la región con mejores números y Antonio lo considera su sucesor. Una de las auxiliares de almacén pidió cambio de CEDIS «por motivos personales» hace un mes. Una investigación externa toma unas 3 semanas. Necesito saber cómo procedemos mientras tanto. Rocío Guajardo Directora de Personas
 
 **Pregunta:** ¿Qué decides mientras se investiga?
 
 - **A** (score 3, balance +3): Suspenderlo con goce de sueldo mientras una firma externa investiga, proteger a quienes denunciaron y que Antonio atienda la región. → Margen -2, Equipo +4, Consejo +1.
-- **B** (score 0, balance -7): Que siga trabajando mientras se investiga, pero cambiar de CEDIS a quienes denunciaron y que Personas lo investigue internamente, sin ruido. → Margen +1, Equipo -6, Consejo -2.
+- **B** (score 0, balance -7): Que siga trabajando mientras se investiga, pero cambiar de CEDIS a quienes denunciaron y que Personas lo investigue internamente, sin ruido. → Margen +1, Equipo -6, Consejo -2. Línea roja: Mover a quienes denunciaron acoso: represalia contra denunciantes.
 - **C** (score 1, balance -3): Despedirlo de inmediato. Con tres denuncias coincidentes no hay nada que investigar y cada día que sigue es un riesgo. → Caja -3, Equipo +3, Consejo -3.
 - **Sin respuesta** (balance -8): Equipo -6, Consejo -2.
 
@@ -1661,4 +1901,64 @@ Respuesta: `vl-d7-consejo | ... | ...`
 - **Sin respuesta** (balance -10): Margen -2, Equipo -6, Clientes -2.
 
 Respuesta: `vl-d7-equipo | ... | ...`
+
+### vl-d2-diesel · Día 2 · El diésel subió 12 % y los contratos no
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Director: el diésel subió 12 % en cuatro meses. Ya es el 38 % de nuestro costo y el 70 % de los contratos no tiene recargo por combustible: cada kilómetro de más se come el margen. Mauricio teme que si subimos tarifas, Avante aproveche para quitarnos cuentas. Antonio cree que podemos bajar consumo con manejo eficiente. Te pongo tres caminos con números.
+
+**Pregunta:** ¿Cómo enfrentas el alza del diésel?
+
+- **A** (score 3, balance 0): Proponer a cada cliente una fórmula pública de recargo ligada al precio del diésel, empezando por los contratos que vencen. → Margen +2, Equipo -1, Clientes -1.
+- **B** (score 1, balance +2): Subir 8 % todas las tarifas con aviso de 15 días: el diésel subió para todos y Avante tiene el mismo problema. → Caja +1, Margen +3, Clientes -3, Consejo +1.
+- **C** (score 2, balance 0): No tocar tarifas: absorber el alza y bajar consumo con telemetría, rutas y capacitación de manejo eficiente. → Caja -1, Margen -1, Equipo +1, Clientes +1.
+- **Sin respuesta** (balance -3): Caja -1, Margen -2.
+
+Respuesta: `vl-d2-diesel | ... | ...`
+
+### vl-c-diesel-formula · Día 4 · consecuencia · Supermercados Almena · Recargo por combustible
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Estimado Director: Revisamos su propuesta de recargo por combustible. Es la primera que recibimos con una fórmula clara y la valoramos. Aceptamos con dos condiciones: que la fórmula también baje la tarifa cuando baje el diésel, y que nuestro equipo pueda auditar los consumos una vez al año. Ricardo Hinojosa Director de Logística · Supermercados Almena
+
+**Pregunta:** ¿Aceptas las condiciones de Almena?
+
+- **A** (score 3, balance +1): Aceptar la simetría con un piso y un techo, y la auditoría anual con los datos de telemetría de su ruta. → Caja -1, Margen +1, Equipo -1, Clientes +2.
+- **B** (score 1, balance 0): Aceptar la auditoría pero no la simetría: el riesgo del diésel lo asumimos nosotros cuando sube. → Margen +2, Clientes -2.
+- **C** (score 2, balance +1): Aceptar todo tal cual para cerrar rápido y usarlo como modelo con los demás clientes. → Margen -1, Clientes +2.
+- **Sin respuesta** (balance -2): Margen -2.
+
+Respuesta: `vl-c-diesel-formula | ... | ...`
+
+### vl-c-diesel-licitacion · Día 4 · consecuencia · Llamada perdida · Mauricio Cárdenas (Comercial)
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Mensaje de voz · 0:42 «Director, Almena respondió al aumento abriendo licitación por todas sus rutas del noreste e invitó a Avante. Tenemos diez días para presentar propuesta.» «Don Rodrigo ya me llamó. Necesito saber con qué vamos.»
+
+**Pregunta:** Almena licita sus rutas. ¿Con qué te presentas?
+
+- **A** (score 3, balance 0): Presentar la tarifa anterior con una fórmula de recargo pública, nuestro historial y penalización si fallamos. → Margen -1, Equipo +1, Clientes +1, Consejo -1.
+- **B** (score 1, balance -1): Igualar el precio de Avante para no perder la cuenta: el 20 % de la venta no se puede arriesgar hoy. → Margen -3, Clientes +2.
+- **C** (score 2, balance 0): Ofrecer un descuento solo en las rutas donde Avante sí opera y mantener el aumento en las demás. → Margen +1, Clientes -1.
+- **Sin respuesta** (balance -5): Clientes -4, Consejo -1.
+
+Respuesta: `vl-c-diesel-licitacion | ... | ...`
+
+### vl-c-diesel-telemetria · Día 5 · consecuencia · José «Pepe» Medina
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Director, con respeto: en el patio pegaron un ranking de consumo por operador, con nombres. Los de abajo son los que hacen la ruta de la sierra, que gasta más por las pendientes. Ya hay compañeros que hablan de irse a Avante. Dicen que los están exhibiendo por una ruta que nadie quiere. El consumo sí bajó 5 %. Nomás queremos que se mida parejo.
+
+**Pregunta:** ¿Qué haces con el ranking de consumo?
+
+- **A** (score 3, balance 0): Quitar los nombres del ranking, medir por ruta y premiar a quien mejore contra sí mismo. → Caja -1, Margen -1, Equipo +2.
+- **B** (score 1, balance -1): Mantener el ranking como está: el consumo ya bajó 5 % y la presión está funcionando. → Margen +2, Equipo -3.
+- **C** (score 2, balance 0): Ajustar el ranking por tipo de ruta y de carga, pero mantenerlo público y con nombres. → Margen +1, Equipo -1.
+- **Sin respuesta** (balance -3): Equipo -3.
+
+Respuesta: `vl-c-diesel-telemetria | ... | ...`
 

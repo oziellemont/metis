@@ -183,12 +183,22 @@ const V6: RuleSet = Object.freeze({
   }),
 }) as RuleSet;
 
+/**
+ * Versión 7 · auditoría ética del veredicto continuo. Igual que v6 en todos los números (no se movió ningún umbral);
+ * lo único que cambia es qué opciones cuentan como línea roja: engañar al cliente sobre lo que se le entrega,
+ * represalias contra quien denuncia, explicaciones falsas al equipo sobre su nómina, mantener una fecha que solo se
+ * cumple haciendo trampa y ocultar un error atribuyéndolo a otro (ver RED_LINES y BANK_RED_LINES en editorial.ts,
+ * marcadas `since: 7`). Hallazgo: la estrategia «solo números» aprobaba 76.7 % de los meses en v6 eligiendo varias
+ * de esas opciones. Los periodos v6 conservan su calificación.
+ */
+const V7: RuleSet = Object.freeze({ ...V6, version: 7 }) as RuleSet;
+
 /** Reglas de todas las partidas guardadas antes de que existiera `rulesVersion`. */
 export const LEGACY_RULES_VERSION = 1;
 /** Versión con la que empiezan las temporadas nuevas. */
 export const RULES_VERSION = 5;
 /** Versión con la que empiezan los periodos de la carrera continua (desde v6: veredicto V5). */
-export const CONTINUOUS_RULES_VERSION = 6;
+export const CONTINUOUS_RULES_VERSION = 7;
 /**
  * Versión de los periodos continuos registrados SIN versión explícita (jugadas anteriores a v6). Así, al reproducir
  * el diario de una carrera, un cierre o una empresa creada antes de v6 sigue abriendo periodos v4: nada cambia en
@@ -197,7 +207,7 @@ export const CONTINUOUS_RULES_VERSION = 6;
 export const LEGACY_CONTINUOUS_RULES_VERSION = 4;
 
 /** Todas las versiones publicadas. Las pruebas pueden registrar una versión simulada. */
-export const RULESETS: Record<number, RuleSet> = { 1: V1, 2: V2, 3: V3, 4: V4, 5: V5, 6: V6 };
+export const RULESETS: Record<number, RuleSet> = { 1: V1, 2: V2, 3: V3, 4: V4, 5: V5, 6: V6, 7: V7 };
 
 export const isRulesVersion = (v: unknown): v is number => typeof v === "number" && Number.isInteger(v) && v >= 1;
 /** ¿Este código conoce esa versión? (una partida guardada por una versión más nueva de la app no lo sería). */

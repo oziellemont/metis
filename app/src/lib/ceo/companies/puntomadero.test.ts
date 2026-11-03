@@ -24,8 +24,8 @@ describe("Punto Madero · retail (P1-F)", () => {
     expect(LEGACY_ROTATION.map((c) => c.id)).toEqual(["cumbre", "forja", "brasa"]);
   });
 
-  it("17 asuntos propios en 7 días, todos etiquetados, más el banco de casos con su elenco", () => {
-    expect(PUNTOMADERO.items).toHaveLength(17);
+  it("21 asuntos propios en 7 días (17 + la cadena piloto v7), todos etiquetados, más el banco de casos con su elenco", () => {
+    expect(PUNTOMADERO.items).toHaveLength(21);
     expect(new Set(PUNTOMADERO.items.map((i) => i.day))).toEqual(new Set([1, 2, 3, 4, 5, 6, 7]));
     for (const i of PUNTOMADERO.items) { expect(i.id.startsWith("pm-")).toBe(true); expect(CASE_TAGS[i.id], i.id).toBeTruthy(); }
     expect(PACK_CONTEXT.puntomadero).toBe("retail");

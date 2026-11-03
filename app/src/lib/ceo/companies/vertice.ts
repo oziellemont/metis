@@ -7,6 +7,7 @@
  * CEDIS que propone el consejo. Personas, empresas y fondos son ficticios.
  */
 import type { CompanyPack, Item } from "../types";
+import { CADENA_VERTICE } from "./vertice-cadena";
 
 /** Frases que dicen el giro original (el vocabulario por especialidad las cambia; ver career/lexicon.ts). */
 export const VL_TAGLINE = "Un operador logístico integral con 420 tractocamiones y seis CEDIS. Un competidor nacional que entra cobrando 12% menos.";
@@ -487,5 +488,5 @@ export const VERTICE: CompanyPack = {
       { id: "pepe", start: 14, likes: ["entrevista", "townhall"], dislikes: ["incentivos"], secret: "«Frenar una salida suena bien hasta que culpan al operador. Si me garantizas que nadie se castiga por frenar, los patios apoyan.»" },
     ],
   },
-  items: ITEMS,
+  items: [...ITEMS, ...CADENA_VERTICE],
 };

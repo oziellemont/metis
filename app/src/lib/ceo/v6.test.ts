@@ -20,12 +20,14 @@ const COS = ["cumbre", "forja", "brasa", "kubit", "puntomadero", "vertice"];
 const MONTHS = 3;
 const T = 120_000;
 const memo = new Map<string, ReturnType<typeof playCareer>>();
-const career = (c: string, st: string, v = CONTINUOUS_RULES_VERSION, i = 0) => {
+/** Esta prueba fija v6 (desde v7 los periodos nuevos abren con la auditoría ética; ver v7.test.ts). */
+const V6 = 6;
+const career = (c: string, st: string, v = V6, i = 0) => {
   const k = `${c}|${st}|${v}|${i}`;
   if (!memo.has(k)) memo.set(k, playCareer(c, st, MONTHS, `${c}|${st}|${i}`, v));
   return memo.get(k)!;
 };
-const passRate = (st: string, v = CONTINUOUS_RULES_VERSION) => {
+const passRate = (st: string, v = V6) => {
   let ok = 0, n = 0;
   for (const c of COS) for (const m of career(c, st, v).months) { n++; if (m.passed) ok++; }
   return ok / n;
@@ -34,7 +36,7 @@ const passRate = (st: string, v = CONTINUOUS_RULES_VERSION) => {
 describe("V6 · versiones y transición controlada", () => {
   it("v6 es la carrera continua con veredicto V5; v1–v5 no cambian", () => {
     const r6 = ruleSet(6);
-    expect(CONTINUOUS_RULES_VERSION).toBe(6);
+    expect(CONTINUOUS_RULES_VERSION).toBeGreaterThanOrEqual(6);
     expect(LEGACY_CONTINUOUS_RULES_VERSION).toBe(4);
     expect(r6.career).toBe("continua");
     expect(r6.v5).toBeDefined();
@@ -58,8 +60,9 @@ describe("V6 · versiones y transición controlada", () => {
     const r = career("brasa", "criterio_y_tablero", LEGACY_CONTINUOUS_RULES_VERSION);
     const m = r.months[0];
     const before = verdictOf(m.state, m.at);
-    const next = advance(m.state, m.at, CONTINUOUS_RULES_VERSION);
+    const next = advance(m.state, m.at, V6);
     expect(next.rulesVersion).toBe(6);
+    expect(advance(m.state, m.at, CONTINUOUS_RULES_VERSION).rulesVersion).toBe(CONTINUOUS_RULES_VERSION);
     const closed = closedRunsOf(next);
     expect(closed).toHaveLength(1);
     expect(closed[0].rulesVersion).toBe(4);
@@ -85,7 +88,8 @@ describe("V6 · versiones y transición controlada", () => {
   }, T);
 
   it("los periodos nuevos de una empresa nueva empiezan y siguen con v6", () => {
-    expect(ownStart("forja")().rulesVersion).toBe(6);
+    expect(ownStart("forja", V6)().rulesVersion).toBe(6);
+    expect(ownStart("forja")().rulesVersion).toBe(CONTINUOUS_RULES_VERSION);
     const r = career("forja", "criterio_y_tablero");
     for (const m of r.months) expect(m.state.rulesVersion).toBe(6);
     for (const run of closedRunsOf(r.state)) expect(run.rulesVersion).toBe(6);
@@ -95,7 +99,7 @@ describe("V6 · versiones y transición controlada", () => {
 describe("V6 · las reglas se conocen antes de empezar el periodo", () => {
   it("desde el primer minuto del periodo el veredicto ya dice el encargo, los objetivos y los umbrales", () => {
     for (const c of COS) {
-      const s = ownStart(c)();
+      const s = ownStart(c, V6)();
       const v = verdictOf(s, s.startedAt!);
       expect(v.v5, c).toBeDefined();
       expect(v.v5!.objectiveText).toBe(SEASON_OBJECTIVES[c].text);
@@ -124,7 +128,7 @@ describe("V6 · matriz de estrategias en la carrera continua (3 meses × 6 empre
   }, 600_000);
   it("al azar no se aprueba por suerte", () => {
     let ok = 0, n = 0;
-    for (const c of COS) for (let i = 0; i < 3; i++) for (const m of career(c, "azar", CONTINUOUS_RULES_VERSION, i).months) { n++; if (m.passed) ok++; }
+    for (const c of COS) for (let i = 0; i < 3; i++) for (const m of career(c, "azar", V6, i).months) { n++; if (m.passed) ok++; }
     expect(ok / n).toBeLessThanOrEqual(0.1);
   }, 600_000);
 });
@@ -154,7 +158,7 @@ describe("V6 · el reporte del mes se firma antes del siguiente cierre (como en 
   it("advance espera el reporte firmado", () => {
     const r = career("cumbre", "criterio_y_tablero");
     const m = r.months[0];
-    const next = advance(m.state, m.at, CONTINUOUS_RULES_VERSION);
+    const next = advance(m.state, m.at, V6);
     expect(reportDueOf(next)).toBe(1);
     const signed = closePeriod(next, 1, m.at);
     expect(reportDueOf(signed)).toBeNull();
