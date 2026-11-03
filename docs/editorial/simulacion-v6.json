@@ -1,0 +1,3974 @@
+{
+ "generated": "Motor V6 · carrera continua (v6) y temporadas (v5), con estrategias de control",
+ "seeds": "`${empresa}|${estrategia}|${i}`; cada mes de carrera usa `${semilla}|m${mes}`",
+ "months": 5,
+ "holdout": [
+  "cuida_caja",
+  "personas_primero",
+  "numeros_con_piso",
+  "criterio_con_errores",
+  "criterio_ocupado",
+  "segunda_mejor"
+ ],
+ "note": "Las estrategias de control (holdout) NO se usaron para calibrar v5 ni v6: sirven para comprobar que el veredicto no está ajustado a una sola ruta.",
+ "strategies": {
+  "mas_larga": {
+   "label": "Siempre la opción más larga",
+   "holdout": false,
+   "reps": 1
+  },
+  "mas_corta": {
+   "label": "Siempre la opción más corta",
+   "holdout": false,
+   "reps": 1
+  },
+  "azar": {
+   "label": "Al azar",
+   "holdout": false,
+   "reps": 10
+  },
+  "mejor_score": {
+   "label": "Siempre la que el feedback felicita (criterio más alto)",
+   "holdout": false,
+   "reps": 1
+  },
+  "peor_score": {
+   "label": "Siempre la de criterio más bajo",
+   "holdout": false,
+   "reps": 1
+  },
+  "mejor_efecto": {
+   "label": "Solo números: la de mejor efecto neto",
+   "holdout": false,
+   "reps": 1
+  },
+  "siempre_A": {
+   "label": "Siempre la primera opción",
+   "holdout": false,
+   "reps": 1
+  },
+  "no_contesta": {
+   "label": "No contesta nada",
+   "holdout": false,
+   "reps": 1
+  },
+  "contesta_la_mitad": {
+   "label": "Contesta la mitad (al azar)",
+   "holdout": false,
+   "reps": 10
+  },
+  "director_equilibrado": {
+   "label": "Director equilibrado: opciones defendibles cuidando el indicador más débil",
+   "holdout": false,
+   "reps": 1
+  },
+  "criterio_contextual": {
+   "label": "Criterio contextual (rúbrica nueva): lo mejor razonado leyendo el tablero",
+   "holdout": false,
+   "reps": 1
+  },
+  "criterio_y_tablero": {
+   "label": "Criterio y tablero: bien razonada y cuidando el encargo del consejo y la caja",
+   "holdout": false,
+   "reps": 1
+  },
+  "criterio_variado": {
+   "label": "Caminos variados: cualquier opción con criterio contextual alto, al azar",
+   "holdout": false,
+   "reps": 10
+  },
+  "cuida_caja": {
+   "label": "Control · bien razonada cuidando la caja",
+   "holdout": true,
+   "reps": 1
+  },
+  "personas_primero": {
+   "label": "Control · bien razonada, personas y clientes primero",
+   "holdout": true,
+   "reps": 1
+  },
+  "numeros_con_piso": {
+   "label": "Control · solo números, sin dejar indicadores bajo la línea",
+   "holdout": true,
+   "reps": 1
+  },
+  "criterio_con_errores": {
+   "label": "Control · buen criterio con 25 % de errores al azar",
+   "holdout": true,
+   "reps": 6
+  },
+  "criterio_ocupado": {
+   "label": "Control · buen criterio, pero deja vencer 25 % de los asuntos",
+   "holdout": true,
+   "reps": 6
+  },
+  "segunda_mejor": {
+   "label": "Control · siempre la segunda mejor razonada",
+   "holdout": true,
+   "reps": 1
+  }
+ },
+ "temporadaV5": {
+  "mas_larga": {
+   "cumbre": {
+    "pass": 0,
+    "reasons": {
+     "linea_roja": 1
+    }
+   },
+   "forja": {
+    "pass": 0,
+    "reasons": {
+     "linea_roja": 1,
+     "criterio": 1
+    }
+   },
+   "brasa": {
+    "pass": 0,
+    "reasons": {
+     "linea_roja": 1,
+     "objetivo": 1,
+     "criterio": 1
+    }
+   },
+   "kubit": {
+    "pass": 0,
+    "reasons": {
+     "criterio": 1
+    }
+   },
+   "puntomadero": {
+    "pass": 0,
+    "reasons": {
+     "salud": 1,
+     "criterio": 1
+    }
+   },
+   "vertice": {
+    "pass": 0,
+    "reasons": {
+     "criterio": 1
+    }
+   }
+  },
+  "mas_corta": {
+   "cumbre": {
+    "pass": 0,
+    "reasons": {
+     "objetivo": 1,
+     "salud": 1,
+     "criterio": 1
+    }
+   },
+   "forja": {
+    "pass": 0,
+    "reasons": {
+     "insolvencia": 1,
+     "objetivo": 1,
+     "salud": 1,
+     "criterio": 1
+    }
+   },
+   "brasa": {
+    "pass": 0,
+    "reasons": {
+     "salud": 1,
+     "criterio": 1
+    }
+   },
+   "kubit": {
+    "pass": 0,
+    "reasons": {
+     "salud": 1,
+     "criterio": 1
+    }
+   },
+   "puntomadero": {
+    "pass": 0,
+    "reasons": {
+     "salud": 1,
+     "criterio": 1
+    }
+   },
+   "vertice": {
+    "pass": 0,
+    "reasons": {
+     "insolvencia": 1,
+     "objetivo": 1,
+     "salud": 1,
+     "criterio": 1
+    }
+   }
+  },
+  "azar": {
+   "cumbre": {
+    "pass": 0,
+    "reasons": {
+     "objetivo": 5,
+     "salud": 9,
+     "criterio": 10,
+     "linea_roja": 6
+    }
+   },
+   "forja": {
+    "pass": 0,
+    "reasons": {
+     "objetivo": 9,
+     "insolvencia": 1,
+     "criterio": 9,
+     "salud": 2,
+     "linea_roja": 2
+    }
+   },
+   "brasa": {
+    "pass": 30,
+    "reasons": {
+     "criterio": 7,
+     "salud": 4
+    }
+   },
+   "kubit": {
+    "pass": 0,
+    "reasons": {
+     "criterio": 9,
+     "salud": 4,
+     "objetivo": 3
+    }
+   },
+   "puntomadero": {
+    "pass": 30,
+    "reasons": {
+     "objetivo": 4,
+     "piso": 1,
+     "salud": 5,
+     "criterio": 7,
+     "insolvencia": 1
+    }
+   },
+   "vertice": {
+    "pass": 10,
+    "reasons": {
+     "salud": 6,
+     "criterio": 8,
+     "objetivo": 3,
+     "piso": 2,
+     "insolvencia": 1
+    }
+   }
+  },
+  "mejor_score": {
+   "cumbre": {
+    "pass": 100,
+    "reasons": {}
+   },
+   "forja": {
+    "pass": 0,
+    "reasons": {
+     "objetivo": 1
+    }
+   },
+   "brasa": {
+    "pass": 100,
+    "reasons": {}
+   },
+   "kubit": {
+    "pass": 0,
+    "reasons": {
+     "objetivo": 1
+    }
+   },
+   "puntomadero": {
+    "pass": 0,
+    "reasons": {
+     "objetivo": 1
+    }
+   },
+   "vertice": {
+    "pass": 0,
+    "reasons": {
+     "objetivo": 1
+    }
+   }
+  },
+  "peor_score": {
+   "cumbre": {
+    "pass": 0,
+    "reasons": {
+     "consejo_perdido": 1,
+     "linea_roja": 1,
+     "objetivo": 1,
+     "piso": 1,
+     "salud": 1,
+     "criterio": 1
+    }
+   },
+   "forja": {
+    "pass": 0,
+    "reasons": {
+     "linea_roja": 1,
+     "objetivo": 1,
+     "piso": 1,
+     "salud": 1,
+     "criterio": 1
+    }
+   },
+   "brasa": {
+    "pass": 0,
+    "reasons": {
+     "linea_roja": 1,
+     "salud": 1,
+     "criterio": 1
+    }
+   },
+   "kubit": {
+    "pass": 0,
+    "reasons": {
+     "piso": 1,
+     "salud": 1,
+     "criterio": 1
+    }
+   },
+   "puntomadero": {
+    "pass": 0,
+    "reasons": {
+     "piso": 1,
+     "salud": 1,
+     "criterio": 1
+    }
+   },
+   "vertice": {
+    "pass": 0,
+    "reasons": {
+     "piso": 1,
+     "salud": 1,
+     "criterio": 1
+    }
+   }
+  },
+  "mejor_efecto": {
+   "cumbre": {
+    "pass": 100,
+    "reasons": {}
+   },
+   "forja": {
+    "pass": 0,
+    "reasons": {
+     "linea_roja": 1
+    }
+   },
+   "brasa": {
+    "pass": 100,
+    "reasons": {}
+   },
+   "kubit": {
+    "pass": 100,
+    "reasons": {}
+   },
+   "puntomadero": {
+    "pass": 100,
+    "reasons": {}
+   },
+   "vertice": {
+    "pass": 100,
+    "reasons": {}
+   }
+  },
+  "siempre_A": {
+   "cumbre": {
+    "pass": 0,
+    "reasons": {
+     "insolvencia": 1
+    }
+   },
+   "forja": {
+    "pass": 0,
+    "reasons": {
+     "insolvencia": 1,
+     "objetivo": 1,
+     "piso": 1,
+     "criterio": 1
+    }
+   },
+   "brasa": {
+    "pass": 100,
+    "reasons": {}
+   },
+   "kubit": {
+    "pass": 0,
+    "reasons": {
+     "objetivo": 1,
+     "criterio": 1
+    }
+   },
+   "puntomadero": {
+    "pass": 0,
+    "reasons": {
+     "objetivo": 1,
+     "piso": 1,
+     "criterio": 1
+    }
+   },
+   "vertice": {
+    "pass": 0,
+    "reasons": {
+     "insolvencia": 1,
+     "objetivo": 1,
+     "piso": 1,
+     "criterio": 1
+    }
+   }
+  },
+  "no_contesta": {
+   "cumbre": {
+    "pass": 0,
+    "reasons": {
+     "consejo_perdido": 1,
+     "objetivo": 1,
+     "piso": 1,
+     "salud": 1,
+     "criterio": 1
+    }
+   },
+   "forja": {
+    "pass": 0,
+    "reasons": {
+     "consejo_perdido": 1,
+     "objetivo": 1,
+     "piso": 1,
+     "salud": 1,
+     "criterio": 1
+    }
+   },
+   "brasa": {
+    "pass": 0,
+    "reasons": {
+     "objetivo": 1,
+     "salud": 1,
+     "criterio": 1
+    }
+   },
+   "kubit": {
+    "pass": 0,
+    "reasons": {
+     "consejo_perdido": 1,
+     "objetivo": 1,
+     "piso": 1,
+     "salud": 1,
+     "criterio": 1
+    }
+   },
+   "puntomadero": {
+    "pass": 0,
+    "reasons": {
+     "consejo_perdido": 1,
+     "objetivo": 1,
+     "piso": 1,
+     "salud": 1,
+     "criterio": 1
+    }
+   },
+   "vertice": {
+    "pass": 0,
+    "reasons": {
+     "consejo_perdido": 1,
+     "objetivo": 1,
+     "piso": 1,
+     "salud": 1,
+     "criterio": 1
+    }
+   }
+  },
+  "contesta_la_mitad": {
+   "cumbre": {
+    "pass": 0,
+    "reasons": {
+     "consejo_perdido": 2,
+     "linea_roja": 8,
+     "objetivo": 9,
+     "salud": 10,
+     "criterio": 10,
+     "piso": 6,
+     "insolvencia": 1
+    }
+   },
+   "forja": {
+    "pass": 0,
+    "reasons": {
+     "salud": 10,
+     "criterio": 10,
+     "piso": 4,
+     "objetivo": 5,
+     "linea_roja": 2
+    }
+   },
+   "brasa": {
+    "pass": 10,
+    "reasons": {
+     "salud": 8,
+     "criterio": 9,
+     "linea_roja": 3,
+     "objetivo": 1
+    }
+   },
+   "kubit": {
+    "pass": 0,
+    "reasons": {
+     "salud": 10,
+     "criterio": 10,
+     "objetivo": 6,
+     "piso": 3
+    }
+   },
+   "puntomadero": {
+    "pass": 0,
+    "reasons": {
+     "piso": 7,
+     "salud": 10,
+     "criterio": 10,
+     "objetivo": 5
+    }
+   },
+   "vertice": {
+    "pass": 0,
+    "reasons": {
+     "objetivo": 9,
+     "piso": 7,
+     "salud": 10,
+     "criterio": 10
+    }
+   }
+  },
+  "director_equilibrado": {
+   "cumbre": {
+    "pass": 100,
+    "reasons": {}
+   },
+   "forja": {
+    "pass": 100,
+    "reasons": {}
+   },
+   "brasa": {
+    "pass": 100,
+    "reasons": {}
+   },
+   "kubit": {
+    "pass": 100,
+    "reasons": {}
+   },
+   "puntomadero": {
+    "pass": 100,
+    "reasons": {}
+   },
+   "vertice": {
+    "pass": 100,
+    "reasons": {}
+   }
+  },
+  "criterio_contextual": {
+   "cumbre": {
+    "pass": 100,
+    "reasons": {}
+   },
+   "forja": {
+    "pass": 0,
+    "reasons": {
+     "objetivo": 1
+    }
+   },
+   "brasa": {
+    "pass": 100,
+    "reasons": {}
+   },
+   "kubit": {
+    "pass": 100,
+    "reasons": {}
+   },
+   "puntomadero": {
+    "pass": 100,
+    "reasons": {}
+   },
+   "vertice": {
+    "pass": 100,
+    "reasons": {}
+   }
+  },
+  "criterio_y_tablero": {
+   "cumbre": {
+    "pass": 100,
+    "reasons": {}
+   },
+   "forja": {
+    "pass": 100,
+    "reasons": {}
+   },
+   "brasa": {
+    "pass": 100,
+    "reasons": {}
+   },
+   "kubit": {
+    "pass": 100,
+    "reasons": {}
+   },
+   "puntomadero": {
+    "pass": 100,
+    "reasons": {}
+   },
+   "vertice": {
+    "pass": 100,
+    "reasons": {}
+   }
+  },
+  "criterio_variado": {
+   "cumbre": {
+    "pass": 100,
+    "reasons": {}
+   },
+   "forja": {
+    "pass": 0,
+    "reasons": {
+     "objetivo": 10
+    }
+   },
+   "brasa": {
+    "pass": 100,
+    "reasons": {}
+   },
+   "kubit": {
+    "pass": 100,
+    "reasons": {}
+   },
+   "puntomadero": {
+    "pass": 80,
+    "reasons": {
+     "objetivo": 2
+    }
+   },
+   "vertice": {
+    "pass": 80,
+    "reasons": {
+     "salud": 2
+    }
+   }
+  },
+  "cuida_caja": {
+   "cumbre": {
+    "pass": 100,
+    "reasons": {}
+   },
+   "forja": {
+    "pass": 100,
+    "reasons": {}
+   },
+   "brasa": {
+    "pass": 100,
+    "reasons": {}
+   },
+   "kubit": {
+    "pass": 100,
+    "reasons": {}
+   },
+   "puntomadero": {
+    "pass": 100,
+    "reasons": {}
+   },
+   "vertice": {
+    "pass": 100,
+    "reasons": {}
+   }
+  },
+  "personas_primero": {
+   "cumbre": {
+    "pass": 100,
+    "reasons": {}
+   },
+   "forja": {
+    "pass": 0,
+    "reasons": {
+     "objetivo": 1
+    }
+   },
+   "brasa": {
+    "pass": 100,
+    "reasons": {}
+   },
+   "kubit": {
+    "pass": 0,
+    "reasons": {
+     "objetivo": 1
+    }
+   },
+   "puntomadero": {
+    "pass": 0,
+    "reasons": {
+     "objetivo": 1
+    }
+   },
+   "vertice": {
+    "pass": 0,
+    "reasons": {
+     "objetivo": 1
+    }
+   }
+  },
+  "numeros_con_piso": {
+   "cumbre": {
+    "pass": 100,
+    "reasons": {}
+   },
+   "forja": {
+    "pass": 0,
+    "reasons": {
+     "linea_roja": 1
+    }
+   },
+   "brasa": {
+    "pass": 100,
+    "reasons": {}
+   },
+   "kubit": {
+    "pass": 100,
+    "reasons": {}
+   },
+   "puntomadero": {
+    "pass": 100,
+    "reasons": {}
+   },
+   "vertice": {
+    "pass": 100,
+    "reasons": {}
+   }
+  },
+  "criterio_con_errores": {
+   "cumbre": {
+    "pass": 66.7,
+    "reasons": {
+     "linea_roja": 2
+    }
+   },
+   "forja": {
+    "pass": 16.7,
+    "reasons": {
+     "objetivo": 4,
+     "linea_roja": 2
+    }
+   },
+   "brasa": {
+    "pass": 100,
+    "reasons": {}
+   },
+   "kubit": {
+    "pass": 100,
+    "reasons": {}
+   },
+   "puntomadero": {
+    "pass": 83.3,
+    "reasons": {
+     "objetivo": 1
+    }
+   },
+   "vertice": {
+    "pass": 83.3,
+    "reasons": {
+     "objetivo": 1
+    }
+   }
+  },
+  "criterio_ocupado": {
+   "cumbre": {
+    "pass": 100,
+    "reasons": {}
+   },
+   "forja": {
+    "pass": 16.7,
+    "reasons": {
+     "objetivo": 5,
+     "salud": 1
+    }
+   },
+   "brasa": {
+    "pass": 83.3,
+    "reasons": {
+     "salud": 1
+    }
+   },
+   "kubit": {
+    "pass": 83.3,
+    "reasons": {
+     "salud": 1
+    }
+   },
+   "puntomadero": {
+    "pass": 16.7,
+    "reasons": {
+     "salud": 5
+    }
+   },
+   "vertice": {
+    "pass": 50,
+    "reasons": {
+     "salud": 3
+    }
+   }
+  },
+  "segunda_mejor": {
+   "cumbre": {
+    "pass": 0,
+    "reasons": {
+     "objetivo": 1,
+     "salud": 1,
+     "criterio": 1
+    }
+   },
+   "forja": {
+    "pass": 0,
+    "reasons": {
+     "salud": 1,
+     "criterio": 1
+    }
+   },
+   "brasa": {
+    "pass": 0,
+    "reasons": {
+     "criterio": 1
+    }
+   },
+   "kubit": {
+    "pass": 0,
+    "reasons": {
+     "objetivo": 1,
+     "salud": 1,
+     "criterio": 1
+    }
+   },
+   "puntomadero": {
+    "pass": 0,
+    "reasons": {
+     "salud": 1,
+     "criterio": 1
+    }
+   },
+   "vertice": {
+    "pass": 0,
+    "reasons": {
+     "salud": 1,
+     "criterio": 1
+    }
+   }
+  }
+ },
+ "carrera": {
+  "v6": {
+   "mas_larga": {
+    "cumbre": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "linea_roja": 5,
+      "insolvencia": 1,
+      "criterio": 1
+     }
+    },
+    "forja": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "linea_roja": 5,
+      "criterio": 5,
+      "objetivo": 1
+     }
+    },
+    "brasa": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "linea_roja": 5,
+      "objetivo": 2,
+      "criterio": 5
+     }
+    },
+    "kubit": {
+     "months": [
+      0,
+      0,
+      0,
+      100,
+      0
+     ],
+     "reasons": {
+      "criterio": 4,
+      "insolvencia": 1,
+      "objetivo": 1,
+      "piso": 1
+     }
+    },
+    "puntomadero": {
+     "months": [
+      0,
+      0,
+      100,
+      0,
+      0
+     ],
+     "reasons": {
+      "criterio": 4,
+      "salud": 3
+     }
+    },
+    "vertice": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "criterio": 5,
+      "piso": 1,
+      "salud": 1
+     }
+    }
+   },
+   "mas_corta": {
+    "cumbre": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "objetivo": 5,
+      "criterio": 5,
+      "salud": 4,
+      "piso": 1
+     }
+    },
+    "forja": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "insolvencia": 4,
+      "objetivo": 5,
+      "criterio": 5
+     }
+    },
+    "brasa": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "criterio": 5,
+      "salud": 4,
+      "piso": 1
+     }
+    },
+    "kubit": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "criterio": 5,
+      "salud": 4,
+      "objetivo": 2
+     }
+    },
+    "puntomadero": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "salud": 5,
+      "criterio": 5,
+      "insolvencia": 1,
+      "objetivo": 3,
+      "piso": 1
+     }
+    },
+    "vertice": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "insolvencia": 5,
+      "objetivo": 5,
+      "salud": 5,
+      "criterio": 5,
+      "piso": 1
+     }
+    }
+   },
+   "azar": {
+    "cumbre": {
+     "months": [
+      0,
+      0,
+      0,
+      10,
+      10
+     ],
+     "reasons": {
+      "salud": 21,
+      "criterio": 46,
+      "insolvencia": 7,
+      "linea_roja": 30,
+      "objetivo": 25,
+      "piso": 5
+     }
+    },
+    "forja": {
+     "months": [
+      10,
+      10,
+      10,
+      10,
+      10
+     ],
+     "reasons": {
+      "insolvencia": 13,
+      "objetivo": 31,
+      "criterio": 42,
+      "linea_roja": 28,
+      "salud": 6,
+      "consejo_perdido": 1,
+      "piso": 2
+     }
+    },
+    "brasa": {
+     "months": [
+      0,
+      0,
+      0,
+      10,
+      0
+     ],
+     "reasons": {
+      "criterio": 46,
+      "salud": 11,
+      "linea_roja": 19,
+      "objetivo": 6,
+      "insolvencia": 2,
+      "piso": 1
+     }
+    },
+    "kubit": {
+     "months": [
+      20,
+      0,
+      0,
+      0,
+      10
+     ],
+     "reasons": {
+      "criterio": 43,
+      "insolvencia": 5,
+      "objetivo": 21,
+      "piso": 5,
+      "salud": 5
+     }
+    },
+    "puntomadero": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "criterio": 49,
+      "salud": 10,
+      "insolvencia": 6,
+      "objetivo": 22,
+      "piso": 6
+     }
+    },
+    "vertice": {
+     "months": [
+      10,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "criterio": 47,
+      "objetivo": 24,
+      "salud": 19,
+      "insolvencia": 8,
+      "piso": 6
+     }
+    }
+   },
+   "mejor_score": {
+    "cumbre": {
+     "months": [
+      100,
+      0,
+      0,
+      100,
+      0
+     ],
+     "reasons": {
+      "insolvencia": 3,
+      "objetivo": 1,
+      "salud": 1
+     }
+    },
+    "forja": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "objetivo": 5,
+      "insolvencia": 2
+     }
+    },
+    "brasa": {
+     "months": [
+      100,
+      100,
+      100,
+      0,
+      0
+     ],
+     "reasons": {
+      "insolvencia": 2
+     }
+    },
+    "kubit": {
+     "months": [
+      100,
+      100,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "objetivo": 3
+     }
+    },
+    "puntomadero": {
+     "months": [
+      0,
+      100,
+      0,
+      0,
+      100
+     ],
+     "reasons": {
+      "objetivo": 3
+     }
+    },
+    "vertice": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "objetivo": 5,
+      "insolvencia": 2,
+      "piso": 1
+     }
+    }
+   },
+   "peor_score": {
+    "cumbre": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "consejo_perdido": 1,
+      "linea_roja": 5,
+      "objetivo": 5,
+      "piso": 5,
+      "salud": 5,
+      "criterio": 5
+     }
+    },
+    "forja": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "linea_roja": 5,
+      "objetivo": 5,
+      "piso": 4,
+      "criterio": 5,
+      "salud": 3
+     }
+    },
+    "brasa": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "linea_roja": 5,
+      "salud": 5,
+      "criterio": 5,
+      "objetivo": 3,
+      "piso": 3
+     }
+    },
+    "kubit": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "piso": 5,
+      "criterio": 5,
+      "objetivo": 1,
+      "salud": 3
+     }
+    },
+    "puntomadero": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "piso": 5,
+      "salud": 4,
+      "criterio": 5,
+      "objetivo": 2
+     }
+    },
+    "vertice": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "piso": 5,
+      "salud": 5,
+      "criterio": 5,
+      "objetivo": 2
+     }
+    }
+   },
+   "mejor_efecto": {
+    "cumbre": {
+     "months": [
+      100,
+      100,
+      100,
+      100,
+      100
+     ],
+     "reasons": {}
+    },
+    "forja": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "linea_roja": 5,
+      "objetivo": 1
+     }
+    },
+    "brasa": {
+     "months": [
+      100,
+      100,
+      100,
+      100,
+      0
+     ],
+     "reasons": {
+      "insolvencia": 1
+     }
+    },
+    "kubit": {
+     "months": [
+      100,
+      0,
+      100,
+      100,
+      100
+     ],
+     "reasons": {
+      "criterio": 1
+     }
+    },
+    "puntomadero": {
+     "months": [
+      100,
+      100,
+      100,
+      100,
+      100
+     ],
+     "reasons": {}
+    },
+    "vertice": {
+     "months": [
+      100,
+      100,
+      100,
+      100,
+      100
+     ],
+     "reasons": {}
+    }
+   },
+   "siempre_A": {
+    "cumbre": {
+     "months": [
+      0,
+      0,
+      0,
+      100,
+      0
+     ],
+     "reasons": {
+      "insolvencia": 2,
+      "criterio": 2,
+      "salud": 1
+     }
+    },
+    "forja": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "insolvencia": 5,
+      "objetivo": 5,
+      "piso": 2,
+      "criterio": 5
+     }
+    },
+    "brasa": {
+     "months": [
+      100,
+      100,
+      100,
+      100,
+      0
+     ],
+     "reasons": {
+      "piso": 1,
+      "salud": 1,
+      "criterio": 1
+     }
+    },
+    "kubit": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "objetivo": 4,
+      "criterio": 5
+     }
+    },
+    "puntomadero": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "objetivo": 5,
+      "piso": 3,
+      "criterio": 5,
+      "insolvencia": 3
+     }
+    },
+    "vertice": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "insolvencia": 4,
+      "objetivo": 5,
+      "piso": 3,
+      "criterio": 5
+     }
+    }
+   },
+   "no_contesta": {
+    "cumbre": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "consejo_perdido": 1,
+      "objetivo": 1,
+      "piso": 1,
+      "salud": 1,
+      "criterio": 1
+     }
+    },
+    "forja": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "consejo_perdido": 1,
+      "objetivo": 1,
+      "piso": 1,
+      "salud": 1,
+      "criterio": 1
+     }
+    },
+    "brasa": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "objetivo": 1,
+      "salud": 1,
+      "criterio": 1
+     }
+    },
+    "kubit": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "consejo_perdido": 1,
+      "objetivo": 1,
+      "piso": 1,
+      "salud": 1,
+      "criterio": 1
+     }
+    },
+    "puntomadero": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "consejo_perdido": 1,
+      "objetivo": 1,
+      "piso": 1,
+      "salud": 1,
+      "criterio": 1
+     }
+    },
+    "vertice": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "consejo_perdido": 1,
+      "objetivo": 1,
+      "piso": 1,
+      "salud": 1,
+      "criterio": 1
+     }
+    }
+   },
+   "contesta_la_mitad": {
+    "cumbre": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "linea_roja": 28,
+      "objetivo": 37,
+      "piso": 22,
+      "salud": 43,
+      "criterio": 50,
+      "insolvencia": 6,
+      "consejo_perdido": 5
+     }
+    },
+    "forja": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "insolvencia": 13,
+      "objetivo": 38,
+      "salud": 47,
+      "criterio": 50,
+      "piso": 22,
+      "linea_roja": 16
+     }
+    },
+    "brasa": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "criterio": 50,
+      "linea_roja": 16,
+      "objetivo": 20,
+      "salud": 36,
+      "insolvencia": 1,
+      "piso": 4
+     }
+    },
+    "kubit": {
+     "months": [
+      0,
+      0,
+      0,
+      10,
+      0
+     ],
+     "reasons": {
+      "objetivo": 26,
+      "salud": 43,
+      "criterio": 49,
+      "piso": 17,
+      "insolvencia": 3
+     }
+    },
+    "puntomadero": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "objetivo": 29,
+      "piso": 33,
+      "salud": 47,
+      "criterio": 50,
+      "insolvencia": 3
+     }
+    },
+    "vertice": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "objetivo": 29,
+      "piso": 32,
+      "salud": 47,
+      "criterio": 49,
+      "insolvencia": 3
+     }
+    }
+   },
+   "director_equilibrado": {
+    "cumbre": {
+     "months": [
+      100,
+      100,
+      100,
+      100,
+      100
+     ],
+     "reasons": {}
+    },
+    "forja": {
+     "months": [
+      100,
+      100,
+      100,
+      0,
+      100
+     ],
+     "reasons": {
+      "criterio": 1
+     }
+    },
+    "brasa": {
+     "months": [
+      100,
+      100,
+      100,
+      100,
+      100
+     ],
+     "reasons": {}
+    },
+    "kubit": {
+     "months": [
+      100,
+      100,
+      100,
+      100,
+      100
+     ],
+     "reasons": {}
+    },
+    "puntomadero": {
+     "months": [
+      100,
+      100,
+      100,
+      100,
+      100
+     ],
+     "reasons": {}
+    },
+    "vertice": {
+     "months": [
+      100,
+      100,
+      100,
+      0,
+      0
+     ],
+     "reasons": {
+      "criterio": 2
+     }
+    }
+   },
+   "criterio_contextual": {
+    "cumbre": {
+     "months": [
+      100,
+      0,
+      0,
+      100,
+      0
+     ],
+     "reasons": {
+      "insolvencia": 3,
+      "objetivo": 1
+     }
+    },
+    "forja": {
+     "months": [
+      0,
+      100,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "objetivo": 4
+     }
+    },
+    "brasa": {
+     "months": [
+      100,
+      100,
+      100,
+      100,
+      100
+     ],
+     "reasons": {}
+    },
+    "kubit": {
+     "months": [
+      100,
+      100,
+      0,
+      100,
+      0
+     ],
+     "reasons": {
+      "objetivo": 2,
+      "insolvencia": 1
+     }
+    },
+    "puntomadero": {
+     "months": [
+      100,
+      100,
+      100,
+      100,
+      0
+     ],
+     "reasons": {
+      "insolvencia": 1
+     }
+    },
+    "vertice": {
+     "months": [
+      100,
+      100,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "objetivo": 3
+     }
+    }
+   },
+   "criterio_y_tablero": {
+    "cumbre": {
+     "months": [
+      100,
+      100,
+      0,
+      100,
+      100
+     ],
+     "reasons": {
+      "insolvencia": 1
+     }
+    },
+    "forja": {
+     "months": [
+      100,
+      100,
+      0,
+      0,
+      100
+     ],
+     "reasons": {
+      "objetivo": 2
+     }
+    },
+    "brasa": {
+     "months": [
+      100,
+      100,
+      100,
+      100,
+      100
+     ],
+     "reasons": {}
+    },
+    "kubit": {
+     "months": [
+      100,
+      100,
+      100,
+      100,
+      0
+     ],
+     "reasons": {
+      "objetivo": 1
+     }
+    },
+    "puntomadero": {
+     "months": [
+      100,
+      100,
+      100,
+      100,
+      100
+     ],
+     "reasons": {}
+    },
+    "vertice": {
+     "months": [
+      100,
+      100,
+      0,
+      100,
+      100
+     ],
+     "reasons": {
+      "objetivo": 1
+     }
+    }
+   },
+   "criterio_variado": {
+    "cumbre": {
+     "months": [
+      100,
+      70,
+      30,
+      90,
+      20
+     ],
+     "reasons": {
+      "insolvencia": 19,
+      "salud": 1,
+      "objetivo": 1
+     }
+    },
+    "forja": {
+     "months": [
+      80,
+      90,
+      20,
+      40,
+      10
+     ],
+     "reasons": {
+      "objetivo": 26,
+      "insolvencia": 4
+     }
+    },
+    "brasa": {
+     "months": [
+      100,
+      100,
+      100,
+      90,
+      90
+     ],
+     "reasons": {
+      "insolvencia": 2
+     }
+    },
+    "kubit": {
+     "months": [
+      100,
+      100,
+      70,
+      50,
+      40
+     ],
+     "reasons": {
+      "objetivo": 14,
+      "insolvencia": 2
+     }
+    },
+    "puntomadero": {
+     "months": [
+      80,
+      100,
+      60,
+      100,
+      80
+     ],
+     "reasons": {
+      "objetivo": 6,
+      "insolvencia": 2
+     }
+    },
+    "vertice": {
+     "months": [
+      90,
+      80,
+      70,
+      90,
+      50
+     ],
+     "reasons": {
+      "objetivo": 6,
+      "insolvencia": 7
+     }
+    }
+   },
+   "cuida_caja": {
+    "cumbre": {
+     "months": [
+      100,
+      100,
+      0,
+      100,
+      100
+     ],
+     "reasons": {
+      "insolvencia": 1
+     }
+    },
+    "forja": {
+     "months": [
+      100,
+      100,
+      0,
+      0,
+      100
+     ],
+     "reasons": {
+      "objetivo": 2
+     }
+    },
+    "brasa": {
+     "months": [
+      100,
+      100,
+      100,
+      100,
+      100
+     ],
+     "reasons": {}
+    },
+    "kubit": {
+     "months": [
+      100,
+      100,
+      100,
+      100,
+      0
+     ],
+     "reasons": {
+      "objetivo": 1
+     }
+    },
+    "puntomadero": {
+     "months": [
+      100,
+      100,
+      100,
+      100,
+      100
+     ],
+     "reasons": {}
+    },
+    "vertice": {
+     "months": [
+      100,
+      100,
+      0,
+      0,
+      100
+     ],
+     "reasons": {
+      "objetivo": 2
+     }
+    }
+   },
+   "personas_primero": {
+    "cumbre": {
+     "months": [
+      100,
+      0,
+      0,
+      100,
+      0
+     ],
+     "reasons": {
+      "insolvencia": 3,
+      "objetivo": 1,
+      "salud": 1
+     }
+    },
+    "forja": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "objetivo": 5,
+      "insolvencia": 1
+     }
+    },
+    "brasa": {
+     "months": [
+      100,
+      100,
+      0,
+      100,
+      0
+     ],
+     "reasons": {
+      "insolvencia": 2,
+      "objetivo": 1
+     }
+    },
+    "kubit": {
+     "months": [
+      100,
+      100,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "objetivo": 3
+     }
+    },
+    "puntomadero": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "objetivo": 5
+     }
+    },
+    "vertice": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "objetivo": 5,
+      "insolvencia": 1,
+      "piso": 1
+     }
+    }
+   },
+   "numeros_con_piso": {
+    "cumbre": {
+     "months": [
+      100,
+      100,
+      100,
+      100,
+      100
+     ],
+     "reasons": {}
+    },
+    "forja": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "linea_roja": 5
+     }
+    },
+    "brasa": {
+     "months": [
+      100,
+      100,
+      100,
+      100,
+      100
+     ],
+     "reasons": {}
+    },
+    "kubit": {
+     "months": [
+      100,
+      0,
+      100,
+      100,
+      100
+     ],
+     "reasons": {
+      "criterio": 1
+     }
+    },
+    "puntomadero": {
+     "months": [
+      100,
+      100,
+      100,
+      100,
+      100
+     ],
+     "reasons": {}
+    },
+    "vertice": {
+     "months": [
+      100,
+      0,
+      100,
+      100,
+      0
+     ],
+     "reasons": {
+      "criterio": 2
+     }
+    }
+   },
+   "criterio_con_errores": {
+    "cumbre": {
+     "months": [
+      83.3,
+      100,
+      83.3,
+      66.7,
+      66.7
+     ],
+     "reasons": {
+      "salud": 3,
+      "objetivo": 3,
+      "insolvencia": 1,
+      "linea_roja": 1
+     }
+    },
+    "forja": {
+     "months": [
+      66.7,
+      66.7,
+      50,
+      66.7,
+      66.7
+     ],
+     "reasons": {
+      "objetivo": 9,
+      "linea_roja": 2,
+      "insolvencia": 1
+     }
+    },
+    "brasa": {
+     "months": [
+      100,
+      100,
+      100,
+      100,
+      100
+     ],
+     "reasons": {}
+    },
+    "kubit": {
+     "months": [
+      100,
+      100,
+      83.3,
+      33.3,
+      33.3
+     ],
+     "reasons": {
+      "objetivo": 9,
+      "insolvencia": 2
+     }
+    },
+    "puntomadero": {
+     "months": [
+      100,
+      83.3,
+      50,
+      100,
+      100
+     ],
+     "reasons": {
+      "insolvencia": 2,
+      "objetivo": 3
+     }
+    },
+    "vertice": {
+     "months": [
+      83.3,
+      83.3,
+      66.7,
+      83.3,
+      66.7
+     ],
+     "reasons": {
+      "objetivo": 4,
+      "criterio": 2,
+      "insolvencia": 3,
+      "salud": 1
+     }
+    }
+   },
+   "criterio_ocupado": {
+    "cumbre": {
+     "months": [
+      100,
+      100,
+      83.3,
+      83.3,
+      66.7
+     ],
+     "reasons": {
+      "insolvencia": 2,
+      "salud": 2
+     }
+    },
+    "forja": {
+     "months": [
+      83.3,
+      100,
+      0,
+      33.3,
+      50
+     ],
+     "reasons": {
+      "objetivo": 14,
+      "salud": 1
+     }
+    },
+    "brasa": {
+     "months": [
+      66.7,
+      100,
+      100,
+      100,
+      66.7
+     ],
+     "reasons": {
+      "criterio": 3,
+      "salud": 2
+     }
+    },
+    "kubit": {
+     "months": [
+      100,
+      83.3,
+      100,
+      16.7,
+      66.7
+     ],
+     "reasons": {
+      "objetivo": 8
+     }
+    },
+    "puntomadero": {
+     "months": [
+      100,
+      100,
+      100,
+      83.3,
+      100
+     ],
+     "reasons": {
+      "criterio": 1
+     }
+    },
+    "vertice": {
+     "months": [
+      100,
+      100,
+      66.7,
+      100,
+      83.3
+     ],
+     "reasons": {
+      "objetivo": 2,
+      "insolvencia": 1,
+      "salud": 1
+     }
+    }
+   },
+   "segunda_mejor": {
+    "cumbre": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "objetivo": 5,
+      "criterio": 5,
+      "salud": 4,
+      "piso": 1
+     }
+    },
+    "forja": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "criterio": 5
+     }
+    },
+    "brasa": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "criterio": 5,
+      "objetivo": 1
+     }
+    },
+    "kubit": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "criterio": 5,
+      "objetivo": 4
+     }
+    },
+    "puntomadero": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "criterio": 5,
+      "salud": 1
+     }
+    },
+    "vertice": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "criterio": 5,
+      "salud": 3
+     }
+    }
+   }
+  },
+  "v4": {
+   "mas_larga": {
+    "cumbre": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 5
+     }
+    },
+    "forja": {
+     "months": [
+      100,
+      0,
+      0,
+      0,
+      100
+     ],
+     "reasons": {
+      "caja<línea": 3,
+      "equipo<línea": 1
+     }
+    },
+    "brasa": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "clientes<línea": 2,
+      "caja<línea": 3
+     }
+    },
+    "kubit": {
+     "months": [
+      100,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 4,
+      "equipo<línea": 1
+     }
+    },
+    "puntomadero": {
+     "months": [
+      100,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 4,
+      "equipo<línea": 2,
+      "margen<línea": 1
+     }
+    },
+    "vertice": {
+     "months": [
+      100,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "equipo<línea": 4,
+      "caja<línea": 1,
+      "clientes<línea": 1
+     }
+    }
+   },
+   "mas_corta": {
+    "cumbre": {
+     "months": [
+      100,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 3,
+      "equipo<línea": 4,
+      "margen<línea": 1
+     }
+    },
+    "forja": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 5,
+      "margen<línea": 5
+     }
+    },
+    "brasa": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 5,
+      "equipo<línea": 3,
+      "margen<línea": 1,
+      "consejo<línea": 1
+     }
+    },
+    "kubit": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "equipo<línea": 3,
+      "caja<línea": 4,
+      "consejo<línea": 2,
+      "margen<línea": 2
+     }
+    },
+    "puntomadero": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 5,
+      "equipo<línea": 2,
+      "margen<línea": 4
+     }
+    },
+    "vertice": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 5,
+      "margen<línea": 5
+     }
+    }
+   },
+   "azar": {
+    "cumbre": {
+     "months": [
+      20,
+      10,
+      0,
+      30,
+      0
+     ],
+     "reasons": {
+      "consejo<línea": 8,
+      "caja<línea": 34,
+      "margen<línea": 12,
+      "equipo<línea": 14,
+      "clientes<línea": 3
+     }
+    },
+    "forja": {
+     "months": [
+      10,
+      0,
+      0,
+      0,
+      10
+     ],
+     "reasons": {
+      "caja<línea": 45,
+      "margen<línea": 19,
+      "consejo<línea": 4,
+      "clientes<línea": 4,
+      "equipo<línea": 5
+     }
+    },
+    "brasa": {
+     "months": [
+      30,
+      10,
+      10,
+      10,
+      10
+     ],
+     "reasons": {
+      "caja<línea": 39,
+      "equipo<línea": 11,
+      "clientes<línea": 4,
+      "margen<línea": 5,
+      "consejo<línea": 1
+     }
+    },
+    "kubit": {
+     "months": [
+      60,
+      0,
+      10,
+      30,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 36,
+      "margen<línea": 7,
+      "clientes<línea": 2,
+      "equipo<línea": 8,
+      "consejo<línea": 2
+     }
+    },
+    "puntomadero": {
+     "months": [
+      10,
+      10,
+      20,
+      20,
+      0
+     ],
+     "reasons": {
+      "equipo<línea": 16,
+      "caja<línea": 25,
+      "margen<línea": 21,
+      "clientes<línea": 6
+     }
+    },
+    "vertice": {
+     "months": [
+      30,
+      0,
+      0,
+      20,
+      0
+     ],
+     "reasons": {
+      "margen<línea": 26,
+      "equipo<línea": 10,
+      "caja<línea": 36,
+      "consejo<línea": 2,
+      "clientes<línea": 1
+     }
+    }
+   },
+   "mejor_score": {
+    "cumbre": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 5
+     }
+    },
+    "forja": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 5,
+      "margen<línea": 1
+     }
+    },
+    "brasa": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 5
+     }
+    },
+    "kubit": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 5,
+      "margen<línea": 1
+     }
+    },
+    "puntomadero": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "margen<línea": 5,
+      "caja<línea": 4
+     }
+    },
+    "vertice": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 5,
+      "margen<línea": 5
+     }
+    }
+   },
+   "peor_score": {
+    "cumbre": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "equipo<línea": 5,
+      "clientes<línea": 1,
+      "consejo<línea": 5
+     }
+    },
+    "forja": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 5,
+      "equipo<línea": 5,
+      "margen<línea": 3
+     }
+    },
+    "brasa": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "equipo<línea": 5,
+      "caja<línea": 4,
+      "clientes<línea": 3,
+      "consejo<línea": 3
+     }
+    },
+    "kubit": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "equipo<línea": 5,
+      "clientes<línea": 1,
+      "caja<línea": 1
+     }
+    },
+    "puntomadero": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "equipo<línea": 5,
+      "clientes<línea": 1,
+      "margen<línea": 1
+     }
+    },
+    "vertice": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "equipo<línea": 5,
+      "clientes<línea": 1,
+      "margen<línea": 2
+     }
+    }
+   },
+   "mejor_efecto": {
+    "cumbre": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 5
+     }
+    },
+    "forja": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 5
+     }
+    },
+    "brasa": {
+     "months": [
+      100,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 4
+     }
+    },
+    "kubit": {
+     "months": [
+      100,
+      100,
+      100,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 2
+     }
+    },
+    "puntomadero": {
+     "months": [
+      100,
+      100,
+      100,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 2
+     }
+    },
+    "vertice": {
+     "months": [
+      100,
+      100,
+      100,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 2
+     }
+    }
+   },
+   "siempre_A": {
+    "cumbre": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 5,
+      "clientes<línea": 2
+     }
+    },
+    "forja": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 5,
+      "margen<línea": 5
+     }
+    },
+    "brasa": {
+     "months": [
+      100,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 4
+     }
+    },
+    "kubit": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 5,
+      "margen<línea": 4
+     }
+    },
+    "puntomadero": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 5,
+      "margen<línea": 5
+     }
+    },
+    "vertice": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 5,
+      "margen<línea": 5
+     }
+    }
+   },
+   "no_contesta": {
+    "cumbre": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "margen<línea": 1,
+      "equipo<línea": 1,
+      "consejo<línea": 1
+     }
+    },
+    "forja": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "margen<línea": 1,
+      "equipo<línea": 1,
+      "clientes<línea": 1,
+      "consejo<línea": 1
+     }
+    },
+    "brasa": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "margen<línea": 1,
+      "equipo<línea": 1,
+      "consejo<línea": 1
+     }
+    },
+    "kubit": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 1,
+      "equipo<línea": 1,
+      "clientes<línea": 1,
+      "consejo<línea": 1
+     }
+    },
+    "puntomadero": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "margen<línea": 1,
+      "equipo<línea": 1,
+      "clientes<línea": 1,
+      "consejo<línea": 1
+     }
+    },
+    "vertice": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 1,
+      "margen<línea": 1,
+      "equipo<línea": 1,
+      "clientes<línea": 1,
+      "consejo<línea": 1
+     }
+    }
+   },
+   "contesta_la_mitad": {
+    "cumbre": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 36,
+      "equipo<línea": 33,
+      "consejo<línea": 18,
+      "margen<línea": 14,
+      "clientes<línea": 8
+     }
+    },
+    "forja": {
+     "months": [
+      20,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 36,
+      "margen<línea": 30,
+      "equipo<línea": 35,
+      "clientes<línea": 13,
+      "consejo<línea": 4
+     }
+    },
+    "brasa": {
+     "months": [
+      20,
+      10,
+      0,
+      0,
+      10
+     ],
+     "reasons": {
+      "equipo<línea": 16,
+      "clientes<línea": 23,
+      "caja<línea": 34,
+      "consejo<línea": 15,
+      "margen<línea": 7
+     }
+    },
+    "kubit": {
+     "months": [
+      0,
+      0,
+      10,
+      0,
+      0
+     ],
+     "reasons": {
+      "clientes<línea": 18,
+      "consejo<línea": 12,
+      "caja<línea": 35,
+      "equipo<línea": 36,
+      "margen<línea": 12
+     }
+    },
+    "puntomadero": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 31,
+      "margen<línea": 23,
+      "equipo<línea": 42,
+      "consejo<línea": 3,
+      "clientes<línea": 16
+     }
+    },
+    "vertice": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "margen<línea": 23,
+      "equipo<línea": 38,
+      "caja<línea": 32,
+      "clientes<línea": 14,
+      "consejo<línea": 3
+     }
+    }
+   },
+   "director_equilibrado": {
+    "cumbre": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 5
+     }
+    },
+    "forja": {
+     "months": [
+      100,
+      0,
+      0,
+      100,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 3
+     }
+    },
+    "brasa": {
+     "months": [
+      100,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 4
+     }
+    },
+    "kubit": {
+     "months": [
+      100,
+      0,
+      0,
+      100,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 3
+     }
+    },
+    "puntomadero": {
+     "months": [
+      100,
+      100,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 3,
+      "margen<línea": 1
+     }
+    },
+    "vertice": {
+     "months": [
+      100,
+      0,
+      0,
+      100,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 3,
+      "margen<línea": 1
+     }
+    }
+   },
+   "criterio_contextual": {
+    "cumbre": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 5
+     }
+    },
+    "forja": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 5,
+      "margen<línea": 1
+     }
+    },
+    "brasa": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 5
+     }
+    },
+    "kubit": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 5,
+      "margen<línea": 1
+     }
+    },
+    "puntomadero": {
+     "months": [
+      100,
+      100,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 3,
+      "margen<línea": 3
+     }
+    },
+    "vertice": {
+     "months": [
+      100,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 4,
+      "margen<línea": 3
+     }
+    }
+   },
+   "criterio_y_tablero": {
+    "cumbre": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 5
+     }
+    },
+    "forja": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 5
+     }
+    },
+    "brasa": {
+     "months": [
+      100,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 4
+     }
+    },
+    "kubit": {
+     "months": [
+      100,
+      100,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 3,
+      "margen<línea": 1
+     }
+    },
+    "puntomadero": {
+     "months": [
+      100,
+      100,
+      0,
+      100,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 2
+     }
+    },
+    "vertice": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 5,
+      "margen<línea": 2
+     }
+    }
+   },
+   "criterio_variado": {
+    "cumbre": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 50
+     }
+    },
+    "forja": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 50,
+      "margen<línea": 7
+     }
+    },
+    "brasa": {
+     "months": [
+      0,
+      10,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 49
+     }
+    },
+    "kubit": {
+     "months": [
+      30,
+      30,
+      0,
+      10,
+      10
+     ],
+     "reasons": {
+      "caja<línea": 42,
+      "margen<línea": 2
+     }
+    },
+    "puntomadero": {
+     "months": [
+      50,
+      20,
+      0,
+      10,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 40,
+      "margen<línea": 20
+     }
+    },
+    "vertice": {
+     "months": [
+      40,
+      0,
+      0,
+      10,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 45,
+      "margen<línea": 24
+     }
+    }
+   },
+   "cuida_caja": {
+    "cumbre": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 5
+     }
+    },
+    "forja": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 5
+     }
+    },
+    "brasa": {
+     "months": [
+      100,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 4
+     }
+    },
+    "kubit": {
+     "months": [
+      100,
+      100,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 3,
+      "margen<línea": 1
+     }
+    },
+    "puntomadero": {
+     "months": [
+      100,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 4,
+      "margen<línea": 1
+     }
+    },
+    "vertice": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 5,
+      "margen<línea": 3
+     }
+    }
+   },
+   "personas_primero": {
+    "cumbre": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 5
+     }
+    },
+    "forja": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 5,
+      "margen<línea": 1
+     }
+    },
+    "brasa": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 5
+     }
+    },
+    "kubit": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 5,
+      "margen<línea": 1
+     }
+    },
+    "puntomadero": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "margen<línea": 5,
+      "caja<línea": 4
+     }
+    },
+    "vertice": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 5,
+      "margen<línea": 5
+     }
+    }
+   },
+   "numeros_con_piso": {
+    "cumbre": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 5
+     }
+    },
+    "forja": {
+     "months": [
+      0,
+      0,
+      0,
+      100,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 4
+     }
+    },
+    "brasa": {
+     "months": [
+      100,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 4
+     }
+    },
+    "kubit": {
+     "months": [
+      100,
+      100,
+      100,
+      100,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 1
+     }
+    },
+    "puntomadero": {
+     "months": [
+      100,
+      100,
+      100,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 2
+     }
+    },
+    "vertice": {
+     "months": [
+      100,
+      100,
+      100,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 2
+     }
+    }
+   },
+   "criterio_con_errores": {
+    "cumbre": {
+     "months": [
+      16.7,
+      0,
+      0,
+      16.7,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 28,
+      "margen<línea": 1
+     }
+    },
+    "forja": {
+     "months": [
+      16.7,
+      16.7,
+      16.7,
+      16.7,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 26,
+      "margen<línea": 1
+     }
+    },
+    "brasa": {
+     "months": [
+      33.3,
+      0,
+      0,
+      0,
+      16.7
+     ],
+     "reasons": {
+      "caja<línea": 27,
+      "equipo<línea": 1
+     }
+    },
+    "kubit": {
+     "months": [
+      66.7,
+      0,
+      0,
+      0,
+      16.7
+     ],
+     "reasons": {
+      "caja<línea": 20,
+      "clientes<línea": 1,
+      "margen<línea": 5,
+      "consejo<línea": 1
+     }
+    },
+    "puntomadero": {
+     "months": [
+      100,
+      16.7,
+      0,
+      66.7,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 17,
+      "margen<línea": 4,
+      "clientes<línea": 2
+     }
+    },
+    "vertice": {
+     "months": [
+      66.7,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "margen<línea": 11,
+      "caja<línea": 23
+     }
+    }
+   },
+   "criterio_ocupado": {
+    "cumbre": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 30
+     }
+    },
+    "forja": {
+     "months": [
+      0,
+      16.7,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 29,
+      "consejo<línea": 1,
+      "margen<línea": 2
+     }
+    },
+    "brasa": {
+     "months": [
+      100,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 24
+     }
+    },
+    "kubit": {
+     "months": [
+      83.3,
+      33.3,
+      16.7,
+      16.7,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 19,
+      "margen<línea": 5,
+      "equipo<línea": 1
+     }
+    },
+    "puntomadero": {
+     "months": [
+      100,
+      66.7,
+      0,
+      33.3,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 17,
+      "margen<línea": 9
+     }
+    },
+    "vertice": {
+     "months": [
+      33.3,
+      16.7,
+      0,
+      16.7,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 25,
+      "margen<línea": 12
+     }
+    }
+   },
+   "segunda_mejor": {
+    "cumbre": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "margen<línea": 5,
+      "caja<línea": 4,
+      "consejo<línea": 1
+     }
+    },
+    "forja": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 5
+     }
+    },
+    "brasa": {
+     "months": [
+      100,
+      100,
+      100,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 2,
+      "margen<línea": 2,
+      "equipo<línea": 2
+     }
+    },
+    "kubit": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 5,
+      "consejo<línea": 1
+     }
+    },
+    "puntomadero": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 5
+     }
+    },
+    "vertice": {
+     "months": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "reasons": {
+      "caja<línea": 5
+     }
+    }
+   }
+  }
+ }
+}
