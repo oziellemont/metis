@@ -31,15 +31,8 @@ export const SHADOW_RULES = Object.freeze({
   minEvidence: 0.5,
 });
 
-/** Objetivos de temporada por empresa (propuesta editorial: lo que el consejo te pidió al contratarte). */
-export const SEASON_OBJECTIVES: Record<string, { kpis: KpiKey[]; text: string }> = {
-  cumbre: { kpis: ["margen", "equipo"], text: "Recuperar margen sin romper la planta." },
-  forja: { kpis: ["clientes", "caja"], text: "Cumplir a la armadora y generar caja para el fondo." },
-  brasa: { kpis: ["margen", "clientes"], text: "Defender el margen frente a las apps sin perder clientes." },
-  kubit: { kpis: ["caja", "clientes"], text: "Alargar la caja hasta la siguiente ronda sin perder a los clientes que quieren el producto." },
-  puntomadero: { kpis: ["margen", "clientes"], text: "Recuperar margen frente a Mundo Casa sin perder a los clientes de toda la vida." },
-  vertice: { kpis: ["margen", "clientes"], text: "Recuperar margen frente a Avante sin dejar de cumplirle a las cuentas grandes." },
-};
+export { SEASON_OBJECTIVES } from "./objectives";
+import { SEASON_OBJECTIVES } from "./objectives";
 
 export type ShadowOutcome = "aprobado" | "reprobado" | "sin_evidencia";
 export type ShadowReason = "insolvencia" | "consejo_perdido" | "linea_roja" | "objetivo" | "salud";

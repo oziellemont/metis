@@ -50,6 +50,20 @@ export interface RuleSet {
    * «continua»: una sola empresa persistente; cerrar un periodo nunca cambia de empresa ni sube la exigencia.
    */
   career?: "temporadas" | "continua";
+  /**
+   * Motor y veredicto V5 (desde v5). Sin este bloque = motor y veredicto anteriores (cinco indicadores ≥ línea).
+   *  - cashFlow: al cierre, el margen se convierte en caja: cada `perPoints` puntos de margen sobre la línea suman
+   *    1 de caja (y por debajo restan), entre `min` y `max`. Un negocio rentable genera efectivo.
+   *  - verdict: resultado del negocio con límites críticos (insolvencia, consejo, línea roja), objetivos del consejo,
+   *    piso por indicador y salud promedio; más el criterio: proporción mínima de asuntos bien razonados.
+   *  - mandateMargin: en la rúbrica, los indicadores que el consejo encargó (y la caja) se consideran «en riesgo»
+   *    desde esta distancia a la línea.
+   */
+  v5?: {
+    cashFlow: { perPoints: number; min: number; max: number };
+    verdict: { insolvency: number; boardLost: number; floorBelowLine: number; healthAboveLine: number; minJudgment: number };
+    mandateMargin: number;
+  };
 }
 
 /** Versión 1 · reglas legacy (v2 del simulador, octubre 2026). Congeladas: no editar. */
@@ -121,15 +135,36 @@ const V4: RuleSet = Object.freeze({
   career: "continua",
 }) as RuleSet;
 
+/**
+ * Versión 5 · motor y veredicto V5 (temporadas nuevas). Igual que v3 en exigencia, XP, crisis y casos ejecutivos.
+ * Cambia cómo se decide aprobar, con base en la simulación de 12 estrategias × 6 empresas (docs/editorial):
+ *  - Ya no basta tener los cinco indicadores ≥ línea, ni un indicador en 49 reprueba una empresa sana.
+ *    Se exige: caja sin insolvencia, consejo que te sostiene, ninguna línea roja, los dos objetivos que el consejo
+ *    te encargó ≥ línea, ningún indicador por debajo del piso, salud promedio con holgura…
+ *  - …y criterio: al menos el 60 % de los asuntos bien razonados según la rúbrica contextual (vencidos cuentan en
+ *    contra). Al azar ya no se aprueba por suerte; elegir solo por números o por «la opción más larga» tampoco.
+ *  - El margen genera caja al cierre (antes, una empresa rentable podía quedarse sin caja sin ningún efecto del margen).
+ * Las temporadas que empezaron con v3 siguen con v3 hasta terminar; la carrera continua sigue en v4.
+ */
+const V5: RuleSet = Object.freeze({
+  ...V3,
+  version: 5,
+  v5: Object.freeze({
+    cashFlow: Object.freeze({ perPoints: 3, min: -5, max: 6 }),
+    verdict: Object.freeze({ insolvency: 40, boardLost: 40, floorBelowLine: 10, healthAboveLine: 12, minJudgment: 0.6 }),
+    mandateMargin: 12,
+  }),
+}) as RuleSet;
+
 /** Reglas de todas las partidas guardadas antes de que existiera `rulesVersion`. */
 export const LEGACY_RULES_VERSION = 1;
 /** Versión con la que empiezan las temporadas nuevas. */
-export const RULES_VERSION = 3;
+export const RULES_VERSION = 5;
 /** Versión con la que empiezan los periodos de la carrera continua. */
 export const CONTINUOUS_RULES_VERSION = 4;
 
 /** Todas las versiones publicadas. Las pruebas pueden registrar una versión simulada. */
-export const RULESETS: Record<number, RuleSet> = { 1: V1, 2: V2, 3: V3, 4: V4 };
+export const RULESETS: Record<number, RuleSet> = { 1: V1, 2: V2, 3: V3, 4: V4, 5: V5 };
 
 export const isRulesVersion = (v: unknown): v is number => typeof v === "number" && Number.isInteger(v) && v >= 1;
 /** ¿Este código conoce esa versión? (una partida guardada por una versión más nueva de la app no lo sería). */

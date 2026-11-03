@@ -86,7 +86,8 @@ describe("diagnóstico de temporada sobre partidas reales", () => {
     }
   });
   it("una temporada reprobada se explica con decisiones concretas y separa criterio de resultado", () => {
-    const r = playSeason(classicStart("cumbre"), "mejor_score", "cumbre|diag");
+    // Temporada con reglas V3 (las que conservan las partidas que empezaron antes de V5).
+    const r = playSeason(() => ({ ...classicStart("cumbre")(), rulesVersion: 3 }), "mejor_score", "cumbre|diag");
     const d = seasonDiagnosis(r.state, r.at);
     expect(d.result.passed).toBe(false);
     expect(d.result.failed).toContain("caja");

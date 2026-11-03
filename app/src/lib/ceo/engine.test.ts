@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { STRATEGIES } from "./season-sim";
 import { LESSONS } from "./lessons";
 import { COMPANIES } from "./companies";
 import { CUMBRE } from "./companies/cumbre";
@@ -267,6 +268,8 @@ const careful = (s: CeoState, t: number, itemId: string, ids: string[]) => {
   return pick;
 };
 const best: Picker = (os, s, t, itemId) => careful(s, t, itemId, os.map((o) => o.id));
+// V5: aprobar exige razonar bien Y cuidar el tablero (no basta maximizar indicadores).
+const wise: Picker = (os, s, t, itemId) => STRATEGIES.criterio_y_tablero.pick(os as never, { s, t, itemId, r: () => 0.5 }) ?? os[0].id;
 const worst: Picker = (os) => os.slice().sort((a, b) => sum(a.effects) - sum(b.effects))[0].id;
 const sum = (e: Record<string, number | undefined>) => Object.values(e).reduce<number>((a, x) => a + (x ?? 0), 0);
 
@@ -291,16 +294,16 @@ describe("carrera multiempresa", () => {
     expect(s3.equipo!).toBeLessThan(10);
   });
   it.each(COMPANIES.map((c) => [c.id] as const))("%s: se puede aprobar con buenas decisiones y reprobar con malas", (id) => {
-    const good = finish(started({ company: id }), best);
+    const good = finish(started({ company: id }), wise);
     expect(rulesOf(0).passLine).toBe(50);
     expect(seasonDoneOf(good.s, good.t)).toBe(true);
     const vg = verdictOf(good.s, good.t);
-    expect(vg.passed, JSON.stringify(vg.kpis)).toBe(true);
+    expect(vg.passed, JSON.stringify([vg.kpis, vg.v5])).toBe(true);
     const bad = finish(started({ company: id }), worst, "skip");
     expect(verdictOf(bad.s, bad.t).passed).toBe(false);
   });
   it("al aprobar asciende a otra empresa (de otro giro) y sube la exigencia; al reprobar repite", () => {
-    const good = finish(started({ company: "cumbre" }), best);
+    const good = finish(started({ company: "cumbre" }), wise);
     const up = advance(good.s, good.t);
     expect(up.company).not.toBe("cumbre");
     expect(up.tier).toBe(1);
@@ -391,9 +394,9 @@ describe("carrera continua · identidad y reglas v4", () => {
     expect(s.companyProfile?.displayName).toBe("Casa Norte Alimentos");
     expect(packOf(s).name).toBe("Casa Norte Alimentos");
     expect(JSON.stringify(packOf(s).items)).not.toMatch(/Cumbre/);
-    // la v4 no es la versión por omisión: las temporadas siguen en v3
-    expect(RULES_VERSION).toBe(3);
-    expect(newState().rulesVersion).toBe(3);
+    // la v4 no es la versión por omisión: las temporadas nuevas usan v5
+    expect(RULES_VERSION).toBe(5);
+    expect(newState().rulesVersion).toBe(5);
   });
 
   it("solo se crea una vez, antes de decidir, y con una combinación jugable", () => {

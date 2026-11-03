@@ -73,11 +73,11 @@ describe("resolver la versión", () => {
     expect(knownRules(7)).toBe(false);
   });
   it("una versión de una app más nueva usa la más alta conocida que no la supera", () => {
-    expect(ruleSet(9).version).toBe(4);
+    expect(ruleSet(9).version).toBe(5);
     withV2();
     expect(ruleSet(9).version).toBe(7);
     expect(ruleSet(7).version).toBe(7);
-    expect(ruleSet(5).version).toBe(4);
+    expect(ruleSet(6).version).toBe(5);
     expect(ruleSet(1).version).toBe(1);
   });
 });
@@ -189,7 +189,7 @@ describe("reglas v4 · carrera continua", () => {
     const { version: _c, ...rest3 } = v3;
     expect(rest4).toEqual(rest3);
     expect(Object.isFrozen(RULESETS[4])).toBe(true);
-    expect(RULES_VERSION).toBe(3);
+    expect(RULES_VERSION).toBe(5);
     expect(knownRules(4)).toBe(true);
   });
 });
