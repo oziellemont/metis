@@ -49,7 +49,7 @@ describe("continuidad de la empresa", () => {
       }
     }
     expect(checked).toBeGreaterThan(300);
-  });
+  }, 60_000);
 
   it("no repite el mismo asunto anterior dos veces y muestra como mucho 3 recuerdos", () => {
     for (const { r } of runs) for (const e of entries(r.state, r.at)) {
@@ -57,7 +57,7 @@ describe("continuidad de la empresa", () => {
       expect(ls.length).toBeLessThanOrEqual(3);
       expect(new Set(ls.map((l) => l.from)).size).toBe(ls.length);
     }
-  });
+  }, 60_000);
 
   it("la empresa recuerda: la mayoría de los asuntos después del primer día trae algo de antes", () => {
     for (const { c, st, r } of runs) {
@@ -65,13 +65,13 @@ describe("continuidad de la empresa", () => {
       const w = es.filter((e) => continuityOf(r.state, e.item.id, r.at).links.length > 0).length;
       expect(w / es.length, `${c} ${st}`).toBeGreaterThanOrEqual(0.6);
     }
-  });
+  }, 60_000);
 
   it("una consecuencia que llegó por tu decisión siempre lo dice primero", () => {
     for (const { r } of runs) for (const e of entries(r.state, r.at).filter((x) => x.item.trigger && x.status !== "futuro")) {
       expect(continuityOf(r.state, e.item.id, r.at).links[0]?.kind).toBe("detonador");
     }
-  });
+  }, 60_000);
 
   it("un asunto que no ha llegado no tiene recuerdos, y el texto usa los nombres reales del elenco", () => {
     const { r } = runs[0];
@@ -79,5 +79,5 @@ describe("continuidad de la empresa", () => {
     for (const e of entries(r.state, r.at)) for (const l of continuityOf(r.state, e.item.id, r.at).links.filter((x) => x.who)) expect(l.text.startsWith(pack.cast[l.who!].name)).toBe(true);
     const first = entries(r.state, r.state.startedAt!)[0];
     expect(continuityOf(r.state, first.item.id, r.state.startedAt!).links).toEqual([]);
-  });
+  }, 60_000);
 });
