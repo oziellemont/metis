@@ -119,6 +119,7 @@ export function sanitizeAction(raw: unknown): GameAction | null {
       const out: GameAction = { type: "setupCompany", at, companyId: a.companyId, sectorId: a.sectorId, industryId: a.industryId, archetype: a.archetype, displayName: a.displayName };
       if (str(a.shortName, 40)) out.shortName = a.shortName;
       if (str(a.specialty, 60)) out.specialty = a.specialty;
+      if (num(a.rulesVersion) && Number.isInteger(a.rulesVersion) && a.rulesVersion >= 1) out.rulesVersion = a.rulesVersion;
       return out;
     }
     case "renameCompany": return str(a.displayName, 40) ? { type: "renameCompany", at, displayName: a.displayName, ...(str(a.shortName, 40) ? { shortName: a.shortName } : {}) } : null;

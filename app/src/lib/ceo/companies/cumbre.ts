@@ -4,6 +4,7 @@
  */
 import type { CompanyPack } from "../types";
 import { ITEMS } from "./cumbre-items";
+import { MANTENIMIENTO } from "./cumbre-mantenimiento";
 
 export const CUMBRE: CompanyPack = {
   id: "cumbre",
@@ -84,5 +85,5 @@ export const CUMBRE: CompanyPack = {
       { id: "paty", start: 40, likes: ["ejemplo"], secret: "«La gente me pregunta a mí qué está pasando. Si yo lo entiendo, el chisme trabaja a tu favor.»" },
     ],
   },
-  items: ITEMS,
+  items: [...ITEMS, ...MANTENIMIENTO],
 };

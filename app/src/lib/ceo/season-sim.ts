@@ -9,7 +9,7 @@
  * No cambia nada del juego: solo llama a las funciones públicas del motor.
  */
 import { LEVERS, canUse, leverById, simulate } from "./change";
-import { H, KPI_KEYS, casesDoneOf, decide, entries, episodeEntries, kpis, newState, nextArrivalOf, openSeasonEpisode, packOf, rulesFor, verdictOf } from "./engine";
+import { H, KPI_KEYS, advance, casesDoneOf, decide, reportDueOf, setupCompany, entries, episodeEntries, kpis, newState, nextArrivalOf, openSeasonEpisode, packOf, rulesFor, verdictOf } from "./engine";
 import { EPISODES, actEpisode } from "./episodes/catalog";
 import { applyEpisode, strategiesFor, type EpisodeAction } from "./episodes/engine";
 import type { EpisodeRun } from "./episodes/contracts";
@@ -17,6 +17,9 @@ import { closeChange, playLever, startChange } from "./relations";
 import type { CeoState, ChangeMove, CompanyPack, KpiKey, Kpis, Option } from "./types";
 import { contextualJudgment } from "./judgment";
 import { SEASON_OBJECTIVES } from "./shadow-verdict";
+import { CONTINUOUS_RULES_VERSION } from "./rules";
+import { closePeriod } from "./business/report";
+import type { CompanyArchetype } from "./career/taxonomy";
 
 /** Lunes 5-oct-2026, 09:00 en Monterrey. Mismo arranque que las partidas doradas. */
 export const SIM_T0 = Date.UTC(2026, 9, 5, 15, 0, 0);
@@ -79,6 +82,48 @@ function contextualMix(os: Option[], c: PickCtx): string {
   return p[Math.floor(c.r() * p.length)].id;
 }
 
+// ── Estrategias de control (no se usaron para calibrar V5): prueban que el veredicto no está ajustado a una ruta.
+/** Bien razonada (criterio contextual ≥ 2) y, entre esas, la que mejor cuida la caja; desempata el indicador más bajo. */
+function cashKeeper(os: Option[], c: PickCtx): string {
+  const k0 = kpis(c.s, c.t), line = rulesFor(c.s).passLine;
+  const pool = os.filter((o) => contextualJudgment(o, os, k0, line).level >= 2);
+  let pick = (pool[0] ?? os[0]).id, bv = -1e9;
+  for (const o of pool.length ? pool : os) {
+    const k = kpis(decide(c.s, c.itemId, o.id, c.t), c.t);
+    const v = k.caja * 10 + Math.min(...KPI_KEYS.map((x) => k[x]));
+    if (v > bv) { bv = v; pick = o.id; }
+  }
+  return pick;
+}
+/** Bien razonada y, entre esas, la que mejor trata a la gente y a los clientes (estilo «personas primero»). */
+function peopleFirst(os: Option[], c: PickCtx): string {
+  const k0 = kpis(c.s, c.t), line = rulesFor(c.s).passLine;
+  const pool = os.filter((o) => contextualJudgment(o, os, k0, line).level >= 2);
+  return (pool.length ? pool : os).slice().sort((a, b) => ((b.effects.equipo ?? 0) + (b.effects.clientes ?? 0)) - ((a.effects.equipo ?? 0) + (a.effects.clientes ?? 0)) || b.score - a.score)[0].id;
+}
+/** Solo números, pero con cuidado: el mejor efecto neto entre las opciones que no dejan ningún indicador bajo la línea. */
+function safeNumbers(os: Option[], c: PickCtx): string {
+  const line = rulesFor(c.s).passLine;
+  const sc = os.map((o) => { const k = kpis(decide(c.s, c.itemId, o.id, c.t), c.t); return { o, ok: KPI_KEYS.every((x) => k[x] >= line), n: net(o) }; });
+  const pool = sc.filter((x) => x.ok);
+  return (pool.length ? pool : sc).sort((a, b) => b.n - a.n)[0].o.id;
+}
+/** Un director bueno pero humano: decide como «criterio y tablero», salvo que una de cada cuatro veces se equivoca al azar. */
+function noisy(os: Option[], c: PickCtx): string {
+  return c.r() < 0.25 ? os[Math.floor(c.r() * os.length)].id : judgedBalanced(os, c);
+}
+/** Ocupado: decide como «criterio y tablero», pero deja vencer uno de cada cuatro asuntos. */
+function busy(os: Option[], c: PickCtx): string | null {
+  return c.r() < 0.25 ? null : judgedBalanced(os, c);
+}
+/** Siempre la segunda mejor por criterio de diseño: ni lo peor ni lo mejor razonado. */
+function secondBest(os: Option[]): string {
+  const s = os.slice().sort((a, b) => b.score - a.score || net(b) - net(a));
+  return (s[1] ?? s[0]).id;
+}
+/** Estrategias de control: no participaron en la calibración del veredicto V5 (docs/editorial/simulacion-temporadas.json). */
+export const HOLDOUT = ["cuida_caja", "personas_primero", "numeros_con_piso", "criterio_con_errores", "criterio_ocupado", "segunda_mejor"] as const;
+
 /** Las nueve estrategias de la auditoría + el «director equilibrado» (criterio y tablero a la vez). */
 export const STRATEGIES: Record<string, { label: string; pick: Picker; reps: number }> = {
   mas_larga: { label: "Siempre la opción más larga", pick: (os) => os.slice().sort((a, b) => b.text.length - a.text.length)[0].id, reps: 1 },
@@ -94,6 +139,13 @@ export const STRATEGIES: Record<string, { label: string; pick: Picker; reps: num
   criterio_contextual: { label: "Criterio contextual (rúbrica nueva): lo mejor razonado leyendo el tablero", pick: (os, c) => contextual(os, c), reps: 1 },
   criterio_y_tablero: { label: "Criterio y tablero: bien razonada y cuidando el encargo del consejo y la caja", pick: (os, c) => judgedBalanced(os, c), reps: 1 },
   criterio_variado: { label: "Caminos variados: cualquier opción con criterio contextual alto, al azar", pick: (os, c) => contextualMix(os, c), reps: 40 },
+  // control (no calibradas)
+  cuida_caja: { label: "Control · bien razonada cuidando la caja", pick: (os, c) => cashKeeper(os, c), reps: 1 },
+  personas_primero: { label: "Control · bien razonada, personas y clientes primero", pick: (os, c) => peopleFirst(os, c), reps: 1 },
+  numeros_con_piso: { label: "Control · solo números, sin dejar indicadores bajo la línea", pick: (os, c) => safeNumbers(os, c), reps: 1 },
+  criterio_con_errores: { label: "Control · buen criterio con 25 % de errores al azar", pick: (os, c) => noisy(os, c), reps: 40 },
+  criterio_ocupado: { label: "Control · buen criterio, pero deja vencer 25 % de los asuntos", pick: (os, c) => busy(os, c), reps: 40 },
+  segunda_mejor: { label: "Control · siempre la segunda mejor razonada", pick: (os) => secondBest(os), reps: 1 },
 };
 
 /** Plan del proyecto de cambio: la palanca que más acerca a la meta por semana usada (igual que las pruebas del motor). */
@@ -123,7 +175,7 @@ export function greedyPlan(pack: CompanyPack, rel0: Record<string, number>, week
 }
 
 type EpisodePolicy = "mejor_efecto" | "peor_efecto" | "primera" | "azar";
-const episodePolicyOf = (name: string): EpisodePolicy => (name === "mejor_efecto" || name === "director_equilibrado" || name === "mejor_score" || name.startsWith("criterio") ? "mejor_efecto" : name === "peor_score" ? "peor_efecto" : name === "azar" || name === "contesta_la_mitad" || name === "criterio_variado" ? "azar" : "primera");
+const episodePolicyOf = (name: string): EpisodePolicy => (name === "mejor_efecto" || name === "director_equilibrado" || name === "mejor_score" || name.startsWith("criterio") ? "mejor_efecto" : name === "peor_score" ? "peor_efecto" : name === "azar" || name === "contesta_la_mitad" || name === "criterio_variado" ? "azar" : name === "cuida_caja" || name === "personas_primero" || name === "numeros_con_piso" || name === "criterio_con_errores" || name === "criterio_ocupado" ? "mejor_efecto" : "primera");
 
 /** Juega un caso ejecutivo completo con una política simple (búsqueda exhaustiva para «mejor/peor efecto»). */
 function playEpisode(s0: CeoState, id: string, t0: number, policy: EpisodePolicy, r: () => number): { s: CeoState; t: number } {
@@ -203,3 +255,37 @@ export function playSeason(make: () => CeoState, name: string, seed: string): Se
 
 /** Temporada clásica de una empresa (igual que la auditoría). */
 export const classicStart = (company: string) => (): CeoState => ({ ...newState(), name: "QA", alias: "qa", startedAt: SIM_T0, savedAt: SIM_T0, lastActiveAt: SIM_T0, company });
+
+// ───────────────────────────────────────────── carrera continua (varios meses de la misma empresa)
+const OWN: Record<string, { sectorId: string; industryId: string; archetype: CompanyArchetype }> = {
+  cumbre: { sectorId: "manufactura", industryId: "alimentos_bebidas", archetype: "establecida" },
+  forja: { sectorId: "manufactura", industryId: "autopartes", archetype: "establecida" },
+  brasa: { sectorId: "restaurantes_alimentos", industryId: "restaurantes", archetype: "establecida" },
+  kubit: { sectorId: "tecnologia_informacion", industryId: "software_saas", archetype: "startup" },
+  puntomadero: { sectorId: "comercio", industryId: "retail", archetype: "establecida" },
+  vertice: { sectorId: "transporte_almacenamiento", industryId: "logistica_distribucion", archetype: "establecida" },
+};
+/** Empresa propia (carrera continua) del paquete dado, con las reglas continuas indicadas (por omisión, las vigentes). */
+export const ownStart = (pack: string, rulesVersion: number = CONTINUOUS_RULES_VERSION) => (): CeoState =>
+  setupCompany(classicStart(pack)(), { companyId: "3f1c2a4b-5d6e-4f70-8a9b-0c1d2e3f4a5b", displayName: "Empresa QA", ...OWN[pack] }, SIM_T0, rulesVersion);
+
+export interface CareerSimResult { months: SeasonResult[]; state: CeoState }
+/**
+ * Juega `months` periodos seguidos de la carrera continua con la misma estrategia: cierra cada mes con las reglas
+ * continuas vigentes y firma el reporte (sin asignar presupuesto) antes del siguiente. Determinista.
+ */
+export function playCareer(pack: string, name: string, months: number, seed: string, rulesVersion: number = CONTINUOUS_RULES_VERSION): CareerSimResult {
+  const out: SeasonResult[] = [];
+  let s = ownStart(pack, rulesVersion)();
+  for (let m = 0; m < months; m++) {
+    const cur = s;
+    const r = playSeason(() => cur, name, `${seed}|m${m}`);
+    out.push(r);
+    if (m === months - 1) { s = r.state; break; }
+    const next = advance(r.state, r.at, rulesVersion);
+    if (next === r.state) { s = r.state; break; }
+    const p = reportDueOf(next);
+    s = p !== null ? closePeriod(next, p, r.at) : next;
+  }
+  return { months: out, state: s };
+}

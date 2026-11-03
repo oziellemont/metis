@@ -62,7 +62,18 @@ export interface Item {
   bitacora: { title: string; text: string; nota: string };
   areas: Area[];
   /** Consecuencia que regresa: sólo llega si en `item` elegiste alguna de `options` ("__expired" = no respondiste). */
-  trigger?: { item: string; options: string[] };
+  trigger?: {
+    item: string;
+    options: string[];
+    /**
+     * Consecuencia incierta: solo llega si el azar del jugador para ese detonador cae en [desde, hasta).
+     * El azar es estable (sale de la fecha de inicio del periodo y del id del detonador), así que una partida se
+     * reproduce igual; dos consecuencias del mismo detonador con rangos complementarios son caminos excluyentes.
+     */
+    roll?: [number, number];
+  };
+  /** Solo llega en periodos jugados con esta versión de reglas o posterior (los periodos anteriores no cambian). */
+  since?: number;
   deadlineH?: number;
   /** Otras personas que se ven afectadas (se resaltan en el mapa de relaciones). */
   involves?: CastId[];

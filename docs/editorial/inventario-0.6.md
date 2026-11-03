@@ -1,23 +1,23 @@
-# mêtis CEO · Inventario editorial de los 103 asuntos y veredicto sombra
+# mêtis CEO · Inventario editorial de los 110 asuntos y veredicto sombra
 
 Clasificador editorial v1 · Veredicto sombra v0. Reporte generado por código a partir del contenido actual; no cambia ningún resultado de partidas, XP ni veredicto en producción.
 
 ## 1. Resumen
 
-De los 103 asuntos (77 base y 26 consecuencias), el clasificador propone:
+De los 110 asuntos (78 base y 32 consecuencias), el clasificador propone:
 
 | Estado | Asuntos | % |
 |---|---:|---:|
-| approved (propuesta, falta firma humana) | 21 | 20 % |
-| legacy (se conserva como histórico) | 21 | 20 % |
-| needsRewrite (reescribir) | 44 | 43 % |
-| restrictedEthics (obligación ética o de seguridad) | 17 | 17 % |
+| approved (propuesta, falta firma humana) | 27 | 25 % |
+| legacy (se conserva como histórico) | 21 | 19 % |
+| needsRewrite (reescribir) | 44 | 40 % |
+| restrictedEthics (obligación ética o de seguridad) | 18 | 16 % |
 
 Ningún asunto queda aprobado de forma definitiva: «approved» es una propuesta automática que requiere la aprobación de Oziel (tabla `EDITORIAL_REVIEW` en `editorial.ts`).
 
 | Empresa | approved | legacy | needsRewrite | restrictedEthics |
 |---|---:|---:|---:|---:|
-| Botanas Cumbre | 0 | 2 | 15 | 3 |
+| Botanas Cumbre | 6 | 2 | 15 | 4 |
 | Forja Norte | 2 | 6 | 5 | 4 |
 | Grupo Brasa | 4 | 4 | 6 | 1 |
 | Kúbit | 5 | 3 | 6 | 3 |
@@ -30,7 +30,7 @@ Balance neto promedio (suma de los cinco indicadores, sin multiplicadores de niv
 
 | Empresa | score 0 | score 1 | score 2 | score 3 | Correlación score–balance |
 |---|---:|---:|---:|---:|---:|
-| Botanas Cumbre | -5.27 (11) | -1.37 (19) | 0.00 (4) | +4.00 (20) | 0.82 |
+| Botanas Cumbre | -5.27 (11) | -1.38 (26) | -0.91 (11) | +2.52 (27) | 0.68 |
 | Forja Norte | -6.20 (5) | -1.71 (14) | -1.33 (12) | +0.88 (17) | 0.59 |
 | Grupo Brasa | -3.20 (5) | -2.67 (12) | +0.09 (11) | +1.36 (14) | 0.55 |
 | Kúbit | -5.20 (5) | -1.00 (14) | -0.75 (12) | +1.35 (17) | 0.60 |
@@ -42,12 +42,12 @@ Hallazgos por asunto (un asunto puede tener varios):
 | Hallazgo | Asuntos |
 |---|---:|
 | Una opción gana o empata en los cinco indicadores frente a todas las demás. | 0 |
-| La opción con score más alto también es la de mejor balance de indicadores. | 73 |
+| La opción con score más alto también es la de mejor balance de indicadores. | 74 |
 | La opción con score más alto gana por una ventaja clara: se adivina la preferencia del autor. | 53 |
 | La opción con score 0 es la que peor le va a la empresa. | 31 |
 | Hay una opción sin ningún costo visible. | 0 |
 | Solo una opción queda cerca de la mejor; las demás no son defendibles por números. | 55 |
-| No responder castiga más que cualquier opción. | 93 |
+| No responder castiga más que cualquier opción. | 98 |
 | Una opción cruza una línea roja (se analiza, no se presenta como alternativa legítima). | 6 |
 
 Umbrales: ventaja «obvia» ≥ 3 puntos netos; una opción es «defendible» si queda a 2 puntos o menos de la mejor.
@@ -93,6 +93,13 @@ Opciones como `id:score:balance`. Un `!` marca una línea roja. «Vencer» es el
 | 6 | `c-ana-renuncia` Renuncia de Ana Martínez (Planeación) | consecuencia | a:3:+1 b:1:-1 | -3 | legacy | Jugable como contenido histórico, pero la opción preferida por el autor sigue siendo la que más conviene. |
 | 7 | `c-piloto` Resultados del piloto · Cumbre Selección (8 semanas) | consecuencia | a:3:+8 b:1:+1 | -4 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
 | 7 | `d7-sucesion` Una última cosa antes de cerrar tus 90 días | base | a:3:+8 b:0:-4 c:1:-1 | -6 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
+| 2 | `d2-mantenimiento` Mantenimiento mayor de la envasadora de la línea 1 | base | a:3:-2 b:1:+2 c:2:0 | -2 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 4 | `c-mant-sabados` Javier Ortiz | consecuencia | a:3:-1 b:1:-1 c:2:-1 | -3 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 4 | `c-mant-falla` Llamada perdida · Javier Ortiz (Planta) | consecuencia | a:3:-3 b:1:-2 c:2:-4 | -4 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 4 | `c-mant-rendimiento` La línea 1 está perdiendo rendimiento | consecuencia | a:3:-3 b:1:-3 c:2:-1 | -4 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 5 | `c-mant-queja` Incumplimiento de nivel de servicio | consecuencia | a:3:0 b:2:0 c:1:-2 | -6 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 6 | `c-mant-inversion` La envasadora: reconstruir o reemplazar | consecuencia | a:3:-3 b:2:-3 c:1:-2 | -5 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 5 | `c-mant-dosificador` Javier Ortiz | consecuencia | a:3:0 b:1:-2 c:2:-1 | -3 | restrictedEthics | Tema de ética o seguridad sin opción de línea roja. Revisar que el feedback no sea sermón. |
 
 ### Forja Norte
 

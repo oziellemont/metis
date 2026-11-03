@@ -109,10 +109,12 @@ export function Career() {
           </h2>
           <p className="mt-2 text-sm text-slate-500 max-w-xl">
             {!c.seasonDone
-              ? v.v5 ? `${c.changeOpen ? "Cerraste los asuntos. Presenta tu proyecto de cambio al consejo para recibir el veredicto. " : "El nivel cierra con un reto de cambio cuando termines tus asuntos. "}El consejo revisa tres cosas: que cumplas lo que te encargó, que la empresa cierre sana y que tus decisiones estén bien razonadas. Un indicador apenas debajo de la línea no te reprueba si lo demás está sano.`
+              ? v.v5 ? `${c.changeOpen ? "Cerraste los asuntos. Presenta tu proyecto de cambio al consejo para recibir el veredicto. " : cont ? "El periodo cierra con un reto de cambio cuando termines tus asuntos. " : "El nivel cierra con un reto de cambio cuando termines tus asuntos. "}El consejo revisa tres cosas: que cumplas lo que te encargó, que la empresa cierre sana y que tus decisiones estén bien razonadas. Un indicador apenas debajo de la línea no te reprueba si lo demás está sano.`
               : `${c.changeOpen ? "Cerraste los asuntos. Presenta tu proyecto de cambio al consejo para recibir el veredicto. " : "El nivel cierra con un reto de cambio cuando termines tus asuntos. "}Para ascender necesitas cerrar con todos los rubros en ${v.passLine} o más${r.minAnswered > 0 ? ` y responder al menos el ${Math.round(r.minAnswered * 100)}% de los asuntos` : ""}. No basta con un buen promedio: el consejo revisa cada rubro.`
               : cont
-                ? (v.passed ? "El consejo firmó tu evaluación del periodo. Sigues al frente: el siguiente periodo arranca con lo que dejaste construido." : "Algunos rubros quedaron debajo de la línea. Sigues al frente de la misma empresa: el siguiente periodo es para corregirlos.")
+                ? (v.v5
+                  ? (v.passed ? "Cumpliste el encargo del consejo, la empresa cerró sana y tu criterio sostuvo los resultados. Sigues al frente: el siguiente periodo arranca con lo que dejaste construido." : "El consejo no aprobó este periodo. Abajo está por qué, en concreto. Sigues al frente de la misma empresa, sin despido: el siguiente periodo es para corregirlo.")
+                  : (v.passed ? "El consejo firmó tu evaluación del periodo. Sigues al frente: el siguiente periodo arranca con lo que dejaste construido." : "Algunos rubros quedaron debajo de la línea. Sigues al frente de la misma empresa: el siguiente periodo es para corregirlos."))
               : v.passed
                 ? v.v5 ? "Cumpliste el encargo del consejo, la empresa cerró sana y tu criterio sostuvo los resultados. Otra empresa, de otro giro, ya preguntó por ti." : "El consejo firmó tu evaluación. Otra empresa, de otro giro, ya preguntó por ti. Allá los golpes pegan más fuerte y los plazos son más cortos."
                 : v.v5 ? "El consejo pide otra vuelta. Abajo está por qué, en concreto. Puedes volver a dirigir la misma empresa con lo que ya sabes." : "Algunos rubros quedaron debajo de la línea. Puedes volver a dirigir la misma empresa con lo que ya sabes y probar otros caminos."}
@@ -127,7 +129,7 @@ export function Career() {
               </div>
             ))}
           </div>
-          {v.v5 && <V5Panel v5={v.v5} done={c.seasonDone} kpiLabel={pk.kpiLabel} health={v.health} />}
+          {v.v5 && <V5Panel v5={v.v5} done={c.seasonDone} kpiLabel={pk.kpiLabel} health={v.health} cont={cont} />}
           {review && <div className="mt-4 rounded-2xl bg-indigo-soft/40 px-4 py-3 text-sm text-ink">{reviewText}</div>}
           {!v.v5 && <div className="mt-3 text-xs text-slate-500">Asuntos respondidos a tiempo: <b className={clsx("tabular-nums", v.answeredOk ? "text-ink" : "text-coral")}>{Math.round(v.answered * 100)}%</b> {r.minAnswered > 0 ? `(mínimo ${Math.round(r.minAnswered * 100)}%)` : "· Un asunto vencido tiene consecuencias en la empresa, pero no te reprueba por sí solo."}</div>}
 
@@ -210,7 +212,7 @@ export function Career() {
 }
 
 /** Veredicto V5: lo que el consejo revisa (encargo, salud, criterio) y, al cierre, por qué aprobaste o no. */
-function V5Panel({ v5, done, kpiLabel, health }: { v5: NonNullable<Verdict["v5"]>; done: boolean; kpiLabel: Record<string, string>; health: number }) {
+function V5Panel({ v5, done, kpiLabel, health, cont }: { v5: NonNullable<Verdict["v5"]>; done: boolean; kpiLabel: Record<string, string>; health: number; cont?: boolean }) {
   const pct = Math.round(v5.judgment.ratio * 100);
   const jOk = v5.judgment.ratio >= v5.judgment.min;
   const Row = ({ ok, label, value, testid }: { ok: boolean; label: string; value: string; testid: string }) => (
@@ -228,10 +230,10 @@ function V5Panel({ v5, done, kpiLabel, health }: { v5: NonNullable<Verdict["v5"]
         <Row testid="v5-salud" ok={health >= v5.healthMin} label={`Salud promedio de ${v5.healthMin} o más, sin indicadores por debajo de ${v5.floor}`} value={String(health)} />
         <Row testid="v5-criterio" ok={jOk} label={`Al menos ${Math.round(v5.judgment.min * 100)} % de asuntos bien razonados`} value={`${v5.judgment.good} de ${v5.judgment.total} · ${pct} %`} />
       </ul>
-      <p className="mt-2 text-[11px] text-slate-500">Además: la caja no puede caer en insolvencia, el consejo debe seguir respaldándote y no se cruzan líneas rojas (seguridad, fraude, represalias, ocultar riesgos).{v5.cashFlow ? ` Al cierre, el margen ${v5.cashFlow > 0 ? "sumó" : "restó"} ${Math.abs(v5.cashFlow)} puntos de caja.` : " Al cierre, el margen se convierte en caja: un buen margen la repone; uno malo la consume."}</p>
+      <p className="mt-2 text-[11px] text-slate-500">Además: la caja no puede caer en insolvencia, el consejo debe seguir respaldándote y no se cruzan líneas rojas (seguridad, fraude, represalias, ocultar riesgos).{v5.cashFlow ? ` Al cierre, ${cont ? `la operación y el margen ${v5.cashFlow > 0 ? "sumaron" : "restaron"}` : `el margen ${v5.cashFlow > 0 ? "sumó" : "restó"}`} ${Math.abs(v5.cashFlow)} puntos de caja.` : cont ? " Al cierre, la operación y el margen generan caja: un buen margen la repone; uno malo la consume." : " Al cierre, el margen se convierte en caja: un buen margen la repone; uno malo la consume."}</p>
       {done && v5.why.length > 0 && (
         <div data-testid="v5-razones" className="mt-3 rounded-xl bg-coral-soft/50 px-3.5 py-3 text-sm text-ink">
-          <div className="font-semibold">Por qué el consejo pide otra vuelta</div>
+          <div className="font-semibold">{cont ? "Por qué el consejo no aprobó este periodo" : "Por qué el consejo pide otra vuelta"}</div>
           <ul className="mt-1 list-disc space-y-1 pl-5">{v5.why.map((w) => <li key={w}>{w}</li>)}</ul>
         </div>
       )}

@@ -3,7 +3,8 @@ import Link from "next/link";
 import { useEffect, useMemo } from "react";
 import clsx from "clsx";
 import { ArrowRight, BookOpen, Briefcase, Check, Clock, Coffee, FastForward, Flag, Hourglass, Trophy } from "lucide-react";
-import { KPI_KEYS } from "@/lib/ceo/engine";
+import { KPI_KEYS, closedRunsOf } from "@/lib/ceo/engine";
+import { CONTINUOUS_RULES_VERSION } from "@/lib/ceo/rules";
 import { firstName, personOf } from "@/lib/ceo/cast";
 import { LESSONS } from "@/lib/ceo/lessons";
 import { useCeo } from "./CeoProvider";
@@ -46,6 +47,10 @@ export function Today() {
     const rank = { critico: 0, riesgo: 1, aviso: 2 } as const;
     return alertsAt(c.s, c.now).filter((a) => a.kind !== "saturacion" || a.level !== "aviso").sort((a, b) => rank[a.level] - rank[b.level]).slice(0, 2);
   }, [c.s, c.now, c.seasonDone]);
+  // V5/V6 · el encargo y las reglas se ven ANTES de decidir: nadie reprueba por una regla que no conocía.
+  const mandate = v.v5 && !c.seasonDone ? v.v5 : null;
+  const prevRun = c.continuous ? closedRunsOf(c.s).at(-1) : undefined;
+  const newRules = !!mandate && c.s.rulesVersion === CONTINUOUS_RULES_VERSION && !!prevRun && (prevRun.rulesVersion ?? 1) < CONTINUOUS_RULES_VERSION;
   const j = c.journey;
   const jPct = j.total ? Math.round((j.met / j.total) * 100) : 100;
   const greeting = c.seasonDone
@@ -106,6 +111,24 @@ export function Today() {
           </div>
         </div>
       </section>
+
+      {mandate && (
+        <section data-testid="encargo-periodo" className="card p-4 sm:p-5">
+          {newRules && (
+            <p data-testid="aviso-reglas-nuevas" className="mb-3 rounded-xl bg-indigo-soft/50 px-3.5 py-2.5 text-[13px] text-ink">
+              <b>Desde este mes el consejo evalúa de otra forma.</b> Ya no basta con tener los cinco indicadores en la línea: revisa tu encargo, la salud de la empresa y qué tan bien razonas. Tus meses anteriores conservan la evaluación que ya recibiste.
+            </p>
+          )}
+          <div className="flex items-baseline justify-between gap-2"><h2 className="font-semibold text-ink text-sm">Con qué te va a evaluar el consejo {c.continuous ? "este mes" : "esta temporada"}</h2><Link href="/ceo/carrera" className="shrink-0 text-[11px] font-semibold text-indigo">Detalle →</Link></div>
+          <p className="mt-1 text-sm text-slate-600">Tu encargo: <b className="text-ink">{mandate.objectiveText}</b></p>
+          <ul className="mt-2 grid gap-1.5 sm:grid-cols-3 text-[12.5px] text-slate-600">
+            <li className="rounded-xl bg-slate-50 px-3 py-2"><b className="text-ink">Objetivos:</b> {mandate.objectives.map((o) => pk.kpiLabel[o.kpi]).join(" y ")} en {v.passLine} o más al cierre.</li>
+            <li className="rounded-xl bg-slate-50 px-3 py-2"><b className="text-ink">Empresa sana:</b> salud promedio de {mandate.healthMin} o más y ningún indicador debajo de {mandate.floor}; caja y consejo arriba de 40.</li>
+            <li className="rounded-xl bg-slate-50 px-3 py-2"><b className="text-ink">Criterio:</b> al menos {Math.round(mandate.judgment.min * 100)} % de asuntos bien razonados. Los que dejes vencer cuentan en contra.</li>
+          </ul>
+          <p className="mt-2 text-[11px] text-slate-500">Sin líneas rojas (seguridad, fraude, represalias, ocultar riesgos). Al cierre, la operación y el margen generan caja: un buen margen la repone.</p>
+        </section>
+      )}
 
       <div className="grid gap-5 lg:grid-cols-[1.55fr_1fr] items-start">
         {/* decisiones: lo principal */}

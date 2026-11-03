@@ -15,10 +15,11 @@ const ITEMS: Item[] = [
       "Estimado Director:",
       "Te damos la bienvenida. Capital Sierra compró Forja Norte hace 18 meses y te elegimos para llevarla a la siguiente etapa. Seré directo, porque así trabajamos: el plan de inversión dice +4 puntos de margen EBITDA en 24 meses y vamos 1.5 puntos abajo.",
       "La planta es buena. La gente es buena. Pero la armadora nos tiene en amarillo en su scorecard, el OEE no pasa de 61% y los soldadores se nos van con la competencia de enfrente.",
+      "Te lo encargo en dos frases: cumplirle a la armadora y generar caja para el fondo. Con eso te vamos a evaluar. Cada peso que gastes tiene que poder explicarse con una de esas dos cosas.",
       "En la sesión de consejo del mes que entra quiero ver tu plan. Antes de eso, dime cómo vas a usar tus primeras semanas.",
       "Alberto Zertuche\nPresidente del consejo · Socio director de Capital Sierra",
     ],
-    data: { title: "Tu tablero de llegada", rows: [["Ventas", "$2,300 M · 72% con Aurora Motors"], ["Margen EBITDA", "11.5% (meta del fondo: 15.5%)"], ["OEE de la planta", "61% (clase mundial: 85%)"], ["Scorecard con Aurora", "Amarillo · 410 PPM"], ["Rotación de soldadores", "38% anual"]] },
+    data: { title: "Tu tablero de llegada", rows: [["Ventas", "$2,300 M · 72% con Aurora Motors"], ["Margen EBITDA", "11.5% (meta del fondo: 15.5%)"], ["OEE de la planta", "61% (clase mundial: 85%)"], ["Scorecard con Aurora", "Amarillo · 410 PPM"], ["Rotación de soldadores", "38% anual"], ["Tu encargo del consejo", "Cumplir a la armadora y generar caja para el fondo"]] },
     ask: "¿Cómo usas tus primeras semanas?",
     involves: ["regina", "ramon", "laura", "greg"],
     options: [
