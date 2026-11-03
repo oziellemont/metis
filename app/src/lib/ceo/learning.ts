@@ -12,7 +12,7 @@
  */
 import { KPI_KEYS, nowOf, rulesFor, rulesVersionOf, scaled } from "./engine";
 import { firstName } from "./cast";
-import { caseConceptOf } from "./concepts";
+import { CONCEPT_LESSON, caseConceptOf } from "./concepts";
 import { displayOptions } from "./option-order";
 import { timeline } from "./season-report";
 import type { CeoState, CompanyPack, Entry, KpiKey, Kpis, Option } from "./types";
@@ -33,7 +33,7 @@ export interface DecisionLesson {
   sacrificed: LessonChip[];
   /** El primero es el más importante; el resto se ve al profundizar. */
   risks: string[];
-  learned: { name: string | null; applied: string; definition: string | null };
+  learned: { name: string | null; applied: string; definition: string | null; lesson: string | null };
   /** Nota de dirección del caso (se conserva para la bitácora y como respaldo del concepto). */
   principle: string;
   otherPath: OtherPath | null;
@@ -92,7 +92,7 @@ export function decisionLesson(s: CeoState, e: Entry, pack: CompanyPack, now: nu
   if (e.status === "vencido") sacrificed.push({ text: "La iniciativa: otros decidieron por ti", kind: "otro" });
 
   const cc = caseConceptOf(it.id);
-  const learned = cc ? { name: cc.def.name, applied: cc.applied, definition: cc.def.definition } : { name: null, applied: it.bitacora.nota, definition: null };
+  const learned = cc ? { name: cc.def.name, applied: cc.applied, definition: cc.def.definition, lesson: CONCEPT_LESSON[cc.concept] ?? it.lesson ?? null } : { name: null, applied: it.bitacora.nota, definition: null, lesson: it.lesson ?? null };
   return { gained, sacrificed, risks: [...below, ...near, ...other], learned, principle: it.bitacora.nota, otherPath: otherPathOf(s, e, eff, before, line, label) };
 }
 

@@ -2,12 +2,12 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
-import { ArrowLeft, ArrowRight, BookOpen, CheckCheck, PenLine, ListChecks, Clock, Globe2, Lightbulb, PhoneMissed, Play, Quote, XCircle } from "lucide-react";
+import { ArrowLeft, ArrowRight, BookOpen, CheckCheck, PenLine, ListChecks, Clock, Globe2, Lightbulb, Lock, PhoneMissed, Play, Quote, XCircle } from "lucide-react";
 import { firstName, personOf, personalizeText } from "@/lib/ceo/cast";
-import { effectOf, entryXp, nextLessonXp } from "@/lib/ceo/engine";
+import { effectOf, entryXp, LEVELS, nextLessonXp, rankFor } from "@/lib/ceo/engine";
 import { runSpans } from "@/lib/ceo/pausetime";
 import { entryRipples, moodOf, REL_START } from "@/lib/ceo/relations";
-import { lessonById } from "@/lib/ceo/lessons";
+import { lessonById, rankOf } from "@/lib/ceo/lessons";
 import type { Entry, Item, KpiKey, Option, Written } from "@/lib/ceo/types";
 import { MAX_CHARS, MIN_CHARS, textProblem, writtenEligible } from "@/lib/ceo/written";
 import { displayOptions } from "@/lib/ceo/option-order";
@@ -317,6 +317,7 @@ function Outcome({ e, fresh, part }: { e: Entry; fresh: boolean; part: "resultad
   const effects = effectOf(c.s, e);
   const outcome = expired ? it.expired.outcome : o?.outcome;
   const lesson = it.lesson ? lessonById(it.lesson) : undefined;
+  const conceptLesson = useMemo(() => decisionLesson(c.s, e, c.pack, c.now)?.learned.lesson ?? null, [c.s, e, c.pack, c.now]);
   const xp = o ? entryXp(c.s, e, runSpans(c.s, c.now)) : 0;
   const myIdx = o ? displayOptions(it).findIndex((x) => x.id === o.id) : -1;
   const w = e.decision?.written;
@@ -383,7 +384,7 @@ function Outcome({ e, fresh, part }: { e: Entry; fresh: boolean; part: "resultad
         <h3 className="mt-1.5 font-semibold text-ink">{it.bitacora.title}</h3>
         <p className="mt-2 text-sm text-slate-600 leading-relaxed">{it.bitacora.text}</p>
         <div className="mt-4 flex gap-2.5 rounded-xl bg-white/80 px-4 py-3"><Lightbulb size={16} className="text-indigo shrink-0 mt-0.5" /><p className="text-sm text-ink"><b>Nota CEO:</b> {it.bitacora.nota}</p></div>
-        {lesson && (
+        {lesson && lesson.id !== conceptLesson && (
           <Link href={`/ceo/academy/${lesson.id}?from=${it.id}`} className="mt-4 flex items-center gap-3 rounded-xl bg-indigo text-white px-4 py-3 hover:bg-indigo-light transition-colors">
             <BookOpen size={18} />
             <span className="flex-1 text-sm"><b>Aprende la teoría:</b> {lesson.title} · {lesson.minutes} min</span>
@@ -438,6 +439,7 @@ function LessonCard({ e }: { e: Entry }) {
         <div className="text-[11px] font-semibold uppercase tracking-wider text-indigo">Lo que aprendiste</div>
         {l.learned.name && <div className="mt-1 font-semibold text-ink">{l.learned.name}</div>}
         <p className="mt-1 text-sm text-slate-600 leading-relaxed">{l.learned.applied}</p>
+        <ConceptLessonLink lessonId={l.learned.lesson} itemId={e.item.id} />
       </div>
       {(p || l.learned.definition) && (
         <button onClick={() => setOpen((v) => !v)} className="mt-4 w-full flex items-center justify-between rounded-xl bg-slate-50 hover:bg-slate-100 px-4 py-3 text-sm font-medium text-ink transition-colors" aria-expanded={open} data-testid="explorar-otro-camino">
@@ -465,6 +467,34 @@ function LessonCard({ e }: { e: Entry }) {
         </div>
       )}
     </div>
+  );
+}
+
+/**
+ * Enlace del concepto a su lección de Academy: completada, disponible (+XP) o bloqueada por rango (con el XP que falta).
+ * Solo navegación: no cambia XP ni desbloqueos.
+ */
+function ConceptLessonLink({ lessonId, itemId }: { lessonId: string | null; itemId: string }) {
+  const c = useCeo();
+  const lesson = lessonId ? lessonById(lessonId) : undefined;
+  if (!lesson) return null;
+  const done = !!c.s.lessons[lesson.id];
+  const locked = !done && rankOf(lesson) > rankFor(c.s, c.now);
+  const xp = nextLessonXp(c.s, c.now);
+  const body = (
+    <>
+      {locked ? <Lock size={16} className="shrink-0" /> : <BookOpen size={16} className="shrink-0" />}
+      <span className="flex-1 text-sm leading-snug"><b>{locked ? "Lección por abrir:" : "Aprende la teoría:"}</b> {lesson.title} · {lesson.minutes} min</span>
+      {done ? <span className="chip bg-mint-soft text-sob text-xs">Completada</span>
+        : locked ? <span className="chip bg-slate-100 text-slate-500 text-xs">Se abre con {LEVELS[rankOf(lesson)]?.min} XP</span>
+        : xp > 0 ? <span className="chip bg-indigo-soft text-indigo text-xs">+{xp} XP</span> : null}
+    </>
+  );
+  if (locked) return <div className="mt-3 flex items-center gap-2.5 rounded-xl border border-slate-100 bg-slate-50 px-3.5 py-2.5 text-slate-500" data-testid="concepto-leccion" data-state="bloqueada">{body}</div>;
+  return (
+    <Link href={`/ceo/academy/${lesson.id}?from=${itemId}`} className="mt-3 flex items-center gap-2.5 rounded-xl border border-indigo/15 bg-indigo-soft/40 px-3.5 py-2.5 text-indigo hover:bg-indigo-soft transition-colors" data-testid="concepto-leccion" data-state={done ? "completada" : "disponible"}>
+      {body}
+    </Link>
   );
 }
 
