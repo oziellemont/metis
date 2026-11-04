@@ -61,4 +61,11 @@ describe("progresión · una sola fuente y sin escalera de títulos", () => {
     const src = code(read("lib", "ceo", "trajectory.ts"));
     expect(src).not.toMatch(/xpOf|streakOf|\.lessons\b|\.journey\b|\.xp\b/);
   });
+  it("competencias en Perfil: gráfica con explicación corta al tocar, sin párrafos", () => {
+    const profile = readFileSync(join(__dirname, "../../components/ceo/Profile.tsx"), "utf8");
+    expect(profile).toContain("CompetencyTrend");
+    expect(profile).toContain("aria-expanded");
+    expect(profile).toContain("d.brief");
+    expect(profile).not.toMatch(/\{d\.why\}|\{d\.question\}|L\.summary\.competencias/);
+  });
 });

@@ -6,7 +6,7 @@ import { Award, Briefcase, Lock, Pencil, ShieldCheck } from "lucide-react";
 import { badgesOf, profileOf } from "@/lib/ceo/engine";
 import { firstName } from "@/lib/ceo/cast";
 import { useCeo } from "./CeoProvider";
-import { leadershipOf, type Leadership } from "@/lib/ceo/leadership";
+import { LEADERSHIP_MIN_EVIDENCE, leadershipOf, type Leadership } from "@/lib/ceo/leadership";
 import { track } from "@/lib/ceo/events";
 import { Avatar, Flame, rel } from "./ui";
 import { ProfileEditor } from "./ProfileFlow";
@@ -140,50 +140,89 @@ function MyLeadership() {
   const c = useCeo();
   const L: Leadership = useMemo(() => leadershipOf(c.s, c.now), [c.s, c.now]);
   const pk = c.pack;
-  const tone: Record<Leadership["competencies"][number]["band"], string> = {
-    fortaleza: "bg-mint-soft text-sob", en_desarrollo: "bg-indigo-soft text-indigo", por_desarrollar: "bg-coral-soft text-coral", tendencia: "bg-slate-100 text-slate-600", sin_evidencia: "bg-slate-50 text-slate-400",
-  };
   return (
     <section id="liderazgo" data-testid="mi-liderazgo" className="card p-5 sm:p-6">
       <h2 className="font-semibold text-ink">Mi liderazgo</h2>
-      <p className="text-xs text-slate-400 mt-1">Basado solo en lo que hiciste: {L.decisions} decisiones en este periodo{L.expired ? ` y ${L.expired} asuntos vencidos` : ""}{L.periods > 1 ? `; las competencias suman ${L.decisionsAll} decisiones de ${L.periods} periodos` : ""}. Tres lecturas separadas: cómo prefieres decidir, qué tan bien lo haces y cómo va la empresa. La lectura cambia con lo que vayas haciendo.</p>
+      <p className="text-xs text-slate-400 mt-1">Según tus {L.periods > 1 ? L.decisionsAll : L.decisions} decisiones{L.periods > 1 ? ` de ${L.periods} periodos` : ""}.</p>
 
       <div data-testid="liderazgo-preferencias" className="mt-5">
         <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">1 · Preferencias · estilo, no calificación</div>
-        <p className="mt-1 text-sm text-ink">{L.summary.preferencias}</p>
-        <ul className="mt-2 grid gap-1.5 sm:grid-cols-2">
-          {L.preferences.filter((p) => p.n > 0).map((p) => (
-            <li key={p.axis} className="rounded-xl bg-slate-50 px-3 py-2 text-[12px] text-slate-600"><b className="text-ink font-semibold">{p.left} / {p.right}.</b> {p.text}</li>
-          ))}
+        <ul className="mt-2 grid gap-x-8 gap-y-1 sm:grid-cols-2">
+          {L.preferences.filter((p) => p.n > 0).map((p) => <PreferenceTrend key={p.axis} p={p} />)}
         </ul>
       </div>
 
       <div data-testid="liderazgo-competencias" className="mt-6">
-        <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">2 · Competencias · medidas solo donde la situación las pedía</div>
-        <p className="mt-1 text-sm text-ink">{L.summary.competencias}</p>
-        <ul className="mt-2 divide-y divide-slate-100">
-          {L.competencies.map((d) => (
-            <li key={d.dim} data-band={d.band} className="py-2.5">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="text-sm font-semibold text-ink">{d.name} <span className="font-normal text-xs text-slate-400">· {d.n} {d.n === 1 ? "situación" : "situaciones"}{d.areas ? ` · ${d.areas} ${d.areas === 1 ? "área" : "áreas"}` : ""}</span></span>
-                <span className={clsx("chip text-[10px]", tone[d.band])}>{d.bandLabel}</span>
-              </div>
-              <div className="text-[11.5px] text-slate-500">{d.question}</div>
-              <div data-testid="liderazgo-evidencia" className="mt-0.5 text-[11.5px] text-slate-500">{d.why}{d.change ? ` Este periodo, comparado con los anteriores: ${d.change === "mejora" ? "mejoró" : d.change === "baja" ? "bajó" : "se mantiene"}.` : ""}</div>
-              {d.best && <div className="mt-1 text-[12px] text-slate-600">Lo mostraste en <Link className="text-indigo hover:underline" href={`/ceo/caso/${d.best.item}`}>«{d.best.subject}»</Link>: {d.best.note}</div>}
-              {d.weakest && <div className="mt-0.5 text-[12px] text-slate-600">Faltó en <Link className="text-indigo hover:underline" href={`/ceo/caso/${d.weakest.item}`}>«{d.weakest.subject}»</Link>: {d.weakest.note}</div>}
-            </li>
-          ))}
+        <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">2 · Competencias</div>
+        <p className="mt-1 text-[11.5px] text-slate-400">Toca una barra para ver por qué.</p>
+        <ul className="mt-3 grid gap-x-8 gap-y-1 sm:grid-cols-2">
+          {L.competencies.map((d) => <CompetencyTrend key={d.dim} d={d} />)}
         </ul>
       </div>
 
       <div data-testid="liderazgo-resultados" className="mt-6">
         <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">3 · Resultados de la empresa · aparte del criterio</div>
-        <p className="mt-1 text-sm text-ink">{L.summary.resultados}</p>
         <div className="mt-2 flex flex-wrap gap-1.5">
-          {L.results.map((r) => <span key={r.kpi} className="chip bg-slate-50 text-[11px] text-slate-600">{pk.kpiLabel[r.kpi]} {r.start} → <b className="text-ink">{r.now}</b></span>)}
+          {L.results.map((r) => <span key={r.kpi} className={clsx("chip text-[11px]", r.delta > 0 ? "bg-mint-soft/70 text-sob" : r.delta < 0 ? "bg-coral-soft/70 text-coral" : "bg-slate-50 text-slate-500")}>{pk.kpiLabel[r.kpi]} {r.delta > 0 ? "↑" : r.delta < 0 ? "↓" : "→"} {r.now}</span>)}
         </div>
       </div>
     </section>
+  );
+}
+
+type Comp = Leadership["competencies"][number];
+/** Color tenue por lectura. La tendencia (poca evidencia) se dibuja más clara y rayada: aún no es una afirmación. */
+const BAR: Record<Comp["band"], string> = {
+  fortaleza: "bg-mint/50", en_desarrollo: "bg-indigo/30", por_desarrollar: "bg-coral/40", tendencia: "bg-slate-300/70", sin_evidencia: "bg-transparent",
+};
+const LABEL_TONE: Record<Comp["band"], string> = {
+  fortaleza: "text-sob", en_desarrollo: "text-indigo", por_desarrollar: "text-coral", tendencia: "text-slate-400", sin_evidencia: "text-slate-300",
+};
+const ARROW = { mejora: "↑", baja: "↓", estable: "→" } as const;
+
+function CompetencyTrend({ d }: { d: Comp }) {
+  const [open, setOpen] = useState(false);
+  const w = d.score === null ? 0 : Math.max(6, Math.round(d.score * 100));
+  return (
+    <li data-band={d.band}>
+      <button type="button" aria-expanded={open} onClick={() => setOpen((v) => !v)} className="w-full rounded-lg px-1.5 py-1.5 text-left hover:bg-slate-50">
+        <div className="flex items-baseline justify-between gap-2">
+          <span className="text-[13px] text-ink">{d.name}</span>
+          <span className={clsx("text-[10.5px]", LABEL_TONE[d.band])}>{d.bandLabel}{d.change ? ` ${ARROW[d.change]}` : ""}</span>
+        </div>
+        <div className="mt-1 h-1.5 rounded-full bg-slate-100 overflow-hidden">
+          <div
+            className={clsx("h-full rounded-full transition-all duration-700", BAR[d.band])}
+            style={{ width: `${w}%`, ...(d.band === "tendencia" ? { backgroundImage: "repeating-linear-gradient(90deg, transparent 0 4px, rgba(255,255,255,.7) 4px 6px)" } : {}) }}
+          />
+        </div>
+      </button>
+      {open && (
+        <div data-testid="liderazgo-evidencia" className="px-1.5 pb-1.5 text-[11.5px] text-slate-500">
+          {d.brief}
+          {(d.weakest ?? d.best) && <> <Link className="text-indigo hover:underline" href={`/ceo/caso/${(d.weakest ?? d.best)!.item}`}>Ver caso</Link></>}
+        </div>
+      )}
+    </li>
+  );
+}
+
+type Pref = Leadership["preferences"][number];
+function PreferenceTrend({ p }: { p: Pref }) {
+  const [open, setOpen] = useState(false);
+  const few = p.n < LEADERSHIP_MIN_EVIDENCE;
+  const side = p.value >= 15 ? p.right : p.value <= -15 ? p.left : null;
+  const brief = few ? "Aún hay pocas decisiones en este eje." : side ? `Tiendes a «${side}»${p.consistency < 0.7 ? ", pero cambias según el caso" : ""}.` : "Decides según el caso.";
+  return (
+    <li>
+      <button type="button" aria-expanded={open} onClick={() => setOpen((v) => !v)} className="w-full rounded-lg px-1.5 py-1.5 text-left hover:bg-slate-50">
+        <div className="flex justify-between text-[12px] text-slate-500"><span>{p.left}</span><span>{p.right}</span></div>
+        <div className="relative mt-1.5 h-1.5 rounded-full bg-slate-100">
+          <span className="absolute left-1/2 -top-1 h-3.5 w-px bg-slate-200" />
+          <span className={clsx("absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full transition-all duration-700", few ? "bg-slate-300" : "bg-indigo/40")} style={{ left: `${50 + p.value / 2}%` }} />
+        </div>
+      </button>
+      {open && <div className="px-1.5 pb-1.5 text-[11.5px] text-slate-500">{brief}</div>}
+    </li>
   );
 }
