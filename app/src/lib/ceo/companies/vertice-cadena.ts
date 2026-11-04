@@ -33,7 +33,7 @@ export const CADENA_VERTICE: Item[] = [
         ["Mauricio: con un alza general así", "En 1 de cada 2 casos un cliente grande abre licitación"],
         ["Manejo eficiente con telemetría", "−6 % de consumo · en 4 de cada 10 flotas los operadores lo resienten al principio"],
       ],
-      note: "Estimaciones de Patricio, Mauricio y Antonio.",
+      note: "Estimaciones de Patricio, Mauricio y Antonio. Cifras ficticias de este caso, no estadísticas reales.",
     },
     ask: "¿Cómo enfrentas el alza del diésel?",
     options: [
@@ -107,7 +107,7 @@ export const CADENA_VERTICE: Item[] = [
       "Ya hay compañeros que hablan de irse a Avante. Dicen que los están exhibiendo por una ruta que nadie quiere.",
       "El consumo sí bajó 5 %. Nomás queremos que se mida parejo.",
     ],
-    data: { title: "Lo que sabes", rows: [["Consumo de la flota", "−5 % en seis semanas"], ["Ranking por operador", "Público, con nombres, sin ajustar por ruta"], ["Operadores de la ruta sierra", "Todos en el último lugar"], ["Rotación de operadores", "38 % anual"]] },
+    data: { title: "Lo que sabes", rows: [["Consumo de la flota", "−5 % desde que se instaló la telemetría"], ["Ranking por operador", "Público, con nombres, sin ajustar por ruta"], ["Operadores de la ruta sierra", "Todos en el último lugar"], ["Rotación de operadores", "38 % anual"]] },
     ask: "¿Qué haces con el ranking de consumo?",
     options: [
       { id: "a", stance: { pepe: 2, rocio: 1, antonio: -1 }, text: "Quitar los nombres del ranking, medir por ruta y premiar a quien mejore contra sí mismo.", reply: ["Gracias, Director. Así sí se mide parejo.", "(Antonio) Perdemos presión, pero entiendo."], outcome: "Conservas la mejora de consumo y la medición se vuelve justa. Pierdes algo de presión individual y Antonio tiene que rediseñar el tablero.", effects: { equipo: 2, margen: -1, caja: -1 }, style: { estilo: 2, horizonte: 1 }, score: 3 },

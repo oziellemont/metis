@@ -33,7 +33,7 @@ export const CADENA_PUNTOMADERO: Item[] = [
         ["Octavio: después de un remate así", "En 1 de cada 2 casos Mundo Casa responde con un descuento mayor"],
         ["Guardarla en bodega", "$600 mil al mes · en 4 de cada 10 temporadas el proveedor cambia de línea y lo guardado vale menos"],
       ],
-      note: "Estimaciones de Diego y de Claudia con la venta de las últimas cuatro temporadas.",
+      note: "Estimaciones de Diego y de Claudia con la venta de las últimas cuatro temporadas. Cifras ficticias de este caso, no estadísticas reales.",
     },
     ask: "¿Qué haces con la mercancía que no se vendió?",
     options: [
@@ -54,11 +54,11 @@ export const CADENA_PUNTOMADERO: Item[] = [
     trigger: { item: "pm-d2-temporada", options: ["a"] },
     subject: "La rebaja funcionó. El problema estaba antes", preview: "Ya recuperamos 62 % del costo. Y vimos por qué sobró tanto…",
     body: [
-      "La rebaja escalonada va mejor de lo esperado: en tres semanas recuperamos el 62 % del costo y las tiendas casi no tocaron el 30 %.",
+      "La rebaja escalonada va mejor de lo esperado: con la primera etapa recuperamos el 62 % del costo y las tiendas casi no tocaron el 30 %.",
       "Pero al cruzar los datos vimos por qué sobró tanto: los compradores pidieron igual para las 60 tiendas, con base en la temporada pasada. Las tiendas de la sierra vendieron la mitad que las de la ciudad.",
       "Chuy y Beto dicen que los gerentes sabían qué se iba a vender en su tienda, pero nadie les preguntó.",
     ],
-    data: { title: "Lo que sabes", rows: [["Recuperado en tres semanas", "62 % del costo"], ["Compra por tienda", "Igual para las 60"], ["Venta de tiendas de la sierra vs. ciudad", "≈ 50 %"], ["Pedido de la próxima temporada", "Se cierra en 5 semanas"]] },
+    data: { title: "Lo que sabes", rows: [["Recuperado en la primera etapa", "62 % del costo"], ["Compra por tienda", "Igual para las 60"], ["Venta de tiendas de la sierra vs. ciudad", "≈ 50 %"], ["Pedido de la próxima temporada", "Se cierra en 5 semanas"]] },
     ask: "¿Cómo compras la próxima temporada?",
     options: [
       { id: "a", stance: { chuy: 2, beto: 1, diego: -1 }, text: "Que cada gerente proponga su pedido con datos de su tienda y que Compras lo consolide y negocie.", reply: ["(Chuy) ¡Por fin! Yo sé qué se vende en mi tienda.", "(Diego) Mis compradores van a sentir que les quitan su trabajo."], outcome: "Compras más cerca de lo que se vende en cada tienda. Los compradores pierden control y el pedido tarda más en armarse.", effects: { margen: 1, equipo: 1, clientes: 1, consejo: -1, caja: -1 }, style: { estilo: 2, horizonte: 1 }, score: 3 },
@@ -106,7 +106,7 @@ export const CADENA_PUNTOMADERO: Item[] = [
       "Mundo Casa va a tener la línea nueva desde el primer día. Si ponemos lo guardado a precio completo, no se va a vender.",
       "Inés preguntó en el consejo por qué seguimos pagando bodega por mercancía que vale menos.",
     ],
-    data: { title: "Lo que sabes", rows: [["Mercancía guardada", "$38 M a costo"], ["Valor estimado hoy", "≈ $23 M"], ["Bodega pagada", "$2.4 M en cuatro meses"], ["Venderla a un mayorista", "$21 M · en una semana"]] },
+    data: { title: "Lo que sabes", rows: [["Mercancía guardada", "$38 M a costo"], ["Valor estimado hoy", "≈ $23 M"], ["Bodega", "$600 mil al mes mientras siga guardada"], ["Venderla a un mayorista", "$21 M · en una semana"]] },
     ask: "Lo guardado vale menos. ¿Qué haces?",
     options: [
       { id: "a", stance: { claudia: 2, ines: 1, diego: -1 }, text: "Venderla a un mayorista esta semana, reconocer la pérdida ante el consejo y ajustar cómo decidimos guardar.", reply: ["Recuperamos caja y dejamos de pagar bodega.", "(Inés) Gracias por decirlo de frente."], outcome: "Reconoces la pérdida y la caja vuelve a moverse. El margen del trimestre lo resiente y el consejo valora la claridad.", effects: { caja: 2, margen: -3, consejo: 1 }, style: { horizonte: 1, conflicto: 1 }, score: 3 },

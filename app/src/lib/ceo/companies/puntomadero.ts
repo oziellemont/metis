@@ -95,7 +95,7 @@ const ITEMS: Item[] = [
       "Un asesor que de verdad sabe orientar a un cliente en plomería, electricidad o pintura tarda un año en formarse. Hoy cubrimos con personal temporal y los clientes de toda la vida lo notan. Te pongo tres caminos con números.",
       "Lorena",
     ],
-    data: { title: "Opciones (Lorena y Claudia)", rows: [["Bono de permanencia por 12 meses (120 asesores expertos)", "$14 M"], ["Escuela de asesores con plan de carrera", "$6 M · primera generación en 6 meses"], ["Personal de piso por agencia", "$10 M al año · más rotación"], ["Rotación de asesores", "48% anual"]] },
+    data: { title: "Opciones (Lorena y Claudia)", rows: [["Bono de permanencia por 12 meses (120 asesores expertos)", "$14 M"], ["Escuela de asesores con plan de carrera", "$6 M · primer grupo intensivo en pocas semanas; generación completa en 6 meses"], ["Personal de piso por agencia", "$10 M al año · más rotación"], ["Rotación de asesores", "48% anual"]] },
     ask: "¿Qué camino tomas?",
     involves: ["octavio", "beto", "claudia", "ines"],
     options: [
@@ -341,14 +341,14 @@ const ITEMS: Item[] = [
   },
   {
     id: "pm-c-escuela", day: 6, slot: 3, channel: "whatsapp", from: "lorena",
-    subject: "Lorena Cantú", preview: "¡Primera generación de la escuela de asesores! 30 listos. Pregunta rápida…",
+    subject: "Lorena Cantú", preview: "¡Primer grupo intensivo de la escuela de asesores! 30 listos. Pregunta rápida…",
     trigger: { item: "pm-d2-asesores", options: ["b"] },
     body: [
-      "¡Director! Primera generación de la escuela de asesores: 30 personas listas.",
+      "¡Director! Primer grupo intensivo de la escuela de asesores: 30 personas listas.",
       "Octavio quiere mandarlas ya solas a piso porque le faltan manos para la temporada. Los asesores expertos piden 3 meses más trabajando en pareja con ellas.",
       "¿Qué hacemos?",
     ],
-    ask: "¿Cómo integras a la primera generación?",
+    ask: "¿Cómo integras al primer grupo?",
     involves: ["octavio", "claudia", "chuy"],
     options: [
       { id: "a", stance: { lorena: 1, octavio: 1, claudia: -1 }, text: "Acompañadas 3 meses: cada asesor nuevo en pareja con un experto y un bono para los mentores.", reply: ["Me encanta lo del bono para los mentores. Ellos también van a querer que funcione"], outcome: "La primera generación se forma bien y los expertos se vuelven maestros. Octavio tiene que aguantar 3 meses más.", effects: { equipo: 4, caja: -1, clientes: -1 }, style: { horizonte: 2, foco: 2 }, score: 3 },

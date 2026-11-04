@@ -75,8 +75,8 @@ export async function GET(req: NextRequest) {
       });
       out.push({ user: p.user_id, key: job.key, subject: m.subject, at, ok: r.ok, error: r.error });
       if (r.ok && !dry) { sent[job.key] = real; if (at && "id" in r && r.id) sent[schedKey(job.key)] = `${r.id}|${at}`; changed = true; }
-      // WhatsApp (opcional) solo para asuntos que llegan ya, no para los programados.
-      if (job.kind === "case" && !at && p.notify_whatsapp && p.phone && !dry) await sendWhatsapp(p.phone, ceoWhatsappText({ appUrl, entry: job.entry, pack: packOf(s) }));
+      // WhatsApp EN PAUSA: no se envía nada salvo que CEO_WHATSAPP_ENABLED=1 (no configurado). Solo para asuntos que llegan ya, no para los programados.
+      if (job.kind === "case" && !at && process.env.CEO_WHATSAPP_ENABLED === "1" && p.notify_whatsapp && p.phone && !dry) await sendWhatsapp(p.phone, ceoWhatsappText({ appUrl, entry: job.entry, pack: packOf(s) }));
     }
     if (changed) await sb.from("players").update({ sent, last_notified_at: new Date(real).toISOString() }).eq("user_id", p.user_id);
   }

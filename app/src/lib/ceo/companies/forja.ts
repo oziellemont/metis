@@ -92,7 +92,7 @@ const ITEMS: Item[] = [
       "Un soldador certificado tarda 9 meses en formarse. Hoy cubrimos con tiempo extra y la gente está cansada. Te pongo tres caminos con números.",
       "Teresa",
     ],
-    data: { title: "Opciones (Teresa y Marcos)", rows: [["Bono de retención 12 meses (40 soldadores)", "$2.4 M"], ["Escuela interna con el tecnológico de Ramos", "$1.1 M · primera generación en 6 meses"], ["2 celdas robotizadas en arrendamiento", "$0.9 M al año · eliminan 10 puestos"], ["Tiempo extra actual", "$310 mil al mes"]] },
+    data: { title: "Opciones (Teresa y Marcos)", rows: [["Bono de retención 12 meses (40 soldadores)", "$2.4 M"], ["Escuela interna con el tecnológico de Ramos", "$1.1 M · primer grupo intensivo en pocas semanas; generación completa en 6 meses"], ["2 celdas robotizadas en arrendamiento", "$0.9 M al año · eliminan 10 puestos"], ["Tiempo extra actual", "$310 mil al mes"]] },
     ask: "¿Qué camino tomas?",
     involves: ["ramon", "fermin", "marcos", "regina"],
     options: [
@@ -255,7 +255,7 @@ const ITEMS: Item[] = [
       "Su precio objetivo nos deja 6% de margen. Hay otros dos proveedores cotizando. Necesito definir la estrategia antes del lunes.",
       "Daniela Kuri\nDirectora Comercial",
     ],
-    data: { title: "Escenarios (Daniela y Marcos)", rows: [["Cotizar al precio objetivo", "Margen 6% · probabilidad de ganar ≈ 70%"], ["Cotizar con margen sano", "Margen 11% · probabilidad ≈ 25%"], ["Herramental pagado por Aurora", "Margen 8% · Aurora tarda 6 semanas más en decidir"], ["Inversión necesaria", "$350 M en prensa de 1,200 toneladas"]] },
+    data: { title: "Escenarios (Daniela y Marcos)", rows: [["Cotizar al precio objetivo", "Margen 6% · probabilidad de ganar ≈ 70%"], ["Cotizar con margen sano", "Margen 11% · probabilidad ≈ 25%"], ["Herramental pagado por Aurora", "Margen 8% · Aurora tarda 6 semanas más en decidir"], ["Inversión necesaria", "$350 M en prensa de 1,200 toneladas"]], note: "Probabilidades estimadas por Daniela y Marcos. Cifras ficticias de este caso, no estadísticas reales." },
     ask: "¿Con qué estrategia cotizas?",
     involves: ["greg", "zertuche", "marcos"],
     options: [
@@ -338,14 +338,14 @@ const ITEMS: Item[] = [
   },
   {
     id: "fn-c-escuela", day: 6, slot: 3, channel: "whatsapp", from: "teresa",
-    subject: "Teresa Galván", preview: "¡Primera generación de la escuela de soldadura! 14 aprendices. Pregunta rápida…",
+    subject: "Teresa Galván", preview: "¡Primer grupo intensivo de la escuela de soldadura! 14 aprendices. Pregunta rápida…",
     trigger: { item: "fn-d2-soldadores", options: ["b"] },
     body: [
-      "¡Director! Primera generación de la escuela de soldadura: 14 aprendices certificados.",
+      "¡Director! Primer grupo intensivo de la escuela de soldadura: 14 aprendices certificados.",
       "Ramón quiere meterlos ya a las celdas críticas porque le faltan manos. Los instructores piden 3 meses más acompañados por un soldador senior.",
       "¿Qué hacemos?",
     ],
-    ask: "¿Cómo integras a la primera generación?",
+    ask: "¿Cómo integras al primer grupo?",
     involves: ["ramon", "marcos", "chuy"],
     options: [
       { id: "a", stance: {teresa: 1, ramon: 1, marcos: -1}, text: "Acompañados 3 meses: cada aprendiz junto a un soldador senior en su celda, y un bono para los mentores que lo hagan bien.", reply: ["Me encanta lo del bono para los mentores. Ellos también van a querer que funcione"], outcome: "La primera generación se forma bien y los senior se vuelven maestros. Ramón tiene que aguantar 3 meses más.", effects: { equipo: 4, caja: -1, clientes: -1 }, style: { horizonte: 2, foco: 2 }, score: 3 },
