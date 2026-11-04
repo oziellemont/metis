@@ -15,13 +15,13 @@ export const AVAILABILITY: { item: string; state: Availability; note: string }[]
   { item: "Personajes que recuerdan", state: "hoy", note: "Postura de cada persona según lo que decidiste antes" },
   { item: "Bitácora y Nota CEO", state: "hoy", note: "Explicación al cerrar cada caso" },
   { item: "mêtis Academy", state: "hoy", note: "Lecciones breves" },
-  { item: "Ruta de seis etapas", state: "hoy", note: "Cambia solo con un nombramiento" },
-  { item: "The Executive Arena", state: "hoy", note: "Después de Global CEO: empresas con exigencia Legendaria (engine tier + legendary)" },
-  { item: "Ranking", state: "hoy", note: "Con alias" },
+  { item: "Seis capítulos de la empresa", state: "hoy", note: "Describen el momento de la empresa (career/stages.ts); no son rangos del jugador. Empiezas como Director General" },
+  { item: "Trayectoria del mandato", state: "hoy", note: "Revisiones del consejo, hitos, decisiones que marcaron y compromisos abiertos (trajectory.ts)" },
+  { item: "Ranking", state: "preparacion", note: "Oculto en la app; la página existe pero no se enlaza ni se menciona" },
   { item: "Perfil profesional y orden «Para ti»", state: "hoy", note: "V33" },
   { item: "Avisos por correo", state: "hoy", note: "Si conectas tu correo y lo activas" },
   { item: "Respuestas escritas con retroalimentación", state: "preparacion", note: "Vista previa apagada por defecto" },
-  { item: "Junta ante el Consejo", state: "hoy", note: "Tres momentos encadenados; requisito para Chief Executive Officer (/ceo/junta)" },
+  { item: "Junta ante el Consejo", state: "hoy", note: "Tres momentos encadenados; sesión extraordinaria del consejo (/ceo/junta)" },
   { item: "Boardroom Crisis", state: "hoy", note: "Sesión extraordinaria con 3 decisiones con reloj, una por empresa desde el día 3 (/ceo/crisis)" },
   { item: "Conversaciones abiertas con personajes", state: "futuro", note: "No construido" },
   { item: "Escenarios generados", state: "futuro", note: "No construido" },
@@ -62,8 +62,8 @@ export const UI = {
   switchLabel: "Read in English",
   switchShort: "EN",
   howEyebrow: "Cómo funciona",
-  stage: "Etapa",
-  stagesLabel: "Etapas de la carrera",
+  stage: "Capítulo",
+  stagesLabel: "Capítulos de la empresa",
   faqTitle: "Preguntas frecuentes",
   haveAccount: "¿Ya tienes cuenta?",
   signIn: "Inicia sesión",
@@ -230,27 +230,28 @@ export const DIFF = {
 };
 
 /* ---------------- Camino profesional (ruta visual) ---------------- */
-export type StageState = "inicio" | "siguiente" | "bloqueada";
+/** «inicio» marca dónde arranca toda empresa; el resto son capítulos posibles, sin candados ni rangos. */
+export type StageState = "inicio" | "capitulo";
 export const PATH = {
   eyebrow: "Tu carrera",
   title: "Una carrera que crece contigo.",
-  body: "Empiezas dirigiendo una empresa en la industria que elijas. Cada caso te deja un aprendizaje: entiendes por qué pasó lo que pasó y refuerzas la teoría en mêtis Academy. Al resolver retos, asumes responsabilidades mayores y otras industrias te llaman a dirigir.",
-  stateLabel: { inicio: "Aquí empiezas", siguiente: "Siguiente objetivo", bloqueada: "Por desbloquear" } as Record<StageState, string>,
+  body: "Desde el primer día eres el Director General de una empresa que ya existe, con su historia, su equipo y su consejo. Cada caso te deja un aprendizaje: entiendes por qué pasó lo que pasó y refuerzas la teoría en mêtis Academy. Lo que cambia es la empresa: según lo que decides, se estabiliza, construye capacidad, acelera o atraviesa una crisis y se recupera.",
+  stateLabel: { inicio: "Aquí empiezas", capitulo: "Capítulo posible" } as Record<StageState, string>,
   stages: [
-    { n: "01", name: "Emerging Leader", learn: "Equipos y prioridades", state: "inicio" },
-    { n: "02", name: "Functional Manager", learn: "Presupuestos y ejecución", state: "siguiente" },
-    { n: "03", name: "Business Unit Director", learn: "Estrategia y rentabilidad", state: "bloqueada" },
-    { n: "04", name: "Chief Operating Officer", learn: "Operaciones y organización", state: "bloqueada" },
-    { n: "05", name: "Chief Executive Officer", learn: "Crecimiento y riesgo", state: "bloqueada" },
-    { n: "06", name: "Global CEO", learn: "Mercados y gobernanza", state: "bloqueada" },
+    { n: "01", name: "Tomar el mando", learn: "Entender lo que heredas y priorizar", state: "inicio" },
+    { n: "02", name: "Estabilizar", learn: "Caja, servicio, costos y ejecución", state: "capitulo" },
+    { n: "03", name: "Construir capacidad", learn: "Mandos, procesos y talento", state: "capitulo" },
+    { n: "04", name: "Acelerar con criterio", learn: "Dónde invertir y dónde no", state: "capitulo" },
+    { n: "05", name: "Escalar", learn: "Varias áreas, regiones o alianzas", state: "capitulo" },
+    { n: "06", name: "Gobernar la complejidad", learn: "Más exposición y riesgos de mayor alcance", state: "capitulo" },
   ] as { n: string; name: string; learn: string; state: StageState }[],
-  beyond: { t: "The Executive Arena", d: "Después de Global CEO, nuevos desafíos ponen a prueba tu criterio. Siempre habrá algo más que aprender." },
+  beyond: { t: "Los capítulos son de la empresa, no rangos tuyos", d: "Una empresa puede quedarse en un capítulo, retroceder en sus números o recuperarse. El consejo te revisa cada mes y tu historia se conserva: no hay despido ni reinicio." },
 };
 
 /* ---------------- Filosofía ---------------- */
 export const PHILOSOPHY = {
   title: "¡Tu próxima gran decisión está por llegar!",
-  body: "Un correo inesperado, un WhatsApp urgente o una llamada de tu equipo. En MÊTIS cada día trae un nuevo reto. Decide, aprende de lo que sucede y desbloquea nuevas etapas en una simulación inmersiva que crece contigo.",
+  body: "Un correo inesperado, un WhatsApp urgente o una llamada de tu equipo. En MÊTIS cada día trae un nuevo reto. Decide, aprende de lo que sucede y acompaña a tu empresa en cada capítulo de una simulación inmersiva que crece contigo.",
   who: "Para quienes aspiran a dirigir, para quienes ya lideran y para quienes creen que siempre hay algo más que aprender.",
 };
 

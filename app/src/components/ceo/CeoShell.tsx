@@ -3,14 +3,14 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import clsx from "clsx";
-import { Home, Inbox, GraduationCap, Trophy, UserRound, Settings, X, Building2, Network, Route } from "lucide-react";
+import { Home, Inbox, GraduationCap, UserRound, Settings, X, Building2, Network, Route } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { useCeo } from "./CeoProvider";
 import { Flame } from "./ui";
 import { ImportPrompt } from "./ImportPrompt";
 import { RestScreen, ReturnScreen } from "./Cadence";
 
-const NAV = [
+const NAV: { href: string; label: string; Icon: typeof Home; badge?: boolean; desktop?: boolean }[] = [
   { href: "/ceo", label: "Hoy", Icon: Home },
   { href: "/ceo/bandeja", label: "Bandeja", Icon: Inbox, badge: true },
   { href: "/ceo/empresa", label: "Empresa", Icon: Network },
@@ -18,7 +18,8 @@ const NAV = [
   // La página y su contenido siguen existiendo; para volver a mostrarla basta con regresar esta línea.
   { href: "/ceo/carrera", label: "Carrera", Icon: Route },
   { href: "/ceo/academy", label: "Academy", Icon: GraduationCap },
-  { href: "/ceo/ranking", label: "Ranking", Icon: Trophy, desktop: true },
+  // «Ranking» (/ceo/ranking) se ocultó del menú y de la barra móvil: el avance no se compara entre jugadores.
+  // La página sigue existiendo; para volver a mostrarla basta con regresar el enlace.
   { href: "/ceo/perfil", label: "Perfil", Icon: UserRound },
 ];
 
@@ -79,7 +80,6 @@ export function CeoShell({ children }: { children: React.ReactNode }) {
         <div className="flex items-center gap-3 text-sm">
           <span className={clsx("inline-flex items-center gap-1 font-semibold tabular-nums", c.streak.atRisk && "text-amber")}><Flame on={c.streak.days > 0 && c.streak.doneToday} size={17} /> {c.streak.days}</span>
           <span className="inline-flex items-center gap-1 font-semibold tabular-nums text-indigo">{c.xp} <span className="text-[10px] text-slate-400">XP</span></span>
-          <Link href="/ceo/ranking" aria-label="Ranking" className="text-slate-400"><Trophy size={18} /></Link>
           <Link href="/ceo/ajustes" aria-label="Ajustes" className="text-slate-400"><Settings size={18} /></Link>
         </div>
       </header>

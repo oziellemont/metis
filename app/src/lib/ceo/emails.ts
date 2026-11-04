@@ -94,7 +94,7 @@ export function welcomeEmail(i: { pack?: CompanyPack; name: string; appUrl: stri
     ["2", "Todo tiene plazo", "Si no respondes a tiempo, alguien decide por ti. Y lo que decides regresa días después."],
     i.continuous
       ? ["3", "El consejo te evalúa cada periodo", `Al cierre de cada periodo revisa todos tus rubros. Sigues al frente de ${esc(pk.name)}: lo que construyes se queda.`]
-      : ["3", "Aprueba todos los rubros", "Si al cierre todos tus indicadores pasan la línea, asciendes a otra empresa de otro giro (y más exigente)."],
+      : ["3", "Aprueba todos los rubros", "Si al cierre todos tus indicadores pasan la línea, el consejo aprueba y te espera otra empresa de otro giro (y más exigente)."],
     ["4", "Aprende en el camino", "Cada asunto se conecta con una lección corta de mêtis Academy."],
   ].map(([ic, t, d]) => `<tr><td width="34" valign="top" style="padding:8px 0"><div style="width:22px;height:22px;border-radius:11px;background:#EEEBFD;color:${INDIGO};font-family:${FONT};font-size:12px;font-weight:700;line-height:22px;text-align:center">${ic}</div></td><td style="padding:8px 0;font-family:${FONT}"><div style="font-size:14px;font-weight:600;color:${INK}">${t}</div><div style="font-size:13px;line-height:20px;color:${SLATE}">${d}</div></td></tr>`).join("");
   const chair = pk.roles.chair;
@@ -112,7 +112,7 @@ export function welcomeEmail(i: { pack?: CompanyPack; name: string; appUrl: stri
     </td></tr></table>
     ${button("Entrar a mi oficina", base(i.appUrl))}`;
   const html = shell({ pack: pk, preheader, title: subject, body, appUrl: i.appUrl, brand: true });
-  const text = `${first}:\n\n${letter.map(plain).join("\n\n")}\n— ${firstOfCast(pk, chair)}\n\nCómo funciona: tu equipo te escribe entre las ${i.windowStart}:00 y las ${i.windowEnd}:00; todo tiene plazo; ${i.continuous ? "el consejo te evalúa cada periodo" : "aprueba todos los rubros para ascender a otra empresa"}; aprende en mêtis Academy.\n\nEntrar: ${base(i.appUrl)}`;
+  const text = `${first}:\n\n${letter.map(plain).join("\n\n")}\n— ${firstOfCast(pk, chair)}\n\nCómo funciona: tu equipo te escribe entre las ${i.windowStart}:00 y las ${i.windowEnd}:00; todo tiene plazo; ${i.continuous ? "el consejo te evalúa cada periodo" : "aprueba todos los rubros para pasar a otra empresa"}; aprende en mêtis Academy.\n\nEntrar: ${base(i.appUrl)}`;
   return { subject, html, text, fromName: senderName(pk, chair), preheader };
 }
 
@@ -256,12 +256,12 @@ export function digestEmail(i: DigestInput): Mailable {
       <td width="8"></td>
       <td width="33%" align="center" style="padding:12px 4px;background:${i.streak > 0 ? "#FEF3DF" : CANVAS};border-radius:12px;font-family:${FONT}"><div style="font-size:22px;font-weight:700;color:${INK}">${i.streak}</div><div style="font-size:11px;color:${MUTED}">días de racha</div></td>
       <td width="8"></td>
-      <td width="33%" align="center" style="padding:12px 4px;background:${CANVAS};border-radius:12px;font-family:${FONT}"><div style="font-size:22px;font-weight:700;color:${INK}">${i.xp}</div><div style="font-size:11px;color:${MUTED}">XP · ${esc(i.level)}</div></td>
+      <td width="33%" align="center" style="padding:12px 4px;background:${CANVAS};border-radius:12px;font-family:${FONT}"><div style="font-size:22px;font-weight:700;color:${INK}">${i.xp}</div><div style="font-size:11px;color:${MUTED}">XP de constancia</div></td>
     </tr></table>
     ${expired}
     <div style="font-family:${FONT};font-size:14px;font-weight:600;color:${INK};margin:0 0 6px">Tu empresa hoy</div>
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 6px">${kpiRows}</table>
-    <div style="font-family:${FONT};font-size:11px;color:${MUTED};margin:0 0 18px">Cambio desde que llegaste. Para ascender, cada rubro debe cerrar en ${line} o más.</div>
+    <div style="font-family:${FONT};font-size:11px;color:${MUTED};margin:0 0 18px">Cambio desde que llegaste. Para aprobar, cada rubro debe cerrar en ${line} o más.</div>
     ${pend ? `<div style="font-family:${FONT};font-size:14px;font-weight:600;color:${INK};margin:0 0 4px">Esperando tu decisión</div><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 18px">${pend}</table>` : ""}
     ${p(i.todayCount ? `Hoy te van a escribir <b style="color:${INK}">${i.todayCount} ${i.todayCount === 1 ? "persona" : "personas"}</b>${i.firstAt ? `; el primer asunto llega cerca de las <b style="color:${INK}">${esc(i.firstAt)}</b>` : ""}. Te aviso por aquí en cuanto lleguen.` : "Hoy no hay asuntos nuevos en tu agenda. Buen día para ponerte al corriente o tomar una lección.")}
     ${button(i.pending.length ? "Atender pendientes" : "Ir a mi oficina", base(i.appUrl))}`;
@@ -331,7 +331,7 @@ export function seasonEmail(i: { pack?: CompanyPack; name: string; appUrl: strin
       <div style="font-size:14px;line-height:21px;color:#D6D8EC">${esc(i.archetypeText)}</div>
     </td></tr></table>
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 20px"><tr>
-      ${stat(`${i.health}`, "Salud /100")}<td width="6"></td>${stat(`${i.decisions}`, "decisiones")}<td width="6"></td>${stat(`${i.bestStreak}`, "mejor racha")}<td width="6"></td>${stat(`${i.xp}`, esc(i.level))}
+      ${stat(`${i.health}`, "Salud /100")}<td width="6"></td>${stat(`${i.decisions}`, "decisiones")}<td width="6"></td>${stat(`${i.bestStreak}`, "mejor racha")}<td width="6"></td>${stat(`${i.xp}`, "XP de constancia")}
     </tr></table>
     ${button(i.passed === undefined ? "Ver mi perfil completo" : "Ver mi carrera", `${base(i.appUrl)}/${i.passed === undefined ? "perfil" : "carrera"}`)}
     ${p(`— ${esc(personOf(pk, pk.roles.board).name)}, ${esc(personOf(pk, pk.roles.board).role.toLowerCase())}`, "font-style:italic;margin:16px 0 0")}`;

@@ -78,7 +78,7 @@ export function ProfileQuestions({ initial, source, onDone, onBackFirst, onLater
       </div>
       {q === "role" && (<>
         <h1 className="mt-2.5 text-[26px] sm:text-[28px] font-semibold leading-tight">¿Cuál es tu responsabilidad actual?</h1>
-        <p className="mt-2 text-white/70 text-sm leading-relaxed max-w-xl">Nos ayuda a elegir el tono, los ejemplos y por dónde empezar. No cambia tu etapa: todos empiezan como Emerging Leader.</p>
+        <p className="mt-2 text-white/70 text-sm leading-relaxed max-w-xl">Nos ayuda a elegir el tono, los ejemplos y por dónde empezar. No cambia tu cargo: todos empiezan como Director General de su empresa.</p>
         <div className="mt-6 grid gap-2.5 sm:grid-cols-2">{ROLES.map((r) => <Choice key={r.id} on={p.role === r.id} onClick={() => set("role", r.id)}>{r.label}</Choice>)}</div>
       </>)}
       {q === "areas" && (<>
@@ -133,7 +133,7 @@ export function DiagnosticOffer({ onStart, onLater, later = "Ahora no, ir a mi e
     <section className="academy-in mt-10">
       <div className="inline-flex rounded-full bg-white/10 px-3 py-1 text-xs">Opcional · 3 minutos</div>
       <h1 className="mt-5 text-3xl sm:text-[34px] font-semibold leading-tight">Antes de empezar, tres decisiones.</h1>
-      <p className="mt-3 text-white/70 text-[14.5px] leading-relaxed">Tres situaciones de dirección, sin respuestas obvias. Nos dan una primera lectura de tu criterio para ajustar por dónde empiezas. No suman puntos, no cambian tu etapa y no cuentan para ningún nombramiento.</p>
+      <p className="mt-3 text-white/70 text-[14.5px] leading-relaxed">Tres situaciones de dirección, sin respuestas obvias. Nos dan una primera lectura de tu criterio para ajustar por dónde empiezas. No suman puntos ni cambian tu cargo o el momento de tu empresa.</p>
       <div className="mt-7 grid gap-3 sm:grid-cols-3">
         {DIAGNOSTIC.map((d, i) => (
           <div key={d.id} className="rounded-2xl bg-white/[.06] border border-white/[.12] p-4">
@@ -213,7 +213,7 @@ export function DeclaredCard({ p, onEdit }: { p?: ProfessionalProfile; onEdit?: 
         {onEdit && <button type="button" onClick={onEdit} className="inline-flex items-center gap-1 text-xs font-medium text-indigo"><Pencil size={12} /> Editar</button>}
       </div>
       {rows.map(([k, v]) => <div key={k} className="flex justify-between gap-4 py-2.5 border-t border-slate-100 text-[13px]"><span className="text-slate-500">{k}</span><b className={clsx("font-medium text-right", !v && "text-slate-400 font-normal")}>{v || "Sin responder"}</b></div>)}
-      <div className="mt-3 flex gap-2 rounded-xl bg-slate-100 px-3 py-2.5 text-[11.5px] text-slate-500"><ShieldCheck size={13} className="shrink-0 mt-0.5" /> No suma dominio, puntos ni nombramientos.</div>
+      <div className="mt-3 flex gap-2 rounded-xl bg-slate-100 px-3 py-2.5 text-[11.5px] text-slate-500"><ShieldCheck size={13} className="shrink-0 mt-0.5" /> No suma competencias ni puntos.</div>
     </div>
   );
 }
@@ -252,13 +252,13 @@ export function adaptationOf(p: ProfessionalProfile | undefined, m: Mastery, d?:
   ];
 }
 
-export function StartingPoint({ name, p, d, m, cta, onCta, onEdit, stage = "Emerging Leader", fresh = true }: { name: string; p?: ProfessionalProfile; d?: InitialDiagnostic; m: Mastery; cta: string; onCta: () => void; onEdit?: () => void; stage?: string; fresh?: boolean }) {
+export function StartingPoint({ name, p, d, m, cta, onCta, onEdit, stage = "Director General", fresh = true }: { name: string; p?: ProfessionalProfile; d?: InitialDiagnostic; m: Mastery; cta: string; onCta: () => void; onEdit?: () => void; stage?: string; fresh?: boolean }) {
   const plan = useMemo(() => adaptationOf(p, m, d), [p, m, d]);
   return (
     <section className="academy-in mt-8">
       <div className="inline-flex rounded-full bg-white/10 px-3 py-1 text-xs">Tu punto de partida</div>
       <h1 className="mt-4 text-3xl sm:text-[34px] font-semibold leading-tight">{fresh ? <>{name ? `${name.split(" ")[0]}, empiezas` : "Empiezas"} como {stage}.</> : <>{name ? `${name.split(" ")[0]}, sigues` : "Sigues"} como {stage}.</>}</h1>
-      <p className="mt-3 text-white/70 text-[14.5px] leading-relaxed">Tu experiencia cambia por dónde {fresh ? "empiezas" : "sigues"} y cómo te acompañamos. Tu etapa y tu dominio solo suben con lo que demuestres en el simulador.</p>
+      <p className="mt-3 text-white/70 text-[14.5px] leading-relaxed">Tu experiencia cambia por dónde {fresh ? "empiezas" : "sigues"} y cómo te acompañamos. Tu cargo es el mismo para todos; tus competencias solo cambian con lo que demuestres en el simulador.</p>
       <div className="mt-6 grid gap-4 md:grid-cols-2">
         <DeclaredCard p={p} onEdit={onEdit} />
         <DemonstratedCard m={m} d={d} />
@@ -300,7 +300,7 @@ export function ProfileEditor({ initial, onSave, onCancel }: { initial?: Profess
       </div>
       <div className="mt-2 grid gap-3 sm:grid-cols-2 text-[12px] leading-relaxed">
         <div className="rounded-xl bg-indigo-soft/60 px-3.5 py-3"><b className="block text-indigo font-semibold mb-0.5">Qué cambia</b><span className="text-slate-600">El orden de lecciones recomendadas, cuánta explicación ves dentro de cada caso y el tono del coach.</span></div>
-        <div className="rounded-xl bg-slate-100 px-3.5 py-3"><b className="block text-ink font-semibold mb-0.5">Qué no cambia</b><span className="text-slate-600">Tu dominio, tu etapa, tu XP, el ranking y los nombramientos. Eso solo sube con tus decisiones.</span></div>
+        <div className="rounded-xl bg-slate-100 px-3.5 py-3"><b className="block text-ink font-semibold mb-0.5">Qué no cambia</b><span className="text-slate-600">Tu cargo, el capítulo de tu empresa, tus competencias y tu XP. Eso solo cambia con lo que hagas en la empresa.</span></div>
       </div>
       <div className="mt-4 flex justify-end gap-2"><button type="button" onClick={onCancel} className="btn-ghost">Cancelar</button><button type="button" onClick={save} className="btn-primary">Guardar</button></div>
     </div>
@@ -316,7 +316,7 @@ export function TierChoice({ tier, setTier, offered, names, title = "Exigencia d
   return (
     <div className="mt-6 rounded-2xl bg-white/[.06] border border-white/[.12] p-4">
       <div className="text-[11px] font-semibold uppercase tracking-wider text-white/55">{title}</div>
-      <p className="mt-1 text-xs text-white/60">Por tu experiencia te ofrecemos empezar con más exigencia. No cambia tu etapa ni cuenta como modo Legendario.</p>
+      <p className="mt-1 text-xs text-white/60">Por tu experiencia te ofrecemos empezar con más exigencia. No cambia tu cargo ni el capítulo de tu empresa, ni cuenta como modo Legendario.</p>
       <div className="mt-3 grid gap-2.5 sm:grid-cols-2">{opts.map(([t, n, sub]) => <Choice key={t} on={tier === t} onClick={() => setTier(t)} sub={sub}>{n}</Choice>)}</div>
     </div>
   );

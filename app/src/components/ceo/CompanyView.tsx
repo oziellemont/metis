@@ -59,7 +59,7 @@ export function CompanyView() {
 
       <section className="card p-5 sm:p-6">
         <h2 className="font-semibold text-ink">Cómo te mide el consejo</h2>
-        <p className="mt-1 text-sm text-slate-500">{c.continuous ? "Cinco índices de salud de 0 a 100, aparte del dinero. " : ""}Para ascender, cada rubro debe cerrar en <b className="text-ink">{c.verdict.passLine}</b> o más.</p>
+        <p className="mt-1 text-sm text-slate-500">{c.continuous ? "Cinco índices de salud de 0 a 100, aparte del dinero. " : ""}Para aprobar el cierre, cada rubro debe terminar en <b className="text-ink">{c.verdict.passLine}</b> o más.</p>
         <dl className="mt-4 grid gap-3 sm:grid-cols-2">
           {KPI_KEYS.map((k) => (
             <div key={k} className="rounded-2xl border border-slate-100 p-4">

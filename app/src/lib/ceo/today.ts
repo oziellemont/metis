@@ -21,6 +21,6 @@ export function specialTasks(x: { changeOpen: boolean; changeStarted: boolean; c
   const out: SpecialTask[] = [];
   if (x.crisisOpen) out.push({ id: "crisis", href: "/ceo/crisis", subject: "Sesión extraordinaria · Boardroom Crisis", label: "Urgente: el consejo te cita hoy" });
   if (x.changeOpen && !x.changeDone) out.push({ id: "cambio", href: "/ceo/cambio", subject: `Reto final · ${x.changeTitle}`, label: x.changeStarted ? "En curso" : "El consejo espera tu plan" });
-  if (x.boardOpen) out.push({ id: "junta", href: "/ceo/junta", subject: "Junta ante el Consejo", label: "Requisito para tu nombramiento" });
+  if (x.boardOpen) out.push({ id: "junta", href: "/ceo/junta", subject: "Junta ante el Consejo", label: "Sesión extraordinaria del consejo" });
   return out;
 }

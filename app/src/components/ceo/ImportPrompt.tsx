@@ -27,7 +27,7 @@ function Summary({ title, Icon, s, tone }: { title: string; Icon: typeof Cloud; 
       <div className="mt-2 flex items-center gap-2 font-semibold text-ink"><Building2 size={15} className="text-slate-400" /> {s.company}</div>
       <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-1.5 text-slate-600">
         <dt className="text-slate-400">XP</dt><dd className="text-right tabular-nums font-medium text-ink">{s.xp}</dd>
-        <dt className="text-slate-400">Etapa</dt><dd className="text-right">{s.stage}</dd>
+        <dt className="text-slate-400">Cargo</dt><dd className="text-right">{s.stage}</dd>
         <dt className="text-slate-400">Decisiones</dt><dd className="text-right tabular-nums">{s.decisions}</dd>
         <dt className="text-slate-400">Empresas cerradas</dt><dd className="text-right tabular-nums">{s.companiesClosed}</dd>
         <dt className="text-slate-400">Última actividad</dt><dd className="text-right">{fmtDate(s.lastActivity)}</dd>
@@ -84,7 +84,7 @@ export function ImportPrompt({ flow }: { flow: ImportFlow }) {
             </div>
           )}
 
-          <p className="mt-6 text-xs text-slate-400">El progreso que traigas se marca como anterior a la nueva versión: conservas tu XP y tus empresas, pero no cuenta como ventaja en los rankings nuevos.</p>
+          <p className="mt-6 text-xs text-slate-400">El progreso que traigas se marca como anterior a la nueva versión: conservas tu XP, tu racha y tus empresas tal como están.</p>
         </section>
       </div>
     </main>

@@ -36,7 +36,7 @@ export function Experience() {
           {phase === "q" && <ProfileQuestions initial={p} source={c.s.profile?.source ?? "aviso"} step={q} setStep={setQ} onBackFirst={exit} onLater={exit} onDone={saved} />}
           {phase === "offer" && <DiagnosticOffer onStart={() => setPhase("diag")} onLater={exit} later="Ahora no" />}
           {phase === "diag" && <DiagnosticCases onDone={(nd) => { track("diagnostico_hecho", { respuestas: nd.answers.length, fuente: "perfil" }); c.saveDiagnostic(nd); setD(nd); setPhase("start"); }} onSkip={() => { track("diagnostico_saltado", { fuente: "perfil" }); c.saveDiagnostic({ v: 1, set: "d1", answers: [], skippedAt: Date.now() }); exit(); }} />}
-          {phase === "start" && <StartingPoint name={c.s.name} p={p} d={d} m={c.mastery} stage={c.journey.name} fresh={false} cta="Volver a mi empresa" onCta={() => router.replace("/ceo")} onEdit={() => { setQ(0); setPhase("q"); }} />}
+          {phase === "start" && <StartingPoint name={c.s.name} p={p} d={d} m={c.mastery} stage={c.trajectory.appointment.title} fresh={false} cta="Volver a mi empresa" onCta={() => router.replace("/ceo")} onEdit={() => { setQ(0); setPhase("q"); }} />}
         </div>
       </div>
     </main>

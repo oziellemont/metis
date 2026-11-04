@@ -17,7 +17,7 @@ import { migrate, nowOf, rulesVersionOf, xpOf } from "./engine";
 import { COMPANIES, companyById, isCompany } from "./companies";
 import { withBank } from "./cases/bank";
 import { CATALOG_VERSION, catalogCompanyById } from "./catalog";
-import { STAGES } from "./journey";
+import { mandateLabelOf } from "./trajectory";
 
 /** Versión de reglas con la que se jugaron las partidas anteriores a la v3 (ver contracts.ts). */
 export { LEGACY_RULES_VERSION } from "./rules";
@@ -113,7 +113,7 @@ export function summaryOf(s: CeoState): CareerSummary {
     companyId: s.company,
     company: companyById(s.company).name,
     xp: xpOf(s, nowOf(s, Math.max(s.savedAt || 0, s.lastActiveAt || 0) || undefined)),
-    stage: STAGES[s.journey?.stage ?? 0]?.name ?? STAGES[0].name,
+    stage: mandateLabelOf(s),
     decisions: all,
     companiesClosed: s.career.length,
     lastActivity: Math.max(s.lastActiveAt || 0, s.savedAt || 0),

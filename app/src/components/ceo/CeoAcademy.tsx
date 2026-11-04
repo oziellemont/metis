@@ -8,7 +8,7 @@ import { BlockView } from "@/components/academy/Blocks";
 
 import { LESSONS, MAX_TRACK_LEVEL, TRACKS, lessonsOfTrack, rankOf, trackOf, type Lesson } from "@/lib/ceo/lessons";
 import { LEVELS, nextLessonXp, rankFor } from "@/lib/ceo/engine";
-import { TRACK_TO } from "@/lib/ceo/mastery";
+import { COMPETENCY_IDS, TRACK_TO } from "@/lib/ceo/mastery";
 import { celebrate } from "@/lib/ceo/celebrate";
 import { useCeo } from "./CeoProvider";
 import { Stage, StepTitle } from "./Stage";
@@ -25,7 +25,8 @@ export function CeoAcademyHome() {
   const lessonXp = nextLessonXp(c.s, c.now);
   const nextRank = LEVELS[rank + 1];
   const unlockNext = nextRank ? LESSONS.filter((l) => rankOf(l) === rank + 1).length : 0;
-  const focus = c.journey.focus;
+  // Enfoque de estudio: la competencia con menor dominio (desempate por orden fijo). Es una sugerencia, no un requisito.
+  const focus = COMPETENCY_IDS.slice().sort((a, b) => c.mastery[a].value - c.mastery[b].value)[0] ?? null;
   const fm = focus ? c.mastery[focus] : null;
   const forYou = personalized(c.s);
   const [order, setOrder] = useState<"ti" | "todas">("ti");
@@ -51,13 +52,13 @@ export function CeoAcademyHome() {
         </div>
       </section>
 
-      {focus && fm && c.journey.next && (
+      {focus && fm && (
         <section className="mt-6 card p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4">
           <span className="h-11 w-11 shrink-0 rounded-2xl bg-indigo-soft text-indigo grid place-items-center"><Target size={20} /></span>
           <div className="flex-1 min-w-0">
-            <div className="text-xs text-slate-400">Tu enfoque para {c.journey.next.name}</div>
-            <div className="mt-0.5 font-semibold text-ink">{fm.name} · {fm.value} · {fm.level.name}</div>
-            <p className="mt-1 text-sm text-slate-500">Es la competencia que más te frena para tu siguiente nombramiento. Súbela con decisiones de esa área y con estas lecciones.</p>
+            <div className="text-xs text-slate-400">Tu enfoque de estudio</div>
+            <div className="mt-0.5 font-semibold text-ink">{fm.name}</div>
+            <p className="mt-1 text-sm text-slate-500">Es la competencia donde tus decisiones muestran menos dominio por ahora. Estas lecciones te ayudan a practicarla; tu lectura en Mi liderazgo cambia con lo que decidas en la empresa.</p>
           </div>
           {focusLesson && <Link href={`/ceo/academy/${focusLesson.id}`} className="btn-primary inline-flex items-center gap-2 shrink-0">{focusLesson.title} <ArrowRight size={15} /></Link>}
         </section>

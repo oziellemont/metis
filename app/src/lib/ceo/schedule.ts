@@ -16,7 +16,7 @@
  * En pausa (vacaciones o día tranquilo, ver cadence.ts) no se manda nada; el cron además cancela lo que
  * ya estaba programado en Resend y lo vuelve a programar una sola vez, a su nueva hora, al reanudar.
  */
-import { STAGES, stageOf } from "./journey";
+import { mandateLabelOf } from "./trajectory";
 import { DAY, H, casesDoneOf, dayKey, entries, healthOf, kpis, levelOf, localMidnight, packOf, profileOf, rulesFor, seasonDay, seasonDoneOf, streakOf, verdictOf, xpOf } from "./engine";
 import { LESSONS, rankOf } from "./lessons";
 import type { CeoState, Entry, Kpis } from "./types";
@@ -116,7 +116,7 @@ export function jobsFor(s: CeoState, sent: Sent, real: number, opts: { plan?: bo
       data: {
         day, seasonDays: pack.season.days, kpis: k, passLine: rulesFor(s).passLine,
         kpiDelta: Object.fromEntries((Object.keys(k) as (keyof Kpis)[]).map((x) => [x, k[x] - pack.kpiStart[x]])) as unknown as Kpis,
-        health: healthOf(k), streak: streakOf(s, now).days, xp, level: STAGES[stageOf(s)].name,
+        health: healthOf(k), streak: streakOf(s, now).days, xp, level: mandateLabelOf(s),
         pending, expiredYesterday: es.filter((e) => e.status === "vencido" && e.deadline >= yStart && e.deadline < yEnd),
         decidedYesterday: Object.values(s.decisions).filter((d) => d.at >= yStart && d.at < yEnd).length,
         todayCount: todays.length, firstAt: todays[0] ? clockLabel(todays[0].arrivesAt - (s.clockOffset || 0), tz) : undefined,
@@ -146,7 +146,7 @@ export function jobsFor(s: CeoState, sent: Sent, real: number, opts: { plan?: bo
   const seasonKey = (s.career ?? []).length ? `season:${s.company}:${(s.career ?? []).length}` : "season";
   if (seasonDone && !sent[seasonKey]) {
     const k = kpis(s, now), xp = xpOf(s, now), pr = profileOf(s, now), v = verdictOf(s, now);
-    jobs.push({ key: seasonKey, kind: "season", health: healthOf(k), xp, level: STAGES[stageOf(s)].name, archetype: pr.archetype.name, archetypeText: pr.archetype.text, decisions: pr.decisions, bestStreak: st.best, passed: v.passed, passLine: v.passLine, kpis: k, ...(v.v5 ? { why: v.v5.why } : {}) });
+    jobs.push({ key: seasonKey, kind: "season", health: healthOf(k), xp, level: mandateLabelOf(s), archetype: pr.archetype.name, archetypeText: pr.archetype.text, decisions: pr.decisions, bestStreak: st.best, passed: v.passed, passLine: v.passLine, kpis: k, ...(v.v5 ? { why: v.v5.why } : {}) });
   }
 
   // Si ya hay un asunto nuevo o un resumen, el recordatorio de racha sobra (no saturar).

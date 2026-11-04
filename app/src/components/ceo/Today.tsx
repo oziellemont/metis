@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useEffect, useMemo } from "react";
 import clsx from "clsx";
-import { ArrowRight, BookOpen, Briefcase, Check, Clock, Coffee, FastForward, Flag, Hourglass, Trophy } from "lucide-react";
+import { ArrowRight, BookOpen, Briefcase, Clock, Coffee, FastForward, Flag, Hourglass, Trophy } from "lucide-react";
 import { KPI_KEYS, closedRunsOf } from "@/lib/ceo/engine";
 import { CONTINUOUS_RULES_VERSION } from "@/lib/ceo/rules";
 import { ETHICS_AUDIT_RULES } from "@/lib/ceo/editorial";
@@ -18,9 +18,8 @@ import { rankOf } from "@/lib/ceo/lessons";
 import { nextLessonXp, rankFor } from "@/lib/ceo/engine";
 import { nudgeQuiet, shouldNudge } from "@/lib/ceo/profile";
 import { Avatar, Bar, ChannelChip, Delta, Flame, rel, until } from "./ui";
-import { STAGES } from "@/lib/ceo/journey";
+import { headlineOf } from "@/lib/ceo/trajectory";
 import { presenterOf } from "@/lib/ceo/business/report";
-import { COMPANY_STAGES } from "@/lib/ceo/career/identity";
 import { alertsAt } from "@/lib/ceo/season-report";
 
 export function Today() {
@@ -55,8 +54,8 @@ export function Today() {
   const curV = c.s.rulesVersion ?? 1, prevV = prevRun?.rulesVersion ?? 1;
   const newRules = !!mandate && !!prevRun && curV >= 6 && curV <= CONTINUOUS_RULES_VERSION && prevV < 6;
   const ethicsRules = !!mandate && !!prevRun && curV >= ETHICS_AUDIT_RULES && prevV >= 6 && prevV < ETHICS_AUDIT_RULES;
-  const j = c.journey;
-  const jPct = j.total ? Math.round((j.met / j.total) * 100) : 100;
+  const t = c.trajectory;
+  const headline = headlineOf(t);
   const greeting = c.seasonDone
     ? (c.continuous ? (v.passed ? `Cerraste un buen periodo en ${pk.short}, ${first}.` : `Cerraste el periodo en ${pk.short}, ${first}.`) : v.passed ? `Aprobaste ${pk.short}, ${first}.` : `Cerraste la temporada en ${pk.short}, ${first}.`)
     : `${hello}, ${first}.`;
@@ -84,33 +83,27 @@ export function Today() {
       <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#141735] via-[#1E1A5E] to-[#2B1F8A] p-5 sm:p-7 text-white">
         <div aria-hidden className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-indigo-light/30 blur-3xl" />
         <div aria-hidden className="absolute right-24 bottom-[-80px] h-48 w-48 rounded-full bg-mint/20 blur-3xl" />
-        <div className="relative grid gap-5 md:grid-cols-[1.4fr_1fr] md:items-center">
+        <div className="relative grid grid-cols-[minmax(0,1fr)] gap-5 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] md:items-center">
           <div className="min-w-0">
-            <div className="text-xs text-white/60 truncate">{pk.name} · {pk.industry} · {c.continuous ? `Mes ${(c.s.career ?? []).length + 1} · ${COMPANY_STAGES.find((x) => x.id === c.s.companyProfile?.stage)?.label ?? COMPANY_STAGES[0].label}` : `Día ${c.day} de ${pk.season.days}`}{c.s.tier > 0 ? ` · Exigencia ${c.rules.name}` : ""}</div>
+            <div className="text-xs text-white/60 truncate">{pk.name} · {pk.industry}{c.s.tier > 0 ? ` · Exigencia ${c.rules.name}` : ""}</div>
             <h1 className="mt-1.5 text-2xl sm:text-[28px] font-semibold leading-tight">{greeting}</h1>
             <p className="mt-1 text-[15px] text-white/75">{sub}</p>
             {cta && <Link href={cta.href} className="mt-4 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-ink hover:bg-white/90">{cta.label} <ArrowRight size={15} /></Link>}
             {c.seasonDone && <Link href="/ceo/carrera" className="mt-4 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-ink"><Trophy size={15} /> Ver el veredicto del consejo</Link>}
           </div>
 
-          <div className="rounded-2xl bg-white/[.08] border border-white/[.12] backdrop-blur p-3.5 sm:p-4" aria-label="Tu progreso">
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2.5">
-                <span className={clsx("h-9 w-9 rounded-xl grid place-items-center shrink-0", c.streak.doneToday ? "bg-gradient-to-br from-amber to-coral" : "bg-white/10")}><Flame on={c.streak.doneToday} size={19} white /></span>
-                <div><div className="text-[11px] text-white/55 leading-none">Racha</div><div className="mt-1 text-[15px] font-semibold tabular-nums leading-none">{c.streak.days} {c.streak.days === 1 ? "día" : "días"}</div></div>
-              </div>
-              <div className="hidden sm:flex gap-1.5">
-                {c.streak.week.map((d) => <span key={d.key} title={d.label} className={clsx("h-5 w-5 rounded-full grid place-items-center", d.on ? "bg-gradient-to-br from-amber to-coral text-white" : d.paused ? "border border-dashed border-white/30" : d.today ? "bg-white/20 ring-2 ring-white/40" : "bg-white/10")}>{d.on && <Check size={10} strokeWidth={3} />}<span className="sr-only">{d.label}{d.paused ? " en pausa" : ""}</span></span>)}
-              </div>
-              <div className="text-right"><div className="text-[11px] text-white/55 leading-none">XP</div><div className="mt-1 text-[15px] font-semibold tabular-nums leading-none">{c.xp}</div></div>
+          <div className="min-w-0 rounded-2xl bg-white/[.08] border border-white/[.12] backdrop-blur p-3.5 sm:p-4" aria-label="Tu mandato" data-testid="resumen-mandato">
+            <div className="flex items-baseline justify-between gap-2">
+              <div className="min-w-0"><div className="text-[11px] text-white/55">Tu mandato</div><div className="text-sm font-semibold leading-snug">{t.appointment.title}</div></div>
+              <Link href="/ceo/carrera" className="shrink-0 text-[11px] font-semibold text-indigo-light hover:text-white">Tu trayectoria →</Link>
             </div>
-            <div className="mt-3 pt-3 border-t border-white/10">
-              <div className="flex items-baseline justify-between gap-2">
-                <div className="min-w-0"><div className="text-[11px] text-white/55">Executive Journey · Stage {j.stage + 1} de {STAGES.length}</div><div className="text-sm font-semibold truncate">{j.name}</div></div>
-                <Link href="/ceo/carrera" className="shrink-0 text-[11px] font-semibold text-indigo-light hover:text-white">Tu carrera →</Link>
-              </div>
-              <div className="mt-2 h-1.5 rounded-full bg-white/15 overflow-hidden"><div className="h-full bg-gradient-to-r from-indigo-light to-white" style={{ width: `${jPct}%` }} /></div>
-              <div className="mt-1.5 text-[11px] text-white/55 tabular-nums">{j.next ? (j.ready ? "Listo para tu nombramiento" : `Siguiente nombramiento: ${j.met} de ${j.total} requisitos`) : "Última etapa"}{!c.streak.doneToday && c.streak.atRisk ? " · Decide o estudia hoy para no perder tu racha" : ""}</div>
+            <div className="mt-1 text-[12px] text-white/70">{t.active ? `Mes ${t.month} · ${t.chapter.label}` : `Día ${c.day} de ${pk.season.days}`}</div>
+            <p className="mt-2 text-[13px] text-white/85 leading-snug">{t.moment.text}</p>
+            {headline && <p className="mt-2 text-[12px] text-white/65 truncate"><span className="text-white/45">{headline.label}:</span> {headline.text}</p>}
+            {/* Constancia: hábito, separado del mandato. No es requisito de nada. */}
+            <div className="mt-3 pt-2.5 border-t border-white/10 flex items-center justify-between gap-3 text-[11px] text-white/55" aria-label="Constancia">
+              <span className="flex items-center gap-1.5"><Flame on={c.streak.doneToday} size={13} white /> Racha {c.streak.days} {c.streak.days === 1 ? "día" : "días"}{!c.streak.doneToday && c.streak.atRisk ? " · decide o estudia hoy para conservarla" : ""}</span>
+              <span className="tabular-nums">{c.xp} XP</span>
             </div>
           </div>
         </div>
