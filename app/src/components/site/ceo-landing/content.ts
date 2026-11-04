@@ -76,7 +76,7 @@ export const UI = {
 /* ---------------- Primer bloque: qué es mêtis, con un caso real al lado ---------------- */
 export const HERO = {
   eyebrow: "Simulador de dirección",
-  title: "Unos minutos al día. Lidera, decide y aprende.",
+  title: "Piensa y decide como CEO. Unos minutos al día.",
   body: "Vive los retos de un CEO: recibe mensajes de tu equipo, resuelve situaciones de negocio y aprende de sus consecuencias para desarrollar tu criterio como líder.",
   motto: "Dirigir se aprende decidiendo.",
   note: "Sin tarjeta.",
