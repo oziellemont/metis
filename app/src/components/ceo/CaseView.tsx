@@ -366,6 +366,15 @@ function Outcome({ e, fresh, part }: { e: Entry; fresh: boolean; part: "resultad
         {o && <ProfileHint o={o} />}
       </div>
 
+      {e.agreement && (
+        <div className="card p-5 sm:p-6">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">{e.agreement.resolved ? "Respuesta" : "Falta una respuesta"} · {e.agreement.who}</div>
+          {e.agreement.resolved
+            ? <p className="mt-1.5 text-[15px] text-ink leading-relaxed">{e.agreement.text}</p>
+            : <p className="mt-1.5 text-[15px] text-ink leading-relaxed">{e.agreement.what}. Lo que depende de esa respuesta todavía no cuenta en tus indicadores; llega en {until(e.agreement.respondsAt, c.now)}.</p>}
+        </div>
+      )}
+
       <Ripples e={e} fresh={fresh} />
       </>}
 

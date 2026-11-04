@@ -2,7 +2,7 @@
  * mêtis CEO · motor del simulador. Lógica pura (sin React ni navegador) para usarla
  * igual en la app, en el cron que agenda correos/WhatsApp y en las pruebas.
  */
-import type { Axis, CareerRun, CeoState, CrisisRating, CompanyPack, Decision, Entry, Item, KpiKey, Kpis, Option, Settings, Written } from "./types";
+import type { AgreementState, Axis, CareerRun, CeoState, CrisisRating, CompanyPack, Decision, Entry, Item, KpiKey, Kpis, Option, PriorCondition, Settings, Written } from "./types";
 import { COMPANIES, FIRST_COMPANY, LEGACY_ROTATION, companyById } from "./companies";
 import { DILEMMAS, dilemmaById, sameSituation, type Dilemma } from "./dilemmas";
 import { changeEffect, simulate, type ChangeSim } from "./change";
@@ -22,7 +22,9 @@ import { sanitizeEpisodes } from "./episodes/engine";
 import { EPISODES, SEASON_EPISODES, openEpisode as openEpisodeRaw } from "./episodes/catalog";
 import { authoredFromScore, judge, prioritizes, type ContextOption } from "./judgment";
 import { SEASON_OBJECTIVES } from "./objectives";
-import { isRedLine } from "./editorial";
+import { expectedEffects, isDefensibleOption, isOmissionRedLine, isRedLine } from "./editorial";
+import { acceptsWith, addEffects, itemAtVersion, presentIn } from "./versioned";
+import type { AuthoredJudgment } from "./judgment";
 import type { EpisodeRun, EpisodeSpec } from "./episodes/contracts";
 import { activeMs, extendDeadline, onVacation, runSpans, sanitizeCadence, shiftArrival, shiftDaysOf, spansOf, type Span } from "./pausetime";
 
@@ -257,6 +259,12 @@ export function seasonEpisodesOf(s: Pick<CeoState, "company" | "rulesVersion"> &
     return spec && spec.approval === "aprobado" && spec.company === s.company ? [{ spec, day: x.day, slot: x.slot, replaces: x.replaces }] : [];
   });
 }
+/** Reglas v8: si dejar vencer equivale a la línea roja, el vencimiento lo dice con todas sus letras. */
+const OMISSION_NOTE = " Sin tu decisión, alguien hizo justo lo que es línea roja: cuenta como si lo hubieras decidido tú.";
+function withOmissionNote(it: Item, v: number): Item {
+  if (!isOmissionRedLine(it.id, v) || it.expired.outcome.includes(OMISSION_NOTE.trim())) return it;
+  return { ...it, expired: { ...it.expired, outcome: it.expired.outcome + OMISSION_NOTE } };
+}
 /**
  * Asuntos de la temporada: los del paquete menos los que sustituye un caso ejecutivo. En la carrera continua, solo
  * los compatibles con el tipo de empresa, y sin las consecuencias cuyo detonador no se muestra (auditoría P1-A).
@@ -265,7 +273,8 @@ export function seasonItems(s: Pick<CeoState, "company" | "rulesVersion"> & Stag
   const pack = packOf(s);
   const v = rulesVersionOf(s);
   // Asuntos nuevos (con `since`) solo en periodos de esa versión: un periodo que ya empezó no cambia.
-  let items = compatibleItems(pack.items.filter((i) => !isBankId(i.id) && !(i.since && v < i.since)), companyTypeOf(s));
+  // Revisiones por versión (v8+): mismo id, el asunto se presenta como lo define la versión del periodo.
+  let items = compatibleItems(pack.items.filter((i) => !isBankId(i.id) && presentIn(i, v)).map((i) => withOmissionNote(itemAtVersion(i, v), v)), companyTypeOf(s));
   // Carrera continua (P1-B): la carta de llegada y lo del primer día solo tienen sentido al tomar el mando.
   if (companyStageOf(s).idx > 0) {
     const first = new Set(items.filter((i) => i.day <= 1).map((i) => i.id));
@@ -403,20 +412,85 @@ export function entries(s: CeoState, now = nowOf(s)): Entry[] {
   const out: Entry[] = [];
   // Pausas (vacaciones / día tranquilo): el plazo solo corre en tiempo activo. Sin pausas, todo queda igual.
   const spans = runSpans(s, now);
-  for (const it of seasonItems(s)) {
-    if (!isActive(s, it, now)) continue;
-    let arrivesAt = arrivalOf(s, it, spans);
+  const seen = new Map<string, Entry>();
+  for (const it0 of seasonItems(s)) {
+    // Cadena (v8+): si el detonador ya se calculó aquí, su estado real (con llegada encadenada) decide si esto existe.
+    const tPrev = it0.after?.length && it0.trigger ? seen.get(it0.trigger.item) : undefined;
+    if (tPrev) {
+      if (it0.trigger!.roll && !inRoll(s, it0.trigger!.item, it0.trigger!.roll)) continue;
+      const r = tPrev.status === "decidido" ? tPrev.decision!.option : tPrev.status === "vencido" ? "__expired" : null;
+      if (r === null || !it0.trigger!.options.includes(r)) continue;
+    } else if (it0.after?.length && it0.trigger && !seen.has(it0.trigger.item)) continue;
+    else if (!isActive(s, it0, now)) continue;
+    let arrivesAt = arrivalOf(s, it0, spans);
     // Una consecuencia nunca llega antes de que se haya resuelto lo que la detona.
-    if (it.trigger) {
-      const t = s.decisions[it.trigger.item];
-      if (t) arrivesAt = Math.max(arrivesAt, s.pinned[it.id] || !spans.length ? t.at + 2 * 60_000 : shiftArrival(spans.filter((x) => x.to > t.at), t.at + 2 * 60_000, s.settings.windowStart));
+    if (it0.trigger) {
+      const t = s.decisions[it0.trigger.item];
+      if (t) arrivesAt = Math.max(arrivesAt, s.pinned[it0.id] || !spans.length ? t.at + 2 * 60_000 : shiftArrival(spans.filter((x) => x.to > t.at), t.at + 2 * 60_000, s.settings.windowStart));
     }
+    // Acuerdo (v8+): lo que depende de la respuesta de la contraparte llega después de esa respuesta.
+    const tAgr = it0.trigger ? seen.get(it0.trigger.item)?.agreement : undefined;
+    if (tAgr && !s.pinned[it0.id]) arrivesAt = Math.max(arrivesAt, tAgr.respondsAt + 2 * 60_000);
+    // Cadena (v8+): espera a que se resuelva lo anterior de la cadena que sí llegó (y a la respuesta de su acuerdo).
+    let waiting = false;
+    for (const id of it0.after ?? []) {
+      const p = seen.get(id);
+      if (!p) continue;
+      const at = resolvedAt(p);
+      if (at === null) { waiting = true; break; }
+      if (!s.pinned[it0.id]) arrivesAt = Math.max(arrivesAt, Math.max(at, p.agreement?.respondsAt ?? 0) + 2 * 60_000);
+    }
+    if (waiting) continue;
+    // Cadena (v8+): lo que decidiste antes (resuelto antes de que esto llegara) cambia información y opciones.
+    const it = withVariants(it0, seen, arrivesAt);
     const deadline = spans.length ? extendDeadline(spans, arrivesAt, deadlineOf(s, it) * H) : arrivesAt + deadlineOf(s, it) * H;
     const decision = s.decisions[it.id];
     const status = decision ? "decidido" : now < arrivesAt ? "futuro" : now >= deadline ? "vencido" : "pendiente";
-    out.push({ item: it, arrivesAt, deadline, status, decision, option: decision ? it.options.find((o) => o.id === decision.option) : undefined });
+    const option = decision ? it.options.find((o) => o.id === decision.option) : undefined;
+    const agreement = decision && option?.pending ? agreementOf(s, it, option, decision.at, now) : undefined;
+    const entry: Entry = { item: it, arrivesAt, deadline, status, decision, option, ...(agreement ? { agreement } : {}) };
+    seen.set(it.id, entry);
+    out.push(entry);
   }
   return out.sort((a, b) => a.arrivesAt - b.arrivesAt);
+}
+
+/**
+ * Acuerdo pendiente (v8+): la contraparte responde `days` días reales después de tu decisión y, a más tardar, al
+ * empezar el último día del periodo (antes de que pueda cerrarse). Acepta según el azar estable del asunto.
+ */
+export function agreementOf(s: CeoState, it: Item, o: Option, at: number, now: number): AgreementState {
+  const p = o.pending!;
+  const last = Math.max(...packOf(s).items.map((i) => i.day));
+  const bound = localMidnight(s.startedAt ?? 0, s.settings.tz) + (last - 1) * DAY + s.settings.windowStart * H;
+  const respondsAt = Math.max(at, Math.min(at + p.days * DAY, bound));
+  const accepted = acceptsWith(rollOf(s, it.id), o);
+  const r = accepted ? p.yes : p.no;
+  return { who: p.who, what: p.what, respondsAt, resolved: now >= respondsAt, accepted, text: r.text, effects: r.effects };
+}
+
+/** Momento en que se resolvió un asunto (decisión o vencimiento); null si sigue abierto. */
+const resolvedAt = (e: Entry): number | null => (e.status === "decidido" ? e.decision!.at : e.status === "vencido" ? e.deadline : null);
+
+/** ¿Se cumple la condición? Solo cuenta lo resuelto antes de `before` (nada cambia después de que el asunto llegó). */
+function priorMet(c: PriorCondition, seen: Map<string, Entry>, before: number): boolean {
+  const p = seen.get(c.item);
+  if (!p) return false;
+  const at = resolvedAt(p);
+  if (at === null || at > before) return false;
+  const r = p.status === "vencido" ? "__expired" : p.decision!.option;
+  if (!c.options.includes(r)) return false;
+  return c.accepted === undefined || (!!p.agreement && p.agreement.respondsAt <= before && p.agreement.accepted === c.accepted);
+}
+function withVariants(it: Item, seen: Map<string, Entry>, before: number): Item {
+  if (!it.variants?.length) return it;
+  let out = it;
+  for (const v of it.variants) {
+    if (!v.when.every((c) => priorMet(c, seen, before))) continue;
+    out = { ...out, ...v.patch };
+    if (v.rows?.length && out.data) out = { ...out, data: { ...out.data, rows: [...out.data.rows, ...v.rows] } };
+  }
+  return out;
 }
 
 // ───────────────────────────────────────────── indicadores, XP, perfil
@@ -430,7 +504,9 @@ export function effectOf(s: CeoState, e: Entry): Partial<Kpis> {
     // exigencia ya no la amplifica: no se apilan castigos sobre una ausencia.
     return scaled(e.item.expired.effects, ruleSet(v).participation ? 0 : s.tier, v);
   }
-  return scaled(e.status === "decidido" ? e.option?.effects : undefined, s.tier, v);
+  const now = scaled(e.status === "decidido" ? e.option?.effects : undefined, s.tier, v);
+  // Acuerdo (v8+): lo que depende de la contraparte solo suma cuando responde.
+  return e.status === "decidido" && e.agreement?.resolved ? addEffects(now, scaled(e.agreement.effects, s.tier, v)) : now;
 }
 export function kpis(s: CeoState, now = nowOf(s)): Kpis {
   const k = { ...packOf(s).kpiStart };
@@ -468,6 +544,20 @@ export function mandateOf(s: Pick<CeoState, "company" | "rulesVersion">): { kpis
   return { kpis: [...new Set<KpiKey>(["caja", ...(SEASON_OBJECTIVES[s.company]?.kpis ?? [])])], margin: R.mandateMargin };
 }
 
+/**
+ * Evaluación autoral de una opción. Hasta v7, se deriva del score. Desde v8, una opción de score 2 defendible (sin
+ * línea roja, no dominada y con balance esperado dentro de la banda editorial de la mejor) usa la información clave
+ * y reconoce su costo: suma 6 y llega a «bien razonado» salvo que gaste lo que el tablero dice que está en riesgo.
+ */
+export function authoredFor(item: Pick<Item, "id" | "options">, optionId: string, v: number): AuthoredJudgment {
+  const o = item.options.find((x) => x.id === optionId);
+  const score = o?.score ?? 0;
+  if (score === 2 && ruleSet(v).judgment?.defensibleScore2 && isDefensibleOption(item, optionId, v)) {
+    return { analiza: 2, consulta: 1, anticipa: 1, negocia: 1, ejecuta: 1 };
+  }
+  return authoredFromScore(score);
+}
+
 /** Criterio de la temporada (V5): asuntos bien razonados (nivel ≥ 2 de la rúbrica contextual) sobre asuntos cerrados. */
 export function judgmentShareOf(s: CeoState, now = nowOf(s)): { good: number; total: number; ratio: number } {
   const k = { ...packOf(s).kpiStart };
@@ -477,9 +567,9 @@ export function judgmentShareOf(s: CeoState, now = nowOf(s)): { good: number; to
     if (e.status !== "decidido" && e.status !== "vencido") continue;
     total++;
     if (e.status === "decidido" && e.option) {
-      const os: ContextOption[] = e.item.options.map((o) => ({ id: o.id, score: o.score, effects: scaled(o.effects, s.tier, v) }));
+      const os: ContextOption[] = e.item.options.map((o) => ({ id: o.id, score: o.score, effects: scaled(expectedEffects(o), s.tier, v) }));
       const me = os.find((o) => o.id === e.option!.id);
-      if (me && judge(authoredFromScore(me.score), prioritizes(me, os, k, line, m.kpis, m.margin)).level >= 2) good++;
+      if (me && judge(authoredFor(e.item, me.id, v), prioritizes(me, os, k, line, m.kpis, m.margin)).level >= 2) good++;
     }
     const eff = effectOf(s, e);
     for (const key of Object.keys(eff) as KpiKey[]) k[key] = clamp(k[key] + (eff[key] ?? 0));
@@ -865,7 +955,8 @@ export function casesDoneOf(s: CeoState, now = nowOf(s)): boolean {
   const done = (id: string) => es.some((e) => e.item.id === id && (e.status === "decidido" || e.status === "vencido"));
   // Reglas v3+: los casos ejecutivos no vencen; el reto final espera a que los cierres.
   const epsOk = !ruleSet(rulesVersionOf(s)).episodes?.required || episodeEntries(s, now).every((e) => e.status === "cerrado");
-  return epsOk && base.every((i) => done(i.id)) && !es.some((e) => e.status === "pendiente" || (e.status === "futuro" && !e.item.trigger));
+  // Cadena (v8+): un eslabón que ya está en camino (`after`) también se espera; no existe en periodos anteriores.
+  return epsOk && base.every((i) => done(i.id)) && !es.some((e) => e.status === "pendiente" || (e.status === "futuro" && (!e.item.trigger || !!e.item.after?.length)));
 }
 /** Fin del nivel: cerraste los asuntos Y el reto final (proyecto de cambio). Hasta entonces no hay veredicto. */
 export function seasonDoneOf(s: CeoState, now = nowOf(s)): boolean {
@@ -918,7 +1009,7 @@ function verdictV5(s: CeoState, now: number, k: Kpis, line: number, R5: NonNulla
   const L = KPI_LABEL;
   if (k.caja < C.insolvency) { reasons.push("insolvencia"); why.push(`La caja cerró en ${k.caja}: zona de insolvencia (menos de ${C.insolvency}). Ningún otro indicador compensa quedarse sin dinero.`); }
   if (k.consejo < C.boardLost) { reasons.push("consejo_perdido"); why.push(`El consejo cerró en ${k.consejo}: ya no te sostiene (menos de ${C.boardLost}).`); }
-  const red = entries(s, now).filter((e) => e.status === "decidido" && e.decision && isRedLine(e.item.id, e.decision.option, rulesVersionOf(s)));
+  const red = redLineEntries(s, now);
   if (red.length) { reasons.push("linea_roja"); why.push(`Cruzaste una línea roja en «${red[0].item.subject}»: seguridad, fraude, represalia, engañar u ocultarle un riesgo al cliente no se compensan con resultados.`); }
   const obj = SEASON_OBJECTIVES[s.company];
   const objectives = (obj?.kpis ?? []).map((x) => ({ kpi: x, value: k[x], ok: k[x] >= line }));
@@ -933,6 +1024,17 @@ function verdictV5(s: CeoState, now: number, k: Kpis, line: number, R5: NonNulla
   const j = judgmentShareOf(s, now);
   if (j.ratio < C.minJudgment) { reasons.push("criterio"); why.push(`${j.good} de ${j.total} asuntos estuvieron bien razonados (${Math.round(j.ratio * 100)} %); se pide al menos ${Math.round(C.minJudgment * 100)} %. Los que dejaste vencer cuentan como no razonados.`); }
   return { reasons, why, objectives, objectiveText: obj?.text ?? "", floor, healthMin, judgment: { ...j, min: C.minJudgment }, cashFlow: cashFlowOf(s, k), business };
+}
+
+/**
+ * Asuntos donde cruzaste una línea roja: por decisión (siempre) o, desde v8, por omisión cuando dejar vencer equivale
+ * a la conducta (sin tu decisión alguien la ejecutó en tu nombre).
+ */
+export function redLineEntries(s: CeoState, now = nowOf(s)): Entry[] {
+  const v = rulesVersionOf(s);
+  return entries(s, now).filter((e) =>
+    (e.status === "decidido" && e.decision && isRedLine(e.item.id, e.decision.option, v)) ||
+    (e.status === "vencido" && isOmissionRedLine(e.item.id, v)));
 }
 
 /** Siguiente empresa: aleatoria entre las que no has aprobado (estable por jugador). */

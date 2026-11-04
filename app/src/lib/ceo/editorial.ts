@@ -40,6 +40,11 @@ export interface RedLine {
   option: string;
   why: string;
   /**
+   * Omisión (desde esta versión de reglas): dejar vencer el asunto también cuenta, porque sin tu decisión alguien
+   * ejecuta justo esa conducta en tu nombre (el texto del vencimiento lo dice). Sin dato = vencer no cuenta.
+   */
+  omissionSince?: number;
+  /**
    * Desde qué versión de reglas cuenta en el veredicto. Sin dato = desde siempre. Las que se agregan después llevan
    * versión: un periodo jugado con reglas anteriores se sigue calificando como se calificó (nada se recalifica).
    */
@@ -48,24 +53,27 @@ export interface RedLine {
 /** Versión de reglas desde la que cuentan las líneas rojas de la auditoría ética de noviembre de 2026. */
 export const ETHICS_AUDIT_RULES = 7;
 const E7 = ETHICS_AUDIT_RULES;
+/** Versión de la ronda de coherencia: omisiones que equivalen a la línea roja (ver `RedLine.omissionSince`). */
+export const OMISSION_RULES = 8;
+const E8 = OMISSION_RULES;
 export const RED_LINES: Record<string, RedLine[]> = {
-  "d3-planta": [{ option: "b", why: "Seguir operando un equipo con riesgo de accidente ya identificado." }],
-  "d6-gastos": [{ option: "b", why: "Encubrir un fraude comprobado a cambio de ventas." }],
-  "fn-d3-ppap": [{ option: "b", why: "Saltarse la firma de Calidad y entregar sin declarar la capacidad real." }],
+  "d3-planta": [{ option: "b", why: "Seguir operando un equipo con riesgo de accidente ya identificado.", omissionSince: E8 }],
+  "d6-gastos": [{ option: "b", why: "Encubrir un fraude comprobado a cambio de ventas.", omissionSince: E8 }],
+  "fn-d3-ppap": [{ option: "b", why: "Saltarse la firma de Calidad y entregar sin declarar la capacidad real.", omissionSince: E8 }],
   "fn-c-laura": [{ option: "b", why: "Mantener oculto al cliente un riesgo de calidad conocido." }],
   "fn-d6-denuncia": [{ option: "b", why: "Mover a quienes denunciaron acoso: represalia contra denunciantes." }],
-  "gb-d3-brote": [{ option: "b", why: "Seguir abiertos tras un brote de intoxicación sin dar la cara." }],
+  "gb-d3-brote": [{ option: "b", why: "Seguir abiertos tras un brote de intoxicación sin dar la cara.", omissionSince: E8 }],
   // Auditoría ética (v7): conductas que la estrategia «solo números» elegía sin reprobar.
-  "kb-d3-demo": [{ option: "b", why: "Firmar ante el cliente que una integración funciona cuando no existe, y ocultarlo operándola a mano.", since: E7 }],
-  "pm-d3-entrega": [{ option: "b", why: "Anunciar a los clientes un servicio que no se puede cumplir y encubrir la diferencia.", since: E7 }],
-  "vl-d3-rastreo": [{ option: "b", why: "Prometer en una licitación una capacidad que no existe y encubrir la diferencia.", since: E7 }],
+  "kb-d3-demo": [{ option: "b", why: "Firmar ante el cliente que una integración funciona cuando no existe, y ocultarlo operándola a mano.", since: E7, omissionSince: E8 }],
+  "pm-d3-entrega": [{ option: "b", why: "Anunciar a los clientes un servicio que no se puede cumplir y encubrir la diferencia.", since: E7, omissionSince: E8 }],
+  "vl-d3-rastreo": [{ option: "b", why: "Prometer en una licitación una capacidad que no existe y encubrir la diferencia.", since: E7, omissionSince: E8 }],
   "kb-d6-denuncia": [{ option: "b", why: "Mover a quienes denunciaron acoso: represalia contra denunciantes.", since: E7 }],
   "pm-d6-denuncia": [{ option: "b", why: "Mover a quienes denunciaron acoso: represalia contra denunciantes.", since: E7 }],
   "vl-d6-denuncia": [{ option: "b", why: "Mover a quienes denunciaron acoso: represalia contra denunciantes.", since: E7 }],
   "kb-d5-banco": [{ option: "b", why: "Retener media nómina y dar al equipo una explicación falsa.", since: E7 }],
   "pm-d5-embargo": [{ option: "b", why: "Retener media nómina y dar al equipo una explicación falsa.", since: E7 }],
   "vl-d5-embargo": [{ option: "b", why: "Retener media nómina y dar al equipo una explicación falsa.", since: E7 }],
-  "c-mant-dosificador": [{ option: "b", why: "Saber que se envió producto con menos contenido del etiquetado y no avisar al cliente ni reponer.", since: E7 }],
+  "c-mant-dosificador": [{ option: "b", why: "Saber que se envió producto con menos contenido del etiquetado y no avisar al cliente ni reponer.", since: E7, omissionSince: E8 }],
 };
 /**
  * Líneas rojas de los casos del banco, por arquetipo (la letra de cada opción no cambia con el giro: el orden en
@@ -248,5 +256,34 @@ export function countBy(audits: ItemAudit[]): Record<EditorialStatus, number> {
  * ¿Esta opción cruza una línea roja? Con `rulesVersion`, solo cuentan las vigentes en esa versión (el veredicto de un
  * periodo usa la versión con que empezó). Sin versión, todas (vista editorial).
  */
+/** ¿Dejar vencer este asunto cuenta como línea roja en esa versión? (sin tu decisión, alguien ejecuta la conducta). */
+export const isOmissionRedLine = (itemId: string, rulesVersion: number) =>
+  redLinesOf(itemId).some((r) => !!r.omissionSince && rulesVersion >= r.omissionSince);
+
+/** Efecto esperado de una opción: lo inmediato más el acuerdo pendiente ponderado por su probabilidad estimada. */
+export function expectedEffects(o: Pick<Option, "effects" | "pending">): Partial<Kpis> {
+  if (!o.pending) return o.effects;
+  const out: Partial<Kpis> = {};
+  const { p, yes, no } = o.pending;
+  for (const k of KEYS) {
+    const v = (o.effects[k] ?? 0) + p * (yes.effects[k] ?? 0) + (1 - p) * (no.effects[k] ?? 0);
+    if (v) out[k] = Math.round(v * 100) / 100;
+  }
+  return out;
+}
+
+/**
+ * ¿Opción defendible? Misma definición que la auditoría editorial, sin umbrales nuevos: no cruza línea roja, ninguna
+ * otra la domina y su balance esperado queda a `defensibleBand` o menos del mejor.
+ */
+export function isDefensibleOption(item: Pick<Item, "id" | "options">, optionId: string, rulesVersion?: number): boolean {
+  const o = item.options.find((x) => x.id === optionId);
+  if (!o || isRedLine(item.id, optionId, rulesVersion)) return false;
+  const eff = (x: Option) => expectedEffects(x);
+  if (item.options.some((x) => x !== o && dominates(eff(x), eff(o)))) return false;
+  const best = Math.max(...item.options.filter((x) => !isRedLine(item.id, x.id, rulesVersion)).map((x) => netOf(eff(x))));
+  return best - netOf(eff(o)) <= EDITORIAL_THRESHOLDS.defensibleBand;
+}
+
 export const isRedLine = (itemId: string, optionId: string, rulesVersion?: number) =>
   redLinesOf(itemId).some((r) => r.option === optionId && (rulesVersion === undefined || !r.since || rulesVersion >= r.since));

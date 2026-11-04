@@ -9,16 +9,17 @@
  * No cambia nada del juego: solo llama a las funciones públicas del motor.
  */
 import { LEVERS, canUse, leverById, simulate } from "./change";
-import { H, KPI_KEYS, advance, casesDoneOf, decide, reportDueOf, setupCompany, entries, episodeEntries, kpis, newState, nextArrivalOf, openSeasonEpisode, packOf, rulesFor, verdictOf } from "./engine";
+import { H, KPI_KEYS, advance, authoredFor, rulesVersionOf, casesDoneOf, decide, reportDueOf, setupCompany, entries, episodeEntries, kpis, newState, nextArrivalOf, openSeasonEpisode, packOf, rulesFor, verdictOf } from "./engine";
 import { EPISODES, actEpisode } from "./episodes/catalog";
 import { applyEpisode, strategiesFor, type EpisodeAction } from "./episodes/engine";
 import type { EpisodeRun } from "./episodes/contracts";
 import { closeChange, playLever, startChange } from "./relations";
 import type { CeoState, ChangeMove, CompanyPack, KpiKey, Kpis, Option } from "./types";
+import type { ContextOption, JudgmentResult } from "./judgment";
 import { contextualJudgment } from "./judgment";
 import { SEASON_OBJECTIVES } from "./shadow-verdict";
 import { CONTINUOUS_RULES_VERSION } from "./rules";
-import { isRedLine } from "./editorial";
+import { expectedEffects, isRedLine } from "./editorial";
 import { closePeriod } from "./business/report";
 import type { CompanyArchetype } from "./career/taxonomy";
 
@@ -36,6 +37,10 @@ export function rng(seed: string): () => number {
 const net = (o: Option) => KPI_KEYS.reduce((a, k) => a + (o.effects[k] ?? 0), 0);
 export interface PickCtx { s: CeoState; t: number; itemId: string; r: () => number }
 export type Picker = (os: Option[], c: PickCtx) => string | null;
+/** Criterio contextual con la evaluación autoral del periodo (v8: score 2 defendible; antes, derivada del score). */
+function judgedOf(o: ContextOption, os: Option[], k: Kpis, line: number, c: PickCtx): JudgmentResult {
+  return contextualJudgment(o, os, k, line, authoredFor({ id: c.itemId, options: os }, o.id, rulesVersionOf(c.s)));
+}
 
 /** Jugador que mira el tablero: entre las opciones defendibles (criterio ≥ 2), la que deja mejor su indicador más débil. */
 function balanced(os: Option[], c: PickCtx): string {
@@ -53,7 +58,7 @@ function balanced(os: Option[], c: PickCtx): string {
 /** Criterio contextual (rúbrica nueva): el nivel de criterio más alto considerando el tablero; desempata el texto (no los números). */
 function contextual(os: Option[], c: PickCtx): string {
   const k = kpis(c.s, c.t), line = rulesFor(c.s).passLine;
-  const js = os.map((o) => contextualJudgment(o, os, k, line));
+  const js = os.map((o) => judgedOf(o, os, k, line, c));
   let best = 0;
   const key = (i: number) => js[i].level * 100 + js[i].dims.prioriza * 10 + os[i].score;
   for (let i = 1; i < os.length; i++) if (key(i) > key(best)) best = i;
@@ -65,7 +70,7 @@ function contextual(os: Option[], c: PickCtx): string {
  */
 function judgedBalanced(os: Option[], c: PickCtx): string {
   const k0 = kpis(c.s, c.t), line = rulesFor(c.s).passLine;
-  const pool = os.filter((o) => contextualJudgment(o, os, k0, line).level >= 2);
+  const pool = os.filter((o) => judgedOf(o, os, k0, line, c).level >= 2);
   const focus = [...new Set<KpiKey>(["caja", ...(SEASON_OBJECTIVES[c.s.company]?.kpis ?? [])])];
   let pick = (pool[0] ?? os[0]).id, bv = -1e9;
   for (const o of pool.length ? pool : os) {
@@ -78,7 +83,7 @@ function judgedBalanced(os: Option[], c: PickCtx): string {
 /** Varios caminos: al azar entre las opciones con criterio contextual ≥ 2 (prueba que no hay una sola ruta). */
 function contextualMix(os: Option[], c: PickCtx): string {
   const k = kpis(c.s, c.t), line = rulesFor(c.s).passLine;
-  const pool = os.filter((o) => contextualJudgment(o, os, k, line).level >= 2);
+  const pool = os.filter((o) => judgedOf(o, os, k, line, c).level >= 2);
   const p = pool.length ? pool : os;
   return p[Math.floor(c.r() * p.length)].id;
 }
@@ -87,7 +92,7 @@ function contextualMix(os: Option[], c: PickCtx): string {
 /** Bien razonada (criterio contextual ≥ 2) y, entre esas, la que mejor cuida la caja; desempata el indicador más bajo. */
 function cashKeeper(os: Option[], c: PickCtx): string {
   const k0 = kpis(c.s, c.t), line = rulesFor(c.s).passLine;
-  const pool = os.filter((o) => contextualJudgment(o, os, k0, line).level >= 2);
+  const pool = os.filter((o) => judgedOf(o, os, k0, line, c).level >= 2);
   let pick = (pool[0] ?? os[0]).id, bv = -1e9;
   for (const o of pool.length ? pool : os) {
     const k = kpis(decide(c.s, c.itemId, o.id, c.t), c.t);
@@ -99,7 +104,7 @@ function cashKeeper(os: Option[], c: PickCtx): string {
 /** Bien razonada y, entre esas, la que mejor trata a la gente y a los clientes (estilo «personas primero»). */
 function peopleFirst(os: Option[], c: PickCtx): string {
   const k0 = kpis(c.s, c.t), line = rulesFor(c.s).passLine;
-  const pool = os.filter((o) => contextualJudgment(o, os, k0, line).level >= 2);
+  const pool = os.filter((o) => judgedOf(o, os, k0, line, c).level >= 2);
   return (pool.length ? pool : os).slice().sort((a, b) => ((b.effects.equipo ?? 0) + (b.effects.clientes ?? 0)) - ((a.effects.equipo ?? 0) + (a.effects.clientes ?? 0)) || b.score - a.score)[0].id;
 }
 /** Solo números, pero con cuidado: el mejor efecto neto entre las opciones que no dejan ningún indicador bajo la línea. */
@@ -129,7 +134,7 @@ function secondBest(os: Option[]): string {
  */
 function peopleWithFloor(os: Option[], c: PickCtx): string {
   const k0 = kpis(c.s, c.t), line = rulesFor(c.s).passLine;
-  const pool = os.filter((o) => contextualJudgment(o, os, k0, line).level >= 2);
+  const pool = os.filter((o) => judgedOf(o, os, k0, line, c).level >= 2);
   const focus = [...new Set<KpiKey>(["caja", ...(SEASON_OBJECTIVES[c.s.company]?.kpis ?? [])])];
   const sc = (pool.length ? pool : os).map((o) => {
     const k = kpis(decide(c.s, c.itemId, o.id, c.t), c.t);
@@ -256,7 +261,9 @@ export function playSeason(make: () => CeoState, name: string, seed: string): Se
   for (let i = 0; i < 800 && !casesDoneOf(s, t); i++) {
     const p = entries(s, t).find((e) => e.status === "pendiente");
     if (p) {
-      const o = st.pick(p.item.options, { s, t, itemId: p.item.id, r });
+      // Las estrategias ven el efecto esperado (lo inmediato más el acuerdo ponderado): lo mismo que dice el caso.
+      const os = p.item.options.map((x) => (x.pending ? { ...x, effects: expectedEffects(x), pending: undefined } : x));
+      const o = st.pick(os, { s, t, itemId: p.item.id, r });
       if (o) { s = decide(s, p.item.id, o, t); t += 60_000; continue; }
     }
     const ep = !silent && episodeEntries(s, t).find((e) => e.status === "pendiente");

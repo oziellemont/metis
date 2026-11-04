@@ -13,8 +13,7 @@
  * Solo mide el RESULTADO DEL NEGOCIO (eje B). El criterio (eje A) se reporta por separado (`judgment.ts`).
  * Para activarla haría falta una versión nueva de reglas (V5) con aprobación editorial; las publicadas no se tocan.
  */
-import { KPI_KEYS, KPI_LABEL, entries, healthOf, kpis, rulesFor, rulesVersionOf } from "./engine";
-import { isRedLine } from "./editorial";
+import { KPI_KEYS, KPI_LABEL, healthOf, kpis, redLineEntries, rulesFor } from "./engine";
 import { SEASON_OBJECTIVES } from "./shadow-verdict";
 import type { CeoState, KpiKey, Kpis } from "./types";
 
@@ -61,6 +60,6 @@ export function candidateVerdictOfKpis(k: Kpis, company: string, line: number, r
 }
 
 export function candidateVerdictOf(s: CeoState, now: number): CandidateVerdict {
-  const red = entries(s, now).filter((e) => e.status === "decidido" && e.decision && isRedLine(e.item.id, e.decision.option, rulesVersionOf(s))).map((e) => `${e.item.id}/${e.decision!.option}`);
+  const red = redLineEntries(s, now).map((e) => `${e.item.id}/${e.decision?.option ?? "__expired"}`);
   return candidateVerdictOfKpis(kpis(s, now), s.company, rulesFor(s).passLine, red);
 }
