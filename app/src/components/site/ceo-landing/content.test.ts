@@ -27,7 +27,7 @@ function shape(o: unknown): unknown {
 
 describe("landing de MÊTIS CEO · primer bloque", () => {
   it("el primer bloque dice qué es mêtis con la frase pedida y una sola h1", () => {
-    expect(C.HERO.title).toBe("Unos minutos al día. Lidera, decide y aprende.");
+    expect(C.HERO.title).toBe("Piensa y decide como CEO. Unos minutos al día.");
     expect(C.HERO.eyebrow).toBe("Simulador de dirección");
     expect(C.HERO.body).toBe("Vive los retos de un CEO: recibe mensajes de tu equipo, resuelve situaciones de negocio y aprende de sus consecuencias para desarrollar tu criterio como líder.");
     expect(EN.HERO.body).toBe("Live the challenges of running a company: get messages from your team, solve business situations and learn from their consequences to develop your judgment as a leader.");
@@ -233,7 +233,7 @@ describe("landing de MÊTIS CEO · inglés", () => {
     for (const f of ["Every decision shapes the leader you become.", "Think beyond the obvious.", "Leadership isn't a title. It's a practice.", "Tomorrow's leaders start deciding today.", "Before the title, build the judgment.", "Where leadership is practiced, not preached."]) expect(heads, f).toContain(f);
     // «The decisions are simulated. The learning is real.» espera evidencia antes de publicarse
     expect(enCopy()).not.toContain("the learning is real");
-    expect(EN.HERO.title).toBe("Your next challenge can arrive at any moment.");
+    expect(EN.HERO.title).toBe("Think and decide like a CEO. A few minutes a day.");
   });
 
   it("dice con claridad que el simulador está en español y conserva los mismos datos del caso", () => {

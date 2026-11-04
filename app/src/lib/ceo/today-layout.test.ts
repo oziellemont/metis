@@ -14,7 +14,7 @@ describe("Hoy · una sola experiencia", () => {
   });
   it("la franja de bienvenida resume el mandato (de la trayectoria) y deja la constancia aparte y secundaria", () => {
     expect(today).toContain('aria-label="Tu mandato"');
-    for (const x of ["c.trajectory", "t.appointment.title", "t.chapter.label", "t.moment.text", "headlineOf(t)", "/ceo/carrera", 'aria-label="Constancia"', "c.xp"]) expect(today).toContain(x);
+    for (const x of ["c.trajectory", "t.appointment.title", "t.chapter.label", "t.moment.text", "headlineOf(t)", "/ceo/carrera", 'aria-label="Constancia"', "c.xp", "c.streak.week.map", "d.on"]) expect(today).toContain(x);
     expect(today.indexOf("t.moment.text")).toBeLessThan(today.indexOf('aria-label="Constancia"'));
     for (const x of ["Executive Journey", "j.met", "j.total", "Siguiente nombramiento", "Stage {", "c.journey", "Emerging Leader"]) expect(today).not.toContain(x);
   });

@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useEffect, useMemo } from "react";
 import clsx from "clsx";
-import { ArrowRight, BookOpen, Briefcase, Clock, Coffee, FastForward, Flag, Hourglass, Trophy } from "lucide-react";
+import { ArrowRight, BookOpen, Check, Briefcase, Clock, Coffee, FastForward, Flag, Hourglass, Trophy } from "lucide-react";
 import { KPI_KEYS, closedRunsOf } from "@/lib/ceo/engine";
 import { CONTINUOUS_RULES_VERSION } from "@/lib/ceo/rules";
 import { ETHICS_AUDIT_RULES } from "@/lib/ceo/editorial";
@@ -101,9 +101,18 @@ export function Today() {
             <p className="mt-2 text-[13px] text-white/85 leading-snug">{t.moment.text}</p>
             {headline && <p className="mt-2 text-[12px] text-white/65 truncate"><span className="text-white/45">{headline.label}:</span> {headline.text}</p>}
             {/* Constancia: hábito, separado del mandato. No es requisito de nada. */}
-            <div className="mt-3 pt-2.5 border-t border-white/10 flex items-center justify-between gap-3 text-[11px] text-white/55" aria-label="Constancia">
-              <span className="flex items-center gap-1.5"><Flame on={c.streak.doneToday} size={13} white /> Racha {c.streak.days} {c.streak.days === 1 ? "día" : "días"}{!c.streak.doneToday && c.streak.atRisk ? " · decide o estudia hoy para conservarla" : ""}</span>
-              <span className="tabular-nums">{c.xp} XP</span>
+            <div className="mt-3 pt-3 border-t border-white/10" aria-label="Constancia">
+              <div className="flex items-center justify-between gap-2 sm:gap-3">
+                <div className="flex items-center gap-2 sm:gap-2.5">
+                  <span className={clsx("h-8 w-8 sm:h-9 sm:w-9 rounded-xl grid place-items-center shrink-0", c.streak.doneToday ? "bg-gradient-to-br from-amber to-coral" : "bg-white/10")}><Flame on={c.streak.doneToday} size={19} white /></span>
+                  <div><div className="text-[11px] text-white/55 leading-none">Racha</div><div className="mt-1 whitespace-nowrap text-[15px] font-semibold tabular-nums leading-none">{c.streak.days} {c.streak.days === 1 ? "día" : "días"}</div></div>
+                </div>
+                <div className="flex gap-[3px] sm:gap-1.5">
+                  {c.streak.week.map((d) => <span key={d.key} title={d.label} className={clsx("h-4 w-4 sm:h-5 sm:w-5 rounded-full grid place-items-center", d.on ? "bg-gradient-to-br from-amber to-coral text-white" : d.paused ? "border border-dashed border-white/30" : d.today ? "bg-white/20 ring-2 ring-white/40" : "bg-white/10")}>{d.on && <Check size={9} strokeWidth={3} />}<span className="sr-only">{d.label}{d.paused ? " en pausa" : ""}</span></span>)}
+                </div>
+                <div className="text-right"><div className="text-[11px] text-white/55 leading-none">XP</div><div className="mt-1 text-[15px] font-semibold tabular-nums leading-none">{c.xp}</div></div>
+              </div>
+              {!c.streak.doneToday && c.streak.atRisk && <div className="mt-2 text-[11px] text-white/55">Decide o estudia hoy para conservar tu racha.</div>}
             </div>
           </div>
         </div>

@@ -42,7 +42,7 @@ export const EN: Copy = {
   },
   HERO: {
     eyebrow: "Leadership simulator",
-    title: "Your next challenge can arrive at any moment.",
+    title: "Think and decide like a CEO. A few minutes a day.",
     body: "Live the challenges of running a company: get messages from your team, solve business situations and learn from their consequences to develop your judgment as a leader.",
     motto: "Every decision shapes the leader you become.",
     note: "No card required.",
