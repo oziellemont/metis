@@ -43,7 +43,7 @@ export function CeoSettings() {
         <h2 className="font-semibold text-ink">Tú</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="text-sm text-slate-600">Nombre<input className={input} value={f.name} onChange={(e) => set("name", e.target.value)} /></label>
-          <label className="text-sm text-slate-600">Cómo apareces en el ranking<input className={input} value={f.alias} onChange={(e) => set("alias", e.target.value)} maxLength={24} /></label>
+          <label className="text-sm text-slate-600">Cómo te llama tu equipo<input className={input} value={f.alias} onChange={(e) => set("alias", e.target.value)} maxLength={24} /></label>
         </div>
       </section>
 
@@ -84,7 +84,7 @@ export function CeoSettings() {
         </div>
         <label className="flex items-start gap-3 rounded-2xl bg-slate-50 p-4 text-sm">
           <input type="checkbox" checked={sound} onChange={(e) => toggleSound(e.target.checked)} className="accent-indigo h-4 w-4 mt-0.5" />
-          <span><b className="inline-flex items-center gap-1 text-ink"><Volume2 size={14} /> Sonido al lograr algo</b><br /><span className="text-slate-500">Un tono breve cuando recibes un nombramiento, apruebas una empresa, logras un cambio o terminas una lección. Se guarda en este dispositivo.</span></span>
+          <span><b className="inline-flex items-center gap-1 text-ink"><Volume2 size={14} /> Sonido al lograr algo</b><br /><span className="text-slate-500">Un tono breve cuando el consejo aprueba tu cierre, logras un cambio o terminas una lección. Se guarda en este dispositivo.</span></span>
         </label>
         {perm !== "granted" && typeof Notification !== "undefined" && (
           <button type="button" onClick={() => Notification.requestPermission().then(setPerm)} className="inline-flex items-center gap-2 text-sm text-indigo font-medium"><Bell size={15} /> Activar avisos en este navegador</button>

@@ -3,7 +3,7 @@ import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import * as C from "./content";
 import { BANNED_EN, EN } from "./content-en";
-import { STAGES } from "../../../lib/ceo/journey";
+import { COMPANY_STAGES } from "../../../lib/ceo/career/identity";
 import { COMPANIES } from "../../../lib/ceo/companies";
 import { avatarHex } from "../../../lib/ceo/cast";
 import { lessonById } from "../../../lib/ceo/lessons";
@@ -154,28 +154,26 @@ describe("landing de MÊTIS CEO · bloques", () => {
     expect(C.DIFF.carousel).not.toHaveProperty("pause");
   });
 
-  it("carrera: el texto también habla de aprender; seis etapas iguales a las del producto y Executive Arena aparte", () => {
+  it("carrera: empiezas como Director General; los seis capítulos son de la empresa, sin candados ni títulos corporativos", () => {
     expect(C.PATH.title).toBe("Una carrera que crece contigo.");
     expect(C.PATH.body).toMatch(/aprendizaje/);
     expect(C.PATH.body).toMatch(/mêtis Academy/);
-    expect(C.PATH.stages.map((s) => s.name)).toEqual(STAGES.map((s) => s.name));
-    expect(EN.PATH.stages.map((s) => s.name)).toEqual(STAGES.map((s) => s.name));
+    expect(C.PATH.body).toMatch(/Director General/);
+    expect(C.PATH.stages.map((s) => s.name)).toEqual(COMPANY_STAGES.map((s) => s.label));
+    expect(EN.PATH.stages).toHaveLength(COMPANY_STAGES.length);
     const st = C.PATH.stages.map((s) => s.state);
     expect(st[0]).toBe("inicio");
-    expect(st[1]).toBe("siguiente");
-    expect(st.slice(2).every((x) => x === "bloqueada")).toBe(true);
+    expect(st.slice(1).every((x) => x === "capitulo")).toBe(true);
     const sec = read("Sections.tsx");
     expect(sec).toContain('<span className="sr-only">{PATH.stateLabel[s.state]}</span>');
-    expect(sec).toContain("<ArenaLock t={t} />");
-    expect(C.PATH.beyond.t).toBe("The Executive Arena");
-    expect(C.PATH.beyond.d).toMatch(/^Después de Global CEO/);
-    const lock = read("ArenaLock.tsx");
-    expect(lock).not.toMatch(/<button|<a |<Link|onClick/);
+    expect(sec).not.toMatch(/<Lock\b|ArenaLock/);
+    const all = JSON.stringify([C.PATH, EN.PATH, C.PHILOSOPHY, EN.PHILOSOPHY, C.AVAILABILITY]);
+    expect(all).not.toMatch(/Emerging Leader|Functional Manager|Business Unit Director|Chief Operating Officer|Global CEO|Executive Arena|desbloque|unlock|nombramiento/i);
   });
 
   it("bloque oscuro: título y texto de Oziel, sin firma", () => {
     expect(C.PHILOSOPHY.title).toBe("¡Tu próxima gran decisión está por llegar!");
-    expect(C.PHILOSOPHY.body).toBe("Un correo inesperado, un WhatsApp urgente o una llamada de tu equipo. En MÊTIS cada día trae un nuevo reto. Decide, aprende de lo que sucede y desbloquea nuevas etapas en una simulación inmersiva que crece contigo.");
+    expect(C.PHILOSOPHY.body).toBe("Un correo inesperado, un WhatsApp urgente o una llamada de tu equipo. En MÊTIS cada día trae un nuevo reto. Decide, aprende de lo que sucede y acompaña a tu empresa en cada capítulo de una simulación inmersiva que crece contigo.");
     expect(C.PHILOSOPHY.who).toMatch(/^Para quienes aspiran a dirigir/);
     expect(EN.PHILOSOPHY.title).toBe("Your next big decision is on its way!");
     // ya no lleva firma

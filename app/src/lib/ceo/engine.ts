@@ -798,7 +798,7 @@ export function badgesOf(s: CeoState, now = nowOf(s)): Badge[] {
     { id: "gente", name: "Arquitecto social", text: "Llevaste el indicador de Equipo a 70 o más.", on: k.equipo >= 70 },
     { id: "caja", name: "Guardián de la caja", text: "Llevaste la Caja a 70 o más.", on: k.caja >= 70 },
     { id: "lector", name: "Teoría en mano", text: "Completaste 5 lecciones de mêtis Academy.", on: Object.keys(s.lessons).length >= 5 },
-    { id: "ascenso", name: "Ascenso", text: "Aprobaste tu primera empresa en todos los rubros.", on: passed.length >= 1 },
+    { id: "ascenso", name: "Primer cierre aprobado", text: "El consejo aprobó por primera vez tu cierre en todos los rubros.", on: passed.length >= 1 },
     { id: "multigiro", name: "Multigiro", text: "Aprobaste empresas de 3 industrias distintas.", on: industries.size >= 3 },
     { id: "impecable", name: "Impecable", text: "Cerraste una empresa con todos los rubros en 70 o más.", on: allGreen },
     { id: "legendario", name: "Legendario", text: "Aprobaste una empresa en modo Legendario.", on: (s.career ?? []).some((r) => r.passed && r.tier >= 2 && s.legendary) },

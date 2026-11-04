@@ -1,5 +1,6 @@
 /**
- * Junta ante el Consejo: requisito para el nombramiento de Chief Executive Officer.
+ * Junta ante el Consejo: sesión extraordinaria con el consejo de tu empresa. (Su acceso todavía se calcula con el
+ * antiguo s.journey; cambiarlo es parte de la fase de motor del rediseño de progresión, no de esta entrega.)
  *
  * Una sesión de consejo con tres momentos encadenados. Lo que decides en un momento cambia el
  * siguiente: si escondes un dato en el primero, la consejera lo encuentra en el segundo; si
@@ -54,7 +55,7 @@ export const STEPS: BoardStep[] = [
     id: "numeros",
     title: "Los números del trimestre",
     speaker: "chair",
-    prompt: "{chair} abre la sesión: «Antes de hablar de tu nombramiento, cuéntanos cómo cerró el trimestre». Dos rubros superaron el plan. Uno quedó 8 puntos abajo y todavía no tienes la causa completa.",
+    prompt: "{chair} abre la sesión: «Antes de hablar de tu continuidad, cuéntanos cómo cerró el trimestre». Dos rubros superaron el plan. Uno quedó 8 puntos abajo y todavía no tienes la causa completa.",
     options: [
       { id: "todo", label: "Presentar todo, empezando por el rubro que quedó abajo, con lo que sabes y lo que te falta saber.", reaction: "Silencio breve. {board} toma nota y asiente. Nadie te interrumpe.", effects: { rendicion: 25, criterio: 10 }, trust: 10 },
       { id: "anexo", label: "Abrir con los dos rubros buenos y dejar el que quedó abajo en el anexo.", reaction: "La presentación fluye. {board} pasa directo a las últimas páginas.", effects: { rendicion: -20, vision: 5 }, trust: -5 },

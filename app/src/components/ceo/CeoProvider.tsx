@@ -16,6 +16,7 @@ import type { Dilemma } from "@/lib/ceo/dilemmas";
 import { OFFERED_TIER, sanitizeDiagnostic, sanitizeProfile, snoozeNudge, type InitialDiagnostic, type ProfessionalProfile } from "@/lib/ceo/profile";
 import { recordCrisis as recordCrisisFn, type CrisisPicks } from "@/lib/ceo/crisis";
 import type { CrisisRating } from "@/lib/ceo/types";
+import { trajectoryOf, type Trajectory } from "@/lib/ceo/trajectory";
 import { appoint as appointFn, recordBoard as recordBoardFn, enrollJourney, journeyOf, STAGES, type JourneyView } from "@/lib/ceo/journey";
 import { masteryOf, type Mastery } from "@/lib/ceo/mastery";
 import { appEnvOf, testToolsVisible } from "@/lib/ceo/flags";
@@ -111,8 +112,10 @@ interface Ctx {
   answerDilemma: (id: string, option: number) => void;
   updateSettings: (p: Partial<Settings> & { name?: string; alias?: string }) => void;
   skipNext: () => void;
-  /** Executive Journey: etapa, siguiente nombramiento y requisitos. */
+  /** Antiguo Executive Journey (solo compatibilidad: ya no se muestra en ninguna pantalla). */
   journey: JourneyView;
+  /** Mandato y trayectoria de la empresa: la única fuente para Hoy, Carrera y Perfil (sin XP). */
+  trajectory: Trajectory;
   /** Mastery Engine: dominio de las 8 competencias. */
   mastery: Mastery;
   /** Recibe el nombramiento si ya cumples todo. Devuelve el nombre de la nueva etapa (o null). */
@@ -491,6 +494,7 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
   const closeChange = useCallback(() => play((p) => { const at = nowOf(p); return { n: closeChangeFn(p, at), a: { type: "changeClose", at } }; }), [play]);
   const mastery = useMemo(() => masteryOf(s, now), [s, now]);
   const journey = useMemo(() => journeyOf(s, now, mastery), [s, now, mastery]);
+  const trajectory = useMemo(() => trajectoryOf(s, now), [s, now]);
   const appoint = useCallback((): string | null => {
     const at = nowOf(s);
     const n = appointFn(s, at);
@@ -527,7 +531,7 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
   const value: Ctx = {
     ready, s, now, pack, rules: rulesFor(s), verdict, entries, inbox, pending, episodes, kpis: k, health: healthOf(k), xp, level: levelOf(xp), streak, day: seasonDay(s, now), seasonDone, nextArrival,
     relations, changeOpen: changeOpen(s, now), cases: casesProgress(s, now, entries), change, startChange, playLever, closeChange,
-    user, synced, toast, dismissToast: () => setToast(null), start, advance, reportDue, signReport, switchCompany, renameCompany, continuous: isContinuous(s), decide, markRead, completeLesson, dilemma, answerDilemma, updateSettings, skipNext, testTools, importFlow, reset, journey, mastery, appoint, recordBoard, recordCrisis, saveProfile, saveDiagnostic, snoozeProfile,
+    user, synced, toast, dismissToast: () => setToast(null), start, advance, reportDue, signReport, switchCompany, renameCompany, continuous: isContinuous(s), decide, markRead, completeLesson, dilemma, answerDilemma, updateSettings, skipNext, testTools, importFlow, reset, journey, trajectory, mastery, appoint, recordBoard, recordCrisis, saveProfile, saveDiagnostic, snoozeProfile,
     cadence: cadenceStatus(s, now), pauseCareer, resumeCareer, startQuietDay, returnDue: ready ? returnDueFn(s, now) : null, markReturnSeen, openEpisode, episodeAct, resetEpisode,
   };
   return <C.Provider value={value}>{children}</C.Provider>;

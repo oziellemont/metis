@@ -4,13 +4,12 @@
  */
 import type React from "react";
 import Link from "next/link";
-import { Check, ChevronDown, Lock } from "lucide-react";
+import { Check, ChevronDown, Info } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { CeoCta } from "@/components/site/CeoCta";
 import { CEO_CONTACT_EMAIL } from "@/lib/site";
 import { LOGIN_HREF, type Copy, type StageState } from "./content";
 import { MemoryCarousel } from "./Memory";
-import { ArenaLock } from "./ArenaLock";
 import { Stagger } from "./Stagger";
 
 const WRAP = "mx-auto max-w-7xl px-5 sm:px-6 lg:px-8";
@@ -68,10 +67,9 @@ export function MemorySection({ t }: { t: Copy }) {
 
 const NODE: Record<StageState, string> = {
   inicio: "bg-mint text-white ring-4 ring-mint/20",
-  siguiente: "bg-white text-indigo ring-2 ring-indigo",
-  bloqueada: "bg-white text-slate-400 ring-1 ring-slate-200",
+  capitulo: "bg-white text-indigo ring-2 ring-indigo/40",
 };
-/** Solo el punto de partida lleva etiqueta visible; el resto se entiende con el número y el candado. */
+/** Solo el punto de partida lleva etiqueta visible; los capítulos no llevan candado: no son rangos. */
 const START_BADGE = "bg-mint-soft text-sob";
 
 export function PathSection({ t }: { t: Copy }) {
@@ -88,11 +86,11 @@ export function PathSection({ t }: { t: Copy }) {
             {PATH.stages.map((s, i) => (
               <li key={s.name} style={{ "--i": i } as React.CSSProperties} className="ceo-step relative grid grid-cols-[40px_1fr] gap-4 pb-7 last:pb-0 lg:block lg:pb-0" aria-current={s.state === "inicio" ? "step" : undefined}>
                 <span className={"relative z-10 h-10 w-10 rounded-full grid place-items-center text-[13px] font-semibold tabular-nums " + NODE[s.state]}>
-                  {s.state === "inicio" ? <Check size={17} aria-hidden /> : s.state === "bloqueada" ? <Lock size={14} aria-hidden /> : s.n}
+                  {s.state === "inicio" ? <Check size={17} aria-hidden /> : s.n}
                 </span>
                 <div className="min-w-0 lg:mt-5">
                   <span className="text-[12px] font-semibold tabular-nums text-slate-500">{t.UI.stage} {s.n}</span>
-                  <h3 className={"mt-0.5 text-[16px] leading-snug font-semibold " + (s.state === "bloqueada" ? "text-ink/80" : "text-ink")}>{s.name}</h3>
+                  <h3 className="mt-0.5 text-[16px] leading-snug font-semibold text-ink">{s.name}</h3>
                   <p className="mt-2 text-[14px] text-ink">{s.learn}</p>
                   {s.state === "inicio" ? <span className={"chip mt-3 " + START_BADGE}>{PATH.stateLabel.inicio}</span> : <span className="sr-only">{PATH.stateLabel[s.state]}</span>}
                 </div>
@@ -100,7 +98,11 @@ export function PathSection({ t }: { t: Copy }) {
             ))}
           </Stagger>
         </div>
-        <ArenaLock t={t} />
+        <div data-testid="capitulos-nota" className="mt-10 mx-auto max-w-xl text-center">
+          <span aria-hidden className="mx-auto h-12 w-12 rounded-2xl bg-ink text-mint-light grid place-items-center"><Info size={22} /></span>
+          <h3 className="mt-4 text-xl font-semibold text-ink">{PATH.beyond.t}</h3>
+          <p className="mt-2 text-[15px] leading-relaxed text-slate-600">{PATH.beyond.d}</p>
+        </div>
       </div>
     </section>
   );

@@ -1,6 +1,6 @@
 "use client";
 /**
- * Junta ante el Consejo: requisito para el nombramiento de Chief Executive Officer.
+ * Junta ante el Consejo: sesión extraordinaria con el consejo de tu empresa (rendición de cuentas, criterio, gobierno, visión).
  * Tres momentos encadenados ante el presidente y la consejera independiente de la empresa actual.
  * La lógica vive en lib/ceo/board.ts; aquí solo se presenta y se guarda el resultado.
  */
@@ -11,7 +11,6 @@ import { ArrowRight, Check, Clock, Lock, X } from "lucide-react";
 import {
   CRITERIA, PASS_CRITERION, PASS_TRUST, STEPS, boardAccess, chainsAt, fill, scoreBoard, startTrust, type Picks,
 } from "@/lib/ceo/board";
-import { STAGES } from "@/lib/ceo/journey";
 import { personOf } from "@/lib/ceo/cast";
 import { celebrate } from "@/lib/ceo/celebrate";
 import { useCeo } from "./CeoProvider";
@@ -38,11 +37,10 @@ function useNames() {
 // ───────────────────────────────────────────── cerrada
 function Closed({ reason, untilTs }: { reason: "stage" | "passed" | "past" | "wait"; untilTs?: number }) {
   const c = useCeo();
-  const ceo = STAGES[4].name;
   const text = {
-    stage: `La junta es el último requisito para el nombramiento de ${ceo}. Se abre cuando llegues a ${STAGES[3].name}.`,
-    passed: "Ya superaste la Junta ante el Consejo. Queda registrada en tu carrera.",
-    past: `Ya tienes el nombramiento de ${ceo} o uno superior. No necesitas presentar la junta.`,
+    stage: "El consejo convoca esta sesión extraordinaria en momentos clave de la empresa. Hoy no hay una convocada: sigue dirigiendo.",
+    passed: "Ya superaste la Junta ante el Consejo. Queda registrada en la trayectoria de tu mandato.",
+    past: "Esta sesión ya no está convocada para tu empresa. Sigue dirigiendo.",
     wait: `El consejo vuelve a sesionar en ${untilTs ? until(untilTs, c.now) : "un día"}. Mientras, revisa qué criterio te faltó y sigue dirigiendo.`,
   }[reason];
   return (
@@ -50,9 +48,9 @@ function Closed({ reason, untilTs }: { reason: "stage" | "passed" | "past" | "wa
       <section className="card p-8 text-center">
         <span className="mx-auto h-14 w-14 rounded-2xl bg-indigo-soft text-indigo grid place-items-center">{reason === "passed" ? <Check size={24} /> : reason === "wait" ? <Clock size={24} /> : <Lock size={24} />}</span>
         <div className="mt-4 text-[11px] font-semibold uppercase tracking-wider text-indigo">Junta ante el Consejo</div>
-        <h1 className="mt-1 text-xl font-semibold text-ink">{reason === "passed" ? "Junta superada" : reason === "wait" ? "La siguiente sesión todavía no empieza" : "Todavía no te toca"}</h1>
+        <h1 className="mt-1 text-xl font-semibold text-ink">{reason === "passed" ? "Junta superada" : reason === "wait" ? "La siguiente sesión todavía no empieza" : "No hay sesión convocada"}</h1>
         <p className="mt-2 text-sm text-slate-500 leading-relaxed">{text}</p>
-        <Link href="/ceo/carrera" className="btn-primary mt-6 inline-flex">Ir a mi carrera <ArrowRight size={16} /></Link>
+        <Link href="/ceo/carrera" className="btn-primary mt-6 inline-flex">Ver mi trayectoria <ArrowRight size={16} /></Link>
       </section>
     </div>
   );
@@ -68,9 +66,9 @@ function Intro({ onStart }: { onStart: () => void }) {
       <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#141735] via-[#1E1A5E] to-[#2B1F8A] p-6 sm:p-8 text-white">
         <div aria-hidden className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-indigo-light/30 blur-3xl" />
         <div className="relative">
-          <div className="text-[11px] font-semibold uppercase tracking-wider text-white/60">Requisito para {STAGES[4].name}</div>
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-white/60">Sesión extraordinaria</div>
           <h1 className="mt-2 text-2xl sm:text-3xl font-semibold leading-tight">Junta ante el Consejo</h1>
-          <p className="mt-3 text-white/80 leading-relaxed max-w-2xl">Antes de confirmarte en la Dirección General, el consejo de {c.pack.name} quiere verte en la sala. Tres momentos, uno detrás de otro. Lo que digas en uno se queda en el acta y pesa en el siguiente.</p>
+          <p className="mt-3 text-white/80 leading-relaxed max-w-2xl">El consejo de {c.pack.name} quiere revisar tu gestión contigo, en la sala. Tres momentos, uno detrás de otro. Lo que digas en uno se queda en el acta y pesa en el siguiente.</p>
           <div className="mt-5 grid grid-cols-3 gap-3 max-w-lg">
             <Stat k="Momentos" v={String(STEPS.length)} />
             <Stat k="Duración" v="10 min" />
@@ -188,7 +186,7 @@ function Result({ result, t0, picks }: { result: ReturnType<typeof scoreBoard>; 
     <div>
       <StepTitle eyebrow="Veredicto del consejo" title={result.passed ? "Superaste la Junta ante el Consejo." : "El consejo todavía no te da su voto."}
         text={result.passed
-          ? `${chair.name} cierra la sesión: «Queda en el acta. Si cumples lo demás, el nombramiento es tuyo». El requisito ya aparece cumplido en tu carrera.`
+          ? `${chair.name} cierra la sesión: «Queda en el acta. Seguimos contando contigo al frente». La junta ya aparece en la trayectoria de tu mandato.`
           : trustLow
             ? `${chair.name} agradece tu tiempo y pide volver a verte en la siguiente sesión. La confianza quedó en ${result.trust}; necesitabas ${PASS_TRUST}.`
             : `La sala confía en ti, pero ${weak.name.toLowerCase()} quedó debajo de ${PASS_CRITERION}. El consejo no vota con promedios: revisa cada criterio.`} />

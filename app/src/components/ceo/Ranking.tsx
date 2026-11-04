@@ -45,7 +45,7 @@ export function Ranking() {
     });
   }, []);
 
-  const me: Row = { alias: c.s.alias || c.s.name || "Tú", xp: c.xp, level: c.journey.name, streak: c.streak.days, health: c.health, me: true };
+  const me: Row = { alias: c.s.alias || c.s.name || "Tú", xp: c.xp, level: c.trajectory.chapter.label, streak: c.streak.days, health: c.health, me: true };
   const days = c.s.startedAt ? (c.now - c.s.startedAt) / DAY : 0;
   const rows = useMemo(() => {
     const base = real ? real.filter((r) => r.alias !== me.alias) : bots(c.s.alias || "x", days);
