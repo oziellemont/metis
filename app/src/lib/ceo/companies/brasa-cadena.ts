@@ -31,7 +31,7 @@ export const CADENA_BRASA: Item[] = [
         ["Andrés: con un proveedor nuevo sin probar", "En 1 de cada 2 casos la calidad varía lo suficiente para notarse en las reseñas"],
         ["Proveedor actual", "11 años · cero faltantes de fin de semana"],
       ],
-      note: "Estimación de Fer y del chef con la muestra; no hay historial en temporada alta.",
+      note: "Estimación de Fer y del chef con la muestra; no hay historial en temporada alta. Cifras ficticias de este caso, no estadísticas reales.",
     },
     ask: "¿Cambias de proveedor de res?",
     options: [

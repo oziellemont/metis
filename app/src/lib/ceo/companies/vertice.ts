@@ -96,7 +96,7 @@ const ITEMS: Item[] = [
       "Un operador que maneja seguro en carretera y cuida la unidad tarda un año en formarse. Hoy tenemos 35 camiones parados por falta de operador y los clientes lo notan. Te pongo tres caminos con números.",
       "Rocío",
     ],
-    data: { title: "Opciones (Rocío y Patricio)", rows: [["Bono de permanencia por 12 meses (250 operadores con experiencia)", "$16 M"], ["Escuela de operadores con licencia federal y plan de carrera", "$7 M · primera generación en 6 meses"], ["Subcontratar transportistas independientes", "$12 M al año · menos control"], ["Rotación de operadores", "55% anual"]] },
+    data: { title: "Opciones (Rocío y Patricio)", rows: [["Bono de permanencia por 12 meses (250 operadores con experiencia)", "$16 M"], ["Escuela de operadores con licencia federal y plan de carrera", "$7 M · primer grupo intensivo en pocas semanas; generación completa en 6 meses"], ["Subcontratar transportistas independientes", "$12 M al año · menos control"], ["Rotación de operadores", "55% anual"]] },
     ask: "¿Qué camino tomas?",
     involves: ["antonio", "pepe", "patricio", "elena"],
     options: [
@@ -342,14 +342,14 @@ const ITEMS: Item[] = [
   },
   {
     id: "vl-c-escuela", day: 6, slot: 3, channel: "whatsapp", from: "rocio",
-    subject: "Rocío Guajardo", preview: "¡Primera generación de la escuela de operadores! 30 con licencia. Pregunta rápida…",
+    subject: "Rocío Guajardo", preview: "¡Primer grupo intensivo de la escuela de operadores! 30 con licencia. Pregunta rápida…",
     trigger: { item: "vl-d2-operadores", options: ["b"] },
     body: [
-      "¡Director! Primera generación de la escuela de operadores: 30 personas con licencia federal.",
+      "¡Director! Primer grupo intensivo de la escuela de operadores: 30 personas con licencia federal.",
       "Antonio quiere mandarlas ya solas a carretera porque tiene camiones parados. Los operadores con experiencia piden 3 meses más con ellas de copiloto en rutas largas.",
       "¿Qué hacemos?",
     ],
-    ask: "¿Cómo integras a la primera generación?",
+    ask: "¿Cómo integras al primer grupo?",
     involves: ["antonio", "patricio", "lalo"],
     options: [
       { id: "a", stance: { rocio: 1, antonio: 1, patricio: -1 }, text: "Acompañadas 3 meses: cada operador nuevo en pareja con uno experto y un bono para los instructores.", reply: ["Me encanta lo del bono para los instructores. Ellos también van a querer que funcione"], outcome: "La primera generación se forma bien y los expertos se vuelven maestros. Antonio tiene que aguantar 3 meses más.", effects: { equipo: 4, caja: -1, clientes: -1 }, style: { horizonte: 2, foco: 2 }, score: 3 },

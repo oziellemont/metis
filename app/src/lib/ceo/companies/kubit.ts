@@ -89,7 +89,7 @@ const ITEMS: Item[] = [
       "Que un ingeniero conozca bien nuestro producto toma de 6 a 9 meses. Hoy cubrimos con horas extra y la gente está cansada. Te pongo tres caminos con números.",
       "Carmen",
     ],
-    data: { title: "Opciones (Carmen y Andrea)", rows: [["Bono de retención por 12 meses (40 ingenieros clave)", "$6 M"], ["Academia interna con la universidad (ingenieros junior)", "$2.5 M · primera generación en 6 meses"], ["Subcontratar un equipo en el extranjero", "$5 M al año · menos control"], ["Rotación de ingeniería", "31% anual"]] },
+    data: { title: "Opciones (Carmen y Andrea)", rows: [["Bono de retención por 12 meses (40 ingenieros clave)", "$6 M"], ["Academia interna con la universidad (ingenieros junior)", "$2.5 M · primer grupo intensivo en pocas semanas; generación completa en 6 meses"], ["Subcontratar un equipo en el extranjero", "$5 M al año · menos control"], ["Rotación de ingeniería", "31% anual"]] },
     ask: "¿Qué camino tomas?",
     involves: ["emilio", "joel", "andrea", "valeria"],
     options: [
@@ -335,14 +335,14 @@ const ITEMS: Item[] = [
   },
   {
     id: "kb-c-academia", day: 6, slot: 3, channel: "whatsapp", from: "carmen",
-    subject: "Carmen Olvera", preview: "¡Primera generación de la academia! 12 ingenieros junior. Pregunta rápida…",
+    subject: "Carmen Olvera", preview: "¡Primer grupo intensivo de la academia! 12 ingenieros junior. Pregunta rápida…",
     trigger: { item: "kb-d2-fuga", options: ["b"] },
     body: [
-      "¡Director! Primera generación de la academia: 12 ingenieros junior listos.",
+      "¡Director! Primer grupo intensivo de la academia: 12 ingenieros junior listos.",
       "Emilio quiere meterlos ya a la entrega del trimestre porque le faltan manos. Los mentores piden 3 meses más trabajando en pareja con un senior.",
       "¿Qué hacemos?",
     ],
-    ask: "¿Cómo integras a la primera generación?",
+    ask: "¿Cómo integras al primer grupo?",
     involves: ["emilio", "andrea", "memo"],
     options: [
       { id: "a", stance: { carmen: 1, emilio: 1, andrea: -1 }, text: "Acompañados 3 meses: cada junior en pareja con un senior, y un bono para los mentores que lo hagan bien.", reply: ["Me encanta lo del bono para los mentores. Ellos también van a querer que funcione"], outcome: "La primera generación se forma bien y los senior se vuelven maestros. Emilio tiene que aguantar 3 meses más.", effects: { equipo: 4, caja: -1, clientes: -1 }, style: { horizonte: 2, foco: 2 }, score: 3 },

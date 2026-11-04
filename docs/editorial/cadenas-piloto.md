@@ -54,7 +54,7 @@ Validación automática por cadena (`cadenas.test.ts`): versión, causalidad (na
 
 **Contexto**
 
-> Director, buenas noticias de la línea 3: en tres semanas bajamos de 41 a 31 días de inventario sin un solo faltante.
+> Director, buenas noticias de la línea 3: desde que lo arrancamos bajamos de 41 a 31 días de inventario sin un solo faltante.
 > Encontramos $12 M en piezas de un modelo que Aurora ya no pide. Y la gente propone hacerlo en las otras cuatro líneas.
 > Nomás una cosa: el bono de Ramón y de los supervisores se paga por piezas producidas, no por inventario. Así nadie va a querer producir menos.
 
@@ -106,7 +106,7 @@ Validación automática por cadena (`cadenas.test.ts`): versión, causalidad (na
 | Faltante | 1 pieza crítica · 2 turnos de producción |
 | Flete aéreo urgente de la materia prima | $3.5 M · llega mañana |
 | Cargo de Aurora por paro de línea | Hasta $2 M por hora |
-| Compras congeladas desde hace | 2 semanas |
+| Compras congeladas | Desde tu decisión de bajar inventario |
 
 **Pregunta:** Aurora puede quedarse sin piezas. ¿Qué haces?
 
@@ -149,7 +149,7 @@ Purchasing Manager · Aurora Motors México
 | Factoraje vigente | $40 M adelantados · 1.1 % mensual |
 | Lo que pide Aurora | Estados financieros y explicación de liquidez |
 | Plataforma 2028 | Evaluación de proveedores en 3 semanas |
-| Inventario | Sigue en 39 días |
+| Inventario | Sin cambio: el factoraje no lo tocó |
 
 **Pregunta:** Aurora pregunta por tu liquidez. ¿Qué le respondes?
 
@@ -385,7 +385,7 @@ Purchasing Manager · Aurora Motors México
 
 **Contexto**
 
-> Director, en tres semanas ya bajamos 18 % la factura sin una sola caída.
+> Director, con lo primero que apagamos ya bajamos 18 % la factura sin una sola caída.
 > Y encontramos algo: los reportes a la medida de Grupo Altamar consumen la tercera parte de toda la infraestructura. Corren cada hora, aunque ellos los ven una vez al día.
 > Altamar paga lo mismo que cualquier cliente de su tamaño. Bruno dice que no le toquemos nada antes de la renovación.
 
@@ -551,7 +551,7 @@ Purchasing Manager · Aurora Motors México
 
 **Contexto**
 
-> La rebaja escalonada va mejor de lo esperado: en tres semanas recuperamos el 62 % del costo y las tiendas casi no tocaron el 30 %.
+> La rebaja escalonada va mejor de lo esperado: con la primera etapa recuperamos el 62 % del costo y las tiendas casi no tocaron el 30 %.
 > Pero al cruzar los datos vimos por qué sobró tanto: los compradores pidieron igual para las 60 tiendas, con base en la temporada pasada. Las tiendas de la sierra vendieron la mitad que las de la ciudad.
 > Chuy y Beto dicen que los gerentes sabían qué se iba a vender en su tienda, pero nadie les preguntó.
 
@@ -559,7 +559,7 @@ Purchasing Manager · Aurora Motors México
 
 | Dato | Valor |
 |---|---|
-| Recuperado en tres semanas | 62 % del costo |
+| Recuperado en la primera etapa | 62 % del costo |
 | Compra por tienda | Igual para las 60 |
 | Venta de tiendas de la sierra vs. ciudad | ≈ 50 % |
 | Pedido de la próxima temporada | Se cierra en 5 semanas |
@@ -643,7 +643,7 @@ Purchasing Manager · Aurora Motors México
 |---|---|
 | Mercancía guardada | $38 M a costo |
 | Valor estimado hoy | ≈ $23 M |
-| Bodega pagada | $2.4 M en cuatro meses |
+| Bodega | $600 mil al mes mientras siga guardada |
 | Venderla a un mayorista | $21 M · en una semana |
 
 **Pregunta:** Lo guardado vale menos. ¿Qué haces?
@@ -808,7 +808,7 @@ Director de Logística · Supermercados Almena
 
 | Dato | Valor |
 |---|---|
-| Consumo de la flota | −5 % en seis semanas |
+| Consumo de la flota | −5 % desde que se instaló la telemetría |
 | Ranking por operador | Público, con nombres, sin ajustar por ruta |
 | Operadores de la ruta sierra | Todos en el último lugar |
 | Rotación de operadores | 38 % anual |

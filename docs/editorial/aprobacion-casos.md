@@ -288,7 +288,7 @@ Respuesta: `d6-clima | ... | ...`
 
 Respuesta: `c-ana-renuncia | ... | ...`
 
-### c-piloto · Día 7 · consecuencia · Resultados del piloto · Cumbre Selección (8 semanas)
+### c-piloto · Día 7 · consecuencia · Primeros resultados del piloto · Cumbre Selección
 
 **Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
 
@@ -381,7 +381,7 @@ Respuesta: `c-mant-rendimiento | ... | ...`
 
 **Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
 
-**Caso:** Director: En las últimas tres semanas su nivel de servicio bajó a 86 % y en 12 tiendas encontramos empaques mal sellados en anaquel. Tuvimos que retirarlos. Nuestra política es clara: penalización de 3 % sobre lo facturado del periodo y revisión del espacio en anaquel para el siguiente trimestre. Necesito saber hoy qué va a hacer para que no vuelva a pasar. Sofía Leal
+**Caso:** Director: Desde la falla de la envasadora su nivel de servicio bajó a 86 % y en 12 tiendas encontramos empaques mal sellados en anaquel. Tuvimos que retirarlos. Nuestra política es clara: penalización de 3 % sobre lo facturado del periodo y revisión del espacio en anaquel para el siguiente trimestre. Necesito saber hoy qué va a hacer para que no vuelva a pasar. Sofía Leal
 
 **Pregunta:** SuperNorte reclama. ¿Qué le respondes?
 
@@ -411,11 +411,11 @@ Respuesta: `c-mant-inversion | ... | ...`
 
 **Propuesta automática:** etica. Obligación ética o de seguridad. Es válido que tenga una respuesta clara; la opción que cruza la línea roja debe mostrarse como consecuencia, no como alternativa.
 
-**Caso:** Jefe, las mordazas nuevas jalan perfecto: no se nos ha vuelto a parar la línea. Pero salió otra cosa. El dosificador, que no tocamos, está llenando disparejo. En la auditoría de hoy, 1 de cada 20 empaques traía menos contenido del que dice la etiqueta. Ya separé el lote. Lo que no sé es cuánto salió así en las últimas dos semanas.
+**Caso:** Jefe, las mordazas nuevas jalan perfecto: no se nos ha vuelto a parar la línea. Pero salió otra cosa. El dosificador, que no tocamos, está llenando disparejo. En la auditoría de hoy, 1 de cada 20 empaques traía menos contenido del que dice la etiqueta. Ya separé el lote. Lo que no sé es cuánto salió así desde que cambiamos las mordazas.
 
 **Pregunta:** ¿Qué haces con lo que ya salió?
 
-- **A** (score 3, balance 0): Calibrar hoy, avisarle a SuperNorte qué lotes pueden venir bajos y reponerles sin costo lo enviado en esas dos semanas. → Caja -3, Clientes +2, Consejo +1.
+- **A** (score 3, balance 0): Calibrar hoy, avisarle a SuperNorte qué lotes pueden venir bajos y reponerles sin costo todo lo enviado desde el cambio de mordazas. → Caja -3, Clientes +2, Consejo +1.
 - **B** (score 1, balance -2): Calibrar hoy, reforzar el muestreo y no decirle nada a SuperNorte de lo que ya salió: el promedio queda dentro de tolerancia y nadie se ha quejado. → Caja +1, Equipo -1, Clientes -2. Línea roja: Saber que se envió producto con menos contenido del etiquetado y no avisar al cliente ni reponer.
 - **C** (score 2, balance -1): Calibrar hoy, avisarle ya a SuperNorte que esos lotes están en revisión y que Calidad mida una muestra grande; en 48 horas le digo cuánto se repone. → Caja -1, Equipo +1, Clientes -1.
 - **Sin respuesta** (balance -3): Equipo -1, Clientes -2.
@@ -636,9 +636,9 @@ Respuesta: `fn-d6-denuncia | ... | ...`
 
 **Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
 
-**Caso:** ¡Director! Primera generación de la escuela de soldadura: 14 aprendices certificados. Ramón quiere meterlos ya a las celdas críticas porque le faltan manos. Los instructores piden 3 meses más acompañados por un soldador senior. ¿Qué hacemos?
+**Caso:** ¡Director! Primer grupo intensivo de la escuela de soldadura: 14 aprendices certificados. Ramón quiere meterlos ya a las celdas críticas porque le faltan manos. Los instructores piden 3 meses más acompañados por un soldador senior. ¿Qué hacemos?
 
-**Pregunta:** ¿Cómo integras a la primera generación?
+**Pregunta:** ¿Cómo integras al primer grupo?
 
 - **A** (score 3, balance +2): Acompañados 3 meses: cada aprendiz junto a un soldador senior en su celda, y un bono para los mentores que lo hagan bien. → Caja -1, Equipo +4, Clientes -1.
 - **B** (score 1, balance -1): Directo a las celdas críticas. Ya están certificados, la planta los necesita hoy y aprenden más haciendo que mirando. → Margen -1, Equipo -2, Clientes +2.
@@ -695,7 +695,7 @@ Respuesta: `fn-d2-inventario | ... | ...`
 
 **Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
 
-**Caso:** Director, buenas noticias de la línea 3: en tres semanas bajamos de 41 a 31 días de inventario sin un solo faltante. Encontramos $12 M en piezas de un modelo que Aurora ya no pide. Y la gente propone hacerlo en las otras cuatro líneas. Nomás una cosa: el bono de Ramón y de los supervisores se paga por piezas producidas, no por inventario. Así nadie va a querer producir menos.
+**Caso:** Director, buenas noticias de la línea 3: desde que lo arrancamos bajamos de 41 a 31 días de inventario sin un solo faltante. Encontramos $12 M en piezas de un modelo que Aurora ya no pide. Y la gente propone hacerlo en las otras cuatro líneas. Nomás una cosa: el bono de Ramón y de los supervisores se paga por piezas producidas, no por inventario. Así nadie va a querer producir menos.
 
 **Pregunta:** ¿Cómo sigues?
 
@@ -905,7 +905,7 @@ Respuesta: `gb-d5-cdmx | ... | ...`
 
 **Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
 
-**Caso:** Director: La primera franquicia (León) abrió hace 3 semanas y ya tiene una calificación de 3.1 en reseñas. Usan otro proveedor de carne y porciones más chicas para cuidar su margen. Hay comentarios que dicen «Brasa ya no es lo que era». Lo están leyendo en Guadalajara también. Sara Ibarra Directora de Marketing
+**Caso:** Director: La primera franquicia (León) acaba de abrir y ya tiene una calificación de 3.1 en reseñas. Usan otro proveedor de carne y porciones más chicas para cuidar su margen. Hay comentarios que dicen «Brasa ya no es lo que era». Lo están leyendo en Guadalajara también. Sara Ibarra Directora de Marketing
 
 **Pregunta:** ¿Qué haces con el franquiciatario?
 
@@ -1234,9 +1234,9 @@ Respuesta: `kb-d6-denuncia | ... | ...`
 
 **Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
 
-**Caso:** ¡Director! Primera generación de la academia: 12 ingenieros junior listos. Emilio quiere meterlos ya a la entrega del trimestre porque le faltan manos. Los mentores piden 3 meses más trabajando en pareja con un senior. ¿Qué hacemos?
+**Caso:** ¡Director! Primer grupo intensivo de la academia: 12 ingenieros junior listos. Emilio quiere meterlos ya a la entrega del trimestre porque le faltan manos. Los mentores piden 3 meses más trabajando en pareja con un senior. ¿Qué hacemos?
 
-**Pregunta:** ¿Cómo integras a la primera generación?
+**Pregunta:** ¿Cómo integras al primer grupo?
 
 - **A** (score 3, balance +2): Acompañados 3 meses: cada junior en pareja con un senior, y un bono para los mentores que lo hagan bien. → Caja -1, Equipo +4, Clientes -1.
 - **B** (score 1, balance -1): Directo a la entrega del trimestre. Ya terminaron la academia y el equipo los necesita hoy. → Margen -1, Equipo -2, Clientes +2.
@@ -1293,7 +1293,7 @@ Respuesta: `kb-d2-nube | ... | ...`
 
 **Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
 
-**Caso:** Director, en tres semanas ya bajamos 18 % la factura sin una sola caída. Y encontramos algo: los reportes a la medida de Grupo Altamar consumen la tercera parte de toda la infraestructura. Corren cada hora, aunque ellos los ven una vez al día. Altamar paga lo mismo que cualquier cliente de su tamaño. Bruno dice que no le toquemos nada antes de la renovación.
+**Caso:** Director, con lo primero que apagamos ya bajamos 18 % la factura sin una sola caída. Y encontramos algo: los reportes a la medida de Grupo Altamar consumen la tercera parte de toda la infraestructura. Corren cada hora, aunque ellos los ven una vez al día. Altamar paga lo mismo que cualquier cliente de su tamaño. Bruno dice que no le toquemos nada antes de la renovación.
 
 **Pregunta:** ¿Qué haces con el consumo de Altamar?
 
@@ -1548,9 +1548,9 @@ Respuesta: `pm-d6-denuncia | ... | ...`
 
 **Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
 
-**Caso:** ¡Director! Primera generación de la escuela de asesores: 30 personas listas. Octavio quiere mandarlas ya solas a piso porque le faltan manos para la temporada. Los asesores expertos piden 3 meses más trabajando en pareja con ellas. ¿Qué hacemos?
+**Caso:** ¡Director! Primer grupo intensivo de la escuela de asesores: 30 personas listas. Octavio quiere mandarlas ya solas a piso porque le faltan manos para la temporada. Los asesores expertos piden 3 meses más trabajando en pareja con ellas. ¿Qué hacemos?
 
-**Pregunta:** ¿Cómo integras a la primera generación?
+**Pregunta:** ¿Cómo integras al primer grupo?
 
 - **A** (score 3, balance +2): Acompañadas 3 meses: cada asesor nuevo en pareja con un experto y un bono para los mentores. → Caja -1, Equipo +4, Clientes -1.
 - **B** (score 1, balance -1): Directo a piso. Ya terminaron la escuela, las tiendas los necesitan hoy y aprenden más atendiendo que mirando. → Margen -1, Equipo -2, Clientes +2.
@@ -1607,7 +1607,7 @@ Respuesta: `pm-d2-temporada | ... | ...`
 
 **Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
 
-**Caso:** La rebaja escalonada va mejor de lo esperado: en tres semanas recuperamos el 62 % del costo y las tiendas casi no tocaron el 30 %. Pero al cruzar los datos vimos por qué sobró tanto: los compradores pidieron igual para las 60 tiendas, con base en la temporada pasada. Las tiendas de la sierra vendieron la mitad que las de la ciudad. Chuy y Beto dicen que los gerentes sabían qué se iba a vender en su tienda, pero nadie les preguntó.
+**Caso:** La rebaja escalonada va mejor de lo esperado: con la primera etapa recuperamos el 62 % del costo y las tiendas casi no tocaron el 30 %. Pero al cruzar los datos vimos por qué sobró tanto: los compradores pidieron igual para las 60 tiendas, con base en la temporada pasada. Las tiendas de la sierra vendieron la mitad que las de la ciudad. Chuy y Beto dicen que los gerentes sabían qué se iba a vender en su tienda, pero nadie les preguntó.
 
 **Pregunta:** ¿Cómo compras la próxima temporada?
 
@@ -1862,9 +1862,9 @@ Respuesta: `vl-d6-denuncia | ... | ...`
 
 **Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
 
-**Caso:** ¡Director! Primera generación de la escuela de operadores: 30 personas con licencia federal. Antonio quiere mandarlas ya solas a carretera porque tiene camiones parados. Los operadores con experiencia piden 3 meses más con ellas de copiloto en rutas largas. ¿Qué hacemos?
+**Caso:** ¡Director! Primer grupo intensivo de la escuela de operadores: 30 personas con licencia federal. Antonio quiere mandarlas ya solas a carretera porque tiene camiones parados. Los operadores con experiencia piden 3 meses más con ellas de copiloto en rutas largas. ¿Qué hacemos?
 
-**Pregunta:** ¿Cómo integras a la primera generación?
+**Pregunta:** ¿Cómo integras al primer grupo?
 
 - **A** (score 3, balance +2): Acompañadas 3 meses: cada operador nuevo en pareja con uno experto y un bono para los instructores. → Caja -1, Equipo +4, Clientes -1.
 - **B** (score 1, balance -1): Directo a carretera. Ya tienen licencia, los camiones parados no ganan y aprenden más manejando que mirando. → Margen -1, Equipo -2, Clientes +2.

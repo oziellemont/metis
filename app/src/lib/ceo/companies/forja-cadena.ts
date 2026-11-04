@@ -33,7 +33,7 @@ export const CADENA_FORJA: Item[] = [
         ["Ramón: si se congelan compras de golpe", "En 4 o 5 de cada 10 meses Aurora mueve su programa lo suficiente para dejarnos cortos"],
         ["Cargo de Aurora por paro de línea", "Hasta $2 M por hora"],
       ],
-      note: "Estimaciones de Marcos y de Ramón con el cierre del mes.",
+      note: "Estimaciones de Marcos y de Ramón con el cierre del mes. Cifras ficticias de este caso, no estadísticas reales.",
     },
     ask: "¿Cómo liberas la caja atrapada en inventario?",
     options: [
@@ -54,7 +54,7 @@ export const CADENA_FORJA: Item[] = [
     trigger: { item: "fn-d2-inventario", options: ["a"] },
     subject: "Chuy Morales", preview: "Director, en la línea 3 bajamos de 41 a 31 días sin un solo faltante…",
     body: [
-      "Director, buenas noticias de la línea 3: en tres semanas bajamos de 41 a 31 días de inventario sin un solo faltante.",
+      "Director, buenas noticias de la línea 3: desde que lo arrancamos bajamos de 41 a 31 días de inventario sin un solo faltante.",
       "Encontramos $12 M en piezas de un modelo que Aurora ya no pide. Y la gente propone hacerlo en las otras cuatro líneas.",
       "Nomás una cosa: el bono de Ramón y de los supervisores se paga por piezas producidas, no por inventario. Así nadie va a querer producir menos.",
     ],
@@ -82,7 +82,7 @@ export const CADENA_FORJA: Item[] = [
       "«Director, Aurora adelantó dos días el programa de la SUV y nos falta materia prima para una pieza crítica. El proveedor la puede traer, pero no antes del jueves. Si no surtimos el miércoles, les paramos la línea.»",
       "«Necesito que usted decida ya.»",
     ],
-    data: { title: "Lo que sabes", rows: [["Faltante", "1 pieza crítica · 2 turnos de producción"], ["Flete aéreo urgente de la materia prima", "$3.5 M · llega mañana"], ["Cargo de Aurora por paro de línea", "Hasta $2 M por hora"], ["Compras congeladas desde hace", "2 semanas"]] },
+    data: { title: "Lo que sabes", rows: [["Faltante", "1 pieza crítica · 2 turnos de producción"], ["Flete aéreo urgente de la materia prima", "$3.5 M · llega mañana"], ["Cargo de Aurora por paro de línea", "Hasta $2 M por hora"], ["Compras congeladas", "Desde tu decisión de bajar inventario"]] },
     ask: "Aurora puede quedarse sin piezas. ¿Qué haces?",
     options: [
       { id: "a", stance: { ramon: 2, greg: 1, marcos: -1 }, text: "Pagar el flete aéreo, descongelar las compras críticas y llamarle yo a Greg hoy para avisarle del riesgo.", reply: ["Gracias, Director. Con eso llegamos.", "(Greg) Appreciate the heads-up. Mándeme el plan por escrito."], outcome: "Pagas caro el flete y pierdes parte de la caja que habías liberado. Aurora no para y se entera por ti.", effects: { caja: -3, clientes: 1, equipo: 1 }, style: { horizonte: 1, conflicto: 1 }, score: 3 },
@@ -107,7 +107,7 @@ export const CADENA_FORJA: Item[] = [
       "Para la evaluación de proveedores de la plataforma 2028 necesitamos sus estados financieros del trimestre y una explicación de su situación de liquidez antes del viernes.",
       "Greg Holloway\nPurchasing Manager · Aurora Motors México",
     ],
-    data: { title: "Lo que sabes", rows: [["Factoraje vigente", "$40 M adelantados · 1.1 % mensual"], ["Lo que pide Aurora", "Estados financieros y explicación de liquidez"], ["Plataforma 2028", "Evaluación de proveedores en 3 semanas"], ["Inventario", "Sigue en 39 días"]] },
+    data: { title: "Lo que sabes", rows: [["Factoraje vigente", "$40 M adelantados · 1.1 % mensual"], ["Lo que pide Aurora", "Estados financieros y explicación de liquidez"], ["Plataforma 2028", "Evaluación de proveedores en 3 semanas"], ["Inventario", "Sin cambio: el factoraje no lo tocó"]] },
     ask: "Aurora pregunta por tu liquidez. ¿Qué le respondes?",
     options: [
       { id: "a", stance: { greg: 1, daniela: 1, marcos: -1 }, text: "Mandar los estados financieros y explicar que el factoraje es temporal mientras bajamos inventario.", reply: ["Thank you. Eso es lo que necesitaba ver.", "(Marcos) Les estamos enseñando todo, Director. Espero que sirva."], outcome: "Expones tus números a tu cliente más grande. Aurora entiende la situación, aunque te anota como proveedor a vigilar.", effects: { clientes: 1, consejo: 1, caja: -1, margen: -1 }, style: { conflicto: 1, horizonte: 1 }, score: 3 },

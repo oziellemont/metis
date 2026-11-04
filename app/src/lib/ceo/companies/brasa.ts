@@ -257,11 +257,11 @@ const ITEMS: Item[] = [
   },
   {
     id: "gb-c-franquicia-mala", day: 5, slot: 2, channel: "email", from: "sara",
-    subject: "Reseñas de la primera franquicia en León", preview: "Abrió hace 3 semanas y ya tiene calificación de 3.1. Usan otra carne y otras porciones…",
+    subject: "Reseñas de la primera franquicia en León", preview: "Recién abierta y ya tiene calificación de 3.1. Usan otra carne y otras porciones…",
     trigger: { item: "gb-d3-franquicia", options: ["a"] },
     body: [
       "Director:",
-      "La primera franquicia (León) abrió hace 3 semanas y ya tiene una calificación de 3.1 en reseñas. Usan otro proveedor de carne y porciones más chicas para cuidar su margen.",
+      "La primera franquicia (León) acaba de abrir y ya tiene una calificación de 3.1 en reseñas. Usan otro proveedor de carne y porciones más chicas para cuidar su margen.",
       "Hay comentarios que dicen «Brasa ya no es lo que era». Lo están leyendo en Guadalajara también.",
       "Sara Ibarra\nDirectora de Marketing",
     ],

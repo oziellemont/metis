@@ -39,7 +39,7 @@ export const MANTENIMIENTO: Item[] = [
         ["Si se pospone a enero (estimación del técnico)", "El rendimiento baja de 82 % a cerca de 72 %; entre 3 y 4 de cada 10 equipos así fallan antes"],
         ["Un paro no programado típico", "2 a 4 días y refacción importada"],
       ],
-      note: "Son estimaciones del técnico, no certezas.",
+      note: "Son estimaciones del técnico, no certezas. Cifras ficticias de este caso, no estadísticas reales.",
     },
     ask: "¿Qué hacemos con la envasadora?",
     options: [
@@ -64,7 +64,7 @@ export const MANTENIMIENTO: Item[] = [
       "El problema es que para recuperar los 4 días necesitamos 3 sábados seguidos. Roberto dice que la gente ya está cansada y que, si son obligatorios, lo lleva a la comisión mixta.",
       "Y SuperNorte no espera: si no llegamos, son entregas incompletas.",
     ],
-    data: { title: "Lo que sabes", rows: [["Rendimiento de la línea 1 tras el mantenimiento", "84 % (antes 79 %)"], ["Volumen por recuperar", "4 días de producción"], ["Tres sábados con horas extra", "$450 mil"], ["Maquila en otra planta", "$900 mil · calidad sin probar"]] },
+    data: { title: "Lo que sabes", rows: [["Rendimiento de la línea 1 tras el mantenimiento", "84 % (antes 82 %)"], ["Volumen por recuperar", "4 días de producción"], ["Tres sábados con horas extra", "$450 mil"], ["Maquila en otra planta", "$900 mil · calidad sin probar"]] },
     ask: "¿Cómo recuperas el volumen?",
     options: [
       { id: "a", stance: { roberto: 2, javier: 1 }, text: "Sábados voluntarios con pago doble y comida, rotando para que nadie trabaje los tres. Se lo platico yo a Roberto antes de anunciarlo.", reply: ["Así sí, jefe. Roberto va a ver que esta vez se le preguntó.", "Armo hoy el rol de sábados."], outcome: "Pagas más por hora, pero la gente llega por su voluntad. La relación con el sindicato queda intacta; quizá algún pedido salga un día tarde.", effects: { equipo: 2, caja: -2, clientes: -1 }, style: { conflicto: 1, horizonte: 1 }, score: 3 },
@@ -128,15 +128,15 @@ export const MANTENIMIENTO: Item[] = [
     id: "c-mant-queja", day: 5, slot: 3, channel: "email", from: "sofia", since: V,
     involves: ["hector", "lucia"],
     trigger: { item: "c-mant-falla", options: ["b", "__expired"], roll: [0, 0.7] },
-    subject: "Incumplimiento de nivel de servicio", preview: "En las últimas tres semanas su nivel de servicio bajó a 86 % y encontramos empaques mal sellados…",
+    subject: "Incumplimiento de nivel de servicio", preview: "Desde la falla de la envasadora su nivel de servicio bajó a 86 % y encontramos empaques mal sellados…",
     body: [
       "Director:",
-      "En las últimas tres semanas su nivel de servicio bajó a 86 % y en 12 tiendas encontramos empaques mal sellados en anaquel. Tuvimos que retirarlos.",
+      "Desde la falla de la envasadora su nivel de servicio bajó a 86 % y en 12 tiendas encontramos empaques mal sellados en anaquel. Tuvimos que retirarlos.",
       "Nuestra política es clara: penalización de 3 % sobre lo facturado del periodo y revisión del espacio en anaquel para el siguiente trimestre.",
       "Necesito saber hoy qué va a hacer para que no vuelva a pasar.",
       "Sofía Leal",
     ],
-    data: { title: "Lo que sabes", rows: [["Nivel de servicio acordado", "95 %"], ["Nivel de servicio real (3 semanas)", "86 %"], ["Penalización", "$1.4 M"], ["Planta", "La soldadura del eje cedió dos veces"]] },
+    data: { title: "Lo que sabes", rows: [["Nivel de servicio acordado", "95 %"], ["Nivel de servicio real (desde la falla)", "86 %"], ["Penalización", "$1.4 M"], ["Planta", "La soldadura del eje cedió dos veces"]] },
     ask: "SuperNorte reclama. ¿Qué le respondes?",
     options: [
       { id: "a", stance: { sofia: 2, lucia: -1 }, text: "Aceptar la penalización, explicarle a Sofía la falla de la envasadora con datos y comprometer la reparación de fondo con un reporte semanal.", reply: ["Le agradezco la claridad, Director.", "Mándeme el primer reporte el lunes y lo comparto con mi gerente."], outcome: "Pagas la penalización completa. SuperNorte ve un proveedor que reconoce el problema y lo está resolviendo, y eso pesa en la revisión del anaquel.", effects: { caja: -3, clientes: 2, consejo: 1 }, style: { conflicto: 1, horizonte: 2 }, score: 3 },
@@ -182,12 +182,12 @@ export const MANTENIMIENTO: Item[] = [
     body: [
       "Jefe, las mordazas nuevas jalan perfecto: no se nos ha vuelto a parar la línea.",
       "Pero salió otra cosa. El dosificador, que no tocamos, está llenando disparejo. En la auditoría de hoy, 1 de cada 20 empaques traía menos contenido del que dice la etiqueta.",
-      "Ya separé el lote. Lo que no sé es cuánto salió así en las últimas dos semanas.",
+      "Ya separé el lote. Lo que no sé es cuánto salió así desde que cambiamos las mordazas.",
     ],
-    data: { title: "Lo que sabes", rows: [["Empaques con menos contenido", "5 % del lote auditado"], ["Producto enviado en 2 semanas", "Cerca de $3 M"], ["Calibrar el dosificador", "1 día de paro · $150 mil"], ["Si lo detecta la autoridad", "Multa e inmovilización de producto"]] },
+    data: { title: "Lo que sabes", rows: [["Empaques con menos contenido", "5 % del lote auditado"], ["Producto enviado desde el cambio de mordazas", "Cerca de $3 M"], ["Calibrar el dosificador", "1 día de paro · $150 mil"], ["Si lo detecta la autoridad", "Multa e inmovilización de producto"]] },
     ask: "¿Qué haces con lo que ya salió?",
     options: [
-      { id: "a", stance: { javier: 2, sofia: 1, lucia: -1 }, text: "Calibrar hoy, avisarle a SuperNorte qué lotes pueden venir bajos y reponerles sin costo lo enviado en esas dos semanas.", reply: ["Va, jefe. Le paso hoy los números de lote.", "(Sofía) Le agradezco que nos avise antes de que lo encontremos nosotros."], outcome: "Pagas la reposición y un día de paro. SuperNorte se entera por ti y no por un cliente o por la autoridad.", effects: { caja: -3, clientes: 2, consejo: 1 }, style: { horizonte: 2, conflicto: 1 }, score: 3 },
+      { id: "a", stance: { javier: 2, sofia: 1, lucia: -1 }, text: "Calibrar hoy, avisarle a SuperNorte qué lotes pueden venir bajos y reponerles sin costo todo lo enviado desde el cambio de mordazas.", reply: ["Va, jefe. Le paso hoy los números de lote.", "(Sofía) Le agradezco que nos avise antes de que lo encontremos nosotros."], outcome: "Pagas la reposición y un día de paro. SuperNorte se entera por ti y no por un cliente o por la autoridad.", effects: { caja: -3, clientes: 2, consejo: 1 }, style: { horizonte: 2, conflicto: 1 }, score: 3 },
       { id: "b", stance: { lucia: 1, javier: -1 }, text: "Calibrar hoy, reforzar el muestreo y no decirle nada a SuperNorte de lo que ya salió: el promedio queda dentro de tolerancia y nadie se ha quejado.", reply: ["Como usted diga, jefe, pero yo no voy a firmar que todo salió bien.", "Reforzamos el muestreo desde el siguiente turno."], outcome: "No pagas reposición. Pero ya sabes que hay empaques con menos de lo que dice la etiqueta en el anaquel de tu cliente y decidiste callarlo: si aparece, ya no es una falla de la máquina, es una decisión tuya. Eso es una línea roja.", effects: { caja: 1, clientes: -2, equipo: -1 }, style: { horizonte: -2, riesgo: 2 }, score: 1 },
       { id: "c", stance: { javier: 1, lucia: 1, sofia: 1 }, text: "Calibrar hoy, avisarle ya a SuperNorte que esos lotes están en revisión y que Calidad mida una muestra grande; en 48 horas le digo cuánto se repone.", reply: ["Me parece, jefe. Mañana tengo la muestra.", "(Sofía) Gracias por avisar. Espero el número el jueves; si es grande, lo retiramos juntos."], outcome: "El cliente sabe desde hoy lo que tú sabes y decides la reposición con el tamaño real del problema. Pagas el muestreo y dos días de incertidumbre con tu cliente más grande.", effects: { caja: -1, clientes: -1, equipo: 1 }, style: { horizonte: 1, riesgo: 1 }, score: 2 },
     ],

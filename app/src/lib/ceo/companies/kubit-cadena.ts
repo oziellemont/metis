@@ -33,7 +33,7 @@ export const CADENA_KUBIT: Item[] = [
         ["Memo: migraciones así de rápidas", "4 o 5 de cada 10 tienen una caída seria en las primeras semanas"],
         ["Compromiso de tres años con el proveedor actual", "−30 % · pago anual por adelantado · en 4 de cada 10 rondas el consejo cuestiona la caja comprometida"],
       ],
-      note: "Estimaciones de Andrea y de Memo con la factura del último mes.",
+      note: "Estimaciones de Andrea y de Memo con la factura del último mes. Cifras ficticias de este caso, no estadísticas reales.",
     },
     ask: "¿Qué haces con el costo de la nube?",
     options: [
@@ -54,7 +54,7 @@ export const CADENA_KUBIT: Item[] = [
     trigger: { item: "kb-d2-nube", options: ["a"] },
     subject: "Guillermo «Memo» Paz", preview: "Director, ya bajamos 18 %. Y encontramos algo: un solo cliente consume la tercera parte…",
     body: [
-      "Director, en tres semanas ya bajamos 18 % la factura sin una sola caída.",
+      "Director, con lo primero que apagamos ya bajamos 18 % la factura sin una sola caída.",
       "Y encontramos algo: los reportes a la medida de Grupo Altamar consumen la tercera parte de toda la infraestructura. Corren cada hora, aunque ellos los ven una vez al día.",
       "Altamar paga lo mismo que cualquier cliente de su tamaño. Bruno dice que no le toquemos nada antes de la renovación.",
     ],

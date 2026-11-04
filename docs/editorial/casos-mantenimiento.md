@@ -61,7 +61,7 @@ Cambio de este ciclo en el dosificador: ocultar el incumplimiento (opción b) ah
 
 | Dato | Valor |
 |---|---|
-| Rendimiento de la línea 1 tras el mantenimiento | 84 % (antes 79 %) |
+| Rendimiento de la línea 1 tras el mantenimiento | 84 % (antes 82 %) |
 | Volumen por recuperar | 4 días de producción |
 | Tres sábados con horas extra | $450 mil |
 | Maquila en otra planta | $900 mil · calidad sin probar |
@@ -177,7 +177,7 @@ Cambio de este ciclo en el dosificador: ocultar el incumplimiento (opción b) ah
 **Contexto**
 
 > Director:
-> En las últimas tres semanas su nivel de servicio bajó a 86 % y en 12 tiendas encontramos empaques mal sellados en anaquel. Tuvimos que retirarlos.
+> Desde la falla de la envasadora su nivel de servicio bajó a 86 % y en 12 tiendas encontramos empaques mal sellados en anaquel. Tuvimos que retirarlos.
 > Nuestra política es clara: penalización de 3 % sobre lo facturado del periodo y revisión del espacio en anaquel para el siguiente trimestre.
 > Necesito saber hoy qué va a hacer para que no vuelva a pasar.
 > Sofía Leal
@@ -187,7 +187,7 @@ Cambio de este ciclo en el dosificador: ocultar el incumplimiento (opción b) ah
 | Dato | Valor |
 |---|---|
 | Nivel de servicio acordado | 95 % |
-| Nivel de servicio real (3 semanas) | 86 % |
+| Nivel de servicio real (desde la falla) | 86 % |
 | Penalización | $1.4 M |
 | Planta | La soldadura del eje cedió dos veces |
 
@@ -262,14 +262,14 @@ Cambio de este ciclo en el dosificador: ocultar el incumplimiento (opción b) ah
 
 > Jefe, las mordazas nuevas jalan perfecto: no se nos ha vuelto a parar la línea.
 > Pero salió otra cosa. El dosificador, que no tocamos, está llenando disparejo. En la auditoría de hoy, 1 de cada 20 empaques traía menos contenido del que dice la etiqueta.
-> Ya separé el lote. Lo que no sé es cuánto salió así en las últimas dos semanas.
+> Ya separé el lote. Lo que no sé es cuánto salió así desde que cambiamos las mordazas.
 
 **Lo que sabes**
 
 | Dato | Valor |
 |---|---|
 | Empaques con menos contenido | 5 % del lote auditado |
-| Producto enviado en 2 semanas | Cerca de $3 M |
+| Producto enviado desde el cambio de mordazas | Cerca de $3 M |
 | Calibrar el dosificador | 1 día de paro · $150 mil |
 | Si lo detecta la autoridad | Multa e inmovilización de producto |
 
@@ -277,7 +277,7 @@ Cambio de este ciclo en el dosificador: ocultar el incumplimiento (opción b) ah
 
 | Opción | Costo y efecto inmediato | Score | Línea roja (v7) |
 |---|---|---|---|
-| **a.** Calibrar hoy, avisarle a SuperNorte qué lotes pueden venir bajos y reponerles sin costo lo enviado en esas dos semanas. | Caja -3, Clientes +2, Consejo +1 | 3 | — |
+| **a.** Calibrar hoy, avisarle a SuperNorte qué lotes pueden venir bajos y reponerles sin costo todo lo enviado desde el cambio de mordazas. | Caja -3, Clientes +2, Consejo +1 | 3 | — |
 | **b.** Calibrar hoy, reforzar el muestreo y no decirle nada a SuperNorte de lo que ya salió: el promedio queda dentro de tolerancia y nadie se ha quejado. | Caja +1, Clientes -2, Equipo -1 | 1 | sí |
 | **c.** Calibrar hoy, avisarle ya a SuperNorte que esos lotes están en revisión y que Calidad mida una muestra grande; en 48 horas le digo cuánto se repone. | Caja -1, Clientes -1, Equipo +1 | 2 | — |
 | *(no responder)* | Clientes -2, Equipo -1 | — | — |

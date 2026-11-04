@@ -438,13 +438,13 @@ export const ITEMS: Item[] = [
     id: "c-piloto", day: 7, slot: 1, channel: "reporte", from: "diego",
     involves: ["hector", "lucia"],
     real: { company: "Salsas Doña Brava (ficticia)", title: "Canibalizarse antes de que te canibalicen", text: "Una marca de salsas lanzó su versión premium sabiendo que le quitaría ventas a la tradicional. Tres años después, la premium cargaba el margen de toda la empresa." },
-    subject: "Resultados del piloto · Cumbre Selección (8 semanas)", preview: "Rotación 1.8× vs la categoría. Margen 39%. Pero ojo con la canibalización…",
+    subject: "Primeros resultados del piloto · Cumbre Selección", preview: "Rotación 1.8× vs la categoría. Margen 39%. Pero ojo con la canibalización…",
     trigger: { item: "d3-diego", options: ["b"] },
     body: [
       "Hola! Ya tenemos resultados del piloto. Ana me ayudó con las métricas",
       "Te los comparto tal cual, con lo bueno y lo malo.",
     ],
-    data: { title: "Piloto · 30 tiendas · 8 semanas", rows: [["Rotación vs la categoría", "1.8×"], ["Margen real", "39%"], ["Recompra", "34% de los compradores"], ["Canibalización de la línea tradicional", "22% de las ventas nuevas"], ["Ventas incrementales netas (anualizadas)", "≈ $14 M"]], note: "Diego: «Sé que la canibalización no es lo ideal, pero el margen compensa.»" },
+    data: { title: "Piloto · 30 tiendas · primeras lecturas", rows: [["Rotación vs la categoría", "1.8×"], ["Margen real", "39%"], ["Recompra", "34% de los compradores"], ["Canibalización de la línea tradicional", "22% de las ventas nuevas"], ["Ventas incrementales netas (anualizadas)", "≈ $14 M"]], note: "Diego: «Sé que la canibalización no es lo ideal, pero el margen compensa.»" },
     ask: "¿Qué sigue para Cumbre Selección?",
     options: [
       { id: "a", stance: {diego: 1, lucia: 1}, text: "Escalar a 300 tiendas del noreste en el Q2 con el mismo tablero. Diego lo sigue liderando y me presenta cada mes.", reply: ["¡¡Vamos!!", "Y gracias por no dármelo nomás porque sí. Ahora sí me lo gané."], outcome: "Escalas lo que funciona con datos y formas a un posible sucesor en el camino.", effects: { margen: 4, clientes: 3, consejo: 4, caja: -3 }, style: { horizonte: 2, riesgo: 1, foco: 1 }, score: 3 },

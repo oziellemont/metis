@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Target, Bell, Cloud, LogOut, Clock, FastForward, Mail, MessageCircle, RotateCcw, Save, Volume2, Zap } from "lucide-react";
+import { Target, Bell, Cloud, LogOut, Clock, FastForward, Mail, RotateCcw, Save, Volume2, Zap } from "lucide-react";
 import { playChime, setSoundOn, soundOn } from "@/lib/ceo/celebrate";
 import { ceoSignOut } from "@/lib/ceo/auth-client";
 import { useCeo } from "./CeoProvider";
@@ -49,13 +49,11 @@ export function CeoSettings() {
 
       <section className="card p-5 sm:p-6 space-y-4">
         <h2 className="font-semibold text-ink">Cómo te llegan los asuntos</h2>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4">
           <label className="text-sm text-slate-600"><span className="inline-flex items-center gap-1"><Mail size={14} /> Correo</span><input type="email" className={input} value={f.email} onChange={(e) => set("email", e.target.value)} placeholder="tu@correo.com" /></label>
-          <label className="text-sm text-slate-600"><span className="inline-flex items-center gap-1"><MessageCircle size={14} /> WhatsApp</span><input type="tel" className={input} value={f.phone} onChange={(e) => set("phone", e.target.value)} placeholder="+52 81 …" /></label>
         </div>
         <div className="flex flex-wrap gap-5 text-sm text-slate-700">
           <label className="inline-flex items-center gap-2"><input type="checkbox" checked={f.notifyEmail} onChange={(e) => set("notifyEmail", e.target.checked)} className="accent-indigo h-4 w-4" /> Avisarme por correo</label>
-          <label className="inline-flex items-center gap-2"><input type="checkbox" checked={f.notifyWhatsapp} onChange={(e) => set("notifyWhatsapp", e.target.checked)} className="accent-indigo h-4 w-4" /> Avisarme por WhatsApp</label>
         </div>
         <div className="grid gap-4 sm:grid-cols-3">
           <label className="text-sm text-slate-600"><span className="inline-flex items-center gap-1"><Clock size={14} /> Desde</span>
