@@ -67,6 +67,8 @@ describe("Mi liderazgo", () => {
         expect(x.band, `${c} ${st} ${x.dim}`).not.toBe("fortaleza");
         if (x.n && x.band !== "por_desarrollar") expect(x.band).toBe("tendencia");
         expect(x.why.length).toBeGreaterThan(10);
+        expect(x.brief.length, `breve ${x.dim}`).toBeGreaterThan(10);
+        expect(x.brief.length, `breve ${x.dim}`).toBeLessThanOrEqual(70);
       }
       expect(L.summary.competencias).not.toMatch(/Fortaleza consistente en/);
       expect(L.summary.competencias).not.toMatch(/demostrada/);

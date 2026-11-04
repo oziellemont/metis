@@ -73,6 +73,8 @@ export interface CompetencyEvidence {
   lean?: "favorable" | "mixta" | "desfavorable";
   /** Explicación en una frase de por qué tiene esa lectura (cuánta evidencia y de qué tipo). */
   why: string;
+  /** Versión muy corta de «why» (para la gráfica: se ve al tocar la barra). */
+  brief: string;
   /** Periodo en curso contra los anteriores (null si no hay suficiente evidencia en ambos). */
   change: "mejora" | "baja" | "estable" | null;
   best?: { item: string; subject: string; note: string };
@@ -197,13 +199,18 @@ export function leadershipOf(s: CeoState, now: number): Leadership {
       : band === "por_desarrollar" ? `La misma dificultad apareció ${a.misses} veces en situaciones distintas (${base}).`
       : band === "en_desarrollo" ? `${base}: hay evidencia suficiente, sin un patrón claro todavía.${score! >= E.strongScore && nP < E.strongPeriods ? " Para considerarla consistente falta verla en otro periodo." : ""}`
       : `${nP < E.minPeriods && a.n >= E.minN ? `${base[0].toUpperCase()}${base.slice(1)}, todas de un solo periodo` : `Solo ${base}`}: ${lean === "favorable" ? "apunta a bien" : lean === "desfavorable" ? "apunta a que cuesta" : "señales mezcladas"}, pero aún no alcanza para afirmarlo.`;
+    const brief = band === "sin_evidencia" ? "Aún no te tocó una situación que la pida."
+      : band === "fortaleza" ? `Bien de forma repetida: ${sit(a.n)} de ${ar(areas)}.`
+      : band === "por_desarrollar" ? `Tropezaste ${a.misses} veces en situaciones distintas.`
+      : band === "en_desarrollo" ? `${sit(a.n)[0].toUpperCase()}${sit(a.n).slice(1)}; aún sin patrón claro.`
+      : `Solo ${sit(a.n)}: ${lean === "favorable" ? "apunta a bien" : lean === "desfavorable" ? "apunta a que cuesta" : "señales mezcladas"}.`;
     const change: CompetencyEvidence["change"] = a.cur.n >= E.trendN && a.past.n >= E.trendN
       ? (() => { const dlt = a.cur.sum / a.cur.n / 2 - a.past.sum / a.past.n / 2; return dlt >= E.trendDelta ? "mejora" : dlt <= -E.trendDelta ? "baja" : "estable"; })()
       : null;
     const strip = (x?: Ex) => (x ? { item: x.item, subject: x.subject, note: x.note } : undefined);
     return {
       dim: d, name: JUDGMENT_LABEL[d].name, question: JUDGMENT_LABEL[d].question, n: a.n, score, band, bandLabel: BAND_LABEL[band],
-      areas, periods: nP, misses: a.misses, ...(lean ? { lean } : {}), why, change,
+      areas, periods: nP, misses: a.misses, ...(lean ? { lean } : {}), why, brief, change,
       best: a.best && a.best.lv >= 2 ? strip(a.best) : undefined,
       weakest: a.worst && a.worst.lv === 0 ? strip(a.worst) : undefined,
     };
