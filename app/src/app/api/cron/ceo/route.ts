@@ -22,7 +22,11 @@ import { schedKey, unscheduleAll } from "@/lib/ceo/cadence";
 import { currentPause } from "@/lib/ceo/pausetime";
 import { jobsFor, type Sent } from "@/lib/ceo/schedule";
 import { renderJob } from "@/lib/ceo/mailer";
-import { ceoWhatsappText, fromHeader, sendWhatsapp } from "@/lib/ceo/notify";
+import { fromHeader } from "@/lib/ceo/notify";
+import { emailForCases, waEligible, waJobsFor, waMsgFor, waPayload, type WaPlayer } from "@/lib/ceo/whatsapp";
+import { waFinish, waReserve, waSend } from "@/lib/ceo/whatsapp-server";
+import { globalFlagRows } from "@/lib/ceo/flags-server";
+import { resolveFlags } from "@/lib/ceo/flags";
 import type { CeoState } from "@/lib/ceo/types";
 
 export const dynamic = "force-dynamic";
@@ -39,13 +43,25 @@ export async function GET(req: NextRequest) {
 
   const appUrl = process.env.CEO_APP_URL ?? (process.env.CEO_MOVED !== "0" ? CEO_URL : "https://metisalign.app");
   const real = Date.now();
-  const { data: players, error } = await sb.from("players").select("user_id, name, email, phone, notify_email, notify_whatsapp, state, sent").limit(2000);
+  // WhatsApp (0021): si la migración aún no corre, el cron sigue igual que antes, solo con correo.
+  const BASE = "user_id, name, email, notify_email, state, sent";
+  let waCols = true;
+  type Res = { data: Record<string, unknown>[] | null; error: { message: string; code?: string } | null };
+  let res = (await sb.from("players").select(`${BASE}, flags, wa_phone, wa_verified_at, wa_consent_at, wa_revoked_at, wa_channel, wa_sent`).limit(2000)) as unknown as Res;
+  if (res.error?.code === "42703") { waCols = false; res = (await sb.from("players").select(BASE).limit(2000)) as unknown as Res; }
+  const { data: players, error } = res;
   if (error) return NextResponse.json({ error: error.message, hint: error.code === "42703" ? "Falta correr la migración 0014_ceo_correos.sql" : undefined }, { status: 500 });
+  const globalFlags = waCols ? await globalFlagRows().catch(() => null) : null;
+  const allowlist = process.env.CEO_WHATSAPP_ALLOWLIST;
+  const wa: { user: string; key: string; ok: boolean; dryRun?: boolean; error?: string }[] = [];
 
   const out: { user: string; key: string; subject: string; at?: string; ok: boolean; error?: string }[] = [];
-  for (const p of players ?? []) {
+  for (const p of (players ?? []) as Record<string, any>[]) { // eslint-disable-line @typescript-eslint/no-explicit-any
     if (Date.now() - real > 50_000) break; // margen antes del límite de 60 s; lo que falte sale en la siguiente corrida
     const s: CeoState = migrate(p.state);
+    // Candados de WhatsApp: interruptor del jugador + lista autorizada + número verificado + consentimiento + canal.
+    const waOn = waCols && !!globalFlags && waEligible(p as WaPlayer, resolveFlags({ global: globalFlags, player: p.flags }).whatsapp, allowlist);
+    const mailCases = emailForCases(p as WaPlayer, waOn);
     if (!s.startedAt) continue;
     const sent: Sent = { ...((p.sent as Sent) ?? {}) };
     // 1.2: en pausa no se manda nada y se cancela lo programado (al reanudar se vuelve a programar una vez).
@@ -64,7 +80,8 @@ export async function GET(req: NextRequest) {
     for (const job of jobs) {
       const at = "at" in job && job.at ? new Date(job.at).toISOString() : undefined;
       // Sin correo o con avisos apagados: se anota como resuelto para no reintentar (la bienvenida espera a que haya correo).
-      if (!to || !p.notify_email) {
+      // «Solo WhatsApp»: los asuntos y recordatorios no salen por correo (resumen, racha y cierre sí).
+      if (!to || !p.notify_email || (!mailCases && (job.kind === "case" || job.kind === "reminder"))) {
         if (job.kind !== "welcome" && !dry) { sent[job.key] = real; changed = true; }
         continue;
       }
@@ -75,10 +92,29 @@ export async function GET(req: NextRequest) {
       });
       out.push({ user: p.user_id, key: job.key, subject: m.subject, at, ok: r.ok, error: r.error });
       if (r.ok && !dry) { sent[job.key] = real; if (at && "id" in r && r.id) sent[schedKey(job.key)] = `${r.id}|${at}`; changed = true; }
-      // WhatsApp (opcional) solo para asuntos que llegan ya, no para los programados.
-      if (job.kind === "case" && !at && p.notify_whatsapp && p.phone && !dry) await sendWhatsapp(p.phone, ceoWhatsappText({ appUrl, entry: job.entry, pack: packOf(s) }));
     }
     if (changed) await sb.from("players").update({ sent, last_notified_at: new Date(real).toISOString() }).eq("user_id", p.user_id);
+    // WhatsApp: aislado del correo y de la partida. Un error se registra y no se reintenta en esta corrida.
+    if (waOn) {
+      try {
+        const waSent: Sent = { ...((p.wa_sent as Sent) ?? {}) };
+        let waChanged = false;
+        for (const job of waJobsFor(s, waSent, real)) {
+          const m = waMsgFor(packOf(s), job, appUrl);
+          if (!m) continue;
+          if (dry) { wa.push({ user: p.user_id, key: job.key, ok: true, dryRun: true }); continue; }
+          const id = await waReserve(sb, p.user_id, p.wa_phone, job.kind === "case" ? "asunto" : "recordatorio", job.key, m.template);
+          waSent[job.key] = real; waChanged = true;   // reservado o ya existente: no vuelve a salir
+          if (id === null) continue;
+          const r = await waSend(waPayload(p.wa_phone, m));
+          await waFinish(sb, id, r);
+          wa.push({ user: p.user_id, key: job.key, ok: r.ok, dryRun: r.dryRun, error: r.error });
+        }
+        if (waChanged) await sb.from("players").update({ wa_sent: waSent }).eq("user_id", p.user_id);
+      } catch (e) {
+        wa.push({ user: p.user_id, key: "wa:error", ok: false, error: (e as Error).message.slice(0, 200) });
+      }
+    }
   }
-  return NextResponse.json({ ok: true, dry, plan, players: players?.length ?? 0, sent: out });
+  return NextResponse.json({ ok: true, dry, plan, players: players?.length ?? 0, sent: out, whatsapp: wa });
 }

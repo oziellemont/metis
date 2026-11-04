@@ -2,13 +2,14 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Target, Bell, Cloud, LogOut, Clock, FastForward, Mail, MessageCircle, RotateCcw, Save, Volume2, Zap } from "lucide-react";
+import { Target, Bell, Cloud, LogOut, Clock, FastForward, Mail, RotateCcw, Save, Volume2, Zap } from "lucide-react";
 import { playChime, setSoundOn, soundOn } from "@/lib/ceo/celebrate";
 import { ceoSignOut } from "@/lib/ceo/auth-client";
 import { useCeo } from "./CeoProvider";
 import clsx from "clsx";
 import { DAILY_GOALS, DEFAULT_DAILY_GOAL, SESSION_MINUTES, weeklyProjectionText } from "@/lib/ceo/onboarding";
 import { CadenceCard } from "./Cadence";
+import { WhatsappCard } from "./WhatsappCard";
 import { EPISODES } from "@/lib/ceo/episodes/catalog";
 
 const TZS = ["America/Monterrey", "America/Mexico_City", "America/Cancun", "America/Tijuana", "America/Hermosillo", "America/Bogota", "America/Lima", "America/Santiago", "America/Argentina/Buenos_Aires", "Europe/Madrid"];
@@ -49,13 +50,11 @@ export function CeoSettings() {
 
       <section className="card p-5 sm:p-6 space-y-4">
         <h2 className="font-semibold text-ink">Cómo te llegan los asuntos</h2>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4">
           <label className="text-sm text-slate-600"><span className="inline-flex items-center gap-1"><Mail size={14} /> Correo</span><input type="email" className={input} value={f.email} onChange={(e) => set("email", e.target.value)} placeholder="tu@correo.com" /></label>
-          <label className="text-sm text-slate-600"><span className="inline-flex items-center gap-1"><MessageCircle size={14} /> WhatsApp</span><input type="tel" className={input} value={f.phone} onChange={(e) => set("phone", e.target.value)} placeholder="+52 81 …" /></label>
         </div>
         <div className="flex flex-wrap gap-5 text-sm text-slate-700">
           <label className="inline-flex items-center gap-2"><input type="checkbox" checked={f.notifyEmail} onChange={(e) => set("notifyEmail", e.target.checked)} className="accent-indigo h-4 w-4" /> Avisarme por correo</label>
-          <label className="inline-flex items-center gap-2"><input type="checkbox" checked={f.notifyWhatsapp} onChange={(e) => set("notifyWhatsapp", e.target.checked)} className="accent-indigo h-4 w-4" /> Avisarme por WhatsApp</label>
         </div>
         <div className="grid gap-4 sm:grid-cols-3">
           <label className="text-sm text-slate-600"><span className="inline-flex items-center gap-1"><Clock size={14} /> Desde</span>
@@ -97,6 +96,8 @@ export function CeoSettings() {
           {c.synced && <span className="text-xs text-slate-400">Sincronizado con tu cuenta</span>}
         </div>
       </section>
+
+      <WhatsappCard />
 
       {c.cadence === "vacation_paused" ? (
         <section className="card p-5 sm:p-6 flex flex-wrap items-center gap-3 text-sm">

@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import clsx from "clsx";
-import { ArrowRight, Bell, Check, Clock, Mail, MessageCircle, Zap } from "lucide-react";
+import { ArrowRight, Bell, Check, Clock, Mail, Zap } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { COMPANIES, FIRST_COMPANY, companyById } from "@/lib/ceo/companies";
 import { useCeo } from "./CeoProvider";
@@ -29,10 +29,9 @@ export function Onboarding() {
   const pk = previewPack(sel) ?? companyById(FIRST_COMPANY);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
+  const phone = "";
   const [ws, setWs] = useState(8);
   const [we, setWe] = useState(19);
-  const [wa, setWa] = useState(true);
   const [intensivo, setIntensivo] = useState(false);
   const [goal, setGoal] = useState<DailyDecisionGoal>(DEFAULT_DAILY_GOAL);
   const [minutes, setMinutes] = useState<SessionMinutes | undefined>();
@@ -64,7 +63,7 @@ export function Onboarding() {
     if (offered) track("exigencia_elegida", { tier: tier ? offered : 0 });
     const setup = buildSetup(sel, newCompanyId());
     if (!setup) { setStep(2); return; }
-    c.start({ name, email, phone, company: pk.id, setup, profile, diagnostic, tier: offered ? tier : 0, settings: { windowStart: ws, windowEnd: we, notifyEmail: !!email, notifyWhatsapp: wa && !!phone, intensivo, dailyGoal: goal, ...(minutes ? { sessionMinutes: minutes } : {}) } });
+    c.start({ name, email, phone, company: pk.id, setup, profile, diagnostic, tier: offered ? tier : 0, settings: { windowStart: ws, windowEnd: we, notifyEmail: !!email, notifyWhatsapp: false, intensivo, dailyGoal: goal, ...(minutes ? { sessionMinutes: minutes } : {}) } });
     try { if (typeof Notification !== "undefined" && Notification.permission === "default") Notification.requestPermission(); } catch { /* ignore */ }
     router.replace("/ceo");
   };
@@ -144,11 +143,6 @@ export function Onboarding() {
             <p className="mt-3 text-white/70 text-[15px]">Cada día te llegan de 2 a 4 asuntos a horas distintas; tu ritmo es cuántos te propones decidir. Casi todos tienen tiempo límite: como en la vida real, si no respondes, alguien decide por ti.</p>
             <div className="mt-6 rounded-2xl bg-white text-ink p-5 sm:p-6 space-y-4">
               <div><label className="label flex items-center gap-1.5"><Mail size={12} /> Correo</label><input className="input" type="email" placeholder="tu@correo.com" value={email} onChange={(e) => setEmail(e.target.value)} /></div>
-              <div>
-                <label className="label flex items-center gap-1.5"><MessageCircle size={12} /> WhatsApp (opcional)</label>
-                <input className="input" type="tel" placeholder="+52 81 1234 5678" value={phone} onChange={(e) => setPhone(e.target.value)} />
-                <label className="mt-2 flex items-center gap-2 text-xs text-slate-500"><input type="checkbox" checked={wa} onChange={(e) => setWa(e.target.checked)} className="accent-indigo" /> Que mi equipo también me escriba por WhatsApp</label>
-              </div>
               <div>
                 <label className="label flex items-center gap-1.5"><Clock size={12} /> Horario en que te pueden escribir</label>
                 <div className="flex items-center gap-2">
