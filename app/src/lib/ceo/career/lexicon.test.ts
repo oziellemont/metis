@@ -93,7 +93,7 @@ describe("vocabulario por especialidad", () => {
 
   it("casos: con Lácteos el alérgeno es del saborizante, el producto cambia y las palabras clave siguen funcionando", () => {
     const profile = newCompanyProfile({ companyId: ID, sectorId: "manufactura", industryId: "alimentos_bebidas", archetype: "establecida", displayName: BRAND.name, specialty: "Lácteos", at: 1 }, 2)!;
-    for (const spec of Object.values(EPISODES)) {
+    for (const spec of Object.values(EPISODES).filter((e) => e.company === "cumbre")) {
       const b = brandedEpisode(spec, { companyProfile: profile });
       const bad = strings(b).filter((t) => /botan|picositas|sazonador|\bpapas\b/i.test(t));
       expect(bad, `${spec.id}: ${bad.slice(0, 2).join(" | ")}`).toEqual([]);

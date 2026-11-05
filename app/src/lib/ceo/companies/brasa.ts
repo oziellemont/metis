@@ -3,6 +3,7 @@
  * Dilemas inspirados en tipos de casos de la industria (apps de entrega, crisis sanitaria, franquicias,
  * ingeniería de menú). Personas, marcas y plataformas son ficticias.
  */
+import { SEGUIMIENTOS_BRASA } from "./seguimientos";
 import type { CompanyPack, Item } from "../types";
 import { withV8 } from "./v8";
 import { CADENA_BRASA } from "./brasa-cadena";
@@ -23,7 +24,7 @@ const ITEMS: Item[] = [
     ask: "¿Por dónde empiezas?",
     involves: ["lourdes", "fer", "andres", "sara"],
     options: [
-      { id: "a", stance: {andres: 2, lourdes: -1}, text: "Dos semanas trabajando turnos en 6 sucursales, en cocina, piso y caja, antes de tomar cualquier decisión de fondo.", reply: ["Así empecé yo. En la plancha.", "Lourdes va a decir que es una pérdida de tiempo. Yo creo que es lo único que funciona."], outcome: "Los gerentes de sucursal te ven con mandil. Lourdes y el consejo anotan que tardas en arrancar.", effects: { equipo: 6, clientes: 1, consejo: -4 }, style: { horizonte: 2, foco: 2, estilo: 1 }, score: 3 },
+      { id: "a", stance: {andres: 2, lourdes: -1}, text: "Dos semanas trabajando turnos en 6 sucursales, en cocina, piso y caja, antes de tomar cualquier decisión de fondo.", reply: ["Así empecé yo. En la plancha.", "Lourdes va a decir que es una pérdida de tiempo. Yo creo que es lo único que funciona."], outcome: "Los gerentes de sucursal te ven con mandil. El consejo acepta el método; Lourdes pide que en dos semanas haya propuesta.", effects: { equipo: 6, clientes: 1, consejo: -1 }, style: { horizonte: 2, foco: 2, estilo: 1 }, score: 3 },
       { id: "b", stance: {fer: 2, andres: -2}, text: "Atacar el prime cost de inmediato: renegociar con proveedores de carne y ajustar plantillas por sucursal según el tráfico.", reply: ["Los números lo piden, eso que ni qué.", "Nomás cuida que en las sucursales no se sienta que llegó el de los recortes."], outcome: "En un mes el prime cost baja un punto. En las cocinas se siente la presión antes de conocerte.", effects: { margen: 5, caja: 2, equipo: -6 }, style: { foco: -2, horizonte: -1, estilo: -1 }, score: 1 },
       { id: "c", stance: {sara: 2, andres: -1}, text: "Empezar por el cliente: 1,500 encuestas, visitas de cliente incógnito y escuchar las reseñas de las 34 sucursales.", reply: ["Me parece bien. Las reseñas nos están lastimando en CDMX.", "Ojo: los clientes te dicen qué no les gusta, no siempre qué hacer."], outcome: "Entiendes por qué la gente regresa o no. La operación todavía no te conoce.", effects: { clientes: 4, caja: -1, equipo: -1 }, style: { horizonte: 1, foco: 1, riesgo: -1 }, score: 2 },
     ],
@@ -325,6 +326,7 @@ const ITEMS: Item[] = [
   // ═══════════════════════════════ DÍA 7
   {
     id: "gb-d7-consejo", day: 7, slot: 1, channel: "email", from: "beatriz",
+    stages: [0, 0], // habla de tu llegada: solo al tomar el mando
     subject: "Para tu primer consejo como director", preview: "Mañana presentas tu plan a 3 años. Te recomiendo decidir cuál es la única apuesta…",
     body: [
       "Hola:",
@@ -423,5 +425,5 @@ export const BRASA: CompanyPack = {
       { id: "paty", start: 40, likes: ["ejemplo"], secret: "«Don Ignacio me pregunta todo a mí. Si me tienes al tanto, le hablo bien de ti.»" },
     ],
   },
-  items: withV8([...ITEMS, ...CADENA_BRASA]),
+  items: withV8([...ITEMS, ...CADENA_BRASA, ...SEGUIMIENTOS_BRASA]),
 };

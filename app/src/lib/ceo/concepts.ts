@@ -202,6 +202,18 @@ export const CASE_CONCEPTS: Record<string, CaseConcept> = {
   "vl-c-diesel-formula": A("expectativas", "La fórmula funciona si los clientes la entienden y la pueden revisar. Explicar desde el principio cuándo sube y cuándo baja evita que cada ajuste se viva como una sorpresa."),
   "vl-c-diesel-licitacion": A("concentracion", "El aumento parejo llevó a un cliente grande a abrir licitación. Cuando una cuenta pesa una quinta parte de la venta, perderla cambia la empresa; conviene saber antes qué tan expuesta está."),
   "vl-c-diesel-telemetria": A("cultura_justa", "La telemetría muestra cómo maneja cada operador. Usarla para enseñar y corregir mejora el consumo; usarla para exhibir y castigar convierte una herramienta de mejora en una de vigilancia."),
+  "fn-s-precio-mas": A("juego_repetido", "El 5% del mes pasado no compró la plataforma: enseñó a Aurora que presionar funciona. Ligar cualquier descuento a un ahorro demostrable corta el ciclo sin romper la relación."),
+  "fn-s-precio-rfq": A("costo_oportunidad", "Cotizar al objetivo gana el programa y amarra cinco años de margen; cotizar caro lo pierde. Lo que puedes sostener sale del ahorro que ya tienes y del rediseño que propones."),
+  "kb-s-altamar-mas": A("juego_repetido", "Regalar desarrollos el mes pasado enseñó al grupo que pedir más funciona. Separar lo que sirve a todos de lo que es a la medida pone precio a cada cosa."),
+  "kb-s-altamar-grupo": A("piloto", "Catorce empresas en tres meses no se implementan bien. Arrancar por etapas con metas de adopción prueba el modelo antes de comprometer a todo el equipo."),
+  "pm-s-penasco-mas": A("liquidez", "El crédito largo que diste ya financia a tu cliente con tu caja. Atar más plazo a pedidos firmados y pagos por avance protege la liquidez sin cerrar la puerta."),
+  "pm-s-penasco-obras": A("integrativa", "Precio fijo dos años carga toda la inflación de tu lado. Un índice público reparte ese riesgo con reglas que los dos pueden revisar."),
+  "vl-s-almena-mas": A("juego_repetido", "El descuento del mes pasado compró un CEDIS; los otros dos los piden gratis. Cambiar descuento por bono de desempeño pone el precio donde está el valor."),
+  "vl-s-almena-cedis": A("piloto", "Tres CEDIS en dos meses con gente nueva es receta para fallar. Arrancar uno y crecer por etapas con metas visibles compite con credibilidad."),
+  "gb-s-app-renueva": A("batna", "La exclusividad dejó a Brasa sin canal propio, y la app sube la comisión porque puede. Construir la alternativa antes de la siguiente revisión es lo que da poder."),
+  "gb-s-app-oferta": A("batna", "La app vuelve con mejores condiciones porque el canal propio ya funciona. Usarla para atraer clientes nuevos, sin depender de ella, conserva esa ventaja."),
+  "c-s-merma": A("juego_repetido", "El bono por merma funciona mientras los dos cumplen lo pactado. Pagar de más enseña que la meta se negocia; no pagar nada enseña que el esfuerzo no cuenta."),
+  "c-s-revision": A("intereses", "La base pide vales y transporte; detrás está la rotación y el traslado de noche. Atender ese interés y ligar el resto a resultados cambia la siguiente mesa."),
 };
 
 /** Banco de casos: un concepto por arquetipo (el texto del caso cambia por empresa; la idea no). */
@@ -224,6 +236,16 @@ export const ARCHETYPE_CONCEPTS: Record<string, CaseConcept> = {
   meta: A("goodhart", "Para llegar a la fecha comprometida, el equipo tomó un atajo. Mantener la fecha sin preguntar cómo se cumplirá empuja más atajos; detenerlo y renegociar protege la calidad y a quien avisó."),
   foco: A("pareto", "Pocos productos hacen la mayor parte del dinero. No quitar nada conserva ventas pequeñas con toda su complejidad; quitar solo lo que pierde evita la discusión estratégica; quedarte con lo que gana y te distingue concentra recursos."),
   adaptativo: A("adaptativo", "Dos áreas no se ponen de acuerdo y te piden que decidas. Decidir tú resuelve hoy, pero el conflicto regresará; darles datos y un plazo para una propuesta conjunta las obliga a cambiar cómo trabajan juntas."),
+  mando: A("talento_interno", "Ascender al mejor técnico sin apoyo cambia a tu mejor operador por un jefe sin herramientas; traer a alguien de fuera dice que aquí no se crece. Elegir por potencial y acompañar el cambio de papel construye mandos propios."),
+  sucesor: A("sucesion", "Los puestos clave dependen de pocas personas. Nombrar al favorito resuelve rápido y desanima al resto; posponer deja a la empresa colgada. Un relevo con más de un candidato y revisión periódica reduce ese riesgo."),
+  inversion: A("etapas", "Comprar todo de una vez ahorra en la cotización y apuesta a que el arranque salga bien. Invertir por fases cuesta algo más y te deja decidir la siguiente con lo que enseñó la primera."),
+  capital: A("estructura_capital", "El fondo no cobra cada mes, pero cobra con control y metas; el crédito conserva el control y fija pagos que no esperan a un año malo. La pregunta es qué riesgo aguanta la empresa si el plan sale peor."),
+  region: A("escalar_sistema", "Copiar el modelo de casa a gran escala en otra región multiplica lo que no se adapta. Entrar con un sitio y un líder local enseña qué cambiar antes de abrir más."),
+  alianza: A("batna", "La alianza duplica ventas a cambio de exclusividad larga. Tu poder para negociar plazos, metas y salida depende de tener otros canales vivos; firmar todo lo deja en manos del socio."),
+  adquisicion: A("premortem", "Comprar con prisa y sin revisar es la forma más común de pagar de más. Preguntar antes por qué fracasaría la compra convierte esos riesgos en el precio tope y en lo que hay que revisar."),
+  regulador: A("juego_repetido", "La autoridad regresa cada año. Pelear cada observación o corregir lo mínimo cierra el tema de hoy y encarece las siguientes visitas; reconocer y corregir con calendario construye reputación."),
+  prensa: A("crisis_com", "La nota sale con o sin tu versión. El silencio y la respuesta que no contesta suenan a que escondes algo; dar la cara con cifras y decir qué cambia hace más justa la siguiente nota."),
+  deuda: A("apalancamiento", "La deuda trae condiciones. Romper una avisando permite renegociar; maquillar el corte traslada el problema a los proveedores, y vender activos con prisa cuesta valor."),
 };
 
 /** Concepto y aplicación de un asunto (casos propios o banco). `undefined` si el caso aún no tiene concepto asignado. */

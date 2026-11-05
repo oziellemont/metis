@@ -251,13 +251,23 @@ export function seasonEpisodesOf(s: Pick<CeoState, "company" | "rulesVersion"> &
   const a = companyTypeOf(s);
   // Carrera continua (P1-B): un caso ejecutivo llega una sola vez en la vida de tu empresa.
   const played = all ? new Set<string>() : playedEpisodesOf(s);
+  const stage = companyStageOf(s).idx;
   return (SEASON_EPISODES[s.company] ?? []).flatMap((x) => {
     if (played.has(x.episode)) return [];
+    // Capítulos: el caso largo de cada capítulo solo llega en él (y una sola vez en la vida de tu empresa).
+    if (x.stages && (stage < x.stages[0] || stage > x.stages[1])) return [];
     // Auditoría (P1-A): un caso que no es compatible con el tipo de empresa no se muestra.
     if (!episodeFits(x.episode, a)) return [];
     const spec = EPISODES[x.episode];
     return spec && spec.approval === "aprobado" && spec.company === s.company ? [{ spec, day: x.day, slot: x.slot, replaces: x.replaces }] : [];
   });
+}
+/** Lo último que elegiste en cada asunto en los meses cerrados de tu empresa (carrera continua). */
+function priorChoicesOf(s: StageInput): Map<string, string> {
+  const out = new Map<string, string>();
+  if (s.careerMode !== "continua" || !s.companyProfile) return out;
+  for (const r of closedRunsOf({ companyProfile: s.companyProfile, career: s.career ?? [] })) for (const [id, d] of Object.entries(r.decisions ?? {})) out.set(id, d.option);
+  return out;
 }
 /** Reglas v8: si dejar vencer equivale a la línea roja, el vencimiento lo dice con todas sus letras. */
 const OMISSION_NOTE = " Sin tu decisión, alguien hizo justo lo que es línea roja: cuenta como si lo hubieras decidido tú.";
@@ -276,9 +286,17 @@ export function seasonItems(s: Pick<CeoState, "company" | "rulesVersion"> & Stag
   // Revisiones por versión (v8+): mismo id, el asunto se presenta como lo define la versión del periodo.
   let items = compatibleItems(pack.items.filter((i) => !isBankId(i.id) && presentIn(i, v)).map((i) => withOmissionNote(itemAtVersion(i, v), v)), companyTypeOf(s));
   // Carrera continua (P1-B): la carta de llegada y lo del primer día solo tienen sentido al tomar el mando.
-  if (companyStageOf(s).idx > 0) {
+  const stage = companyStageOf(s).idx;
+  if (stage > 0) {
     const first = new Set(items.filter((i) => i.day <= 1).map((i) => i.id));
     items = items.filter((i) => !first.has(i.id) && !(i.trigger && first.has(i.trigger.item)));
+  }
+  // Capítulos: lo que habla de tu llegada solo llega al tomar el mando; los seguimientos, solo en su capítulo y
+  // solo si en un mes anterior decidiste lo que les da origen. Sus consecuencias se van con ellos.
+  if (items.some((i) => i.stages || i.recall)) {
+    const prior = items.some((i) => i.recall) ? priorChoicesOf(s) : new Map<string, string>();
+    const out = new Set(items.filter((i) => (i.stages && (stage < i.stages[0] || stage > i.stages[1])) || (i.recall && !i.recall.options.includes(prior.get(i.recall.item) ?? ""))).map((i) => i.id));
+    if (out.size) items = items.filter((i) => !out.has(i.id) && !(i.trigger && out.has(i.trigger.item)));
   }
   // Lo que sustituye un caso ejecutivo no vuelve, aunque ese caso ya se haya jugado en un mes anterior.
   const gone = new Set<string>(seasonEpisodesOf(s, true).map((x) => x.replaces).filter((x): x is string => !!x));

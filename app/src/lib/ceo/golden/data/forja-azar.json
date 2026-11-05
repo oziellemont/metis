@@ -14,8 +14,8 @@
   {
    "type": "dilemma",
    "at": 1791212420000,
-   "id": "n2",
-   "option": 2
+   "id": "n2-v2",
+   "option": 1
   },
   {
    "type": "decide",
@@ -32,8 +32,8 @@
   {
    "type": "dilemma",
    "at": 1791307454390,
-   "id": "g1",
-   "option": 1
+   "id": "g1-v2",
+   "option": 3
   },
   {
    "type": "decide",
@@ -49,21 +49,21 @@
   },
   {
    "type": "dilemma",
-   "at": 1791413972141,
-   "id": "d4",
-   "option": 0
+   "at": 1791403188427,
+   "id": "d4-v2",
+   "option": 2
   },
   {
    "type": "decide",
-   "at": 1791413972141,
+   "at": 1791403188427,
    "item": "fn-d3-ppap",
    "option": "c"
   },
   {
    "type": "dilemma",
    "at": 1791472015003,
-   "id": "e2",
-   "option": 2
+   "id": "e2-v2",
+   "option": 3
   },
   {
    "type": "decide",
@@ -86,8 +86,8 @@
   {
    "type": "dilemma",
    "at": 1791563411467,
-   "id": "v4",
-   "option": 0
+   "id": "v4-v2",
+   "option": 1
   },
   {
    "type": "decide",
@@ -104,8 +104,8 @@
   {
    "type": "dilemma",
    "at": 1791647116344,
-   "id": "c1",
-   "option": 1
+   "id": "c1-v2",
+   "option": 3
   },
   {
    "type": "decide",
@@ -128,8 +128,8 @@
   {
    "type": "dilemma",
    "at": 1791738893338,
-   "id": "s1",
-   "option": 3
+   "id": "s1-v2",
+   "option": 0
   },
   {
    "type": "decide",
@@ -193,7 +193,7 @@
      "consejo": 77
     },
     "health": 66,
-    "xp": 105,
+    "xp": 115,
     "level": 0,
     "relations": {
      "zertuche": 58,
@@ -247,7 +247,7 @@
       86400
      ],
      "fn-d3-ppap": [
-      201551,
+      190767,
       36000
      ],
      "fn-c-kaizen": [
@@ -311,7 +311,7 @@
      "primera"
     ],
     "dilemmas": {
-     "n2": 2
+     "n2-v2": 1
     },
     "lessons": [],
     "career": []
@@ -319,7 +319,7 @@
   },
   {
    "after": 7,
-   "at": 1791413952141,
+   "at": 1791403168427,
    "snapshot": {
     "company": "forja",
     "tier": 0,
@@ -388,7 +388,7 @@
       86400
      ],
      "fn-d3-ppap": [
-      201551,
+      190767,
       36000
      ],
      "fn-c-kaizen": [
@@ -458,8 +458,8 @@
      "primera"
     ],
     "dilemmas": {
-     "n2": 2,
-     "g1": 1
+     "n2-v2": 1,
+     "g1-v2": 3
     },
     "lessons": [],
     "career": []
@@ -481,7 +481,7 @@
      "consejo": 77
     },
     "health": 64,
-    "xp": 310,
+    "xp": 315,
     "level": 1,
     "relations": {
      "zertuche": 66,
@@ -536,7 +536,7 @@
       86400
      ],
      "fn-d3-ppap": [
-      201551,
+      190767,
       36000
      ],
      "fn-c-kaizen": [
@@ -609,9 +609,9 @@
      "puntual"
     ],
     "dilemmas": {
-     "n2": 2,
-     "g1": 1,
-     "d4": 0
+     "n2-v2": 1,
+     "g1-v2": 3,
+     "d4-v2": 2
     },
     "lessons": [],
     "career": []
@@ -633,7 +633,7 @@
      "consejo": 73
     },
     "health": 64,
-    "xp": 450,
+    "xp": 465,
     "level": 2,
     "relations": {
      "zertuche": 58,
@@ -688,7 +688,7 @@
       86400
      ],
      "fn-d3-ppap": [
-      201551,
+      190767,
       36000
      ],
      "fn-c-kaizen": [
@@ -764,10 +764,10 @@
      "puntual"
     ],
     "dilemmas": {
-     "n2": 2,
-     "g1": 1,
-     "d4": 0,
-     "e2": 2
+     "n2-v2": 1,
+     "g1-v2": 3,
+     "d4-v2": 2,
+     "e2-v2": 3
     },
     "lessons": [],
     "career": []
@@ -789,7 +789,7 @@
      "consejo": 75
     },
     "health": 64,
-    "xp": 580,
+    "xp": 600,
     "level": 2,
     "relations": {
      "zertuche": 66,
@@ -844,7 +844,7 @@
       86400
      ],
      "fn-d3-ppap": [
-      201551,
+      190767,
       36000
      ],
      "fn-c-kaizen": [
@@ -922,11 +922,11 @@
      "puntual"
     ],
     "dilemmas": {
-     "n2": 2,
-     "g1": 1,
-     "d4": 0,
-     "e2": 2,
-     "v4": 0
+     "n2-v2": 1,
+     "g1-v2": 3,
+     "d4-v2": 2,
+     "e2-v2": 3,
+     "v4-v2": 1
     },
     "lessons": [],
     "career": []
@@ -948,7 +948,7 @@
      "consejo": 75
     },
     "health": 64,
-    "xp": 770,
+    "xp": 780,
     "level": 3,
     "relations": {
      "zertuche": 66,
@@ -1003,7 +1003,7 @@
       86400
      ],
      "fn-d3-ppap": [
-      201551,
+      190767,
       36000
      ],
      "fn-c-kaizen": [
@@ -1085,12 +1085,12 @@
      "gente"
     ],
     "dilemmas": {
-     "n2": 2,
-     "g1": 1,
-     "d4": 0,
-     "e2": 2,
-     "v4": 0,
-     "c1": 1
+     "n2-v2": 1,
+     "g1-v2": 3,
+     "d4-v2": 2,
+     "e2-v2": 3,
+     "v4-v2": 1,
+     "c1-v2": 3
     },
     "lessons": [],
     "career": []
@@ -1112,7 +1112,7 @@
      "consejo": 71
     },
     "health": 63,
-    "xp": 865,
+    "xp": 885,
     "level": 3,
     "relations": {
      "zertuche": 50,
@@ -1167,7 +1167,7 @@
       86400
      ],
      "fn-d3-ppap": [
-      201551,
+      190767,
       36000
      ],
      "fn-c-kaizen": [
@@ -1252,13 +1252,13 @@
      "gente"
     ],
     "dilemmas": {
-     "n2": 2,
-     "g1": 1,
-     "d4": 0,
-     "e2": 2,
-     "v4": 0,
-     "c1": 1,
-     "s1": 3
+     "n2-v2": 1,
+     "g1-v2": 3,
+     "d4-v2": 2,
+     "e2-v2": 3,
+     "v4-v2": 1,
+     "c1-v2": 3,
+     "s1-v2": 0
     },
     "lessons": [],
     "career": []
@@ -1280,7 +1280,7 @@
      "consejo": 66
     },
     "health": 61,
-    "xp": 865,
+    "xp": 885,
     "level": 3,
     "relations": {
      "zertuche": 50,
@@ -1335,7 +1335,7 @@
       86400
      ],
      "fn-d3-ppap": [
-      201551,
+      190767,
       36000
      ],
      "fn-c-kaizen": [
@@ -1437,13 +1437,13 @@
      "puntual"
     ],
     "dilemmas": {
-     "n2": 2,
-     "g1": 1,
-     "d4": 0,
-     "e2": 2,
-     "v4": 0,
-     "c1": 1,
-     "s1": 3
+     "n2-v2": 1,
+     "g1-v2": 3,
+     "d4-v2": 2,
+     "e2-v2": 3,
+     "v4-v2": 1,
+     "c1-v2": 3,
+     "s1-v2": 0
     },
     "lessons": [],
     "career": []
@@ -1465,7 +1465,7 @@
      "consejo": 70
     },
     "health": 65,
-    "xp": 865,
+    "xp": 885,
     "level": 3,
     "relations": {
      "zertuche": 50,
@@ -1518,7 +1518,7 @@
       86400
      ],
      "fn-d3-ppap": [
-      174535,
+      163811,
       36000
      ],
      "fn-d4-recap": [
@@ -1576,13 +1576,13 @@
      "racha7"
     ],
     "dilemmas": {
-     "n2": 2,
-     "g1": 1,
-     "d4": 0,
-     "e2": 2,
-     "v4": 0,
-     "c1": 1,
-     "s1": 3
+     "n2-v2": 1,
+     "g1-v2": 3,
+     "d4-v2": 2,
+     "e2-v2": 3,
+     "v4-v2": 1,
+     "c1-v2": 3,
+     "s1-v2": 0
     },
     "lessons": [],
     "career": [

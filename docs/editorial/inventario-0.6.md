@@ -1,28 +1,28 @@
-# mêtis CEO · Inventario editorial de los 132 asuntos y veredicto sombra
+# mêtis CEO · Inventario editorial de los 144 asuntos y veredicto sombra
 
 Clasificador editorial v1 · Veredicto sombra v0. Reporte generado por código a partir del contenido actual; no cambia ningún resultado de partidas, XP ni veredicto en producción.
 
 ## 1. Resumen
 
-De los 132 asuntos (83 base y 49 consecuencias), el clasificador propone:
+De los 144 asuntos (95 base y 49 consecuencias), el clasificador propone:
 
 | Estado | Asuntos | % |
 |---|---:|---:|
-| approved (propuesta, falta firma humana) | 49 | 37 % |
-| legacy (se conserva como histórico) | 21 | 16 % |
-| needsRewrite (reescribir) | 41 | 31 % |
-| restrictedEthics (obligación ética o de seguridad) | 21 | 16 % |
+| approved (propuesta, falta firma humana) | 46 | 32 % |
+| legacy (se conserva como histórico) | 19 | 13 % |
+| needsRewrite (reescribir) | 58 | 40 % |
+| restrictedEthics (obligación ética o de seguridad) | 21 | 15 % |
 
 Ningún asunto queda aprobado de forma definitiva: «approved» es una propuesta automática que requiere la aprobación de Oziel (tabla `EDITORIAL_REVIEW` en `editorial.ts`).
 
 | Empresa | approved | legacy | needsRewrite | restrictedEthics |
 |---|---:|---:|---:|---:|
-| Botanas Cumbre | 6 | 2 | 15 | 4 |
-| Forja Norte | 8 | 6 | 5 | 4 |
-| Grupo Brasa | 8 | 4 | 6 | 1 |
-| Kúbit | 9 | 3 | 5 | 4 |
-| Punto Madero | 9 | 3 | 5 | 4 |
-| Vértice Logística | 9 | 3 | 5 | 4 |
+| Botanas Cumbre | 6 | 2 | 17 | 4 |
+| Forja Norte | 8 | 5 | 8 | 4 |
+| Grupo Brasa | 8 | 3 | 9 | 1 |
+| Kúbit | 8 | 3 | 8 | 4 |
+| Punto Madero | 8 | 3 | 8 | 4 |
+| Vértice Logística | 8 | 3 | 8 | 4 |
 
 ## 2. Auditoría de `score` frente a efectos
 
@@ -30,24 +30,24 @@ Balance neto promedio (suma de los cinco indicadores, sin multiplicadores de niv
 
 | Empresa | score 0 | score 1 | score 2 | score 3 | Correlación score–balance |
 |---|---:|---:|---:|---:|---:|
-| Botanas Cumbre | -5.27 (11) | -1.38 (26) | -0.91 (11) | +2.52 (27) | 0.68 |
-| Forja Norte | -6.20 (5) | -1.00 (20) | -0.78 (18) | +0.78 (23) | 0.51 |
-| Grupo Brasa | -3.20 (5) | -2.12 (16) | +0.13 (15) | +1.11 (18) | 0.53 |
-| Kúbit | -5.20 (5) | -0.67 (18) | -0.62 (16) | +1.19 (21) | 0.54 |
-| Punto Madero | -5.20 (5) | -0.78 (18) | -0.56 (16) | +1.19 (21) | 0.56 |
-| Vértice Logística | -5.20 (5) | -0.78 (18) | -0.50 (16) | +1.14 (21) | 0.56 |
+| Botanas Cumbre | -5.15 (13) | -1.39 (28) | -0.91 (11) | +2.59 (29) | 0.70 |
+| Forja Norte | -5.86 (7) | -1.27 (22) | -0.78 (18) | +1.04 (25) | 0.57 |
+| Grupo Brasa | -3.43 (7) | -2.22 (18) | +0.13 (15) | +1.30 (20) | 0.57 |
+| Kúbit | -5.00 (7) | -0.85 (20) | -0.62 (16) | +1.52 (23) | 0.60 |
+| Punto Madero | -5.14 (7) | -1.10 (20) | -0.56 (16) | +1.52 (23) | 0.63 |
+| Vértice Logística | -5.43 (7) | -1.15 (20) | -0.50 (16) | +1.43 (23) | 0.63 |
 
 Hallazgos por asunto (un asunto puede tener varios):
 
 | Hallazgo | Asuntos |
 |---|---:|
 | Una opción gana o empata en los cinco indicadores frente a todas las demás. | 0 |
-| La opción con score más alto también es la de mejor balance de indicadores. | 74 |
-| La opción con score más alto gana por una ventaja clara: se adivina la preferencia del autor. | 53 |
-| La opción con score 0 es la que peor le va a la empresa. | 31 |
+| La opción con score más alto también es la de mejor balance de indicadores. | 89 |
+| La opción con score más alto gana por una ventaja clara: se adivina la preferencia del autor. | 70 |
+| La opción con score 0 es la que peor le va a la empresa. | 42 |
 | Hay una opción sin ningún costo visible. | 0 |
-| Solo una opción queda cerca de la mejor; las demás no son defendibles por números. | 58 |
-| No responder castiga más que cualquier opción. | 119 |
+| Solo una opción queda cerca de la mejor; las demás no son defendibles por números. | 75 |
+| No responder castiga más que cualquier opción. | 126 |
 | Una opción cruza una línea roja (se analiza, no se presenta como alternativa legítima). | 16 |
 
 Umbrales: ventaja «obvia» ≥ 3 puntos netos; una opción es «defendible» si queda a 2 puntos o menos de la mejor.
@@ -85,7 +85,7 @@ Opciones como `id:score:balance`. Un `!` marca una línea roja. «Vencer» es el
 
 | Día | Asunto | Tipo | Opciones | Vencer | Estado propuesto | Motivo |
 |---:|---|---|---|---:|---|---|
-| 1 | `d1-bienvenida` Te damos la bienvenida a Cumbre. Mañana empiezas. | base | a:3:+5 b:1:+1 c:1:0 | -6 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
+| 1 | `d1-bienvenida` Te damos la bienvenida a Cumbre. Mañana empiezas. | base | a:3:+6 b:1:+1 c:1:0 | -6 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
 | 1 | `d1-hector` Héctor Salinas | base | a:3:+5 b:2:+2 c:0:-3 | -6 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
 | 2 | `d2-supernorte` Condiciones comerciales 2027 · Botanas Cumbre | base | a:0:-10 b:3:+2 c:1:-7 | -21 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
 | 2 | `d2-ana` Pronóstico Q1 · versión final (22 láminas) | base | a:1:-1 b:3:+4 c:1:+1 | -3 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
@@ -112,12 +112,14 @@ Opciones como `id:score:balance`. Un `!` marca una línea roja. «Vencer» es el
 | 5 | `c-mant-queja` Incumplimiento de nivel de servicio | consecuencia | a:3:0 b:2:0 c:1:-2 | -6 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 | 6 | `c-mant-inversion` La envasadora: reconstruir o reemplazar | consecuencia | a:3:-3 b:2:-3 c:1:-2 | -5 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 | 5 | `c-mant-dosificador` Javier Ortiz | consecuencia | a:3:0 b:1:-2! c:2:-1 | -3 | restrictedEthics | Obligación ética o de seguridad. Es válido que tenga una respuesta clara; la opción que cruza la línea roja debe mostrarse como consecuencia, no como alternativa. |
+| 3 | `c-s-merma` Junta · El bono por merma del trimestre | base | a:3:+3 b:1:-1 c:0:-5 | -6 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
+| 3 | `c-s-revision` Junta · Revisión de medio año con el sindicato | base | a:3:+3 b:1:-2 c:0:-4 | -6 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
 
 ### Forja Norte
 
 | Día | Asunto | Tipo | Opciones | Vencer | Estado propuesto | Motivo |
 |---:|---|---|---|---:|---|---|
-| 1 | `fn-d1-carta` Te damos la bienvenida a Forja Norte. Esto es lo que esperamos. | base | a:3:+3 b:1:+2 c:2:+1 | -7 | legacy | Jugable como contenido histórico, pero la opción preferida por el autor sigue siendo la que más conviene. |
+| 1 | `fn-d1-carta` Te damos la bienvenida a Forja Norte. Esto es lo que esperamos. | base | a:3:+7 b:1:+2 c:2:+1 | -7 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
 | 1 | `fn-d1-andon` Chuy Morales | base | a:2:+2 b:1:0 c:3:+3 | -5 | legacy | Jugable como contenido histórico, pero la opción preferida por el autor sigue siendo la que más conviene. |
 | 2 | `fn-d2-precio` Aurora Motors · Annual price reduction 2027 | base | a:0:-6 b:2:0 c:3:-2 | -13 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 | 2 | `fn-d2-soldadores` Fuga de soldadores · 7 en un mes | base | a:1:-1 b:3:-3 c:2:0 | -7 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
@@ -140,12 +142,14 @@ Opciones como `id:score:balance`. Un `!` marca una línea roja. «Vencer» es el
 | 5 | `fn-c-inv-factoraje` Aurora Motors · Supplier financial review | consecuencia | a:3:0 b:2:0 c:1:0 | -4 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 | 5 | `fn-c8-greg` Aurora Motors · Incidente de suministro y scorecard | consecuencia | a:3:0 b:1:-1 c:2:0 | -4 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 | 6 | `fn-c8-consejo` Antes del consejo: la caja del inventario | consecuencia | a:3:+1 b:1:+2 c:2:-1 | -3 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 3 | `fn-s-precio-mas` Aurora Motors · Productividad para la plataforma 2028 | base | a:3:+3 b:0:-6 c:1:-4 | -6 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
+| 3 | `fn-s-precio-rfq` Aurora Motors · Solicitud de cotización plataforma SUV 2028 | base | a:3:+1 b:1:-4 c:0:-4 | -9 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
 
 ### Grupo Brasa
 
 | Día | Asunto | Tipo | Opciones | Vencer | Estado propuesto | Motivo |
 |---:|---|---|---|---:|---|---|
-| 1 | `gb-d1-carta` Te dejo las llaves de Brasa | base | a:3:+3 b:1:+1 c:2:+2 | -6 | legacy | Jugable como contenido histórico, pero la opción preferida por el autor sigue siendo la que más conviene. |
+| 1 | `gb-d1-carta` Te dejo las llaves de Brasa | base | a:3:+6 b:1:+1 c:2:+2 | -6 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
 | 1 | `gb-d1-app` Propuesta · Socio preferente en Rappido | base | a:0:0 b:3:-2 c:2:0 | -2 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 | 2 | `gb-d2-menu` Ingeniería de menú · 72 platillos | base | a:3:+3 b:2:+4 c:1:-6 | -3 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 | 2 | `gb-d2-propinas` Maru Gutiérrez | base | a:2:+1 b:0:-3 c:2:-1 | -8 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
@@ -164,12 +168,14 @@ Opciones como `id:score:balance`. Un `!` marca una línea roja. «Vencer» es el
 | 4 | `gb-c-prov-piloto` Resultados de la prueba ciega de res | consecuencia | a:3:+1 b:2:+1 c:1:-1 | -2 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 | 4 | `gb-c-prov-resenas` Maru Gutiérrez | consecuencia | a:3:-1 b:2:-1 c:1:-1 | -4 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 | 5 | `gb-c-prov-contrato` El proveedor de res acepta… con condiciones | consecuencia | a:3:0 b:2:0 c:1:-1 | -2 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 3 | `gb-s-app-renueva` Rappido · Revisión del programa Socio Preferente | base | a:3:0 b:0:-6 c:1:-5 | -6 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
+| 3 | `gb-s-app-oferta` Rappido · Nueva propuesta para Brasa | base | a:3:+3 b:1:-1 c:0:-2 | -3 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
 
 ### Kúbit
 
 | Día | Asunto | Tipo | Opciones | Vencer | Estado propuesto | Motivo |
 |---:|---|---|---|---:|---|---|
-| 1 | `kb-d1-carta` Te damos la bienvenida a Kúbit. Esto es lo que esperamos. | base | a:3:+3 b:1:+3 c:2:+1 | -7 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 1 | `kb-d1-carta` Te damos la bienvenida a Kúbit. Esto es lo que esperamos. | base | a:3:+7 b:1:+3 c:2:+1 | -7 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
 | 1 | `kb-d1-guardia` Memo Paz | base | a:2:+2 b:1:0 c:3:+3 | -5 | legacy | Jugable como contenido histórico, pero la opción preferida por el autor sigue siendo la que más conviene. |
 | 2 | `kb-d2-altamar` Grupo Altamar · Renovación del contrato anual | base | a:0:-6 b:2:0 c:3:-2 | -9 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 | 2 | `kb-d2-fuga` Fuga de ingenieros · 9 en dos meses | base | a:1:-1 b:3:-3 c:2:0 | -7 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
@@ -190,12 +196,14 @@ Opciones como `id:score:balance`. Un `!` marca una línea roja. «Vencer» es el
 | 4 | `kb-c-nube-consumo` Guillermo «Memo» Paz | consecuencia | a:3:+1 b:1:+1 c:2:0 | -1 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 | 4 | `kb-c-nube-caida` Llamada perdida · Renata Cruz (Éxito del Cliente) | consecuencia | a:3:-1 b:2:-2 c:1:-1 | -5 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 | 5 | `kb-c-nube-compromiso` Pregunta antes del consejo: el compromiso con la nube | consecuencia | a:3:0 b:2:0 c:1:-1 | -3 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 3 | `kb-s-altamar-mas` Grupo Altamar · Desarrollos para las empresas del grupo | base | a:3:+3 b:0:-5 c:1:-1 | -5 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
+| 3 | `kb-s-altamar-grupo` Grupo Altamar · Plataforma para todo el grupo | base | a:3:+3 b:1:-4 c:0:-4 | -8 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
 
 ### Punto Madero
 
 | Día | Asunto | Tipo | Opciones | Vencer | Estado propuesto | Motivo |
 |---:|---|---|---|---:|---|---|
-| 1 | `pm-d1-carta` Te damos la bienvenida a Punto Madero. Esto es lo que esperamos. | base | a:3:+3 b:1:+3 c:2:+1 | -7 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 1 | `pm-d1-carta` Te damos la bienvenida a Punto Madero. Esto es lo que esperamos. | base | a:3:+7 b:1:+3 c:2:+1 | -7 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
 | 1 | `pm-d1-piso` Chuy Elizondo | base | a:2:+2 b:1:0 c:3:+3 | -5 | legacy | Jugable como contenido histórico, pero la opción preferida por el autor sigue siendo la que más conviene. |
 | 2 | `pm-d2-penasco` Constructora Peñasco · Condiciones para el próximo año | base | a:0:-6 b:2:0 c:3:-2 | -9 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 | 2 | `pm-d2-asesores` Se nos van los asesores expertos · 26 en dos meses | base | a:1:-1 b:3:-3 c:2:0 | -7 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
@@ -216,12 +224,14 @@ Opciones como `id:score:balance`. Un `!` marca una línea roja. «Vencer» es el
 | 4 | `pm-c-temp-compras` La rebaja funcionó. El problema estaba antes | consecuencia | a:3:+1 b:1:+1 c:2:-1 | -1 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 | 4 | `pm-c-temp-guerra` Octavio Ríos | consecuencia | a:3:0 b:1:-1 c:2:0 | -3 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 | 5 | `pm-c-temp-bodega` El proveedor cambió la línea | consecuencia | a:3:0 b:2:0 c:1:-2 | -3 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 3 | `pm-s-penasco-mas` Constructora Peñasco · Crédito para los desarrollos nuevos | base | a:3:+3 b:0:-6 c:1:-4 | -5 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
+| 3 | `pm-s-penasco-obras` Constructora Peñasco · Proveedor de los nueve desarrollos | base | a:3:+3 b:1:-4 c:0:-4 | -8 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
 
 ### Vértice Logística
 
 | Día | Asunto | Tipo | Opciones | Vencer | Estado propuesto | Motivo |
 |---:|---|---|---|---:|---|---|
-| 1 | `vl-d1-carta` Te damos la bienvenida a Vértice. Esto es lo que esperamos. | base | a:3:+3 b:1:+3 c:2:+1 | -7 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 1 | `vl-d1-carta` Te damos la bienvenida a Vértice. Esto es lo que esperamos. | base | a:3:+7 b:1:+3 c:2:+1 | -7 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
 | 1 | `vl-d1-patio` Lalo Rangel | base | a:2:+2 b:1:0 c:3:+3 | -5 | legacy | Jugable como contenido histórico, pero la opción preferida por el autor sigue siendo la que más conviene. |
 | 2 | `vl-d2-almena` Supermercados Almena · Condiciones para el próximo año | base | a:0:-6 b:2:0 c:3:-2 | -9 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 | 2 | `vl-d2-operadores` Se nos van los operadores · 40 en dos meses | base | a:1:-1 b:3:-3 c:2:0 | -7 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
@@ -242,6 +252,8 @@ Opciones como `id:score:balance`. Un `!` marca una línea roja. «Vencer» es el
 | 4 | `vl-c-diesel-formula` Supermercados Almena · Recargo por combustible | consecuencia | a:3:+1 b:1:0 c:2:+1 | -2 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 | 4 | `vl-c-diesel-licitacion` Llamada perdida · Mauricio Cárdenas (Comercial) | consecuencia | a:3:0 b:1:-1 c:2:0 | -5 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 | 5 | `vl-c-diesel-telemetria` José «Pepe» Medina | consecuencia | a:3:0 b:1:-1 c:2:0 | -3 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 3 | `vl-s-almena-mas` Supermercados Almena · Los CEDIS nuevos | base | a:3:+3 b:0:-8 c:1:-4 | -5 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
+| 3 | `vl-s-almena-cedis` Supermercados Almena · Operador de los CEDIS nuevos | base | a:3:+2 b:1:-5 c:0:-4 | -8 | needsRewrite | La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor. |
 
 ## 5. Veredicto sombra
 
@@ -256,8 +268,8 @@ Población: 216 partidas reproducibles (semilla fija) en las tres empresas, nive
 
 | | Sombra: aprobado | Sombra: reprobado | Sombra: sin evidencia | Total |
 |---|---:|---:|---:|---:|
-| Actual: aprobó | 46 | 3 | 0 | 49 |
-| Actual: reprobó | 53 | 112 | 2 | 167 |
+| Actual: aprobó | 46 | 4 | 0 | 50 |
+| Actual: reprobó | 53 | 111 | 2 | 166 |
 
 Coinciden en 74 % de las partidas. Aprobación actual: 23 %; sombra: 46 %.
 
@@ -277,7 +289,7 @@ Por empresa y estilo de juego (aprobadas actual / sombra, de cada grupo):
 |---|---:|---:|---:|---:|---:|---:|
 | Botanas Cumbre | 6 / 6 de 6 | 0 / 6 de 6 | 0 / 5 de 6 | 1 / 3 de 6 | 0 / 2 de 6 | 0 / 0 de 6 |
 | Forja Norte | 6 / 6 de 6 | 0 / 0 de 6 | 0 / 0 de 6 | 1 / 2 de 6 | 0 / 0 de 6 | 2 / 0 de 6 |
-| Grupo Brasa | 6 / 6 de 6 | 0 / 6 de 6 | 0 / 6 de 6 | 1 / 2 de 6 | 0 / 3 de 6 | 0 / 0 de 6 |
+| Grupo Brasa | 6 / 6 de 6 | 0 / 6 de 6 | 0 / 6 de 6 | 2 / 2 de 6 | 0 / 3 de 6 | 0 / 0 de 6 |
 | Kúbit | 6 / 6 de 6 | 0 / 0 de 6 | 3 / 3 de 6 | 1 / 2 de 6 | 0 / 2 de 6 | 0 / 6 de 6 |
 | Punto Madero | 6 / 6 de 6 | 0 / 0 de 6 | 0 / 1 de 6 | 2 / 3 de 6 | 0 / 0 de 6 | 0 / 6 de 6 |
 | Vértice Logística | 6 / 6 de 6 | 0 / 0 de 6 | 1 / 1 de 6 | 1 / 2 de 6 | 0 / 0 de 6 | 0 / 2 de 6 |

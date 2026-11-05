@@ -14,7 +14,7 @@
   {
    "type": "dilemma",
    "at": 1791219620000,
-   "id": "c4",
+   "id": "c4-v2",
    "option": 0
   },
   {
@@ -26,8 +26,8 @@
   {
    "type": "dilemma",
    "at": 1791305303477,
-   "id": "d1",
-   "option": 3
+   "id": "d1-v2",
+   "option": 0
   },
   {
    "type": "decide",
@@ -37,13 +37,13 @@
   },
   {
    "type": "dilemma",
-   "at": 1791391042421,
-   "id": "p1",
-   "option": 2
+   "at": 1791388687066,
+   "id": "p1-v2",
+   "option": 3
   },
   {
    "type": "settings",
-   "at": 1791391052421,
+   "at": 1791388697066,
    "patch": {
     "windowStart": 7,
     "windowEnd": 20
@@ -51,21 +51,21 @@
   },
   {
    "type": "decide",
-   "at": 1791391052421,
+   "at": 1791388697066,
    "item": "d3-planta",
    "option": "a"
   },
   {
    "type": "decide",
-   "at": 1791401245998,
+   "at": 1791395434749,
    "item": "d3-diego",
    "option": "a"
   },
   {
    "type": "dilemma",
    "at": 1791469933416,
-   "id": "s1",
-   "option": 3
+   "id": "s1-v2",
+   "option": 2
   },
   {
    "type": "decide",
@@ -76,8 +76,8 @@
   {
    "type": "dilemma",
    "at": 1791553616832,
-   "id": "g4",
-   "option": 3
+   "id": "g4-v2",
+   "option": 1
   },
   {
    "type": "decide",
@@ -88,13 +88,13 @@
   {
    "type": "dilemma",
    "at": 1791640322280,
-   "id": "q5",
-   "option": 3
+   "id": "q5-v2",
+   "option": 1
   },
   {
    "type": "dilemma",
    "at": 1791750807494,
-   "id": "k1",
+   "id": "k2-v2",
    "option": 2
   },
   {
@@ -139,10 +139,10 @@
      "margen": 54,
      "equipo": 56,
      "clientes": 67,
-     "consejo": 59
+     "consejo": 60
     },
     "health": 59,
-    "xp": 70,
+    "xp": 80,
     "level": 0,
     "relations": {
      "ramiro": 42,
@@ -195,15 +195,15 @@
       86400
      ],
      "d3-planta": [
-      171421,
+      169066,
       28800
      ],
      "d3-diego": [
-      181669,
+      176752,
       86400
      ],
      "c-hector-renuncia": [
-      196776,
+      188082,
       36000
      ],
      "d4-objetivos": [
@@ -258,7 +258,7 @@
      "primera"
     ],
     "dilemmas": {
-     "c4": 0
+     "c4-v2": 0
     },
     "lessons": [],
     "career": []
@@ -266,7 +266,7 @@
   },
   {
    "after": 5,
-   "at": 1791391022421,
+   "at": 1791388667066,
    "snapshot": {
     "company": "cumbre",
     "tier": 0,
@@ -277,10 +277,10 @@
      "margen": 54,
      "equipo": 52,
      "clientes": 67,
-     "consejo": 62
+     "consejo": 63
     },
     "health": 59,
-    "xp": 120,
+    "xp": 140,
     "level": 0,
     "relations": {
      "ramiro": 42,
@@ -334,15 +334,15 @@
       86400
      ],
      "d3-planta": [
-      171421,
+      169066,
       28800
      ],
      "d3-diego": [
-      181669,
+      176752,
       86400
      ],
      "c-hector-renuncia": [
-      196776,
+      188082,
       36000
      ],
      "d4-objetivos": [
@@ -402,8 +402,8 @@
      "primera"
     ],
     "dilemmas": {
-     "c4": 0,
-     "d1": 3
+     "c4-v2": 0,
+     "d1-v2": 0
     },
     "lessons": [],
     "career": []
@@ -422,10 +422,10 @@
      "margen": 45,
      "equipo": 56,
      "clientes": 55,
-     "consejo": 61
+     "consejo": 62
     },
-    "health": 51,
-    "xp": 225,
+    "health": 52,
+    "xp": 245,
     "level": 1,
     "relations": {
      "ramiro": 58,
@@ -479,15 +479,15 @@
       86400
      ],
      "d3-planta": [
-      171421,
+      169066,
       28800
      ],
      "d3-diego": [
-      181645,
+      175834,
       86400
      ],
      "c-hector-renuncia": [
-      199499,
+      189224,
       36000
      ],
      "d4-objetivos": [
@@ -550,9 +550,9 @@
      "racha3"
     ],
     "dilemmas": {
-     "c4": 0,
-     "d1": 3,
-     "p1": 2
+     "c4-v2": 0,
+     "d1-v2": 0,
+     "p1-v2": 3
     },
     "lessons": [],
     "career": []
@@ -571,10 +571,10 @@
      "margen": 50,
      "equipo": 45,
      "clientes": 55,
-     "consejo": 62
+     "consejo": 63
     },
-    "health": 50,
-    "xp": 295,
+    "health": 51,
+    "xp": 315,
     "level": 1,
     "relations": {
      "ramiro": 58,
@@ -628,15 +628,15 @@
       86400
      ],
      "d3-planta": [
-      171421,
+      169066,
       28800
      ],
      "d3-diego": [
-      181645,
+      175834,
       86400
      ],
      "c-hector-renuncia": [
-      199499,
+      189224,
       36000
      ],
      "d4-objetivos": [
@@ -700,10 +700,10 @@
      "racha3"
     ],
     "dilemmas": {
-     "c4": 0,
-     "d1": 3,
-     "p1": 2,
-     "s1": 3
+     "c4-v2": 0,
+     "d1-v2": 0,
+     "p1-v2": 3,
+     "s1-v2": 2
     },
     "lessons": [],
     "career": []
@@ -722,10 +722,10 @@
      "margen": 48,
      "equipo": 43,
      "clientes": 55,
-     "consejo": 66
+     "consejo": 67
     },
-    "health": 50,
-    "xp": 370,
+    "health": 51,
+    "xp": 395,
     "level": 1,
     "relations": {
      "ramiro": 66,
@@ -779,15 +779,15 @@
       86400
      ],
      "d3-planta": [
-      171421,
+      169066,
       28800
      ],
      "d3-diego": [
-      181645,
+      175834,
       86400
      ],
      "c-hector-renuncia": [
-      199499,
+      189224,
       36000
      ],
      "d4-objetivos": [
@@ -852,11 +852,11 @@
      "racha3"
     ],
     "dilemmas": {
-     "c4": 0,
-     "d1": 3,
-     "p1": 2,
-     "s1": 3,
-     "g4": 3
+     "c4-v2": 0,
+     "d1-v2": 0,
+     "p1-v2": 3,
+     "s1-v2": 2,
+     "g4-v2": 1
     },
     "lessons": [],
     "career": []
@@ -875,11 +875,11 @@
      "margen": 48,
      "equipo": 38,
      "clientes": 55,
-     "consejo": 66
+     "consejo": 67
     },
-    "health": 49,
-    "xp": 385,
-    "level": 1,
+    "health": 50,
+    "xp": 420,
+    "level": 2,
     "relations": {
      "ramiro": 66,
      "carla": 65,
@@ -932,15 +932,15 @@
       86400
      ],
      "d3-planta": [
-      171421,
+      169066,
       28800
      ],
      "d3-diego": [
-      181645,
+      175834,
       86400
      ],
      "c-hector-renuncia": [
-      199499,
+      189224,
       36000
      ],
      "d4-objetivos": [
@@ -1005,12 +1005,12 @@
      "racha3"
     ],
     "dilemmas": {
-     "c4": 0,
-     "d1": 3,
-     "p1": 2,
-     "s1": 3,
-     "g4": 3,
-     "q5": 3
+     "c4-v2": 0,
+     "d1-v2": 0,
+     "p1-v2": 3,
+     "s1-v2": 2,
+     "g4-v2": 1,
+     "q5-v2": 1
     },
     "lessons": [],
     "career": []
@@ -1029,10 +1029,10 @@
      "margen": 48,
      "equipo": 30,
      "clientes": 55,
-     "consejo": 60
+     "consejo": 61
     },
     "health": 47,
-    "xp": 400,
+    "xp": 440,
     "level": 2,
     "relations": {
      "ramiro": 58,
@@ -1086,15 +1086,15 @@
       86400
      ],
      "d3-planta": [
-      171421,
+      169066,
       28800
      ],
      "d3-diego": [
-      181645,
+      175834,
       86400
      ],
      "c-hector-renuncia": [
-      199499,
+      189224,
       36000
      ],
      "d4-objetivos": [
@@ -1160,13 +1160,13 @@
      "racha7"
     ],
     "dilemmas": {
-     "c4": 0,
-     "d1": 3,
-     "p1": 2,
-     "s1": 3,
-     "g4": 3,
-     "q5": 3,
-     "k1": 2
+     "c4-v2": 0,
+     "d1-v2": 0,
+     "p1-v2": 3,
+     "s1-v2": 2,
+     "g4-v2": 1,
+     "q5-v2": 1,
+     "k2-v2": 2
     },
     "lessons": [],
     "career": []
@@ -1185,10 +1185,10 @@
      "margen": 48,
      "equipo": 27,
      "clientes": 55,
-     "consejo": 55
+     "consejo": 56
     },
     "health": 45,
-    "xp": 400,
+    "xp": 440,
     "level": 2,
     "relations": {
      "ramiro": 58,
@@ -1242,15 +1242,15 @@
       86400
      ],
      "d3-planta": [
-      171421,
+      169066,
       28800
      ],
      "d3-diego": [
-      181645,
+      175834,
       86400
      ],
      "c-hector-renuncia": [
-      199499,
+      189224,
       36000
      ],
      "d4-objetivos": [
@@ -1334,13 +1334,13 @@
      "racha7"
     ],
     "dilemmas": {
-     "c4": 0,
-     "d1": 3,
-     "p1": 2,
-     "s1": 3,
-     "g4": 3,
-     "q5": 3,
-     "k1": 2
+     "c4-v2": 0,
+     "d1-v2": 0,
+     "p1-v2": 3,
+     "s1-v2": 2,
+     "g4-v2": 1,
+     "q5-v2": 1,
+     "k2-v2": 2
     },
     "lessons": [],
     "career": []
@@ -1362,7 +1362,7 @@
      "consejo": 62
     },
     "health": 59,
-    "xp": 400,
+    "xp": 440,
     "level": 2,
     "relations": {
      "ramiro": 50,
@@ -1414,11 +1414,11 @@
       86400
      ],
      "d3-planta": [
-      156822,
+      153960,
       28800
      ],
      "d3-diego": [
-      163942,
+      159300,
       86400
      ],
      "d4-objetivos": [
@@ -1472,13 +1472,13 @@
      "racha7"
     ],
     "dilemmas": {
-     "c4": 0,
-     "d1": 3,
-     "p1": 2,
-     "s1": 3,
-     "g4": 3,
-     "q5": 3,
-     "k1": 2
+     "c4-v2": 0,
+     "d1-v2": 0,
+     "p1-v2": 3,
+     "s1-v2": 2,
+     "g4-v2": 1,
+     "q5-v2": 1,
+     "k2-v2": 2
     },
     "lessons": [],
     "career": [
@@ -1494,7 +1494,7 @@
        "margen": 48,
        "equipo": 27,
        "clientes": 55,
-       "consejo": 55
+       "consejo": 56
       },
       "change": {
        "adopted": 2,

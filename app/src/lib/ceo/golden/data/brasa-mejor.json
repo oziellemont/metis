@@ -15,8 +15,8 @@
   {
    "type": "dilemma",
    "at": 1791212420000,
-   "id": "n2",
-   "option": 1
+   "id": "n2-v2",
+   "option": 0
   },
   {
    "type": "decide",
@@ -33,8 +33,8 @@
   {
    "type": "dilemma",
    "at": 1791295221000,
-   "id": "g1",
-   "option": 1
+   "id": "g1-v2",
+   "option": 0
   },
   {
    "type": "decide",
@@ -51,8 +51,8 @@
   {
    "type": "dilemma",
    "at": 1791381621000,
-   "id": "d4",
-   "option": 1
+   "id": "d4-v2",
+   "option": 0
   },
   {
    "type": "decide",
@@ -64,7 +64,7 @@
    "type": "decide",
    "at": 1791381901000,
    "item": "gb-d3-franquicia",
-   "option": "b"
+   "option": "c"
   },
   {
    "type": "decide",
@@ -75,14 +75,14 @@
   {
    "type": "dilemma",
    "at": 1791468021000,
-   "id": "e2",
+   "id": "e2-v2",
    "option": 1
   },
   {
    "type": "decide",
    "at": 1791468021000,
    "item": "gb-d4-carne",
-   "option": "a"
+   "option": "b"
   },
   {
    "type": "decide",
@@ -93,8 +93,8 @@
   {
    "type": "dilemma",
    "at": 1791554421000,
-   "id": "v4",
-   "option": 1
+   "id": "v4-v2",
+   "option": 0
   },
   {
    "type": "decide",
@@ -105,8 +105,8 @@
   {
    "type": "dilemma",
    "at": 1791640821000,
-   "id": "c1",
-   "option": 1
+   "id": "c1-v2",
+   "option": 0
   },
   {
    "type": "decide",
@@ -123,8 +123,8 @@
   {
    "type": "dilemma",
    "at": 1791727221000,
-   "id": "p3",
-   "option": 1
+   "id": "p3-v2",
+   "option": 0
   },
   {
    "type": "decide",
@@ -189,27 +189,19 @@
    "at": 1791727551000,
    "lever": "piloto",
    "targets": [
-    "lourdes",
+    "ignacio",
     "paty"
    ]
   },
   {
    "type": "lever",
    "at": 1791727581000,
-   "lever": "entrevista",
-   "targets": [
-    "lourdes"
-   ]
-  },
-  {
-   "type": "lever",
-   "at": 1791727611000,
    "lever": "avance",
    "targets": []
   },
   {
    "type": "lever",
-   "at": 1791727641000,
+   "at": 1791727611000,
    "lever": "piloto",
    "targets": [
     "beatriz",
@@ -218,38 +210,27 @@
   },
   {
    "type": "lever",
+   "at": 1791727641000,
+   "lever": "avance",
+   "targets": []
+  },
+  {
+   "type": "lever",
    "at": 1791727671000,
-   "lever": "reconocer",
+   "lever": "coalicion",
    "targets": [
-    "beatriz",
-    "paty"
-   ]
-  },
-  {
-   "type": "lever",
-   "at": 1791727701000,
-   "lever": "reconocer",
-   "targets": [
-    "lourdes",
-    "beatriz"
-   ]
-  },
-  {
-   "type": "lever",
-   "at": 1791727731000,
-   "lever": "reconocer",
-   "targets": [
+    "ignacio",
     "lourdes",
     "beatriz"
    ]
   },
   {
    "type": "changeClose",
-   "at": 1791727791000
+   "at": 1791727731000
   },
   {
    "type": "advance",
-   "at": 1791727851000
+   "at": 1791727791000
   }
  ],
  "checkpoints": [
@@ -266,9 +247,9 @@
      "margen": 59,
      "equipo": 62,
      "clientes": 64,
-     "consejo": 60
+     "consejo": 63
     },
-    "health": 61,
+    "health": 62,
     "xp": 125,
     "level": 0,
     "relations": {
@@ -375,7 +356,7 @@
      "primera"
     ],
     "dilemmas": {
-     "n2": 1
+     "n2-v2": 0
     },
     "lessons": [],
     "career": []
@@ -394,9 +375,9 @@
      "margen": 60,
      "equipo": 67,
      "clientes": 62,
-     "consejo": 61
+     "consejo": 64
     },
-    "health": 62,
+    "health": 63,
     "xp": 240,
     "level": 1,
     "relations": {
@@ -510,8 +491,8 @@
      "primera"
     ],
     "dilemmas": {
-     "n2": 1,
-     "g1": 1
+     "n2-v2": 0,
+     "g1-v2": 0
     },
     "lessons": [],
     "career": []
@@ -526,22 +507,22 @@
     "legendary": false,
     "seasonDay": 4,
     "kpis": {
-     "caja": 57,
+     "caja": 60,
      "margen": 59,
-     "equipo": 67,
-     "clientes": 63,
-     "consejo": 65
+     "equipo": 68,
+     "clientes": 62,
+     "consejo": 60
     },
     "health": 62,
-    "xp": 420,
+    "xp": 400,
     "level": 2,
     "relations": {
-     "ignacio": 89,
-     "lourdes": 32,
+     "ignacio": 97,
+     "lourdes": 24,
      "beatriz": 50,
      "fer": 38,
-     "andres": 97,
-     "sara": 44,
+     "andres": 100,
+     "sara": 41,
      "vero": 58,
      "maru": 42,
      "paty": 50,
@@ -626,7 +607,7 @@
      "gb-d2-menu": "b",
      "gb-d2-propinas": "a",
      "gb-d3-brote": "c",
-     "gb-d3-franquicia": "b",
+     "gb-d3-franquicia": "c",
      "gb-c-cocinas": "a"
     },
     "change": null,
@@ -638,11 +619,11 @@
     "profile": {
      "archetype": "Estratega equilibrado",
      "axes": {
-      "horizonte": 83,
-      "riesgo": -67,
+      "horizonte": 75,
+      "riesgo": -83,
       "foco": 50,
-      "estilo": 17,
-      "conflicto": 13
+      "estilo": 0,
+      "conflicto": 20
      }
     },
     "badges": [
@@ -651,9 +632,9 @@
      "puntual"
     ],
     "dilemmas": {
-     "n2": 1,
-     "g1": 1,
-     "d4": 1
+     "n2-v2": 0,
+     "g1-v2": 0,
+     "d4-v2": 0
     },
     "lessons": [],
     "career": []
@@ -668,26 +649,26 @@
     "legendary": false,
     "seasonDay": 5,
     "kpis": {
-     "caja": 57,
-     "margen": 62,
-     "equipo": 71,
-     "clientes": 59,
-     "consejo": 66
+     "caja": 59,
+     "margen": 60,
+     "equipo": 73,
+     "clientes": 62,
+     "consejo": 62
     },
     "health": 63,
-    "xp": 545,
+    "xp": 535,
     "level": 2,
     "relations": {
-     "ignacio": 89,
-     "lourdes": 26,
-     "beatriz": 53,
-     "fer": 46,
-     "andres": 95,
-     "sara": 28,
+     "ignacio": 94,
+     "lourdes": 24,
+     "beatriz": 56,
+     "fer": 54,
+     "andres": 92,
+     "sara": 41,
      "vero": 74,
      "maru": 50,
      "paty": 50,
-     "nico": 34
+     "nico": 42
     },
     "progress": {
      "done": 8,
@@ -768,9 +749,9 @@
      "gb-d2-menu": "b",
      "gb-d2-propinas": "a",
      "gb-d3-brote": "c",
-     "gb-d3-franquicia": "b",
+     "gb-d3-franquicia": "c",
      "gb-c-cocinas": "a",
-     "gb-d4-carne": "a",
+     "gb-d4-carne": "b",
      "gb-d4-gerente": "a"
     },
     "change": null,
@@ -783,8 +764,8 @@
      "archetype": "Estratega equilibrado",
      "axes": {
       "horizonte": 88,
-      "riesgo": -67,
-      "foco": 42,
+      "riesgo": -50,
+      "foco": 60,
       "estilo": 17,
       "conflicto": 25
      }
@@ -796,10 +777,10 @@
      "gente"
     ],
     "dilemmas": {
-     "n2": 1,
-     "g1": 1,
-     "d4": 1,
-     "e2": 1
+     "n2-v2": 0,
+     "g1-v2": 0,
+     "d4-v2": 0,
+     "e2-v2": 1
     },
     "lessons": [],
     "career": []
@@ -814,26 +795,26 @@
     "legendary": false,
     "seasonDay": 6,
     "kpis": {
-     "caja": 53,
-     "margen": 62,
-     "equipo": 73,
-     "clientes": 59,
-     "consejo": 64
+     "caja": 55,
+     "margen": 60,
+     "equipo": 75,
+     "clientes": 62,
+     "consejo": 60
     },
     "health": 62,
-    "xp": 615,
+    "xp": 605,
     "level": 2,
     "relations": {
      "ignacio": 100,
-     "lourdes": 21,
-     "beatriz": 47,
-     "fer": 30,
-     "andres": 100,
-     "sara": 28,
+     "lourdes": 19,
+     "beatriz": 50,
+     "fer": 38,
+     "andres": 98,
+     "sara": 41,
      "vero": 74,
      "maru": 50,
      "paty": 50,
-     "nico": 34
+     "nico": 42
     },
     "progress": {
      "done": 9,
@@ -914,9 +895,9 @@
      "gb-d2-menu": "b",
      "gb-d2-propinas": "a",
      "gb-d3-brote": "c",
-     "gb-d3-franquicia": "b",
+     "gb-d3-franquicia": "c",
      "gb-c-cocinas": "a",
-     "gb-d4-carne": "a",
+     "gb-d4-carne": "b",
      "gb-d4-gerente": "a",
      "gb-d5-cdmx": "b"
     },
@@ -930,8 +911,8 @@
      "archetype": "Estratega equilibrado",
      "axes": {
       "horizonte": 88,
-      "riesgo": -25,
-      "foco": 43,
+      "riesgo": -20,
+      "foco": 58,
       "estilo": 17,
       "conflicto": 25
      }
@@ -943,11 +924,11 @@
      "gente"
     ],
     "dilemmas": {
-     "n2": 1,
-     "g1": 1,
-     "d4": 1,
-     "e2": 1,
-     "v4": 1
+     "n2-v2": 0,
+     "g1-v2": 0,
+     "d4-v2": 0,
+     "e2-v2": 1,
+     "v4-v2": 0
     },
     "lessons": [],
     "career": []
@@ -962,26 +943,26 @@
     "legendary": false,
     "seasonDay": 7,
     "kpis": {
-     "caja": 55,
-     "margen": 62,
-     "equipo": 74,
-     "clientes": 59,
-     "consejo": 60
+     "caja": 57,
+     "margen": 60,
+     "equipo": 76,
+     "clientes": 62,
+     "consejo": 56
     },
     "health": 62,
-    "xp": 710,
+    "xp": 700,
     "level": 2,
     "relations": {
      "ignacio": 84,
-     "lourdes": 31,
-     "beatriz": 47,
-     "fer": 28,
+     "lourdes": 29,
+     "beatriz": 50,
+     "fer": 36,
      "andres": 94,
-     "sara": 18,
+     "sara": 31,
      "vero": 74,
      "maru": 50,
      "paty": 50,
-     "nico": 26
+     "nico": 34
     },
     "progress": {
      "done": 11,
@@ -1062,9 +1043,9 @@
      "gb-d2-menu": "b",
      "gb-d2-propinas": "a",
      "gb-d3-brote": "c",
-     "gb-d3-franquicia": "b",
+     "gb-d3-franquicia": "c",
      "gb-c-cocinas": "a",
-     "gb-d4-carne": "a",
+     "gb-d4-carne": "b",
      "gb-d4-gerente": "a",
      "gb-d5-cdmx": "b",
      "gb-d6-dark": "c",
@@ -1080,8 +1061,8 @@
      "archetype": "Estratega equilibrado",
      "axes": {
       "horizonte": 88,
-      "riesgo": -17,
-      "foco": 43,
+      "riesgo": -14,
+      "foco": 58,
       "estilo": 17,
       "conflicto": 36
      }
@@ -1093,12 +1074,12 @@
      "gente"
     ],
     "dilemmas": {
-     "n2": 1,
-     "g1": 1,
-     "d4": 1,
-     "e2": 1,
-     "v4": 1,
-     "c1": 1
+     "n2-v2": 0,
+     "g1-v2": 0,
+     "d4-v2": 0,
+     "e2-v2": 1,
+     "v4-v2": 0,
+     "c1-v2": 0
     },
     "lessons": [],
     "career": []
@@ -1113,26 +1094,26 @@
     "legendary": false,
     "seasonDay": 7,
     "kpis": {
-     "caja": 56,
-     "margen": 62,
-     "equipo": 72,
-     "clientes": 59,
-     "consejo": 62
+     "caja": 58,
+     "margen": 60,
+     "equipo": 74,
+     "clientes": 62,
+     "consejo": 58
     },
     "health": 62,
-    "xp": 780,
+    "xp": 770,
     "level": 3,
     "relations": {
      "ignacio": 79,
-     "lourdes": 47,
-     "beatriz": 39,
-     "fer": 25,
+     "lourdes": 45,
+     "beatriz": 42,
+     "fer": 33,
      "andres": 94,
-     "sara": 24,
+     "sara": 37,
      "vero": 74,
      "maru": 50,
      "paty": 50,
-     "nico": 26
+     "nico": 34
     },
     "progress": {
      "done": 12,
@@ -1213,9 +1194,9 @@
      "gb-d2-menu": "b",
      "gb-d2-propinas": "a",
      "gb-d3-brote": "c",
-     "gb-d3-franquicia": "b",
+     "gb-d3-franquicia": "c",
      "gb-c-cocinas": "a",
-     "gb-d4-carne": "a",
+     "gb-d4-carne": "b",
      "gb-d4-gerente": "a",
      "gb-d5-cdmx": "b",
      "gb-d6-dark": "c",
@@ -1233,7 +1214,7 @@
      "axes": {
       "horizonte": 80,
       "riesgo": 0,
-      "foco": 43,
+      "foco": 58,
       "estilo": 17,
       "conflicto": 36
      }
@@ -1246,47 +1227,47 @@
      "gente"
     ],
     "dilemmas": {
-     "n2": 1,
-     "g1": 1,
-     "d4": 1,
-     "e2": 1,
-     "v4": 1,
-     "c1": 1,
-     "p3": 1
+     "n2-v2": 0,
+     "g1-v2": 0,
+     "d4-v2": 0,
+     "e2-v2": 1,
+     "v4-v2": 0,
+     "c1-v2": 0,
+     "p3-v2": 0
     },
     "lessons": [],
     "career": []
    }
   },
   {
-   "after": 36,
-   "at": 1791727791000,
+   "after": 34,
+   "at": 1791727731000,
    "snapshot": {
     "company": "brasa",
     "tier": 0,
     "legendary": false,
     "seasonDay": 7,
     "kpis": {
-     "caja": 54,
-     "margen": 62,
-     "equipo": 73,
-     "clientes": 59,
-     "consejo": 60
+     "caja": 56,
+     "margen": 60,
+     "equipo": 75,
+     "clientes": 62,
+     "consejo": 56
     },
     "health": 62,
-    "xp": 780,
+    "xp": 770,
     "level": 3,
     "relations": {
      "ignacio": 79,
-     "lourdes": 47,
-     "beatriz": 39,
-     "fer": 25,
+     "lourdes": 45,
+     "beatriz": 42,
+     "fer": 33,
      "andres": 94,
-     "sara": 24,
+     "sara": 37,
      "vero": 74,
      "maru": 50,
      "paty": 50,
-     "nico": 26
+     "nico": 34
     },
     "progress": {
      "done": 12,
@@ -1367,9 +1348,9 @@
      "gb-d2-menu": "b",
      "gb-d2-propinas": "a",
      "gb-d3-brote": "c",
-     "gb-d3-franquicia": "b",
+     "gb-d3-franquicia": "c",
      "gb-c-cocinas": "a",
-     "gb-d4-carne": "a",
+     "gb-d4-carne": "b",
      "gb-d4-gerente": "a",
      "gb-d5-cdmx": "b",
      "gb-d6-dark": "c",
@@ -1380,7 +1361,7 @@
      "adopted": 6,
      "share": 0.6,
      "weeksUsed": 24,
-     "credibility": 78,
+     "credibility": 76,
      "done": true,
      "ok": false
     },
@@ -1405,7 +1386,7 @@
      "axes": {
       "horizonte": 80,
       "riesgo": 0,
-      "foco": 43,
+      "foco": 58,
       "estilo": 17,
       "conflicto": 36
      }
@@ -1418,21 +1399,21 @@
      "gente"
     ],
     "dilemmas": {
-     "n2": 1,
-     "g1": 1,
-     "d4": 1,
-     "e2": 1,
-     "v4": 1,
-     "c1": 1,
-     "p3": 1
+     "n2-v2": 0,
+     "g1-v2": 0,
+     "d4-v2": 0,
+     "e2-v2": 1,
+     "v4-v2": 0,
+     "c1-v2": 0,
+     "p3-v2": 0
     },
     "lessons": [],
     "career": []
    }
   },
   {
-   "after": 37,
-   "at": 1791727851000,
+   "after": 35,
+   "at": 1791727791000,
    "snapshot": {
     "company": "cumbre",
     "tier": 1,
@@ -1446,7 +1427,7 @@
      "consejo": 62
     },
     "health": 59,
-    "xp": 780,
+    "xp": 770,
     "level": 3,
     "relations": {
      "ramiro": 50,
@@ -1486,51 +1467,51 @@
       79200
      ],
      "d1-hector": [
-      2274,
+      3533,
       39600
      ],
      "d2-supernorte": [
-      85749,
+      85809,
       79200
      ],
      "d2-ana": [
-      86049,
+      86109,
       79200
      ],
      "d3-planta": [
-      172149,
+      172209,
       25200
      ],
      "d3-diego": [
-      172449,
+      172509,
       79200
      ],
      "d4-objetivos": [
-      258549,
+      258609,
       79200
      ],
      "d4-sindicato": [
-      258849,
+      258909,
       32400
      ],
      "d5-credito": [
-      344949,
+      345009,
       79200
      ],
      "d5-consejo": [
-      345249,
+      345309,
       79200
      ],
      "d6-gastos": [
-      431349,
+      431409,
       79200
      ],
      "d6-clima": [
-      431649,
+      431709,
       79200
      ],
      "d7-sucesion": [
-      518049,
+      518109,
       79200
      ]
     },
@@ -1546,7 +1527,7 @@
      "axes": {
       "horizonte": 80,
       "riesgo": 0,
-      "foco": 43,
+      "foco": 58,
       "estilo": 17,
       "conflicto": 36
      }
@@ -1557,13 +1538,13 @@
      "ascenso"
     ],
     "dilemmas": {
-     "n2": 1,
-     "g1": 1,
-     "d4": 1,
-     "e2": 1,
-     "v4": 1,
-     "c1": 1,
-     "p3": 1
+     "n2-v2": 0,
+     "g1-v2": 0,
+     "d4-v2": 0,
+     "e2-v2": 1,
+     "v4-v2": 0,
+     "c1-v2": 0,
+     "p3-v2": 0
     },
     "lessons": [],
     "career": [
@@ -1573,13 +1554,13 @@
       "passed": true,
       "health": 62,
       "answered": 100,
-      "xp": 605,
+      "xp": 595,
       "kpis": {
-       "caja": 54,
-       "margen": 62,
-       "equipo": 73,
-       "clientes": 59,
-       "consejo": 60
+       "caja": 56,
+       "margen": 60,
+       "equipo": 75,
+       "clientes": 62,
+       "consejo": 56
       },
       "change": {
        "adopted": 6,

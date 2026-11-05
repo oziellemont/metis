@@ -16,6 +16,7 @@
  */
 import type { Area, Axis, Channel, Kpis } from "../types";
 import { ARCHETYPES_P1D } from "./archetypes-p1d";
+import { ARCHETYPES_CAP } from "./archetypes-cap";
 
 /** Roles del caso. Cada paquete los asigna a su elenco (Cumbre: Finanzas = Lucía; Forja: Finanzas = Marcos…). */
 export type Role = "chair" | "board" | "cfo" | "ops" | "sales" | "people" | "assistant" | "frontline" | "client";
@@ -25,7 +26,9 @@ export type ArchetypeId =
   | "retiro" | "cliente" | "incentivos" | "ciberataque" | "expansion"
   | "precio" | "recorte" | "proveedor" | "apuesta" | "error"
   // P1-D (archetypes-p1d.ts)
-  | "guerra" | "verde" | "trimestre" | "incidente" | "salarios" | "meta" | "foco" | "adaptativo";
+  | "guerra" | "verde" | "trimestre" | "incidente" | "salarios" | "meta" | "foco" | "adaptativo"
+  // Capítulos (archetypes-cap.ts)
+  | "mando" | "sucesor" | "inversion" | "capital" | "region" | "alianza" | "adquisicion" | "regulador" | "prensa" | "deuda";
 
 export interface ArchOption {
   text: string;
@@ -64,8 +67,12 @@ export interface Archetype {
   real: Precedent;
   /** Tres giros: el mismo dilema con otra presión. Permiten volver a un arquetipo sin repetir el caso. */
   twists: [string, string, string];
-  /** Etapa mínima de la empresa (índice de COMPANY_STAGES) para que llegue. */
+  /**
+   * Capítulo de la empresa (índice de COMPANY_STAGES) en que la decisión es propia: llega desde `minStage` y hasta
+   * `maxStage`. En su capítulo de origen tiene prioridad; en el siguiente sigue llegando, ya con menos peso.
+   */
   minStage: number;
+  maxStage: number;
   deadlineH?: number;
 }
 
@@ -121,6 +128,7 @@ const ARCHETYPES_P1C: readonly Archetype[] = [
       "Además: Calidad sospecha que la falla viene de un proveedor, no de tu proceso. Nadie quiere cargar con el costo.",
     ],
     minStage: 1,
+    maxStage: 2,
     deadlineH: 10,
   },
 
@@ -175,6 +183,7 @@ const ARCHETYPES_P1C: readonly Archetype[] = [
       "Además: el consejo te preguntó hace un mes qué tan dependiente es la empresa de este cliente y no tuviste respuesta.",
     ],
     minStage: 1,
+    maxStage: 2,
   },
 
   // ─────────────────────────────────────────────── 3 · metas que corrompen
@@ -227,7 +236,8 @@ const ARCHETYPES_P1C: readonly Archetype[] = [
       "Además: el cierre del trimestre es en diez días y el consejo espera el número de siempre.",
       "Además: quien denunció pidió que no se sepa su nombre; teme represalias.",
     ],
-    minStage: 1,
+    minStage: 2,
+    maxStage: 3,
   },
 
   // ─────────────────────────────────────────────── 4 · ciberataque
@@ -281,6 +291,7 @@ const ARCHETYPES_P1C: readonly Archetype[] = [
       "Además: la última prueba de respaldos se hizo hace más de un año.",
     ],
     minStage: 1,
+    maxStage: 5,
     deadlineH: 8,
   },
 
@@ -334,7 +345,8 @@ const ARCHETYPES_P1C: readonly Archetype[] = [
       "Además: tu Director de Operaciones te dijo en privado que el equipo no aguanta otro frente.",
       "Además: un competidor anunció ayer algo parecido.",
     ],
-    minStage: 1,
+    minStage: 3,
+    maxStage: 4,
   },
 
   // ─────────────────────────────────────────────── 6 · subir precio
@@ -388,6 +400,7 @@ const ARCHETYPES_P1C: readonly Archetype[] = [
       "Además: el año pasado ya subiste dos veces.",
     ],
     minStage: 1,
+    maxStage: 2,
   },
 
   // ─────────────────────────────────────────────── 7 · recortar
@@ -441,6 +454,7 @@ const ARCHETYPES_P1C: readonly Archetype[] = [
       "Además: entre los puestos que sobran hay personas con muchos años en la empresa.",
     ],
     minStage: 1,
+    maxStage: 2,
   },
 
   // ─────────────────────────────────────────────── 8 · proveedor único
@@ -494,6 +508,7 @@ const ARCHETYPES_P1C: readonly Archetype[] = [
       "Además: Compras te recuerda que el ahorro por tener un solo proveedor fue parte del bono del año pasado.",
     ],
     minStage: 1,
+    maxStage: 2,
     deadlineH: 12,
   },
 
@@ -547,7 +562,8 @@ const ARCHETYPES_P1C: readonly Archetype[] = [
       "Además: un equipo joven ya lo está probando por su cuenta, fuera de horario.",
       "Además: el negocio actual tuvo su mejor año, lo que hace más difícil explicar por qué cambiar.",
     ],
-    minStage: 2,
+    minStage: 3,
+    maxStage: 4,
   },
 
   // ─────────────────────────────────────────────── 10 · el error propio
@@ -601,10 +617,11 @@ const ARCHETYPES_P1C: readonly Archetype[] = [
       "Además: es la segunda vez en el año que pasa algo parecido en el mismo punto del proceso.",
     ],
     minStage: 1,
+    maxStage: 2,
   },
 ];
 
 /** Las diez decisiones de P1-C y las ocho de P1-D (mismas reglas, mismo generador). */
-export const ARCHETYPES: readonly Archetype[] = [...ARCHETYPES_P1C, ...ARCHETYPES_P1D];
+export const ARCHETYPES: readonly Archetype[] = [...ARCHETYPES_P1C, ...ARCHETYPES_P1D, ...ARCHETYPES_CAP];
 
 export const archetypeById = (id: string): Archetype | undefined => ARCHETYPES.find((a) => a.id === id);

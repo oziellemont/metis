@@ -155,3 +155,21 @@ El perfil es uno por persona (`metis.profiles`) y puede pertenecer a varias empr
 - Ajuste al activar: en v8 una opción que cruza una línea roja nunca cuenta como bien razonada (`authoredFor`), aunque ayude al tablero. Sin esto, «criterio y tablero» y «cuida caja» elegían ocultar el faltante del dosificador en Cumbre.
 - Aviso justo: el caso dice antes de vencer que no se puede dejar vencer (`aviso-omision`), y Hoy avisa una vez del cambio al pasar de un mes v6/v7 a uno v8 (`aviso-coherencia`).
 - Simulación a 2 meses, 6 empresas (tasa de aprobación v7 → v8): director equilibrado 0.92 → 1.00, criterio contextual 0.92 → 1.00, criterio y tablero 1.00 → 1.00, cuida caja 1.00 → 1.00, no contesta: línea roja 0 → 1.00, ocupado (deja vencer 25 %) 1.00 → 0.58, personas primero sin piso 0.67 → 0.25 (falla por caja o margen del encargo, no por criterio), personas primero con piso 1.00 → 0.92.
+
+## Capítulos del journey (casos acordes a la etapa)
+- Cada caso puede llevar `stages: [desde, hasta]` (etapa 0 Tomar el mando, 1 Estabilizar, 2 Construir capacidad, 3 Acelerar, 4 Escalar, 5 Gobernar). La etapa sale de los meses cerrados y aprobados (`STAGE_MONTHS`).
+- Los asuntos que hablan de tu llegada (carta del día 1, primer consejo, etc.) quedan en `[0, 0]`: en el segundo capítulo ya no se repiten.
+- Seguimientos (`companies/seguimientos.ts`): 12 casos, 2 por empresa, que regresan la decisión del mes anterior. Solo llegan si elegiste las opciones de `recall` en el asunto de origen y en las etapas 1 a 3.
+- Banco: 10 arquetipos nuevos por capítulo (`archetypes-cap.ts`, `contexts-cap.ts`) para las 7 industrias.
+- Carta del día 1: la opción de recorrer la operación primero ya no castiga al consejo (tenía −5; ahora −1 con plan y fecha).
+
+## Casos largos de varias decisiones (uno por capítulo)
+- Formato de episodio como SuperNorte (nodos encadenados, estrategias que cambian el siguiente paso, términos negociados).
+- Forja · Aurora (negociación de 4 % de descuento): Estabilizar (etapas 1 a 2).
+- Kúbit · Brecha de datos (avisos a clientes y autoridad): Construir capacidad a Escalar (2 a 4).
+- Brasa · Franquicias (10 unidades, piloto y auditoría): Construir capacidad a Acelerar (2 a 3).
+- Cumbre · Socio (un fondo ofrece $120 M por 30 %): Acelerar a Escalar (3 a 4).
+- Punto Madero · Refinanciar (crédito que vence en 90 días): Acelerar a Gobernar (3 a 5).
+- Vértice · Transbajío (compra de Transportes del Bajío): Escalar a Gobernar (4 a 5).
+- Los 3 pilotos originales de Cumbre (SuperNorte, Diego, Alérgeno) siguen igual. Cada episodio pasa las 14 pruebas de aceptación.
+- Línea base de dominio antes de 1.3 (`golden/mastery-antes-1.3.json`) recalculada con la fórmula anterior sobre las partidas doradas regrabadas.

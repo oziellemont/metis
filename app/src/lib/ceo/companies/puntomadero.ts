@@ -5,6 +5,7 @@
  * cumple, deuda para abrir tiendas, cuentas embargadas, la oferta de compra y el cierre de tiendas que propone el
  * consejo. Personas, empresas y fondos son ficticios.
  */
+import { SEGUIMIENTOS_PUNTOMADERO } from "./seguimientos";
 import type { CompanyPack, Item } from "../types";
 import { withV8 } from "./v8";
 import { CADENA_PUNTOMADERO } from "./puntomadero-cadena";
@@ -31,7 +32,7 @@ const ITEMS: Item[] = [
     ask: "¿Cómo usas tus primeras semanas?",
     involves: ["ines", "octavio", "claudia", "ramos"],
     options: [
-      { id: "a", stance: { octavio: 2, ines: -1 }, text: "Antes de decidir: visitar 20 tiendas (primero la principal), una plática a solas con cada director y una semana atendiendo en piso. Propuesta al día 45.", reply: ["Respeto el método. Le advierto que Mundo Casa no va a esperar 45 días.", "Día 45. Ni uno más."], outcome: "El equipo ve a un director que pregunta antes de mandar. El consejo anota que te tomaste tu tiempo.", effects: { equipo: 5, clientes: 3, consejo: -5 }, style: { horizonte: 2, estilo: 2, foco: 1, riesgo: -1 }, score: 3 },
+      { id: "a", stance: { octavio: 2, ines: -1 }, text: "Antes de decidir: visitar 20 tiendas (primero la principal), una plática a solas con cada director y una semana atendiendo en piso. Propuesta al día 45.", reply: ["Respeto el método. Le advierto que Mundo Casa no va a esperar 45 días.", "Día 45. Ni uno más."], outcome: "El equipo ve a un director que pregunta antes de mandar. El consejo acepta el método porque tiene fecha; solo pide un avance a medio camino.", effects: { equipo: 5, clientes: 3, consejo: -1 }, style: { horizonte: 2, estilo: 2, foco: 1, riesgo: -1 }, score: 3 },
       { id: "b", stance: { ines: 2, garza: 1, octavio: -2 }, text: "Plan de 100 días desde ya: congelar contrataciones, recortar 15% del gasto que no es esencial y bajar precios en las 200 marcas que más compara la gente.", reply: ["Eso es lo que necesitábamos oír.", "Le pido que Claudia me mande el avance cada viernes."], outcome: "El consejo respira. En las tiendas se corre la voz de que llegó «el de los recortes» antes de conocer a nadie.", effects: { consejo: 6, caja: 4, equipo: -6, clientes: -1 }, style: { horizonte: -1, riesgo: 1, estilo: -2, foco: -2 }, score: 1 },
       { id: "c", stance: { ramos: 2, octavio: -1 }, text: "Primero el cliente que más pesa: una semana con Constructora Peñasco para entender qué les duele y asegurar sus compras del año.", reply: ["Interesante. El 18% de la venta está ahí; no es mala apuesta.", "Pero no se olvide de que las tiendas no se arreglan desde las oficinas de Peñasco."], outcome: "El director de compras de Peñasco agradece que el nuevo director se presente en persona. Tu propio equipo se queda una semana sin conocerte.", effects: { clientes: 5, equipo: -3, caja: -1 }, style: { horizonte: 1, foco: -1, conflicto: 1 }, score: 2 },
     ],
@@ -363,6 +364,7 @@ const ITEMS: Item[] = [
   // ═══════════════════════════════ DÍA 7 · Consejo
   {
     id: "pm-d7-consejo", day: 7, slot: 1, channel: "junta", from: "garza",
+    stages: [0, 0], // habla de tu llegada: solo al tomar el mando
     subject: "Sesión de consejo · Cierre del trimestre", preview: "Las tiendas chicas pierden dinero. El consejo propone cerrar 12 y recortar 300 puestos…",
     body: ["Sala de consejo, 9:00. Esteban Garza preside. Inés Treviño y Claudia Leal en la mesa. Tu primer cierre de trimestre."],
     lines: [
@@ -488,5 +490,5 @@ export const PUNTOMADERO: CompanyPack = {
       { id: "beto", start: 14, likes: ["entrevista", "townhall"], dislikes: ["incentivos"], secret: "«Frenar una promoción suena bien hasta que culpan al gerente. Si me garantizas que nadie se castiga por frenar, las tiendas apoyan.»" },
     ],
   },
-  items: withV8([...ITEMS, ...CADENA_PUNTOMADERO]),
+  items: withV8([...ITEMS, ...CADENA_PUNTOMADERO, ...SEGUIMIENTOS_PUNTOMADERO]),
 };

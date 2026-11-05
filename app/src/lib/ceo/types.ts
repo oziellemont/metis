@@ -120,6 +120,16 @@ export interface Item {
   /** Deja de llegar en periodos con esta versión de reglas o posterior (lo sustituye otro asunto). */
   until?: number;
   /**
+   * Carrera continua: capítulos de la empresa (índices de COMPANY_STAGES, desde y hasta) en que llega. Sin dato, en
+   * cualquiera. [0, 0] = solo al tomar el mando (lo que habla de tu llegada: «tu primer consejo», «tus 90 días»).
+   */
+  stages?: [number, number];
+  /**
+   * Carrera continua: seguimiento de una decisión de un mes anterior. Solo llega si la última vez que decidiste
+   * `item` en tu empresa elegiste alguna de `options`.
+   */
+  recall?: { item: string; options: string[] };
+  /**
    * Cadena (v8+): si alguno de estos asuntos llegó en tu periodo, este no llega hasta que lo resuelvas (decidido o
    * vencido) y nunca antes. Deben ir antes en la lista del paquete.
    */

@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { interpretLocal, interpretMessages, parseInterpretation } from "./ai";
-import { EPISODES } from "./catalog";
+import { EPISODES, PILOT_EPISODES } from "./catalog";
 import { matchFact, nodeOf, sayOf, strategiesFor } from "./engine";
 import { FACT_SET, INTERPRET_SET, ADVISOR_SET } from "./eval-set";
 import { pct, runAt, score } from "./eval-harness";
 
 describe("P0-D · conjunto de evaluación", () => {
   it("cubre los 18 nodos de los tres pilotos con 10 respuestas cada uno, y cada estrategia esperada existe en ese punto", () => {
-    const nodes = Object.values(EPISODES).flatMap((s) => Object.keys(s.nodes).map((n) => `${s.id}/${n}`));
+    const nodes = PILOT_EPISODES.map((id) => EPISODES[id]).flatMap((s) => Object.keys(s.nodes).map((n) => `${s.id}/${n}`));
     expect(nodes).toHaveLength(18);
     for (const k of nodes) expect(INTERPRET_SET.filter((i) => `${i.ep}/${i.node}` === k).length, k).toBe(10);
     for (const it of INTERPRET_SET) {

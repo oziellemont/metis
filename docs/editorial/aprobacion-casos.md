@@ -31,7 +31,7 @@ Indicadores: Caja, Margen, Equipo, Clientes, Consejo. «Score» (0–3) es qué 
 
 **Pregunta:** ¿Cómo usas tus primeros 30 días?
 
-- **A** (score 3, balance +5): Recorrer antes de decidir: sentarme con los 12 líderes clave, dos turnos en planta y los 5 clientes mayores; propuesta al día 30. → Equipo +5, Clientes +3, Consejo -3.
+- **A** (score 3, balance +6): Recorrer antes de decidir: sentarme con los 12 líderes clave, dos turnos en planta y los 5 clientes mayores; propuesta al día 30. → Equipo +5, Clientes +3, Consejo -2.
 - **B** (score 1, balance +1): Llegar con fuerza: en la primera semana anuncio 5 prioridades y 2 victorias rápidas, para que todos vean desde ya que hay rumbo. → Equipo -4, Consejo +5.
 - **C** (score 1, balance 0): Perfil bajo: me encierro con Finanzas a entender los números a fondo antes de hablar con nadie; opinar sin cifras es solo improvisar. → Caja +1, Margen +3, Equipo -3, Clientes -1.
 - **Sin respuesta** (balance -6): Consejo -6.
@@ -422,17 +422,47 @@ Respuesta: `c-mant-inversion | ... | ...`
 
 Respuesta: `c-mant-dosificador | ... | ...`
 
+### c-s-merma · Día 3 · Junta · El bono por merma del trimestre
+
+**Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
+
+**Caso:** Sala de juntas de la planta. Roberto Cantú viene con dos delegados a revisar el bono que acordaron. Roberto Cantú: Director, cumplimos: la merma bajó de 4.8% a 3.4%. La gente quiere su bono completo. Lucía Treviño: (en voz baja) El acuerdo era bono completo con 3%. Con 3.4% toca 70%. Javier Ortiz: (en voz baja) Bajó mucho. Lo que falta es una llenadora vieja que no depende de ellos.
+
+**Pregunta:** Roberto espera tu respuesta.
+
+- **A** (score 3, balance +3): «Pagamos el 70% acordado y cambiamos la llenadora; si con eso llegan al 3%, el bono completo regresa.» → Caja -2, Margen +2, Equipo +3.
+- **B** (score 1, balance -1): «Pagamos el bono completo: la merma bajó muchísimo y no quiero que la gente sienta que le regateamos lo que se ganó.» → Caja -4, Equipo +5, Consejo -2.
+- **C** (score 0, balance -5): «El acuerdo decía 3%. No llegaron, así que este trimestre no hay bono y lo volvemos a medir el siguiente.» → Caja +2, Margen -1, Equipo -6.
+- **Sin respuesta** (balance -6): Equipo -5, Consejo -1.
+
+Respuesta: `c-s-merma | ... | ...`
+
+### c-s-revision · Día 3 · Junta · Revisión de medio año con el sindicato
+
+**Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
+
+**Caso:** Sala de juntas de la planta. Roberto Cantú pidió revisar prestaciones a medio año. Roberto Cantú: Director, la base pide vales de despensa y transporte. Se acuerda de cómo terminó la última revisión. Lucía Treviño: (en voz baja) Lo que piden cuesta $5 M al año. No está en el presupuesto. Mariana Villarreal: (en voz baja) La rotación sigue en 30%. El transporte es la queja número uno.
+
+**Pregunta:** Roberto espera tu respuesta.
+
+- **A** (score 3, balance +3): «Transporte en los turnos de noche desde ya, y vales ligados a bajar rotación y merma, con un tablero.» → Caja -2, Margen +1, Equipo +4.
+- **B** (score 1, balance -2): «Les damos vales y transporte completos: la gente lo necesita y no quiero otra revisión que termine en conflicto.» → Caja -5, Equipo +5, Consejo -2.
+- **C** (score 0, balance -4): «Las prestaciones se revisan una vez al año en el contrato colectivo. Lo vemos en la siguiente revisión.» → Caja +2, Margen -1, Equipo -5.
+- **Sin respuesta** (balance -6): Equipo -5, Consejo -1.
+
+Respuesta: `c-s-revision | ... | ...`
+
 ## Forja Norte
 
 ### fn-d1-carta · Día 1 · Te damos la bienvenida a Forja Norte. Esto es lo que esperamos.
 
-**Propuesta automática:** legacy. Jugable como contenido histórico, pero la opción preferida por el autor sigue siendo la que más conviene.
+**Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
 
 **Caso:** Estimado Director: Te damos la bienvenida. Capital Sierra compró Forja Norte hace 18 meses y te elegimos para llevarla a la siguiente etapa. Seré directo, porque así trabajamos: el plan de inversión dice +4 puntos de margen EBITDA en 24 meses y vamos 1.5 puntos abajo. La planta es buena. La gente es buena. Pero la armadora nos tiene en amarillo en su scorecard, el OEE no pasa de 61% y los soldadores se nos van con la competencia de enfrente. Te lo encargo en dos frases: cumplirle a la armadora y generar caja para el fondo. Con eso te vamos a evaluar. Cada peso que gastes tiene que poder explicarse con una de esas dos cosas. En la sesión de consejo del mes que entra quiero ver tu plan. Antes de eso, dime cómo vas a usar tus primeras semanas. Alberto Zertuche Presidente del consejo · Socio director de Capital Sierra
 
 **Pregunta:** ¿Cómo usas tus primeras semanas?
 
-- **A** (score 3, balance +3): Piso de planta primero: tres turnos en las líneas, sentarme con los supervisores y oír la queja del cliente de frente. Propuesta al día 45. → Equipo +6, Clientes +2, Consejo -5.
+- **A** (score 3, balance +7): Piso de planta primero: tres turnos en las líneas, sentarme con los supervisores y oír la queja del cliente de frente. Propuesta al día 45. → Equipo +6, Clientes +2, Consejo -1.
 - **B** (score 1, balance +2): Plan de 100 días desde ya: congelar contrataciones, renegociar con 20 proveedores y meter un programa de reducción de costos con metas semanales. → Margen +3, Equipo -6, Clientes -1, Consejo +6.
 - **C** (score 2, balance +1): Primero el cliente: me voy una semana a la planta de Aurora en Saltillo para entender qué les duele y qué necesitamos para salir de amarillo. → Caja -1, Equipo -3, Clientes +5.
 - **Sin respuesta** (balance -7): Consejo -7.
@@ -766,17 +796,47 @@ Respuesta: `fn-c8-greg | ... | ...`
 
 Respuesta: `fn-c8-consejo | ... | ...`
 
+### fn-s-precio-mas · Día 3 · Aurora Motors · Productividad para la plataforma 2028
+
+**Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
+
+**Caso:** Estimado Director: Agradecemos la disposición del mes pasado con el 5%. Como sabe, estamos por asignar la plataforma SUV 2028. Para considerar a su empresa necesitamos un compromiso de 3% de productividad cada año durante los cinco años del programa. Greg Holloway Purchasing Manager · Aurora Motors México
+
+**Pregunta:** ¿Qué le respondes a Greg?
+
+- **A** (score 3, balance +3): Mostrarle el costo real por pieza y ofrecer el 3% solo si sale de un rediseño hecho con sus ingenieros; sin ahorro, no. → Margen +3, Clientes -2, Consejo +2.
+- **B** (score 0, balance -6): Aceptar también el 3% anual para asegurar la plataforma; el volumen de 2028 compensará el margen que estamos perdiendo hoy. → Margen -7, Clientes +4, Consejo -3.
+- **C** (score 1, balance -4): Decirle que ya dimos suficiente y que, si insiste, dejamos de cotizar la plataforma 2028 y buscamos otra armadora. → Caja +1, Margen +2, Clientes -6, Consejo -1.
+- **Sin respuesta** (balance -6): Clientes -4, Consejo -2.
+
+Respuesta: `fn-s-precio-mas | ... | ...`
+
+### fn-s-precio-rfq · Día 3 · Aurora Motors · Solicitud de cotización plataforma SUV 2028
+
+**Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
+
+**Caso:** Estimado Director: Les invitamos a cotizar los soportes de la plataforma SUV 2028. El precio objetivo por pieza está 6% abajo de su precio actual. Valoramos la propuesta del mes pasado. Las cotizaciones se reciben en tres semanas. Greg Holloway Purchasing Manager · Aurora Motors México
+
+**Pregunta:** ¿Cómo cotizas la plataforma?
+
+- **A** (score 3, balance +1): Cotizar 3% abajo con el ahorro de las celdas nuevas y proponer a Aurora un rediseño de dos piezas para cerrar la brecha. → Caja -2, Margen -1, Clientes +2, Consejo +2.
+- **B** (score 1, balance -4): Cotizar justo al precio objetivo para asegurar el programa y buscar después, ya con el contrato firmado, cómo bajar costos. → Margen -6, Clientes +4, Consejo -2.
+- **C** (score 0, balance -4): Cotizar a nuestro precio actual con el índice de acero y explicar que bajar 6% no es posible con los costos de este año. → Margen +2, Clientes -5, Consejo -1.
+- **Sin respuesta** (balance -9): Clientes -6, Consejo -3.
+
+Respuesta: `fn-s-precio-rfq | ... | ...`
+
 ## Grupo Brasa
 
 ### gb-d1-carta · Día 1 · Te dejo las llaves de Brasa
 
-**Propuesta automática:** legacy. Jugable como contenido histórico, pero la opción preferida por el autor sigue siendo la que más conviene.
+**Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
 
 **Caso:** Hola: Abrí la primera Brasa con mi hermana Lourdes en 2009, en Chapultepec. Hoy somos 34 restaurantes en Jalisco, Bajío y CDMX, y 1,450 personas. Te lo digo sin rodeos: las ventas por sucursal llevan dos años planas, el costo de la carne no para de subir y las apps de entrega se llevan casi un tercio de cada pedido. Mi hermana quiere franquiciar para crecer. Yo no sé si crecer o cuidar lo que tenemos. Antes de que el equipo te jale para todos lados, dime: ¿por dónde vas a empezar? Ignacio Arce Fundador · Presidente del consejo
 
 **Pregunta:** ¿Por dónde empiezas?
 
-- **A** (score 3, balance +3): Dos semanas trabajando turnos en 6 sucursales, en cocina, piso y caja, antes de tomar cualquier decisión de fondo. → Equipo +6, Clientes +1, Consejo -4.
+- **A** (score 3, balance +6): Dos semanas trabajando turnos en 6 sucursales, en cocina, piso y caja, antes de tomar cualquier decisión de fondo. → Equipo +6, Clientes +1, Consejo -1.
 - **B** (score 1, balance +1): Atacar el prime cost de inmediato: renegociar con proveedores de carne y ajustar plantillas por sucursal según el tráfico. → Caja +2, Margen +5, Equipo -6.
 - **C** (score 2, balance +2): Empezar por el cliente: 1,500 encuestas, visitas de cliente incógnito y escuchar las reseñas de las 34 sucursales. → Caja -1, Equipo -1, Clientes +4.
 - **Sin respuesta** (balance -6): Consejo -6.
@@ -1050,17 +1110,47 @@ Respuesta: `gb-c-prov-resenas | ... | ...`
 
 Respuesta: `gb-c-prov-contrato | ... | ...`
 
+### gb-s-app-renueva · Día 3 · Rappido · Revisión del programa Socio Preferente
+
+**Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
+
+**Caso:** Hola, Director: Buenas noticias: sus pedidos en la app crecieron 28%. Para mantener los primeros lugares en la siguiente revisión, la comisión pasa de 30% a 32%. La exclusividad sigue igual. Nico Salcido Key Account Manager · Rappido
+
+**Pregunta:** ¿Qué le respondes a Nico?
+
+- **A** (score 3, balance 0): Quedarnos en 30% sin subir y preparar ya el canal propio para no depender de la app cuando venza. → Caja -1, Margen +3, Clientes -2.
+- **B** (score 0, balance -6): Aceptar el 32% para no perder los primeros lugares: la app ya es la mitad de los pedidos y salir sería peor. → Margen -7, Clientes +3, Consejo -2.
+- **C** (score 1, balance -5): Decirle que si sube la comisión rompemos la exclusividad ahora, aunque el contrato nos cobre una penalización. → Caja -4, Margen +1, Clientes -3, Consejo +1.
+- **Sin respuesta** (balance -6): Margen -5, Consejo -1.
+
+Respuesta: `gb-s-app-renueva | ... | ...`
+
+### gb-s-app-oferta · Día 3 · Rappido · Nueva propuesta para Brasa
+
+**Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
+
+**Caso:** Hola, Director: Vimos que sus pedidos directos crecieron. Les ofrecemos comisión de 28% sin exclusividad, a cambio de dos promociones al mes pagadas mitad y mitad. Nico Salcido Key Account Manager · Rappido
+
+**Pregunta:** ¿Qué le respondes a Nico?
+
+- **A** (score 3, balance +3): Aceptar el 28% sin exclusividad con una promoción al mes, y medir cuántos pedidos se vuelven directos. → Margen +1, Equipo -1, Clientes +3.
+- **B** (score 1, balance -1): Aceptar todo como viene, con las dos promociones al mes: más pedidos por la app son más ventas para las sucursales. → Caja -1, Margen -4, Clientes +4.
+- **C** (score 0, balance -2): Rechazar la propuesta y salir de Rappido: con el canal propio creciendo, la app solo nos quita margen en cada pedido. → Caja +1, Margen +2, Clientes -5.
+- **Sin respuesta** (balance -3): Clientes -3.
+
+Respuesta: `gb-s-app-oferta | ... | ...`
+
 ## Kúbit
 
 ### kb-d1-carta · Día 1 · Te damos la bienvenida a Kúbit. Esto es lo que esperamos.
 
-**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+**Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
 
 **Caso:** Estimado Director: Te damos la bienvenida. En Andes Ventures lideramos la Serie B de Kúbit hace dos años y te elegimos para llevarla a la siguiente etapa. Seré directo: el ingreso recurrente creció 38% el año pasado, pero quemamos $9 M al mes y la caja alcanza para 14 meses. Emilio, el cofundador, dejó la dirección general para volver a producto. El equipo lo sigue viendo como su líder. Los clientes quieren el producto, pero Grupo Altamar pesa 22% del ingreso y lo sabe. En la sesión de consejo del mes que entra quiero ver tu plan: camino a la rentabilidad o a la Serie C. Antes de eso, dime cómo vas a usar tus primeras semanas. Rodrigo Ibarra Presidente del consejo · Socio de Andes Ventures
 
 **Pregunta:** ¿Cómo usas tus primeras semanas?
 
-- **A** (score 3, balance +3): Antes de decidir: 30 llamadas con clientes (primero Altamar), una plática a solas con cada director y una semana en soporte. Propuesta al día 45. → Equipo +5, Clientes +3, Consejo -5.
+- **A** (score 3, balance +7): Antes de decidir: 30 llamadas con clientes (primero Altamar), una plática a solas con cada director y una semana en soporte. Propuesta al día 45. → Equipo +5, Clientes +3, Consejo -1.
 - **B** (score 1, balance +3): Plan de 100 días desde ya: congelar contrataciones, recortar 15% del gasto que no es esencial y una meta semanal de quema. → Caja +4, Equipo -6, Clientes -1, Consejo +6.
 - **C** (score 2, balance +1): Primero el cliente que más pesa: una semana con Grupo Altamar para entender qué les duele y asegurar la renovación. → Caja -1, Equipo -3, Clientes +5.
 - **Sin respuesta** (balance -7): Consejo -7.
@@ -1364,17 +1454,47 @@ Respuesta: `kb-c-nube-caida | ... | ...`
 
 Respuesta: `kb-c-nube-compromiso | ... | ...`
 
+### kb-s-altamar-mas · Día 3 · Grupo Altamar · Desarrollos para las empresas del grupo
+
+**Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
+
+**Caso:** Estimado Director: Gracias por aceptar las condiciones del mes pasado. Varias empresas del grupo vieron los desarrollos y piden lo mismo para cada una, también sin costo. Necesitamos su respuesta antes de decidir la plataforma del grupo. Hernán Villaseñor Director de Finanzas · Grupo Altamar
+
+**Pregunta:** ¿Qué le respondes a Hernán?
+
+- **A** (score 3, balance +3): Ofrecer meter al producto lo que sirva a todos, con fecha, y cotizar aparte lo que sea solo de una empresa del grupo. → Margen +3, Equipo +2, Clientes -2.
+- **B** (score 0, balance -5): Aceptar los desarrollos para las cinco empresas: si ganamos la plataforma del grupo, el volumen paga de sobra este esfuerzo. → Margen -4, Equipo -5, Clientes +4.
+- **C** (score 1, balance -1): Decirle que ya dimos suficiente y que, si quieren más desarrollos, el contrato completo regresa a precio de lista. → Margen +2, Equipo +3, Clientes -6.
+- **Sin respuesta** (balance -5): Clientes -4, Consejo -1.
+
+Respuesta: `kb-s-altamar-mas | ... | ...`
+
+### kb-s-altamar-grupo · Día 3 · Grupo Altamar · Plataforma para todo el grupo
+
+**Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
+
+**Caso:** Estimado Director: Vamos a decidir la plataforma para las 14 empresas del grupo. Para ustedes pedimos un precio por usuario 20% abajo de lista y arranque en tres meses. Valoramos la propuesta del mes pasado. Decidimos en dos semanas. Hernán Villaseñor Director de Finanzas · Grupo Altamar
+
+**Pregunta:** ¿Qué le propones a Altamar?
+
+- **A** (score 3, balance +3): Ofrecer 10% abajo por volumen y arrancar en cuatro empresas por trimestre, con metas de adopción revisadas en cada etapa. → Margen -1, Equipo -1, Clientes +3, Consejo +2.
+- **B** (score 1, balance -4): Aceptar el 20% y las 14 empresas en tres meses, contratando a la carrera para no dejar ir la cuenta más grande del año. → Margen -3, Equipo -5, Clientes +4.
+- **C** (score 0, balance -4): Mantener precio de lista y calendario propio: si nos eligen, es por el producto, no por un descuento que luego no se recupera. → Margen +2, Clientes -5, Consejo -1.
+- **Sin respuesta** (balance -8): Clientes -6, Consejo -2.
+
+Respuesta: `kb-s-altamar-grupo | ... | ...`
+
 ## Punto Madero
 
 ### pm-d1-carta · Día 1 · Te damos la bienvenida a Punto Madero. Esto es lo que esperamos.
 
-**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+**Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
 
 **Caso:** Estimado Director: Te damos la bienvenida. Mi padre fundó Punto Madero hace 41 años y es la primera vez que la familia pone a alguien de fuera al frente. Seré directo: vendemos $2,400 M al año en 60 tiendas, pero el margen bajó de 34% a 31% y la venta en mismas tiendas cayó 2%. Mundo Casa, la cadena nacional, abre 12 tiendas en la región este año. La primera queda a tres cuadras de nuestra tienda principal. Octavio, que dirigió la empresa de forma interina, conoce cada tienda y el equipo lo sigue viendo como su líder. Constructora Peñasco pesa 18% de la venta y lo sabe. En la sesión de consejo del mes que entra quiero ver tu plan. Antes de eso, dime cómo vas a usar tus primeras semanas. Esteban Garza Presidente del consejo
 
 **Pregunta:** ¿Cómo usas tus primeras semanas?
 
-- **A** (score 3, balance +3): Antes de decidir: visitar 20 tiendas (primero la principal), una plática a solas con cada director y una semana atendiendo en piso. Propuesta al día 45. → Equipo +5, Clientes +3, Consejo -5.
+- **A** (score 3, balance +7): Antes de decidir: visitar 20 tiendas (primero la principal), una plática a solas con cada director y una semana atendiendo en piso. Propuesta al día 45. → Equipo +5, Clientes +3, Consejo -1.
 - **B** (score 1, balance +3): Plan de 100 días desde ya: congelar contrataciones, recortar 15% del gasto que no es esencial y bajar precios en las 200 marcas que más compara la gente. → Caja +4, Equipo -6, Clientes -1, Consejo +6.
 - **C** (score 2, balance +1): Primero el cliente que más pesa: una semana con Constructora Peñasco para entender qué les duele y asegurar sus compras del año. → Caja -1, Equipo -3, Clientes +5.
 - **Sin respuesta** (balance -7): Consejo -7.
@@ -1678,17 +1798,47 @@ Respuesta: `pm-c-temp-guerra | ... | ...`
 
 Respuesta: `pm-c-temp-bodega | ... | ...`
 
+### pm-s-penasco-mas · Día 3 · Constructora Peñasco · Crédito para los desarrollos nuevos
+
+**Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
+
+**Caso:** Estimado Director: Gracias por las condiciones del mes pasado. Para arrancar los nueve desarrollos necesitamos ampliar el crédito a 120 días y entrega en obra los fines de semana. Con eso los consideramos como proveedor principal. Federico Ramos Director de Compras · Constructora Peñasco
+
+**Pregunta:** ¿Qué le respondes a Federico?
+
+- **A** (score 3, balance +3): Ofrecer 120 días solo en los desarrollos que nos asigne por escrito, con pagos parciales por avance de obra. → Caja +3, Clientes -2, Consejo +2.
+- **B** (score 0, balance -6): Aceptar los 120 días y la entrega en fin de semana: si nos quedamos con los nueve desarrollos, la venta compensa el esfuerzo. → Caja -7, Clientes +4, Consejo -3.
+- **C** (score 1, balance -4): Decirle que ya dimos suficiente y que, si insiste, regresamos el crédito a 30 días para todas sus compras. → Caja +2, Margen +1, Clientes -6, Consejo -1.
+- **Sin respuesta** (balance -5): Clientes -4, Consejo -1.
+
+Respuesta: `pm-s-penasco-mas | ... | ...`
+
+### pm-s-penasco-obras · Día 3 · Constructora Peñasco · Proveedor de los nueve desarrollos
+
+**Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
+
+**Caso:** Estimado Director: Vamos a asignar el proveedor de los nueve desarrollos. Pedimos precio fijo por dos años y entrega programada en cada obra. Valoramos la propuesta del mes pasado. Decidimos en dos semanas. Federico Ramos Director de Compras · Constructora Peñasco
+
+**Pregunta:** ¿Qué le propones a Peñasco?
+
+- **A** (score 3, balance +3): Ofrecer precio fijo seis meses, luego ajuste por un índice público de materiales, y entregas en tres obras. → Caja -1, Margen -1, Clientes +3, Consejo +2.
+- **B** (score 1, balance -4): Aceptar precio fijo dos años en los nueve desarrollos para quedarnos con todo y cubrir la inflación con volumen. → Margen -6, Clientes +4, Consejo -2.
+- **C** (score 0, balance -4): Mantener precio de lista con ajuste mensual: con esta inflación, fijar precio es regalarle a Peñasco nuestra utilidad. → Margen +2, Clientes -5, Consejo -1.
+- **Sin respuesta** (balance -8): Clientes -6, Consejo -2.
+
+Respuesta: `pm-s-penasco-obras | ... | ...`
+
 ## Vértice Logística
 
 ### vl-d1-carta · Día 1 · Te damos la bienvenida a Vértice. Esto es lo que esperamos.
 
-**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+**Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
 
 **Caso:** Estimado Director: Te damos la bienvenida. Mi padre fundó Vértice con tres camiones hace 38 años y es la primera vez que la familia pone a alguien de fuera al frente. Seré directo: facturamos $1,800 M al año con 420 tractocamiones y seis CEDIS, pero el margen de operación bajó de 9% a 6% y este año perdimos cuatro cuentas. Avante, el operador nacional, entra a la región con tarifas 12% abajo de las nuestras y una plataforma de rastreo que los clientes están pidiendo. Antonio, que dirigió la empresa de forma interina, conoce cada ruta y los operadores lo siguen viendo como su líder. Supermercados Almena pesa 20% de la venta y lo sabe. En la sesión de consejo del mes que entra quiero ver tu plan. Antes de eso, dime cómo vas a usar tus primeras semanas. Rodrigo Salinas Presidente del consejo
 
 **Pregunta:** ¿Cómo usas tus primeras semanas?
 
-- **A** (score 3, balance +3): Antes de decidir: recorrer los seis CEDIS, una ruta de copiloto con un operador y una plática a solas con cada director. Propuesta al día 45. → Equipo +5, Clientes +3, Consejo -5.
+- **A** (score 3, balance +7): Antes de decidir: recorrer los seis CEDIS, una ruta de copiloto con un operador y una plática a solas con cada director. Propuesta al día 45. → Equipo +5, Clientes +3, Consejo -1.
 - **B** (score 1, balance +3): Plan de 100 días desde ya: congelar contrataciones, recortar 15% del gasto que no es esencial y bajar tarifas a las 30 cuentas que Avante está visitando. → Caja +4, Equipo -6, Clientes -1, Consejo +6.
 - **C** (score 2, balance +1): Primero el cliente que más pesa: una semana con Supermercados Almena para entender qué les duele y asegurar su contrato del año. → Caja -1, Equipo -3, Clientes +5.
 - **Sin respuesta** (balance -7): Consejo -7.
@@ -1991,4 +2141,34 @@ Respuesta: `vl-c-diesel-licitacion | ... | ...`
 - **Sin respuesta** (balance -3): Equipo -3.
 
 Respuesta: `vl-c-diesel-telemetria | ... | ...`
+
+### vl-s-almena-mas · Día 3 · Supermercados Almena · Los CEDIS nuevos
+
+**Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
+
+**Caso:** Estimado Director: Gracias por las condiciones del mes pasado. Asignamos uno de los tres CEDIS nuevos a su empresa. Para los otros dos necesitamos 5% adicional de descuento y que absorban el costo de las unidades nuevas. Ricardo Hinojosa Director de Logística · Supermercados Almena
+
+**Pregunta:** ¿Qué le respondes a Ricardo?
+
+- **A** (score 3, balance +3): Ofrecer los dos CEDIS con un bono por cumplir arriba de 97% en vez de descuento, y unidades en arrendamiento. → Margen +3, Clientes -2, Consejo +2.
+- **B** (score 0, balance -8): Aceptar el 5% adicional y comprar las 15 unidades: con los tres CEDIS somos su operador principal por años. → Caja -2, Margen -7, Clientes +4, Consejo -3.
+- **C** (score 1, balance -4): Decirle que ya dimos suficiente y que, si insiste, renunciamos al CEDIS asignado y regresamos a la tarifa anterior. → Caja +1, Margen +2, Clientes -6, Consejo -1.
+- **Sin respuesta** (balance -5): Clientes -4, Consejo -1.
+
+Respuesta: `vl-s-almena-mas | ... | ...`
+
+### vl-s-almena-cedis · Día 3 · Supermercados Almena · Operador de los CEDIS nuevos
+
+**Propuesta automática:** reescribir. La opción con score más alto es claramente la más rentable: se aprende a adivinar al autor.
+
+**Caso:** Estimado Director: Vamos a asignar los tres CEDIS nuevos. El operador elegido debe arrancar en dos meses con 15 unidades propias. Valoramos la propuesta del mes pasado. Decidimos en dos semanas. Ricardo Hinojosa Director de Logística · Supermercados Almena
+
+**Pregunta:** ¿Qué le propones a Almena?
+
+- **A** (score 3, balance +2): Ofrecer un CEDIS en dos meses y los otros dos a los cinco, con unidades por fases y metas revisadas en cada etapa. → Caja -2, Equipo -1, Clientes +3, Consejo +2.
+- **B** (score 1, balance -5): Aceptar los tres CEDIS en dos meses y comprar las 15 unidades de una vez para no dejar ir la cuenta más grande del año. → Caja -6, Equipo -3, Clientes +4.
+- **C** (score 0, balance -4): Ofrecer solo un CEDIS con nuestras unidades actuales: crecer tres veces en dos meses pone en riesgo a todos los clientes. → Caja +2, Clientes -5, Consejo -1.
+- **Sin respuesta** (balance -8): Clientes -6, Consejo -2.
+
+Respuesta: `vl-s-almena-cedis | ... | ...`
 

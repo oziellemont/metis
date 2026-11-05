@@ -51,7 +51,9 @@ describe("casos ejecutivos · publicados", () => {
       expect(EPISODES[x.episode].approval).toBe("aprobado");
       expect(EPISODES[x.episode].company).toBe("cumbre");
     }
-    expect(SEASON_EPISODES.cumbre.map((x) => x.episode)).toEqual(["supernorte", "diego", "alergeno"]);
+    expect(SEASON_EPISODES.cumbre.map((x) => x.episode)).toEqual(["supernorte", "diego", "alergeno", "socio"]);
+    // El caso largo de «Acelerar» solo llega en ese capítulo (en la temporada suelta no aparece).
+    expect(SEASON_EPISODES.cumbre.find((x) => x.episode === "socio")!.stages).toEqual([3, 4]);
   });
   it("temporada nueva (v3): SuperNorte sustituye al asunto de una decisión; los otros asuntos siguen", () => {
     const s = started();
@@ -69,7 +71,7 @@ describe("casos ejecutivos · publicados", () => {
       expect(seasonItems(s).some((i) => i.id === "d2-supernorte")).toBe(true);
     }
   });
-  it("otras empresas no reciben casos (todavía no hay casos ejecutivos para ellas)", () => {
+  it("en la temporada suelta las otras empresas no reciben casos: sus casos largos son de capítulos posteriores", () => {
     expect(seasonEpisodesOf(started({ company: "forja" }))).toEqual([]);
     expect(seasonEpisodesOf(started({ company: "brasa" }))).toEqual([]);
   });

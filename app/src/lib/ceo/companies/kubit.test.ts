@@ -22,8 +22,8 @@ describe("Kúbit · software (P1-E)", () => {
     expect(LEGACY_ROTATION.map((c) => c.id)).toEqual(["cumbre", "forja", "brasa"]);
   });
 
-  it("21 asuntos propios en 7 días (17 + la cadena piloto v7), todos etiquetados, más el banco de casos con su elenco", () => {
-    expect(KUBIT.items).toHaveLength(21);
+  it("23 asuntos propios en 7 días (17 + la cadena piloto v7 + 2 seguimientos por capítulo), todos etiquetados, más el banco de casos con su elenco", () => {
+    expect(KUBIT.items).toHaveLength(23); // + 2 seguimientos por capítulo
     expect(new Set(KUBIT.items.map((i) => i.day))).toEqual(new Set([1, 2, 3, 4, 5, 6, 7]));
     for (const i of KUBIT.items) { expect(i.id.startsWith("kb-")).toBe(true); expect(CASE_TAGS[i.id], i.id).toBeTruthy(); }
     expect(PACK_CONTEXT.kubit).toBe("software_saas");
