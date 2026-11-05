@@ -14,6 +14,14 @@ import { TRANSBAJIO } from "./transbajio";
 import { BRECHA } from "./brecha";
 import { FRANQUICIA } from "./franquicia";
 import { REFINANCIAR } from "./refinanciar";
+import { ELECTRICO } from "./electrico";
+import { PRECIOS } from "./precios";
+import { CARRETERA } from "./carretera";
+import { SUCESION } from "./sucesion";
+import { CDMX } from "./cdmx";
+import { MUNDOCASA } from "./mundocasa";
+import { ENLINEA } from "./enlinea";
+import { SERIEC } from "./seriec";
 import type { CeoState } from "../types";
 
 export const EPISODES: Record<string, EpisodeSpec> = {
@@ -21,6 +29,14 @@ export const EPISODES: Record<string, EpisodeSpec> = {
   [DIEGO.id]: DIEGO,
   [ALERGENO.id]: ALERGENO,
   [AURORA.id]: AURORA,
+  [ELECTRICO.id]: ELECTRICO,
+  [PRECIOS.id]: PRECIOS,
+  [CARRETERA.id]: CARRETERA,
+  [SUCESION.id]: SUCESION,
+  [CDMX.id]: CDMX,
+  [MUNDOCASA.id]: MUNDOCASA,
+  [ENLINEA.id]: ENLINEA,
+  [SERIEC.id]: SERIEC,
   [SOCIO.id]: SOCIO,
   [TRANSBAJIO.id]: TRANSBAJIO,
   [BRECHA.id]: BRECHA,
@@ -46,11 +62,29 @@ export const SEASON_EPISODES: Record<string, SeasonEpisode[]> = {
     { episode: SOCIO.id, day: 3, slot: 2, stages: [3, 4] },
   ],
   // Casos largos por capítulo en las demás empresas (carrera continua).
-  forja: [{ episode: AURORA.id, day: 3, slot: 2, stages: [1, 2] }],
-  kubit: [{ episode: BRECHA.id, day: 4, slot: 2, stages: [2, 4] }],
-  vertice: [{ episode: TRANSBAJIO.id, day: 3, slot: 2, stages: [4, 5] }],
-  brasa: [{ episode: FRANQUICIA.id, day: 4, slot: 2, stages: [2, 3] }],
-  puntomadero: [{ episode: REFINANCIAR.id, day: 3, slot: 2, stages: [3, 5] }],
+  forja: [
+    { episode: AURORA.id, day: 3, slot: 2, stages: [1, 2] },
+    { episode: ELECTRICO.id, day: 4, slot: 2, stages: [3, 5] },
+  ],
+  kubit: [
+    { episode: PRECIOS.id, day: 3, slot: 2, stages: [1, 1] },
+    { episode: BRECHA.id, day: 4, slot: 2, stages: [2, 4] },
+    { episode: SERIEC.id, day: 5, slot: 2, stages: [5, 5] },
+  ],
+  vertice: [
+    { episode: CARRETERA.id, day: 4, slot: 2, stages: [1, 3] },
+    { episode: TRANSBAJIO.id, day: 3, slot: 2, stages: [4, 5] },
+  ],
+  brasa: [
+    { episode: CDMX.id, day: 3, slot: 2, stages: [1, 1] },
+    { episode: FRANQUICIA.id, day: 4, slot: 2, stages: [2, 3] },
+    { episode: SUCESION.id, day: 5, slot: 2, stages: [4, 5] },
+  ],
+  puntomadero: [
+    { episode: MUNDOCASA.id, day: 3, slot: 2, stages: [1, 1] },
+    { episode: ENLINEA.id, day: 4, slot: 2, stages: [2, 2] },
+    { episode: REFINANCIAR.id, day: 3, slot: 2, stages: [3, 5] },
+  ],
 };
 
 /** Abre (o reabre) un episodio en el estado del jugador. Si ya existe una partida abierta, no hace nada. */

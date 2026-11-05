@@ -33,9 +33,9 @@ describe("auditoría de casos · etiquetas", () => {
       if (t.archetypes.length < 2) expect(t.note, id).toBeTruthy();
     }
   });
-  it("la clasificación: universal 36, de familia 72 (47 + cadena de mantenimiento + 20 de cadenas piloto, 4 de ellas universales + 2 de la cadena profunda v8), del paquete 27 (con 3 casos ejecutivos; P0-A §5.1 más Kúbit, Punto Madero y Vértice); capítulos: +4 de familia (seguimientos de Brasa y Cumbre), +8 seguimientos del paquete y +6 casos largos", () => {
+  it("la clasificación: universal 36, de familia 72 (47 + cadena de mantenimiento + 20 de cadenas piloto, 4 de ellas universales + 2 de la cadena profunda v8), del paquete 27 (con 3 casos ejecutivos; P0-A §5.1 más Kúbit, Punto Madero y Vértice); capítulos: +4 de familia (seguimientos de Brasa y Cumbre), +8 seguimientos del paquete y +14 casos largos", () => {
     const n = (scope: string) => Object.values(CASE_TAGS).filter((t) => t.scope === scope).length;
-    expect([n("universal"), n("familia"), n("paquete") + Object.keys(EPISODE_TAGS).length]).toEqual([36, 76, 41]);
+    expect([n("universal"), n("familia"), n("paquete") + Object.keys(EPISODE_TAGS).length]).toEqual([36, 76, 49]);
     const by = (pack: string, scope: string) => COMPANIES.find((c) => c.id === pack)!.items.filter((i) => CASE_TAGS[i.id].scope === scope).length;
     expect([by("cumbre", "universal"), by("forja", "universal"), by("brasa", "universal")]).toEqual([10, 5, 2]);
     expect([by("cumbre", "familia"), by("forja", "familia"), by("brasa", "familia")]).toEqual([15, 14, 15]); // + 2 seguimientos de familia en Cumbre y Brasa

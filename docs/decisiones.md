@@ -171,5 +171,15 @@ El perfil es uno por persona (`metis.profiles`) y puede pertenecer a varias empr
 - Cumbre · Socio (un fondo ofrece $120 M por 30 %): Acelerar a Escalar (3 a 4).
 - Punto Madero · Refinanciar (crédito que vence en 90 días): Acelerar a Gobernar (3 a 5).
 - Vértice · Transbajío (compra de Transportes del Bajío): Escalar a Gobernar (4 a 5).
+- Segunda tanda (8 casos más, 4 decisiones cada uno):
+  - Forja · El programa eléctrico (charolas de batería, línea de $420 M): Acelerar a Gobernar (3 a 5).
+  - Kúbit · Subir precios (aumento por segmento y reclamo de los grandes): Estabilizar (1).
+  - Kúbit · Serie C o rentabilidad (preferencia de 2x, Emilio y el consejo): Gobernar (5).
+  - Vértice · Accidente en la carretera (operador con 14 horas al volante): Estabilizar a Acelerar (1 a 3).
+  - Brasa · CDMX pierde dinero (tres sucursales, gente y porción): Estabilizar (1).
+  - Brasa · La sucesión de Don Ignacio (proceso, protocolo familiar y gerentes): Escalar a Gobernar (4 a 5).
+  - Punto Madero · Mundo Casa abre enfrente (precio, constructor y bono de asesores): Estabilizar (1).
+  - Punto Madero · La tienda en línea promete de más (promesa, metas y clientes): Construir capacidad (2).
+- Resultado: cada empresa tiene al menos un caso largo en Estabilizar, Construir capacidad o Acelerar, y en Escalar o Gobernar.
 - Los 3 pilotos originales de Cumbre (SuperNorte, Diego, Alérgeno) siguen igual. Cada episodio pasa las 14 pruebas de aceptación.
 - Línea base de dominio antes de 1.3 (`golden/mastery-antes-1.3.json`) recalculada con la fórmula anterior sobre las partidas doradas regrabadas.

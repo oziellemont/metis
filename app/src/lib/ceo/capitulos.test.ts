@@ -117,6 +117,14 @@ describe("capítulos · un caso largo de varias decisiones por capítulo", () =>
     ["retail", "comercio", "refinanciar", [3, 5]],
     ["alimentos_bebidas", "manufactura", "socio", [3, 4]],
     ["logistica_distribucion", "transporte_almacenamiento", "transbajio", [4, 5]],
+    ["autopartes", "manufactura", "electrico", [3, 5]],
+    ["software_saas", "tecnologia_informacion", "precios", [1, 1]],
+    ["software_saas", "tecnologia_informacion", "seriec", [5, 5]],
+    ["logistica_distribucion", "transporte_almacenamiento", "carretera", [1, 3]],
+    ["restaurantes", "restaurantes_alimentos", "cdmx", [1, 1]],
+    ["restaurantes", "restaurantes_alimentos", "sucesion", [4, 5]],
+    ["retail", "comercio", "mundocasa", [1, 1]],
+    ["retail", "comercio", "enlinea", [2, 2]],
   ];
   it.each(CASES)("%s: «%s» llega solo en los capítulos que le tocan", (ind, sec, ep, [a, b]) => {
     const s0 = own(ind, sec);

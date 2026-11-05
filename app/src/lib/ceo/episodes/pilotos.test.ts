@@ -29,7 +29,7 @@ const kpi = (r: EpisodeRun, key: string) => r.outcome!.kpi.filter((k) => k.key =
 
 describe("P0-C · catálogo", () => {
   it("los dos pilotos están registrados y aprobados para la carrera, junto a SuperNorte y los casos largos por capítulo", () => {
-    expect(Object.keys(EPISODES).sort()).toEqual(["alergeno", "aurora", "brecha", "diego", "franquicia", "refinanciar", "socio", "supernorte", "transbajio"]);
+    expect(Object.keys(EPISODES).sort()).toEqual(["alergeno", "aurora", "brecha", "carretera", "cdmx", "diego", "electrico", "enlinea", "franquicia", "mundocasa", "precios", "refinanciar", "seriec", "socio", "sucesion", "supernorte", "transbajio"]);
     expect(DIEGO.approval).toBe("aprobado");
     expect(ALERGENO.approval).toBe("aprobado");
   });
