@@ -552,6 +552,8 @@ export function mandateOf(s: Pick<CeoState, "company" | "rulesVersion">): { kpis
 export function authoredFor(item: Pick<Item, "id" | "options">, optionId: string, v: number): AuthoredJudgment {
   const o = item.options.find((x) => x.id === optionId);
   const score = o?.score ?? 0;
+  // v8: cruzar una línea roja nunca cuenta como bien razonado, aunque la opción ayude al tablero.
+  if (ruleSet(v).judgment && isRedLine(item.id, optionId, v)) return authoredFromScore(0);
   if (score === 2 && ruleSet(v).judgment?.defensibleScore2 && isDefensibleOption(item, optionId, v)) {
     return { analiza: 2, consulta: 1, anticipa: 1, negocia: 1, ejecuta: 1 };
   }

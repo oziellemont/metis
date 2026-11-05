@@ -24,10 +24,10 @@ function rate(company: string, strat: string, reps = STRATEGIES[strat].reps, mak
 }
 
 describe("V5 · versiones", () => {
-  it("las temporadas nuevas empiezan con v5; los periodos continuos nuevos, con v7 (V5 en la carrera continua + auditoría ética)", () => {
+  it("las temporadas nuevas empiezan con v5; los periodos continuos nuevos, con v8 (V5 + auditoría ética + coherencia)", () => {
     expect(RULES_VERSION).toBe(5);
     expect(newState().rulesVersion).toBe(5);
-    expect(CONTINUOUS_RULES_VERSION).toBe(7);
+    expect(CONTINUOUS_RULES_VERSION).toBe(8);
   }, 60_000);
   it("V1–V4 siguen congeladas y sin reglas V5", () => {
     for (const v of [1, 2, 3, 4]) {

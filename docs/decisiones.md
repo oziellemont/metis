@@ -148,3 +148,10 @@ El perfil es uno por persona (`metis.profiles`) y puede pertenecer a varias empr
 - Califica cuatro criterios (rendición de cuentas, criterio, gobierno, visión) más la confianza del consejo. La confianza inicial sale de tu relación con ambos durante la temporada (50 ± 15). Para superarla: confianza de 60 o más y ningún criterio debajo de 55. De 27 caminos, 2 la superan.
 - Si no la superas, el consejo vuelve a sesionar en un día de juego. Superada, queda superada.
 - Lógica pura en `lib/ceo/board.ts`. Solo guarda `journey.board` con `recordBoard`: no toca KPI, decisiones ni partidas doradas. Sin migración de base de datos (vive dentro de la partida).
+
+## Reglas v8 activada (ronda de coherencia)
+- `CONTINUOUS_RULES_VERSION = 8`. Las empresas nuevas y el siguiente mes de cada carrera continua nacen en v8. Los meses cerrados conservan su versión y su veredicto: nada se recalifica.
+- Qué cambia para el jugador: una respuesta defendible de criterio 2 cuenta como bien razonada; lo que depende de que otra persona acepte cuenta cuando responde; dejar vencer un asunto ético grave (lista cerrada en `RED_LINES` con `omissionSince`) cuenta como línea roja; ritmo de casos dosificado y la cadena profunda de Forja.
+- Ajuste al activar: en v8 una opción que cruza una línea roja nunca cuenta como bien razonada (`authoredFor`), aunque ayude al tablero. Sin esto, «criterio y tablero» y «cuida caja» elegían ocultar el faltante del dosificador en Cumbre.
+- Aviso justo: el caso dice antes de vencer que no se puede dejar vencer (`aviso-omision`), y Hoy avisa una vez del cambio al pasar de un mes v6/v7 a uno v8 (`aviso-coherencia`).
+- Simulación a 2 meses, 6 empresas (tasa de aprobación v7 → v8): director equilibrado 0.92 → 1.00, criterio contextual 0.92 → 1.00, criterio y tablero 1.00 → 1.00, cuida caja 1.00 → 1.00, no contesta: línea roja 0 → 1.00, ocupado (deja vencer 25 %) 1.00 → 0.58, personas primero sin piso 0.67 → 0.25 (falla por caja o margen del encargo, no por criterio), personas primero con piso 1.00 → 0.92.

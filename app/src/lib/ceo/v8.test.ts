@@ -1,5 +1,5 @@
 /**
- * Reglas v8 · ronda de coherencia (definida, no activada: la carrera nueva sigue naciendo en v7).
+ * Reglas v8 · ronda de coherencia (activa: los periodos continuos nuevos nacen en v8; los v4–v7 no se recalifican).
  *
  * Lo que se prueba:
  *  1. Nada se recalifica: un periodo v7 ve cada asunto exactamente como antes (mismas opciones, mismos efectos, sin
@@ -50,9 +50,9 @@ const V7 = 7, V8 = COHERENCE_RULES_VERSION;
 const REVISED = COMPANIES.flatMap((p) => p.items.filter((i) => i.revisions?.some((r) => r.since === V8)).map((i) => ({ pack: p.id, item: i })));
 
 describe("v8 · versión", () => {
-  it("v8 existe con los mismos números de v7 más la rúbrica de score 2 defendible; la carrera sigue en v7", () => {
+  it("v8 existe con los mismos números de v7 más la rúbrica de score 2 defendible; los periodos continuos nuevos ya nacen en v8", () => {
     expect(V8).toBe(8);
-    expect(CONTINUOUS_RULES_VERSION).toBe(7);
+    expect(CONTINUOUS_RULES_VERSION).toBe(8);
     const { version: _a, judgment: j, ...r8 } = ruleSet(8) as unknown as Record<string, unknown>;
     const { version: _b, ...r7 } = ruleSet(7) as unknown as Record<string, unknown>;
     expect(r8).toEqual(r7);
@@ -326,4 +326,45 @@ describe("v8 · un periodo v8 completo se puede jugar y cerrar", () => {
     expect(r.months).toHaveLength(1);
     expect(verdictOf(r.months[0].state, r.months[0].at).v5).toBeTruthy();
   }, 120_000);
+});
+
+describe("v8 · activación", () => {
+  it("una empresa nueva y el siguiente mes de una carrera v7 nacen en v8; los meses v7 cerrados conservan su versión", async () => {
+    const { playCareer } = await import("./season-sim");
+    expect(own("cumbre", T0, CONTINUOUS_RULES_VERSION).rulesVersion).toBe(V8);
+    // Carrera que empezó en v7: al cerrar el mes con la app vigente, el mes nuevo es v8 y el cerrado sigue en v7.
+    const r7 = playCareer("cumbre", "criterio_y_tablero", 1, "act|v7", 7);
+    const closed = r7.months[0];
+    expect(closed.state.rulesVersion).toBe(7);
+    const before = verdictOf(closed.state, closed.at);
+    const { advance } = await import("./engine");
+    const next = advance(closed.state, closed.at, CONTINUOUS_RULES_VERSION);
+    if (next !== closed.state) {
+      expect(next.rulesVersion).toBe(V8);
+      expect(next.career?.at(-1)?.rulesVersion).toBe(7);
+    }
+    // El veredicto del mes v7 no cambia por existir v8.
+    expect(verdictOf(closed.state, closed.at)).toEqual(before);
+  }, 120_000);
+  it("Hoy avisa una sola vez del cambio a v8, al pasar de un mes v6/v7 a uno v8", async () => {
+    const { readFileSync } = await import("node:fs");
+    const src = readFileSync("src/components/ceo/Today.tsx", "utf8");
+    expect(src).toContain("curV >= COHERENCE_RULES_VERSION && prevV >= 6 && prevV < COHERENCE_RULES_VERSION");
+    expect(src).toContain('data-testid="aviso-coherencia"');
+    expect(src).toMatch(/Tus meses anteriores conservan su evaluación/);
+  });
+  it("cruzar una línea roja nunca cuenta como bien razonado en v8 (aunque ayude al tablero)", () => {
+    const item = seasonItems(own("cumbre", T0, V8)).find((x) => x.id === "c-mant-dosificador") ?? COMPANIES.flatMap((c) => c.items ?? []).find((x: Item) => x.id === "c-mant-dosificador");
+    expect(item).toBeTruthy();
+    expect(isRedLine("c-mant-dosificador", "b", V8)).toBe(true);
+    expect(judge(authoredFor(item!, "b", V8), 2).level).toBeLessThan(2);
+    // En v7 la regla no existía: no se recalifica.
+    expect(authoredFor(item!, "b", 7)).toEqual({ analiza: 1, consulta: 1, anticipa: 1, negocia: 1, ejecuta: 1 });
+  });
+  it("el caso avisa antes de vencer cuando dejarlo vencer cuenta como línea roja", async () => {
+    const { readFileSync } = await import("node:fs");
+    const src = readFileSync("src/components/ceo/CaseView.tsx", "utf8");
+    expect(src).toContain("isOmissionRedLine(it.id, rulesVersionOf(c.s))");
+    expect(src).toContain('data-testid="aviso-omision"');
+  });
 });

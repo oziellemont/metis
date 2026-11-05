@@ -4,7 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
 import { ArrowLeft, ArrowRight, BookOpen, CheckCheck, PenLine, ListChecks, Clock, Globe2, Lightbulb, Lock, PhoneMissed, Play, Quote, XCircle } from "lucide-react";
 import { firstName, personOf, personalizeText } from "@/lib/ceo/cast";
-import { effectOf, entryXp, LEVELS, nextLessonXp, rankFor } from "@/lib/ceo/engine";
+import { effectOf, entryXp, LEVELS, nextLessonXp, rankFor, rulesVersionOf } from "@/lib/ceo/engine";
+import { isOmissionRedLine } from "@/lib/ceo/editorial";
 import { runSpans } from "@/lib/ceo/pausetime";
 import { entryRipples, moodOf, REL_START } from "@/lib/ceo/relations";
 import { lessonById, rankOf } from "@/lib/ceo/lessons";
@@ -112,6 +113,9 @@ export function CaseView({ id }: { id: string }) {
         <>
           <StepTitle eyebrow="Tu decisión" title={it.ask} />
           <CaseHelp it={it} />
+          {isOmissionRedLine(it.id, rulesVersionOf(c.s)) && (
+            <p data-testid="aviso-omision" className="mt-4 rounded-xl bg-coral/20 px-3 py-2 text-sm text-white">Este asunto no se puede dejar vencer: si no decides, alguien actúa en tu nombre y el consejo lo cuenta igual que cruzar la línea.</p>
+          )}
           {canWrite && (
             <div className="mt-5 inline-flex rounded-xl bg-white/10 p-1 text-sm">
               <button onClick={() => setMode("options")} className={clsx("inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-medium", mode === "options" ? "bg-white text-ink" : "text-white/70")}><ListChecks size={14} /> Elegir opción</button>

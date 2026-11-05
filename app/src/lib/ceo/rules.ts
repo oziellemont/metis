@@ -214,7 +214,7 @@ export const LEGACY_RULES_VERSION = 1;
 /** Versión con la que empiezan las temporadas nuevas. */
 export const RULES_VERSION = 5;
 /** Versión con la que empiezan los periodos de la carrera continua (desde v6: veredicto V5). */
-export const CONTINUOUS_RULES_VERSION = 7;
+export const CONTINUOUS_RULES_VERSION = 8;
 /**
  * Versión de los periodos continuos registrados SIN versión explícita (jugadas anteriores a v6). Así, al reproducir
  * el diario de una carrera, un cierre o una empresa creada antes de v6 sigue abriendo periodos v4: nada cambia en
@@ -224,7 +224,7 @@ export const LEGACY_CONTINUOUS_RULES_VERSION = 4;
 
 /** Todas las versiones publicadas. Las pruebas pueden registrar una versión simulada. */
 export const RULESETS: Record<number, RuleSet> = { 1: V1, 2: V2, 3: V3, 4: V4, 5: V5, 6: V6, 7: V7, 8: V8 };
-/** Versión de la ronda de coherencia (definida y probada; la carrera continua sigue en v7 hasta activarla aparte). */
+/** Versión de la ronda de coherencia (activa desde nov-2026: es la versión continua vigente). */
 export const COHERENCE_RULES_VERSION = 8;
 
 export const isRulesVersion = (v: unknown): v is number => typeof v === "number" && Number.isInteger(v) && v >= 1;
