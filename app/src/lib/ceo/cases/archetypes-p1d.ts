@@ -60,6 +60,7 @@ export const ARCHETYPES_P1D: readonly Archetype[] = [
       "Además: tu equipo comercial cobra comisión por volumen, no por margen.",
     ],
     minStage: 1,
+    maxStage: 2,
   },
 
   // ─────────────────────────────────────────────── 12 · el reporte todo verde
@@ -113,6 +114,7 @@ export const ARCHETYPES_P1D: readonly Archetype[] = [
       "Además: quien te escribió te pide que no digas que fue él.",
     ],
     minStage: 1,
+    maxStage: 2,
   },
 
   // ─────────────────────────────────────────────── 13 · el número del trimestre
@@ -165,7 +167,8 @@ export const ARCHETYPES_P1D: readonly Archetype[] = [
       "Además: el consejero que lo propone es el que más votos tiene en el consejo.",
       "Además: el trimestre pasado tampoco llegaste.",
     ],
-    minStage: 2,
+    minStage: 3,
+    maxStage: 5,
   },
 
   // ─────────────────────────────────────────────── 14 · incidente de primera línea
@@ -219,6 +222,7 @@ export const ARCHETYPES_P1D: readonly Archetype[] = [
       "Además: hay otro video, de hace un año, en otra sucursal, con la misma regla.",
     ],
     minStage: 1,
+    maxStage: 2,
     deadlineH: 8,
   },
 
@@ -272,7 +276,8 @@ export const ARCHETYPES_P1D: readonly Archetype[] = [
       "Además: el consejo aprobó hace un mes el bono directivo del año.",
       "Además: la nómina de este mes ya circula en un grupo de WhatsApp.",
     ],
-    minStage: 1,
+    minStage: 2,
+    maxStage: 3,
   },
 
   // ─────────────────────────────────────────────── 16 · la meta imposible
@@ -325,7 +330,8 @@ export const ARCHETYPES_P1D: readonly Archetype[] = [
       "Además: quien te escribe lleva menos de un año en la empresa.",
       "Además: {ops} te dice que «así se ha hecho siempre y nunca ha pasado nada».",
     ],
-    minStage: 1,
+    minStage: 2,
+    maxStage: 3,
   },
 
   // ─────────────────────────────────────────────── 17 · decir que no
@@ -379,6 +385,7 @@ export const ARCHETYPES_P1D: readonly Archetype[] = [
       "Además: tu competidor acaba de lanzar tres productos nuevos.",
     ],
     minStage: 1,
+    maxStage: 2,
   },
 
   // ─────────────────────────────────────────────── 18 · el reto adaptativo
@@ -432,5 +439,6 @@ export const ARCHETYPES_P1D: readonly Archetype[] = [
       "Además: un cliente importante ya se quejó de los dos lados.",
     ],
     minStage: 2,
+    maxStage: 3,
   },
 ];

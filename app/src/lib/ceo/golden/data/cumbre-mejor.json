@@ -14,8 +14,8 @@
   {
    "type": "dilemma",
    "at": 1791212420000,
-   "id": "n2",
-   "option": 1
+   "id": "n2-v2",
+   "option": 0
   },
   {
    "type": "lesson",
@@ -37,8 +37,8 @@
   {
    "type": "dilemma",
    "at": 1791303794664,
-   "id": "a2",
-   "option": 1
+   "id": "a2-v2",
+   "option": 0
   },
   {
    "type": "lesson",
@@ -59,32 +59,32 @@
   },
   {
    "type": "dilemma",
-   "at": 1791383743771,
-   "id": "d5",
-   "option": 1
+   "at": 1791383213078,
+   "id": "d5-v2",
+   "option": 0
   },
   {
    "type": "lesson",
-   "at": 1791383763771,
+   "at": 1791383233078,
    "id": "equipos"
   },
   {
    "type": "decide",
-   "at": 1791383763771,
+   "at": 1791383233078,
    "item": "d3-planta",
    "option": "c"
   },
   {
    "type": "decide",
-   "at": 1791400091138,
+   "at": 1791395468603,
    "item": "d3-diego",
    "option": "b"
   },
   {
    "type": "dilemma",
    "at": 1791473880955,
-   "id": "e3",
-   "option": 1
+   "id": "e3-v2",
+   "option": 0
   },
   {
    "type": "lesson",
@@ -112,8 +112,8 @@
   {
    "type": "dilemma",
    "at": 1791560160466,
-   "id": "v4",
-   "option": 1
+   "id": "v4-v2",
+   "option": 0
   },
   {
    "type": "lesson",
@@ -135,8 +135,8 @@
   {
    "type": "dilemma",
    "at": 1791643971048,
-   "id": "c2",
-   "option": 1
+   "id": "c2-v2",
+   "option": 0
   },
   {
    "type": "lesson",
@@ -164,8 +164,8 @@
   {
    "type": "dilemma",
    "at": 1791738905059,
-   "id": "s1",
-   "option": 1
+   "id": "s1-v2",
+   "option": 0
   },
   {
    "type": "lesson",
@@ -302,7 +302,7 @@
      "margen": 57,
      "equipo": 60,
      "clientes": 67,
-     "consejo": 60
+     "consejo": 61
     },
     "health": 61,
     "xp": 155,
@@ -357,11 +357,11 @@
       86400
      ],
      "d3-planta": [
-      171323,
+      170792,
       28800
      ],
      "d3-diego": [
-      187690,
+      183068,
       86400
      ],
      "d4-objetivos": [
@@ -417,7 +417,7 @@
      "primera"
     ],
     "dilemmas": {
-     "n2": 1
+     "n2-v2": 0
     },
     "lessons": [
      "mentalidad"
@@ -427,7 +427,7 @@
   },
   {
    "after": 9,
-   "at": 1791383723771,
+   "at": 1791383193078,
    "snapshot": {
     "company": "cumbre",
     "tier": 0,
@@ -438,7 +438,7 @@
      "margen": 60,
      "equipo": 59,
      "clientes": 59,
-     "consejo": 60
+     "consejo": 61
     },
     "health": 60,
     "xp": 280,
@@ -495,11 +495,11 @@
       86400
      ],
      "d3-planta": [
-      171323,
+      170792,
       28800
      ],
      "d3-diego": [
-      187690,
+      183068,
       86400
      ],
      "d4-objetivos": [
@@ -565,8 +565,8 @@
      "primera"
     ],
     "dilemmas": {
-     "n2": 1,
-     "a2": 1
+     "n2-v2": 0,
+     "a2-v2": 0
     },
     "lessons": [
      "mentalidad",
@@ -588,7 +588,7 @@
      "margen": 60,
      "equipo": 65,
      "clientes": 58,
-     "consejo": 60
+     "consejo": 61
     },
     "health": 60,
     "xp": 425,
@@ -646,11 +646,11 @@
       86400
      ],
      "d3-planta": [
-      171323,
+      170792,
       28800
      ],
      "d3-diego": [
-      187690,
+      183068,
       86400
      ],
      "d4-objetivos": [
@@ -724,9 +724,9 @@
      "puntual"
     ],
     "dilemmas": {
-     "n2": 1,
-     "a2": 1,
-     "d5": 1
+     "n2-v2": 0,
+     "a2-v2": 0,
+     "d5-v2": 0
     },
     "lessons": [
      "equipos",
@@ -749,7 +749,7 @@
      "margen": 62,
      "equipo": 66,
      "clientes": 61,
-     "consejo": 61
+     "consejo": 62
     },
     "health": 61,
     "xp": 625,
@@ -807,11 +807,11 @@
       86400
      ],
      "d3-planta": [
-      171323,
+      170792,
       28800
      ],
      "d3-diego": [
-      187690,
+      183068,
       86400
      ],
      "d4-objetivos": [
@@ -888,10 +888,10 @@
      "puntual"
     ],
     "dilemmas": {
-     "n2": 1,
-     "a2": 1,
-     "d5": 1,
-     "e3": 1
+     "n2-v2": 0,
+     "a2-v2": 0,
+     "d5-v2": 0,
+     "e3-v2": 0
     },
     "lessons": [
      "alineacion",
@@ -915,7 +915,7 @@
      "margen": 60,
      "equipo": 62,
      "clientes": 61,
-     "consejo": 67
+     "consejo": 68
     },
     "health": 62,
     "xp": 770,
@@ -973,11 +973,11 @@
       86400
      ],
      "d3-planta": [
-      171323,
+      170792,
       28800
      ],
      "d3-diego": [
-      187690,
+      183068,
       86400
      ],
      "d4-objetivos": [
@@ -1057,11 +1057,11 @@
      "lector"
     ],
     "dilemmas": {
-     "n2": 1,
-     "a2": 1,
-     "d5": 1,
-     "e3": 1,
-     "v4": 1
+     "n2-v2": 0,
+     "a2-v2": 0,
+     "d5-v2": 0,
+     "e3-v2": 0,
+     "v4-v2": 0
     },
     "lessons": [
      "alineacion",
@@ -1086,7 +1086,7 @@
      "margen": 60,
      "equipo": 64,
      "clientes": 63,
-     "consejo": 62
+     "consejo": 63
     },
     "health": 62,
     "xp": 960,
@@ -1144,11 +1144,11 @@
       86400
      ],
      "d3-planta": [
-      171323,
+      170792,
       28800
      ],
      "d3-diego": [
-      187690,
+      183068,
       86400
      ],
      "d4-objetivos": [
@@ -1231,12 +1231,12 @@
      "lector"
     ],
     "dilemmas": {
-     "n2": 1,
-     "a2": 1,
-     "d5": 1,
-     "e3": 1,
-     "v4": 1,
-     "c2": 1
+     "n2-v2": 0,
+     "a2-v2": 0,
+     "d5-v2": 0,
+     "e3-v2": 0,
+     "v4-v2": 0,
+     "c2-v2": 0
     },
     "lessons": [
      "alineacion",
@@ -1262,7 +1262,7 @@
      "margen": 62,
      "equipo": 67,
      "clientes": 63,
-     "consejo": 59
+     "consejo": 60
     },
     "health": 62,
     "xp": 1085,
@@ -1320,11 +1320,11 @@
       86400
      ],
      "d3-planta": [
-      171323,
+      170792,
       28800
      ],
      "d3-diego": [
-      187690,
+      183068,
       86400
      ],
      "d4-objetivos": [
@@ -1410,13 +1410,13 @@
      "lector"
     ],
     "dilemmas": {
-     "n2": 1,
-     "a2": 1,
-     "d5": 1,
-     "e3": 1,
-     "v4": 1,
-     "c2": 1,
-     "s1": 1
+     "n2-v2": 0,
+     "a2-v2": 0,
+     "d5-v2": 0,
+     "e3-v2": 0,
+     "v4-v2": 0,
+     "c2-v2": 0,
+     "s1-v2": 0
     },
     "lessons": [
      "alineacion",
@@ -1443,7 +1443,7 @@
      "margen": 62,
      "equipo": 68,
      "clientes": 63,
-     "consejo": 57
+     "consejo": 58
     },
     "health": 61,
     "xp": 1085,
@@ -1501,11 +1501,11 @@
       86400
      ],
      "d3-planta": [
-      171323,
+      170792,
       28800
      ],
      "d3-diego": [
-      187690,
+      183068,
       86400
      ],
      "d4-objetivos": [
@@ -1609,13 +1609,13 @@
      "lector"
     ],
     "dilemmas": {
-     "n2": 1,
-     "a2": 1,
-     "d5": 1,
-     "e3": 1,
-     "v4": 1,
-     "c2": 1,
-     "s1": 1
+     "n2-v2": 0,
+     "a2-v2": 0,
+     "d5-v2": 0,
+     "e3-v2": 0,
+     "v4-v2": 0,
+     "c2-v2": 0,
+     "s1-v2": 0
     },
     "lessons": [
      "alineacion",
@@ -1695,11 +1695,11 @@
       32400
      ],
      "gb-d3-brote": [
-      142855,
+      142037,
       18000
      ],
      "gb-d3-franquicia": [
-      160632,
+      155371,
       79200
      ],
      "gb-d4-carne": [
@@ -1751,13 +1751,13 @@
      "ascenso"
     ],
     "dilemmas": {
-     "n2": 1,
-     "a2": 1,
-     "d5": 1,
-     "e3": 1,
-     "v4": 1,
-     "c2": 1,
-     "s1": 1
+     "n2-v2": 0,
+     "a2-v2": 0,
+     "d5-v2": 0,
+     "e3-v2": 0,
+     "v4-v2": 0,
+     "c2-v2": 0,
+     "s1-v2": 0
     },
     "lessons": [
      "alineacion",
@@ -1781,7 +1781,7 @@
        "margen": 62,
        "equipo": 68,
        "clientes": 63,
-       "consejo": 57
+       "consejo": 58
       },
       "change": {
        "adopted": 5,

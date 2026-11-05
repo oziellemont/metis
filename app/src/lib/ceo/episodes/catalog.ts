@@ -8,23 +8,49 @@ import { applyEpisode, startEpisode, type EpisodeAction } from "./engine";
 import { SUPERNORTE } from "./supernorte";
 import { DIEGO } from "./diego";
 import { ALERGENO } from "./alergeno";
+import { AURORA } from "./aurora";
+import { SOCIO } from "./socio";
+import { TRANSBAJIO } from "./transbajio";
+import { BRECHA } from "./brecha";
+import { FRANQUICIA } from "./franquicia";
+import { REFINANCIAR } from "./refinanciar";
 import type { CeoState } from "../types";
 
 export const EPISODES: Record<string, EpisodeSpec> = {
   [SUPERNORTE.id]: SUPERNORTE,
   [DIEGO.id]: DIEGO,
   [ALERGENO.id]: ALERGENO,
+  [AURORA.id]: AURORA,
+  [SOCIO.id]: SOCIO,
+  [TRANSBAJIO.id]: TRANSBAJIO,
+  [BRECHA.id]: BRECHA,
+  [FRANQUICIA.id]: FRANQUICIA,
+  [REFINANCIAR.id]: REFINANCIAR,
 };
+/** Los tres pilotos originales (conjunto de evaluación de la IA y pruebas de P0). */
+export const PILOT_EPISODES = ["supernorte", "diego", "alergeno"] as const;
 export const episodeSpec = (id: string): EpisodeSpec | undefined => EPISODES[id];
 
 /** Cuándo llega un caso ejecutivo en la temporada de su empresa. `replaces`: asunto de una decisión que sustituye. */
-export interface SeasonEpisode { episode: string; day: number; slot: number; replaces?: string }
+export interface SeasonEpisode {
+  episode: string; day: number; slot: number; replaces?: string;
+  /** Carrera continua: capítulos de la empresa (índices de COMPANY_STAGES, desde y hasta) en que llega. Sin dato, en cualquiera. */
+  stages?: [number, number];
+}
 export const SEASON_EPISODES: Record<string, SeasonEpisode[]> = {
   cumbre: [
     { episode: SUPERNORTE.id, day: 2, slot: 1, replaces: "d2-supernorte" },
     { episode: DIEGO.id, day: 4, slot: 2 },
     { episode: ALERGENO.id, day: 6, slot: 2 },
+    // Caso largo del capítulo «Acelerar» / «Escalar».
+    { episode: SOCIO.id, day: 3, slot: 2, stages: [3, 4] },
   ],
+  // Casos largos por capítulo en las demás empresas (carrera continua).
+  forja: [{ episode: AURORA.id, day: 3, slot: 2, stages: [1, 2] }],
+  kubit: [{ episode: BRECHA.id, day: 4, slot: 2, stages: [2, 4] }],
+  vertice: [{ episode: TRANSBAJIO.id, day: 3, slot: 2, stages: [4, 5] }],
+  brasa: [{ episode: FRANQUICIA.id, day: 4, slot: 2, stages: [2, 3] }],
+  puntomadero: [{ episode: REFINANCIAR.id, day: 3, slot: 2, stages: [3, 5] }],
 };
 
 /** Abre (o reabre) un episodio en el estado del jugador. Si ya existe una partida abierta, no hace nada. */

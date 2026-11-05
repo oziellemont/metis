@@ -1,46 +1,46 @@
 {
  "brasa-mejor": {
   "personas": 38,
-  "estrategia": 30,
+  "estrategia": 22,
   "comunicacion": 12,
-  "ejecucion": 25,
-  "mercado": 27,
+  "ejecucion": 27,
+  "mercado": 22,
   "etica": 24,
-  "negociacion": 9,
-  "finanzas": 24
+  "negociacion": 7,
+  "finanzas": 17
  },
  "brasa-peor": {
   "personas": 3,
-  "estrategia": 19,
+  "estrategia": 18,
   "comunicacion": 0,
   "ejecucion": 8,
-  "mercado": 16,
+  "mercado": 14,
   "etica": 0,
-  "negociacion": 12,
-  "finanzas": 8
+  "negociacion": 9,
+  "finanzas": 7
  },
  "carrera-legendaria": {
-  "personas": 72,
-  "estrategia": 62,
-  "comunicacion": 49,
+  "personas": 62,
+  "estrategia": 55,
+  "comunicacion": 55,
   "ejecucion": 47,
-  "mercado": 52,
-  "etica": 53,
-  "negociacion": 48,
-  "finanzas": 63
+  "mercado": 40,
+  "etica": 44,
+  "negociacion": 35,
+  "finanzas": 53
  },
  "cumbre-mejor": {
-  "personas": 50,
+  "personas": 43,
   "estrategia": 32,
   "comunicacion": 24,
   "ejecucion": 9,
   "mercado": 15,
-  "etica": 20,
-  "negociacion": 28,
+  "etica": 18,
+  "negociacion": 22,
   "finanzas": 25
  },
  "cumbre-peor": {
-  "personas": 7,
+  "personas": 6,
   "estrategia": 4,
   "comunicacion": 2,
   "ejecucion": 3,
@@ -50,53 +50,53 @@
   "finanzas": 5
  },
  "cumbre-vencidos": {
-  "personas": 12,
+  "personas": 16,
   "estrategia": 19,
   "comunicacion": 16,
   "ejecucion": 9,
   "mercado": 0,
-  "etica": 9,
-  "negociacion": 1,
+  "etica": 10,
+  "negociacion": 2,
   "finanzas": 2
  },
  "forja-azar": {
-  "personas": 33,
+  "personas": 36,
   "estrategia": 27,
   "comunicacion": 16,
   "ejecucion": 36,
-  "mercado": 27,
+  "mercado": 22,
   "etica": 34,
-  "negociacion": 19,
-  "finanzas": 34
+  "negociacion": 13,
+  "finanzas": 30
  },
  "forja-mejor": {
   "personas": 43,
   "estrategia": 43,
   "comunicacion": 39,
   "ejecucion": 31,
-  "mercado": 30,
+  "mercado": 22,
   "etica": 31,
-  "negociacion": 25,
-  "finanzas": 36
+  "negociacion": 19,
+  "finanzas": 29
  },
  "otra-zona": {
   "personas": 42,
   "estrategia": 33,
   "comunicacion": 29,
   "ejecucion": 31,
-  "mercado": 30,
+  "mercado": 22,
   "etica": 27,
-  "negociacion": 24,
-  "finanzas": 32
+  "negociacion": 17,
+  "finanzas": 25
  },
  "repite-y-asciende": {
-  "personas": 33,
+  "personas": 26,
   "estrategia": 25,
   "comunicacion": 13,
   "ejecucion": 24,
   "mercado": 21,
-  "etica": 13,
-  "negociacion": 22,
+  "etica": 10,
+  "negociacion": 15,
   "finanzas": 29
  }
 }

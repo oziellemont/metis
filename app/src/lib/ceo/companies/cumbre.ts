@@ -2,6 +2,7 @@
  * Empresa 1 · Botanas Cumbre (consumo masivo, familiar, Monterrey).
  * Todos los nombres de personas, empresas y cadenas son ficticios.
  */
+import { SEGUIMIENTOS_CUMBRE } from "./seguimientos";
 import type { CompanyPack } from "../types";
 import { withV8 } from "./v8";
 import { ITEMS } from "./cumbre-items";
@@ -86,5 +87,5 @@ export const CUMBRE: CompanyPack = {
       { id: "paty", start: 40, likes: ["ejemplo"], secret: "«La gente me pregunta a mí qué está pasando. Si yo lo entiendo, el chisme trabaja a tu favor.»" },
     ],
   },
-  items: withV8([...ITEMS, ...MANTENIMIENTO]),
+  items: withV8([...ITEMS, ...MANTENIMIENTO, ...SEGUIMIENTOS_CUMBRE]),
 };

@@ -4,6 +4,7 @@
  * presión, un cliente que pesa demasiado, vender lo que no existe, deuda de riesgo, el banco que congela la caja,
  * una ronda a la baja y el recorte que propone el consejo. Personas, empresas y fondos son ficticios.
  */
+import { SEGUIMIENTOS_KUBIT } from "./seguimientos";
 import type { CompanyPack, Item } from "../types";
 import { withV8 } from "./v8";
 import { CADENA_KUBIT } from "./kubit-cadena";
@@ -25,7 +26,7 @@ const ITEMS: Item[] = [
     ask: "¿Cómo usas tus primeras semanas?",
     involves: ["valeria", "emilio", "andrea", "hernan"],
     options: [
-      { id: "a", stance: { emilio: 2, valeria: -1 }, text: "Antes de decidir: 30 llamadas con clientes (primero Altamar), una plática a solas con cada director y una semana en soporte. Propuesta al día 45.", reply: ["Respeto el método. Le advierto que el fondo mide en trimestres, no en intenciones.", "Día 45. Ni uno más."], outcome: "El equipo ve a un director que pregunta antes de mandar. El fondo anota que te tomaste tu tiempo.", effects: { equipo: 5, clientes: 3, consejo: -5 }, style: { horizonte: 2, estilo: 2, foco: 1, riesgo: -1 }, score: 3 },
+      { id: "a", stance: { emilio: 2, valeria: -1 }, text: "Antes de decidir: 30 llamadas con clientes (primero Altamar), una plática a solas con cada director y una semana en soporte. Propuesta al día 45.", reply: ["Respeto el método. Le advierto que el fondo mide en trimestres, no en intenciones.", "Día 45. Ni uno más."], outcome: "El equipo ve a un director que pregunta antes de mandar. El fondo acepta el plan porque tiene fecha; solo pide un avance a medio camino.", effects: { equipo: 5, clientes: 3, consejo: -1 }, style: { horizonte: 2, estilo: 2, foco: 1, riesgo: -1 }, score: 3 },
       { id: "b", stance: { valeria: 2, ibarra: 1, emilio: -2 }, text: "Plan de 100 días desde ya: congelar contrataciones, recortar 15% del gasto que no es esencial y una meta semanal de quema.", reply: ["Eso es lo que necesitábamos oír.", "Le pido que Andrea me mande el avance cada viernes."], outcome: "El fondo respira. En el equipo se corre la voz de que llegó «el de los recortes» antes de conocer a nadie.", effects: { consejo: 6, caja: 4, equipo: -6, clientes: -1 }, style: { horizonte: -1, riesgo: 1, estilo: -2, foco: -2 }, score: 1 },
       { id: "c", stance: { hernan: 2, emilio: -1 }, text: "Primero el cliente que más pesa: una semana con Grupo Altamar para entender qué les duele y asegurar la renovación.", reply: ["Interesante. El 22% del ingreso está ahí; no es mala apuesta.", "Pero no se olvide de que el producto no se arregla desde las oficinas de Altamar."], outcome: "El director de finanzas de Altamar agradece que el nuevo director se presente en persona. Tu propio equipo se queda una semana sin conocerte.", effects: { clientes: 5, equipo: -3, caja: -1 }, style: { horizonte: 1, foco: -1, conflicto: 1 }, score: 2 },
     ],
@@ -357,6 +358,7 @@ const ITEMS: Item[] = [
   // ═══════════════════════════════ DÍA 7 · Consejo
   {
     id: "kb-d7-consejo", day: 7, slot: 1, channel: "junta", from: "ibarra",
+    stages: [0, 0], // habla de tu llegada: solo al tomar el mando
     subject: "Sesión de consejo · Cierre del trimestre", preview: "La quema sigue en $9 M al mes. El fondo propone recortar 50 puestos…",
     body: ["Sala de consejo, 9:00. Rodrigo Ibarra preside. Valeria Contreras y Andrea Quiroga en la mesa. Tu primer cierre de trimestre."],
     lines: [
@@ -482,5 +484,5 @@ export const KUBIT: CompanyPack = {
       { id: "joel", start: 14, likes: ["entrevista", "townhall"], dislikes: ["incentivos"], secret: "«Detener un lanzamiento suena bien hasta que culpan al ingeniero. Si me garantizas que nadie se castiga por frenar, el equipo apoya.»" },
     ],
   },
-  items: withV8([...ITEMS, ...CADENA_KUBIT]),
+  items: withV8([...ITEMS, ...CADENA_KUBIT, ...SEGUIMIENTOS_KUBIT]),
 };

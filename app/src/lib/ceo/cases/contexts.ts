@@ -13,6 +13,7 @@
  */
 import type { ArchetypeId } from "./archetypes";
 import { P1D_FACTS, type P1DId } from "./contexts-p1d";
+import { CAP_FACTS, type CapId } from "./contexts-cap";
 
 export interface CaseFacts {
   subject: string;
@@ -29,8 +30,8 @@ export interface IndustryContext {
 }
 
 /** Contexto con las diez decisiones de P1-C; las ocho de P1-D viven en contexts-p1d.ts y se suman abajo. */
-type BaseContext = Omit<IndustryContext, "cases"> & { cases: Record<Exclude<ArchetypeId, P1DId>, CaseFacts> };
-const full = (c: BaseContext): IndustryContext => ({ ...c, cases: { ...c.cases, ...P1D_FACTS[c.industryId] } });
+type BaseContext = Omit<IndustryContext, "cases"> & { cases: Record<Exclude<ArchetypeId, P1DId | CapId>, CaseFacts> };
+const full = (c: BaseContext): IndustryContext => ({ ...c, cases: { ...c.cases, ...P1D_FACTS[c.industryId], ...CAP_FACTS[c.industryId] } });
 
 const ALIMENTOS: BaseContext = {
   industryId: "alimentos_bebidas",

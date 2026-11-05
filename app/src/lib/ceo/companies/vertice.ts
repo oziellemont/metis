@@ -6,6 +6,7 @@
  * entrega que la operación no cumple, deuda para comprar flota, cuentas embargadas, la oferta de compra y el cierre de
  * CEDIS que propone el consejo. Personas, empresas y fondos son ficticios.
  */
+import { SEGUIMIENTOS_VERTICE } from "./seguimientos";
 import type { CompanyPack, Item } from "../types";
 import { withV8 } from "./v8";
 import { CADENA_VERTICE } from "./vertice-cadena";
@@ -32,7 +33,7 @@ const ITEMS: Item[] = [
     ask: "¿Cómo usas tus primeras semanas?",
     involves: ["elena", "antonio", "patricio", "hinojosa"],
     options: [
-      { id: "a", stance: { antonio: 2, elena: -1 }, text: "Antes de decidir: recorrer los seis CEDIS, una ruta de copiloto con un operador y una plática a solas con cada director. Propuesta al día 45.", reply: ["Respeto el método. Le advierto que Avante no va a esperar 45 días.", "Día 45. Ni uno más."], outcome: "El equipo ve a un director que pregunta antes de mandar. El consejo empieza a contar los días.", effects: { equipo: 5, clientes: 3, consejo: -5 }, style: { horizonte: 2, estilo: 2, foco: 1, riesgo: -1 }, score: 3 },
+      { id: "a", stance: { antonio: 2, elena: -1 }, text: "Antes de decidir: recorrer los seis CEDIS, una ruta de copiloto con un operador y una plática a solas con cada director. Propuesta al día 45.", reply: ["Respeto el método. Le advierto que Avante no va a esperar 45 días.", "Día 45. Ni uno más."], outcome: "El equipo ve a un director que pregunta antes de mandar. El consejo acepta el método porque tiene fecha; solo pide un avance a medio camino.", effects: { equipo: 5, clientes: 3, consejo: -1 }, style: { horizonte: 2, estilo: 2, foco: 1, riesgo: -1 }, score: 3 },
       { id: "b", stance: { elena: 2, rodrigo: 1, antonio: -2 }, text: "Plan de 100 días desde ya: congelar contrataciones, recortar 15% del gasto que no es esencial y bajar tarifas a las 30 cuentas que Avante está visitando.", reply: ["Eso es lo que necesitábamos oír.", "Le pido que Patricio me mande el avance cada viernes."], outcome: "El consejo respira. En los patios se corre la voz de que llegó un director que recorta antes de preguntar.", effects: { consejo: 6, caja: 4, equipo: -6, clientes: -1 }, style: { horizonte: -1, riesgo: 1, estilo: -2, foco: -2 }, score: 1 },
       { id: "c", stance: { hinojosa: 2, antonio: -1 }, text: "Primero el cliente que más pesa: una semana con Supermercados Almena para entender qué les duele y asegurar su contrato del año.", reply: ["Interesante. El 20% de la venta está ahí; no es mala apuesta.", "Pero no se olvide de que los camiones no se arreglan desde las oficinas de Almena."], outcome: "El director de logística de Almena se siente escuchado. En los patios se preguntan cuándo vas a ir a verlos.", effects: { clientes: 5, equipo: -3, caja: -1 }, style: { horizonte: 1, foco: -1, conflicto: 1 }, score: 2 },
     ],
@@ -364,6 +365,7 @@ const ITEMS: Item[] = [
   // ═══════════════════════════════ DÍA 7 · Consejo
   {
     id: "vl-d7-consejo", day: 7, slot: 1, channel: "junta", from: "rodrigo",
+    stages: [0, 0], // habla de tu llegada: solo al tomar el mando
     subject: "Sesión de consejo · Cierre del trimestre", preview: "Dos CEDIS pierden dinero. El consejo propone cerrarlos y recortar 280 puestos…",
     body: ["Sala de consejo, 9:00. Rodrigo Salinas preside. Elena Quiroga y Patricio Lozano en la mesa. Tu primer cierre de trimestre."],
     lines: [
@@ -489,5 +491,5 @@ export const VERTICE: CompanyPack = {
       { id: "pepe", start: 14, likes: ["entrevista", "townhall"], dislikes: ["incentivos"], secret: "«Frenar una salida suena bien hasta que culpan al operador. Si me garantizas que nadie se castiga por frenar, los patios apoyan.»" },
     ],
   },
-  items: withV8([...ITEMS, ...CADENA_VERTICE]),
+  items: withV8([...ITEMS, ...CADENA_VERTICE, ...SEGUIMIENTOS_VERTICE]),
 };

@@ -3,6 +3,7 @@
  * Dilemas inspirados en tipos de casos clásicos de manufactura (poder de parar la línea, PPAP bajo presión,
  * proveedor único en quiebra, recapitalización de un fondo). Personas, empresas y armadoras son ficticias.
  */
+import { SEGUIMIENTOS_FORJA } from "./seguimientos";
 import type { CompanyPack, Item } from "../types";
 import { CADENA_FORJA_V8, withV8 } from "./v8";
 import { CADENA_FORJA } from "./forja-cadena";
@@ -25,7 +26,7 @@ const ITEMS: Item[] = [
     ask: "¿Cómo usas tus primeras semanas?",
     involves: ["regina", "ramon", "laura", "greg"],
     options: [
-      { id: "a", stance: {ramon: 2, regina: -1}, text: "Piso de planta primero: tres turnos en las líneas, sentarme con los supervisores y oír la queja del cliente de frente. Propuesta al día 45.", reply: ["Respeto el método. Le advierto que el fondo mide en trimestres, no en intenciones.", "Día 45. Ni uno más."], outcome: "La planta te ve con casco y botas desde el primer día. El fondo anota que te tomaste tu tiempo.", effects: { equipo: 6, clientes: 2, consejo: -5 }, style: { horizonte: 2, estilo: 2, foco: 1, riesgo: -1 }, score: 3 },
+      { id: "a", stance: {ramon: 2, regina: -1}, text: "Piso de planta primero: tres turnos en las líneas, sentarme con los supervisores y oír la queja del cliente de frente. Propuesta al día 45.", reply: ["Respeto el método. Le advierto que el fondo mide en trimestres, no en intenciones.", "Día 45. Ni uno más."], outcome: "La planta te ve con casco y botas desde el primer día. El fondo acepta el plan porque tiene fecha; solo pide un avance a medio camino.", effects: { equipo: 6, clientes: 2, consejo: -1 }, style: { horizonte: 2, estilo: 2, foco: 1, riesgo: -1 }, score: 3 },
       { id: "b", stance: {regina: 2, zertuche: 1, ramon: -2}, text: "Plan de 100 días desde ya: congelar contrataciones, renegociar con 20 proveedores y meter un programa de reducción de costos con metas semanales.", reply: ["Eso es lo que necesitábamos oír.", "Le pido que Marcos me mande el avance cada viernes."], outcome: "El fondo respira. En la planta se corre la voz de que llegó «el de los recortes» antes de conocer a nadie.", effects: { consejo: 6, margen: 3, equipo: -6, clientes: -1 }, style: { horizonte: -1, riesgo: 1, estilo: -2, foco: -2 }, score: 1 },
       { id: "c", stance: {greg: 2, ramon: -1}, text: "Primero el cliente: me voy una semana a la planta de Aurora en Saltillo para entender qué les duele y qué necesitamos para salir de amarillo.", reply: ["Interesante. El 72% de la venta está ahí; no es mala apuesta.", "Pero no se olvide de que la planta no se arregla desde Saltillo."], outcome: "El comprador de Aurora agradece que el nuevo director se presente en persona. Tu propia planta se queda una semana sin conocerte.", effects: { clientes: 5, equipo: -3, caja: -1 }, style: { horizonte: 1, foco: -1, conflicto: 1 }, score: 2 },
     ],
@@ -360,6 +361,7 @@ const ITEMS: Item[] = [
   // ═══════════════════════════════ DÍA 7 · Consejo
   {
     id: "fn-d7-consejo", day: 7, slot: 1, channel: "junta", from: "zertuche",
+    stages: [0, 0], // habla de tu llegada: solo al tomar el mando
     subject: "Sesión de consejo · Cierre del trimestre", preview: "El margen quedó abajo del plan. El fondo propone cerrar la línea 1 y recortar 60 puestos…",
     body: ["Sala de consejo, 9:00. Alberto Zertuche preside. Regina Ochoa y Marcos Elizondo en la mesa. Tu primer cierre de trimestre."],
     lines: [
@@ -486,5 +488,5 @@ export const FORJA: CompanyPack = {
       { id: "fermin", start: 14, likes: ["entrevista", "townhall"], dislikes: ["incentivos"], secret: "«Parar la línea suena bien hasta que culpan al operador. Si me garantizas que nadie se castiga por parar, el sindicato apoya.»" },
     ],
   },
-  items: withV8([...ITEMS, ...CADENA_FORJA, ...CADENA_FORJA_V8]),
+  items: withV8([...ITEMS, ...CADENA_FORJA, ...CADENA_FORJA_V8, ...SEGUIMIENTOS_FORJA]),
 };

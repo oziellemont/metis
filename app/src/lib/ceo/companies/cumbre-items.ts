@@ -28,7 +28,7 @@ export const ITEMS: Item[] = [
     data: { title: "Tu primer tablero", rows: [["Ventas", "$410 M · +3% anual"], ["Margen operativo", "9.8% (era 13% hace 4 años)"], ["Rotación en planta", "34% anual"], ["Cliente principal", "SuperNorte · 31% de las ventas"]] },
     ask: "¿Cómo usas tus primeros 30 días?",
     options: [
-      { id: "a", stance: {ramiro: -1, hector: 1, javier: 1}, text: "Recorrer antes de decidir: sentarme con los 12 líderes clave, dos turnos en planta y los 5 clientes mayores; propuesta al día 30.", reply: ["Me gusta, aunque el consejo no va a tener tanta paciencia. Así entré yo hace 38 años: con las manos en el cacahuate.", "Te voy a pedir que también escuches a los que no hablan en las juntas. Ahí está la verdad de esta empresa."], outcome: "La gente nota que preguntas antes de mandar. El consejo se impacienta un poco.", effects: { equipo: 5, clientes: 3, consejo: -3 }, style: { horizonte: 2, estilo: 2, foco: 1, riesgo: -1 }, score: 3 },
+      { id: "a", stance: {ramiro: -1, hector: 1, javier: 1}, text: "Recorrer antes de decidir: sentarme con los 12 líderes clave, dos turnos en planta y los 5 clientes mayores; propuesta al día 30.", reply: ["Me gusta, aunque el consejo no va a tener tanta paciencia. Así entré yo hace 38 años: con las manos en el cacahuate.", "Te voy a pedir que también escuches a los que no hablan en las juntas. Ahí está la verdad de esta empresa."], outcome: "La gente nota que preguntas antes de mandar. El consejo acepta el método porque tiene fecha.", effects: { equipo: 5, clientes: 3, consejo: -2 }, style: { horizonte: 2, estilo: 2, foco: 1, riesgo: -1 }, score: 3 },
       { id: "b", stance: {carla: 1, ramiro: 1, hector: -1, javier: -1}, text: "Llegar con fuerza: en la primera semana anuncio 5 prioridades y 2 victorias rápidas, para que todos vean desde ya que hay rumbo.", reply: ["Rumbo hace falta, eso que ni qué.", "Nada más cuida que tus 5 prioridades no sean las de tu empresa anterior. Aquí la gente lleva décadas y va a medir si la entendiste."], outcome: "El consejo aplaude la energía. En los pasillos se comenta que «ya llegó con la receta hecha».", effects: { consejo: 5, equipo: -4 }, style: { horizonte: -1, riesgo: 1, estilo: -2, conflicto: 1 }, score: 1 },
       { id: "c", stance: {lucia: 2, hector: -1, ramiro: -1}, text: "Perfil bajo: me encierro con Finanzas a entender los números a fondo antes de hablar con nadie; opinar sin cifras es solo improvisar.", reply: ["Los números no mienten, pero tampoco cuentan toda la historia.", "Si te encierras, la gente va a llenar el silencio con chismes. Te lo digo por experiencia."], outcome: "Entiendes el negocio por dentro, pero la organización no te conoce y empiezan los rumores.", effects: { margen: 3, caja: 1, equipo: -3, clientes: -1 }, style: { foco: -2, estilo: -1, conflicto: -1 }, score: 1 },
     ],
@@ -223,7 +223,7 @@ export const ITEMS: Item[] = [
     options: [
       { id: "a", stance: {lucia: 2, hector: 1, javier: 1}, text: "Definir con el comité UNA meta para la empresa y bajarla en cascada: cada director con indicadores que la empujen y bono atado a ambos.", reply: ["Por fin. Es lo que llevo pidiendo 3 años.", "Te propongo un taller de un día con el comité. Ojo: Héctor y Javier van a sentir que pierden autonomía."], outcome: "Empiezas a construir línea de vista: cada persona va a saber cómo su trabajo mueve el resultado. Duele al principio; es lo que más rinde.", effects: { margen: 5, consejo: 4, equipo: -2 }, style: { horizonte: 2, estilo: 2, conflicto: 1 }, score: 3 },
       { id: "b", stance: {hector: 1, lucia: -2}, text: "Que cada director mantenga sus objetivos: ellos conocen su área mejor que nadie. Yo nada más reviso que estén retadores.", reply: ["Como veas… lo dejo así.", "Nada más te aviso que el año que entra vamos a tener la misma conversación."], outcome: "Respetas la autonomía, pero dejas que cada área reme hacia su lado. Otro año de bonos pagados con margen perdido.", effects: { equipo: 3, margen: -4, consejo: -1 }, style: { conflicto: -2, estilo: 1 }, score: 0 },
-      { id: "c", stance: {hector: -1, javier: -1, diego: -1, lucia: 1}, text: "Pongo yo los objetivos de cada área este fin de semana y los comunico el lunes, para no perder un mes en discusiones.", reply: ["Ok. Si quieres te paso la plantilla.", "Te sugiero que al menos lo platiques con cada uno antes del lunes."], outcome: "Los objetivos ahora cuadran en papel. Pero nadie los siente suyos y se nota en el primer mes.", effects: { margen: 2, caja: 2, equipo: -4 }, style: { estilo: -2, conflicto: 1, horizonte: 1 }, score: 1 },
+      { id: "c", stance: {hector: -1, javier: -1, diego: -1, lucia: 1}, text: "Pongo yo los objetivos de cada área este fin de semana y los comunico el lunes, para no perder un mes en discusiones.", reply: ["Ok. Si quieres te paso la plantilla.", "Te sugiero que al menos lo platiques con cada uno antes del lunes."], outcome: "Los objetivos ahora cuadran en papel. Pero nadie los siente suyos y se nota en las semanas siguientes.", effects: { margen: 2, caja: 2, equipo: -4 }, style: { estilo: -2, conflicto: 1, horizonte: 1 }, score: 1 },
     ],
     expired: { reply: ["Director, como no definimos nada, uso los objetivos que mandaron."], outcome: "Sin decisión, cada área siguió con lo suyo.", effects: { margen: -4, consejo: -2 } },
     lesson: "alineacion",
@@ -302,6 +302,7 @@ export const ITEMS: Item[] = [
   },
   {
     id: "d5-consejo", day: 5, slot: 2, channel: "email", from: "carla",
+    stages: [0, 0], // habla de tu llegada: solo al tomar el mando
     involves: ["ramiro", "lucia"],
     subject: "Para tu sesión del jueves con el consejo", preview: "Un consejo de alguien que ha visto muchos debuts: decide con qué abres…",
     body: [
@@ -324,6 +325,7 @@ export const ITEMS: Item[] = [
   },
   {
     id: "c-ana-brilla", day: 5, slot: 3, channel: "whatsapp", from: "ana",
+    stages: [0, 0], // habla de tu llegada: solo al tomar el mando
     involves: ["hector", "diego"],
     subject: "Ana Martínez", preview: "Director! Le mando la página. ¿Puedo presentar yo esa parte en el consejo?",
     trigger: { item: "d2-ana", options: ["b"] },
@@ -457,6 +459,7 @@ export const ITEMS: Item[] = [
   },
   {
     id: "d7-sucesion", day: 7, slot: 2, channel: "email", from: "ramiro",
+    stages: [0, 0], // habla de tu llegada: solo al tomar el mando
     involves: ["diego", "carla", "hector"],
     real: { company: "Tortillería Los Altos (ficticia)", title: "El hijo que esperó su turno", text: "El fundador quería que su hijo dirigiera la nueva división. El consejo propuso dos años de rotación y metas claras. El hijo llegó al puesto con resultados propios, y la organización lo respetó." },
     subject: "Una última cosa antes de cerrar tus 90 días", preview: "Diego me pidió la Dirección Comercial. Quiero tu opinión, no tu permiso…",

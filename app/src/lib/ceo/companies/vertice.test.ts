@@ -24,8 +24,8 @@ describe("Vértice Logística · logística (P1-H)", () => {
     expect(LEGACY_ROTATION.map((c) => c.id)).toEqual(["cumbre", "forja", "brasa"]);
   });
 
-  it("21 asuntos propios en 7 días (17 + la cadena piloto v7), todos etiquetados, más el banco de casos con su elenco", () => {
-    expect(VERTICE.items).toHaveLength(21);
+  it("23 asuntos propios en 7 días (17 + la cadena piloto v7 + 2 seguimientos por capítulo), todos etiquetados, más el banco de casos con su elenco", () => {
+    expect(VERTICE.items).toHaveLength(23); // + 2 seguimientos por capítulo
     expect(new Set(VERTICE.items.map((i) => i.day))).toEqual(new Set([1, 2, 3, 4, 5, 6, 7]));
     for (const i of VERTICE.items) { expect(i.id.startsWith("vl-")).toBe(true); expect(CASE_TAGS[i.id], i.id).toBeTruthy(); }
     expect(PACK_CONTEXT.vertice).toBe("logistica_distribucion");

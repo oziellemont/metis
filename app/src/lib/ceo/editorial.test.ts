@@ -17,23 +17,23 @@ const all = inventory();
 
 describe("0.6 inventario editorial", () => {
   // 103 asuntos originales + 7 de la cadena de mantenimiento de Cumbre (consecuencias diferidas, v6).
-  it("clasifica los 132 asuntos, cada uno con un estado válido y un motivo", () => {
-    expect(all).toHaveLength(132);
+  it("clasifica los 144 asuntos, cada uno con un estado válido y un motivo", () => {
+    expect(all).toHaveLength(144);
     expect(all.length).toBe(COMPANIES.reduce((a, c) => a + c.items.length, 0));
     for (const a of all) {
       expect(EDITORIAL_STATUSES).toContain(a.status);
       expect(a.reason.length).toBeGreaterThan(20);
     }
     const c = countBy(all);
-    expect(Object.values(c).reduce((x, y) => x + y, 0)).toBe(132);
+    expect(Object.values(c).reduce((x, y) => x + y, 0)).toBe(144);
   });
 
   it("reproduce el hallazgo C1 de la auditoría (score alto = más rentable)", () => {
-    // El hallazgo se midió sobre los 103 asuntos originales; los asuntos nuevos (con `since`) se miden aparte.
-    const s = Object.fromEntries(scoreAudit(COMPANIES.map((c) => ({ ...c, items: c.items.filter((i) => !i.since) }))).map((x) => [x.company, x]));
-    expect(s.cumbre.byScore[3].meanNet).toBe(4);
+    // El hallazgo se midió sobre los 103 asuntos originales; los asuntos nuevos (con `since` o seguimientos con `recall`) se miden aparte.
+    const s = Object.fromEntries(scoreAudit(COMPANIES.map((c) => ({ ...c, items: c.items.filter((i) => !i.since && !i.recall) }))).map((x) => [x.company, x]));
+    expect(s.cumbre.byScore[3].meanNet).toBe(4.05); // la carta del día 1 ya no castiga al consejo
     expect(s.cumbre.byScore[0].meanNet).toBe(-5.27);
-    expect(s.forja.byScore[3].meanNet).toBe(0.88);
+    expect(s.forja.byScore[3].meanNet).toBe(1.12);
     expect(s.forja.byScore[0].meanNet).toBe(-6.2);
     for (const x of Object.values(s)) expect(x.correlation).toBeGreaterThan(0.3);
   });
@@ -103,7 +103,7 @@ describe("0.6 inventario editorial", () => {
 
   it("el CSV trae una fila por asunto", () => {
     const csv = itemsCsv(all).trim().split("\n");
-    expect(csv).toHaveLength(133);
+    expect(csv).toHaveLength(145);
     expect(csv[0]).toContain("estado");
   });
 });
@@ -180,10 +180,10 @@ describe("0.6 veredicto sombra", () => {
  * Regenera el reporte revisable. NO corre en la suite normal:
  *   EDITORIAL_REPORT=1 npx vitest run src/lib/ceo/editorial.test.ts
  */
-it("el paquete de aprobación incluye los 132 asuntos con su formato de respuesta y está al día", () => {
+it("el paquete de aprobación incluye los 144 asuntos con su formato de respuesta y está al día", () => {
   const md = approvalPacket();
-  expect((md.match(/^### /gm) ?? []).length).toBe(132);
-  expect((md.match(/^Respuesta: `/gm) ?? []).length).toBe(132);
+  expect((md.match(/^### /gm) ?? []).length).toBe(144);
+  expect((md.match(/^Respuesta: `/gm) ?? []).length).toBe(144);
   expect(md).not.toMatch(/undefined|NaN/);
   expect(readFileSync(join(__dirname, "..", "..", "..", "..", "docs", "editorial", "aprobacion-casos.md"), "utf8")).toBe(md);
 });

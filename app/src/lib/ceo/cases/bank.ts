@@ -154,19 +154,24 @@ export function pickBank(packId: string, stage: number, h: BankHistory, seed: st
   const seen = new Set(h.seen);
   const lastArch = new Set(h.last.map(bankArchetypeOf));
   const count = (a: string) => h.seen.filter((x) => bankArchetypeOf(x) === a).length;
-  const cands = ARCHETYPES.filter((a) => a.minStage <= stage).map((a) => {
+  const cands = ARCHETYPES.filter((a) => fitsStage(a, stage)).map((a) => {
     const c = count(a.id);
     // Primer giro que no has visto; si ya viste los tres, el ciclo vuelve a empezar.
     let twist = a.twists.findIndex((_t, i) => !seen.has(bankItemId(packId, a.id, i)));
     const fresh = twist >= 0;
     if (!fresh) twist = c % a.twists.length;
     const group = c === 0 ? 0 : fresh ? 1 : 2;
-    const score = group * 10 + (lastArch.has(a.id) ? 5 : 0) - weaknessOf(h.quality, a.areas) * 2 + rand01(`${seed}|${a.id}`) * 0.5;
+    // Lo propio del capítulo va primero; lo que viene del capítulo anterior, después (pesa menos que un área floja).
+    const own = a.minStage === stage ? 0 : 1;
+    const score = group * 10 + own + (lastArch.has(a.id) ? 5 : 0) - weaknessOf(h.quality, a.areas) * 4 + rand01(`${seed}|${a.id}`) * 0.5;
     return { a, twist, score, reason: (c === 0 ? "nuevo" : "giro") as BankPick["reason"] };
   });
   cands.sort((x, y) => x.score - y.score || x.a.id.localeCompare(y.a.id));
   return cands.slice(0, n).map((c) => ({ id: bankItemId(packId, c.a.id, c.twist), archetype: c.a.id, twist: c.twist, reason: c.reason }));
 }
+
+/** ¿La decisión corresponde a este capítulo de la empresa? */
+export const fitsStage = (a: Pick<Archetype, "minStage" | "maxStage">, stage: number): boolean => a.minStage <= stage && stage <= a.maxStage;
 
 /** Cuántos casos del banco llegan en un mes según la etapa (ninguno al tomar el mando). */
 export const bankSizeFor = (stage: number): number => (stage <= 0 ? 0 : stage === 1 ? 3 : 4);
@@ -179,13 +184,16 @@ export interface BankRun { passed: boolean; decisions: Record<string, { option: 
 export interface BankMonth {
   /** Casos del banco que llegan este mes (ids). */
   picks: BankPick[];
-  /** Asuntos del paquete que ya decidiste dos veces o más: se retiran este mes y su lugar lo toma un caso del banco. */
+  /** Asuntos del paquete que ya decidiste dos veces o más y ya se retiraron (acumulado): su lugar lo toman casos del capítulo. */
   stale: string[];
 }
 /** A partir de «Construir capacidad», lo que ya viviste dos veces cede su lugar a casos nuevos. */
 export const STALE_FROM_STAGE = 2;
 export const STALE_AFTER = 2;
-const MAX_BANK = ARCHETYPES.length;
+/** Transición suave: cada mes se retiran a lo más estos asuntos de la empresa (antes se retiraban todos de golpe). */
+export const STALE_STEP = 4;
+/** Tope de casos del banco en un mes: el resto del mes lo llenan los asuntos y los casos largos del capítulo. */
+export const BANK_CAP = 8;
 
 /**
  * Casos del banco del mes `runs.length` (el que está en curso). Recorre los meses cerrados en orden, reconstruyendo
@@ -198,14 +206,20 @@ export function bankMonth(packId: string, runs: readonly BankRun[], stageAt: (k:
   let last: string[] = [];
   const quality: BankHistory["quality"] = {};
   const decidedTimes = new Map<string, number>();
+  const retired: string[] = [];
   let month: BankMonth = { picks: [], stale: [] };
   for (let k = 0; k <= runs.length; k++) {
     const stage = stageAt(k);
-    const stale = stage >= STALE_FROM_STAGE ? [...decidedTimes].filter(([id, n]) => n >= STALE_AFTER && !isBankId(id) && base.has(id) && !base.get(id)!.trigger).map(([id]) => id).sort() : [];
-    const n = Math.min(MAX_BANK, bankSizeFor(stage) + stale.length);
-    const picks = pickBank(packId, stage, { seen, last, quality }, `${seed}|${k}`, n);
-    // Solo se retiran tantos asuntos como casos nuevos alcancen a cubrir.
-    month = { picks, stale: stale.slice(0, Math.max(0, picks.length - bankSizeFor(stage))) };
+    if (stage >= STALE_FROM_STAGE) {
+      // Primero lo que más veces decidiste; a igualdad, en el orden del paquete (lo de los primeros días se va antes).
+      const order = [...base.keys()];
+      const cands = [...decidedTimes].filter(([id, n]) => n >= STALE_AFTER && !retired.includes(id) && !isBankId(id) && base.has(id) && !base.get(id)!.trigger)
+        .sort((a, b) => b[1] - a[1] || order.indexOf(a[0]) - order.indexOf(b[0])).map(([id]) => id);
+      retired.push(...cands.slice(0, STALE_STEP));
+    }
+    const n = Math.min(BANK_CAP, bankSizeFor(stage) + retired.length);
+    const picks = bankSizeFor(stage) ? pickBank(packId, stage, { seen, last, quality }, `${seed}|${k}`, n) : [];
+    month = { picks, stale: [...retired].sort() };
     if (k === runs.length) break;
     const r = runs[k];
     for (const p of picks) seen.push(p.id);

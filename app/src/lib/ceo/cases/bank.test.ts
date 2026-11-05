@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { ARCHETYPES, ROLES, archetypeById } from "./archetypes";
 import { CONTEXTS } from "./contexts";
-import { BANK_PREFIX, PACK_CONTEXT, PACK_ROLES, bankItems, bankMonth, buildCase, callName, isBankId, pickBank, weaknessOf, withBank } from "./bank";
+import { BANK_PREFIX, PACK_CONTEXT, PACK_ROLES, bankItems, bankMonth, buildCase, callName, fitsStage, isBankId, pickBank, weaknessOf, withBank } from "./bank";
 import { COMPANIES, companyById, findItem } from "../companies";
 import { LESSONS } from "../lessons";
 import { focusIndustries } from "../career/taxonomy";
@@ -164,7 +164,8 @@ describe("banco de casos · selección que se retroalimenta", () => {
   it("no repite: primero lo nunca visto; luego otro giro del mismo dilema; con todo visto, vuelve a empezar", () => {
     const seen: string[] = [];
     const months: string[][] = [];
-    const N = ARCHETYPES.length;
+    // Solo las decisiones que corresponden al capítulo (Construir capacidad).
+    const N = ARCHETYPES.filter((a) => fitsStage(a, 2)).length;
     const total = N * 3;
     for (let m = 0; m < Math.ceil(total / 3) + 4; m++) {
       const picks = pickBank("forja", 2, { seen, last: months[m - 1] ?? [], quality: {} }, `s|${m}`, 3);
@@ -229,11 +230,22 @@ describe("banco de casos · P1-D (ocho decisiones más)", () => {
     const pack = companyById("brasa");
     for (const it of bankItems(pack).filter((i) => NEW.some((n) => i.id.includes(`-${n}-`)))) expect(it.body.join(" "), it.id).not.toMatch(/\{[a-z_]+\}/);
   });
-  it("las de más peso llegan con la empresa más madura: presión del consejo y retos adaptativos desde «Construir capacidad»", () => {
-    expect(archetypeById("trimestre")!.minStage).toBe(2);
+  it("las de más peso llegan con la empresa más madura: retos adaptativos desde «Construir capacidad», presión del consejo desde «Acelerar»", () => {
+    expect(archetypeById("trimestre")!.minStage).toBe(3);
     expect(archetypeById("adaptativo")!.minStage).toBe(2);
     const m1 = pickBank("cumbre", 1, { seen: [], last: [], quality: {} }, "w", 20).map((p) => p.archetype);
     expect(m1).not.toContain("trimestre");
     expect(m1).not.toContain("adaptativo");
+    const m2 = pickBank("cumbre", 2, { seen: [], last: [], quality: {} }, "w", 20).map((p) => p.archetype);
+    expect(m2).not.toContain("trimestre");
+    expect(m2).toContain("adaptativo");
+  });
+  it("cada capítulo trae sus propias decisiones y deja atrás las de estabilizar", () => {
+    const at = (st: number) => new Set(pickBank("cumbre", st, { seen: [], last: [], quality: {} }, "c", 4).map((p) => p.archetype));
+    expect([...at(2)].some((a) => ["mando", "sucesor"].includes(a))).toBe(true);
+    expect([...at(3)].some((a) => ["inversion", "capital"].includes(a))).toBe(true);
+    expect([...at(4)].some((a) => ["region", "alianza", "adquisicion"].includes(a))).toBe(true);
+    expect([...at(5)].some((a) => ["regulador", "prensa", "deuda"].includes(a))).toBe(true);
+    for (const st of [3, 4, 5]) for (const a of at(st)) expect(["retiro", "cliente", "precio", "recorte", "proveedor", "error"], `${st}:${a}`).not.toContain(a);
   });
 });

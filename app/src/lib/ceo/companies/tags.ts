@@ -15,7 +15,7 @@
  * Las consecuencias cuyo detonador no se muestra tampoco se muestran.
  */
 import type { CompanyArchetype } from "../career/taxonomy";
-import type { CompanyStage } from "../career/identity";
+import { COMPANY_STAGES, type CompanyStage } from "../career/identity";
 import type { CastId, Item, KpiKey } from "../types";
 
 export type CaseScope = "universal" | "familia" | "paquete";
@@ -179,6 +179,19 @@ export const CASE_TAGS: Readonly<Record<string, CaseTag>> = Object.freeze({
   "vl-c-diesel-formula": f(EST, { note: VERTICE_NOTE }),
   "vl-c-diesel-licitacion": f(EST, { note: VERTICE_NOTE }),
   "vl-c-diesel-telemetria": f(EST, { note: VERTICE_NOTE }),
+  // Seguimientos de capítulo (seguimientos.ts): mismo alcance que la decisión que los origina.
+  "fn-s-precio-mas": p(EST, { note: FORJA_NOTE }),
+  "fn-s-precio-rfq": p(EST, { note: FORJA_NOTE }),
+  "kb-s-altamar-mas": p(STARTUP_EST, { note: KUBIT_NOTE }),
+  "kb-s-altamar-grupo": p(STARTUP_EST, { note: KUBIT_NOTE }),
+  "pm-s-penasco-mas": p(EST, { note: PUNTOMADERO_NOTE }),
+  "pm-s-penasco-obras": p(EST, { note: PUNTOMADERO_NOTE }),
+  "vl-s-almena-mas": p(EST, { note: VERTICE_NOTE }),
+  "vl-s-almena-cedis": p(EST, { note: VERTICE_NOTE }),
+  "gb-s-app-renueva": f(EST, { note: BRASA_NOTE }),
+  "gb-s-app-oferta": f(EST, { note: BRASA_NOTE }),
+  "c-s-merma": f(BOTH),
+  "c-s-revision": f(BOTH),
 });
 
 /** Etiquetas de los casos ejecutivos (por id de episodio). */
@@ -186,6 +199,12 @@ export const EPISODE_TAGS: Readonly<Record<string, CaseTag>> = Object.freeze({
   supernorte: p(EST, { note: EPISODE_NOTE }),
   diego: p(EST, { note: EPISODE_NOTE }),
   alergeno: p(EST, { note: EPISODE_NOTE }),
+  aurora: p(EST, { note: EPISODE_NOTE }),
+  socio: p(EST, { note: EPISODE_NOTE }),
+  transbajio: p(EST, { note: EPISODE_NOTE }),
+  brecha: p(STARTUP_EST, { note: EPISODE_NOTE }),
+  franquicia: p(EST, { note: EPISODE_NOTE }),
+  refinanciar: p(EST, { note: EPISODE_NOTE }),
 });
 
 /** Tipo con el que se juzga la compatibilidad. Sin empresa propia (temporadas), todo el contenido es de la establecida. */
@@ -210,7 +229,8 @@ export function compatibleItems(items: Item[], a: CompanyArchetype | undefined):
 
 // ───────────────────────────────────────────── etiquetas derivadas (no se duplican)
 /** Etapas de la carrera en que encaja: la carta de llegada solo al tomar el mando; lo demás, también al estabilizar. */
-export const caseStages = (it: Pick<Item, "day">): CompanyStage[] => (it.day <= 1 ? ["tomar_el_mando"] : ["tomar_el_mando", "estabilizar"]);
+export const caseStages = (it: Pick<Item, "day" | "stages">): CompanyStage[] =>
+  it.stages ? COMPANY_STAGES.slice(it.stages[0], it.stages[1] + 1).map((x) => x.id) : it.day <= 1 ? ["tomar_el_mando"] : ["tomar_el_mando", "estabilizar"];
 /** KPI que puede mover el caso (cualquier opción o dejarlo vencer). */
 export function caseKpis(it: Item): KpiKey[] {
   const ks = new Set<KpiKey>();
