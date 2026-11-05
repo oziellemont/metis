@@ -83,7 +83,7 @@ export function brandDeep<T>(x: T, f: (s: string) => string): T {
 /** Un texto con espacios nunca es un id (p. ej. `real.company`, el nombre de la empresa de un caso real). */
 const isProse = (v: unknown): boolean => typeof v === "string" && /\s/.test(v);
 /** Campos que son identificadores: nunca se traducen (aunque hoy ninguno contenga un nombre con mayúscula). */
-const ID_KEYS = new Set(["id", "from", "who", "item", "company", "trigger", "rules", "replaces", "contentPackId", "a", "b", "assistant", "board", "chair", "reportsTo", "targets"]);
+const ID_KEYS = new Set(["id", "from", "who", "item", "company", "trigger", "after", "when", "rules", "replaces", "contentPackId", "a", "b", "assistant", "board", "chair", "reportsTo", "targets"]);
 
 /** Memo por objeto de paquete (el original o su versión escalada a PYME son objetos distintos). */
 const CACHE = new WeakMap<CompanyPack, Map<string, CompanyPack>>();

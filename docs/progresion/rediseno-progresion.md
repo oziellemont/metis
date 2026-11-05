@@ -165,6 +165,8 @@ No se borró ni se reinició nada: cuentas, XP, rachas, lecciones, decisiones, m
 
 El motor V7, sus reglas éticas, la rúbrica, `companyStageOf`, `STAGE_MONTHS`, la exigencia, la selección de casos y la evaluación del consejo no cambian. La versión de reglas sigue en 7.
 
+Desde noviembre de 2026 la versión continua vigente es v8 (ronda de coherencia, ver `docs/decisiones.md`). Los meses jugados en v4–v7 conservan su veredicto.
+
 ## 6. Plan de las fases siguientes (propuesta, sin implementar)
 
 **Fase 2: acceso a la Junta según la empresa.** Hoy la Junta se abre con `journey.stage = 3`. La propuesta es abrirla cuando la empresa entra a «Acelerar con criterio» o después de dos meses no aprobados seguidos, como sesión de rendición de cuentas. Cambia quién ve la Junta y cuándo, así que se versiona aparte: las partidas en curso conservan su regla. Pruebas de compatibilidad:

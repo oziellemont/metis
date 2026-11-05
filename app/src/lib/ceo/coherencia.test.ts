@@ -24,11 +24,14 @@ const PROSPECTIVAS = [
   /3 meses más/, /12 meses/, /se cierra en 5 semanas/i, /estima 2 semanas/, /dos meses de caja/,
   /Evaluación de proveedores en 3 semanas/, /ofrece \w+ \d+ meses/i,
   // Métricas expresadas en días (días de inventario), no tiempo transcurrido.
-  /de \d+ a \d+ días/, /\d+ días \(antes \d+\)/,
+  /de \d+ a \d+ días/, /\d+ días \(antes \d+\)/, /\d+ días de inventario/,
 ];
 
-function textos(it: { subject: string; preview?: string; body: string[]; data?: { rows: string[][] } }): string[] {
-  return [it.subject, it.preview ?? "", ...it.body, ...(it.data?.rows.map((r) => r.join(": ")) ?? [])];
+type Txt = { subject?: string; preview?: string; body?: string[]; data?: { rows: string[][] } };
+function textos(it: Txt & { variants?: { patch: Txt; rows?: string[][] }[] }): string[] {
+  const one = (x: Txt) => [x.subject ?? "", x.preview ?? "", ...(x.body ?? []), ...(x.data?.rows.map((r) => r.join(": ")) ?? [])];
+  // Las variantes de una cadena (v8) también cuentan: son lo que el jugador lee según lo que decidió antes.
+  return [...one(it), ...(it.variants ?? []).flatMap((v) => [...one(v.patch), ...(v.rows?.map((r) => r.join(": ")) ?? [])])];
 }
 
 describe("coherencia temporal de las consecuencias", () => {

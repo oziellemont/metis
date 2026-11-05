@@ -1,16 +1,16 @@
-# mêtis CEO · Inventario editorial de los 130 asuntos y veredicto sombra
+# mêtis CEO · Inventario editorial de los 132 asuntos y veredicto sombra
 
 Clasificador editorial v1 · Veredicto sombra v0. Reporte generado por código a partir del contenido actual; no cambia ningún resultado de partidas, XP ni veredicto en producción.
 
 ## 1. Resumen
 
-De los 130 asuntos (83 base y 47 consecuencias), el clasificador propone:
+De los 132 asuntos (83 base y 49 consecuencias), el clasificador propone:
 
 | Estado | Asuntos | % |
 |---|---:|---:|
-| approved (propuesta, falta firma humana) | 47 | 36 % |
+| approved (propuesta, falta firma humana) | 49 | 37 % |
 | legacy (se conserva como histórico) | 21 | 16 % |
-| needsRewrite (reescribir) | 41 | 32 % |
+| needsRewrite (reescribir) | 41 | 31 % |
 | restrictedEthics (obligación ética o de seguridad) | 21 | 16 % |
 
 Ningún asunto queda aprobado de forma definitiva: «approved» es una propuesta automática que requiere la aprobación de Oziel (tabla `EDITORIAL_REVIEW` en `editorial.ts`).
@@ -18,7 +18,7 @@ Ningún asunto queda aprobado de forma definitiva: «approved» es una propuesta
 | Empresa | approved | legacy | needsRewrite | restrictedEthics |
 |---|---:|---:|---:|---:|
 | Botanas Cumbre | 6 | 2 | 15 | 4 |
-| Forja Norte | 6 | 6 | 5 | 4 |
+| Forja Norte | 8 | 6 | 5 | 4 |
 | Grupo Brasa | 8 | 4 | 6 | 1 |
 | Kúbit | 9 | 3 | 5 | 4 |
 | Punto Madero | 9 | 3 | 5 | 4 |
@@ -31,7 +31,7 @@ Balance neto promedio (suma de los cinco indicadores, sin multiplicadores de niv
 | Empresa | score 0 | score 1 | score 2 | score 3 | Correlación score–balance |
 |---|---:|---:|---:|---:|---:|
 | Botanas Cumbre | -5.27 (11) | -1.38 (26) | -0.91 (11) | +2.52 (27) | 0.68 |
-| Forja Norte | -6.20 (5) | -1.17 (18) | -0.81 (16) | +0.81 (21) | 0.53 |
+| Forja Norte | -6.20 (5) | -1.00 (20) | -0.78 (18) | +0.78 (23) | 0.51 |
 | Grupo Brasa | -3.20 (5) | -2.12 (16) | +0.13 (15) | +1.11 (18) | 0.53 |
 | Kúbit | -5.20 (5) | -0.67 (18) | -0.62 (16) | +1.19 (21) | 0.54 |
 | Punto Madero | -5.20 (5) | -0.78 (18) | -0.56 (16) | +1.19 (21) | 0.56 |
@@ -47,7 +47,7 @@ Hallazgos por asunto (un asunto puede tener varios):
 | La opción con score 0 es la que peor le va a la empresa. | 31 |
 | Hay una opción sin ningún costo visible. | 0 |
 | Solo una opción queda cerca de la mejor; las demás no son defendibles por números. | 58 |
-| No responder castiga más que cualquier opción. | 117 |
+| No responder castiga más que cualquier opción. | 119 |
 | Una opción cruza una línea roja (se analiza, no se presenta como alternativa legítima). | 16 |
 
 Umbrales: ventaja «obvia» ≥ 3 puntos netos; una opción es «defendible» si queda a 2 puntos o menos de la mejor.
@@ -138,6 +138,8 @@ Opciones como `id:score:balance`. Un `!` marca una línea roja. «Vencer» es el
 | 4 | `fn-c-inv-lineas` Chuy Morales | consecuencia | a:3:+1 b:2:+2 c:1:+2 | -2 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 | 4 | `fn-c-inv-faltante` Llamada perdida · Ing. Ramón Villarreal | consecuencia | a:3:-1 b:2:-1 c:1:-1 | -8 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 | 5 | `fn-c-inv-factoraje` Aurora Motors · Supplier financial review | consecuencia | a:3:0 b:2:0 c:1:0 | -4 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 5 | `fn-c8-greg` Aurora Motors · Incidente de suministro y scorecard | consecuencia | a:3:0 b:1:-1 c:2:0 | -4 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
+| 6 | `fn-c8-consejo` Antes del consejo: la caja del inventario | consecuencia | a:3:+1 b:1:+2 c:2:-1 | -3 | approved | Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana. |
 
 ### Grupo Brasa
 

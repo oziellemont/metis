@@ -34,6 +34,44 @@ export interface Option {
   score: 0 | 1 | 2 | 3;
   /** Cómo le cae a cada persona del caso (−2 … +2). Se propaga por el mapa: aliados, rivales e influidos. */
   stance?: Record<CastId, number>;
+  /**
+   * Acuerdo pendiente (reglas v8+): el beneficio depende de que la contraparte acepte o de que el dinero se cobre.
+   * `effects` es solo lo que pasa al decidir; la respuesta llega después y suma `yes` o `no` (azar estable por
+   * periodo). La probabilidad es una estimación del caso, no un dato empírico.
+   */
+  pending?: PendingAgreement;
+}
+
+export interface PendingAgreement {
+  /** Quién responde (nombre o grupo, tal como se muestra: «Greg (Aurora)», «Clientes anuales»). */
+  who: string;
+  /** Qué se espera que acepte, en una línea («Que Aurora mueva dos días su programa»). */
+  what: string;
+  /** Probabilidad estimada de que acepte (0–1, ficticia del caso). */
+  p: number;
+  /**
+   * Días reales hasta la respuesta (1 día real ≈ 4 de la empresa). Si el periodo cierra antes, se resuelve al cierre.
+   * Se acepta si el azar estable del asunto (el mismo que decide sus consecuencias inciertas) cae en [1 − p, 1): así
+   * un acuerdo y una consecuencia del mismo asunto pueden ser caminos excluyentes y coherentes.
+   */
+  days: number;
+  yes: { text: string; effects: Partial<Kpis> };
+  no: { text: string; effects: Partial<Kpis> };
+}
+
+export interface ItemVariant {
+  when: PriorCondition[];
+  patch: Partial<Pick<Item, "subject" | "preview" | "body" | "lines" | "data" | "ask" | "options" | "expired" | "bitacora" | "involves">>;
+  rows?: [string, string][];
+}
+
+/** Condición sobre una decisión anterior (para variantes de un asunto encadenado). */
+export interface PriorCondition {
+  item: string;
+  /** Opciones elegidas en `item` («__expired» = venció). */
+  options: string[];
+  /** Si la opción tenía acuerdo pendiente: solo si la contraparte aceptó (true) o no (false). */
+  accepted?: boolean;
 }
 
 export interface DataBlock { title: string; rows: [string, string][]; note?: string }
@@ -74,6 +112,24 @@ export interface Item {
   };
   /** Solo llega en periodos jugados con esta versión de reglas o posterior (los periodos anteriores no cambian). */
   since?: number;
+  /**
+   * Revisiones por versión de reglas: en periodos con versión ≥ `since` el asunto se presenta con `patch` encima
+   * (mismo id, así que sus consecuencias y la continuidad no se rompen). Los periodos anteriores no cambian.
+   */
+  revisions?: { since: number; patch: Partial<Omit<Item, "id" | "revisions" | "since" | "until" | "day" | "slot" | "variants">>; note: string }[];
+  /** Deja de llegar en periodos con esta versión de reglas o posterior (lo sustituye otro asunto). */
+  until?: number;
+  /**
+   * Cadena (v8+): si alguno de estos asuntos llegó en tu periodo, este no llega hasta que lo resuelvas (decidido o
+   * vencido) y nunca antes. Deben ir antes en la lista del paquete.
+   */
+  after?: string[];
+  /**
+   * Cadena (v8+): lo que decidiste antes cambia la información, las opciones o el mensaje. Se aplican, en orden,
+   * todas las variantes cuyas condiciones se cumplan; `rows` se agrega al bloque de datos. Solo dependen de asuntos
+   * que ya se resolvieron antes de que este llegara (la cadena va por `trigger`).
+   */
+  variants?: ItemVariant[];
   deadlineH?: number;
   /** Otras personas que se ven afectadas (se resaltan en el mapa de relaciones). */
   involves?: CastId[];
@@ -276,6 +332,18 @@ export interface Entry {
   status: EntryStatus;
   decision?: Decision;
   option?: Option;
+  /** Acuerdo pendiente de la opción elegida (v8+): cuándo responde la contraparte y qué responde. */
+  agreement?: AgreementState;
+}
+export interface AgreementState {
+  who: string;
+  what: string;
+  respondsAt: number;
+  /** Ya respondió (antes de esto, su efecto no cuenta y su respuesta no se muestra). */
+  resolved: boolean;
+  accepted: boolean;
+  text: string;
+  effects: Partial<Kpis>;
 }
 
 // ───────────────────────────────────────────── paquetes de empresa

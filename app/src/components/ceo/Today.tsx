@@ -4,7 +4,7 @@ import { useEffect, useMemo } from "react";
 import clsx from "clsx";
 import { ArrowRight, BookOpen, Check, Briefcase, Clock, Coffee, FastForward, Flag, Hourglass, Trophy } from "lucide-react";
 import { KPI_KEYS, closedRunsOf } from "@/lib/ceo/engine";
-import { CONTINUOUS_RULES_VERSION } from "@/lib/ceo/rules";
+import { COHERENCE_RULES_VERSION, CONTINUOUS_RULES_VERSION } from "@/lib/ceo/rules";
 import { ETHICS_AUDIT_RULES } from "@/lib/ceo/editorial";
 import { firstName, personOf } from "@/lib/ceo/cast";
 import { LESSONS } from "@/lib/ceo/lessons";
@@ -54,6 +54,8 @@ export function Today() {
   const curV = c.s.rulesVersion ?? 1, prevV = prevRun?.rulesVersion ?? 1;
   const newRules = !!mandate && !!prevRun && curV >= 6 && curV <= CONTINUOUS_RULES_VERSION && prevV < 6;
   const ethicsRules = !!mandate && !!prevRun && curV >= ETHICS_AUDIT_RULES && prevV >= 6 && prevV < ETHICS_AUDIT_RULES;
+  // v8 · coherencia: se avisa una sola vez, en el primer mes v8 después de un mes v6/v7.
+  const coherenceRules = !!mandate && !!prevRun && curV >= COHERENCE_RULES_VERSION && prevV >= 6 && prevV < COHERENCE_RULES_VERSION;
   const t = c.trajectory;
   const headline = headlineOf(t);
   const greeting = c.seasonDone
@@ -128,6 +130,11 @@ export function Today() {
           {ethicsRules && (
             <p data-testid="aviso-lineas-rojas" className="mb-3 rounded-xl bg-indigo-soft/50 px-3.5 py-2.5 text-[13px] text-ink">
               <b>Desde este mes hay más líneas rojas.</b> Prometerle a un cliente algo que no existe y encubrirlo, mover a quien denuncia, darle al equipo una explicación falsa, mantener una fecha que solo se cumple haciendo trampa u ocultar un error culpando a otro ya no se compensan con buenos números. Tus meses anteriores conservan su evaluación.
+            </p>
+          )}
+          {coherenceRules && (
+            <p data-testid="aviso-coherencia" className="mb-3 rounded-xl bg-indigo-soft/50 px-3.5 py-2.5 text-[13px] text-ink">
+              <b>Desde este mes el consejo es más justo con tu criterio.</b> Si una respuesta es defendible aunque tenga un costo, cuenta como bien razonada. Lo que depende de que otra persona acepte cuenta cuando responde, no antes. Y dejar vencer un asunto ético grave cuenta igual que decidir mal. Tus meses anteriores conservan su evaluación.
             </p>
           )}
           <div className="flex items-baseline justify-between gap-2"><h2 className="font-semibold text-ink text-sm">Con qué te va a evaluar el consejo {c.continuous ? "este mes" : "esta temporada"}</h2><Link href="/ceo/carrera" className="shrink-0 text-[11px] font-semibold text-indigo">Detalle →</Link></div>

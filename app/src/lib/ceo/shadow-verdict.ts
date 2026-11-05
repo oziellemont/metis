@@ -12,8 +12,7 @@
  *  3. Desempeño integral: salud promedio sobre la línea, en lugar de exigir los cinco por separado.
  *  4. Dejar vencer asuntos no reprueba por sí solo: con pocas respuestas el resultado es «sin evidencia suficiente».
  */
-import { KPI_KEYS, entries, healthOf, kpis, nowOf, rulesFor, rulesVersionOf, verdictOf } from "./engine";
-import { isRedLine } from "./editorial";
+import { KPI_KEYS, entries, healthOf, redLineEntries, kpis, nowOf, rulesFor, rulesVersionOf, verdictOf } from "./engine";
 import type { CeoState, KpiKey, Kpis } from "./types";
 
 export const SHADOW_VERDICT_VERSION = 0;
@@ -55,9 +54,7 @@ export function shadowVerdictOf(s: CeoState, now = nowOf(s)): ShadowVerdict {
   const cur = verdictOf(s, now);
   const line = rulesFor(s).passLine;
   const es = entries(s, now);
-  const redLines = es
-    .filter((e) => e.status === "decidido" && e.decision && isRedLine(e.item.id, e.decision.option, rulesVersionOf(s)))
-    .map((e) => `${e.item.id}/${e.decision!.option}`);
+  const redLines = redLineEntries(s, now).map((e) => `${e.item.id}/${e.decision?.option ?? "__expired"}`);
   const obj = SEASON_OBJECTIVES[s.company] ?? { kpis: [] as KpiKey[] };
   const objectives = obj.kpis.map((x) => ({ kpi: x, value: k[x], ok: k[x] >= line + SHADOW_RULES.objectiveMargin }));
   const health = healthOf(k);

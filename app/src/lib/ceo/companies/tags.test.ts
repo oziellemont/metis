@@ -20,7 +20,7 @@ describe("auditoría de casos · etiquetas", () => {
     const ids = COMPANIES.flatMap((c) => c.items.map((i) => i.id));
     expect(ids.filter((id) => !CASE_TAGS[id])).toEqual([]);
     expect(Object.keys(CASE_TAGS).filter((id) => !ids.includes(id))).toEqual([]);
-    expect(ids).toHaveLength(130); // 103 + 7 de la cadena de mantenimiento de Cumbre (v6) + 20 de las cadenas piloto (v7)
+    expect(ids).toHaveLength(132); // 103 + 7 de la cadena de mantenimiento de Cumbre (v6) + 20 de las cadenas piloto (v7) + 2 de la cadena profunda de Forja (v8)
   });
   it("cada caso ejecutivo de una temporada tiene etiqueta", () => {
     const eps = Object.values(SEASON_EPISODES).flat().map((x) => x.episode);
@@ -33,12 +33,12 @@ describe("auditoría de casos · etiquetas", () => {
       if (t.archetypes.length < 2) expect(t.note, id).toBeTruthy();
     }
   });
-  it("la clasificación: universal 36, de familia 70 (47 + cadena de mantenimiento + 20 de cadenas piloto, 4 de ellas universales), del paquete 27 (con 3 casos ejecutivos; P0-A §5.1 más Kúbit, Punto Madero y Vértice)", () => {
+  it("la clasificación: universal 36, de familia 72 (47 + cadena de mantenimiento + 20 de cadenas piloto, 4 de ellas universales + 2 de la cadena profunda v8), del paquete 27 (con 3 casos ejecutivos; P0-A §5.1 más Kúbit, Punto Madero y Vértice)", () => {
     const n = (scope: string) => Object.values(CASE_TAGS).filter((t) => t.scope === scope).length;
-    expect([n("universal"), n("familia"), n("paquete") + Object.keys(EPISODE_TAGS).length]).toEqual([36, 70, 27]);
+    expect([n("universal"), n("familia"), n("paquete") + Object.keys(EPISODE_TAGS).length]).toEqual([36, 72, 27]);
     const by = (pack: string, scope: string) => COMPANIES.find((c) => c.id === pack)!.items.filter((i) => CASE_TAGS[i.id].scope === scope).length;
     expect([by("cumbre", "universal"), by("forja", "universal"), by("brasa", "universal")]).toEqual([10, 5, 2]);
-    expect([by("cumbre", "familia"), by("forja", "familia"), by("brasa", "familia")]).toEqual([13, 12, 13]);
+    expect([by("cumbre", "familia"), by("forja", "familia"), by("brasa", "familia")]).toEqual([13, 14, 13]);
   });
   it("una consecuencia es compatible solo donde su detonador también lo es", () => {
     for (const c of COMPANIES) for (const it of c.items) if (it.trigger) {
