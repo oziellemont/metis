@@ -18,15 +18,15 @@ export function Landing({ t }: { t: Copy }) {
       <a href="#contenido" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:text-ink">{t.UI.skip}</a>
       <Header t={t} />
       <main id="contenido">
-        <div className="overflow-x-clip bg-gradient-to-b from-[#F3F1FE] via-white to-white">
+        <div className="overflow-x-clip bg-gradient-to-br from-[#141735] via-[#1E1A5E] to-[#2B1F8A] text-white">
           <section aria-labelledby="hero-title" className="mx-auto max-w-6xl px-5 sm:px-6 pt-28 sm:pt-32 pb-16 sm:pb-24 grid lg:grid-cols-[1fr_1.05fr] gap-12 lg:gap-16 items-center [&>*]:min-w-0">
             <div>
-              <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-indigo">{H.eyebrow}</p>
-              <h1 id="hero-title" className="mt-4 text-[36px] leading-[1.08] sm:text-[46px] sm:leading-[1.06] font-semibold tracking-tight text-ink">{H.title}</h1>
-              <p className="mt-5 text-[16px] sm:text-[18px] leading-relaxed text-slate-600 max-w-xl">{H.body}</p>
+              <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-mint-light">{H.eyebrow}</p>
+              <h1 id="hero-title" className="mt-4 text-[36px] leading-[1.08] sm:text-[46px] sm:leading-[1.06] font-semibold tracking-tight text-white">{H.title}</h1>
+              <p className="mt-5 text-[16px] sm:text-[18px] leading-relaxed text-white/75 max-w-xl">{H.body}</p>
               <div className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-3">
-                <CeoCta label={t.CTA} playingLabel={t.UI.playing} className="focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo" />
-                <span className="text-[13px] text-slate-500">{H.note}</span>
+                <CeoCta label={t.CTA} playingLabel={t.UI.playing} className="focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white" />
+                <span className="text-[13px] text-white/60">{H.note}</span>
               </div>
             </div>
             <CaseDemo t={t} />

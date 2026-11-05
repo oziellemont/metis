@@ -81,8 +81,9 @@ describe("landing de MÊTIS CEO · primer bloque", () => {
     // antes de decidir no se pasa de «Decides»; después, no se regresa a decidir
     expect(demo).toContain("const back = step === 0 || (done && step === 3) ? undefined : () => go(step - 1);");
     expect(demo).toContain("const fwd = step < 2 ? () => go(step + 1) : done && step === 3 ? () => go(4) : undefined;");
-    // mismo aspecto que la pantalla de decisión: fondo, barras y opciones
-    for (const s of ["from-[#0F1130] via-[#1A1650] to-[#2B1F8A]", "bg-mint", "bg-white/60", "bg-white/15", "shadow-[0_0_0_4px_rgba(109,93,246,.35)]", "aria-pressed"]) expect(demo).toContain(s);
+    // recuadro blanco sobre el fondo mêtis del primer bloque: barras de pasos y opciones legibles en claro
+    for (const s of ["rounded-[28px] bg-white text-ink", "bg-mint", "bg-indigo/50", "bg-slate-200", "border-indigo shadow-[0_0_0_4px_rgba(109,93,246,.18)]", "aria-pressed"]) expect(demo).toContain(s);
+    expect(demo).not.toContain("from-[#0F1130] via-[#1A1650] to-[#2B1F8A]");
   });
 
   it("las demos están aisladas: no importan el motor, el proveedor ni tocan almacenamiento", () => {
@@ -290,6 +291,16 @@ describe("landing: mêtis Academy y cifras coherentes", () => {
   });
 
 
+});
+
+describe("landing: primer bloque con el color de mêtis", () => {
+  it("el fondo del primer bloque es el degradado mêtis (no blanco) y el encabezado se aclara encima", () => {
+    const landing = read("Landing.tsx"), header = read("Header.tsx");
+    expect(landing).toContain("bg-gradient-to-br from-[#141735] via-[#1E1A5E] to-[#2B1F8A] text-white");
+    expect(landing).not.toContain("from-[#F3F1FE] via-white to-white");
+    expect(header).toContain('<Logo variant={bare ? "light" : "default"}');
+    expect(header).toContain('bare ? "bg-transparent text-white"');
+  });
 });
 
 describe("landing: ancho de página estándar", () => {
