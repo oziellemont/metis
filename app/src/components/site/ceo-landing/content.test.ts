@@ -6,7 +6,7 @@ import { BANNED_EN, EN } from "./content-en";
 import { COMPANY_STAGES } from "../../../lib/ceo/career/identity";
 import { COMPANIES } from "../../../lib/ceo/companies";
 import { avatarHex } from "../../../lib/ceo/cast";
-import { lessonById } from "../../../lib/ceo/lessons";
+import { LESSONS, TRACKS, lessonById, lessonsOfTrack } from "../../../lib/ceo/lessons";
 
 const DIR = "src/components/site/ceo-landing";
 const PAGES = ["src/app/simulador/page.tsx", "src/app/simulador/en/page.tsx"];
@@ -87,7 +87,7 @@ describe("landing de MÊTIS CEO · primer bloque", () => {
 
   it("las demos están aisladas: no importan el motor, el proveedor ni tocan almacenamiento", () => {
     const code = (t: string) => t.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:"'`])\/\/.*$/gm, "$1");
-    const src = code(read("CaseDemo.tsx") + read("HowSlides.tsx") + read("Memory.tsx") + read("Landing.tsx"));
+    const src = code(read("CaseDemo.tsx") + read("HowSlides.tsx") + read("Landing.tsx"));
     expect(src).not.toMatch(/lib\/ceo|CeoProvider|localStorage|supabase|fetch\(|track\(/);
     // la demo vieja y el cuadro de cuatro escenas ya no existen (eran el mismo caso dos veces)
     for (const f of ["FirstDecision.tsx", "Story.tsx", "Effects.tsx", "TryButton.tsx"]) expect(readdirSync(DIR)).not.toContain(f);
@@ -96,9 +96,12 @@ describe("landing de MÊTIS CEO · primer bloque", () => {
 });
 
 describe("landing de MÊTIS CEO · bloques", () => {
-  it("orden: primer bloque, cómo funciona, empresa que recuerda, carrera, filosofía, preguntas y cierre", () => {
+  it("orden: primer bloque, cómo funciona, Academy, carrera, preguntas y cierre (sin bloque «Tu próxima gran decisión»)", () => {
     const page = read("Landing.tsx");
-    const order = ["<CaseDemo", "<HowSection", "<MemorySection", "<PathSection", "<PhilosophySection", "<FaqSection", "<CloseSection"];
+    const order = ["<CaseDemo", "<HowSection", "<AcademySection", "<PathSection", "<FaqSection", "<CloseSection"];
+    expect(page).not.toMatch(/MemorySection|PhilosophySection/);
+    expect("PHILOSOPHY" in C || "DIFF" in C).toBe(false);
+    expect(allCopy() + enCopy()).not.toMatch(/próxima gran decisión|next big decision|una empresa que recuerda/);
     const at = order.map((t) => page.indexOf(t));
     expect(at.every((n) => n > 0)).toBe(true);
     expect([...at].sort((a, b) => a - b)).toEqual(at);
@@ -119,9 +122,6 @@ describe("landing de MÊTIS CEO · bloques", () => {
     expect(C.HOW.title).toBe("¿Y si aprender a dirigir se sintiera como dirigir de verdad?");
     expect(C.HOW.body).toBe("En MÊTIS te sumerges en una empresa que cobra vida con cada correo, WhatsApp o llamada. Toma decisiones, descubre sus consecuencias, gana experiencia y desbloquea nuevos retos mientras desarrollas tu criterio como líder. ¡Todo en unos minutos al día!");
     expect(EN.HOW.title).toBe("What if learning to lead felt like actually leading?");
-    // el título ya no se repite con el del bloque oscuro
-    expect(C.HOW.title).not.toBe(C.PHILOSOPHY.title);
-    expect(EN.HOW.title).not.toBe(EN.PHILOSOPHY.title);
     expect(EN.HOW.body).toMatch(/^At MÊTIS you dive into a company .* All in a few minutes a day!$/);
     expect(C.HOW.steps.map((s) => s.t)).toEqual(["Recibes una situación", "Tomas una decisión", "Aprendes de lo que ocurre"]);
     expect(C.HOW.steps[0].d).toContain("en cualquier momento del día");
@@ -152,15 +152,6 @@ describe("landing de MÊTIS CEO · bloques", () => {
     expect(sec).toMatch(/<Stagger className="relative space-y-8" label=\{HOW\.title\}>[\s\S]*HOW\.steps\.map[\s\S]*ceo-step/);
   });
 
-  it("carrusel: una historia a la vez, cambia sola cada 4 s, sin botón de pausa, con anterior/siguiente e indicadores", () => {
-    expect(C.MEMORY_INTERVAL_MS).toBe(4000);
-    expect(C.HOW_INTERVAL_MS).toBe(7000);
-    const src = read("Memory.tsx");
-    for (const s of ["prefers-reduced-motion", "L.prev", "L.next", "aria-roledescription={L.role}", "onFocusCapture", "inert=", "MEMORY_INTERVAL_MS"]) expect(src).toContain(s);
-    for (const s of ["Pause", "L.pause", "L.play", "setPlaying((v)"]) expect(src).not.toContain(s);
-    expect(C.DIFF.carousel).not.toHaveProperty("pause");
-  });
-
   it("carrera: empiezas como Director General; los seis capítulos son de la empresa, sin candados ni títulos corporativos", () => {
     expect(C.PATH.title).toBe("Una carrera que crece contigo.");
     expect(C.PATH.body).toMatch(/aprendizaje/);
@@ -174,20 +165,8 @@ describe("landing de MÊTIS CEO · bloques", () => {
     const sec = read("Sections.tsx");
     expect(sec).toContain('<span className="sr-only">{PATH.stateLabel[s.state]}</span>');
     expect(sec).not.toMatch(/<Lock\b|ArenaLock/);
-    const all = JSON.stringify([C.PATH, EN.PATH, C.PHILOSOPHY, EN.PHILOSOPHY, C.AVAILABILITY]);
+    const all = JSON.stringify([C.PATH, EN.PATH, C.AVAILABILITY]);
     expect(all).not.toMatch(/Emerging Leader|Functional Manager|Business Unit Director|Chief Operating Officer|Global CEO|Executive Arena|desbloque|unlock|nombramiento/i);
-  });
-
-  it("bloque oscuro: título y texto de Oziel, sin firma", () => {
-    expect(C.PHILOSOPHY.title).toBe("¡Tu próxima gran decisión está por llegar!");
-    expect(C.PHILOSOPHY.body).toBe("Un correo inesperado, un WhatsApp urgente o una llamada de tu equipo. En MÊTIS cada día trae un nuevo reto. Decide, aprende de lo que sucede y acompaña a tu empresa en cada capítulo de una simulación inmersiva que crece contigo.");
-    expect(C.PHILOSOPHY.who).toMatch(/^Para quienes aspiran a dirigir/);
-    expect(EN.PHILOSOPHY.title).toBe("Your next big decision is on its way!");
-    // ya no lleva firma
-    expect(C.PHILOSOPHY).not.toHaveProperty("author");
-    expect(EN.PHILOSOPHY).not.toHaveProperty("author");
-    expect(read("Sections.tsx")).not.toContain("authorRole");
-    expect(allCopy().split("aspiran a dirigir").length - 1).toBe(1);
   });
 
   it("FAQ breve, industrias reales y CTA a rutas reales", () => {
@@ -215,8 +194,7 @@ describe("landing de MÊTIS CEO · bloques", () => {
     // las únicas admiraciones son las que pidió Oziel en «Cómo funciona» y en el bloque oscuro (título),
     // más las del caso, que es copia fiel de lo que dicen los personajes en el juego
     const bang = (x: string) => (x.match(/!/g) ?? []).length;
-    expect(bang(allCopy() + enCopy()) - bang(JSON.stringify(C.HOW) + JSON.stringify(EN.HOW)) - bang(C.PHILOSOPHY.title + EN.PHILOSOPHY.title) - bang(JSON.stringify(C.CASE.options) + JSON.stringify(EN.CASE.options))).toBe(0);
-    expect(bang(C.PHILOSOPHY.title + EN.PHILOSOPHY.title)).toBe(2);
+    expect(bang(allCopy() + enCopy()) - bang(JSON.stringify(C.HOW) + JSON.stringify(EN.HOW)) - bang(JSON.stringify(C.CASE.options) + JSON.stringify(EN.CASE.options))).toBe(0);
     expect(bang(C.HOW.title + C.HOW.body)).toBe(1);
     expect(bang(EN.HOW.title + EN.HOW.body)).toBe(1);
   });
@@ -233,12 +211,12 @@ describe("landing de MÊTIS CEO · inglés", () => {
     expect(shape(en)).toEqual(shape(es));
     expect(shape(fe[0])).toEqual(shape(fs[0]));
     // y no repite texto en español fuera de nombres propios
-    for (const k of ["HERO", "HOW", "PATH", "PHILOSOPHY", "CLOSE", "UI"] as const) expect(JSON.stringify(EN[k]), k).not.toMatch(/ción\b|Comenzar|decisión|empresa\b|Iniciar/);
+    for (const k of ["HERO", "HOW", "ACADEMY", "PATH", "CLOSE", "UI"] as const) expect(JSON.stringify(EN[k]), k).not.toMatch(/ción\b|Comenzar|decisión|empresa\b|Iniciar/);
   });
 
   it("usa las frases de Oziel en los titulares", () => {
-    const heads = [EN.HERO.motto, EN.HOW.title, EN.DIFF.title, EN.PATH.title, EN.CLOSE.title, EN.CLOSE.body, EN.FOOTER.tagline, EN.SEO.title].join(" | ");
-    for (const f of ["Every decision shapes the leader you become.", "Think beyond the obvious.", "Leadership isn't a title. It's a practice.", "Tomorrow's leaders start deciding today.", "Before the title, build the judgment.", "Where leadership is practiced, not preached."]) expect(heads, f).toContain(f);
+    const heads = [EN.HERO.motto, EN.HOW.title, EN.PATH.title, EN.CLOSE.title, EN.CLOSE.body, EN.FOOTER.tagline, EN.SEO.title].join(" | ");
+    for (const f of ["Every decision shapes the leader you become.", "Leadership isn't a title. It's a practice.", "Tomorrow's leaders start deciding today.", "Before the title, build the judgment.", "Where leadership is practiced, not preached."]) expect(heads, f).toContain(f);
     // «The decisions are simulated. The learning is real.» espera evidencia antes de publicarse
     expect(enCopy()).not.toContain("the learning is real");
     expect(EN.HERO.title).toBe("Think and decide like a CEO. A few minutes a day.");
@@ -251,7 +229,6 @@ describe("landing de MÊTIS CEO · inglés", () => {
     expect(EN.CASE.context.data.rows.map(([, v]) => v)).toEqual(expect.arrayContaining(["22"]));
     expect(EN.CASE.context.data.rows[3][1]).toMatch(/28%.*6%/);
     expect(EN.CASE.options.map((o) => o.effects.map(([k]) => k))).toEqual([["Board", "Team"], ["Team", "Board"], ["Board", "Team"]]);
-    expect(EN.DIFF.items.map((e) => [e.decide.day, e.back.day, e.back.initials, e.tone])).toEqual(C.DIFF.items.map((e) => [e.decide.day.replace("Día", "Day"), e.back.day.replace("Día", "Day"), e.back.initials, e.tone]));
   });
 
   it("cada idioma tiene su ruta, su lang y enlaces alternos; el selector lleva a la otra versión", () => {
@@ -269,43 +246,40 @@ describe("landing de MÊTIS CEO · inglés", () => {
   });
 });
 
+
 function personName(id: string) { return cumbre.cast[id]?.name; }
 
-describe("landing: una empresa que recuerda y cifras coherentes", () => {
+describe("landing: mêtis Academy y cifras coherentes", () => {
   const txt = (o: unknown) => JSON.stringify(o);
 
-  it("la experiencia no repite el caso SuperNorte: muestra personas que recuerdan y crisis sembradas antes", () => {
-    expect(txt(C.DIFF)).not.toMatch(/SuperNorte|Sofía|descuento|margen/i);
-    expect(C.DIFF.title).toBe("Tus decisiones siguen teniendo consecuencias.");
-    expect(C.DIFF.eyebrow).toBe("Una empresa que recuerda");
-    expect(C.DIFF.items.length).toBe(4);
-    for (const e of C.DIFF.items) {
-      // lo que regresa ocurre después de la decisión
-      const d = (s: string) => Number(s.replace(/\D/g, ""));
-      expect(d(e.back.day), e.t).toBeGreaterThan(d(e.decide.day));
-    }
+  it("Academy muestra los módulos reales, en el mismo orden, con su número de lecciones", () => {
+    expect(C.ACADEMY.modules.map((m) => [m.id, m.title, m.icon, m.blurb])).toEqual(TRACKS.map((t) => [t.id, t.title, t.icon, t.blurb]));
+    for (const m of C.ACADEMY.modules) expect(m.n, m.id).toBe(lessonsOfTrack(m.id).length);
+    expect(EN.ACADEMY.modules.map((m) => [m.id, m.icon, m.n])).toEqual(C.ACADEMY.modules.map((m) => [m.id, m.icon, m.n]));
+    expect(new Set(EN.ACADEMY.modules.map((m) => m.title)).size).toBe(TRACKS.length);
   });
 
-  it("los ecos salen de Botanas Cumbre: mismos personajes, días y consecuencias que el juego", () => {
-    const cumbre = COMPANIES.find((c) => c.id === "cumbre")!;
-    const items = cumbre.items;
-    const byId = (id: string) => items.find((i) => i.id === id)!;
-    const body = (id: string) => byId(id).body.join(" ");
-    const [hector, ana, planta, brilla] = C.DIFF.items;
-    expect(body("c-hector-renuncia")).toContain("El nuevo ni me contestó");
-    expect(hector.back.text).toContain("El nuevo ni me contestó");
-    expect(hector.decide.day).toBe(`Día ${byId("d1-hector").day}`);
-    expect(hector.back.day).toBe(`Día ${byId("c-hector-renuncia").day}`);
-    expect(body("c-ana-renuncia")).toContain("nunca supe si mi trabajo servía");
-    expect(ana.back.day).toBe(`Día ${byId("c-ana-renuncia").day}`);
-    expect(ana.decide.day).toBe(`Día ${byId("d2-ana").day}`);
-    expect(planta.decide.day).toBe(`Día ${byId("d3-planta").day}`);
-    expect(planta.back.day).toBe(`Día ${byId("c-planta-accidente").day}`);
-    expect(body("c-planta-accidente")).toContain("Toño");
-    expect(brilla.back.day).toBe(`Día ${byId("c-ana-brilla").day}`);
-    // iniciales del reparto real
-    const initials = new Set(Object.values(cumbre.cast).map((p) => p.initials));
-    for (const e of C.DIFF.items) expect(initials.has(e.back.initials), e.back.who).toBe(true);
+  it("el subtítulo dice cómo se aprende, cuántos módulos y lecciones hay, y de dónde salen los casos", () => {
+    const mins = LESSONS.map((l) => l.minutes);
+    const body = C.ACADEMY.body;
+    expect(body).toContain(`${TRACKS.length} módulos y ${LESSONS.length} lecciones de ${Math.min(...mins)} a ${Math.max(...mins)} minutos`);
+    expect(body).toMatch(/programas MBA, escuelas de negocio y libros de dirección/);
+    expect(EN.ACADEMY.body).toContain(`${TRACKS.length} modules and ${LESSONS.length} lessons of ${Math.min(...mins)} to ${Math.max(...mins)} minutes`);
+    expect(EN.ACADEMY.body).toMatch(/MBA programs, business schools and management books/);
+  });
+
+  it("los módulos entran con animación uno a uno (Stagger) y el menú lleva a Academy", () => {
+    const sec = read("Sections.tsx");
+    expect(sec).toContain('id="academy"');
+    expect(sec).toMatch(/<Stagger className="mt-12 grid[^"]*" label=\{A\.listLabel\}>/);
+    expect(C.NAV.map((n) => n.href)).toEqual(["#como", "#academy", "#camino"]);
+    expect(EN.NAV.map((n) => n.href)).toEqual(["#como", "#academy", "#camino"]);
+  });
+
+  it("la carrera ya no lleva la nota «Los capítulos son de la empresa» ni su icono", () => {
+    expect(read("Sections.tsx")).not.toMatch(/capitulos-nota|PATH\.beyond|\bInfo\b/);
+    expect(C.PATH).not.toHaveProperty("beyond");
+    expect(EN.PATH).not.toHaveProperty("beyond");
   });
 
   it("sin cifras viejas del caso SuperNorte en ningún idioma", () => {

@@ -4,12 +4,11 @@
  */
 import type React from "react";
 import Link from "next/link";
-import { Check, ChevronDown, Info } from "lucide-react";
+import { Check, ChevronDown, Coins, Compass, Flag, Flame, GraduationCap, Handshake, Layers, MessagesSquare, Rocket, Target, Users, type LucideIcon } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { CeoCta } from "@/components/site/CeoCta";
 import { CEO_CONTACT_EMAIL } from "@/lib/site";
-import { LOGIN_HREF, type Copy, type StageState } from "./content";
-import { MemoryCarousel } from "./Memory";
+import { LOGIN_HREF, type AcademyIcon, type Copy, type StageState } from "./content";
 import { Stagger } from "./Stagger";
 
 const WRAP = "mx-auto max-w-6xl px-5 sm:px-6";
@@ -49,17 +48,38 @@ export function HowSection({ t }: { t: Copy }) {
   );
 }
 
-export function MemorySection({ t }: { t: Copy }) {
-  const DIFF = t.DIFF;
+const ACADEMY_ICON: Record<AcademyIcon, LucideIcon> = { compass: Compass, users: Users, flag: Flag, message: MessagesSquare, handshake: Handshake, coins: Coins, flame: Flame, rocket: Rocket, target: Target, layers: Layers };
+
+/** mêtis Academy: los 13 módulos aparecen uno a uno al entrar en pantalla (misma animación que los pasos). */
+export function AcademySection({ t }: { t: Copy }) {
+  const A = t.ACADEMY;
   return (
-    <section id="experiencia" aria-labelledby="exp-title" className="scroll-mt-20 bg-[#141735] text-white">
+    <section id="academy" aria-labelledby="academy-title" className="scroll-mt-20 bg-[#141735] text-white">
       <div className={WRAP + " " + PAD}>
         <div className="max-w-2xl mx-auto text-center">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-mint-light">{DIFF.eyebrow}</p>
-          <h2 id="exp-title" className="mt-3 text-[26px] leading-[1.18] sm:text-[32px] sm:leading-[1.15] font-semibold tracking-tight">{DIFF.title}</h2>
-          <p className="mt-4 text-[17px] leading-relaxed text-white/70">{DIFF.body}</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-mint-light">{A.eyebrow}</p>
+          <h2 id="academy-title" className="mt-3 text-[26px] leading-[1.18] sm:text-[32px] sm:leading-[1.15] font-semibold tracking-tight">{A.title}</h2>
+          <p className="mt-4 text-[17px] leading-relaxed text-white/70">{A.body}</p>
         </div>
-        <div className="mt-12"><MemoryCarousel t={t} /></div>
+        <Stagger className="mt-10 sm:mt-12 grid grid-cols-2 gap-2.5 sm:gap-3 lg:grid-cols-4" label={A.listLabel}>
+          {A.modules.map((m, i) => {
+            const Icon = ACADEMY_ICON[m.icon];
+            return (
+              <li key={m.id} style={{ "--i": i * 0.5 } as React.CSSProperties} className="ceo-step group rounded-2xl bg-white/[0.06] ring-1 ring-white/10 p-4 sm:p-5 motion-safe:transition-colors hover:bg-white/[0.1] hover:ring-mint/40">
+                <div className="flex items-center justify-between">
+                  <span aria-hidden className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-indigo/30 text-mint-light grid place-items-center motion-safe:transition-transform group-hover:scale-110"><Icon size={19} /></span>
+                  <span className="text-[11px] sm:text-[12px] tabular-nums text-white/50">{m.n} {m.n === 1 ? A.lesson : A.lessons}</span>
+                </div>
+                <h3 className="mt-3 sm:mt-4 text-[14.5px] sm:text-[16px] font-semibold leading-snug">{m.title}</h3>
+                <p className="hidden sm:block mt-1 text-[14px] leading-relaxed text-white/60">{m.blurb}</p>
+              </li>
+            );
+          })}
+          <li style={{ "--i": A.modules.length * 0.5 } as React.CSSProperties} className="ceo-step rounded-2xl bg-gradient-to-br from-indigo/40 to-indigo/10 ring-1 ring-indigo/40 p-4 sm:p-5 col-span-2 lg:col-span-3 flex items-center gap-4">
+            <span aria-hidden className="h-10 w-10 shrink-0 rounded-xl bg-mint/20 text-mint-light grid place-items-center"><GraduationCap size={19} /></span>
+            <div><h3 className="text-[16px] font-semibold leading-snug">{A.link.t}</h3><p className="mt-1 text-[14px] leading-relaxed text-white/70">{A.link.d}</p></div>
+          </li>
+        </Stagger>
       </div>
     </section>
   );
@@ -97,26 +117,6 @@ export function PathSection({ t }: { t: Copy }) {
               </li>
             ))}
           </Stagger>
-        </div>
-        <div data-testid="capitulos-nota" className="mt-10 mx-auto max-w-xl text-center">
-          <span aria-hidden className="mx-auto h-12 w-12 rounded-2xl bg-ink text-mint-light grid place-items-center"><Info size={22} /></span>
-          <h3 className="mt-4 text-xl font-semibold text-ink">{PATH.beyond.t}</h3>
-          <p className="mt-2 text-[15px] leading-relaxed text-slate-600">{PATH.beyond.d}</p>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-export function PhilosophySection({ t }: { t: Copy }) {
-  const PHILOSOPHY = t.PHILOSOPHY;
-  return (
-    <section aria-labelledby="filo-title" className="bg-gradient-to-br from-[#141735] via-[#1E1A5E] to-[#2B1F8A] text-white">
-      <div className={WRAP + " py-20 sm:py-28"}>
-        <div className="max-w-3xl">
-          <h2 id="filo-title" className="text-[28px] leading-[1.15] sm:text-[40px] sm:leading-[1.12] font-semibold tracking-tight">{PHILOSOPHY.title}</h2>
-          <p className="mt-6 text-[17px] sm:text-lg leading-relaxed text-white/75">{PHILOSOPHY.body}</p>
-          <p className="mt-5 text-[15px] leading-relaxed text-white/55">{PHILOSOPHY.who}</p>
         </div>
       </div>
     </section>

@@ -5,7 +5,24 @@
  * El simulador está en español: se dice con claridad en el primer bloque y en las preguntas frecuentes.
  */
 import type { CaseOption, Copy, StageState, TodayItem } from "./content";
-import { PATH as PATH_ES } from "./content";
+import { ACADEMY as ES_ACADEMY, PATH as PATH_ES } from "./content";
+
+/** Módulos de Academy en inglés, en el mismo orden que en español. */
+const EN_MOD: [string, string][] = [
+  ["CEO mindset", "How someone who carries the responsibility thinks."],
+  ["Leading people", "Each person needs something different from you."],
+  ["Conversations", "Saying the hard thing so it is heard."],
+  ["Teams", "Trust, useful conflict and commitment."],
+  ["Alignment", "From strategy to what everyone does on Monday."],
+  ["Negotiation", "Interests, alternatives and relationships that last."],
+  ["Communication", "Start with the end and deliver bad news."],
+  ["Culture and ethics", "What you tolerate is your real code."],
+  ["Finance", "Allocate capital and never run out of cash."],
+  ["Innovation", "Bet small, learn fast, close on time."],
+  ["Strategy", "Choose, and have the character to say no."],
+  ["Crisis", "People first, facts next, one voice."],
+  ["Governance and the board", "No surprises, always with options."],
+];
 
 export const EN: Copy = {
   lang: "en",
@@ -17,6 +34,7 @@ export const EN: Copy = {
   },
   NAV: [
     { href: "#como", label: "How it works" },
+    { href: "#academy", label: "Academy" },
     { href: "#camino", label: "Your career" },
   ],
   CTA: "Start free",
@@ -133,43 +151,15 @@ export const EN: Copy = {
       caption: "Example with the SuperNorte case at Botanas Cumbre.",
     },
   },
-  DIFF: {
-    eyebrow: "A company that remembers",
-    title: "Think beyond the obvious.",
-    body: "People remember how you treated them, and some of today's problems were planted days earlier. What comes back depends on what you decide.",
-    decideLabel: "You decide",
-    backLabel: "It comes back",
-    carousel: { region: "Stories from Botanas Cumbre", role: "carousel", item: "story", of: "of", prev: "Previous story", next: "Next story", pick: "Choose a story", story: "Story" },
-    items: [
-      {
-        t: "Someone remembers what you did",
-        context: "Héctor, Sales Director with 22 years at the company, expected your job. On your first day he writes to you, worried about his team's commissions.",
-        decide: { day: "Day 1", text: "You don't answer and ask HR to handle him." },
-        back: { day: "Day 3", who: "Mariana · People", initials: "MV", text: "Héctor resigned. On his way out he told me: \u201cThe new guy didn't even answer me.\u201d" },
-        tone: "riesgo",
-      },
-      {
-        t: "A team member stops trusting you",
-        context: "Ana, a planning analyst, stayed up late to hand you a 22-slide forecast. The key insight is buried on slide 19.",
-        decide: { day: "Day 2", text: "You reply: \u201cThis is useless for a board. By tomorrow.\u201d" },
-        back: { day: "Day 6", who: "Mariana · People", initials: "MV", text: "Ana accepted another offer. She said: \u201cI never knew if my work mattered. There they're offering me a mentor.\u201d" },
-        tone: "riesgo",
-      },
-      {
-        t: "A crisis that started earlier",
-        context: "Javier, the plant manager, warns you that the line 2 roaster is failing and nearly hurt an operator.",
-        decide: { day: "Day 3", text: "You decide to keep running until Monday so an order isn't delayed." },
-        back: { day: "Day 5", who: "Javier · Plant", initials: "JO", text: "Boss, what we feared on line 2 happened. Toño is at the hospital and an inspector comes tomorrow." },
-        tone: "riesgo",
-      },
-      {
-        t: "And the company grows with you",
-        context: "Same Ana, a different decision changes the story.",
-        decide: { day: "Day 2", text: "You sit with her for 20 minutes and teach her to start with the recommendation." },
-        back: { day: "Day 5", who: "Carla · Board", initials: "CM", text: "After her presentation: \u201cWho is Ana? That young woman has a future.\u201d" },
-        tone: "bien",
-      },
-    ],
+  ACADEMY: {
+    eyebrow: "mêtis Academy",
+    title: "Learn the theory behind every decision.",
+    body: "Every case leaves you a lesson, and you reinforce it with short, interactive lessons: 13 modules and 25 lessons of 4 to 5 minutes. Cases and frameworks are inspired by MBA programs, business schools and management books.",
+    listLabel: "mêtis Academy modules",
+    link: { t: "From each case to its lesson", d: "When you finish a case, the log tells you what you learned and takes you to the lesson that explains why things happened." },
+    lesson: "lesson",
+    lessons: "lessons",
+    modules: ES_ACADEMY.modules.map((m, i) => ({ ...m, title: EN_MOD[i][0], blurb: EN_MOD[i][1] })),
   },
   PATH: {
     eyebrow: "Your career",
@@ -177,12 +167,6 @@ export const EN: Copy = {
     body: "From day one you are the Chief Executive of a company that already exists, with its own history, team and board. Every case leaves you a lesson: you understand why things happened and reinforce the theory in mêtis Academy. What changes is the company: depending on what you decide, it stabilizes, builds capability, accelerates, or goes through a crisis and recovers.",
     stateLabel: { inicio: "You start here", capitulo: "Possible chapter" } as Record<StageState, string>,
     stages: PATH_ES.stages.map((s, i) => ({ ...s, name: ["Take charge", "Stabilize", "Build capability", "Accelerate with judgment", "Scale", "Govern complexity"][i], learn: ["Understand what you inherit and prioritize", "Cash, service, costs and execution", "Managers, processes and talent", "Where to invest and where not to", "Several areas, regions or alliances", "More exposure and wider-reaching risks"][i] })),
-    beyond: { t: "Chapters belong to the company, not to you", d: "A company can stay in a chapter, see its numbers slip or recover. The board reviews you every month and your history is kept: no firing and no reset." },
-  },
-  PHILOSOPHY: {
-    title: "Your next big decision is on its way!",
-    body: "An unexpected email, an urgent WhatsApp message or a call from your team. At MÊTIS every day brings a new challenge. Decide, learn from what happens and guide your company through every chapter of an immersive simulation that grows with you.",
-    who: "For those who aspire to lead, for those who already lead and for those who believe there is always more to learn.",
   },
   FAQ: [
     { q: "Do I need management experience?", a: "No. When you start, we ask about your experience to adjust the help you see and the order of the cases." },
