@@ -82,51 +82,50 @@ export const HERO = {
   note: "Sin tarjeta.",
 };
 
-/* ---------------- El caso del primer bloque (SuperNorte, día 2 de Botanas Cumbre) ---------------- */
-/** Copia fiel de lib/ceo/companies/cumbre-items.ts (d2-supernorte); las pruebas revisan que coincida. */
+/* ---------------- El caso del primer bloque (Ana, día 2 de Botanas Cumbre) ---------------- */
+/** Copia fiel de lib/ceo/companies/cumbre-items.ts (d2-ana); las pruebas revisan que coincida. Es de los casos más cortos del juego. */
 export interface CaseOption { id: string; text: string; reply: string[]; outcome: string; effects: [string, number][] }
 export const CASE = {
   label: "Un caso del simulador",
   steps: ["El caso", "Contexto", "Decides", "Resultado", "Aprendes"],
   stepOf: "Paso {n} de {t}",
   received: "Te llegó un asunto",
-  from: { name: "Sofía Leal", initials: "SL", role: "Compradora de categoría · SuperNorte", tone: "#171A3A", time: "9:14" },
-  channel: "Correo",
-  subject: "Condiciones comerciales 2027 · Botanas Cumbre",
+  from: { name: "Ana Martínez", initials: "AM", role: "Analista de Planeación Comercial", tone: "#5B4BE8", time: "8:40" },
+  kind: "reporte" as "correo" | "reporte",
+  channel: "Reporte",
+  subject: "Pronóstico Q1 · versión final (22 láminas)",
   to: "Para: Director General <direccion@botanascumbre.mx>",
   body: [
-    "Estimado Director:",
-    "Primero, bienvenido. Nos dio gusto saber del relevo en Cumbre.",
-    "Como cada año, revisamos condiciones con nuestros proveedores estratégicos. Para mantener sus dos frentes de anaquel en las 140 tiendas, necesitamos 4 puntos adicionales de descuento y pasar el plazo de pago de 60 a 90 días a partir de enero.",
-    "Sabemos que es un ajuste importante. También le comento que una marca regional nos ofreció condiciones muy competitivas por ese espacio.",
-    "Quedo atenta a su respuesta antes del viernes.",
-    "Saludos cordiales,\nSofía Leal · Compradora de categoría Botanas",
+    "Buen día, Director:",
+    "Le comparto el pronóstico de ventas del Q1 que me pidió para la junta con el consejo. Incluí todo el detalle por SKU, canal, región y mes, y 6 escenarios de precio.",
+    "Me desvelé un poco, pero quería que tuviera toda la información.",
+    "Quedo atenta a sus comentarios.\nAna",
   ],
   context: {
     eyebrow: "Antes de decidir",
     title: "Lo que necesitas saber",
     text: "Los datos del asunto y quién está en juego. Tómate tu tiempo.",
     data: {
-      title: "Lucía (Finanzas) te armó esto en 20 minutos",
-      rows: [["Ventas a SuperNorte", "$127 M al año"], ["Margen de la cuenta hoy", "7.1%"], ["Si damos 4 pts", "Margen 3.1% · −$5.1 M al año"], ["Si pasamos a 90 días", "Necesitamos ≈ $10 M más de capital de trabajo"], ["Rotación de Cumbre en sus tiendas", "1.4× la de la marca regional"]] as [string, string][],
-      note: "Nota de Lucía: «Ojo, nuestras papas rotan mejor que las de ellos. SuperNorte también pierde si nos saca.»",
+      title: "Lo que ves al abrir el archivo",
+      rows: [["Láminas", "22"], ["Tablas", "17 (letra de 8 puntos)"], ["Conclusión o recomendación", "— ninguna —"], ["Lámina 19 de 22", "«Las papas premium crecen 28% y la línea tradicional cae 6%» (enterrado en una tabla)"]] as [string, string][],
+      note: "La junta con el consejo es en 9 días.",
     },
   },
-  decide: { eyebrow: "Tu decisión", ask: "¿Cómo respondes a SuperNorte?", cta: "Tomar la decisión" },
+  decide: { eyebrow: "Tu decisión", ask: "Ana trabajó mucho, pero no te sirve así. ¿Qué haces?", cta: "Tomar la decisión" },
   options: [
-    { id: "a", text: "Aceptar sus condiciones. Es el 31% de las ventas y en mi primer mes no puedo arriesgar la relación con el cliente más grande que tenemos.", reply: ["Excelente, Director. Le agradecemos mucho la disposición.", "Le hago llegar el anexo para firma esta semana."], outcome: "Conservas el anaquel, pero pierdes $5 M de margen al año y necesitas $10 M de caja. Y SuperNorte aprendió que contigo basta con apretar.", effects: [["Clientes", 4], ["Margen", -8], ["Caja", -6]] },
-    { id: "b", text: "Pedir reunión: nuestra rotación es 1.4× la de la competencia. Ofrezco 1.5 puntos en promociones atadas a volumen y sostener 60 días.", reply: ["Interesante. No tenía el dato de rotación por tienda.", "Lo reviso con mi gerente. Si el plan de promociones viene con metas por tienda, lo podemos considerar.", "¿Le parece el jueves a las 10?"], outcome: "Cambiaste la conversación de «cuánto me das» a «cómo crecemos los dos». Si te funciona, creas valor antes de pelearlo.", effects: [["Clientes", 2], ["Consejo", 3], ["Margen", -2], ["Caja", -1]] },
-    { id: "c", text: "Responder firme: si nos aprietan, sacamos producto y apostamos por tiendas de conveniencia. No vamos a regalar margen.", reply: ["Entiendo su postura, Director.", "Lo comentaré internamente."], outcome: "Defendiste el margen con tu poder. Pero tu alternativa (las tiendas de conveniencia) todavía no existe: estás alardeando.", effects: [["Margen", 3], ["Clientes", -8], ["Consejo", -2]] },
+    { id: "a", text: "Responderle rápido y claro: «Ana, así no sirve para un consejo. Necesito 3 láminas con conclusión. Para mañana.»", reply: ["Entendido, Director.", "Disculpe."], outcome: "Mañana tendrás 3 láminas. También tendrás a una analista que ya no se va a desvelar por ti.", effects: [["Consejo", 3], ["Equipo", -4]] },
+    { id: "b", text: "Sentarme 20 minutos con ella: enseñarle a empezar por el final, por lo que el consejo debe decidir, y pedirle una página.", reply: ["Muchas gracias por el tiempo, Director. Nunca nadie me había explicado lo de «empezar por el final».", "Ya vi que lo importante estaba en la lámina 19. Le mando una página el jueves. ¿Puedo proponer qué hacer con la línea tradicional?"], outcome: "Inviertes 20 minutos y ganas a alguien que el próximo trimestre ya no te va a necesitar para esto. La versión para el consejo llega hasta el jueves.", effects: [["Equipo", 5], ["Consejo", -1]] },
+    { id: "c", text: "Agradecerle y armar yo mismo la presentación esta noche. Es más rápido y el consejo no puede esperar otra versión.", reply: ["¡Qué bueno que le sirvió!"], outcome: "La presentación queda bien. Ana nunca se entera de lo que faltaba y tú acabas de comprarte trabajo para cada trimestre.", effects: [["Consejo", 2], ["Equipo", -1]] },
   ] as CaseOption[],
   result: { decided: "Decidiste", what: "Qué pasó en Botanas Cumbre" },
   learn: {
     eyebrow: "Bitácora del CEO",
-    title: "MAPAN: el poder está en tus alternativas",
-    text: "Tu fuerza no dependía de sonar duro, sino de tu mejor alternativa y de entender la de SuperNorte: perder un producto que rota 1.4× también les cuesta. Antes de pelear la rebanada, pregúntate si la mesa puede crecer.",
+    title: "Empieza con el final",
+    text: "Ana tenía la gran idea (premium +28%, tradicional −6%) en la lámina 19. Las presentaciones ejecutivas empiezan con el big picture y una recomendación. Y enseñar eso es más valioso que corregirlo.",
     notaLabel: "Nota CEO:",
-    nota: "La mejor forma de negociar con fuerza no es sonar fuerte; es construir alternativas antes de necesitarlas.",
+    nota: "Una presentación no debe demostrar que trabajaste mucho; debe hacer que la audiencia entienda rápido y actúe mejor.",
     lessonLabel: "Aprende la teoría:",
-    lesson: "Negociar como CEO · 5 min",
+    lesson: "Comunicación ejecutiva · 5 min",
   },
   nav: { back: "Atrás", next: ["Ver el contexto", "Decidir", "", "Lo que aprendes"], again: "Elegir otra respuesta" },
   note: "Caso del día 2 en Botanas Cumbre, tal cual aparece en el simulador. Esta muestra no guarda nada.",

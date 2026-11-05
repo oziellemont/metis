@@ -1,6 +1,6 @@
 "use client";
 /**
- * Primer bloque de la landing: un caso real del simulador (SuperNorte, día 2 de Botanas Cumbre) con el mismo
+ * Primer bloque de la landing: un caso real del simulador (Ana, día 2 de Botanas Cumbre) con el mismo
  * recorrido por pasos que la pantalla de decisión de la app (components/ceo/Stage.tsx + CaseView.tsx):
  * El caso → Contexto → Decides → Resultado → Aprendes, con barras de avance, «Atrás» y el botón siguiente.
  * Antes de decidir no se pasa de «Decides»; después, no se regresa a decidir (igual que en la app).
@@ -8,7 +8,7 @@
  */
 import { useRef, useState } from "react";
 import clsx from "clsx";
-import { ArrowLeft, ArrowRight, BookOpen, Lightbulb, Mail, Quote, RotateCcw } from "lucide-react";
+import { ArrowLeft, ArrowRight, BookOpen, FileBarChart, Lightbulb, Mail, Quote, RotateCcw } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import type { Copy } from "./content";
 
@@ -81,7 +81,7 @@ export function CaseDemo({ t }: { t: Copy }) {
                     <div className="flex items-start gap-3">
                       <Avatar initials={C.from.initials} tone={C.from.tone} size={40} />
                       <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-center gap-2"><span className="font-semibold text-ink text-[15px]">{C.from.name}</span><span className="chip gap-1 bg-indigo-soft text-indigo"><Mail size={11} aria-hidden /> {C.channel}</span></div>
+                        <div className="flex flex-wrap items-center gap-2"><span className="font-semibold text-ink text-[15px]">{C.from.name}</span><span className={clsx("chip gap-1", C.kind === "reporte" ? "bg-sky-soft text-sky" : "bg-indigo-soft text-indigo")}>{C.kind === "reporte" ? <FileBarChart size={11} aria-hidden /> : <Mail size={11} aria-hidden />} {C.channel}</span></div>
                         <div className="text-xs text-slate-500">{C.from.role}</div>
                       </div>
                       <span className="text-[11px] text-slate-400 whitespace-nowrap">{C.from.time}</span>

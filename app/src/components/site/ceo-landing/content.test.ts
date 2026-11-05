@@ -17,6 +17,7 @@ const allCopy = () => JSON.stringify(C.ES).toLowerCase();
 const enCopy = () => JSON.stringify(EN).toLowerCase();
 const cumbre = COMPANIES.find((c) => c.id === "cumbre")!;
 const sn = cumbre.items.find((i) => i.id === "d2-supernorte")!;
+const ana = cumbre.items.find((i) => i.id === "d2-ana")!;
 
 /** Mismas claves en los dos idiomas (en cualquier nivel), para que nada quede sin traducir. */
 function shape(o: unknown): unknown {
@@ -37,32 +38,38 @@ describe("landing de MÊTIS CEO · primer bloque", () => {
     expect(landing.indexOf("<CaseDemo")).toBeLessThan(landing.indexOf("<HowSection"));
   });
 
-  it("el caso de al lado es SuperNorte tal cual está en el juego (correo, datos, pregunta, opciones, respuestas y bitácora)", () => {
+  it("el caso de al lado es el de Ana tal cual está en el juego (reporte, datos, pregunta, opciones, respuestas y bitácora)", () => {
     const k = C.CASE;
-    expect(sn.channel).toBe("email");
-    expect(k.subject).toBe(sn.subject);
-    expect(k.body).toEqual(sn.body);
-    expect(k.context.data.title).toBe(sn.data!.title);
-    expect(k.context.data.rows).toEqual(sn.data!.rows);
-    expect(k.context.data.note).toBe(sn.data!.note);
-    expect(k.decide.ask).toBe(sn.ask);
-    expect(k.options.map((o) => o.id)).toEqual(sn.options.map((o) => o.id));
+    expect(ana.channel).toBe("reporte");
+    expect(k.kind).toBe("reporte");
+    expect(k.subject).toBe(ana.subject);
+    expect(k.body).toEqual(ana.body);
+    expect(k.context.data.title).toBe(ana.data!.title);
+    expect(k.context.data.rows).toEqual(ana.data!.rows);
+    expect(k.context.data.note).toBe(ana.data!.note);
+    expect(k.decide.ask).toBe(ana.ask);
+    expect(k.options.map((o) => o.id)).toEqual(ana.options.map((o) => o.id));
     for (const o of k.options) {
-      const g = sn.options.find((x) => x.id === o.id)!;
+      const g = ana.options.find((x) => x.id === o.id)!;
       expect(o.text).toBe(g.text);
       expect(o.reply).toEqual(g.reply);
       expect(o.outcome).toBe(g.outcome);
-      // efectos del nivel inicial (sin escalar), con las etiquetas de la empresa y en el mismo orden
       expect(o.effects).toEqual(Object.entries(g.effects).map(([kk, v]) => [cumbre.kpiLabel[kk as keyof typeof cumbre.kpiLabel], v]));
     }
-    expect(k.learn.title).toBe(sn.bitacora.title);
-    expect(k.learn.text).toBe(sn.bitacora.text);
-    expect(k.learn.nota).toBe(sn.bitacora.nota);
-    const lesson = lessonById(sn.lesson!)!;
+    expect(k.learn.title).toBe(ana.bitacora.title);
+    expect(k.learn.text).toBe(ana.bitacora.text);
+    expect(k.learn.nota).toBe(ana.bitacora.nota);
+    const lesson = lessonById(ana.lesson!)!;
     expect(k.learn.lesson).toBe(`${lesson.title} · ${lesson.minutes} min`);
-    const sofia = cumbre.cast.sofia;
-    expect(k.from).toMatchObject({ name: sofia.name, initials: sofia.initials, role: sofia.role, tone: avatarHex(cumbre, "sofia") });
+    const p = cumbre.cast.ana;
+    expect(k.from).toMatchObject({ name: p.name, initials: p.initials, role: p.role, tone: avatarHex(cumbre, "ana") });
     expect(k.to).toContain(`direccion@${cumbre.domain}`);
+  });
+
+  it("el caso de la landing es corto: menos texto que el anterior (SuperNorte) para que quepa sin verse enorme", () => {
+    const len = (x: { body: string[]; options: { text: string }[] }) => x.body.join(" ").length + x.options.reduce((a, o) => a + o.text.length, 0);
+    expect(C.CASE.body.join(" ").length).toBeLessThanOrEqual(320);
+    expect(len(C.CASE)).toBeLessThan(len(sn as never) * 0.75);
   });
 
   it("el caso avanza como en la app: mismos pasos, mismos botones y mismas reglas de navegación", () => {
@@ -205,9 +212,10 @@ describe("landing de MÊTIS CEO · bloques", () => {
   it("el tono evita frases genéricas y exceso de admiraciones (en los dos idiomas)", () => {
     for (const b of C.BANNED) expect(allCopy()).not.toContain(b);
     for (const b of BANNED_EN) expect(enCopy(), b).not.toMatch(new RegExp(`\\b${b}`));
-    // las únicas admiraciones son las que pidió Oziel en «Cómo funciona» y en el bloque oscuro (título)
+    // las únicas admiraciones son las que pidió Oziel en «Cómo funciona» y en el bloque oscuro (título),
+    // más las del caso, que es copia fiel de lo que dicen los personajes en el juego
     const bang = (x: string) => (x.match(/!/g) ?? []).length;
-    expect(bang(allCopy() + enCopy()) - bang(JSON.stringify(C.HOW) + JSON.stringify(EN.HOW)) - bang(C.PHILOSOPHY.title + EN.PHILOSOPHY.title)).toBe(0);
+    expect(bang(allCopy() + enCopy()) - bang(JSON.stringify(C.HOW) + JSON.stringify(EN.HOW)) - bang(C.PHILOSOPHY.title + EN.PHILOSOPHY.title) - bang(JSON.stringify(C.CASE.options) + JSON.stringify(EN.CASE.options))).toBe(0);
     expect(bang(C.PHILOSOPHY.title + EN.PHILOSOPHY.title)).toBe(2);
     expect(bang(C.HOW.title + C.HOW.body)).toBe(1);
     expect(bang(EN.HOW.title + EN.HOW.body)).toBe(1);
@@ -240,7 +248,9 @@ describe("landing de MÊTIS CEO · inglés", () => {
     expect(EN.FAQ.some((f) => /Spanish/.test(f.a))).toBe(true);
     expect(EN.FAQ.length).toBe(C.FAQ.length + 1);
     expect(EN.CASE.options.map((o) => o.effects.map(([, v]) => v))).toEqual(C.CASE.options.map((o) => o.effects.map(([, v]) => v)));
-    expect(EN.CASE.context.data.rows.map(([, v]) => v.replace(/\s/g, "")).join()).toMatch(/\$127M.*7\.1%.*3\.1%.*\$5\.1M.*\$10M.*1\.4×/);
+    expect(EN.CASE.context.data.rows.map(([, v]) => v)).toEqual(expect.arrayContaining(["22"]));
+    expect(EN.CASE.context.data.rows[3][1]).toMatch(/28%.*6%/);
+    expect(EN.CASE.options.map((o) => o.effects.map(([k]) => k))).toEqual([["Board", "Team"], ["Team", "Board"], ["Board", "Team"]]);
     expect(EN.DIFF.items.map((e) => [e.decide.day, e.back.day, e.back.initials, e.tone])).toEqual(C.DIFF.items.map((e) => [e.decide.day.replace("Día", "Day"), e.back.day.replace("Día", "Day"), e.back.initials, e.tone]));
   });
 
@@ -308,11 +318,12 @@ describe("landing: una empresa que recuerda y cifras coherentes", () => {
 
 });
 
-describe("landing: ancho de página", () => {
-  it("header, hero y secciones comparten el mismo ancho, un poco más amplio (max-w-7xl)", () => {
+describe("landing: ancho de página estándar", () => {
+  it("header, hero y secciones vuelven al ancho estándar (max-w-6xl) y los títulos grandes son moderados", () => {
     for (const f of ["Header.tsx", "Landing.tsx", "Sections.tsx"]) {
-      expect(read(f), f).toContain("mx-auto max-w-7xl px-5 sm:px-6 lg:px-8");
-      expect(read(f), f).not.toContain("max-w-6xl");
+      expect(read(f), f).toContain("mx-auto max-w-6xl px-5 sm:px-6");
+      expect(read(f), f).not.toContain("max-w-7xl");
     }
+    for (const f of ["Landing.tsx", "Sections.tsx"]) expect(read(f), f).not.toMatch(/sm:text-(5xl|6xl|\[5\dpx\])/);
   });
 });
