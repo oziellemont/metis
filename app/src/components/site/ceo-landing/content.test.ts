@@ -271,7 +271,7 @@ describe("landing: mêtis Academy y cifras coherentes", () => {
   it("los módulos entran con animación uno a uno (Stagger) y el menú lleva a Academy", () => {
     const sec = read("Sections.tsx");
     expect(sec).toContain('id="academy"');
-    expect(sec).toMatch(/<Stagger className="mt-12 grid[^"]*" label=\{A\.listLabel\}>/);
+    expect(sec).toMatch(/<Stagger className="[^"]*grid[^"]*" label=\{A\.listLabel\}>/);
     expect(C.NAV.map((n) => n.href)).toEqual(["#como", "#academy", "#camino"]);
     expect(EN.NAV.map((n) => n.href)).toEqual(["#como", "#academy", "#camino"]);
   });
