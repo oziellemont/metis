@@ -51,21 +51,21 @@ export function CaseDemo({ t }: { t: Copy }) {
       <div
         onTouchStart={(e) => { const p = e.touches[0]; touch.current = { x: p.clientX, y: p.clientY }; }}
         onTouchEnd={onEnd}
-        className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-[#0F1130] via-[#1A1650] to-[#2B1F8A] text-white shadow-[0_30px_80px_-30px_rgba(43,31,138,.65)] ring-1 ring-white/10 h-[600px] sm:h-[640px] flex flex-col"
+        className="relative overflow-hidden rounded-[28px] bg-white text-ink shadow-[0_30px_80px_-24px_rgba(8,6,40,.7)] ring-1 ring-white/20 h-[600px] sm:h-[640px] flex flex-col"
       >
-        <div aria-hidden className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-indigo-light/30 blur-3xl" />
-        <div aria-hidden className="pointer-events-none absolute -left-20 bottom-0 h-56 w-56 rounded-full bg-mint/15 blur-3xl" />
+        <div aria-hidden className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-indigo-soft blur-3xl" />
+        <div aria-hidden className="pointer-events-none absolute -left-20 bottom-0 h-56 w-56 rounded-full bg-mint-soft/70 blur-3xl" />
 
         <div className="relative px-5 sm:px-6 pt-5">
           <div className="flex items-center justify-between gap-3">
-            <span className="flex items-center gap-2"><Logo variant="light" height={20} /><span className="chip bg-white text-ink text-[10px] tracking-wider">CEO</span></span>
-            <span className="text-[11px] text-white/50">{C.label}</span>
+            <span className="flex items-center gap-2"><Logo height={20} /><span className="chip bg-ink text-white text-[10px] tracking-wider">CEO</span></span>
+            <span className="text-[11px] text-slate-400">{C.label}</span>
           </div>
           <ol className="mt-5 grid grid-cols-5 gap-2" aria-label={C.stepOf.replace("{n}", String(step + 1)).replace("{t}", String(C.steps.length))}>
             {C.steps.map((s, i) => (
               <li key={s} className="min-w-0" aria-current={i === step ? "step" : undefined}>
-                <span className={clsx("block h-1 rounded-full motion-safe:transition-colors", i === step ? "bg-mint" : i <= reach ? "bg-white/60" : "bg-white/15")} />
-                <span className={clsx("mt-1.5 block truncate text-[11px]", i === step ? "text-white font-medium" : "text-white/45")}>{s}</span>
+                <span className={clsx("block h-1 rounded-full motion-safe:transition-colors", i === step ? "bg-mint" : i <= reach ? "bg-indigo/50" : "bg-slate-200")} />
+                <span className={clsx("mt-1.5 block truncate text-[11px]", i === step ? "text-ink font-medium" : "text-slate-400")}>{s}</span>
               </li>
             ))}
           </ol>
@@ -75,7 +75,7 @@ export function CaseDemo({ t }: { t: Copy }) {
           <section key={step} className="academy-in">
             {step === 0 && (
               <>
-                <div className="text-xs font-semibold uppercase tracking-wider text-mint">{C.received}</div>
+                <div className="text-xs font-semibold uppercase tracking-wider text-indigo">{C.received}</div>
                 <article className="mt-3 card overflow-hidden text-ink">
                   <div className="px-5 pt-5 pb-4 border-b border-slate-100">
                     <div className="flex items-start gap-3">
@@ -98,9 +98,9 @@ export function CaseDemo({ t }: { t: Copy }) {
 
             {step === 1 && (
               <>
-                <div className="text-xs font-semibold uppercase tracking-wider text-mint">{C.context.eyebrow}</div>
+                <div className="text-xs font-semibold uppercase tracking-wider text-indigo">{C.context.eyebrow}</div>
                 <h3 className="mt-2 text-2xl font-semibold leading-tight">{C.context.title}</h3>
-                <p className="mt-2 text-white/70 text-[14px] leading-relaxed">{C.context.text}</p>
+                <p className="mt-2 text-slate-600 text-[14px] leading-relaxed">{C.context.text}</p>
                 <div className="mt-5 card p-5 text-ink">
                   <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">{C.context.data.title}</div>
                   <dl className="mt-3 divide-y divide-slate-100">
@@ -113,20 +113,20 @@ export function CaseDemo({ t }: { t: Copy }) {
 
             {step === 2 && (
               <>
-                <div className="text-xs font-semibold uppercase tracking-wider text-mint">{C.decide.eyebrow}</div>
+                <div className="text-xs font-semibold uppercase tracking-wider text-indigo">{C.decide.eyebrow}</div>
                 <h3 className="mt-2 text-2xl font-semibold leading-tight">{C.decide.ask}</h3>
                 <div className="mt-5 space-y-2.5">
                   {C.options.map((x, i) => {
                     const on = picked === x.id;
                     return (
-                      <button key={x.id} type="button" onClick={() => setPicked(x.id)} aria-pressed={on} className={clsx("w-full text-left rounded-2xl border px-4 py-3 flex items-start gap-3 text-[14px] leading-relaxed motion-safe:transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint", on ? "bg-white text-ink border-white shadow-[0_0_0_4px_rgba(109,93,246,.35)]" : "bg-white/[.06] border-white/[.12] text-white hover:bg-white/10")}>
-                        <span aria-hidden className={clsx("h-7 w-7 rounded-full grid place-items-center text-xs font-bold shrink-0", on ? "bg-indigo text-white" : "bg-white/10 text-white/70")}>{LETTER(i)}</span>
+                      <button key={x.id} type="button" onClick={() => setPicked(x.id)} aria-pressed={on} className={clsx("w-full text-left rounded-2xl border px-4 py-3 flex items-start gap-3 text-[14px] leading-relaxed motion-safe:transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo", on ? "bg-indigo-soft text-ink border-indigo shadow-[0_0_0_4px_rgba(109,93,246,.18)]" : "bg-white border-slate-200 text-ink hover:border-indigo/40 hover:bg-indigo-soft/40")}>
+                        <span aria-hidden className={clsx("h-7 w-7 rounded-full grid place-items-center text-xs font-bold shrink-0", on ? "bg-indigo text-white" : "bg-slate-100 text-slate-500")}>{LETTER(i)}</span>
                         <span className="min-w-0 flex-1"><span className="sr-only">{LETTER(i)}. </span>{x.text}</span>
                       </button>
                     );
                   })}
                 </div>
-                <button type="button" disabled={!picked} onClick={confirm} className="btn bg-white text-ink hover:bg-white/90 w-full justify-center mt-5 py-3 text-[15px] font-semibold disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint">{C.decide.cta} <ArrowRight size={16} aria-hidden /></button>
+                <button type="button" disabled={!picked} onClick={confirm} className="btn bg-indigo text-white hover:bg-indigo-light w-full justify-center mt-5 py-3 text-[15px] font-semibold disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo">{C.decide.cta} <ArrowRight size={16} aria-hidden /></button>
               </>
             )}
 
@@ -166,18 +166,18 @@ export function CaseDemo({ t }: { t: Copy }) {
                     <span className="flex-1 text-[13.5px]"><b>{C.learn.lessonLabel}</b> {C.learn.lesson}</span>
                   </div>
                 </div>
-                <p className="text-[11.5px] leading-relaxed text-white/50">{C.note}</p>
+                <p className="text-[11.5px] leading-relaxed text-slate-400">{C.note}</p>
               </div>
             )}
           </section>
         </div>
 
         {(back || fwd || step === 4) && (
-          <div className="relative border-t border-white/10 bg-[#1b1752]/95 px-5 sm:px-6 py-3.5 flex items-center gap-3">
-            {back && <button type="button" onClick={back} className="inline-flex items-center gap-1.5 rounded text-sm text-white/65 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-mint"><ArrowLeft size={14} aria-hidden /> {C.nav.back}</button>}
+          <div className="relative border-t border-slate-100 bg-white/95 px-5 sm:px-6 py-3.5 flex items-center gap-3">
+            {back && <button type="button" onClick={back} className="inline-flex items-center gap-1.5 rounded text-sm text-slate-500 hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo"><ArrowLeft size={14} aria-hidden /> {C.nav.back}</button>}
             <span className="flex-1" />
-            {step === 4 && <button type="button" onClick={again} className="btn bg-white text-ink hover:bg-white/90 px-4 py-2 font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint"><RotateCcw size={14} aria-hidden /> {C.nav.again}</button>}
-            {fwd && <button type="button" onClick={fwd} className="btn bg-white text-ink hover:bg-white/90 px-4 py-2 font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint">{C.nav.next[step]} <ArrowRight size={15} aria-hidden /></button>}
+            {step === 4 && <button type="button" onClick={again} className="btn bg-indigo text-white hover:bg-indigo-light px-4 py-2 font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo"><RotateCcw size={14} aria-hidden /> {C.nav.again}</button>}
+            {fwd && <button type="button" onClick={fwd} className="btn bg-indigo text-white hover:bg-indigo-light px-4 py-2 font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo">{C.nav.next[step]} <ArrowRight size={15} aria-hidden /></button>}
           </div>
         )}
       </div>
