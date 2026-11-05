@@ -93,6 +93,9 @@ export const CASE_TAGS: Readonly<Record<string, CaseTag>> = Object.freeze({
   "fn-c-inv-lineas": f(EST, { note: FORJA_NOTE }),
   "fn-c-inv-faltante": f(EST, { note: FORJA_NOTE }),
   "fn-c-inv-factoraje": f(EST, { note: FORJA_NOTE }),
+  // Cadena profunda v8: mismo alcance que su detonador.
+  "fn-c8-greg": f(EST, { note: FORJA_NOTE }),
+  "fn-c8-consejo": f(EST, { note: FORJA_NOTE }),
   // ── Brasa · restaurantes (familia hospitalidad)
   "gb-d1-carta": p(EST, { note: BRASA_NOTE }),
   "gb-d1-app": f(EST, { note: BRASA_NOTE }),

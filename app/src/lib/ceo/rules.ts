@@ -45,6 +45,8 @@ export interface RuleSet {
    *  - required: el reto final no se abre hasta cerrar los casos ejecutivos que ya llegaron.
    */
   episodes?: { xpDecision: number; xpClose: number; required: boolean };
+  /** Rúbrica (desde v8): una opción de score 2 defendible se evalúa como criterio sólido con costo reconocido. */
+  judgment?: { defensibleScore2: boolean };
   /**
    * Tipo de carrera (desde v4). Sin dato = «temporadas»: al aprobar, `advance()` te lleva a otra empresa.
    * «continua»: una sola empresa persistente; cerrar un periodo nunca cambia de empresa ni sube la exigencia.
@@ -193,6 +195,20 @@ const V6: RuleSet = Object.freeze({
  */
 const V7: RuleSet = Object.freeze({ ...V6, version: 7 }) as RuleSet;
 
+/**
+ * Versión 8 · coherencia y aprendizaje (ciclo 3). Mismos umbrales que v6/v7 (no se movió ninguno). Cambia:
+ *  - Causalidad: un beneficio que depende de que la contraparte acepte o de cobrar llega cuando responde, no al
+ *    decidir (`Option.pending`, revisiones `since: 8` de los asuntos).
+ *  - Rúbrica: una opción con score 2 que es defendible (no cruza línea roja, ninguna otra la domina y su balance
+ *    esperado queda dentro de la banda editorial de la mejor) se evalúa como criterio sólido con costo reconocido.
+ *    Así MÊTIS no enseña que hay una sola respuesta que adivinar.
+ *  - Omisión: en asuntos éticos donde dejar vencer equivale a la conducta de la línea roja, vencer también cuenta.
+ *  - Dosificador: avisar y reponer todo, o avisar y medir antes de reponer, son ambas respuestas sólidas.
+ *  - Cadena profunda de Forja (inventario → faltante → cliente → consejo).
+ * Los periodos v4–v7 conservan su calificación: nada se recalifica.
+ */
+const V8: RuleSet = Object.freeze({ ...V7, version: 8, judgment: Object.freeze({ defensibleScore2: true }) }) as RuleSet;
+
 /** Reglas de todas las partidas guardadas antes de que existiera `rulesVersion`. */
 export const LEGACY_RULES_VERSION = 1;
 /** Versión con la que empiezan las temporadas nuevas. */
@@ -207,7 +223,9 @@ export const CONTINUOUS_RULES_VERSION = 7;
 export const LEGACY_CONTINUOUS_RULES_VERSION = 4;
 
 /** Todas las versiones publicadas. Las pruebas pueden registrar una versión simulada. */
-export const RULESETS: Record<number, RuleSet> = { 1: V1, 2: V2, 3: V3, 4: V4, 5: V5, 6: V6, 7: V7 };
+export const RULESETS: Record<number, RuleSet> = { 1: V1, 2: V2, 3: V3, 4: V4, 5: V5, 6: V6, 7: V7, 8: V8 };
+/** Versión de la ronda de coherencia (definida y probada; la carrera continua sigue en v7 hasta activarla aparte). */
+export const COHERENCE_RULES_VERSION = 8;
 
 export const isRulesVersion = (v: unknown): v is number => typeof v === "number" && Number.isInteger(v) && v >= 1;
 /** ¿Este código conoce esa versión? (una partida guardada por una versión más nueva de la app no lo sería). */

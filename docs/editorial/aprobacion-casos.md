@@ -736,6 +736,36 @@ Respuesta: `fn-c-inv-faltante | ... | ...`
 
 Respuesta: `fn-c-inv-factoraje | ... | ...`
 
+### fn-c8-greg · Día 5 · consecuencia · Aurora Motors · Incidente de suministro y scorecard
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Estimado Director: Gracias por avisarnos a tiempo del riesgo con la pieza crítica. Nuestra línea no paró. Aun así, el incidente entra a la revisión mensual del scorecard. Necesito su análisis de causa raíz y qué cambia para que no se repita, antes del viernes. Greg Holloway Purchasing Manager · Aurora Motors México
+
+**Pregunta:** Aurora pide tu causa raíz. ¿Qué le respondes?
+
+- **A** (score 3, balance 0): Presentar la causa raíz: congelamos compras sin separar piezas críticas. Plan de acción y 5 días de seguridad en esas piezas, a nuestro costo. → Caja -2, Equipo +1, Clientes +2, Consejo -1.
+- **B** (score 1, balance -1): Ofrecer a Aurora 1 % de descuento en el trimestre a cambio de que este incidente no baje nuestra calificación en su scorecard. → Margen -2, Consejo +1.
+- **C** (score 2, balance 0): Explicar que el detonante fue el cambio de programa de Aurora, pedirles cinco días de aviso y revisar qué piezas son críticas sin subir inventario. → Caja +1, Clientes -2, Consejo +1.
+- **Sin respuesta** (balance -4): Clientes -3, Consejo -1.
+
+Respuesta: `fn-c8-greg | ... | ...`
+
+### fn-c8-consejo · Día 6 · consecuencia · Antes del consejo: la caja del inventario
+
+**Propuesta automática:** aprobado. Pasa las pruebas automáticas: hay al menos dos estrategias defendibles y el score no decide el resultado. Falta la firma humana.
+
+**Caso:** Director: Para la sesión del consejo quiero tu reporte de la decisión de inventario: cuánta caja liberamos, qué costó y qué cambia. Marcos me adelantó que hubo un incidente con Aurora; prefiero oírlo de ti. Una página. La leemos antes de la sesión. Alberto Zertuche
+
+**Pregunta:** ¿Qué le reportas al consejo?
+
+- **A** (score 3, balance +1): Reporte completo: caja liberada, costo del incidente con Aurora, su causa y la regla nueva para piezas críticas. → Caja -1, Equipo +1, Consejo +1.
+- **B** (score 1, balance +2): Reportar la caja liberada y mencionar el incidente con Aurora como resuelto, sin cifras: el consejo quiere ver la caja. → Equipo -1, Consejo +3.
+- **C** (score 2, balance -1): Proponer revertir en parte: volver a 35 días solo en piezas críticas, devolver $9 M de la caja liberada y explicar por qué. → Caja -2, Equipo +1, Clientes +1, Consejo -1.
+- **Sin respuesta** (balance -3): Consejo -3.
+
+Respuesta: `fn-c8-consejo | ... | ...`
+
 ## Grupo Brasa
 
 ### gb-d1-carta · Día 1 · Te dejo las llaves de Brasa

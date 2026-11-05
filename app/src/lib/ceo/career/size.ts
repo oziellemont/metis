@@ -69,7 +69,7 @@ export const SIZE_TEXT: Readonly<Record<string, Partial<Record<CompanyArchetype,
 });
 
 /** Llaves que nunca se escalan: ids y el caso real de otra empresa (sus cifras son de esa empresa). */
-const SKIP = new Set(["id", "from", "who", "item", "trigger", "lesson", "real", "areas", "effects", "style", "stance", "score"]);
+const SKIP = new Set(["id", "from", "who", "item", "trigger", "after", "when", "lesson", "real", "areas", "effects", "style", "stance", "score"]);
 function deep<T>(x: T, f: (s: string) => string): T {
   if (typeof x === "string") return f(x) as T;
   if (Array.isArray(x)) return x.map((y) => deep(y, f)) as T;
