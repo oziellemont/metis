@@ -40,6 +40,7 @@ export const SEO = {
 /* ---------------- Navegación ---------------- */
 export const NAV: { href: string; label: string }[] = [
   { href: "#como", label: "Cómo funciona" },
+  { href: "#academy", label: "Academy" },
   { href: "#camino", label: "Tu carrera" },
 ];
 export const LOGIN_HREF = "/entrar";
@@ -175,57 +176,34 @@ export const HOW = {
   },
 };
 
-/* ---------------- La experiencia: una empresa que recuerda (casos reales de Botanas Cumbre) ---------------- */
-/** Una decisión de un día y lo que regresa días después. Todo sale de Botanas Cumbre (lib/ceo/companies/cumbre-items.ts). */
-export interface Echo {
-  t: string;
-  context: string;
-  decide: { day: string; text: string };
-  back: { day: string; who: string; initials: string; text: string };
-  tone: "riesgo" | "bien";
-}
-/** Cada cuánto avanza el carrusel de historias (se detiene con foco, mouse, interacción o movimiento reducido). */
-/** El carrusel de historias cambia cada 4 s. */
-export const MEMORY_INTERVAL_MS = 4000;
 /** Las tres pantallas de «Practica con casos que evolucionan» cambian cada 7 s. */
 export const HOW_INTERVAL_MS = 7000;
-export const DIFF = {
-  eyebrow: "Una empresa que recuerda",
-  title: "Tus decisiones siguen teniendo consecuencias.",
-  body: "Las personas recuerdan cómo las trataste y algunos problemas de hoy se sembraron días antes. Lo que regresa depende de lo que decidas.",
-  decideLabel: "Decides",
-  backLabel: "Regresa",
-  carousel: { region: "Historias de Botanas Cumbre", role: "carrusel", item: "historia", of: "de", prev: "Historia anterior", next: "Historia siguiente", pick: "Elegir historia", story: "Historia" },
-  items: [
-    {
-      t: "Alguien recuerda lo que hiciste",
-      context: "Héctor, Director Comercial con 22 años en la empresa, esperaba tu puesto. El primer día te escribe preocupado por las comisiones de su equipo.",
-      decide: { day: "Día 1", text: "No le contestas y le pides a Personas que lo atienda." },
-      back: { day: "Día 3", who: "Mariana · Personas", initials: "MV", text: "Héctor presentó su renuncia. En la salida me dijo: «El nuevo ni me contestó»." },
-      tone: "riesgo",
-    },
-    {
-      t: "Un colaborador deja de confiar en ti",
-      context: "Ana, analista de planeación, se desveló para entregarte un pronóstico de 22 láminas. La idea clave está enterrada en la lámina 19.",
-      decide: { day: "Día 2", text: "Le respondes: «Esto no sirve para un consejo. Para mañana»." },
-      back: { day: "Día 6", who: "Mariana · Personas", initials: "MV", text: "Ana aceptó otra oferta. Dijo: «Nunca supe si mi trabajo servía. Allá me ofrecen un mentor»." },
-      tone: "riesgo",
-    },
-    {
-      t: "Una crisis que empezó antes",
-      context: "Javier, gerente de planta, te avisa que el tostador de la línea 2 falla y que casi lastima a un operador.",
-      decide: { day: "Día 3", text: "Decides seguir operando hasta el lunes para no retrasar un pedido." },
-      back: { day: "Día 5", who: "Javier · Planta", initials: "JO", text: "Jefe, pasó lo que temíamos en la línea 2. Toño está en el Seguro y mañana viene un inspector." },
-      tone: "riesgo",
-    },
-    {
-      t: "Y la empresa crece contigo",
-      context: "Con la misma Ana, otra decisión cambia la historia.",
-      decide: { day: "Día 2", text: "Te sientas 20 minutos con ella y le enseñas a empezar por la recomendación." },
-      back: { day: "Día 5", who: "Carla · Consejo", initials: "CM", text: "Después de su presentación: «¿Quién es Ana? Esa muchacha tiene futuro»." },
-      tone: "bien",
-    },
-  ] as Echo[],
+
+/* ---------------- mêtis Academy: los módulos (copia de TRACKS en lib/ceo/lessons.ts; las pruebas lo revisan) ---------------- */
+export type AcademyIcon = "compass" | "users" | "flag" | "message" | "handshake" | "coins" | "flame" | "rocket" | "target" | "layers";
+export const ACADEMY = {
+  eyebrow: "mêtis Academy",
+  title: "Aprende la teoría detrás de cada decisión.",
+  body: "Cada caso te deja un aprendizaje y lo refuerzas con lecciones cortas e interactivas: 13 módulos y 25 lecciones de 4 a 5 minutos. Los casos y marcos se inspiran en programas MBA, escuelas de negocio y libros de dirección.",
+  listLabel: "Módulos de mêtis Academy",
+  link: { t: "De cada caso a su lección", d: "Al terminar un caso, la bitácora te dice qué aprendiste y te lleva a la lección que explica por qué pasó lo que pasó." },
+  lesson: "lección",
+  lessons: "lecciones",
+  modules: [
+    { id: "mentalidad", title: "Mentalidad del CEO", icon: "flag", blurb: "Cómo piensa quien carga la responsabilidad.", n: 2 },
+    { id: "personas", title: "Liderar personas", icon: "users", blurb: "Cada persona necesita algo distinto de ti.", n: 3 },
+    { id: "conversaciones", title: "Conversaciones", icon: "message", blurb: "Decir lo difícil para que se escuche.", n: 2 },
+    { id: "equipos", title: "Equipos", icon: "layers", blurb: "Confianza, conflicto útil y compromiso.", n: 2 },
+    { id: "alineacion", title: "Alineación", icon: "compass", blurb: "De la estrategia a lo que cada quien hace el lunes.", n: 2 },
+    { id: "negociacion", title: "Negociación", icon: "handshake", blurb: "Intereses, alternativas y relaciones que duran.", n: 2 },
+    { id: "comunicacion", title: "Comunicación", icon: "message", blurb: "Empezar por el final y dar malas noticias.", n: 2 },
+    { id: "cultura", title: "Cultura y ética", icon: "flame", blurb: "Lo que toleras es tu verdadero código.", n: 2 },
+    { id: "finanzas", title: "Finanzas", icon: "coins", blurb: "Asignar capital y no quedarte sin caja.", n: 2 },
+    { id: "innovacion", title: "Innovación", icon: "rocket", blurb: "Apostar barato, aprender rápido, cerrar a tiempo.", n: 2 },
+    { id: "estrategia", title: "Estrategia", icon: "target", blurb: "Elegir, y tener el carácter de decir que no.", n: 2 },
+    { id: "crisis", title: "Crisis", icon: "flame", blurb: "Personas primero, hechos después, una sola voz.", n: 1 },
+    { id: "consejo", title: "Gobierno y consejo", icon: "compass", blurb: "Sin sorpresas, con opciones.", n: 1 },
+  ] as { id: string; title: string; icon: AcademyIcon; blurb: string; n: number }[],
 };
 
 /* ---------------- Camino profesional (ruta visual) ---------------- */
@@ -244,14 +222,6 @@ export const PATH = {
     { n: "05", name: "Escalar", learn: "Varias áreas, regiones o alianzas", state: "capitulo" },
     { n: "06", name: "Gobernar la complejidad", learn: "Más exposición y riesgos de mayor alcance", state: "capitulo" },
   ] as { n: string; name: string; learn: string; state: StageState }[],
-  beyond: { t: "Los capítulos son de la empresa, no rangos tuyos", d: "Una empresa puede quedarse en un capítulo, retroceder en sus números o recuperarse. El consejo te revisa cada mes y tu historia se conserva: no hay despido ni reinicio." },
-};
-
-/* ---------------- Filosofía ---------------- */
-export const PHILOSOPHY = {
-  title: "¡Tu próxima gran decisión está por llegar!",
-  body: "Un correo inesperado, un WhatsApp urgente o una llamada de tu equipo. En MÊTIS cada día trae un nuevo reto. Decide, aprende de lo que sucede y acompaña a tu empresa en cada capítulo de una simulación inmersiva que crece contigo.",
-  who: "Para quienes aspiran a dirigir, para quienes ya lideran y para quienes creen que siempre hay algo más que aprender.",
 };
 
 /* ---------------- FAQ ---------------- */
@@ -273,7 +243,7 @@ export const CLOSE = {
 export const FOOTER = { tagline: "Simulador de decisiones ejecutivas. Dirigir se aprende decidiendo.", place: "Monterrey, N.L., México" };
 
 /** Todo el copy visible de un idioma. content-en.ts exporta EN con esta misma forma. */
-export const ES = { lang: "es" as Lang, SEO, NAV, CTA, UI, HERO, CASE, HOW, DIFF, PATH, PHILOSOPHY, FAQ, CLOSE, FOOTER };
+export const ES = { lang: "es" as Lang, SEO, NAV, CTA, UI, HERO, CASE, HOW, ACADEMY, PATH, FAQ, CLOSE, FOOTER };
 export type Copy = typeof ES;
 
 /** Frases que no queremos en la landing (tono). Se revisan en las pruebas. */

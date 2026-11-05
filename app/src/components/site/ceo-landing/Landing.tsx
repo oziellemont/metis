@@ -1,14 +1,14 @@
 /**
  * Landing de MÊTIS CEO, la misma para los dos idiomas (t = ES o EN).
- * Bloques: qué es mêtis con un caso real al lado → cómo funciona (tres pantallas) → una empresa que recuerda
- * (carrusel) → tu carrera → por qué importa dirigir bien → preguntas y cierre.
+ * Bloques: qué es mêtis con un caso real al lado → cómo funciona (tres pantallas) → mêtis Academy
+ * (los 13 módulos) → tu carrera → preguntas y cierre.
  * Una sola acción principal (CTA) con el mismo destino en encabezado, primer bloque y cierre.
  * Aislada del simulador: las demos viven en memoria y no usan el motor, la partida ni la cuenta.
  */
 import { Header } from "./Header";
 import { CaseDemo } from "./CaseDemo";
 import { CeoCta } from "@/components/site/CeoCta";
-import { CloseSection, FaqSection, MemorySection, Footer, HowSection, PathSection, PhilosophySection } from "./Sections";
+import { AcademySection, CloseSection, FaqSection, Footer, HowSection, PathSection } from "./Sections";
 import type { Copy } from "./content";
 
 export function Landing({ t }: { t: Copy }) {
@@ -33,9 +33,8 @@ export function Landing({ t }: { t: Copy }) {
           </section>
         </div>
         <HowSection t={t} />
-        <MemorySection t={t} />
+        <AcademySection t={t} />
         <PathSection t={t} />
-        <PhilosophySection t={t} />
         <FaqSection t={t} />
         <CloseSection t={t} />
       </main>
