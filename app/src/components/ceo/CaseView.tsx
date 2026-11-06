@@ -4,17 +4,18 @@ import { useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
 import { ArrowLeft, ArrowRight, BookOpen, CheckCheck, PenLine, ListChecks, Clock, Globe2, Lightbulb, Lock, PhoneMissed, Play, Quote, XCircle } from "lucide-react";
 import { firstName, personOf, personalizeText } from "@/lib/ceo/cast";
-import { effectOf, entryXp, LEVELS, nextLessonXp, rankFor, rulesVersionOf } from "@/lib/ceo/engine";
+import { entryXp, LEVELS, nextLessonXp, rankFor, rulesVersionOf } from "@/lib/ceo/engine";
 import { isOmissionRedLine } from "@/lib/ceo/editorial";
 import { runSpans } from "@/lib/ceo/pausetime";
 import { entryRipples, moodOf, REL_START } from "@/lib/ceo/relations";
 import { lessonById, rankOf } from "@/lib/ceo/lessons";
-import type { Entry, Item, KpiKey, Option, Written } from "@/lib/ceo/types";
+import type { Entry, Item, Option, Written } from "@/lib/ceo/types";
 import { MAX_CHARS, MIN_CHARS, textProblem, writtenEligible } from "@/lib/ceo/written";
 import { displayOptions } from "@/lib/ceo/option-order";
 import { decisionLesson } from "@/lib/ceo/learning";
 import { continuityOf } from "@/lib/ceo/continuity";
 import { useCeo } from "./CeoProvider";
+import { ResultBars } from "./KpiBoard";
 import { competenciesOfItem } from "@/lib/ceo/mastery";
 import { competencyNames, helpBand } from "@/lib/ceo/profile";
 import { Avatar, ChannelChip, clock, until } from "./ui";
@@ -320,7 +321,6 @@ function Outcome({ e, fresh, part }: { e: Entry; fresh: boolean; part: "resultad
   const expired = e.status === "vencido";
   const o = e.option as Option | undefined;
   const reply = expired ? it.expired.reply : o?.reply ?? [];
-  const effects = effectOf(c.s, e);
   const outcome = expired ? it.expired.outcome : o?.outcome;
   const lesson = it.lesson ? lessonById(it.lesson) : undefined;
   const conceptLesson = useMemo(() => decisionLesson(c.s, e, c.pack, c.now)?.learned.lesson ?? null, [c.s, e, c.pack, c.now]);
@@ -360,13 +360,7 @@ function Outcome({ e, fresh, part }: { e: Entry; fresh: boolean; part: "resultad
           {xp > 0 && <span className={clsx("chip bg-indigo text-white gap-1", fresh && "ceo-pop")}>+{xp} XP</span>}
         </div>
         <p className="mt-2 text-[15px] text-ink leading-relaxed">{outcome}</p>
-        <div className="mt-4 flex flex-wrap gap-2">
-          {(Object.keys(effects) as KpiKey[]).filter((k) => effects[k]).map((k, i) => (
-            <span key={k} className={clsx("chip px-3 py-1 text-sm gap-1.5", (effects[k] ?? 0) > 0 ? "bg-indigo-soft text-indigo" : "bg-coral-soft text-coral", fresh && "tree-pop")} style={fresh ? { animationDelay: `${200 + i * 120}ms` } : undefined}>
-              {c.pack.kpiLabel[k]} <b className="tabular-nums">{(effects[k] ?? 0) > 0 ? "+" : ""}{effects[k]}</b>
-            </span>
-          ))}
-        </div>
+        <ResultBars itemId={it.id} fresh={fresh} />
         {o && <ProfileHint o={o} />}
       </div>
 

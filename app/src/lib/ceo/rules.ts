@@ -209,6 +209,26 @@ const V7: RuleSet = Object.freeze({ ...V6, version: 7 }) as RuleSet;
  */
 const V8: RuleSet = Object.freeze({ ...V7, version: 8, judgment: Object.freeze({ defensibleScore2: true }) }) as RuleSet;
 
+/**
+ * Versión 9 · auditoría de indicadores (fase A). DEFINIDA PERO NO ACTIVA: ninguna partida la usa hasta que el fundador
+ * apruebe la simulación (docs/editorial/simulacion-v9.md) y se suba CONTINUOUS_RULES_VERSION. Mismos umbrales,
+ * rúbrica y líneas rojas que v8. Cambian dos cosas que hoy mueven las barras sin una causa que el jugador pueda ver:
+ *  - Sin multiplicador de exigencia: un mismo efecto vale lo mismo en cualquier etapa (antes, +8 % por etapa en los
+ *    golpes y −3 % en las buenas noticias). La dificultad debe venir del escenario, no de inflar los números.
+ *  - Sin caja fabricada desde el margen: el índice de margen ya no se convierte en puntos de caja al cierre, ni hay
+ *    caja «base» de la operación. La caja solo se mueve por hechos (cobros, pagos, decisiones).
+ * Los periodos v4–v8 conservan su calificación: nada se recalifica.
+ */
+const V9: RuleSet = Object.freeze({
+  ...V8,
+  version: 9,
+  tier: Object.freeze({ ...V8.tier, hitPerTier: 0, gainPerTier: 0 }),
+  v5: Object.freeze({ ...V8.v5!, cashFlow: Object.freeze({ perPoints: 2, min: 0, max: 0, base: 0 }) }),
+}) as RuleSet;
+
+/** Versión propuesta por la auditoría de indicadores. No activa: ver V9. */
+export const PROPOSED_RULES_VERSION = 9;
+
 /** Reglas de todas las partidas guardadas antes de que existiera `rulesVersion`. */
 export const LEGACY_RULES_VERSION = 1;
 /** Versión con la que empiezan las temporadas nuevas. */
@@ -223,7 +243,7 @@ export const CONTINUOUS_RULES_VERSION = 8;
 export const LEGACY_CONTINUOUS_RULES_VERSION = 4;
 
 /** Todas las versiones publicadas. Las pruebas pueden registrar una versión simulada. */
-export const RULESETS: Record<number, RuleSet> = { 1: V1, 2: V2, 3: V3, 4: V4, 5: V5, 6: V6, 7: V7, 8: V8 };
+export const RULESETS: Record<number, RuleSet> = { 1: V1, 2: V2, 3: V3, 4: V4, 5: V5, 6: V6, 7: V7, 8: V8, 9: V9 };
 /** Versión de la ronda de coherencia (activa desde nov-2026: es la versión continua vigente). */
 export const COHERENCE_RULES_VERSION = 8;
 

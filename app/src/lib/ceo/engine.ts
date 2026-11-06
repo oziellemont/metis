@@ -551,6 +551,8 @@ export function kpis(s: CeoState, now = nowOf(s)): Kpis {
 export function cashFlowOf(s: CeoState, before: Kpis): number {
   const R = ruleSet(rulesVersionOf(s)).v5;
   if (!R || !changeSimOf(s)?.done) return 0;
+  // v9: la caja no se fabrica desde el índice de margen.
+  if (R.cashFlow.min === 0 && R.cashFlow.max === 0) return 0;
   const line = rulesFor(s).passLine;
   return Math.max(R.cashFlow.min, Math.min(R.cashFlow.max, (R.cashFlow.base ?? 0) + Math.round((before.margen - line) / R.cashFlow.perPoints)));
 }

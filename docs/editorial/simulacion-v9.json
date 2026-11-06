@@ -1,0 +1,1294 @@
+{
+ "months": 3,
+ "strategies": [
+  "director_equilibrado",
+  "criterio_y_tablero",
+  "criterio_contextual",
+  "mejor_score",
+  "mejor_efecto",
+  "azar",
+  "cuida_caja",
+  "personas_primero",
+  "numeros_con_piso",
+  "criterio_con_errores",
+  "criterio_ocupado",
+  "etica_flexible",
+  "no_contesta"
+ ],
+ "out": {
+  "director_equilibrado": {
+   "cumbre": {
+    "8": {
+     "pass": 100,
+     "health": 70.7,
+     "caja": 44,
+     "minKpi": 44,
+     "flow": 9.3
+    },
+    "9": {
+     "pass": 0,
+     "health": 68.7,
+     "caja": 34.7,
+     "minKpi": 34.7,
+     "flow": 0
+    }
+   },
+   "forja": {
+    "8": {
+     "pass": 100,
+     "health": 68.7,
+     "caja": 57.3,
+     "minKpi": 57,
+     "flow": 6.7
+    },
+    "9": {
+     "pass": 66.7,
+     "health": 67.3,
+     "caja": 50.7,
+     "minKpi": 50.7,
+     "flow": 0
+    }
+   },
+   "brasa": {
+    "8": {
+     "pass": 100,
+     "health": 67,
+     "caja": 56,
+     "minKpi": 55.3,
+     "flow": 9.3
+    },
+    "9": {
+     "pass": 100,
+     "health": 65,
+     "caja": 46.7,
+     "minKpi": 46.7,
+     "flow": 0
+    }
+   },
+   "kubit": {
+    "8": {
+     "pass": 100,
+     "health": 70,
+     "caja": 62,
+     "minKpi": 61.7,
+     "flow": 8.3
+    },
+    "9": {
+     "pass": 100,
+     "health": 68.3,
+     "caja": 53.7,
+     "minKpi": 53.7,
+     "flow": 0
+    }
+   },
+   "puntomadero": {
+    "8": {
+     "pass": 100,
+     "health": 66.7,
+     "caja": 55,
+     "minKpi": 55,
+     "flow": 5.3
+    },
+    "9": {
+     "pass": 100,
+     "health": 65.7,
+     "caja": 49.7,
+     "minKpi": 49.7,
+     "flow": 0
+    }
+   },
+   "vertice": {
+    "8": {
+     "pass": 100,
+     "health": 66.7,
+     "caja": 51,
+     "minKpi": 50.3,
+     "flow": 5.3
+    },
+    "9": {
+     "pass": 100,
+     "health": 65.7,
+     "caja": 45.7,
+     "minKpi": 45.7,
+     "flow": 0
+    }
+   }
+  },
+  "criterio_y_tablero": {
+   "cumbre": {
+    "8": {
+     "pass": 100,
+     "health": 69,
+     "caja": 55,
+     "minKpi": 54,
+     "flow": 8
+    },
+    "9": {
+     "pass": 100,
+     "health": 67.3,
+     "caja": 47,
+     "minKpi": 47,
+     "flow": 0
+    }
+   },
+   "forja": {
+    "8": {
+     "pass": 66.7,
+     "health": 69.7,
+     "caja": 54.3,
+     "minKpi": 54.3,
+     "flow": 6.7
+    },
+    "9": {
+     "pass": 33.3,
+     "health": 68.3,
+     "caja": 47.7,
+     "minKpi": 47.7,
+     "flow": 0
+    }
+   },
+   "brasa": {
+    "8": {
+     "pass": 100,
+     "health": 66.3,
+     "caja": 62.3,
+     "minKpi": 61.3,
+     "flow": 9.3
+    },
+    "9": {
+     "pass": 100,
+     "health": 64.7,
+     "caja": 53,
+     "minKpi": 53,
+     "flow": 0
+    }
+   },
+   "kubit": {
+    "8": {
+     "pass": 100,
+     "health": 70,
+     "caja": 63,
+     "minKpi": 59,
+     "flow": 7.7
+    },
+    "9": {
+     "pass": 100,
+     "health": 68.3,
+     "caja": 55.3,
+     "minKpi": 55.3,
+     "flow": 0
+    }
+   },
+   "puntomadero": {
+    "8": {
+     "pass": 100,
+     "health": 66.7,
+     "caja": 58.3,
+     "minKpi": 55,
+     "flow": 4.7
+    },
+    "9": {
+     "pass": 100,
+     "health": 65.7,
+     "caja": 53.7,
+     "minKpi": 53,
+     "flow": 0
+    }
+   },
+   "vertice": {
+    "8": {
+     "pass": 100,
+     "health": 66.3,
+     "caja": 60.7,
+     "minKpi": 56.3,
+     "flow": 6
+    },
+    "9": {
+     "pass": 100,
+     "health": 65,
+     "caja": 54.7,
+     "minKpi": 54.7,
+     "flow": 0
+    }
+   }
+  },
+  "criterio_contextual": {
+   "cumbre": {
+    "8": {
+     "pass": 66.7,
+     "health": 71.7,
+     "caja": 41.7,
+     "minKpi": 41.7,
+     "flow": 9.7
+    },
+    "9": {
+     "pass": 0,
+     "health": 70,
+     "caja": 32,
+     "minKpi": 32,
+     "flow": 0
+    }
+   },
+   "forja": {
+    "8": {
+     "pass": 66.7,
+     "health": 68.3,
+     "caja": 51.3,
+     "minKpi": 51.3,
+     "flow": 4.3
+    },
+    "9": {
+     "pass": 33.3,
+     "health": 67.7,
+     "caja": 47,
+     "minKpi": 47,
+     "flow": 0
+    }
+   },
+   "brasa": {
+    "8": {
+     "pass": 100,
+     "health": 68.3,
+     "caja": 52.3,
+     "minKpi": 52.3,
+     "flow": 10
+    },
+    "9": {
+     "pass": 100,
+     "health": 66.3,
+     "caja": 42.3,
+     "minKpi": 42.3,
+     "flow": 0
+    }
+   },
+   "kubit": {
+    "8": {
+     "pass": 100,
+     "health": 69.7,
+     "caja": 55.3,
+     "minKpi": 54.3,
+     "flow": 6
+    },
+    "9": {
+     "pass": 33.3,
+     "health": 68.7,
+     "caja": 49.3,
+     "minKpi": 49.3,
+     "flow": 0
+    }
+   },
+   "puntomadero": {
+    "8": {
+     "pass": 100,
+     "health": 67.3,
+     "caja": 53,
+     "minKpi": 51.7,
+     "flow": 4.3
+    },
+    "9": {
+     "pass": 100,
+     "health": 66.3,
+     "caja": 48.7,
+     "minKpi": 48.7,
+     "flow": 0
+    }
+   },
+   "vertice": {
+    "8": {
+     "pass": 66.7,
+     "health": 66.7,
+     "caja": 48,
+     "minKpi": 48,
+     "flow": 4
+    },
+    "9": {
+     "pass": 66.7,
+     "health": 66,
+     "caja": 44,
+     "minKpi": 44,
+     "flow": 0
+    }
+   }
+  },
+  "mejor_score": {
+   "cumbre": {
+    "8": {
+     "pass": 33.3,
+     "health": 70.7,
+     "caja": 38.3,
+     "minKpi": 38.3,
+     "flow": 8.3
+    },
+    "9": {
+     "pass": 0,
+     "health": 68.7,
+     "caja": 30,
+     "minKpi": 30,
+     "flow": 0
+    }
+   },
+   "forja": {
+    "8": {
+     "pass": 33.3,
+     "health": 68.7,
+     "caja": 45,
+     "minKpi": 45,
+     "flow": 2.3
+    },
+    "9": {
+     "pass": 0,
+     "health": 68.3,
+     "caja": 42.7,
+     "minKpi": 42.7,
+     "flow": 0
+    }
+   },
+   "brasa": {
+    "8": {
+     "pass": 100,
+     "health": 69,
+     "caja": 46.7,
+     "minKpi": 46.7,
+     "flow": 9.3
+    },
+    "9": {
+     "pass": 33.3,
+     "health": 67,
+     "caja": 37.3,
+     "minKpi": 37.3,
+     "flow": 0
+    }
+   },
+   "kubit": {
+    "8": {
+     "pass": 66.7,
+     "health": 69.7,
+     "caja": 51,
+     "minKpi": 49.7,
+     "flow": 3.3
+    },
+    "9": {
+     "pass": 33.3,
+     "health": 69,
+     "caja": 47.7,
+     "minKpi": 47.3,
+     "flow": 0
+    }
+   },
+   "puntomadero": {
+    "8": {
+     "pass": 33.3,
+     "health": 67,
+     "caja": 46,
+     "minKpi": 44,
+     "flow": 0
+    },
+    "9": {
+     "pass": 33.3,
+     "health": 67,
+     "caja": 46,
+     "minKpi": 44,
+     "flow": 0
+    }
+   },
+   "vertice": {
+    "8": {
+     "pass": 33.3,
+     "health": 67,
+     "caja": 40.7,
+     "minKpi": 40.3,
+     "flow": 0.7
+    },
+    "9": {
+     "pass": 0,
+     "health": 67,
+     "caja": 40,
+     "minKpi": 39.7,
+     "flow": 0
+    }
+   }
+  },
+  "mejor_efecto": {
+   "cumbre": {
+    "8": {
+     "pass": 100,
+     "health": 72,
+     "caja": 47,
+     "minKpi": 47,
+     "flow": 8.7
+    },
+    "9": {
+     "pass": 33.3,
+     "health": 70.3,
+     "caja": 38.3,
+     "minKpi": 38.3,
+     "flow": 0
+    }
+   },
+   "forja": {
+    "8": {
+     "pass": 0,
+     "health": 71.3,
+     "caja": 51.3,
+     "minKpi": 51.3,
+     "flow": 6.7
+    },
+    "9": {
+     "pass": 0,
+     "health": 69.7,
+     "caja": 44.7,
+     "minKpi": 44.7,
+     "flow": 0
+    }
+   },
+   "brasa": {
+    "8": {
+     "pass": 100,
+     "health": 69.7,
+     "caja": 56,
+     "minKpi": 56,
+     "flow": 7.7
+    },
+    "9": {
+     "pass": 100,
+     "health": 68,
+     "caja": 48.3,
+     "minKpi": 48.3,
+     "flow": 0
+    }
+   },
+   "kubit": {
+    "8": {
+     "pass": 0,
+     "health": 71.3,
+     "caja": 69.3,
+     "minKpi": 60,
+     "flow": 7.3
+    },
+    "9": {
+     "pass": 0,
+     "health": 70,
+     "caja": 62,
+     "minKpi": 59.3,
+     "flow": 0
+    }
+   },
+   "puntomadero": {
+    "8": {
+     "pass": 0,
+     "health": 69,
+     "caja": 64.7,
+     "minKpi": 50.3,
+     "flow": 2.3
+    },
+    "9": {
+     "pass": 0,
+     "health": 68.3,
+     "caja": 62.3,
+     "minKpi": 50.3,
+     "flow": 0
+    }
+   },
+   "vertice": {
+    "8": {
+     "pass": 0,
+     "health": 69.3,
+     "caja": 61.3,
+     "minKpi": 55,
+     "flow": 5
+    },
+    "9": {
+     "pass": 0,
+     "health": 68,
+     "caja": 56.3,
+     "minKpi": 53.7,
+     "flow": 0
+    }
+   }
+  },
+  "azar": {
+   "cumbre": {
+    "8": {
+     "pass": 8.3,
+     "health": 58.4,
+     "caja": 50.8,
+     "minKpi": 45.3,
+     "flow": 4.4
+    },
+    "9": {
+     "pass": 8.3,
+     "health": 57.6,
+     "caja": 46.5,
+     "minKpi": 43.3,
+     "flow": 0
+    }
+   },
+   "forja": {
+    "8": {
+     "pass": 0,
+     "health": 60.3,
+     "caja": 42.6,
+     "minKpi": 40.9,
+     "flow": 2.7
+    },
+    "9": {
+     "pass": 0,
+     "health": 60.1,
+     "caja": 41,
+     "minKpi": 39.4,
+     "flow": 0
+    }
+   },
+   "brasa": {
+    "8": {
+     "pass": 25,
+     "health": 59.5,
+     "caja": 56.3,
+     "minKpi": 50.8,
+     "flow": 6.9
+    },
+    "9": {
+     "pass": 25,
+     "health": 58.2,
+     "caja": 49.4,
+     "minKpi": 47.8,
+     "flow": 0
+    }
+   },
+   "kubit": {
+    "8": {
+     "pass": 25,
+     "health": 62.9,
+     "caja": 56,
+     "minKpi": 48.3,
+     "flow": 6.5
+    },
+    "9": {
+     "pass": 16.7,
+     "health": 61.7,
+     "caja": 49.5,
+     "minKpi": 46,
+     "flow": 0
+    }
+   },
+   "puntomadero": {
+    "8": {
+     "pass": 8.3,
+     "health": 60.3,
+     "caja": 52.2,
+     "minKpi": 43.5,
+     "flow": 0.4
+    },
+    "9": {
+     "pass": 8.3,
+     "health": 60.4,
+     "caja": 51.9,
+     "minKpi": 43.1,
+     "flow": 0
+    }
+   },
+   "vertice": {
+    "8": {
+     "pass": 8.3,
+     "health": 58.9,
+     "caja": 49.2,
+     "minKpi": 44.1,
+     "flow": 2.9
+    },
+    "9": {
+     "pass": 8.3,
+     "health": 58.3,
+     "caja": 46.3,
+     "minKpi": 42.9,
+     "flow": 0
+    }
+   }
+  },
+  "cuida_caja": {
+   "cumbre": {
+    "8": {
+     "pass": 100,
+     "health": 69.3,
+     "caja": 55,
+     "minKpi": 54.3,
+     "flow": 8.3
+    },
+    "9": {
+     "pass": 100,
+     "health": 67.3,
+     "caja": 46.7,
+     "minKpi": 46.7,
+     "flow": 0
+    }
+   },
+   "forja": {
+    "8": {
+     "pass": 66.7,
+     "health": 69.7,
+     "caja": 55.7,
+     "minKpi": 55.7,
+     "flow": 7.3
+    },
+    "9": {
+     "pass": 66.7,
+     "health": 68.3,
+     "caja": 48.3,
+     "minKpi": 48.3,
+     "flow": 0
+    }
+   },
+   "brasa": {
+    "8": {
+     "pass": 100,
+     "health": 66.7,
+     "caja": 60.7,
+     "minKpi": 60,
+     "flow": 9.7
+    },
+    "9": {
+     "pass": 100,
+     "health": 64.7,
+     "caja": 51,
+     "minKpi": 51,
+     "flow": 0
+    }
+   },
+   "kubit": {
+    "8": {
+     "pass": 100,
+     "health": 70,
+     "caja": 63,
+     "minKpi": 60.7,
+     "flow": 8
+    },
+    "9": {
+     "pass": 100,
+     "health": 68.7,
+     "caja": 55,
+     "minKpi": 55,
+     "flow": 0
+    }
+   },
+   "puntomadero": {
+    "8": {
+     "pass": 100,
+     "health": 67.3,
+     "caja": 58.3,
+     "minKpi": 55.3,
+     "flow": 4.7
+    },
+    "9": {
+     "pass": 100,
+     "health": 66.3,
+     "caja": 53.7,
+     "minKpi": 53.3,
+     "flow": 0
+    }
+   },
+   "vertice": {
+    "8": {
+     "pass": 100,
+     "health": 65.7,
+     "caja": 59.3,
+     "minKpi": 56.7,
+     "flow": 5.7
+    },
+    "9": {
+     "pass": 100,
+     "health": 64.3,
+     "caja": 53.7,
+     "minKpi": 53.7,
+     "flow": 0
+    }
+   }
+  },
+  "personas_primero": {
+   "cumbre": {
+    "8": {
+     "pass": 33.3,
+     "health": 70,
+     "caja": 35,
+     "minKpi": 35,
+     "flow": 7
+    },
+    "9": {
+     "pass": 0,
+     "health": 68.3,
+     "caja": 28,
+     "minKpi": 28,
+     "flow": 0
+    }
+   },
+   "forja": {
+    "8": {
+     "pass": 0,
+     "health": 68,
+     "caja": 44.7,
+     "minKpi": 44.7,
+     "flow": 0.3
+    },
+    "9": {
+     "pass": 0,
+     "health": 67.7,
+     "caja": 44.3,
+     "minKpi": 44.3,
+     "flow": 0
+    }
+   },
+   "brasa": {
+    "8": {
+     "pass": 66.7,
+     "health": 66.7,
+     "caja": 41,
+     "minKpi": 41,
+     "flow": 3
+    },
+    "9": {
+     "pass": 66.7,
+     "health": 66.3,
+     "caja": 38,
+     "minKpi": 38,
+     "flow": 0
+    }
+   },
+   "kubit": {
+    "8": {
+     "pass": 66.7,
+     "health": 69,
+     "caja": 50,
+     "minKpi": 48.3,
+     "flow": 1.7
+    },
+    "9": {
+     "pass": 33.3,
+     "health": 68.3,
+     "caja": 48.3,
+     "minKpi": 47.3,
+     "flow": 0
+    }
+   },
+   "puntomadero": {
+    "8": {
+     "pass": 0,
+     "health": 66,
+     "caja": 43,
+     "minKpi": 40.7,
+     "flow": -2
+    },
+    "9": {
+     "pass": 0,
+     "health": 66.7,
+     "caja": 45,
+     "minKpi": 41.7,
+     "flow": 0
+    }
+   },
+   "vertice": {
+    "8": {
+     "pass": 0,
+     "health": 65.3,
+     "caja": 39.7,
+     "minKpi": 38.3,
+     "flow": -2
+    },
+    "9": {
+     "pass": 0,
+     "health": 65.7,
+     "caja": 41.7,
+     "minKpi": 39.7,
+     "flow": 0
+    }
+   }
+  },
+  "numeros_con_piso": {
+   "cumbre": {
+    "8": {
+     "pass": 66.7,
+     "health": 69.7,
+     "caja": 52,
+     "minKpi": 52,
+     "flow": 6
+    },
+    "9": {
+     "pass": 66.7,
+     "health": 68.3,
+     "caja": 50.3,
+     "minKpi": 50.3,
+     "flow": 0
+    }
+   },
+   "forja": {
+    "8": {
+     "pass": 0,
+     "health": 69.7,
+     "caja": 54.7,
+     "minKpi": 54.7,
+     "flow": 5.3
+    },
+    "9": {
+     "pass": 0,
+     "health": 68.3,
+     "caja": 49.3,
+     "minKpi": 49.3,
+     "flow": 0
+    }
+   },
+   "brasa": {
+    "8": {
+     "pass": 100,
+     "health": 68.3,
+     "caja": 55.3,
+     "minKpi": 55.3,
+     "flow": 8
+    },
+    "9": {
+     "pass": 100,
+     "health": 66.3,
+     "caja": 47.3,
+     "minKpi": 47.3,
+     "flow": 0
+    }
+   },
+   "kubit": {
+    "8": {
+     "pass": 0,
+     "health": 71.3,
+     "caja": 69.3,
+     "minKpi": 60,
+     "flow": 7.3
+    },
+    "9": {
+     "pass": 0,
+     "health": 70,
+     "caja": 62,
+     "minKpi": 59.3,
+     "flow": 0
+    }
+   },
+   "puntomadero": {
+    "8": {
+     "pass": 0,
+     "health": 68.7,
+     "caja": 65.7,
+     "minKpi": 51,
+     "flow": 2.7
+    },
+    "9": {
+     "pass": 0,
+     "health": 68,
+     "caja": 63,
+     "minKpi": 51,
+     "flow": 0
+    }
+   },
+   "vertice": {
+    "8": {
+     "pass": 0,
+     "health": 66.3,
+     "caja": 64.3,
+     "minKpi": 53.7,
+     "flow": 5
+    },
+    "9": {
+     "pass": 0,
+     "health": 65.3,
+     "caja": 59.3,
+     "minKpi": 53.7,
+     "flow": 0
+    }
+   }
+  },
+  "criterio_con_errores": {
+   "cumbre": {
+    "8": {
+     "pass": 83.3,
+     "health": 66.4,
+     "caja": 50,
+     "minKpi": 49.3,
+     "flow": 7.3
+    },
+    "9": {
+     "pass": 58.3,
+     "health": 65.1,
+     "caja": 42.8,
+     "minKpi": 42.8,
+     "flow": 0
+    }
+   },
+   "forja": {
+    "8": {
+     "pass": 66.7,
+     "health": 66.7,
+     "caja": 52.7,
+     "minKpi": 51.6,
+     "flow": 5.9
+    },
+    "9": {
+     "pass": 25,
+     "health": 65.7,
+     "caja": 46.9,
+     "minKpi": 46.3,
+     "flow": 0
+    }
+   },
+   "brasa": {
+    "8": {
+     "pass": 100,
+     "health": 64.3,
+     "caja": 59.3,
+     "minKpi": 57.7,
+     "flow": 7.7
+    },
+    "9": {
+     "pass": 100,
+     "health": 62.8,
+     "caja": 51.7,
+     "minKpi": 51.7,
+     "flow": 0
+    }
+   },
+   "kubit": {
+    "8": {
+     "pass": 75,
+     "health": 67.3,
+     "caja": 60.9,
+     "minKpi": 55.7,
+     "flow": 6.7
+    },
+    "9": {
+     "pass": 66.7,
+     "health": 66,
+     "caja": 54.3,
+     "minKpi": 52.7,
+     "flow": 0
+    }
+   },
+   "puntomadero": {
+    "8": {
+     "pass": 83.3,
+     "health": 65.7,
+     "caja": 57.8,
+     "minKpi": 54.3,
+     "flow": 5.2
+    },
+    "9": {
+     "pass": 83.3,
+     "health": 64.5,
+     "caja": 52.8,
+     "minKpi": 51.8,
+     "flow": 0
+    }
+   },
+   "vertice": {
+    "8": {
+     "pass": 75,
+     "health": 64.3,
+     "caja": 53.6,
+     "minKpi": 52.6,
+     "flow": 5.1
+    },
+    "9": {
+     "pass": 83.3,
+     "health": 63.3,
+     "caja": 48.6,
+     "minKpi": 48.6,
+     "flow": 0
+    }
+   }
+  },
+  "criterio_ocupado": {
+   "cumbre": {
+    "8": {
+     "pass": 66.7,
+     "health": 67,
+     "caja": 56,
+     "minKpi": 52.1,
+     "flow": 8.5
+    },
+    "9": {
+     "pass": 66.7,
+     "health": 65.3,
+     "caja": 47.5,
+     "minKpi": 46.9,
+     "flow": 0
+    }
+   },
+   "forja": {
+    "8": {
+     "pass": 66.7,
+     "health": 65.1,
+     "caja": 53,
+     "minKpi": 52.8,
+     "flow": 5.3
+    },
+    "9": {
+     "pass": 33.3,
+     "health": 64.1,
+     "caja": 47.7,
+     "minKpi": 47.7,
+     "flow": 0
+    }
+   },
+   "brasa": {
+    "8": {
+     "pass": 100,
+     "health": 65.3,
+     "caja": 60.3,
+     "minKpi": 59.3,
+     "flow": 8.6
+    },
+    "9": {
+     "pass": 100,
+     "health": 63.7,
+     "caja": 51.8,
+     "minKpi": 51.8,
+     "flow": 0
+    }
+   },
+   "kubit": {
+    "8": {
+     "pass": 91.7,
+     "health": 66.7,
+     "caja": 62.4,
+     "minKpi": 57.9,
+     "flow": 8.2
+    },
+    "9": {
+     "pass": 83.3,
+     "health": 65.1,
+     "caja": 54.3,
+     "minKpi": 54,
+     "flow": 0
+    }
+   },
+   "puntomadero": {
+    "8": {
+     "pass": 91.7,
+     "health": 64.3,
+     "caja": 57.6,
+     "minKpi": 55.2,
+     "flow": 5.8
+    },
+    "9": {
+     "pass": 91.7,
+     "health": 63.2,
+     "caja": 51.8,
+     "minKpi": 51.7,
+     "flow": 0
+    }
+   },
+   "vertice": {
+    "8": {
+     "pass": 83.3,
+     "health": 63.8,
+     "caja": 54.8,
+     "minKpi": 53.3,
+     "flow": 5.9
+    },
+    "9": {
+     "pass": 83.3,
+     "health": 62.4,
+     "caja": 48.8,
+     "minKpi": 48.8,
+     "flow": 0
+    }
+   }
+  },
+  "etica_flexible": {
+   "cumbre": {
+    "8": {
+     "pass": 100,
+     "health": 72,
+     "caja": 47,
+     "minKpi": 47,
+     "flow": 8.7
+    },
+    "9": {
+     "pass": 33.3,
+     "health": 70.3,
+     "caja": 38.3,
+     "minKpi": 38.3,
+     "flow": 0
+    }
+   },
+   "forja": {
+    "8": {
+     "pass": 66.7,
+     "health": 71,
+     "caja": 50,
+     "minKpi": 50,
+     "flow": 6
+    },
+    "9": {
+     "pass": 33.3,
+     "health": 69.7,
+     "caja": 44,
+     "minKpi": 44,
+     "flow": 0
+    }
+   },
+   "brasa": {
+    "8": {
+     "pass": 100,
+     "health": 69.7,
+     "caja": 56,
+     "minKpi": 56,
+     "flow": 7.7
+    },
+    "9": {
+     "pass": 100,
+     "health": 68,
+     "caja": 48.3,
+     "minKpi": 48.3,
+     "flow": 0
+    }
+   },
+   "kubit": {
+    "8": {
+     "pass": 100,
+     "health": 71.3,
+     "caja": 66.3,
+     "minKpi": 58,
+     "flow": 6.3
+    },
+    "9": {
+     "pass": 100,
+     "health": 70,
+     "caja": 60,
+     "minKpi": 57,
+     "flow": 0
+    }
+   },
+   "puntomadero": {
+    "8": {
+     "pass": 33.3,
+     "health": 69.3,
+     "caja": 63.7,
+     "minKpi": 49,
+     "flow": 1.7
+    },
+    "9": {
+     "pass": 33.3,
+     "health": 69,
+     "caja": 62,
+     "minKpi": 49,
+     "flow": 0
+    }
+   },
+   "vertice": {
+    "8": {
+     "pass": 100,
+     "health": 68.3,
+     "caja": 58.3,
+     "minKpi": 52.7,
+     "flow": 3.3
+    },
+    "9": {
+     "pass": 100,
+     "health": 68,
+     "caja": 55,
+     "minKpi": 52,
+     "flow": 0
+    }
+   }
+  },
+  "no_contesta": {
+   "cumbre": {
+    "8": {
+     "pass": 0,
+     "health": 38,
+     "caja": 57,
+     "minKpi": 0,
+     "flow": 0
+    },
+    "9": {
+     "pass": 0,
+     "health": 38,
+     "caja": 57,
+     "minKpi": 0,
+     "flow": 0
+    }
+   },
+   "forja": {
+    "8": {
+     "pass": 0,
+     "health": 36,
+     "caja": 51,
+     "minKpi": 22,
+     "flow": 0
+    },
+    "9": {
+     "pass": 0,
+     "health": 36,
+     "caja": 51,
+     "minKpi": 22,
+     "flow": 0
+    }
+   },
+   "brasa": {
+    "8": {
+     "pass": 0,
+     "health": 48,
+     "caja": 55,
+     "minKpi": 39,
+     "flow": 0
+    },
+    "9": {
+     "pass": 0,
+     "health": 48,
+     "caja": 55,
+     "minKpi": 39,
+     "flow": 0
+    }
+   },
+   "kubit": {
+    "8": {
+     "pass": 0,
+     "health": 37,
+     "caja": 46,
+     "minKpi": 12,
+     "flow": 0
+    },
+    "9": {
+     "pass": 0,
+     "health": 37,
+     "caja": 46,
+     "minKpi": 12,
+     "flow": 0
+    }
+   },
+   "puntomadero": {
+    "8": {
+     "pass": 0,
+     "health": 36,
+     "caja": 48,
+     "minKpi": 12,
+     "flow": 0
+    },
+    "9": {
+     "pass": 0,
+     "health": 36,
+     "caja": 48,
+     "minKpi": 12,
+     "flow": 0
+    }
+   },
+   "vertice": {
+    "8": {
+     "pass": 0,
+     "health": 35,
+     "caja": 47,
+     "minKpi": 10,
+     "flow": 0
+    },
+    "9": {
+     "pass": 0,
+     "health": 35,
+     "caja": 47,
+     "minKpi": 10,
+     "flow": 0
+    }
+   }
+  }
+ }
+}

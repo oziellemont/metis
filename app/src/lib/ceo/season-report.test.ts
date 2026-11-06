@@ -20,7 +20,7 @@ describe("balance por decisión", () => {
 });
 
 describe("alertas de tendencia", () => {
-  const ev = (eff: Partial<Kpis>, before: Kpis) => { const after = { ...before }; for (const k of Object.keys(eff) as (keyof Kpis)[]) after[k] = Math.max(0, Math.min(100, before[k] + (eff[k] ?? 0))); return { kind: "decision" as const, id: `x${Math.random()}`, label: "x", eff, wasted: {}, before, after }; };
+  const ev = (eff: Partial<Kpis>, before: Kpis) => { const after = { ...before }; for (const k of Object.keys(eff) as (keyof Kpis)[]) after[k] = Math.max(0, Math.min(100, before[k] + (eff[k] ?? 0))); return { kind: "decision" as const, id: `x${Math.random()}`, label: "x", eff, wasted: {}, before, after, at: null, href: null }; };
   it("avisa cuando varias decisiones seguidas van bajando el mismo indicador cerca de la línea", () => {
     let k = K({ caja: 70 }); const events = [];
     for (const d of [-3, -4, -3, -3]) { const e = ev({ caja: d, equipo: 2 }, k); events.push(e); k = e.after; }

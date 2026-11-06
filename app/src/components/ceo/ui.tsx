@@ -38,6 +38,26 @@ export function Bar({ value, line, className, dark }: { value: number; k?: KpiKe
   );
 }
 
+/**
+ * Barra antes → después: el valor anterior queda como fantasma y el nuevo encima. Mismo lenguaje que `Bar`.
+ * Se usa en el resultado de una decisión para que el cambio se lea en la misma escala que en Hoy.
+ */
+export function BarChange({ before, after, line, dark }: { before: number; after: number; line?: number; dark?: boolean }) {
+  const below = line !== undefined && after < line;
+  const lo = Math.min(before, after), hi = Math.max(before, after);
+  return (
+    <div className={clsx("relative h-2 rounded-full", dark ? "bg-white/15" : "bg-indigo-soft/70")}>
+      <div className={clsx("absolute inset-y-0 left-0 rounded-full", below ? "bg-indigo/40" : "bg-gradient-to-r from-indigo-light to-indigo")} style={{ width: `${lo}%` }} />
+      {after > before && <div className="absolute inset-y-0 rounded-r-full bg-indigo/70" style={{ left: `${lo}%`, width: `${hi - lo}%` }} />}
+      {after < before && <div className="absolute inset-y-0 rounded-r-full bg-coral/35 [background-image:repeating-linear-gradient(135deg,transparent_0_3px,rgba(255,255,255,.5)_3px_5px)]" style={{ left: `${lo}%`, width: `${hi - lo}%` }} />}
+      {line !== undefined && <span title={`Línea de aprobación: ${line}`} className={clsx("absolute -top-1 -bottom-1 w-0.5 rounded-full", dark ? "bg-white/70" : "bg-ink/70")} style={{ left: `${line}%` }} />}
+    </div>
+  );
+}
+
+/** Texto de dirección para lectores de pantalla y para no depender del color. */
+export const directionOf = (d: number) => (d > 0 ? "subió" : d < 0 ? "bajó" : "sin cambio");
+
 export function Delta({ n }: { n: number }) {
   if (!n) return null;
   return <span className={clsx("tabular-nums text-xs font-semibold", n > 0 ? "text-sob" : "text-coral")}>{n > 0 ? `+${n}` : n}</span>;

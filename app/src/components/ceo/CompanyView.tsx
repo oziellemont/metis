@@ -7,6 +7,7 @@ import { COMPANIES } from "@/lib/ceo/companies";
 import { useCeo } from "./CeoProvider";
 import { CompanyOrgChart } from "./CompanyOrgChart";
 import { BusinessPanel } from "./BusinessPanel";
+import { KpiBoard } from "./KpiBoard";
 import { CompanyMark } from "./ui";
 import { NAME_MAX } from "@/lib/ceo/career/identity";
 import { effectiveShort } from "@/lib/ceo/career/setup";
@@ -47,6 +48,12 @@ export function CompanyView() {
             </div>
           </div>
         )}
+      </section>
+
+      <section className="card p-5 sm:p-6" data-testid="indicadores-empresa">
+        <h2 className="font-semibold text-ink">Tus indicadores</h2>
+        <p className="mt-1 text-sm text-slate-500">La barra de arriba es la salud de la empresa: el promedio de los cinco. Toca cualquiera para ver qué la movió y cuándo.</p>
+        <KpiBoard />
       </section>
 
       {c.continuous && <BusinessPanel />}

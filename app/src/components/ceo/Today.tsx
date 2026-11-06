@@ -17,10 +17,11 @@ import { specialTasks } from "@/lib/ceo/today";
 import { rankOf } from "@/lib/ceo/lessons";
 import { nextLessonXp, rankFor } from "@/lib/ceo/engine";
 import { nudgeQuiet, shouldNudge } from "@/lib/ceo/profile";
-import { Avatar, Bar, ChannelChip, Delta, Flame, rel, until } from "./ui";
+import { Avatar, ChannelChip, Flame, rel, until } from "./ui";
 import { headlineOf } from "@/lib/ceo/trajectory";
 import { presenterOf } from "@/lib/ceo/business/report";
 import { alertsAt } from "@/lib/ceo/season-report";
+import { HealthBar, KpiBoard } from "./KpiBoard";
 
 export function Today() {
   const c = useCeo();
@@ -101,6 +102,8 @@ export function Today() {
             </div>
             <div className="mt-1 text-[12px] text-white/70">{t.active ? `Mes ${t.month} · ${t.chapter.label}` : `Día ${c.day} de ${pk.season.days}`}</div>
             <p className="mt-2 text-[13px] text-white/85 leading-snug">{t.moment.text}</p>
+            {/* Barra madre: la salud de la empresa, con la misma escala que los cinco indicadores. */}
+            <div className="mt-2.5"><HealthBar dark /></div>
             {headline && <p className="mt-2 text-[12px] text-white/65 truncate"><span className="text-white/45">{headline.label}:</span> {headline.text}</p>}
             {/* Constancia: hábito, separado del mandato. No es requisito de nada. */}
             <div className="mt-3 pt-3 border-t border-white/10" aria-label="Constancia">
@@ -212,15 +215,7 @@ export function Today() {
           {/* estado de la empresa, compacto */}
           <section className="card p-5">
             <div className="flex items-baseline justify-between gap-2"><h2 className="font-semibold text-ink text-sm">Tu empresa hoy</h2><span className="text-[11px] text-slate-400"><b className="text-ink tabular-nums">{passed}/5</b> en {v.passLine} o más</span></div>
-            <div className="mt-3 space-y-2.5">
-              {KPI_KEYS.map((k) => (
-                <div key={k} title={pk.kpiHint[k]} className="grid grid-cols-[72px_1fr_auto] items-center gap-3">
-                  <span className="text-xs text-slate-500 truncate">{pk.kpiLabel[k]}</span>
-                  <Bar value={c.kpis[k]} k={k} line={v.passLine} />
-                  <span className="text-xs font-semibold tabular-nums whitespace-nowrap text-right min-w-[52px]">{c.kpis[k]} <Delta n={c.kpis[k] - pk.kpiStart[k]} /></span>
-                </div>
-              ))}
-            </div>
+            <KpiBoard />
             {alerts.length > 0 && (
               <ul data-testid="alertas-tendencia" className="mt-3.5 space-y-1.5">
                 {alerts.map((a) => (
