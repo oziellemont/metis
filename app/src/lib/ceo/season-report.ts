@@ -25,6 +25,10 @@ export interface TimelineEvent {
   after: Kpis;
   option?: Option;
   entry?: Entry;
+  /** Cuándo se aplicó (tiempo de juego). Null en el ajuste de cierre. */
+  at: number | null;
+  /** Dónde ver el origen (caso, episodio, proyecto de cambio). */
+  href: string | null;
 }
 
 const clamp = (n: number) => Math.max(0, Math.min(100, Math.round(n)));
@@ -45,14 +49,15 @@ export function timeline(s: CeoState, now: number): { start: Kpis; events: Timel
       const lost = Math.round(raw) - k[key];
       if (lost) wasted[key] = lost;
     }
-    events.push({ kind, id, label, eff, wasted, before, after: { ...k }, ...extra });
+    events.push({ kind, id, label, eff, wasted, before, after: { ...k }, at: null, href: null, ...extra });
   };
   for (const e of entries(s, now)) {
     if (e.status !== "decidido" && e.status !== "vencido") continue;
-    push(e.status === "decidido" ? "decision" : "vencido", e.item.id, e.item.subject, effectOf(s, e), { option: e.option, entry: e });
+    const at = e.status === "decidido" ? e.agreement?.resolved ? Math.max(e.decision!.at, e.agreement.respondsAt) : e.decision!.at : e.deadline;
+    push(e.status === "decidido" ? "decision" : "vencido", e.item.id, e.item.subject, effectOf(s, e), { option: e.option, entry: e, at, href: `/ceo/caso/${e.item.id}` });
   }
-  for (const e of episodeEntries(s, now)) push("caso", e.spec.id, e.spec.title ?? e.spec.id, episodeEffectOf(s, e));
-  push("cambio", "cambio", "Proyecto de cambio", changeKpiEffect(s));
+  for (const e of episodeEntries(s, now)) push("caso", e.spec.id, e.spec.title ?? e.spec.id, episodeEffectOf(s, e), { at: e.run?.closedAt ?? null, href: `/ceo/episodio/${e.spec.id}` });
+  push("cambio", "cambio", "Proyecto de cambio", changeKpiEffect(s), { at: s.change?.closedAt ?? s.change?.moves.at(-1)?.at ?? null, href: "/ceo/cambio" });
   // Reglas V5: al cierre, el margen se convierte en caja (0 en reglas anteriores o si no ha cerrado).
   const cf = cashFlowOf(s, k);
   if (cf) push("flujo", "flujo", "Flujo de caja del año", { caja: cf });

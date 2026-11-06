@@ -19,6 +19,11 @@
 import type { EpisodeAction } from "./episodes/engine";
 import { applyAction, type GameAction } from "./replay";
 import { H, migrate, newState, xpOf } from "./engine";
+import { CONTINUOUS_RULES_VERSION, RULES_VERSION } from "./rules";
+
+/** Versión de reglas que puede pedir el cliente: nunca una propuesta que aún no se activa (v9 hasta su aprobación). */
+const MAX_ACTIVE_RULES = Math.max(RULES_VERSION, CONTINUOUS_RULES_VERSION);
+const rv = (v: unknown): number | null => (num(v) && Number.isInteger(v) && v >= 1 ? Math.min(v, MAX_ACTIVE_RULES) : null);
 import type { CeoState } from "./types";
 
 export const JOURNAL_MAX_EVENTS = 50;
@@ -80,7 +85,7 @@ export function sanitizeAction(raw: unknown): GameAction | null {
     case "start": {
       if (typeof a.name !== "string" || a.name.length > 80 || !str(a.company, 40)) return null;
       const out: GameAction = { type: "start", at, name: a.name, company: a.company, settings: cleanSettings(a.settings) };
-      if (num(a.rulesVersion) && Number.isInteger(a.rulesVersion) && a.rulesVersion >= 1) out.rulesVersion = a.rulesVersion;
+      if (rv(a.rulesVersion) !== null) out.rulesVersion = rv(a.rulesVersion)!;
       if (num(a.tier)) out.tier = a.tier;
       if (a.journey === true) out.journey = true;
       return out;
@@ -105,7 +110,7 @@ export function sanitizeAction(raw: unknown): GameAction | null {
     case "changeStart": return { type: "changeStart", at };
     case "changeClose": return { type: "changeClose", at };
     case "lever": return str(a.lever, 30) && Array.isArray(a.targets) && a.targets.length <= 3 && a.targets.every((t) => str(t, 30)) ? { type: "lever", at, lever: a.lever as never, targets: a.targets as never } : null;
-    case "advance": return { type: "advance", at, ...(num(a.rulesVersion) && Number.isInteger(a.rulesVersion) && a.rulesVersion >= 1 ? { rulesVersion: a.rulesVersion } : {}) };
+    case "advance": return { type: "advance", at, ...(rv(a.rulesVersion) !== null ? { rulesVersion: rv(a.rulesVersion)! } : {}) };
     case "switch": return str(a.company, 40) ? { type: "switch", at, company: a.company } : null;
     case "crisis": { const picks = cleanPicks(a.picks); return picks && num(a.from) ? { type: "crisis", at, from: Math.round(a.from), picks } : null; }
     case "appoint": return { type: "appoint", at };
@@ -119,7 +124,7 @@ export function sanitizeAction(raw: unknown): GameAction | null {
       const out: GameAction = { type: "setupCompany", at, companyId: a.companyId, sectorId: a.sectorId, industryId: a.industryId, archetype: a.archetype, displayName: a.displayName };
       if (str(a.shortName, 40)) out.shortName = a.shortName;
       if (str(a.specialty, 60)) out.specialty = a.specialty;
-      if (num(a.rulesVersion) && Number.isInteger(a.rulesVersion) && a.rulesVersion >= 1) out.rulesVersion = a.rulesVersion;
+      if (rv(a.rulesVersion) !== null) out.rulesVersion = rv(a.rulesVersion)!;
       return out;
     }
     case "renameCompany": return str(a.displayName, 40) ? { type: "renameCompany", at, displayName: a.displayName, ...(str(a.shortName, 40) ? { shortName: a.shortName } : {}) } : null;

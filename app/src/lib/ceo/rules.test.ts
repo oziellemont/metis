@@ -73,10 +73,10 @@ describe("resolver la versión", () => {
     expect(knownRules(7)).toBe(false);
   });
   it("una versión de una app más nueva usa la más alta conocida que no la supera", () => {
-    expect(ruleSet(9).version).toBe(8);
-    expect(ruleSet(99).version).toBe(8);
+    expect(ruleSet(10).version).toBe(9);
+    expect(ruleSet(99).version).toBe(9);
     withV2();
-    expect(ruleSet(9).version).toBe(8);
+    expect(ruleSet(10).version).toBe(9);
     expect(ruleSet(7).version).toBe(7);
     expect(ruleSet(6).version).toBe(6);
     expect(ruleSet(1).version).toBe(1);

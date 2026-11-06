@@ -9,6 +9,7 @@ import { useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
 import { ArrowRight, BookOpen, Check, FileText, HelpCircle, Lock, Pause, Play, Search, SlidersHorizontal, Timer, Users, PenLine } from "lucide-react";
 import { useCeo } from "./CeoProvider";
+import { ResultBars } from "./KpiBoard";
 import { Stage, StageChoice, StepTitle } from "./Stage";
 import { Avatar, ChannelChip, Delta } from "./ui";
 import { personOf, speakerGroups } from "@/lib/ceo/cast";
@@ -588,6 +589,7 @@ function Close({ spec, run, part }: { spec: EpisodeSpec; run: EpisodeRun; part: 
         {o.kpi.length > 0 && (
           <div className="rounded-2xl bg-white px-4 py-3">
             <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Efecto en tu empresa</div>
+            {counts && <ResultBars itemId={spec.id} source="caso" />}
             <ul className="mt-2 space-y-2">{o.kpi.map((k) => <li key={k.key} className="text-sm"><span className="font-medium text-ink">{KPI_LABEL[k.key]}</span> <Delta n={k.delta} /><div className="text-xs text-slate-500">{k.why}</div></li>)}</ul>
             <p className="mt-2 text-[11px] text-slate-400">{counts ? "Ya se aplicó a tu temporada, ajustado a tu nivel de exigencia." : "Práctica: este resultado no se aplica a tu temporada."}</p>
           </div>
