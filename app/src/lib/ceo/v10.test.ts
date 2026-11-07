@@ -239,3 +239,27 @@ describe("v10 · continuidad de partidas", () => {
     expect(src).toMatch(/tus decisiones, tu historial y tu racha siguen igual/);
   });
 });
+
+describe("v10 · contenido de economía real (etapa 3)", () => {
+  const P1 = ["d3-planta", "d3-diego", "d4-objetivos", "c-piloto", "c-planta-accidente", "fn-d1-andon", "fn-d4-pleito", "fn-d5-plataforma", "fn-c-inv-factoraje", "fn-s-precio-mas", "fn-s-precio-rfq", "fn-d2-soldadores", "fn-d5-ciber", "fn-d6-proveedor", "fn-c-inv-lineas", "gb-d5-cdmx", "gb-d4-carne", "gb-d6-dark", "gb-d6-sucesion", "gb-c-prov-contrato", "kb-d1-guardia", "kb-c-mejora", "kb-d2-fuga", "kb-d5-banco", "kb-d6-denuncia", "kb-s-altamar-mas", "kb-s-altamar-grupo", "pm-c-temp-guerra", "pm-d1-piso", "pm-c-tarima", "pm-s-penasco-mas", "pm-s-penasco-obras", "pm-d2-asesores", "pm-d5-embargo", "pm-d6-denuncia", "vl-c-frenos", "vl-d1-patio", "vl-d6-denuncia", "vl-s-almena-cedis", "vl-d2-almena", "vl-d2-operadores", "vl-d5-embargo", "vl-c-diesel-licitacion"];
+  const all = () => ["cumbre", "forja", "brasa", "kubit", "puntomadero", "vertice"].flatMap((p) => companyById(p).items);
+  it("los 43 asuntos prioritarios restantes tienen revisión v10 y ninguna opción escribe Caja o Margen a mano", () => {
+    const items = all();
+    for (const id of P1) {
+      const raw = items.find((i) => i.id === id);
+      expect(raw, id).toBeTruthy();
+      expect(raw!.revisions?.some((r) => r.since === V10), id).toBe(true);
+      const x = itemAtVersion(raw!, V10);
+      for (const o of x.options) {
+        expect(o.effects.caja, `${id}/${o.id}`).toBeUndefined();
+        expect(o.effects.margen, `${id}/${o.id}`).toBeUndefined();
+        for (const r of [o.pending?.yes, o.pending?.no]) { expect(r?.effects?.caja).toBeUndefined(); expect(r?.effects?.margen).toBeUndefined(); }
+      }
+      expect(x.expired.effects.caja, id).toBeUndefined();
+      expect(x.expired.effects.margen, id).toBeUndefined();
+    }
+  });
+  it("un periodo v7 sigue viendo esos asuntos como los jugó (la revisión es solo desde v10)", () => {
+    for (const raw of all().filter((i) => P1.includes(i.id))) expect(itemAtVersion(raw, 8).options.map((o) => o.effects), raw.id).toEqual(itemAtVersion({ ...raw, revisions: raw.revisions?.filter((r) => r.since < V10) }, 8).options.map((o) => o.effects));
+  });
+});

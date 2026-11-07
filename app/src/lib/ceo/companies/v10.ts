@@ -633,6 +633,141 @@ export function revisionsV10(it: Item): Revision[] | undefined {
         data: rows({}, [["Margen de cuatro empresas por trimestre", "≈ $12 M al año con 10 % de descuento (estimación de Andrea)"]]),
       }, "Economía real: ganar el grupo trae margen e implementación; la probabilidad depende de la oferta.");
     }
+    // ───────────────────────────────────────────── etapa 3 · Punto Madero y Vértice (asuntos paralelos)
+    case "pm-d1-piso":
+    case "vl-d1-patio": {
+      const pm = it.id === "pm-d1-piso";
+      return rev({
+        options: opts({
+          a: { effects: { equipo: 3, clientes: 3, consejo: -1 }, facts: [f("pago", pm ? -1.5 : -1.2, pm ? "Venta de pasillos cerrados mientras se surte" : "Viajes que no salen por la revisión completa", { expense: true })] },
+          b: { effects: { consejo: 1, equipo: -3, clientes: -1 } },
+          c: { effects: { equipo: 2, clientes: 1, consejo: 1 }, facts: [f("costo", pm ? -1.8 : -2.4, pm ? "Surtido pesado de noche, pagado" : "Un mecánico más por turno")] },
+        }),
+        expired: { ...at.expired, effects: { equipo: -4, clientes: -1 } },
+      }, "Economía real: la seguridad cuesta venta o un mecánico; quitarla no genera dinero hoy, pero abre el riesgo del accidente.");
+    }
+    case "pm-c-tarima":
+    case "vl-c-frenos": {
+      const pm = it.id === "pm-c-tarima";
+      return rev({
+        arrival: pm
+          ? { text: "Protección Civil ya cerró la tienda principal dos días: esa venta se perdió elijas lo que elijas.", effects: {}, facts: [f("pago", -3, "Margen de $9 M de venta perdida por el cierre", { expense: true })] }
+          : { text: "La autoridad ya detuvo embarques y multó: eso se paga elijas lo que elijas.", effects: {}, facts: [f("pago", -8, "Embarques detenidos y multas", { expense: true })] },
+        options: opts({
+          a: { effects: { clientes: 3, equipo: 3 }, facts: [f("pago", -0.5, pm ? "Gastos de la clienta, cubiertos sin que los pida" : "Gastos del conductor, cubiertos sin que los pida", { expense: true }), f("costo", pm ? -3 : -2.4, pm ? "Cierre de pasillos en 60 tiendas" : "La revisión de salida regresa")] },
+          b: { effects: { clientes: -2, equipo: -2 } },
+          c: { effects: { clientes: -7, consejo: -2 } },
+        }),
+        expired: { ...at.expired, effects: { clientes: -7 } },
+      }, "Economía real: el daño ya ocurrió; dar la cara tiene su costo y negar no genera dinero.");
+    }
+    case "pm-d2-asesores":
+    case "vl-d2-operadores": {
+      const pm = it.id === "pm-d2-asesores";
+      return rev({
+        options: opts({
+          a: { effects: { equipo: 5 }, facts: [f("pago", pm ? -14 : -16, pm ? "Bono de permanencia de 12 meses para 120 asesores" : "Bono de permanencia de 12 meses para 250 operadores", { expense: true })] },
+          b: { effects: { equipo: 2, clientes: -2, consejo: -1 }, facts: [f("pago", pm ? -6 : -7, pm ? "Escuela de asesores" : "Escuela de operadores con licencia federal", { expense: true })] },
+          c: { effects: { consejo: 3, equipo: -5 }, facts: [f("costo", pm ? -10 : -12, pm ? "Personal de piso por agencia" : "Transportistas independientes"), f("costo", pm ? 12 : 15, pm ? "Se dejan de cubrir vacantes con horas extra y temporales" : "Se reactivan camiones parados sin horas extra", { days: 10 })] },
+        }),
+        expired: { ...at.expired, effects: { equipo: -5 }, facts: [f("costo", pm ? -4 : -5, "Las horas extra se disparan")] },
+      }, "Economía real: cada camino con su monto del caso; no decidir sube las horas extra.");
+    }
+    case "pm-d5-embargo":
+    case "vl-d5-embargo": {
+      const pm = it.id === "pm-d5-embargo";
+      return rev({
+        arrival: { text: `Las cuentas ya están embargadas: $${pm ? 150 : 140} M que no puedes usar mientras el juez decide. No se dan por perdidos.`, effects: {} },
+        options: opts({
+          a: { effects: { equipo: 3, clientes: 1, consejo: -1 }, facts: [f("pago", pm ? -0.5 : -0.6, "Fianza por lo reclamado", { expense: true })] },
+          b: { effects: { equipo: -6, consejo: -3 } },
+          c: { effects: { consejo: 3, equipo: 2 }, facts: [f("pago", -0.6, "Comisión de la línea puente de los accionistas", { expense: true })] },
+        }),
+        expired: { ...at.expired, effects: { equipo: -8, consejo: -4 } },
+      }, "Economía real: pagar la nómina no es gasto nuevo y pagar la mitad no genera caja; la garantía y la línea puente tienen costo.");
+    }
+    case "pm-d6-denuncia":
+    case "vl-d6-denuncia":
+      return rev({
+        options: opts({
+          a: { effects: { equipo: 4, consejo: 1 }, facts: [f("pago", -0.8, "Investigación de una firma externa", { expense: true }), f("pago", -2, "La región se resiente unas semanas", { expense: true })] },
+          b: { effects: { equipo: -6, consejo: -2 } },
+          c: { effects: { equipo: 3, consejo: -3 }, facts: [f("pago", -3, "Liquidación y defensa ante una demanda por despido", { expense: true })] },
+        }),
+      }, "Economía real: investigar y despedir tienen costo; no hacer nada no genera dinero.");
+    case "pm-c-temp-guerra":
+      return rev({
+        arrival: { text: "La venta a precio completo ya bajó 9 % esta semana por el remate de Mundo Casa.", effects: {}, facts: [f("pago", -1.5, "Margen de la semana perdido por el remate de Mundo Casa", { expense: true, external: true })] },
+        options: opts({
+          a: { effects: { clientes: -1, consejo: -1, equipo: 1 }, facts: [f("pago", -0.6, "Entrega a domicilio y garantía extendida en la temporada", { expense: true })] },
+          b: { effects: { clientes: 1, consejo: 1 }, facts: [f("pago", -8, "Igualar el 50 % en las 60 tiendas", { expense: true })] },
+          c: { effects: { clientes: 2, equipo: -1 }, facts: [f("pago", -1.6, "Igualar el 50 % en las 12 tiendas frente a Mundo Casa", { expense: true })] },
+        }),
+        expired: { ...at.expired, effects: { clientes: -1 }, facts: [f("pago", -4, "Cada tienda puso su propio descuento", { expense: true })] },
+      }, "Economía real: igualar es margen que se regala en la temporada; no igualar cuesta servicio, no gana dinero.");
+    case "pm-s-penasco-mas":
+      return rev({
+        options: opts({
+          a: { effects: { clientes: -2, consejo: 2 } },
+          b: { effects: { clientes: 4, consejo: -3 }, facts: [f("capital_trabajo", -30, "Crédito a 120 días: $30 M más atrapados en Peñasco", { days: 7 })] },
+          c: { effects: { clientes: -6, consejo: -1 }, facts: [f("capital_trabajo", 20, "Peñasco paga a 30 días lo que compre de aquí en adelante", { days: 7 })] },
+        }),
+        expired: { ...at.expired, effects: { clientes: -4, consejo: -1 } },
+      }, "Economía real: el plazo mueve capital de trabajo: 120 días atrapa $30 M más; atar el crédito a desarrollos asignados no mueve dinero hoy.");
+    case "pm-s-penasco-obras": {
+      const award = (p: number, margin: number, text: string) => pend({
+        who: "Constructora Peñasco", what: "Que asigne los nueve desarrollos", p, days: 7,
+        yes: { text: "Peñasco asignó los desarrollos a Punto Madero.", effects: { clientes: 3 }, facts: [f("precio", margin, text, { days: 7 })] },
+        no: { text: "Peñasco asignó los desarrollos a otro proveedor.", effects: { clientes: -3 } },
+      });
+      return rev({
+        options: opts({
+          a: { effects: { consejo: 2 }, pending: award(0.55, 26, "Margen de 10 % sobre $260 M al año, con ajuste por índice") },
+          b: { effects: { consejo: -2 }, pending: award(0.85, 8, "Margen de 10 % sobre $260 M al año, menos 7 % de inflación sin ajuste") },
+          c: { effects: { consejo: -1 }, pending: award(0.15, 31, "Margen de lista sobre $260 M al año") },
+        }),
+        expired: { ...at.expired, effects: { clientes: -6, consejo: -2 } },
+        data: rows({}, [["Margen de la venta de los desarrollos", "≈ 10 % (estimación de Diego)"]]),
+      }, "Economía real: ganar trae margen; el precio fijo sin ajuste se lo come la inflación.");
+    }
+    case "vl-d2-almena":
+      return rev({
+        options: opts({
+          a: { effects: { clientes: 5, consejo: -1 }, facts: [f("precio", -36, "10 % menos de tarifa a Almena"), f("capital_trabajo", -60, "Pago a 90 días: $60 M más atrapados", { days: 7 })] },
+          b: { effects: { consejo: 2, clientes: -5 }, facts: [f("precio", 10, "Ajuste por diésel del contrato")] },
+          c: { effects: { clientes: 2, equipo: -2, consejo: 1 }, facts: [f("precio", -14.4, "4 % menos por contrato de tres años"), f("capital_trabajo", -15, "Pago a 45 días", { days: 7 })] },
+        }),
+        expired: { ...at.expired, effects: { clientes: -6, consejo: -3 } },
+        data: rows({}, [["Ajuste por diésel del contrato", "≈ $10 M al año (estimación de Patricio)"]]),
+      }, "Economía real: tarifa y plazo con los montos del caso; aceptar todo rebasa la autoridad del director.");
+    case "vl-c-diesel-licitacion": {
+      const p0 = (id: string) => at.options.find((o) => o.id === id)!.pending!;
+      const lose = (amount: number, text: string) => ({ ...p0("a").no, facts: [f("precio", amount, text, { external: true })] });
+      return rev({
+        options: opts({
+          a: { effects: { consejo: -1, equipo: 1 }, facts: [f("precio", -48, "Regresar a la tarifa anterior con fórmula pública")], pending: { ...p0("a"), no: lose(-20, "La mitad de las rutas de Almena se va con Avante") } },
+          b: { effects: {}, facts: [f("precio", -48, "Regresar a la tarifa anterior"), f("precio", -43, "12 % abajo, igual que Avante")], pending: { ...p0("b"), no: lose(-8, "Una parte de las rutas se va a prueba con Avante") } },
+          c: { effects: {}, facts: [f("precio", -18, "Descuento en las rutas donde opera Avante")], pending: { ...p0("c"), no: lose(-12, "Las rutas cortas se van con Avante") } },
+        }),
+        expired: { ...at.expired, effects: { clientes: -2, consejo: -1 }, facts: [f("precio", -30, "Almena reparte la mayor parte de sus rutas", { external: true })] },
+      }, "Economía real: cada propuesta con su monto; perder rutas es venta que deja de llegar. Igualar a Avante rebasa la autoridad del director.");
+    }
+    case "vl-s-almena-cedis": {
+      const award = (p: number, margin: number) => pend({
+        who: "Supermercados Almena", what: "Que asigne los CEDIS nuevos", p, days: 7,
+        yes: { text: "Almena asignó los CEDIS a Vértice.", effects: { clientes: 3 }, facts: [f("precio", margin, "Margen de los CEDIS asignados", { days: 10 })] },
+        no: { text: "Almena asignó los CEDIS a Avante.", effects: { clientes: -3 } },
+      });
+      return rev({
+        options: opts({
+          a: { effects: { equipo: -1, consejo: 2 }, board: true, facts: [f("inversion", -20, "Primeras 5 unidades", { days: 7 })], pending: award(0.55, 14) },
+          b: { effects: { equipo: -3 }, facts: [f("inversion", -60, "15 unidades de una vez")], pending: award(0.85, 12) },
+          c: { effects: { consejo: -1 }, pending: award(0.3, 7) },
+        }),
+        expired: { ...at.expired, effects: { clientes: -6, consejo: -2 } },
+        data: rows({}, [["Margen de los tres CEDIS", "≈ $21 M al año (10 %, estimación de Patricio)"]]),
+      }, "Economía real: las unidades son inversión; comprar las 15 sin consejo rebasa la autoridad del director.");
+    }
     case "vl-s-almena-mas":
       return rev({
         options: opts({
