@@ -324,6 +324,63 @@ export function revisionsV10(it: Item): Revision[] | undefined {
         ),
       }, "Economía real: el alza del diésel es un hecho al llegar; el dato de consumo se corrige (−2 %).");
 
+    // ───────────────────────────────────────────── etapa 3 · Cumbre
+    case "d3-planta":
+      return rev({
+        options: opts({
+          a: { effects: { equipo: 8, clientes: -2 }, facts: [f("pago", -0.42, "Penalización de SuperNorte por entrega incompleta", { expense: true }), f("pago", -0.3, "Sensor nuevo y técnico del tostador", { expense: true })] },
+          b: { effects: { clientes: 1, equipo: -6 }, facts: [f("pago", -0.3, "Sensor nuevo y técnico del tostador (el fin de semana siguiente)", { expense: true, days: 6 })] },
+          c: { effects: { equipo: 3, clientes: -1, consejo: -1 }, facts: [f("pago", -0.42, "Javier paró la línea: penalización de SuperNorte", { expense: true }), f("pago", -0.3, "Sensor nuevo y técnico del tostador", { expense: true })] },
+        }),
+        expired: { ...at.expired, effects: { equipo: -7 } },
+        data: rows({}, [["Reparación del sensor", "≈ $300 mil (cotización del técnico)"]]),
+      }, "Economía real: parar cuesta la penalización y la reparación; seguir operando no genera dinero, solo aplaza la reparación.");
+    case "c-planta-accidente":
+      return rev({
+        arrival: { text: "El accidente ya ocurrió: la reparación urgente del tostador se paga elijas lo que elijas.", effects: {}, facts: [f("pago", -0.3, "Reparación urgente del tostador", { expense: true })] },
+        options: opts({
+          a: { effects: { equipo: 4, consejo: -2 }, facts: [f("pago", -0.42, "Paro de la línea 2: penalización de SuperNorte", { expense: true }), f("pago", -0.6, "Multa mínima de la STPS: hubo medidas correctivas", { expense: true, days: 3 })] },
+          b: { effects: { equipo: -8, consejo: -3 }, facts: [f("pago", -2.5, "Multa de la STPS sin medidas correctivas", { expense: true, days: 3 })] },
+        }),
+        expired: { ...at.expired, effects: { equipo: -10, consejo: -4 }, facts: [f("pago", -2.5, "Multa de la STPS sin medidas correctivas", { expense: true, days: 3 })] },
+        data: { title: "Lo que sabes", rows: [["Lesionado", "Toño · quemadura de segundo grado, estable (lo cubre el Seguro)"], ["Multa posible de la STPS", "hasta $2.5 M sin medidas correctivas; ≈ $600 mil si las hay"], ["Penalización de SuperNorte si se para la línea", "$420 mil"]] },
+      }, "Economía real: la multa depende de si hay medidas correctivas; lavarse las manos ya no suma caja.");
+    case "d3-diego":
+      return rev({
+        options: opts({
+          a: { effects: { consejo: 3, equipo: 2 }, facts: [f("pago", -2, "Anticipo de TV regional e influencers", { expense: true }), f("pago", -4, "Resto del lanzamiento nacional", { expense: true, days: 10 })] },
+          b: { effects: { equipo: 3, consejo: 1 }, facts: [f("pago", -0.8, "Piloto en 30 tiendas de Monterrey", { expense: true })] },
+          c: { effects: { consejo: -5, equipo: -2 } },
+        }),
+        expired: { ...at.expired, effects: { consejo: -4 } },
+      }, "Economía real: el lanzamiento es gasto de marketing en dos pagos; decir que no no genera caja.");
+    case "c-piloto":
+      return rev({
+        options: opts({
+          a: { effects: { clientes: 3, consejo: 4 }, facts: [f("pago", -1.5, "Lanzamiento en 300 tiendas del noreste", { expense: true }), f("precio", 5.5, "Venta incremental neta en 300 tiendas (≈ $14 M al 39 %)", { days: 10 })] },
+          b: {
+            effects: { equipo: 2, consejo: -1 },
+            facts: [f("pago", -6, "Lanzamiento nacional con el plan original", { expense: true })],
+            pending: pend({
+              who: "Logística y tiendas", what: "Que la rotación del piloto se sostenga en 1,200 tiendas", p: 0.5, days: 4,
+              yes: { text: "La rotación se sostuvo en casi todo el país: la venta incremental llegó.", effects: { clientes: 3 }, facts: [f("precio", 9, "Venta incremental nacional (con la canibalización del piloto)")] },
+              no: { text: "Fuera del noreste no rotó: devoluciones y producto caducado en anaquel.", effects: { clientes: -2 }, facts: [f("precio", 2, "Venta incremental real, mucho menor a la del piloto"), f("pago", -1.5, "Devoluciones y producto caducado", { expense: true })] },
+            }),
+          },
+        }),
+        expired: { ...at.expired, effects: { consejo: -2, equipo: -2 } },
+        data: rows({}, [["Lanzamiento en 300 tiendas", "≈ $1.5 M (estimación de Ana)"], ["Lanzamiento nacional", "$6 M (plan original de Diego)"]]),
+      }, "Economía real: la venta incremental del piloto es un hecho; el salto nacional depende de que la rotación se sostenga.");
+    case "d4-objetivos":
+      return rev({
+        options: opts({
+          a: { effects: { consejo: 4, equipo: -2 }, facts: [f("costo", 4.1, "Bonos atados al margen de la empresa: deja de pagarse volumen con descuento", { days: 10 })] },
+          b: { effects: { equipo: 3, consejo: -1 } },
+          c: { effects: { equipo: -4 }, facts: [f("costo", 2, "Objetivos alineados en papel, sin compromiso de los directores", { days: 10 })] },
+        }),
+        expired: { ...at.expired, effects: { consejo: -2 } },
+        data: rows({}, [["Si el bono se ata al margen", "≈ 1 punto de margen recuperado (≈ $4.1 M al año, estimación de Lucía)"]]),
+      }, "Economía real: alinear bonos recupera margen; mantener lo de siempre no lo empeora más allá de lo que ya pasó.");
     case "vl-s-almena-mas":
       return rev({
         options: opts({
