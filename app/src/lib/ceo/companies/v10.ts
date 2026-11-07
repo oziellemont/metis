@@ -381,6 +381,124 @@ export function revisionsV10(it: Item): Revision[] | undefined {
         expired: { ...at.expired, effects: { consejo: -2 } },
         data: rows({}, [["Si el bono se ata al margen", "≈ 1 punto de margen recuperado (≈ $4.1 M al año, estimación de Lucía)"]]),
       }, "Economía real: alinear bonos recupera margen; mantener lo de siempre no lo empeora más allá de lo que ya pasó.");
+    // ───────────────────────────────────────────── etapa 3 · Forja
+    case "fn-d1-andon": {
+      const escape = (p: number) => pend({
+        who: "Línea de Aurora", what: "Que no llegue una pieza con rebaba a la armadora", p, days: 3,
+        yes: { text: "Ninguna pieza mala llegó a Aurora esta semana.", effects: {} },
+        no: { text: "Una pieza con rebaba llegó a Aurora: paró su línea una hora y llegó el cargo.", effects: { clientes: -2 }, facts: [f("pago", -2.4, "Cargo de Aurora por una hora de línea parada ($40 mil por minuto)", { expense: true })] },
+      });
+      return rev({
+        options: opts({
+          a: { effects: { equipo: 3, clientes: 3, consejo: -1 }, facts: [f("pago", -1.2, "Paros por andon de la semana mientras se encuentra la causa (≈ 65 minutos)", { expense: true })] },
+          b: { effects: { consejo: 1, equipo: -3, clientes: -1 }, pending: escape(0.6) },
+          c: { effects: { equipo: 2, clientes: 1, consejo: 1 }, facts: [f("pago", -0.6, "Paros acotados a 60 segundos por el líder de celda", { expense: true })] },
+        }),
+        expired: { ...at.expired, effects: { equipo: -4, clientes: -1 } },
+      }, "Economía real: los paros cuestan minutos de línea; quitar el andon ahorra eso a cambio del riesgo de un cargo de Aurora.");
+    }
+    case "fn-d2-soldadores":
+      return rev({
+        options: opts({
+          a: { effects: { equipo: 5 }, facts: [f("pago", -2.4, "Bono de retención de 12 meses para 40 soldadores", { expense: true }), f("costo", -1.2, "Transporte desde la colonia")] },
+          b: { effects: { equipo: 2, clientes: -2, consejo: -1 }, facts: [f("pago", -1.1, "Escuela interna con el tecnológico de Ramos", { expense: true })] },
+          c: { effects: { consejo: 3, equipo: -5 }, facts: [f("costo", -0.9, "Arrendamiento de dos celdas robotizadas"), f("costo", 3.7, "Se elimina el tiempo extra de soldadura", { days: 10 }), f("pago", -1.5, "Liquidación de 10 puestos", { expense: true, days: 10 })] },
+        }),
+        expired: { ...at.expired, effects: { equipo: -5 }, facts: [f("costo", -1.9, "El tiempo extra sube a la mitad más")] },
+      }, "Economía real: cada camino con su monto del caso; no decidir sube el tiempo extra.");
+    case "fn-d4-pleito":
+      return rev({
+        options: opts({
+          a: { effects: { equipo: 4, clientes: 1, consejo: -1 } },
+          b: {
+            effects: { consejo: 1, equipo: -3, clientes: -1 },
+            pending: pend({
+              who: "Línea de Aurora", what: "Que no se escape una pieza con variación", p: 0.6, days: 4,
+              yes: { text: "El programa salió y ninguna pieza se escapó.", effects: {} },
+              no: { text: "Se escapó un lote con variación: Aurora paró su línea dos horas.", effects: { clientes: -2 }, facts: [f("pago", -4.8, "Cargo de Aurora por dos horas de línea parada", { expense: true })] },
+            }),
+          },
+          c: { effects: { clientes: 3, equipo: -3 }, facts: [f("pago", -1, "Tiempo extra para recuperar el programa del mes", { expense: true })] },
+        }),
+        expired: { ...at.expired, effects: { equipo: -5, clientes: -2 } },
+      }, "Economía real: respaldar a Producción ahorra paros a cambio del riesgo de un escape; respaldar a Calidad cuesta tiempo extra.");
+    case "fn-d5-ciber":
+      return rev({
+        arrival: { text: "El ataque ya ocurrió: los servidores están cifrados y hay que restaurarlos elijas lo que elijas.", effects: {}, facts: [f("pago", -1.5, "Restauración de servidores y horas de Sistemas", { expense: true })] },
+        options: opts({
+          a: { effects: { clientes: -3, equipo: -2, consejo: 2 }, facts: [f("pago", -5, "Cinco días en manual: tiempo extra y entregas parciales", { expense: true })] },
+          b: { effects: { clientes: 2, consejo: -5 }, facts: [f("pago", -21, "Rescate de US$1.2 M en cripto", { expense: true }), f("pago", -1.5, "Recuperar el 20 % que no regresó", { expense: true, days: 3 })] },
+          c: { effects: { clientes: -1, consejo: 4 }, facts: [f("pago", -3.5, "Firma de respuesta a incidentes", { expense: true }), f("pago", -4, "Operación en manual mientras evalúan", { expense: true })] },
+        }),
+        expired: { ...at.expired, effects: { clientes: -8, consejo: -5 }, facts: [f("pago", -5, "Planta parada sin plan", { expense: true }), f("pago", -9.6, "Cargos de Aurora por cuatro horas de línea parada", { expense: true, days: 2 })] },
+      }, "Economía real: el rescate es un pago de $21 M; operar en manual y la firma de respuesta tienen su costo.");
+    case "fn-d5-plataforma": {
+      const award = (p: number, margin: number, pct: string, adv: number) => pend({
+        who: "Aurora Motors", what: "Que asigne la plataforma SUV 2028", p, days: 5,
+        yes: { text: `Aurora asignó la plataforma con margen de ${pct}: hay que anticipar la prensa.`, effects: { clientes: 4 }, facts: [f("precio", margin, `Margen de ${pct} sobre ≈ $150 M al año del programa`, { days: 10 }), f("inversion", -adv, "Anticipo de la prensa de 1,200 toneladas", { days: 7 })] },
+        no: { text: "Aurora asignó la plataforma a otro proveedor.", effects: { clientes: -4 } },
+      });
+      return rev({
+        options: opts({
+          a: { effects: { clientes: 2, consejo: 2 }, pending: award(0.7, 9, "6 %", 35) },
+          b: { effects: { consejo: -3 }, pending: award(0.25, 16.5, "11 %", 35) },
+          c: { effects: { clientes: 2, consejo: -2 } },
+        }),
+        expired: { ...at.expired, effects: { consejo: -3 } },
+        data: rows({}, [["Anticipo de la prensa si se gana", "10 % de $350 M al confirmar"]]),
+      }, "Economía real: ganar trae margen y el anticipo de la prensa; proponer herramental de Aurora aplaza la decisión sin dinero.");
+    }
+    case "fn-d6-proveedor": {
+      const supply = pend({
+        who: "Fundición en Asia", what: "Que las piezas por avión lleguen antes de agotar los 9 días de inventario", p: 0.7, days: 5,
+        yes: { text: "Las piezas por avión llegaron a tiempo.", effects: {} },
+        no: { text: "El primer embarque se retrasó: Aurora paró su línea dos horas.", effects: { clientes: -3 }, facts: [f("pago", -4.8, "Cargo de Aurora por dos horas de línea parada", { expense: true })] },
+      });
+      return rev({
+        options: opts({
+          a: { effects: { clientes: 3, consejo: -1 }, facts: [f("pago", -12, "Anticipo a Fundiciones del Bajío con garantía sobre sus moldes")] },
+          b: { effects: { consejo: 1 }, facts: [f("pago", -7.6, "Sobrecosto de 38 % y flete aéreo durante 6 meses", { expense: true })], pending: supply },
+          c: { effects: { consejo: 3, equipo: -1 }, facts: [f("inversion", -60, "Compra de la fundición (140 empleados)", { days: 7 })] },
+        }),
+        expired: { ...at.expired, effects: { clientes: -8 }, facts: [f("pago", -9.6, "Cargos de Aurora: cuatro horas de línea parada sin nudillos", { expense: true, days: 9 })] },
+      }, "Economía real: el anticipo es caja recuperable; Asia es sobrecosto con riesgo; comprar la fundición rebasa la autoridad del director.");
+    }
+    case "fn-c-inv-lineas":
+      return rev({
+        options: opts({
+          a: { effects: { consejo: 1, equipo: -2 }, facts: [f("capital_trabajo", 20, "Inventario liberado en las otras cuatro líneas (primeras semanas)", { days: 7 })] },
+          b: { effects: { equipo: 1 }, facts: [f("capital_trabajo", 12, "Inventario liberado en las otras cuatro líneas, sin cambiar el bono", { days: 7 })] },
+          c: { effects: { consejo: 3, equipo: -2 }, facts: [f("pago", -11, "Pago adelantado al fondo con la caja liberada")] },
+        }),
+        expired: { ...at.expired, effects: { equipo: -2 } },
+      }, "Economía real: extender la mejora libera inventario; adelantar el pago al fondo saca caja, no la genera.");
+    case "fn-c-inv-factoraje":
+      return rev({
+        options: opts({
+          a: { effects: { clientes: 1, consejo: 1 } },
+          b: { effects: { clientes: 1, consejo: -1 }, facts: [f("costo", 0.4, "Cambias factoraje (13 % anual) por crédito bancario (12 %)")] },
+          c: { effects: { clientes: -2 } },
+        }),
+        expired: { ...at.expired, effects: { clientes: -3, consejo: -1 } },
+      }, "Economía real: responder a Aurora no cuesta dinero; cambiar de financiamiento casi no cambia el costo.");
+    case "fn-s-precio-mas":
+      return rev({
+        options: opts({
+          a: { effects: { clientes: -2, consejo: 2 } },
+          b: { effects: { clientes: 4, consejo: -3 }, facts: [f("precio", -50, "3 % de productividad a Aurora (primer año de cinco; se acumula)")] },
+          c: { effects: { clientes: -6, consejo: -1 } },
+        }),
+        expired: { ...at.expired, effects: { clientes: -4, consejo: -2 } },
+      }, "Economía real: el 3 % anual es una concesión de precio; ofrecerlo solo con rediseño o negarse no regala ni gana dinero.");
+    case "fn-s-precio-rfq":
+      return rev({
+        options: opts({
+          a: { effects: { clientes: 2, consejo: 2 }, facts: [f("pago", -2, "Ingeniería del rediseño de dos piezas", { expense: true })] },
+          b: { effects: { clientes: 4, consejo: -2 }, facts: [f("precio", -10.8, "Cotizar al objetivo: el programa arranca perdiendo 6 % por pieza contra el costo de hoy")] },
+          c: { effects: { clientes: -5, consejo: -1 } },
+        }),
+        expired: { ...at.expired, effects: { clientes: -6, consejo: -3 } },
+      }, "Economía real: cotizar al objetivo compromete margen; defender el precio actual no genera dinero, solo te deja fuera.");
     case "vl-s-almena-mas":
       return rev({
         options: opts({
