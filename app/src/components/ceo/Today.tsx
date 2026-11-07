@@ -4,7 +4,7 @@ import { useEffect, useMemo } from "react";
 import clsx from "clsx";
 import { ArrowRight, BookOpen, Check, Briefcase, Clock, Coffee, FastForward, Flag, Hourglass, Trophy } from "lucide-react";
 import { KPI_KEYS, closedRunsOf } from "@/lib/ceo/engine";
-import { COHERENCE_RULES_VERSION, CONTINUOUS_RULES_VERSION } from "@/lib/ceo/rules";
+import { COHERENCE_RULES_VERSION, CONTINUOUS_RULES_VERSION, ECONOMY_RULES_VERSION } from "@/lib/ceo/rules";
 import { ETHICS_AUDIT_RULES } from "@/lib/ceo/editorial";
 import { firstName, personOf } from "@/lib/ceo/cast";
 import { LESSONS } from "@/lib/ceo/lessons";
@@ -57,6 +57,8 @@ export function Today() {
   const ethicsRules = !!mandate && !!prevRun && curV >= ETHICS_AUDIT_RULES && prevV >= 6 && prevV < ETHICS_AUDIT_RULES;
   // v8 · coherencia: se avisa una sola vez, en el primer mes v8 después de un mes v6/v7.
   const coherenceRules = !!mandate && !!prevRun && curV >= COHERENCE_RULES_VERSION && prevV >= 6 && prevV < COHERENCE_RULES_VERSION;
+  // v10 · economía real: se avisa en el primer mes v10 (también si la partida se pasó a v10 a mitad del mes).
+  const econRules = !!mandate && curV >= ECONOMY_RULES_VERSION && (!!c.s.econMigration || (!!prevRun && prevV >= 6 && prevV < ECONOMY_RULES_VERSION));
   const t = c.trajectory;
   const headline = headlineOf(t);
   const greeting = c.seasonDone
@@ -140,6 +142,11 @@ export function Today() {
               <b>Desde este mes el consejo es más justo con tu criterio.</b> Si una respuesta es defendible aunque tenga un costo, cuenta como bien razonada. Lo que depende de que otra persona acepte cuenta cuando responde, no antes. Y dejar vencer un asunto ético grave cuenta igual que decidir mal. Tus meses anteriores conservan su evaluación.
             </p>
           )}
+          {econRules && (
+            <p data-testid="aviso-economia" className="mb-3 rounded-xl bg-indigo-soft/50 px-3.5 py-2.5 text-[13px] text-ink">
+              <b>Desde ahora Caja y Margen se mueven con dinero real.</b> Cada asunto registra lo que se paga, se cobra o se concede, con su monto y su fecha: un descuento baja el margen desde que lo firmas; un pago sale de la caja el día que ocurre; un ahorro cuenta cuando se mide. No conceder no suma, y un monto chico para el tamaño de tu empresa no mueve el indicador. Una concesión o inversión grande sin pasar por el consejo le cuesta su confianza.{c.s.econMigration ? " Tu periodo en curso se recalculó con estas reglas: tus decisiones, tu historial y tu racha siguen igual." : ""}
+            </p>
+          )}
           <div className="flex items-baseline justify-between gap-2"><h2 className="font-semibold text-ink text-sm">Con qué te va a evaluar el consejo {c.continuous ? "este mes" : "esta temporada"}</h2><Link href="/ceo/carrera" className="shrink-0 text-[11px] font-semibold text-indigo">Detalle →</Link></div>
           <p className="mt-1 text-sm text-slate-600">Tu encargo: <b className="text-ink">{mandate.objectiveText}</b></p>
           <ul className="mt-2 grid gap-1.5 sm:grid-cols-3 text-[12.5px] text-slate-600">
@@ -147,7 +154,7 @@ export function Today() {
             <li className="rounded-xl bg-slate-50 px-3 py-2"><b className="text-ink">Empresa sana:</b> salud promedio de {mandate.healthMin} o más y ningún indicador debajo de {mandate.floor}; caja y consejo arriba de 40.</li>
             <li className="rounded-xl bg-slate-50 px-3 py-2"><b className="text-ink">Criterio:</b> al menos {Math.round(mandate.judgment.min * 100)} % de asuntos bien razonados. Los que dejes vencer cuentan en contra.</li>
           </ul>
-          <p className="mt-2 text-[11px] text-slate-500">Sin líneas rojas (seguridad, fraude, represalias, ocultar riesgos). Al cierre, la operación y el margen generan caja: un buen margen la repone.</p>
+          <p className="mt-2 text-[11px] text-slate-500">Sin líneas rojas (seguridad, fraude, represalias, ocultar riesgos). Al cierre, la operación del mes genera caja: lo que deja el negocio, más o menos los cambios de precio y costo que firmaste.</p>
         </section>
       )}
 

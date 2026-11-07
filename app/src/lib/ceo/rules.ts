@@ -67,6 +67,21 @@ export interface RuleSet {
     verdict: { insolvency: number; boardLost: number; floorBelowLine: number; healthAboveLine: number; minJudgment: number };
     mandateMargin: number;
   };
+  /**
+   * Economía real (desde v10). Sin este bloque = Caja y Margen como índices editoriales (y, en v5–v8, caja derivada
+   * del margen al cierre). Con él, Caja y Margen se mueven por hechos con monto y fecha (economy.ts):
+   *  - cashPct: 1 punto de Caja = esta proporción de lo que la empresa paga en un mes (0.05: 20 puntos = un mes).
+   *  - marginPct: 1 punto de Margen = esta proporción de la venta anual (0.005 = medio punto porcentual de margen).
+   *  - authority: concesiones recurrentes mayores a `concession` × resultado operativo anual, o inversiones mayores a
+   *    `investment` × venta anual, son decisiones de consejo; tomarlas sin él mueve el Consejo `penalty` puntos.
+   *  - depreciationYears: vida por omisión de una inversión (el margen solo carga la depreciación anual).
+   */
+  economy?: {
+    cashPct: number;
+    marginPct: number;
+    authority: { concession: number; investment: number; penalty: number };
+    depreciationYears: number;
+  };
 }
 
 /** Versión 1 · reglas legacy (v2 del simulador, octubre 2026). Congeladas: no editar. */
@@ -226,15 +241,40 @@ const V9: RuleSet = Object.freeze({
   v5: Object.freeze({ ...V8.v5!, cashFlow: Object.freeze({ perPoints: 2, min: 0, max: 0, base: 0 }) }),
 }) as RuleSet;
 
-/** Versión propuesta por la auditoría de indicadores. No activa: ver V9. */
+/**
+ * Versión 10 · economía real (fase C aprobada). Mismos umbrales del veredicto, rúbrica y líneas rojas que v8. Cambia:
+ *  - Caja y Margen se mueven por hechos con monto y fecha (cobros, pagos, cambios de precio o costo, inversiones,
+ *    capital de trabajo, financiamiento), convertidos con las anclas de cada empresa. Lo que no es material no mueve.
+ *  - Lo futuro se registra cuando ocurre; el hecho del caso se registra al llegar el asunto, elijas lo que elijas.
+ *  - Al cierre, la caja recibe la operación del mes (lo que genera el negocio menos su inversión de mantenimiento, más
+ *    los cambios de precio y costo del mes), no una fórmula sobre el índice de Margen.
+ *  - Autoridad: lo que rebasa la del director sin pasar por el consejo mueve el Consejo.
+ *  - Sin multiplicador de exigencia por etapa: un mismo hecho vale lo mismo en cualquier etapa.
+ */
+const V10: RuleSet = Object.freeze({
+  ...V8,
+  version: 10,
+  tier: Object.freeze({ ...V8.tier, hitPerTier: 0, gainPerTier: 0 }),
+  v5: Object.freeze({ ...V8.v5!, cashFlow: Object.freeze({ perPoints: 2, min: 0, max: 0, base: 0 }) }),
+  economy: Object.freeze({
+    cashPct: 0.05,
+    marginPct: 0.005,
+    authority: Object.freeze({ concession: 0.2, investment: 0.02, penalty: 2 }),
+    depreciationYears: 5,
+  }),
+}) as RuleSet;
+
+/** Versión propuesta por la auditoría de indicadores (histórica: la sustituyó v10). */
 export const PROPOSED_RULES_VERSION = 9;
+/** Versión de la economía real. */
+export const ECONOMY_RULES_VERSION = 10;
 
 /** Reglas de todas las partidas guardadas antes de que existiera `rulesVersion`. */
 export const LEGACY_RULES_VERSION = 1;
 /** Versión con la que empiezan las temporadas nuevas. */
 export const RULES_VERSION = 5;
 /** Versión con la que empiezan los periodos de la carrera continua (desde v6: veredicto V5). */
-export const CONTINUOUS_RULES_VERSION = 8;
+export const CONTINUOUS_RULES_VERSION = 10;
 /**
  * Versión de los periodos continuos registrados SIN versión explícita (jugadas anteriores a v6). Así, al reproducir
  * el diario de una carrera, un cierre o una empresa creada antes de v6 sigue abriendo periodos v4: nada cambia en
@@ -243,7 +283,7 @@ export const CONTINUOUS_RULES_VERSION = 8;
 export const LEGACY_CONTINUOUS_RULES_VERSION = 4;
 
 /** Todas las versiones publicadas. Las pruebas pueden registrar una versión simulada. */
-export const RULESETS: Record<number, RuleSet> = { 1: V1, 2: V2, 3: V3, 4: V4, 5: V5, 6: V6, 7: V7, 8: V8, 9: V9 };
+export const RULESETS: Record<number, RuleSet> = { 1: V1, 2: V2, 3: V3, 4: V4, 5: V5, 6: V6, 7: V7, 8: V8, 9: V9, 10: V10 };
 /** Versión de la ronda de coherencia (activa desde nov-2026: es la versión continua vigente). */
 export const COHERENCE_RULES_VERSION = 8;
 

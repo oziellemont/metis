@@ -19,11 +19,12 @@
 import type { EpisodeAction } from "./episodes/engine";
 import { applyAction, type GameAction } from "./replay";
 import { H, migrate, newState, xpOf } from "./engine";
-import { CONTINUOUS_RULES_VERSION, RULES_VERSION } from "./rules";
+import { CONTINUOUS_RULES_VERSION, PROPOSED_RULES_VERSION, RULES_VERSION } from "./rules";
 
 /** Versión de reglas que puede pedir el cliente: nunca una propuesta que aún no se activa (v9 hasta su aprobación). */
 const MAX_ACTIVE_RULES = Math.max(RULES_VERSION, CONTINUOUS_RULES_VERSION);
-const rv = (v: unknown): number | null => (num(v) && Number.isInteger(v) && v >= 1 ? Math.min(v, MAX_ACTIVE_RULES) : null);
+// v9 nunca se publicó (fue una propuesta): quien la pida recibe la vigente.
+const rv = (v: unknown): number | null => (num(v) && Number.isInteger(v) && v >= 1 ? (v === PROPOSED_RULES_VERSION ? MAX_ACTIVE_RULES : Math.min(v, MAX_ACTIVE_RULES)) : null);
 import type { CeoState } from "./types";
 
 export const JOURNAL_MAX_EVENTS = 50;
@@ -228,7 +229,8 @@ export type BaseCheck = { ok: true; state: CeoState; kind: "inicio" | "continuac
 export function checkBase(raw: unknown, careerStartedAt: number, serverNow: number): BaseCheck {
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) return { ok: false, error: "base_invalida" };
   let size = 0;
-  try { size = JSON.stringify(raw).length; } catch { return { ok: false, error: "base_invalida" }; }
+  // El respaldo de la economía real (v10) no cuenta para el límite: es la misma partida guardada dos veces.
+  try { const { econMigration: m, ...rest } = raw as Record<string, unknown>; size = JSON.stringify(rest).length + (m ? JSON.stringify({ ...(m as object), backup: undefined }).length : 0); } catch { return { ok: false, error: "base_invalida" }; }
   if (size > JOURNAL_MAX_BYTES) return { ok: false, error: "base_invalida" };
   const s = migrate(raw);
   if (!s.startedAt) return { ok: false, error: "base_invalida" };

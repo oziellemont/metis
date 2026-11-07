@@ -9,7 +9,7 @@
  * No cambia nada del juego: solo llama a las funciones públicas del motor.
  */
 import { LEVERS, canUse, leverById, simulate } from "./change";
-import { H, KPI_KEYS, advance, authoredFor, rulesVersionOf, casesDoneOf, decide, reportDueOf, setupCompany, entries, episodeEntries, kpis, newState, nextArrivalOf, openSeasonEpisode, packOf, rulesFor, verdictOf } from "./engine";
+import { H, KPI_KEYS, advance, optionOutlookOf, authoredFor, rulesVersionOf, casesDoneOf, decide, reportDueOf, setupCompany, entries, episodeEntries, kpis, newState, nextArrivalOf, openSeasonEpisode, packOf, rulesFor, verdictOf } from "./engine";
 import { EPISODES, actEpisode } from "./episodes/catalog";
 import { applyEpisode, strategiesFor, type EpisodeAction } from "./episodes/engine";
 import type { EpisodeRun } from "./episodes/contracts";
@@ -261,8 +261,8 @@ export function playSeason(make: () => CeoState, name: string, seed: string): Se
   for (let i = 0; i < 800 && !casesDoneOf(s, t); i++) {
     const p = entries(s, t).find((e) => e.status === "pendiente");
     if (p) {
-      // Las estrategias ven el efecto esperado (lo inmediato más el acuerdo ponderado): lo mismo que dice el caso.
-      const os = p.item.options.map((x) => (x.pending ? { ...x, effects: expectedEffects(x), pending: undefined } : x));
+      // Las estrategias ven el efecto esperado (lo inmediato más el acuerdo ponderado; en v10, desde los hechos): lo mismo que dice el caso.
+      const os = p.item.options.map((x) => (x.pending || x.facts ? { ...x, effects: rulesVersionOf(s) >= 10 ? optionOutlookOf(s, p.item, x) : expectedEffects(x), pending: undefined } : x));
       const o = st.pick(os, { s, t, itemId: p.item.id, r });
       if (o) { s = decide(s, p.item.id, o, t); t += 60_000; continue; }
     }

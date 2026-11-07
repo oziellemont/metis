@@ -7,12 +7,12 @@
  *  - `alertsAt`: avisos cuando una estrategia va desgastando un indicador (antes de que sea tarde).
  *  - `seasonDiagnosis`: al cierre, qué patrones de decisión explican el resultado, separado de la calidad del criterio.
  */
-import { KPI_KEYS, KPI_LABEL, cashFlowOf, changeKpiEffect, effectOf, entries, episodeEffectOf, episodeEntries, packOf, rulesFor, verdictOf } from "./engine";
+import { KPI_KEYS, KPI_LABEL, arrivalEffectOf, cashFlowOf, changeKpiEffect, effectOf, entries, episodeEffectOf, episodeEntries, packOf, rulesFor, verdictOf } from "./engine";
 import { rulesVersionOf, ruleSet } from "./engine";
 import { SEASON_OBJECTIVES } from "./objectives";
 import type { Axis, CeoState, Entry, KpiKey, Kpis, Option } from "./types";
 
-export type EventKind = "decision" | "vencido" | "caso" | "cambio" | "flujo";
+export type EventKind = "llegada" | "decision" | "vencido" | "caso" | "cambio" | "flujo";
 export interface TimelineEvent {
   kind: EventKind;
   id: string;
@@ -52,15 +52,19 @@ export function timeline(s: CeoState, now: number): { start: Kpis; events: Timel
     events.push({ kind, id, label, eff, wasted, before, after: { ...k }, at: null, href: null, ...extra });
   };
   for (const e of entries(s, now)) {
+    // v10: lo que ya había pasado cuando llegó el asunto se registra al llegar, decidas lo que decidas.
+    const a = arrivalEffectOf(s, e, now);
+    if (Object.keys(a).length) push("llegada", e.item.id, e.item.subject, a, { entry: e, at: e.arrivesAt, href: `/ceo/caso/${e.item.id}` });
     if (e.status !== "decidido" && e.status !== "vencido") continue;
     const at = e.status === "decidido" ? e.agreement?.resolved ? Math.max(e.decision!.at, e.agreement.respondsAt) : e.decision!.at : e.deadline;
-    push(e.status === "decidido" ? "decision" : "vencido", e.item.id, e.item.subject, effectOf(s, e), { option: e.option, entry: e, at, href: `/ceo/caso/${e.item.id}` });
+    push(e.status === "decidido" ? "decision" : "vencido", e.item.id, e.item.subject, effectOf(s, e, now), { option: e.option, entry: e, at, href: `/ceo/caso/${e.item.id}` });
   }
   for (const e of episodeEntries(s, now)) push("caso", e.spec.id, e.spec.title ?? e.spec.id, episodeEffectOf(s, e), { at: e.run?.closedAt ?? null, href: `/ceo/episodio/${e.spec.id}` });
   push("cambio", "cambio", "Proyecto de cambio", changeKpiEffect(s), { at: s.change?.closedAt ?? s.change?.moves.at(-1)?.at ?? null, href: "/ceo/cambio" });
   // Reglas V5: al cierre, el margen se convierte en caja (0 en reglas anteriores o si no ha cerrado).
-  const cf = cashFlowOf(s, k);
-  if (cf) push("flujo", "flujo", "Flujo de caja del año", { caja: cf });
+  // v10: la operación del mes (lo que genera el negocio más los cambios de precio y costo registrados).
+  const cf = cashFlowOf(s, k, now);
+  if (cf) push("flujo", "flujo", ruleSet(rulesVersionOf(s)).economy ? "Operación del mes" : "Flujo de caja del año", { caja: cf });
   return { start, events, end: k };
 }
 
@@ -209,7 +213,7 @@ export function seasonDiagnosis(s: CeoState, now: number): SeasonDiagnosis {
   const judgment = { average: Math.round(avg * 100) / 100, decided: decisions.length, expired, level: (avg >= 2.4 && expired <= 2 ? "alto" : avg >= 1.8 ? "medio" : "bajo") as "alto" | "medio" | "bajo" };
 
   const stories: KpiStory[] = KPI_KEYS.map((k) => {
-    const bySource: Record<EventKind, number> = { decision: 0, vencido: 0, caso: 0, cambio: 0, flujo: 0 };
+    const bySource: Record<EventKind, number> = { llegada: 0, decision: 0, vencido: 0, caso: 0, cambio: 0, flujo: 0 };
     let wasted = 0;
     for (const e of tl.events) { bySource[e.kind] += e.after[k] - e.before[k]; wasted += Math.max(0, e.wasted[k] ?? 0); }
     const touched = tl.events.filter((e) => (e.eff[k] ?? 0) !== 0).map((e) => ({ id: e.id, label: e.label, delta: e.eff[k] ?? 0 }));
@@ -250,7 +254,7 @@ export function seasonDiagnosis(s: CeoState, now: number): SeasonDiagnosis {
   if (v.v5) summary.push(passed ? `Aprobaste: cumpliste lo que el consejo te encargó, la empresa cerró sana y ${v.v5.judgment.good} de ${v.v5.judgment.total} asuntos estuvieron bien razonados.` : `No aprobaste. ${v.v5.why.join(" ")}`);
   else summary.push(passed ? `Aprobaste: los cinco indicadores cerraron en ${line} o más.` : `No aprobaste: ${failed.map((k) => `${KPI_NAME(k)} cerró en ${v.kpis[k]}`).join(", ")} (la línea es ${line}).`);
   for (const st of stories.filter((x) => !x.passed)) {
-    const src = (Object.entries(st.bySource) as [EventKind, number][]).filter(([, d]) => d < 0).sort((a, b) => a[1] - b[1]).map(([kind, d]) => `${({ decision: "tus decisiones", vencido: "lo que dejaste vencer", caso: "los casos ejecutivos", cambio: "el proyecto de cambio", flujo: "el flujo de caja" } as const)[kind]} (${d})`);
+    const src = (Object.entries(st.bySource) as [EventKind, number][]).filter(([, d]) => d < 0).sort((a, b) => a[1] - b[1]).map(([kind, d]) => `${({ llegada: "lo que ya había pasado al llegar los asuntos", decision: "tus decisiones", vencido: "lo que dejaste vencer", caso: "los casos ejecutivos", cambio: "el proyecto de cambio", flujo: "la operación del mes" } as const)[kind]} (${d})`);
     summary.push(`${KPI_LABEL[st.kpi]} bajó de ${st.start} a ${st.end} por ${src.join(", ") || "costos repartidos"}. Lo que más pesó: ${st.worst.map((w) => `«${w.label}» (${w.delta})`).join(", ") || "ninguna decisión aislada"}.`);
   }
   for (const p of patterns.slice(0, 3)) summary.push(p.text);

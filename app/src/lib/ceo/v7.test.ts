@@ -33,8 +33,8 @@ const reasons = (st: string) => {
 };
 
 describe("V7 · versiones", () => {
-  it("v7 sigue publicada (sus periodos no cambian) y tiene los mismos números que v6; la carrera vigente ya es v8", () => {
-    expect(CONTINUOUS_RULES_VERSION).toBe(8);
+  it("v7 sigue publicada (sus periodos no cambian) y tiene los mismos números que v6; la carrera vigente ya es v10", () => {
+    expect(CONTINUOUS_RULES_VERSION).toBe(10);
     const { version: _a, ...r6 } = ruleSet(6) as unknown as Record<string, unknown>;
     const { version: _b, ...r7 } = ruleSet(7) as unknown as Record<string, unknown>;
     expect(r7).toEqual(r6);

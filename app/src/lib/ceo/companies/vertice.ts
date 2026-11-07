@@ -9,6 +9,7 @@
 import { SEGUIMIENTOS_VERTICE } from "./seguimientos";
 import type { CompanyPack, Item } from "../types";
 import { withV8 } from "./v8";
+import { withV10 } from "./v10";
 import { CADENA_VERTICE } from "./vertice-cadena";
 
 /** Frases que dicen el giro original (el vocabulario por especialidad las cambia; ver career/lexicon.ts). */
@@ -491,5 +492,5 @@ export const VERTICE: CompanyPack = {
       { id: "pepe", start: 14, likes: ["entrevista", "townhall"], dislikes: ["incentivos"], secret: "«Frenar una salida suena bien hasta que culpan al operador. Si me garantizas que nadie se castiga por frenar, los patios apoyan.»" },
     ],
   },
-  items: withV8([...ITEMS, ...CADENA_VERTICE, ...SEGUIMIENTOS_VERTICE]),
+  items: withV10(withV8([...ITEMS, ...CADENA_VERTICE, ...SEGUIMIENTOS_VERTICE])),
 };

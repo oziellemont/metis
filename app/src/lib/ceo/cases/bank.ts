@@ -16,6 +16,7 @@
 import type { Area, CastId, CompanyPack, Item, Option } from "../types";
 import { ARCHETYPES, type Archetype, type Role } from "./archetypes";
 import { CONTEXTS, type IndustryContext } from "./contexts";
+import { archetypeFacts } from "./facts";
 
 export const BANK_PREFIX = "bk-";
 const LETTERS = ["a", "b", "c"] as const;
@@ -78,6 +79,10 @@ export function buildCase(a: Archetype, ctx: IndustryContext, twist: number, pac
     id: LETTERS[i], text: fill(o.text), reply: o.reply.map(fill), outcome: fill(o.outcome), effects: { ...o.effects }, style: { ...o.style }, score: o.score,
     stance: Object.fromEntries(Object.entries(o.stance).map(([r, v]) => [who(r as Role), v as number])),
   }));
+  // Economía real (v10): hechos con monto de la industria, por opción original (antes de barajar). Las reglas
+  // anteriores los ignoran y siguen leyendo `effects`.
+  const econ = archetypeFacts(a.id, ctx.industryId);
+  if (econ) econ.options.forEach((fs, i) => { options[i].facts = fs.map((x) => ({ ...x })); if (econ.board?.includes(i)) options[i].board = true; });
   // El orden de las opciones cambia con el giro: la mejor nunca está siempre en el mismo lugar.
   const order = [0, 1, 2].sort((x, y) => rand01(`${id}|${x}`) - rand01(`${id}|${y}`));
   // Vista previa: el primer párrafo que no es saludo («Estimado Director:», «Hola:»).
@@ -91,7 +96,8 @@ export function buildCase(a: Archetype, ctx: IndustryContext, twist: number, pac
     data: { title: a.dataTitle, rows: facts.rows.map(([k, v]) => [fill(k), fill(v)] as [string, string]) },
     ask: fill(a.ask),
     options: order.map((i) => options[i]),
-    expired: { reply: a.expired.reply.map(fill), outcome: fill(a.expired.outcome), effects: { ...a.expired.effects } },
+    expired: { reply: a.expired.reply.map(fill), outcome: fill(a.expired.outcome), effects: { ...a.expired.effects }, ...(econ ? { facts: econ.expired.map((x) => ({ ...x })) } : {}) },
+    ...(econ?.arrival ? { arrival: { text: econ.arrival.text, facts: econ.arrival.facts.map((x) => ({ ...x })) } } : {}),
     lesson: a.lesson,
     bitacora: { ...a.bitacora },
     areas: [...a.areas],

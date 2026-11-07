@@ -6,6 +6,7 @@
 import { SEGUIMIENTOS_BRASA } from "./seguimientos";
 import type { CompanyPack, Item } from "../types";
 import { withV8 } from "./v8";
+import { withV10 } from "./v10";
 import { CADENA_BRASA } from "./brasa-cadena";
 
 const ITEMS: Item[] = [
@@ -425,5 +426,5 @@ export const BRASA: CompanyPack = {
       { id: "paty", start: 40, likes: ["ejemplo"], secret: "«Don Ignacio me pregunta todo a mí. Si me tienes al tanto, le hablo bien de ti.»" },
     ],
   },
-  items: withV8([...ITEMS, ...CADENA_BRASA, ...SEGUIMIENTOS_BRASA]),
+  items: withV10(withV8([...ITEMS, ...CADENA_BRASA, ...SEGUIMIENTOS_BRASA])),
 };

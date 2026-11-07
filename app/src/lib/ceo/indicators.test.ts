@@ -71,12 +71,12 @@ describe("salud de la empresa (barra madre)", () => {
   });
 });
 
-describe("reglas v9: definidas, no activas", () => {
-  it("existe v9 pero las partidas nuevas siguen naciendo en v8", () => {
+describe("reglas v9: definidas, nunca activas (v10 las incluye)", () => {
+  it("existe v9 pero las partidas nuevas nacen en v10", () => {
     expect(PROPOSED_RULES_VERSION).toBe(9);
     expect(RULESETS[9].version).toBe(9);
-    expect(CONTINUOUS_RULES_VERSION).toBe(8);
-    expect(ownStart("cumbre")().rulesVersion).toBe(8);
+    expect(CONTINUOUS_RULES_VERSION).toBe(10);
+    expect(ownStart("cumbre")().rulesVersion).toBe(10);
   });
   it("sin multiplicador de exigencia: el mismo efecto vale igual en cualquier etapa", () => {
     for (let tier = 0; tier <= 6; tier++) {
@@ -96,7 +96,7 @@ describe("reglas v9: definidas, no activas", () => {
     expect(ruleSet(9).v5!.verdict).toEqual(ruleSet(8).v5!.verdict);
     expect(ruleSet(9).judgment).toEqual(ruleSet(8).judgment);
   });
-  it("el servidor no deja que un cliente pida v9 antes de activarla", () => {
+  it("el servidor no deja que un cliente pida v9: recibe la vigente", () => {
     const { events } = sanitizeEvents([
       { eventId: "3f1c2a4b-5d6e-4f70-8a9b-0c1d2e3f4a5b", seq: 1, action: { type: "advance", at: 1000, rulesVersion: 9 } },
       { eventId: "3f1c2a4b-5d6e-4f70-8a9b-0c1d2e3f4a5c", seq: 2, action: { type: "setupCompany", at: 1000, companyId: "3f1c2a4b-5d6e-4f70-8a9b-0c1d2e3f4a5b", sectorId: "manufactura", industryId: "autopartes", archetype: "establecida", displayName: "QA", rulesVersion: 9 } },
