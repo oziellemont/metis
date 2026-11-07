@@ -165,8 +165,8 @@ export const PROFILES: Record<string, BusinessProfile> = {
     clientsLabel: "Cuentas activas",
     clientsHint: "Cadenas y fabricantes con contrato vigente de transporte o almacenaje.",
     baselines: {
-      establecida: { revenue: 150, grossMargin: 0.3, headcount: 1600, costPerHead: 0.022, marketing: 0.6, otherFixed: 12, otherVar: 0.07, cash: 55, dso: 45, capexPct: 0.04, growth: 0.002, targetGrowth: 0.006, clients: 140 },
-      pyme: { revenue: 6, grossMargin: 0.26, headcount: 70, costPerHead: 0.018, marketing: 0.03, otherFixed: 0.5, otherVar: 0.06, cash: 3, dso: 40, capexPct: 0.03, growth: 0.004, targetGrowth: 0.01, clients: 25 },
+      establecida: { revenue: 150, grossMargin: 0.4, headcount: 1600, costPerHead: 0.017, marketing: 0.6, otherFixed: 7, otherVar: 0.065, cash: 55, dso: 45, capexPct: 0.04, growth: 0.002, targetGrowth: 0.006, clients: 140 },
+      pyme: { revenue: 6, grossMargin: 0.36, headcount: 70, costPerHead: 0.015, marketing: 0.03, otherFixed: 0.35, otherVar: 0.06, cash: 3, dso: 40, capexPct: 0.03, growth: 0.004, targetGrowth: 0.01, clients: 25 },
       startup: { revenue: 4, grossMargin: 0.22, headcount: 60, costPerHead: 0.035, marketing: 0.3, otherFixed: 0.5, otherVar: 0.1, cash: 30, dso: 35, capexPct: 0.02, growth: 0.04, targetGrowth: 0.06, clients: 40 },
     },
     metrics: [

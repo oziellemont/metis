@@ -19,7 +19,7 @@
  * Las competencias usan TODOS tus periodos cerrados más el actual, así que la lectura cambia con el tiempo; además se
  * compara el periodo en curso con los anteriores. Preferencias y resultados siguen siendo solo de la empresa actual.
  */
-import { AXES, KPI_KEYS, entries, kpis, packOf, rulesFor, rulesVersionOf, scaled } from "./engine";
+import { AXES, KPI_KEYS, entries, kpis, packOf, rulesFor, rulesVersionOf, scaled, shownEffectsOf } from "./engine";
 import { JUDGMENT_DIMS, JUDGMENT_LABEL, type JudgmentDim } from "./judgment";
 import { situationRubric } from "./rubric";
 import { timeline } from "./season-report";
@@ -162,7 +162,7 @@ export function leadershipOf(s: CeoState, now: number): Leadership {
     for (const e of dec) {
       const ev = tl.events.find((x) => x.kind === "decision" && x.id === e.item.id);
       if (!ev) continue;
-      const r = situationRubric({ item: e.item, chosen: e.option!, effects: Object.fromEntries(e.item.options.map((o) => [o.id, scaled(o.effects, ps.tier, v)])), board: ev.before, line, label, name });
+      const r = situationRubric({ item: e.item, chosen: e.option!, effects: Object.fromEntries(e.item.options.map((o) => [o.id, shownEffectsOf(ps, e.item, o)])), board: ev.before, line, label, name });
       for (const d of r.dims) {
         const a = acc[d.dim];
         a.sum += d.level; a.n++;

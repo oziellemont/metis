@@ -2,7 +2,9 @@
  * mêtis CEO · motor del simulador. Lógica pura (sin React ni navegador) para usarla
  * igual en la app, en el cron que agenda correos/WhatsApp y en las pruebas.
  */
-import type { AgreementState, Axis, CareerRun, CeoState, CrisisRating, CompanyPack, Decision, Entry, Item, KpiKey, Kpis, Option, PriorCondition, Settings, Written } from "./types";
+import type { AgreementState, Axis, CareerRun, CeoState, CrisisRating, CompanyPack, Decision, Entry, Fact, Item, KpiKey, Kpis, Option, PriorCondition, Settings, Written } from "./types";
+import { ECON_ROLLBACK, applyEconMigration, revertV10, sanitizeEconMigration } from "./econ-migration";
+import { Ledger, NO_MONEY, anchorsFor, beyondAuthority, moneyOf, nonMoney, plus, pointsOf, sumMoney, type Anchors, type Money } from "./economy";
 import { COMPANIES, FIRST_COMPANY, LEGACY_ROTATION, companyById } from "./companies";
 import { DILEMMAS, dilemmaById, sameSituation, type Dilemma } from "./dilemmas";
 import { changeEffect, simulate, type ChangeSim } from "./change";
@@ -169,7 +171,10 @@ export function migrate(raw: unknown): CeoState {
   if (out.careerMode === "continua" && out.companyProfile) out.company = out.companyProfile.contentPackId;
   if (out.settings.displayCurrency !== undefined && !isDisplayCurrency(out.settings.displayCurrency)) delete out.settings.displayCurrency;
   if (out.business !== undefined) { const b = sanitizeBusiness(out.business); if (b) out.business = b; else delete out.business; }
-  return out;
+  if (out.econMigration !== undefined) { const m = sanitizeEconMigration(out.econMigration); if (m) out.econMigration = m; else delete out.econMigration; }
+  // v10 · economía real: el periodo en curso pasa una sola vez, con respaldo (econ-migration.ts).
+  if (ECON_ROLLBACK) return revertV10(out);
+  return applyEconMigration(out);
 }
 
 // ───────────────────────────────────────────── tiempo y zona horaria
@@ -515,8 +520,13 @@ function withVariants(it: Item, seen: Map<string, Entry>, before: number): Item 
 const clamp = (n: number) => Math.max(0, Math.min(100, Math.round(n)));
 
 /** Efecto real (ya ajustado a tu nivel de exigencia) de lo que pasó en un asunto. */
-export function effectOf(s: CeoState, e: Entry): Partial<Kpis> {
+export function effectOf(s: CeoState, e: Entry, now = nowOf(s)): Partial<Kpis> {
   const v = rulesVersionOf(s);
+  // v10: Caja y Margen salen del registro de hechos del periodo (economy.ts); el resto, de lo que pasó.
+  if (ruleSet(v).economy) return econPass(s, now).main.get(e.item.id) ?? {};
+  return legacyEffectOf(s, e, v);
+}
+function legacyEffectOf(s: CeoState, e: Entry, v: number): Partial<Kpis> {
   if (e.status === "vencido") {
     // Con reglas de participación, el vencimiento tiene su consecuencia en la empresa, pero el nivel de
     // exigencia ya no la amplifica: no se apilan castigos sobre una ausencia.
@@ -526,11 +536,18 @@ export function effectOf(s: CeoState, e: Entry): Partial<Kpis> {
   // Acuerdo (v8+): lo que depende de la contraparte solo suma cuando responde.
   return e.status === "decidido" && e.agreement?.resolved ? addEffects(now, scaled(e.agreement.effects, s.tier, v)) : now;
 }
+/** v10: lo que ya había pasado cuando llegó el asunto (se registra elijas lo que elijas). */
+export function arrivalEffectOf(s: CeoState, e: Entry, now = nowOf(s)): Partial<Kpis> {
+  if (!ruleSet(rulesVersionOf(s)).economy) return {};
+  return econPass(s, now).arrival.get(e.item.id) ?? {};
+}
 export function kpis(s: CeoState, now = nowOf(s)): Kpis {
   const k = { ...packOf(s).kpiStart };
   const es = entries(s, now);
+  const econ = !!ruleSet(rulesVersionOf(s)).economy;
   for (const e of es) {
-    const eff = effectOf(s, e);
+    if (econ) { const a = arrivalEffectOf(s, e, now); for (const key of Object.keys(a) as KpiKey[]) k[key] = clamp(k[key] + (a[key] ?? 0)); }
+    const eff = effectOf(s, e, now);
     for (const key of Object.keys(eff) as KpiKey[]) k[key] = clamp(k[key] + (eff[key] ?? 0));
   }
   for (const e of episodeEntries(s, now)) {
@@ -539,7 +556,7 @@ export function kpis(s: CeoState, now = nowOf(s)): Kpis {
   }
   const ce = changeKpiEffect(s);
   for (const key of Object.keys(ce) as KpiKey[]) k[key] = clamp(k[key] + (ce[key] ?? 0));
-  const cf = cashFlowOf(s, k);
+  const cf = cashFlowOf(s, k, now);
   if (cf) k.caja = clamp(k.caja + cf);
   return k;
 }
@@ -547,14 +564,162 @@ export function kpis(s: CeoState, now = nowOf(s)): Kpis {
 /**
  * Reglas V5: al cierre (cuando el proyecto de cambio terminó), el margen se convierte en caja.
  * Recibe los indicadores ANTES de este paso. 0 si las reglas no son V5 o la temporada no ha cerrado.
+ * v10: en lugar de la fórmula, la operación del mes (lo que genera el negocio, más los cambios de precio y costo).
  */
-export function cashFlowOf(s: CeoState, before: Kpis): number {
+export function cashFlowOf(s: CeoState, before: Kpis, now = nowOf(s)): number {
   const R = ruleSet(rulesVersionOf(s)).v5;
   if (!R || !changeSimOf(s)?.done) return 0;
+  if (ruleSet(rulesVersionOf(s)).economy) return econPass(s, now).operation.caja ?? 0;
   // v9: la caja no se fabrica desde el índice de margen.
   if (R.cashFlow.min === 0 && R.cashFlow.max === 0) return 0;
   const line = rulesFor(s).passLine;
   return Math.max(R.cashFlow.min, Math.min(R.cashFlow.max, (R.cashFlow.base ?? 0) + Math.round((before.margen - line) / R.cashFlow.perPoints)));
+}
+
+// ───────────────────────────────────────────── economía real (v10)
+/** Constantes de economía de la partida (null antes de v10). */
+export const economyOf = (s: Pick<CeoState, "rulesVersion">) => ruleSet(rulesVersionOf(s)).economy ?? null;
+/** Anclas de la empresa de la partida (cuánto vale un punto de Caja y de Margen). Null antes de v10. */
+export function anchorsOf(s: Pick<CeoState, "rulesVersion" | "company"> & Partial<Pick<CeoState, "companyProfile">>): Anchors | null {
+  const E = economyOf(s);
+  return E ? anchorsFor(s.company, companyTypeOf(s), E, s.companyProfile?.metricProfileId) : null;
+}
+/** ¿El asunto declara hechos (contenido v10)? Si no, Caja y Margen se leen de sus efectos como antes. */
+export const isEconItem = (it: Item): boolean =>
+  !!it.arrival || !!it.expired.facts || it.options.some((o) => !!o.facts || !!o.pending?.yes.facts || !!o.pending?.no.facts);
+/** Último momento en que algo puede ocurrir dentro del periodo (al empezar su último día). */
+export function periodBoundOf(s: CeoState): number {
+  const last = Math.max(...packOf(s).items.map((i) => i.day));
+  return localMidnight(s.startedAt ?? 0, s.settings.tz) + (last - 1) * DAY + s.settings.windowStart * H;
+}
+/** Un hecho en el registro del periodo, para mostrarlo al jugador. */
+export interface FactLine {
+  item: string;
+  /** «llegada» (ya había pasado), «decision», «respuesta» (de un acuerdo), «vencido» u «operacion» (cierre del mes). */
+  source: "llegada" | "decision" | "respuesta" | "vencido" | "operacion";
+  fact: Fact;
+  /** Cuándo ocurre (tiempo de juego) y si ya ocurrió. */
+  at: number;
+  occurred: boolean;
+  /** Millones ya escalados al tamaño de la empresa. */
+  money: Money;
+}
+export interface EconPass {
+  arrival: Map<string, Partial<Kpis>>;
+  main: Map<string, Partial<Kpis>>;
+  /** Operación del mes (al cierre). */
+  operation: Partial<Kpis>;
+  operationMoney: number;
+  lines: FactLine[];
+  /** Millones acumulados del periodo. */
+  totals: { cash: number; margin: number; monthly: number };
+  anchors: Anchors;
+}
+const ECON_MEMO = new WeakMap<object, Map<number, EconPass>>();
+/**
+ * Registro de hechos del periodo hasta `now`: recorre los asuntos en el mismo orden que el tablero, registra cada hecho
+ * cuando ocurre (llegada, decisión, respuesta, fecha) y convierte el acumulado en puntos. Un asunto sin hechos (contenido
+ * anterior a v10) conserva sus puntos de Caja y Margen.
+ */
+export function econPass(s: CeoState, now = nowOf(s)): EconPass {
+  let memo = ECON_MEMO.get(s);
+  const hit = memo?.get(now);
+  if (hit) return hit;
+  const E = economyOf(s)!;
+  const A = anchorsFor(s.company, companyTypeOf(s), E, s.companyProfile?.metricProfileId);
+  const L = new Ledger(A);
+  const v = rulesVersionOf(s);
+  const bound = periodBoundOf(s);
+  const when = (base: number, f: Fact) => (f.days ? Math.max(base, Math.min(base + f.days * DAY, bound)) : base);
+  const out: EconPass = { arrival: new Map(), main: new Map(), operation: {}, operationMoney: 0, lines: [], totals: { cash: 0, margin: 0, monthly: 0 }, anchors: A };
+  const post = (item: string, source: FactLine["source"], fs: readonly Fact[] | undefined, base: number): Money => {
+    const sum = { cash: 0, margin: 0, monthly: 0 };
+    for (const f of fs ?? []) {
+      const at = when(base, f);
+      const money = moneyOf(f, A, E);
+      const occurred = at <= now;
+      out.lines.push({ item, source, fact: f, at, occurred, money });
+      if (occurred) { sum.cash += money.cash; sum.margin += money.margin; sum.monthly += money.monthly; }
+    }
+    return sum;
+  };
+  for (const e of entries(s, now)) {
+    if (e.status === "futuro") continue;
+    const it = e.item;
+    if (!isEconItem(it)) {
+      if (e.status === "decidido" || e.status === "vencido") out.main.set(it.id, legacyEffectOf(s, e, v));
+      continue;
+    }
+    if (it.arrival) {
+      const m = post(it.id, "llegada", it.arrival.facts, e.arrivesAt);
+      const a = plus(L.add(m), nonMoney(it.arrival.effects));
+      if (Object.keys(a).length) out.arrival.set(it.id, a);
+    }
+    let money: Money = NO_MONEY, eff: Partial<Kpis> = {};
+    if (e.status === "vencido") {
+      money = post(it.id, "vencido", it.expired.facts, e.deadline);
+      eff = nonMoney(it.expired.effects);
+    } else if (e.status === "decidido" && e.option) {
+      money = post(it.id, "decision", e.option.facts, e.decision!.at);
+      eff = plus(nonMoney(e.option.effects), authorityOf(e.option, A, E));
+      const p = e.option.pending;
+      if (p && e.agreement?.resolved) {
+        const r = e.agreement.accepted ? p.yes : p.no;
+        const m2 = post(it.id, "respuesta", r.facts, e.agreement.respondsAt);
+        money = { cash: money.cash + m2.cash, margin: money.margin + m2.margin, monthly: money.monthly + m2.monthly };
+        eff = plus(eff, nonMoney(r.effects));
+      }
+    } else continue;
+    const pts = plus(L.add(money), eff);
+    out.main.set(it.id, pts);
+  }
+  // Operación del mes, al cierre: lo que genera el negocio en un mes normal más la parte mensual de los cambios de precio
+  // y costo registrados. Si el plan de la empresa ya contempla quemar caja (una startup financiada por su ronda), esa
+  // quema está cubierta por el financiamiento: solo cuentan las desviaciones contra el plan.
+  if (changeSimOf(s)?.done) {
+    const cash = Math.max(0, A.monthlyCash) + L.monthly;
+    out.operationMoney = cash;
+    out.operation = L.add({ cash, margin: 0, monthly: 0 });
+  }
+  out.totals = L.totals();
+  if (!memo) { memo = new Map(); ECON_MEMO.set(s, memo); }
+  if (memo.size > 8) memo.clear();
+  memo.set(now, out);
+  return out;
+}
+
+/**
+ * Autoridad (v10): una concesión o inversión que rebasa lo que un director puede comprometer sin consejo es un evento
+ * de gobierno. Si la opción no la lleva al consejo (`board`), el Consejo lo registra.
+ */
+export function authorityOf(o: Pick<Option, "facts" | "board">, A: Anchors, E: NonNullable<ReturnType<typeof economyOf>>): Partial<Kpis> {
+  return !o.board && beyondAuthority(o.facts, A, E) ? { consejo: -E.authority.penalty } : {};
+}
+/**
+ * Lo que se espera de una opción con las reglas de la partida (para la rúbrica de criterio). En v10, los hechos de la
+ * opción convertidos a puntos con las anclas de la empresa, más el acuerdo ponderado por su probabilidad y el evento
+ * de autoridad. Antes de v10 (o si el asunto no tiene hechos), sus efectos ajustados al nivel.
+ */
+export function optionOutlookOf(s: CeoState, it: Item, o: Option): Partial<Kpis> {
+  const v = rulesVersionOf(s);
+  const E = economyOf(s), A = anchorsOf(s);
+  if (!E || !A || !isEconItem(it)) return scaled(expectedEffects(o), s.tier, v);
+  const base = plus(plus(nonMoney(o.effects), pointsOf(sumMoney(o.facts, A, E), A)), authorityOf(o, A, E));
+  if (!o.pending) return base;
+  const { p, yes, no } = o.pending;
+  const y = plus(nonMoney(yes.effects), pointsOf(sumMoney(yes.facts, A, E), A));
+  const n = plus(nonMoney(no.effects), pointsOf(sumMoney(no.facts, A, E), A));
+  const out: Partial<Kpis> = {};
+  for (const k of ["caja", "margen", "equipo", "clientes", "consejo"] as KpiKey[]) {
+    const x = (base[k] ?? 0) + p * (y[k] ?? 0) + (1 - p) * (n[k] ?? 0);
+    if (x) out[k] = Math.round(x * 100) / 100;
+  }
+  return out;
+}
+
+/** Lo que se le muestra al jugador que mueve una opción (v10: desde sus hechos; antes, sus efectos ajustados). */
+export function shownEffectsOf(s: CeoState, it: Item, o: Option): Partial<Kpis> {
+  return economyOf(s) && isEconItem(it) ? optionOutlookOf(s, it, o) : scaled(o.effects, s.tier, rulesVersionOf(s));
 }
 
 /** Indicadores que el consejo encargó (y la caja): la rúbrica V5 los considera en riesgo antes. */
@@ -589,11 +754,11 @@ export function judgmentShareOf(s: CeoState, now = nowOf(s)): { good: number; to
     if (e.status !== "decidido" && e.status !== "vencido") continue;
     total++;
     if (e.status === "decidido" && e.option) {
-      const os: ContextOption[] = e.item.options.map((o) => ({ id: o.id, score: o.score, effects: scaled(expectedEffects(o), s.tier, v) }));
+      const os: ContextOption[] = e.item.options.map((o) => ({ id: o.id, score: o.score, effects: optionOutlookOf(s, e.item, o) }));
       const me = os.find((o) => o.id === e.option!.id);
       if (me && judge(authoredFor(e.item, me.id, v), prioritizes(me, os, k, line, m.kpis, m.margin)).level >= 2) good++;
     }
-    const eff = effectOf(s, e);
+    const eff = plus(arrivalEffectOf(s, e, now), effectOf(s, e, now));
     for (const key of Object.keys(eff) as KpiKey[]) k[key] = clamp(k[key] + (eff[key] ?? 0));
   }
   return { good, total, ratio: total ? good / total : 0 };
@@ -1045,7 +1210,7 @@ function verdictV5(s: CeoState, now: number, k: Kpis, line: number, R5: NonNulla
   const business = reasons.length === 0;
   const j = judgmentShareOf(s, now);
   if (j.ratio < C.minJudgment) { reasons.push("criterio"); why.push(`${j.good} de ${j.total} asuntos estuvieron bien razonados (${Math.round(j.ratio * 100)} %); se pide al menos ${Math.round(C.minJudgment * 100)} %. Los que dejaste vencer cuentan como no razonados.`); }
-  return { reasons, why, objectives, objectiveText: obj?.text ?? "", floor, healthMin, judgment: { ...j, min: C.minJudgment }, cashFlow: cashFlowOf(s, k), business };
+  return { reasons, why, objectives, objectiveText: obj?.text ?? "", floor, healthMin, judgment: { ...j, min: C.minJudgment }, cashFlow: cashFlowOf(s, k, now), business };
 }
 
 /**

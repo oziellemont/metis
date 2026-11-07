@@ -40,6 +40,40 @@ export interface Option {
    * periodo). La probabilidad es una estimación del caso, no un dato empírico.
    */
   pending?: PendingAgreement;
+  /**
+   * Hechos económicos (reglas v10+): lo que esta opción paga, cobra, firma o compromete, con monto y fecha. En v10 la
+   * Caja y el Margen solo se mueven por hechos; `effects` conserva Equipo, Clientes y Consejo, y el motor agrega a
+   * `effects` la conversión de los hechos (para la vista previa y la rúbrica). Ver economy.ts.
+   */
+  facts?: Fact[];
+  /** Reglas v10+: la decisión pasó por el consejo (o el consejo la pidió). Sin esto, rebasar la autoridad mueve el Consejo. */
+  board?: boolean;
+}
+
+/** Tipo de hecho económico (propuesta de economía real, sección 5.2). */
+export type FactKind = "cobro" | "pago" | "precio" | "costo" | "inversion" | "capital_trabajo" | "financiamiento";
+
+/**
+ * Un hecho con monto (millones de pesos, empresa establecida; el motor lo escala al tamaño de la empresa) y fecha.
+ * Signo: positivo entra o mejora el resultado; negativo sale o lo empeora.
+ *  - cobro / capital_trabajo / financiamiento: caja (el financiamiento además carga intereses al margen con `rate`).
+ *  - pago: caja; y margen solo si `expense` (gasto del periodo).
+ *  - precio / costo: monto ANUAL; margen desde que ocurre, y la caja lo recibe en la operación del mes (1/12).
+ *  - inversion: caja cuando se paga; margen solo la depreciación anual (monto / `years`, 5 por omisión).
+ */
+export interface Fact {
+  kind: FactKind;
+  amount: number;
+  /** Qué pasó, en una línea (se muestra al jugador). */
+  text: string;
+  /** Días reales hasta que ocurre (como un acuerdo: si el periodo cierra antes, ocurre al empezar el último día). */
+  days?: number;
+  expense?: boolean;
+  years?: number;
+  /** Interés anual del financiamiento (0.12 = 12 %). */
+  rate?: number;
+  /** Lo decide otro (un cliente que se va, volumen que se pierde): no es una concesión del director (autoridad). */
+  external?: boolean;
 }
 
 export interface PendingAgreement {
@@ -55,8 +89,8 @@ export interface PendingAgreement {
    * un acuerdo y una consecuencia del mismo asunto pueden ser caminos excluyentes y coherentes.
    */
   days: number;
-  yes: { text: string; effects: Partial<Kpis> };
-  no: { text: string; effects: Partial<Kpis> };
+  yes: { text: string; effects: Partial<Kpis>; facts?: Fact[] };
+  no: { text: string; effects: Partial<Kpis>; facts?: Fact[] };
 }
 
 export interface ItemVariant {
@@ -94,7 +128,12 @@ export interface Item {
   ask: string;
   options: Option[];
   /** Si no respondes a tiempo. */
-  expired: { reply: string[]; outcome: string; effects: Partial<Kpis> };
+  expired: { reply: string[]; outcome: string; effects: Partial<Kpis>; facts?: Fact[] };
+  /**
+   * Reglas v10+: hecho del caso que ya ocurrió antes de que decidas (un brote, un alza de costo). Se registra al llegar
+   * el asunto, elijas lo que elijas; cada opción solo mueve su diferencia.
+   */
+  arrival?: { text: string; facts?: Fact[]; effects?: Partial<Kpis> };
   /** Lección de mêtis Academy CEO con la teoría detrás. */
   lesson?: string;
   bitacora: { title: string; text: string; nota: string };
@@ -286,6 +325,22 @@ export interface CeoState {
   companyProfile?: CompanyProfile;
   /** Negocio (P0-C): versión de supuestos y asignaciones de caja. Los números se reconstruyen con businessOf(). */
   business?: BusinessLog;
+  /** Paso del periodo en curso a la economía real (v10): respaldo completo y marca para no repetirlo. Ver econ-migration.ts. */
+  econMigration?: EconMigration;
+}
+
+/** Registro del paso a v10 de un periodo que ya estaba en curso. */
+export interface EconMigration {
+  /** Cuándo se hizo (hora real). */
+  at: number;
+  /** Versión de reglas que tenía el periodo. */
+  from: number;
+  /** Inicio del periodo que se pasó (para saber si sigue siendo el periodo en curso). */
+  startedAt: number;
+  /** Respaldo completo de la partida antes del cambio (JSON, sin este registro). */
+  backup?: string;
+  /** Si se revirtió: cuándo. Un periodo revertido no se vuelve a pasar solo. */
+  reverted?: number;
 }
 
 /** Estado de ritmo del jugador. Se deriva de `cadence.pauses` a una hora dada (ver cadence.ts). */

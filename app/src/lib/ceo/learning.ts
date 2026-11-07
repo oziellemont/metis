@@ -10,7 +10,7 @@
  *
  * Los efectos oficiales siguen saliendo de las reglas del motor (`effectOf`); aquí solo se leen.
  */
-import { KPI_KEYS, nowOf, rulesFor, rulesVersionOf, scaled } from "./engine";
+import { KPI_KEYS, nowOf, rulesFor, rulesVersionOf, scaled, shownEffectsOf } from "./engine";
 import { firstName } from "./cast";
 import { CONCEPT_LESSON, caseConceptOf } from "./concepts";
 import { displayOptions } from "./option-order";
@@ -97,7 +97,7 @@ export function decisionLesson(s: CeoState, e: Entry, pack: CompanyPack, now: nu
   const cc = caseConceptOf(it.id);
   const learned = cc ? { name: cc.def.name, applied: cc.applied, definition: cc.def.definition, lesson: CONCEPT_LESSON[cc.concept] ?? it.lesson ?? null } : { name: null, applied: it.bitacora.nota, definition: null, lesson: it.lesson ?? null };
   const v = rulesVersionOf(s);
-  const rubric = o ? situationRubric({ item: it, chosen: o, effects: Object.fromEntries(it.options.map((x) => [x.id, scaled(x.effects, s.tier, v)])), board: before, line, label, name }) : null;
+  const rubric = o ? situationRubric({ item: it, chosen: o, effects: Object.fromEntries(it.options.map((x) => [x.id, shownEffectsOf(s, it, x)])), board: before, line, label, name }) : null;
   return { gained, sacrificed, risks: [...below, ...near, ...other], learned, principle: it.bitacora.nota, otherPath: otherPathOf(s, e, eff, before, line, label), rubric };
 }
 
@@ -111,7 +111,7 @@ function otherPathOf(s: CeoState, e: Entry, eff: Partial<Kpis>, before: Kpis, li
   const chosen = e.status === "decidido" ? e.option?.id : undefined;
   const pool = displayOptions(e.item).filter((x) => x.id !== chosen);
   if (!pool.length) return null;
-  const effOf = (x: Option) => scaled(x.effects, s.tier, v);
+  const effOf = (x: Option) => shownEffectsOf(s, e.item, x);
   const paid = KPI_KEYS.filter((k) => (eff[k] ?? 0) < 0).sort((a, b) => (before[a] + (eff[a] ?? 0)) - (before[b] + (eff[b] ?? 0)));
   const exposed = paid[0];
   const scored = pool.map((x, i) => {

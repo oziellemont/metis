@@ -4,7 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
 import { ArrowLeft, ArrowRight, BookOpen, CheckCheck, PenLine, ListChecks, Clock, Globe2, Lightbulb, Lock, PhoneMissed, Play, Quote, XCircle } from "lucide-react";
 import { firstName, personOf, personalizeText } from "@/lib/ceo/cast";
-import { entryXp, LEVELS, nextLessonXp, rankFor, rulesVersionOf } from "@/lib/ceo/engine";
+import { econPass, economyOf, entryXp, isEconItem, LEVELS, nextLessonXp, rankFor, rulesVersionOf, type FactLine } from "@/lib/ceo/engine";
+import { moneyText } from "@/lib/ceo/economy";
 import { isOmissionRedLine } from "@/lib/ceo/editorial";
 import { runSpans } from "@/lib/ceo/pausetime";
 import { entryRipples, moodOf, REL_START } from "@/lib/ceo/relations";
@@ -314,6 +315,40 @@ function DataCard({ d }: { d: NonNullable<Item["data"]> }) {
   );
 }
 
+const FACT_SOURCE: Record<FactLine["source"], string> = { llegada: "Ya había pasado", decision: "Tu decisión", respuesta: "La respuesta", vencido: "Sin tu respuesta", operacion: "Operación del mes" };
+const FACT_KIND: Record<FactLine["fact"]["kind"], string> = { cobro: "Cobro", pago: "Pago", precio: "Precio (al año)", costo: "Costo (al año)", inversion: "Inversión", capital_trabajo: "Capital de trabajo", financiamiento: "Financiamiento" };
+
+/** v10: los hechos con monto y fecha que este asunto registró en la empresa (lo que mueve Caja y Margen). */
+function FactsCard({ e }: { e: Entry }) {
+  const c = useCeo();
+  const pass = useMemo(() => (economyOf(c.s) && isEconItem(e.item) ? econPass(c.s, c.now) : null), [c.s, c.now, e.item]);
+  const lines = pass ? pass.lines.filter((l) => l.item === e.item.id) : [];
+  const size = pass?.anchors.size ?? 1;
+  if (!lines.length) return null;
+  return (
+    <div className="card p-5 sm:p-6">
+      <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Registro de la empresa</div>
+      <ul className="mt-2 divide-y divide-slate-100">
+        {lines.map((l, i) => {
+          const recurring = l.fact.kind === "precio" || l.fact.kind === "costo";
+          const amt = l.fact.amount * size;
+          return (
+            <li key={i} className="flex items-start justify-between gap-4 py-2 text-sm">
+              <div className="min-w-0">
+                <div className="text-[11px] text-slate-400">{FACT_SOURCE[l.source]} · {FACT_KIND[l.fact.kind]}</div>
+                <p className="text-ink">{l.fact.text}</p>
+                {!l.occurred && <p className="text-xs text-slate-400">Ocurre en {until(l.at, c.now)}; todavía no cuenta.</p>}
+              </div>
+              <span className={clsx("shrink-0 font-semibold tabular-nums", amt < 0 ? "text-coral" : "text-indigo", !l.occurred && "opacity-50")}>{amt < 0 ? "−" : "+"}{moneyText(amt, recurring)}</span>
+            </li>
+          );
+        })}
+      </ul>
+      <p className="mt-3 text-xs text-slate-400">Caja y Margen se mueven por estos hechos, acumulados en el mes. Un hecho chico puede no mover el indicador por sí solo.</p>
+    </div>
+  );
+}
+
 // ───────────────────────────────────────────── consecuencia
 function Outcome({ e, fresh, part }: { e: Entry; fresh: boolean; part: "resultado" | "aprendes" }) {
   const c = useCeo();
@@ -373,6 +408,7 @@ function Outcome({ e, fresh, part }: { e: Entry; fresh: boolean; part: "resultad
         </div>
       )}
 
+      <FactsCard e={e} />
       <Ripples e={e} fresh={fresh} />
       </>}
 

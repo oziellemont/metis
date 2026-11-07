@@ -18,11 +18,12 @@ export const ZONE_LABEL: Record<Zone, string> = { critica: "Crítica", riesgo: "
 
 /** De dónde viene un movimiento (para no culpar a la última decisión de todo). */
 export const SOURCE_LABEL: Record<EventKind, string> = {
+  llegada: "Lo que ya había pasado al llegar el asunto",
   decision: "Tu decisión",
   vencido: "Asunto que venció sin respuesta",
   caso: "Cierre de un caso ejecutivo",
   cambio: "Proyecto de cambio",
-  flujo: "Ajuste de cierre del mes",
+  flujo: "Operación del mes (cierre)",
 };
 
 export interface Movement {
@@ -79,6 +80,8 @@ export function zoneOf(value: number, line: number, floor: number, mandate = fal
 const textOf = (e: TimelineEvent): string | null => {
   if (e.kind === "decision") return e.entry?.agreement?.resolved ? `${e.option?.outcome ?? ""} ${e.entry.agreement.text}`.trim() : e.option?.outcome ?? null;
   if (e.kind === "vencido") return e.entry?.item.expired.outcome ?? null;
+  if (e.kind === "llegada") return e.entry?.item.arrival?.text ?? null;
+  if (e.kind === "flujo") return "Lo que el negocio genera en un mes normal, más la parte del mes de los cambios de precio y costo que registraste.";
   return null;
 };
 

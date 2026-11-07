@@ -5,6 +5,7 @@
 import { SEGUIMIENTOS_CUMBRE } from "./seguimientos";
 import type { CompanyPack } from "../types";
 import { withV8 } from "./v8";
+import { withV10 } from "./v10";
 import { ITEMS } from "./cumbre-items";
 import { MANTENIMIENTO } from "./cumbre-mantenimiento";
 
@@ -87,5 +88,5 @@ export const CUMBRE: CompanyPack = {
       { id: "paty", start: 40, likes: ["ejemplo"], secret: "«La gente me pregunta a mí qué está pasando. Si yo lo entiendo, el chisme trabaja a tu favor.»" },
     ],
   },
-  items: withV8([...ITEMS, ...MANTENIMIENTO, ...SEGUIMIENTOS_CUMBRE]),
+  items: withV10(withV8([...ITEMS, ...MANTENIMIENTO, ...SEGUIMIENTOS_CUMBRE])),
 };

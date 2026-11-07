@@ -8,6 +8,7 @@
 import { SEGUIMIENTOS_PUNTOMADERO } from "./seguimientos";
 import type { CompanyPack, Item } from "../types";
 import { withV8 } from "./v8";
+import { withV10 } from "./v10";
 import { CADENA_PUNTOMADERO } from "./puntomadero-cadena";
 
 /** Frases que dicen el giro original (el vocabulario por especialidad las cambia; ver career/lexicon.ts). */
@@ -490,5 +491,5 @@ export const PUNTOMADERO: CompanyPack = {
       { id: "beto", start: 14, likes: ["entrevista", "townhall"], dislikes: ["incentivos"], secret: "«Frenar una promoción suena bien hasta que culpan al gerente. Si me garantizas que nadie se castiga por frenar, las tiendas apoyan.»" },
     ],
   },
-  items: withV8([...ITEMS, ...CADENA_PUNTOMADERO, ...SEGUIMIENTOS_PUNTOMADERO]),
+  items: withV10(withV8([...ITEMS, ...CADENA_PUNTOMADERO, ...SEGUIMIENTOS_PUNTOMADERO])),
 };

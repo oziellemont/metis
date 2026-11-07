@@ -10,7 +10,7 @@
  *    ajustado a tu nivel, el mismo que suma `kpis()`).
  * No cambia indicadores, XP ni veredicto.
  */
-import { KPI_KEYS, effectOf, entries, packOf } from "./engine";
+import { KPI_KEYS, effectOf, entries, packOf, shownEffectsOf } from "./engine";
 import { firstName } from "./cast";
 import { REL_START, entryRipples, moodOf, stanceOf } from "./relations";
 import type { CastId, CeoState, Entry, KpiKey } from "./types";
@@ -83,7 +83,7 @@ export function continuityOf(s: CeoState, itemId: string, now: number): Continui
   }
 
   // 3 · indicadores: lo que tus decisiones anteriores ya hicieron con lo que este asunto pone en juego.
-  const atStake = KPI_KEYS.filter((k) => e.item.options.some((o) => (o.effects[k] ?? 0) !== 0));
+  const atStake = KPI_KEYS.filter((k) => e.item.options.some((o) => (shownEffectsOf(s, e.item, o)[k] ?? 0) !== 0));
   const kpiLinks: ContinuityLink[] = [];
   for (const k of atStake) {
     let best: { x: Entry; d: number } | null = null;

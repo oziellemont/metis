@@ -50,9 +50,9 @@ const V7 = 7, V8 = COHERENCE_RULES_VERSION;
 const REVISED = COMPANIES.flatMap((p) => p.items.filter((i) => i.revisions?.some((r) => r.since === V8)).map((i) => ({ pack: p.id, item: i })));
 
 describe("v8 · versión", () => {
-  it("v8 existe con los mismos números de v7 más la rúbrica de score 2 defendible; los periodos continuos nuevos ya nacen en v8", () => {
+  it("v8 existe con los mismos números de v7 más la rúbrica de score 2 defendible; los periodos continuos nuevos ya nacen en v10", () => {
     expect(V8).toBe(8);
-    expect(CONTINUOUS_RULES_VERSION).toBe(8);
+    expect(CONTINUOUS_RULES_VERSION).toBe(10);
     const { version: _a, judgment: j, ...r8 } = ruleSet(8) as unknown as Record<string, unknown>;
     const { version: _b, ...r7 } = ruleSet(7) as unknown as Record<string, unknown>;
     expect(r8).toEqual(r7);
@@ -329,9 +329,9 @@ describe("v8 · un periodo v8 completo se puede jugar y cerrar", () => {
 });
 
 describe("v8 · activación", () => {
-  it("una empresa nueva y el siguiente mes de una carrera v7 nacen en v8; los meses v7 cerrados conservan su versión", async () => {
+  it("una empresa nueva y el siguiente mes de una carrera v7 nacen en la vigente; los meses v7 cerrados conservan su versión", async () => {
     const { playCareer } = await import("./season-sim");
-    expect(own("cumbre", T0, CONTINUOUS_RULES_VERSION).rulesVersion).toBe(V8);
+    expect(own("cumbre", T0, CONTINUOUS_RULES_VERSION).rulesVersion).toBe(CONTINUOUS_RULES_VERSION);
     // Carrera que empezó en v7: al cerrar el mes con la app vigente, el mes nuevo es v8 y el cerrado sigue en v7.
     const r7 = playCareer("cumbre", "criterio_y_tablero", 1, "act|v7", 7);
     const closed = r7.months[0];
@@ -340,7 +340,7 @@ describe("v8 · activación", () => {
     const { advance } = await import("./engine");
     const next = advance(closed.state, closed.at, CONTINUOUS_RULES_VERSION);
     if (next !== closed.state) {
-      expect(next.rulesVersion).toBe(V8);
+      expect(next.rulesVersion).toBe(CONTINUOUS_RULES_VERSION);
       expect(next.career?.at(-1)?.rulesVersion).toBe(7);
     }
     // El veredicto del mes v7 no cambia por existir v8.

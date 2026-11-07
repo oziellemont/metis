@@ -6,6 +6,7 @@
 import { SEGUIMIENTOS_FORJA } from "./seguimientos";
 import type { CompanyPack, Item } from "../types";
 import { CADENA_FORJA_V8, withV8 } from "./v8";
+import { withV10 } from "./v10";
 import { CADENA_FORJA } from "./forja-cadena";
 
 const ITEMS: Item[] = [
@@ -488,5 +489,5 @@ export const FORJA: CompanyPack = {
       { id: "fermin", start: 14, likes: ["entrevista", "townhall"], dislikes: ["incentivos"], secret: "«Parar la línea suena bien hasta que culpan al operador. Si me garantizas que nadie se castiga por parar, el sindicato apoya.»" },
     ],
   },
-  items: withV8([...ITEMS, ...CADENA_FORJA, ...CADENA_FORJA_V8, ...SEGUIMIENTOS_FORJA]),
+  items: withV10(withV8([...ITEMS, ...CADENA_FORJA, ...CADENA_FORJA_V8, ...SEGUIMIENTOS_FORJA])),
 };
