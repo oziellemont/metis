@@ -499,6 +499,140 @@ export function revisionsV10(it: Item): Revision[] | undefined {
         }),
         expired: { ...at.expired, effects: { clientes: -6, consejo: -3 } },
       }, "Economía real: cotizar al objetivo compromete margen; defender el precio actual no genera dinero, solo te deja fuera.");
+    // ───────────────────────────────────────────── etapa 3 · Brasa
+    case "gb-d4-carne":
+      return rev({
+        arrival: { text: "La res ya subió 14 % desde el lunes: el food cost pasa de 33 % a 36 % elijas lo que elijas.", effects: {}, facts: [f("costo", -29.4, "Res 14 % más cara: 3 puntos de food cost", { external: true })] },
+        options: opts({
+          a: { effects: { clientes: -4 }, facts: [f("precio", 29.4, "Menú 6 % más caro"), f("precio", -12, "Tráfico −4 % (venta que se deja de atender)", { external: true })] },
+          b: { effects: { equipo: 1, consejo: 1 }, facts: [f("costo", 12.6, "Contrato a 12 meses: +8 % en lugar de +14 %"), f("pago", -0.2, "Cata ciega con 50 clientes", { expense: true })] },
+          c: { effects: { clientes: 2, consejo: -2 } },
+        }),
+        expired: { ...at.expired, effects: {} },
+      }, "Economía real: el alza ya ocurrió; cada camino recupera una parte con su monto. Absorber no tiene castigo extra: ya se paga en el costo.");
+    case "gb-d5-cdmx": {
+      const plan = pend({
+        who: "Las 6 sucursales de CDMX", what: "Que respondan al plan de recuperación", p: 0.4, days: 7,
+        yes: { text: "Dos sucursales ya llegaron a equilibrio y las demás pierden la mitad.", effects: { clientes: 1 }, facts: [f("costo", 8.4, "La pérdida de CDMX se reduce a la mitad")] },
+        no: { text: "El plan no movió el tráfico: CDMX sigue perdiendo lo mismo.", effects: { consejo: -1 } },
+      });
+      return rev({
+        options: opts({
+          a: { effects: { consejo: 1, equipo: -2 }, facts: [f("pago", -14.7, "Penalización por cerrar 4 sucursales", { expense: true }), f("costo", 13.2, "Se elimina la pérdida de las 4 peores", { days: 7 })] },
+          b: { effects: { equipo: 2, consejo: -2 }, facts: [f("pago", -4, "Gerente regional, menú y marketing local (primer tramo de $8 M)", { expense: true })], pending: plan },
+          c: { effects: { consejo: -3, equipo: -3 }, facts: [f("pago", -22, "Penalización por cerrar las 6 sucursales", { expense: true }), f("costo", 16.8, "Se elimina la pérdida de CDMX", { days: 7 })] },
+        }),
+        expired: { ...at.expired, effects: {} },
+      }, "Economía real: cerrar cuesta la penalización y elimina la pérdida; el plan cuesta y depende de que funcione. La pérdida actual ya está en el negocio.");
+    }
+    case "gb-d6-dark":
+      return rev({
+        options: opts({
+          a: { effects: { equipo: -1 }, facts: [f("pago", -0.4, "Prueba de 8 semanas en 2 cocinas", { expense: true })] },
+          b: { effects: { clientes: -2, equipo: -3 }, facts: [f("pago", -1.5, "Marca, fotos y empaques", { expense: true }), f("precio", 1.6, "Margen de 4 % sobre $40 M de venta en apps", { days: 10 })] },
+          c: { effects: { equipo: 1, consejo: -1 } },
+        }),
+      }, "Economía real: la marca virtual tiene un costo y un margen chico; probar cuesta poco.");
+    case "gb-d6-sucesion":
+      return rev({
+        options: opts({
+          a: { effects: { consejo: 5, equipo: 1 }, facts: [f("pago", -0.5, "Protocolo familiar y dos consejeros independientes", { expense: true })] },
+          b: { effects: { consejo: -3 } },
+          c: { effects: { consejo: -3, equipo: 1 } },
+        }),
+      }, "Economía real: una recomendación no mueve dinero; el protocolo y los consejeros sí cuestan.");
+    case "gb-c-prov-contrato":
+      return rev({
+        options: opts({
+          a: {
+            effects: { equipo: -1 },
+            pending: pend({
+              ...at.options.find((o) => o.id === "a")!.pending!,
+              yes: { text: "El proveedor aceptó el 85 % y los dos pagos. Firmaste el descuento con un riesgo acotado; el primer pago salió de la caja.", effects: { consejo: 1 }, facts: [f("costo", 9.6, "8 % menos sobre ≈ $120 M de res al año"), f("pago", -3, "Primer pago del anticipo")] },
+              no: { text: "El proveedor sostuvo sus condiciones y retiró la oferta del 8 %: la semana de negociación no dio descuento.", effects: { consejo: -1 } },
+            }),
+          },
+          b: { effects: { consejo: 1 }, facts: [f("costo", 9.6, "8 % menos sobre ≈ $120 M de res al año"), f("pago", -6, "Anticipo del 20 % del primer trimestre")] },
+          c: { effects: { consejo: -1 } },
+        }),
+        expired: { ...at.expired, effects: { consejo: -1 } },
+      }, "Economía real: el anticipo es caja que se adelanta, no gasto; el descuento es margen. No firmar no suma caja.");
+    // ───────────────────────────────────────────── etapa 3 · Kúbit
+    case "kb-d1-guardia":
+      return rev({
+        options: opts({
+          a: { effects: { equipo: 3, clientes: 3, consejo: -1 }, facts: [f("pago", -0.5, "Días extra de ingeniería para la entrega de Altamar", { expense: true })] },
+          b: {
+            effects: { consejo: 1, equipo: -3, clientes: -1 },
+            pending: pend({
+              who: "La plataforma en cierre de mes", what: "Que no se caiga con cambios sin revisar", p: 0.6, days: 4,
+              yes: { text: "El cierre de mes pasó sin caídas.", effects: {} },
+              no: { text: "La plataforma se cayó en cierre de mes: créditos por contrato y clientes molestos.", effects: { clientes: -2 }, facts: [f("pago", -1, "Créditos por contrato (10 % de la mensualidad de los afectados)", { expense: true })] },
+            }),
+          },
+          c: { effects: { equipo: 2, clientes: 1, consejo: 1 }, facts: [f("pago", -0.2, "Revisión acotada a dinero y datos de clientes", { expense: true })] },
+        }),
+        expired: { ...at.expired, effects: { equipo: -4, clientes: -1 } },
+      }, "Economía real: revisar cuesta días de ingeniería; quitar la revisión ahorra eso a cambio del riesgo de créditos por caída.");
+    case "kb-c-mejora":
+      return rev({
+        options: opts({
+          a: { effects: { equipo: 5, clientes: 3 }, facts: [f("pago", -0.6, "60 días enseñando la práctica a todos los equipos", { expense: true }), f("costo", 1.5, "Menos incidentes y solicitudes de soporte en toda ingeniería", { days: 10 })] },
+          b: { effects: { equipo: 2, consejo: 1, clientes: -1 }, facts: [f("costo", 0.4, "Menos solicitudes de soporte en infraestructura")] },
+        }),
+      }, "Economía real: extender la mejora cuesta capacitación y ahorra soporte.");
+    case "kb-d2-fuga":
+      return rev({
+        options: opts({
+          a: { effects: { equipo: 5 }, facts: [f("pago", -6, "Bono de retención de 12 meses para 40 ingenieros clave", { expense: true })] },
+          b: { effects: { equipo: 2, clientes: -2, consejo: -1 }, facts: [f("pago", -2.5, "Academia interna con la universidad", { expense: true })] },
+          c: { effects: { consejo: 3, equipo: -5 }, facts: [f("costo", -5, "Equipo subcontratado en el extranjero"), f("costo", 6, "Se dejan de cubrir vacantes con horas extra", { days: 10 })] },
+        }),
+        expired: { ...at.expired, effects: { equipo: -5 }, facts: [f("costo", -2, "Las horas extra se disparan")] },
+      }, "Economía real: cada camino con su monto del caso; no decidir sube las horas extra.");
+    case "kb-d5-banco":
+      return rev({
+        arrival: { text: "Las cuentas ya están congeladas: $90 M que no puedes usar mientras se aclara si se recuperan. No se dan por perdidos.", effects: {} },
+        options: opts({
+          a: { effects: { equipo: 3, clientes: 1, consejo: -1 } },
+          b: { effects: { equipo: -6, consejo: -3 } },
+          c: { effects: { consejo: 3, equipo: 2 }, facts: [f("pago", -0.3, "Comisión de apertura de la línea puente", { expense: true })] },
+        }),
+        expired: { ...at.expired, effects: { equipo: -8, consejo: -4 } },
+      }, "Economía real: pagar la nómina no es un gasto nuevo y pagar la mitad no genera caja; la línea puente cuesta su comisión.");
+    case "kb-d6-denuncia":
+      return rev({
+        options: opts({
+          a: { effects: { equipo: 4, consejo: 1 }, facts: [f("pago", -0.8, "Investigación de una firma externa", { expense: true }), f("pago", -1, "Ventas de la región que bajan unas semanas", { expense: true })] },
+          b: { effects: { equipo: -6, consejo: -2 } },
+          c: { effects: { equipo: 3, consejo: -3 }, facts: [f("pago", -2.5, "Liquidación y defensa ante una demanda por despido", { expense: true })] },
+        }),
+      }, "Economía real: investigar y despedir tienen costo; no hacer nada no genera dinero.");
+    case "kb-s-altamar-mas":
+      return rev({
+        options: opts({
+          a: { effects: { clientes: -2, equipo: 2 } },
+          b: { effects: { clientes: 4, equipo: -5 }, facts: [f("pago", -6.5, "9 ingenieros seis meses en desarrollos sin costo", { expense: true })] },
+          c: { effects: { clientes: -6, equipo: 3 } },
+        }),
+        expired: { ...at.expired, effects: { clientes: -4, consejo: -1 } },
+      }, "Economía real: regalar desarrollos cuesta ingenieros; cotizar aparte o negarse no genera dinero.");
+    case "kb-s-altamar-grupo": {
+      const award = (p: number, margin: number, text: string, cost: number, costText: string) => pend({
+        who: "Grupo Altamar", what: "Que elija a Kúbit para el grupo", p, days: 7,
+        yes: { text: "Altamar eligió a Kúbit para el grupo.", effects: { clientes: 3 }, facts: [f("precio", margin, text, { days: 7 }), f("pago", -cost, costText, { expense: true })] },
+        no: { text: "Altamar eligió a otro proveedor para el grupo.", effects: { clientes: -3 } },
+      });
+      return rev({
+        options: opts({
+          a: { effects: { equipo: -1, consejo: 2 }, pending: award(0.5, 12, "Margen de las primeras cuatro empresas con 10 % de descuento", 2, "Implementación de cuatro empresas") },
+          b: { effects: { equipo: -5 }, pending: award(0.85, 10, "Margen de 14 empresas con 20 % de descuento, menos implementaciones que salen mal", 6, "Contratación a la carrera para 14 implementaciones") },
+          c: { effects: { consejo: -1 }, pending: award(0.15, 14, "Margen de las primeras cuatro empresas a precio de lista", 2, "Implementación de cuatro empresas") },
+        }),
+        expired: { ...at.expired, effects: { clientes: -6, consejo: -2 } },
+        data: rows({}, [["Margen de cuatro empresas por trimestre", "≈ $12 M al año con 10 % de descuento (estimación de Andrea)"]]),
+      }, "Economía real: ganar el grupo trae margen e implementación; la probabilidad depende de la oferta.");
+    }
     case "vl-s-almena-mas":
       return rev({
         options: opts({
