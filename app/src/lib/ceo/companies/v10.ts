@@ -362,7 +362,7 @@ export function revisionsV10(it: Item): Revision[] | undefined {
             effects: { equipo: 2, consejo: -1 },
             facts: [f("pago", -6, "Lanzamiento nacional con el plan original", { expense: true })],
             pending: pend({
-              who: "Logística y tiendas", what: "Que la rotación del piloto se sostenga en 1,200 tiendas", p: 0.5, days: 4,
+              who: "Logística y tiendas", what: "Que la rotación del piloto se sostenga en todo el país", p: 0.5, days: 4,
               yes: { text: "La rotación se sostuvo en casi todo el país: la venta incremental llegó.", effects: { clientes: 3 }, facts: [f("precio", 9, "Venta incremental nacional (con la canibalización del piloto)")] },
               no: { text: "Fuera del noreste no rotó: devoluciones y producto caducado en anaquel.", effects: { clientes: -2 }, facts: [f("precio", 2, "Venta incremental real, mucho menor a la del piloto"), f("pago", -1.5, "Devoluciones y producto caducado", { expense: true })] },
             }),
@@ -435,7 +435,7 @@ export function revisionsV10(it: Item): Revision[] | undefined {
     case "fn-d5-plataforma": {
       const award = (p: number, margin: number, pct: string, adv: number) => pend({
         who: "Aurora Motors", what: "Que asigne la plataforma SUV 2028", p, days: 5,
-        yes: { text: `Aurora asignó la plataforma con margen de ${pct}: hay que anticipar la prensa.`, effects: { clientes: 4 }, facts: [f("precio", margin, `Margen de ${pct} sobre ≈ $150 M al año del programa`, { days: 10 }), f("inversion", -adv, "Anticipo de la prensa de 1,200 toneladas", { days: 7 })] },
+        yes: { text: `Aurora asignó la plataforma con margen de ${pct}: hay que anticipar la inversión.`, effects: { clientes: 4 }, facts: [f("precio", margin, `Margen de ${pct} sobre ≈ $150 M al año del programa`, { days: 10 }), f("inversion", -adv, "Anticipo de la inversión en equipo para el programa", { days: 7 })] },
         no: { text: "Aurora asignó la plataforma a otro proveedor.", effects: { clientes: -4 } },
       });
       return rev({
@@ -445,8 +445,8 @@ export function revisionsV10(it: Item): Revision[] | undefined {
           c: { effects: { clientes: 2, consejo: -2 } },
         }),
         expired: { ...at.expired, effects: { consejo: -3 } },
-        data: rows({}, [["Anticipo de la prensa si se gana", "10 % de $350 M al confirmar"]]),
-      }, "Economía real: ganar trae margen y el anticipo de la prensa; proponer herramental de Aurora aplaza la decisión sin dinero.");
+        data: rows({}, [["Anticipo de la inversión si se gana", "10 % de $350 M al confirmar"]]),
+      }, "Economía real: ganar trae margen y el anticipo de la inversión; proponer herramental de Aurora aplaza la decisión sin dinero.");
     }
     case "fn-d6-proveedor": {
       const supply = pend({
