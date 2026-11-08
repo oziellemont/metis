@@ -4,13 +4,13 @@
  * tipo de empresa (startup o establecida) → sector e industria de ese tipo (con búsqueda) → nombre → carta.
  * Toda la lógica vive en lib/ceo/career (setup.ts, taxonomy.ts, identity.ts); aquí solo se pinta.
  */
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
 import { ArrowRight, Building2, Check, Lock, Search } from "lucide-react";
 import { personOf } from "@/lib/ceo/cast";
 import { ARCHETYPES, INDUSTRY_PLACEHOLDER, availabilityLabel, industryOf } from "@/lib/ceo/career/taxonomy";
 import { NAME_MAX } from "@/lib/ceo/career/identity";
-import { GROWTH_CHOICES, OFFERED_ARCHETYPES, appointedByOf, canContinue, changeChoice, changeType, choiceOf, effectiveShort, growthFactsOf, growthIndustries, growthSummaryOf, industriesForType, nameExample, previewPack, searchForSel, sectorsForSel, typeOpen, type SetupSelection } from "@/lib/ceo/career/setup";
+import { GROWTH_CHOICES, OFFERED_ARCHETYPES, appointedByOf, canContinue, changeChoice, changeType, choiceOf, effectiveShort, growthFactsOf, growthIndustries, growthSummaryOf, industriesForType, templateOfSel, nameExample, previewPack, searchForSel, sectorsForSel, typeOpen, type SetupSelection } from "@/lib/ceo/career/setup";
 import { Avatar, CompanyMark } from "./ui";
 
 type Sel = SetupSelection;
@@ -61,6 +61,8 @@ export function ArchetypeStep({ sel, setSel, onBack, onNext, extra, growth }: St
 /** Empresa emergente o consolidada (Growth Engine, detrás de su interruptor). */
 function GrowthChoiceStep({ sel, setSel, onBack, onNext, extra }: StepProps & { extra?: React.ReactNode }) {
   const cur = choiceOf(sel);
+  // Con el motor encendido, la consolidada preseleccionada también corre el motor en las industrias piloto.
+  useEffect(() => { if (cur === "consolidada" && !sel.growth) setSel((s) => changeChoice(s, "consolidada")); }, [cur, sel.growth, setSel]);
   return (
     <section className="academy-in mt-10">
       <div className="text-xs font-semibold uppercase tracking-wider text-mint">Tu empresa · 1 de 4</div>
@@ -212,11 +214,11 @@ export function LetterStep({ sel, name, onBack, onNext }: Omit<StepProps, "setSe
     <section className="academy-in mt-10">
       <div className="text-xs font-semibold uppercase tracking-wider text-mint">Tu empresa · 4 de 4 · {industryOf(sel.sectorId, sel.industryId)?.label}{sel.specialty ? ` · ${sel.specialty}` : ""} · {pk.city}</div>
       <h1 className="mt-2 text-3xl font-semibold leading-tight">Tu nombramiento en la Dirección General de {pk.name}</h1>
-      <p className="mt-3 text-white/70 text-[15px] leading-relaxed">{sel.growth ? `Te nombra el dueño. ${growthSummaryOf(sel) ?? ""}` : `${appointedByOf(sel.archetype)} ${pk.pitch}`}</p>
+      <p className="mt-3 text-white/70 text-[15px] leading-relaxed">{templateOfSel(sel) ? `${appointedByOf(sel.archetype)} ${growthSummaryOf(sel) ?? ""}` : `${appointedByOf(sel.archetype)} ${pk.pitch}`}</p>
       <div className="mt-6 rounded-2xl bg-white text-ink p-5">
         <div className="flex items-center gap-3"><Avatar id={chair.id} size={40} pack={pk} /><div><div className="text-sm font-semibold">{chair.name}</div><div className="text-xs text-slate-500">{chair.role}</div></div></div>
         {first && <p className="mt-3 text-[15px] font-medium">{first}:</p>}
-        <p className="mt-2 text-[15px] leading-relaxed text-slate-600 whitespace-pre-line">«{sel.growth ? "Te dejo el negocio en tus manos. Tenemos clientes que quieren más de lo que hoy podemos dar, y caja para crecer con cuidado. Cada persona que sumes, cada local o contrato, se va a notar en la nómina y en la caja. Decide con los números a la vista." : pk.welcome}»</p>
+        <p className="mt-2 text-[15px] leading-relaxed text-slate-600 whitespace-pre-line">«{templateOfSel(sel) && sel.archetype === "establecida" ? "Te entregamos una operación que ya funciona. Cada sucursal tiene su gente, sus números y sus pendientes. Lo que decidas, contratar, mover gente, abrir o cerrar, se va a notar en la nómina y en la caja del mes." : templateOfSel(sel) ? "Te dejo el negocio en tus manos. Tenemos clientes que quieren más de lo que hoy podemos dar, y caja para crecer con cuidado. Cada persona que sumes, cada local o contrato, se va a notar en la nómina y en la caja. Decide con los números a la vista." : pk.welcome}»</p>
       </div>
       <div className="mt-6 grid grid-cols-2 gap-3">
         {(growthFactsOf(sel) ?? pk.facts).map(([k, v]) => <div key={k} className="rounded-2xl bg-white/10 p-4"><div className="text-[11px] text-white/50">{k}</div><div className="mt-1 font-semibold">{v}</div></div>)}

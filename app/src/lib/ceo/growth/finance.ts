@@ -188,6 +188,39 @@ export function quoteOwner(s: GrowthState, amount: number): Quote {
   return { available: true, amount: x, cost: 0, arrivesInDays: FIN_PARAMS.ownerArriveDays.value, detail: `El dueño podría aportar hasta $${fmt(cap)}. No genera intereses, pero cada aportación se discute en consejo y pesa en su confianza.` };
 }
 
+// ──────────────────────────────────────────────────────────────── financiamiento de arranque (llamada con el banco)
+/**
+ * Ofertas preaprobadas del banco al llegar (supuesto de simulación): con aval del dueño y garantía de la operación, el
+ * banco ofrece tres plazos sin pedir historia bajo tu gestión. A más plazo, más monto y más tasa. Las cifras salen de
+ * la plantilla (`startCredit`, `bankRate`); el pago es una anualidad mensual y la comisión de apertura es la misma.
+ */
+export const START_OFFERS = Object.freeze([
+  { id: "corto", months: 12, share: 0.35, spread: 0 },
+  { id: "medio", months: 24, share: 0.65, spread: 0.015 },
+  { id: "largo", months: 36, share: 1, spread: 0.03 },
+] as const);
+/** Días desde tu llegada durante los que sigue vigente la preaprobación. */
+export const START_WINDOW = 45;
+export interface LoanOffer { id: string; months: number; amount: number; rate: number; payment: number; cost: number; fee: number }
+const offerOf = (amount: number, rate: number, months: number, id: string): LoanOffer => {
+  const payment = annuity(amount, rate, months);
+  const fee = Math.round(amount * FIN_PARAMS.openingFee.value);
+  return { id, months, amount, rate, payment, fee, cost: payment * months - amount + fee };
+};
+/** Ofertas de arranque vigentes hoy (vacío si ya venció la ventana, ya se tomó una o la relación no lo permite). */
+export function startOffers(s: GrowthState): LoanOffer[] {
+  const T = tpl(s);
+  if (!T?.startCredit || s.day > START_WINDOW || s.loans.some((l) => l.ref.startsWith("gf_arranque")) || s.relations.bank < 0.5 || oldestOverdueDays(s, "fisco") > 30) return [];
+  return START_OFFERS.map((o) => offerOf(Math.floor((T.startCredit * o.share) / 10000) * 10000 * 100, T.bankRate + o.spread, o.months, o.id));
+}
+/** Oferta del banco en una crisis (sale de `quoteLoan`, con el monto que la decisión pediría). */
+export function crisisOffer(s: GrowthState, months = 12): LoanOffer | null {
+  const q = quoteLoan(s, months);
+  if (!q.available) return null;
+  const want = Math.min(q.amount, Math.max(s.liquidity.gap * 1.3, 50_000_00));
+  return offerOf(Math.round(want / 100) * 100, tpl(s).bankRate, months, "crisis");
+}
+
 export const fmt = (cents: number) => Math.round(cents / 100).toLocaleString("en-US");
 
 // ───────────────────────────────────────────────── decisiones
@@ -203,6 +236,14 @@ export function applyFinance(s: GrowthState, cmd: Command): ApplyResult | null {
   const roll = (k: string) => hash01(`${s.seed}|${cmd.id}|${k}`);
   switch (cmd.type) {
     case "bank_loan": {
+      if (cmd.preapproved) {
+        const o = startOffers(s).find((x) => x.months === cmd.months);
+        const want = pesosC(cmd.amount);
+        if (!o) return { ok: false, reason: "La oferta preaprobada ya no está vigente." };
+        if (want > o.amount) return { ok: false, reason: `La oferta preaprobada a ${cmd.months} meses llega hasta $${fmt(o.amount)}.` };
+        grantLoan(s, cmd.id, want, o.rate, cmd.months);
+        break;
+      }
       const q = quoteLoan(s, cmd.months);
       if (!q.available) return refuse(s, cmd, "El banco", q.reason!);
       const want = pesosC(cmd.amount);
@@ -210,14 +251,7 @@ export function applyFinance(s: GrowthState, cmd: Command): ApplyResult | null {
       // Comité de crédito: entre más cerca del límite, más probable el rechazo.
       const risk = 0.1 + 0.5 * (want / q.amount) + (s.overdue.length ? 0.15 : 0);
       if (roll("comite") < risk - 0.25) return refuse(s, cmd, "El comité de crédito", "considera que la empresa está demasiado apretada y pide volver en dos meses con mejores números.");
-      const rate = tpl(s).bankRate;
-      const loan: Loan = { id: `l${s.nextId++}`, lender: "Banco Regional del Norte", principal: want, balance: want, rate, months: cmd.months, payment: annuity(want, rate, cmd.months), startDay: s.day + FIN_PARAMS.loanDisburseDays.value, ref: cmd.id };
-      s.loans.push(loan);
-      schedule(s, loan.startDay, "prestamo", want, "Dispersión del crédito bancario", cmd.id);
-      const fee = Math.round(want * FIN_PARAMS.openingFee.value);
-      post(s, "devengo", "comisiones", -fee, "Comisión de apertura del crédito", cmd.id);
-      schedule(s, loan.startDay, "comisiones", -fee, "Comisión de apertura del crédito", cmd.id);
-      s.events.push({ day: s.day, kind: "decision_financiera", text: `El banco aprueba $${fmt(want)} a ${cmd.months} meses. El dinero llega en unos ${FIN_PARAMS.loanDisburseDays.value} días; el pago mensual será de $${fmt(loan.payment)}.`, ref: cmd.id });
+      grantLoan(s, cmd.id, want, tpl(s).bankRate, cmd.months);
       break;
     }
     case "negotiate_suppliers": {
@@ -254,10 +288,11 @@ export function applyFinance(s: GrowthState, cmd: Command): ApplyResult | null {
       const q = quoteOwner(s, pesosC(cmd.amount));
       if (!q.available) return refuse(s, cmd, "El dueño", q.reason!);
       const asks = s.events.filter((e) => e.kind === "decision_financiera" && e.text.startsWith("El dueño aporta")).length;
-      if (roll("dueno") < 0.15 + 0.3 * asks + (overdueTotal(s, "fisco") ? 0.15 : 0)) return refuse(s, cmd, "El dueño", "no quiere poner más dinero sin ver antes un plan de ajuste. Pide recortes y un calendario de recuperación.");
+      if (!cmd.preapproved && roll("dueno") < 0.15 + 0.3 * asks + (overdueTotal(s, "fisco") ? 0.15 : 0)) return refuse(s, cmd, "El dueño", "no quiere poner más dinero sin ver antes un plan de ajuste. Pide recortes y un calendario de recuperación.");
       s.equity += q.amount;
       schedule(s, s.day + q.arrivesInDays, "aportacion", q.amount, "Aportación de capital del dueño", cmd.id);
-      R.owner = clamp(R.owner - 0.15 - (s.overdue.length ? 0.1 : 0), 0, 1);
+      // Aportar para crecer (acordado al llegar) no es lo mismo que rescatar la caja en una crisis.
+      R.owner = clamp(R.owner - (cmd.preapproved ? 0.03 : 0.15 + (s.overdue.length ? 0.1 : 0)), 0, 1);
       s.events.push({ day: s.day, kind: "decision_financiera", text: `El dueño aporta $${fmt(q.amount)}. Llega en unos ${q.arrivesInDays} días. En la próxima sesión querrá ver cómo se evita repetirlo.`, ref: cmd.id });
       break;
     }
@@ -311,4 +346,15 @@ export function applyFinance(s: GrowthState, cmd: Command): ApplyResult | null {
 }
 
 const pesosC = (p: number) => Math.round(p * 100);
+
+/** Registra un crédito: dispersión en unos días, comisión de apertura y pagos mensuales (serviceLoans). */
+function grantLoan(s: GrowthState, ref: string, amount: number, rate: number, months: number) {
+  const loan: Loan = { id: `l${s.nextId++}`, lender: "Banco Regional del Norte", principal: amount, balance: amount, rate, months, payment: annuity(amount, rate, months), startDay: s.day + FIN_PARAMS.loanDisburseDays.value, ref };
+  s.loans.push(loan);
+  schedule(s, loan.startDay, "prestamo", amount, "Dispersión del crédito bancario", ref);
+  const fee = Math.round(amount * FIN_PARAMS.openingFee.value);
+  post(s, "devengo", "comisiones", -fee, "Comisión de apertura del crédito", ref);
+  schedule(s, loan.startDay, "comisiones", -fee, "Comisión de apertura del crédito", ref);
+  s.events.push({ day: s.day, kind: "decision_financiera", text: `El banco aprueba $${fmt(amount)} a ${months} meses. El dinero llega en unos ${FIN_PARAMS.loanDisburseDays.value} días; el pago mensual será de $${fmt(loan.payment)}.`, ref });
+}
 export { CREDITOR_LABEL, debtTotal, monthOf, cashMove };

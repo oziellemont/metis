@@ -172,7 +172,9 @@ export const isCompanyId = (x: unknown): x is string => typeof x === "string" &&
  */
 export function newCompanyProfile(i: NewCompanyInput, taxonomyVersion: number): CompanyProfile | null {
   // Empresa emergente (Growth Engine, detrás de su interruptor): otra puerta, solo para las industrias piloto.
-  const growthOk = i.growth === true && i.archetype === GROWTH_ARCHETYPE && !!growthTemplateFor(i.sectorId, i.industryId) && !!industryOf(i.sectorId, i.industryId)?.contentPackId;
+  // StartUp (pyme) o consolidada (establecida) con motor: mismas industrias piloto, misma puerta.
+  const growthOk = i.growth === true && !!growthTemplateFor(i.sectorId, i.industryId, i.archetype) && !!industryOf(i.sectorId, i.industryId)?.contentPackId
+    && (i.archetype === GROWTH_ARCHETYPE || isPlayableCombo(i.sectorId, i.industryId, i.archetype));
   if (!isCompanyId(i.companyId) || !isArchetype(i.archetype) || !(growthOk || (i.growth !== true && isPlayableCombo(i.sectorId, i.industryId, i.archetype)))) return null;
   if (typeof i.at !== "number" || !Number.isFinite(i.at) || i.at <= 0) return null;
   const displayName = cleanName(i.displayName);

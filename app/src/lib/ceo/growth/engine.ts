@@ -15,7 +15,7 @@
 import { roleById } from "./catalog";
 import { FAMILIES, TABLE_TURNS, TEMPLATES, WEEKDAY, WORKDAY } from "./families";
 import { LABOR_VERSION, laborOf, minWage, monthlyCost, pesos, regionalSalary, regionOf, terminationOf, vacationDays, type TerminationKind } from "./labor";
-import type { Command, Entry, EntryType, GrowthState, MonthSummary, Person, Site } from "./types";
+import type { Command, Entry, EntryType, GrowthState, MonthSummary, Person, Site, SiteAcc, SiteMonth } from "./types";
 import { MONTH, cashMove, clamp, clone, debtTotal, hash01, monthOf, overdueTotal, pay, payDownOverdue, post, schedule } from "./core";
 import { applyFinance, attritionMultiplier, capacityFactor, dailyConsequences, fmt, serviceLoans, type ApplyResult } from "./finance";
 import { updateLiquidity } from "./liquidity";
@@ -43,7 +43,7 @@ export function createCompany(templateId: keyof typeof TEMPLATES | string, seed 
     family: T.family, templateId: T.id, region: T.region, seed, day: 0,
     cash: pesos(T.cash), fixedLines: T.fixedLines.map((x) => ({ ...x, amount: pesos(x.amount) })),
     people: [], vacancies: [], assets: [], contracts: [], scheduled: [], ledger: [], events: [], months: [], applied: [],
-    sites: T.sites.map((x) => ({ id: x.id, name: x.name, status: "operando", assets: { ...x.assets }, shifts: x.shifts, rent: pesos(x.rent), utilities: pesos(x.utilities), demandBase: x.demandBase, demandFactor: 1, maturityDays: 0, reputation: 1, backlog: 0, openedDay: -3650 })),
+    sites: T.sites.map((x) => ({ id: x.id, name: x.name, zone: x.zone, status: "operando", assets: { ...x.assets }, shifts: x.shifts, rent: pesos(x.rent), utilities: pesos(x.utilities), demandBase: x.demandBase, demandFactor: 1, maturityDays: 0, reputation: 1, backlog: 0, openedDay: -3650 })),
     cur: { demand: 0, served: 0, lost: 0, capacity: 0, scrap: 0, bottlenecks: {}, cashBegin: pesos(T.cash) },
     attrition: true, nextId: 1,
     overdue: [], loans: [], equity: 0,
@@ -61,7 +61,7 @@ export function createCompany(templateId: keyof typeof TEMPLATES | string, seed 
     const prov = monthlyCost(salary, region, L, 1, (st.yearsBefore ?? 0.5)).provision * (T.startMonth - 1);
     s.people.push({ id: `p${s.nextId++}`, roleId: st.roleId, name: st.name, siteId: st.siteId, salary, hiredDay: start, startDay: start, founding: true, provision: prov, daysThisMonth: 0 });
   }
-  for (const c of T.contracts ?? []) s.contracts.push({ id: c.id, client: c.client, unitsPerDay: c.unitsPerDay, price: pesos(c.price), startDay: -3650 });
+  for (const c of T.contracts ?? []) s.contracts.push({ id: c.id, client: c.client, unitsPerDay: c.unitsPerDay, price: pesos(c.price), startDay: -3650, ...(c.siteId ? { siteId: c.siteId } : {}) });
   // Lo que ya venía en curso: cuotas del mes anterior, cobros y pagos a proveedores pendientes.
   const run = operateDay(s, 0, true);
   const prevPayroll = activePeople(s, 0).reduce((a, p) => { const c = monthlyCost(p.salary, region, L, 1, yearsOf(p, 0)); return a + c.employer + c.payrollTax; }, 0);
@@ -90,7 +90,13 @@ function dayFactor(s: GrowthState, day: number): number {
 }
 
 // ─────────────────────────────────────────────── operación de un día
-interface DayRun { revenue: number; cogs: number; variable: number; demand: number; served: number; lost: number; capacity: number; scrap: number; bottleneck: string | null }
+interface DayRun { revenue: number; cogs: number; variable: number; demand: number; served: number; lost: number; capacity: number; scrap: number; bottleneck: string | null; bySite: Record<string, SiteAcc> }
+
+/** Planta que surte un contrato: la suya si opera; si no, la principal (la primera que opera). */
+export function contractSite(s: GrowthState, c: { siteId?: string }): string | undefined {
+  const own = c.siteId ? s.sites.find((x) => x.id === c.siteId && x.status === "operando") : undefined;
+  return (own ?? s.sites.find((x) => x.status === "operando"))?.id;
+}
 
 function siteCapacity(s: GrowthState, site: Site, day: number): { cap: Record<string, number>; produce: number; bottleneck: string; scrapRate: number } {
   const F = fam(s);
@@ -129,7 +135,7 @@ function siteCapacity(s: GrowthState, site: Site, day: number): { cap: Record<st
 
 function operateDay(s: GrowthState, day: number, dry = false): DayRun {
   const F = fam(s);
-  const out: DayRun = { revenue: 0, cogs: 0, variable: 0, demand: 0, served: 0, lost: 0, capacity: 0, scrap: 0, bottleneck: null };
+  const out: DayRun = { revenue: 0, cogs: 0, variable: 0, demand: 0, served: 0, lost: 0, capacity: 0, scrap: 0, bottleneck: null, bySite: {} };
   const w = dry ? 1 : dayFactor(s, day);
   if (w === 0) return out;
   let worst = 0;
@@ -144,10 +150,12 @@ function operateDay(s: GrowthState, day: number, dry = false): DayRun {
       if (!dry) site.reputation = clamp(site.reputation + (demand > 0 && lost / demand > 0.08 ? -0.0006 : 0.0003), 0.85, 1.03);
       out.demand += demand; out.served += served; out.lost += lost; out.capacity += produce;
       const rev = Math.round((served * pesos(F.price)) / (1 + (F.vatInPrice ?? 0)));
-      out.revenue += rev; out.cogs += Math.round(rev * F.cogsPct! * (1 + s.supplierTerms.priceUp)); out.variable += variableOf(s, rev, served);
+      const cogs = Math.round(rev * F.cogsPct! * (1 + s.supplierTerms.priceUp)), vr = variableOf(s, rev, served);
+      out.revenue += rev; out.cogs += cogs; out.variable += vr;
+      out.bySite[site.id] = { revenue: rev, cogs, variable: vr, demand, served, lost, capacity: produce };
       if (lost > worst) { worst = lost; out.bottleneck = `${site.name}: ${bottleneck}`; }
     } else {
-      const contracts = s.contracts.filter((c) => c.startDay <= day);
+      const contracts = s.contracts.filter((c) => c.startDay <= day && contractSite(s, c) === site.id);
       const daily = contracts.reduce((a, c) => a + c.unitsPerDay, 0);
       const price = daily ? contracts.reduce((a, c) => a + c.unitsPerDay * c.price, 0) / daily : 0;
       const need = daily + site.backlog;
@@ -158,7 +166,9 @@ function operateDay(s: GrowthState, day: number, dry = false): DayRun {
       const lost = dry ? 0 : short - site.backlog;
       out.demand += daily; out.served += good; out.lost += lost; out.capacity += produce; out.scrap += produced - good;
       const rev = Math.round(good * price);
-      out.revenue += rev; out.cogs += Math.round(produced * pesos(F.materialPerUnit!) * (1 + s.supplierTerms.priceUp)); out.variable += variableOf(s, rev, good);
+      const cogs = Math.round(produced * pesos(F.materialPerUnit!) * (1 + s.supplierTerms.priceUp)), vr = variableOf(s, rev, good);
+      out.revenue += rev; out.cogs += cogs; out.variable += vr;
+      out.bySite[site.id] = { revenue: rev, cogs, variable: vr, demand: daily, served: good, lost, capacity: produce };
       if (short > worst) { worst = short; out.bottleneck = `${site.name}: ${bottleneck}`; }
     }
   }
@@ -191,11 +201,21 @@ export function apply(s: GrowthState, cmd: Command): ApplyResult {
       leave(s, p, cmd.kind ?? "despido_injustificado", cmd.id, cmd.refusesReinstatement);
       break;
     }
+    case "transfer": {
+      const p = s.people.find((x) => x.id === cmd.personId && active(x, s.day));
+      const site = s.sites.find((x) => x.id === cmd.siteId && x.status !== "cerrada");
+      if (!p) return { ok: false, reason: "Esa persona no está en la plantilla." };
+      if (!site) return { ok: false, reason: "Esa ubicación no existe." };
+      const from = s.sites.find((x) => x.id === p.siteId)?.name ?? "la oficina";
+      p.siteId = site.id;
+      s.events.push({ day: s.day, kind: "turno", text: `${p.name} pasa de ${from} a ${site.name}.`, personId: p.id, siteId: site.id, ref: cmd.id });
+      break;
+    }
     case "open_site": {
       const upfront = pesos(cmd.deposit) + pesos(cmd.capex);
       if (s.cash < upfront) return { ok: false, reason: `Firmar el local y arrancar la obra exige pagar hoy $${fmt(upfront)} (depósito y acondicionamiento); la caja tiene $${fmt(s.cash)}.` };
       const id = `site${s.nextId++}`;
-      s.sites.push({ id, name: cmd.name, status: "en_obra", assets: {}, shifts: 1, rent: pesos(cmd.rent), utilities: pesos(cmd.utilities), demandBase: cmd.demandBase, demandFactor: cmd.demandFactor ?? 0.75 + 0.4 * hash01(`${s.seed}|${cmd.id}|demanda`), maturityDays: cmd.maturityDays, reputation: 1, backlog: 0, buildDoneDay: s.day + cmd.buildDays, rentFreeUntil: cmd.rentFreeDays ? s.day + cmd.rentFreeDays : undefined, ref: cmd.id });
+      s.sites.push({ id, name: cmd.name, ...(cmd.zone ? { zone: cmd.zone } : {}), status: "en_obra", assets: {}, shifts: cmd.shifts ?? 1, rent: pesos(cmd.rent), utilities: pesos(cmd.utilities), demandBase: cmd.demandBase, demandFactor: cmd.demandFactor ?? 0.75 + 0.4 * hash01(`${s.seed}|${cmd.id}|demanda`), maturityDays: cmd.maturityDays, reputation: 1, backlog: 0, buildDoneDay: s.day + cmd.buildDays, rentFreeUntil: cmd.rentFreeDays ? s.day + cmd.rentFreeDays : undefined, ref: cmd.id });
       cashMove(s, "deposito", -pesos(cmd.deposit), `Depósito en garantía de ${cmd.name}`, cmd.id);
       cashMove(s, "inversion", -pesos(cmd.capex), `Acondicionamiento y equipo de ${cmd.name}`, cmd.id);
       for (const [res, units] of Object.entries(cmd.assets)) s.assets.push({ id: `a${s.nextId++}`, siteId: id, label: `Equipo de ${cmd.name}`, resource: res, units, cost: Math.round(pesos(cmd.capex) / Object.keys(cmd.assets).length), years: cmd.years, activeDay: s.day + cmd.buildDays, active: false, ref: cmd.id });
@@ -219,7 +239,8 @@ export function apply(s: GrowthState, cmd: Command): ApplyResult {
       break;
     }
     case "add_contract": {
-      s.contracts.push({ id: cmd.id, client: cmd.client, unitsPerDay: cmd.unitsPerDay, price: pesos(cmd.price), startDay: s.day + cmd.startInDays, ref: cmd.id });
+      if (cmd.siteId && !s.sites.some((x) => x.id === cmd.siteId && x.status !== "cerrada")) return { ok: false, reason: "Esa planta no existe." };
+      s.contracts.push({ id: cmd.id, client: cmd.client, unitsPerDay: cmd.unitsPerDay, price: pesos(cmd.price), startDay: s.day + cmd.startInDays, ref: cmd.id, ...(cmd.siteId ? { siteId: cmd.siteId } : {}) });
       s.events.push({ day: s.day, kind: "contrato", text: `Se firma con ${cmd.client}: ${cmd.unitsPerDay.toLocaleString("en-US")} ${fam(s).unit.many} al día desde dentro de ${cmd.startInDays} días.`, ref: cmd.id });
       break;
     }
@@ -309,6 +330,11 @@ function step(s: GrowthState) {
   const c = s.cur;
   c.demand += run.demand; c.served += run.served; c.lost += run.lost; c.capacity += run.capacity; c.scrap += run.scrap;
   if (run.bottleneck && run.lost > 0) c.bottlenecks[run.bottleneck] = (c.bottlenecks[run.bottleneck] ?? 0) + run.lost;
+  const acc = (c.bySite ??= {});
+  for (const [id, x] of Object.entries(run.bySite)) {
+    const a = (acc[id] ??= { revenue: 0, cogs: 0, variable: 0, demand: 0, served: 0, lost: 0, capacity: 0 });
+    a.revenue += x.revenue; a.cogs += x.cogs; a.variable += x.variable; a.demand += x.demand; a.served += x.served; a.lost += x.lost; a.capacity += x.capacity;
+  }
   post(s, "devengo", "ventas", run.revenue, "Ventas");
   post(s, "devengo", "costo_ventas", -run.cogs, "Costo de ventas");
   post(s, "devengo", "variables", -run.variable, "Gastos variables");
@@ -330,10 +356,13 @@ function closeMonth(s: GrowthState, L: ReturnType<typeof laborOf>) {
   const d = s.day, m = monthOf(d);
   const F = fam(s);
   let employer = 0, isn = 0, coverage = 0;
+  const peopleBySite: Record<string, number> = {};
   for (const p of s.people) {
     if (!p.daysThisMonth) continue;
     const c = monthlyCost(p.salary, regionOf(s.region), L, p.daysThisMonth / MONTH, yearsOf(p, d));
-    if (F.restCoverage && roleById(p.roleId)!.level === "operativo") coverage += Math.round(c.gross * F.restCoverage);
+    const cov = F.restCoverage && roleById(p.roleId)!.level === "operativo" ? Math.round(c.gross * F.restCoverage) : 0;
+    coverage += cov;
+    if (p.siteId) peopleBySite[p.siteId] = (peopleBySite[p.siteId] ?? 0) + c.gross + c.employer + c.payrollTax + c.provision + cov;
     post(s, "devengo", "nomina", -c.gross, "Sueldos"); pay(s, "nomina", c.gross, "Pago de sueldos");
     post(s, "devengo", "cuotas", -c.employer, "Cuotas patronales IMSS, INFONAVIT y retiro"); employer += c.employer;
     post(s, "devengo", "isn", -c.payrollTax, "Impuesto sobre nómina"); isn += c.payrollTax;
@@ -344,6 +373,7 @@ function closeMonth(s: GrowthState, L: ReturnType<typeof laborOf>) {
   if (coverage) { post(s, "devengo", "cobertura", -coverage, "Cobertura de descansos y vacaciones (eventuales)"); pay(s, "cobertura", coverage, "Pago a eventuales por descansos y vacaciones"); }
   schedule(s, (m + 1) * MONTH + 16, "cuotas", -employer, "Pago de cuotas patronales del mes anterior");
   schedule(s, (m + 1) * MONTH + 16, "isn", -isn, "Pago del impuesto sobre nómina del mes anterior");
+  const rentBySite: Record<string, [number, number]> = {};
   for (const site of s.sites) {
     if (site.status === "cerrada") continue;
     // Gracia de renta: se prorratea por los días del mes que quedan fuera del periodo sin renta.
@@ -351,6 +381,7 @@ function closeMonth(s: GrowthState, L: ReturnType<typeof laborOf>) {
     const rent = Math.round((site.rent * (MONTH - free)) / MONTH);
     if (rent) { post(s, "devengo", "renta", -rent, `Renta de ${site.name}`, site.id); pay(s, "renta", rent, `Renta de ${site.name}`, site.id); }
     if (site.status === "operando") { post(s, "devengo", "servicios", -site.utilities, `Servicios de ${site.name}`, site.id); pay(s, "servicios", site.utilities, `Servicios de ${site.name}`, site.id); }
+    rentBySite[site.id] = [rent, site.status === "operando" ? site.utilities : 0];
   }
   for (const f of s.fixedLines) { post(s, "devengo", "fijos", -f.amount, f.label, f.id); pay(s, "fijos", f.amount, f.label, f.id); }
   for (const a of s.assets) if (a.active) post(s, "devengo", "depreciacion", -Math.round(a.cost / (a.years * 12)), "Depreciación de equipo", a.ref);
@@ -363,7 +394,14 @@ function closeMonth(s: GrowthState, L: ReturnType<typeof laborOf>) {
     s.events.push({ day: d, kind: "aguinaldo", text: "Se paga el aguinaldo: la caja lo resiente aunque el gasto ya estaba en los meses anteriores." });
   }
   deliveryConsequences(s);
-  s.months.push(summarize(s, m));
+  const sum = summarize(s, m);
+  sum.bySite = s.sites.filter((x) => x.status !== "cerrada" || s.cur.bySite?.[x.id]).map((x): SiteMonth => {
+    const a = s.cur.bySite?.[x.id] ?? { revenue: 0, cogs: 0, variable: 0, demand: 0, served: 0, lost: 0, capacity: 0 };
+    const [rent, utilities] = rentBySite[x.id] ?? [0, 0];
+    const people = peopleBySite[x.id] ?? 0;
+    return { siteId: x.id, revenue: a.revenue, cogs: a.cogs, variable: a.variable, people, rent, utilities, contribution: a.revenue - a.cogs - a.variable - people - rent - utilities, demand: Math.round(a.demand), served: Math.round(a.served), lost: Math.round(a.lost), capacity: Math.round(a.capacity), headcount: activePeople(s, d).filter((p) => p.siteId === x.id).length };
+  });
+  s.months.push(sum);
   s.cur = { demand: 0, served: 0, lost: 0, capacity: 0, scrap: 0, bottlenecks: {}, cashBegin: s.cash };
 }
 
@@ -431,7 +469,7 @@ export function advance(s0: GrowthState, days: number): GrowthState {
 export function capacityNow(s: GrowthState) {
   return s.sites.filter((x) => x.status === "operando").map((site) => {
     const c = siteCapacity(s, site, s.day);
-    return { site: site.name, cap: c.cap, bottleneck: c.bottleneck, perDay: Math.round(c.produce) };
+    return { id: site.id, site: site.name, cap: c.cap, bottleneck: c.bottleneck, perDay: Math.round(c.produce) };
   });
 }
 

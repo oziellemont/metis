@@ -17,6 +17,7 @@ import { fmt, quoteCollect, quoteLoan, quoteOwner, quoteSuppliers } from "./fina
 import { overdueTotal } from "./core";
 import { regionOf, regionalSalary } from "./labor";
 import type { Command, Family, GrowthState } from "./types";
+import { OPS_CASES } from "./opscases";
 import type { KpiKey } from "../types";
 
 // ───────────────────────────────────────────────── precondiciones
@@ -43,6 +44,10 @@ export interface Requires {
   minDay?: number;
   /** Debe existir (no cerrada) una sede creada por la decisión de este caso. */
   siteFromCase?: string;
+  /** Día simulado máximo (ofertas con vigencia). */
+  maxDay?: number;
+  /** Condición calculada por el motor (p. ej. «hay una sede saturada»). La etiqueta se reporta si no se cumple. */
+  when?: { label: string; test: (g: GrowthState) => boolean };
 }
 
 export interface Check { ok: boolean; failed: string[] }
@@ -66,6 +71,8 @@ export function requiresMet(g: GrowthState, r: Requires): Check {
   if (r.liquidity && !r.liquidity.includes(g.liquidity.status)) failed.push(`liquidez ${r.liquidity.join("/")}`);
   if (r.minCash !== undefined && g.cash < r.minCash * 100) failed.push(`caja ≥ ${r.minCash}`);
   if (r.minDay !== undefined && g.day < r.minDay) failed.push(`día ≥ ${r.minDay}`);
+  if (r.maxDay !== undefined && g.day > r.maxDay) failed.push(`día ≤ ${r.maxDay}`);
+  if (r.when && !r.when.test(g)) failed.push(r.when.label);
   if (r.siteFromCase && !g.sites.some((x) => x.status !== "cerrada" && x.ref?.startsWith(`${r.siteFromCase}:`))) failed.push(`sede de ${r.siteFromCase}`);
   return { ok: failed.length === 0, failed };
 }
@@ -74,6 +81,12 @@ export function requiresMet(g: GrowthState, r: Requires): Check {
 export interface GOption {
   id: string;
   text: string;
+  /** Texto calculado con el estado (p. ej. el puesto o la zona). Si existe, reemplaza a `text` en pantalla. */
+  textOf?: (g: GrowthState) => string;
+  /** Etiqueta corta para la tarjeta minimalista (2–4 palabras). */
+  short?: string | ((g: GrowthState) => string);
+  /** Cómo se presenta: una llamada con el banco o una opción normal. */
+  via?: "banco";
   /** Lo que cambia, en una línea (texto; las cifras se insertan desde el motor). */
   outcome: (g: GrowthState) => string;
   commands: (g: GrowthState, caseId: string) => Command[];
@@ -86,10 +99,16 @@ export interface GOption {
 export interface GCase {
   id: string;
   family: Family | "ambas";
-  chain: "A" | "B" | "liquidez";
+  chain: "A" | "B" | "liquidez" | "finanzas" | "operacion";
   step: number;
   from: string;
   subject: string;
+  /** Una línea para la tarjeta minimalista; el cuerpo completo queda en «Ver detalle». */
+  lead?: (g: GrowthState) => string;
+  /** Asunto calculado con el estado (sede, puesto). */
+  subjectOf?: (g: GrowthState) => string;
+  /** Remitente calculado con el estado. */
+  fromOf?: (g: GrowthState) => string;
   body: (g: GrowthState) => string[];
   data?: (g: GrowthState) => [string, string][];
   requires: Requires;
@@ -99,6 +118,8 @@ export interface GCase {
   waitDays: number;
   /** Puede repetirse (crisis de liquidez): se identifica por el día en que llega. */
   repeatable?: boolean;
+  /** No llega el mismo día que alguno de estos casos (para no duplicar la misma decisión). */
+  notWith?: string[];
 }
 
 const sal = (g: GrowthState, roleId: string) => regionalSalary(roleById(roleId)!.salary.mid, regionOf(g.region));
@@ -108,7 +129,7 @@ const cashOk = (need: number) => (g: GrowthState) => g.cash >= need * 100 ? { ok
 
 type SiteOffer = Omit<Extract<Command, { type: "open_site" }>, "type" | "id">;
 /** Sucursal Cumbres (cadena A): cifras de la propuesta del arrendador y del contratista, fijas en el caso. */
-export const CUMBRES: Readonly<SiteOffer> = Object.freeze({ name: "Sucursal Cumbres", rent: 52000, utilities: 22000, deposit: 104000, capex: 260000, years: 8, buildDays: 45, assets: { mesas: 14 }, demandBase: 95, maturityDays: 150, preopening: 55000 });
+export const CUMBRES: Readonly<SiteOffer> = Object.freeze({ name: "Sucursal Cumbres", zone: "cumbres", rent: 52000, utilities: 22000, deposit: 104000, capex: 260000, years: 8, buildDays: 45, assets: { mesas: 14 }, demandBase: 95, maturityDays: 150, preopening: 55000 });
 const cumbres = (caseId: string, extra: Partial<SiteOffer> = {}): Command => ({ type: "open_site", id: `${caseId}:site`, ...CUMBRES, ...extra });
 const upfront = CUMBRES.deposit + CUMBRES.capex;
 /** Marcador: la sede que crea la misma decisión (el runner lo resuelve después de aplicar `open_site`). */
@@ -299,5 +320,5 @@ export const LIQUIDITY_CASE: GCase = {
   ],
 };
 
-export const GROWTH_CASES: readonly GCase[] = [...CHAIN_A, ...CHAIN_B, LIQUIDITY_CASE];
+export const GROWTH_CASES: readonly GCase[] = [OPS_CASES[0], ...CHAIN_A, ...CHAIN_B, LIQUIDITY_CASE, ...OPS_CASES.slice(1)];
 export const caseById = (id: string) => GROWTH_CASES.find((c) => c.id === id);

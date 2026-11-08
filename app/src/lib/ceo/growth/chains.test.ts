@@ -52,8 +52,8 @@ describe("growth · casos: estructura y reglas", () => {
 describe("growth · precondiciones verificables", () => {
   it("un caso de restaurante no llega a manufactura y viceversa", () => {
     const r = createCompany("restaurante_emergente"), m = createCompany("manufactura_emergente");
-    expect(availableCases(r, []).map((c) => c.id)).toEqual(["ga1_cocina"]);
-    expect(availableCases(m, []).map((c) => c.id)).toEqual(["gb1_cliente"]);
+    expect(availableCases(r, []).map((c) => c.id)).toEqual(["gf_arranque", "ga1_cocina"]);
+    expect(availableCases(m, []).map((c) => c.id)).toEqual(["gf_arranque", "gb1_cliente"]);
     expect(whyNot(r, "gb1_cliente", [])).toContain("industria");
   });
   it("el evaluador reporta exactamente lo que falla", () => {
