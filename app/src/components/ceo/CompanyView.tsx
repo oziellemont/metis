@@ -7,6 +7,7 @@ import { COMPANIES } from "@/lib/ceo/companies";
 import { useCeo } from "./CeoProvider";
 import { CompanyOrgChart } from "./CompanyOrgChart";
 import { BusinessPanel } from "./BusinessPanel";
+import { GrowthPanel } from "./GrowthPanel";
 import { KpiBoard } from "./KpiBoard";
 import { CompanyMark } from "./ui";
 import { NAME_MAX } from "@/lib/ceo/career/identity";
@@ -56,7 +57,7 @@ export function CompanyView() {
         <KpiBoard />
       </section>
 
-      {c.continuous && <BusinessPanel />}
+      {c.s.growth ? <GrowthPanel /> : c.continuous && <BusinessPanel />}
 
       <section className="card p-5 sm:p-6">
         <div className="flex items-center gap-2"><Network size={17} className="text-indigo" /><h2 className="font-semibold text-ink">Organigrama</h2></div>

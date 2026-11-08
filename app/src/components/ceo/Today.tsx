@@ -3,7 +3,10 @@ import Link from "next/link";
 import { useEffect, useMemo } from "react";
 import clsx from "clsx";
 import { ArrowRight, BookOpen, Check, Briefcase, Clock, Coffee, FastForward, Flag, Hourglass, Trophy } from "lucide-react";
-import { KPI_KEYS, closedRunsOf } from "@/lib/ceo/engine";
+import { KPI_KEYS, closedRunsOf, growthDayOf } from "@/lib/ceo/engine";
+import { growthAt, pendingGrowth } from "@/lib/ceo/growth/session";
+import { todayLineOf } from "@/lib/ceo/growth/view";
+import { TrendingUp } from "lucide-react";
 import { COHERENCE_RULES_VERSION, CONTINUOUS_RULES_VERSION, ECONOMY_RULES_VERSION } from "@/lib/ceo/rules";
 import { ETHICS_AUDIT_RULES } from "@/lib/ceo/editorial";
 import { firstName, personOf } from "@/lib/ceo/cast";
@@ -39,7 +42,14 @@ export function Today() {
   const specials = specialTasks({ changeOpen: c.changeOpen && !c.seasonDone, changeStarted: !!c.change, changeDone: !!c.change?.done, changeTitle: pk.change.title, boardOpen: boardAccess(c.s, c.now).open, crisisOpen: crisisAccess(c.s, c.now).open });
   const epPending = c.episodes.filter((e) => e.status === "pendiente");
   const report = c.reportDue !== null ? { href: "/ceo/reporte", period: c.reportDue, from: presenterOf(pk) } : null;
-  const waiting = c.pending.length + specials.length + epPending.length + (report ? 1 : 0);
+  // Empresa emergente: los casos de crecimiento esperan en Mi empresa; aquí solo la línea más urgente del motor.
+  const growth = useMemo(() => {
+    if (!c.s.growth) return null;
+    const day = growthDayOf(c.s, c.now);
+    const pending = pendingGrowth(c.s.growth, day).length;
+    return { pending, line: todayLineOf(growthAt(c.s.growth, day).state, pending) };
+  }, [c.s, c.now]);
+  const waiting = c.pending.length + specials.length + epPending.length + (report ? 1 : 0) + (growth?.pending ?? 0);
   const nextLesson = open.find((l) => !c.s.lessons[l.id] && c.entries.some((e) => e.item.lesson === l.id && e.status !== "futuro")) ?? open.find((l) => !c.s.lessons[l.id]);
 
   const passed = KPI_KEYS.filter((k) => v.approved[k]).length;
@@ -73,6 +83,7 @@ export function Today() {
     : c.pending[0] ? { href: `/ceo/caso/${c.pending[0].item.id}`, label: `Atender: ${firstName(pk, c.pending[0].item.from)}` }
     : epPending[0] ? { href: `/ceo/episodio/${epPending[0].spec.id}`, label: `Atender: ${firstName(pk, epPending[0].spec.from)}` }
     : specials[0] ? { href: specials[0].href, label: `Atender: ${specials[0].subject.split(" · ")[0]}` }
+    : growth?.pending ? { href: "/ceo/empresa#crecimiento", label: "Atender: caso de crecimiento" }
     : null;
 
   return (
@@ -184,6 +195,16 @@ export function Today() {
                   <ArrowRight size={16} className="text-slate-300 group-hover:text-indigo mt-3" />
                 </Link></li>
               )}
+              {growth && growth.pending > 0 && (
+                <li><Link href="/ceo/empresa#crecimiento" className="flex gap-3 py-3 group" data-testid="hoy-crecimiento">
+                  <span className="h-[38px] w-[38px] shrink-0 rounded-full grid place-items-center bg-indigo-soft text-indigo"><TrendingUp size={16} /></span>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-sm font-semibold text-ink truncate">Crecimiento de {pk.short}</div>
+                    <div className="text-sm text-slate-600">{growth.line}</div>
+                  </div>
+                  <ArrowRight size={16} className="text-slate-300 group-hover:text-indigo mt-3" />
+                </Link></li>
+              )}
               {specials.map((t) => (
                 <li key={t.id}><Link href={t.href} className="flex gap-3 py-3 group">
                   <span className={clsx("h-[38px] w-[38px] shrink-0 rounded-full grid place-items-center", t.id === "crisis" ? "bg-coral/10 text-coral" : "bg-indigo-soft text-indigo")}><Flag size={16} /></span>
@@ -228,6 +249,13 @@ export function Today() {
         </section>
 
         <div className="space-y-4 min-w-0">
+          {growth && growth.pending === 0 && (
+            <Link href="/ceo/empresa#crecimiento" className="card p-4 flex gap-3 text-sm group" data-testid="hoy-pulso-crecimiento">
+              <span className="h-9 w-9 shrink-0 rounded-xl bg-indigo-soft text-indigo grid place-items-center"><TrendingUp size={16} /></span>
+              <span className="min-w-0 flex-1 text-slate-600">{growth.line}</span>
+              <ArrowRight size={15} className="text-slate-300 group-hover:text-indigo mt-2.5" />
+            </Link>
+          )}
           {/* estado de la empresa, compacto */}
           <section className="card p-5">
             <div className="flex items-baseline justify-between gap-2"><h2 className="font-semibold text-ink text-sm">Tu empresa hoy</h2><span className="text-[11px] text-slate-400"><b className="text-ink tabular-nums">{passed}/5</b> en {v.passLine} o más</span></div>
