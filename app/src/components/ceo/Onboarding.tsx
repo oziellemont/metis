@@ -102,7 +102,7 @@ export function Onboarding() {
           </div>
         )}
 
-        {step === 2 && <ArchetypeStep sel={sel} setSel={setSel} onBack={() => { setPhase(diagnostic ? "start" : "q"); setStep(1); }} onNext={() => setStep(3)} extra={offered > 0 ? <TierChoice tier={tier} setTier={setTier} offered={offered} names={[rulesOf(0).name, rulesOf(offered).name]} title="Exigencia de tu empresa" /> : null} />}
+        {step === 2 && <ArchetypeStep growth={c.growthOn} sel={sel} setSel={setSel} onBack={() => { setPhase(diagnostic ? "start" : "q"); setStep(1); }} onNext={() => setStep(3)} extra={offered > 0 ? <TierChoice tier={tier} setTier={setTier} offered={offered} names={[rulesOf(0).name, rulesOf(offered).name]} title="Exigencia de tu empresa" /> : null} />}
         {step === 3 && <IndustryStep sel={sel} setSel={setSel} onBack={() => setStep(2)} onNext={() => setStep(4)} />}
         {step === 4 && <NameStep sel={sel} setSel={setSel} onBack={() => setStep(3)} onNext={() => setStep(5)} />}
         {step === 5 && <LetterStep sel={sel} name={name} onBack={() => setStep(4)} onNext={() => setStep(6)} />}

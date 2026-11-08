@@ -229,6 +229,8 @@ export interface CareerRun {
   lessons?: string[];
   /** Resultado del proyecto de cambio de esa empresa. */
   change?: { adopted: number; weeks: number; ok: boolean };
+  /** Identidad de la empresa propia (carrera continua). Distingue dos empresas del mismo paquete. */
+  companyId?: string;
 }
 
 // ───────────────────────────── proyecto de cambio
@@ -325,8 +327,34 @@ export interface CeoState {
   companyProfile?: CompanyProfile;
   /** Negocio (P0-C): versión de supuestos y asignaciones de caja. Los números se reconstruyen con businessOf(). */
   business?: BusinessLog;
+  /**
+   * Empresa emergente con motor de crecimiento (Growth Engine, fase 2; detrás del interruptor growth_engine).
+   * Solo se guarda el registro (plantilla, semilla, decisiones); el estado se reconstruye. Ver growth/session.ts.
+   */
+  growth?: import("./growth/session").GrowthLog;
   /** Paso del periodo en curso a la economía real (v10): respaldo completo y marca para no repetirlo. Ver econ-migration.ts. */
   econMigration?: EconMigration;
+  /**
+   * Empresas guardadas (piloto Growth Engine): al abrir una empresa emergente, la empresa en curso se guarda completa
+   * aquí, con el reloj detenido, y se puede volver a ella. Ver career/shelf.ts.
+   */
+  shelf?: ShelvedCompany[];
+  /** Inicio de la carrera, fijado la primera vez que se guarda una empresa (el diario lo usa como identidad). */
+  careerStart?: number;
+}
+
+/** Campos que pertenecen a UNA empresa (lo demás —XP, lecciones, dilemas, carrera cerrada— es de la persona). */
+export const COMPANY_SLICE_KEYS = ["company", "tier", "rulesVersion", "legendary", "startedAt", "decisions", "pinned", "read", "change", "careerMode", "companyProfile", "business", "growth", "econMigration", "cadence", "episodes"] as const;
+export type CompanySlice = Pick<CeoState, (typeof COMPANY_SLICE_KEYS)[number]>;
+export interface ShelvedCompany {
+  /** companyId de la identidad, o «pack:<id>» para una empresa de temporadas. */
+  id: string;
+  name: string;
+  /** Cuándo se guardó (hora del juego). Al volver, ese lapso cuenta como pausa: nada vence ni llega mientras tanto. */
+  parkedAt: number;
+  /** XP del periodo en curso al guardarla (sigue sumando a tu total mientras está guardada). */
+  xp: number;
+  state: CompanySlice;
 }
 
 /** Registro del paso a v10 de un periodo que ya estaba en curso. */
@@ -349,7 +377,11 @@ export type CadenceStatus = "active" | "quiet_day" | "vacation_paused";
  * Un periodo de pausa en hora real. Vacaciones: `to` = null mientras dura (se cierra al reanudar).
  * Día tranquilo: `to` = medianoche local, fijada al empezar (o antes, si vuelves ese mismo día).
  */
-export interface PausePeriod { kind: "vacation" | "quiet"; from: number; to: number | null; plannedResumeAt?: number | null }
+export interface PausePeriod {
+  kind: "vacation" | "quiet"; from: number; to: number | null; plannedResumeAt?: number | null;
+  /** Lapso en que la empresa estuvo guardada (otra empresa en curso). Congela como unas vacaciones, pero no cuenta en el límite. */
+  shelf?: true;
+}
 export interface Cadence {
   policyVersion: 1;
   pauses: PausePeriod[];

@@ -7,9 +7,10 @@ describe("interruptores", () => {
     expect(resolveFlags({ global: null, player: "basura" })).toEqual(ALL_OFF);
   });
 
-  it("los 5 interruptores sembrados por la 0015 (apagados) dan todo apagado", () => {
+  it("los 5 interruptores sembrados por la 0015 (apagados) dan todo apagado, salvo los prendidos por omisión", () => {
     const global = ["ai", "ai_shadow", "events", "game_journal", "replay_shadow"].map((key) => ({ key, enabled: false }));
-    expect(resolveFlags({ global, player: { events: true }, aiConsent: true, aiEnvEnabled: true })).toEqual(ALL_OFF);
+    expect(resolveFlags({ global, player: { events: true }, aiConsent: true, aiEnvEnabled: true })).toEqual({ ...ALL_OFF, growth_engine: true });
+    expect(resolveFlags({ global: [...global, { key: "growth_engine", enabled: false }] })).toEqual(ALL_OFF);
   });
 
   it("global prendido: aplica a todos, pero un jugador puede salirse", () => {
@@ -35,7 +36,7 @@ describe("interruptores", () => {
   });
 
   it("ignora claves desconocidas", () => {
-    expect(resolveFlags({ global: [{ key: "borrar_todo", enabled: true }] })).toEqual(ALL_OFF);
+    expect(resolveFlags({ global: [{ key: "borrar_todo", enabled: true }, { key: "growth_engine", enabled: false }] })).toEqual(ALL_OFF);
   });
 });
 
@@ -69,5 +70,39 @@ describe("interruptor carrera_continua (P0-B2)", () => {
     const global = [{ key: "carrera_continua", enabled: false, value: { perPlayer: true } }];
     expect(resolveFlags({ global }).carrera_continua).toBe(false);
     expect(resolveFlags({ global, player: { carrera_continua: true } }).carrera_continua).toBe(true);
+  });
+});
+
+describe("interruptor growth_engine (lanzamiento piloto)", () => {
+  it("existe; si la base no responde queda apagado", () => {
+    expect(ALL_OFF.growth_engine).toBe(false);
+    expect(resolveFlags({ global: null, player: { growth_engine: true } }).growth_engine).toBe(false);
+  });
+  it("sin fila en la base queda prendido (autorizado); el jugador puede salirse", () => {
+    expect(resolveFlags({ global: [] }).growth_engine).toBe(true);
+    expect(resolveFlags({ global: [{ key: "events", enabled: true }] }).growth_engine).toBe(true);
+    expect(resolveFlags({ global: [], player: { growth_engine: false } }).growth_engine).toBe(false);
+    // Los demás siguen apagados sin fila.
+    expect(resolveFlags({ global: [] }).episodes).toBe(false);
+    expect(resolveFlags({ global: [] }).ai).toBe(false);
+  });
+  it("interruptor de emergencia: una fila enabled = false lo apaga para todos", () => {
+    expect(resolveFlags({ global: [{ key: "growth_engine", enabled: false }] }).growth_engine).toBe(false);
+    expect(resolveFlags({ global: [{ key: "growth_engine", enabled: false }], player: { growth_engine: true } }).growth_engine).toBe(false);
+  });
+  it("modo solo invitados: apagado salvo quien tenga players.flags.growth_engine = true", () => {
+    const global = [{ key: "growth_engine", enabled: false, value: { perPlayer: true } }];
+    expect(resolveFlags({ global }).growth_engine).toBe(false);
+    expect(resolveFlags({ global, player: { growth_engine: true } }).growth_engine).toBe(true);
+  });
+});
+
+describe("empresa emergente visible", () => {
+  it("producción: solo con el interruptor; preview y desarrollo: siempre", async () => {
+    const { growthVisible } = await import("./flags");
+    expect(growthVisible("production", false)).toBe(false);
+    expect(growthVisible("production", true)).toBe(true);
+    expect(growthVisible("preview", false)).toBe(true);
+    expect(growthVisible("development", false)).toBe(true);
   });
 });

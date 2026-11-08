@@ -48,7 +48,7 @@ export function canPause(s: CeoState, now = nowOf(s), plannedResumeAt: number | 
   if (!s.startedAt) return { ok: false, reason: "sin_empresa" };
   if (cadenceStatus(s, now) === "vacation_paused") return { ok: false, reason: "ya_en_pausa" };
   if (seasonDoneOf(s, now)) return { ok: false, reason: "temporada_cerrada" };
-  if (seasonPauses(s).filter((p) => p.kind === "vacation").length >= VACATIONS_PER_SEASON) return { ok: false, reason: "limite" };
+  if (seasonPauses(s).filter((p) => p.kind === "vacation" && !p.shelf).length >= VACATIONS_PER_SEASON) return { ok: false, reason: "limite" };
   if (plannedResumeAt !== null && !(plannedResumeAt > now && plannedResumeAt <= now + VACATION_MAX_DAYS * DAY)) return { ok: false, reason: "fecha_invalida" };
   return { ok: true };
 }
@@ -96,7 +96,7 @@ export function startQuietDay(s: CeoState, now = nowOf(s), until?: number): CeoS
 // ───────────────────────────────────────────── regreso
 /** Última vacación ya cerrada (si hay). */
 export function lastVacation(s: CeoState): PausePeriod | null {
-  const v = (s.cadence?.pauses ?? []).filter((p) => p.kind === "vacation" && p.to !== null);
+  const v = (s.cadence?.pauses ?? []).filter((p) => p.kind === "vacation" && p.to !== null && !p.shelf);
   return v.length ? v[v.length - 1] : null;
 }
 

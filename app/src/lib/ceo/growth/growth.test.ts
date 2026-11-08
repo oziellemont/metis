@@ -4,7 +4,7 @@
 import { describe, expect, it } from "vitest";
 import { activePeople, advance, apply, capacityNow, createCompany, headcount, peopleByRole } from "./engine";
 import { ROLES_V1, roleById } from "./catalog";
-import { burdenOf, laborOf, monthlyCost, pesos } from "./labor";
+import { burdenOf, laborOf, minWage, monthlyCost, pesos, REGIONS, regionOf, terminationOf, vacationDays } from "./labor";
 import type { GrowthState } from "./types";
 
 const noRot = (s: GrowthState) => { s.attrition = false; return s; };
@@ -14,20 +14,20 @@ describe("costo laboral", () => {
   it("ningún salario del catálogo queda debajo del mínimo 2026 y cada rol declara fuente y confianza", () => {
     const L = laborOf();
     for (const r of ROLES_V1) {
-      expect(r.salary.min * 100).toBeGreaterThanOrEqual(pesos(L.minWageDaily.value * 30));
+      expect(r.salary.min * 100).toBeGreaterThanOrEqual(pesos(minWage(L, REGIONS.MTY) * 30));
       expect(r.salary.min).toBeLessThanOrEqual(r.salary.mid);
       expect(r.salary.mid).toBeLessThanOrEqual(r.salary.max);
       expect(r.salarySource.length).toBeGreaterThan(20);
     }
-    expect(L.minWageDaily.value).toBe(315.04);
+    expect(L.minWageDaily.value.general).toBe(315.04);
     expect(L.minWageDaily.confidence).toBe("oficial");
   });
 
   it("un operador, un gerente y un ingeniero no cuestan lo mismo; la carga patronal es plausible (25–45 %)", () => {
-    const costs = ["operador", "gerente_planta", "ingeniero_procesos"].map((id) => monthlyCost(pesos(roleById(id)!.salary.mid), "NL", laborOf()).total);
+    const costs = ["operador", "gerente_planta", "ingeniero_procesos"].map((id) => monthlyCost(pesos(roleById(id)!.salary.mid), REGIONS.MTY, laborOf()).total);
     expect(new Set(costs).size).toBe(3);
     for (const id of ["mesero", "cocinero", "gerente_sucursal", "operador", "director_operaciones"]) {
-      const b = burdenOf(pesos(roleById(id)!.salary.mid), "NL");
+      const b = burdenOf(pesos(roleById(id)!.salary.mid), REGIONS.MTY);
       expect(b).toBeGreaterThan(0.25);
       expect(b).toBeLessThan(0.45);
     }
@@ -68,7 +68,7 @@ describe("integridad contable", () => {
     apply(s, { type: "hire", id: "h1", roleId: "cocinero", siteId: "centro" });
     apply(s, { type: "hire", id: "h1", roleId: "cocinero", siteId: "centro" });
     expect(s.vacancies.length).toBe(1);
-    const o = { type: "open_site" as const, id: "sur", name: "Sucursal Sur", rent: 50000, utilities: 30000, deposit: 100000, capex: 1200000, years: 8, buildDays: 60, assets: { mesas: 14 }, demandBase: 90, maturityDays: 180, preopening: 80000 };
+    const o = { type: "open_site" as const, id: "sur", name: "Sucursal Sur", rent: 50000, utilities: 30000, deposit: 100000, capex: 250000, years: 8, buildDays: 60, assets: { mesas: 14 }, demandBase: 90, maturityDays: 180, preopening: 80000 };
     apply(s, o); const c = s.cash; apply(s, o);
     expect(s.cash).toBe(c);
     expect(s.sites.length).toBe(2);
@@ -82,11 +82,11 @@ describe("integridad contable", () => {
   it("una inversión consume caja al pagarse y el resultado solo reconoce depreciación", () => {
     const s = noRot(createCompany("manufactura_emergente", "inv"));
     const before = s.cash;
-    apply(s, { type: "add_asset", id: "prensa4", siteId: "planta", label: "Prensa de 200 t", resource: "prensa", units: 1, cost: 1800000, years: 10, leadDays: 45 });
-    expect(before - s.cash).toBe(pesos(1800000));
+    apply(s, { type: "add_asset", id: "prensa4", siteId: "planta", label: "Prensa de 200 t", resource: "prensa", units: 1, cost: 900000, years: 10, leadDays: 45 });
+    expect(before - s.cash).toBe(pesos(900000));
     const later = advance(s, 90);
     const dep = later.ledger.filter((e) => e.type === "devengo" && e.account === "depreciacion");
-    expect(dep.reduce((a, e) => a + e.amount, 0)).toBe(-Math.round(pesos(1800000) / 120) * dep.length);
+    expect(dep.reduce((a, e) => a + e.amount, 0)).toBe(-Math.round(pesos(900000) / 120) * dep.length);
     expect(later.ledger.some((e) => e.type === "devengo" && e.account === "inversion")).toBe(false);
   });
 
@@ -145,7 +145,7 @@ describe("realismo operativo", () => {
 
   it("una sucursal sin personal mínimo no abre ni produce", () => {
     const s = noRot(createCompany("restaurante_emergente", "suc"));
-    apply(s, { type: "open_site", id: "sur", name: "Sucursal Sur", rent: 50000, utilities: 30000, deposit: 100000, capex: 1200000, years: 8, buildDays: 45, assets: { mesas: 12 }, demandBase: 90, maturityDays: 180, preopening: 80000 });
+    apply(s, { type: "open_site", id: "sur", name: "Sucursal Sur", rent: 50000, utilities: 30000, deposit: 100000, capex: 250000, years: 8, buildDays: 45, assets: { mesas: 12 }, demandBase: 90, maturityDays: 180, preopening: 80000 });
     const later = advance(s, 120);
     const sur = later.sites.find((x) => x.ref === "sur")!;
     expect(sur.status).toBe("preapertura");
@@ -213,4 +213,194 @@ describe("realismo operativo", () => {
       expect(s.months.slice(-3).reduce((a, m) => a + m.operating, 0)).toBeGreaterThan(0);
     }
   }, 60_000);
+});
+
+describe("regiones y terminaciones (fase 2)", () => {
+  it("el piloto es Monterrey; otra región cambia salarios y nómina estatal sin tocar el motor", () => {
+    expect(REGIONS.MTY.enabled).toBe(true);
+    expect(Object.values(REGIONS).filter((r) => r.enabled).map((r) => r.id)).toEqual(["MTY"]);
+    const s = createCompany("restaurante_emergente", "r");
+    expect(s.region).toBe("MTY");
+    const gross = pesos(12500);
+    const mty = monthlyCost(gross, REGIONS.MTY, laborOf());
+    const cdmx = monthlyCost(gross, REGIONS.CDMX, laborOf());
+    expect(cdmx.payrollTax).toBeGreaterThan(mty.payrollTax);
+    expect(regionOf("XX").id).toBe("MTY");
+  });
+
+  it("la tabla de vacaciones sigue la reforma: 12, 14, 16, 18, 20 y luego +2 cada cinco años", () => {
+    const L = laborOf();
+    expect([0, 1, 2, 3, 4, 5, 9, 10, 15].map((y) => vacationDays(y, L))).toEqual([12, 14, 16, 18, 20, 22, 22, 24, 26]);
+  });
+
+  it("cada causa de terminación tiene su propio cálculo", () => {
+    const L = laborOf(), r = REGIONS.MTY, gross = pesos(15000), prov = pesos(2000);
+    const of = (k: Parameters<typeof terminationOf>[0], years = 3, refuse = false) => terminationOf(k, gross, years, prov, 4, L, r, refuse);
+    const ren = of("renuncia"), just = of("despido_justificado"), unj = of("despido_injustificado"), unjR = of("despido_injustificado", 3, true), mut = of("mutuo_acuerdo"), prob = of("periodo_prueba", 0.05);
+    // Renuncia con menos de 15 años: solo finiquito (proporcionales y vacaciones), sin prima de antigüedad.
+    expect(ren.seniority).toBe(0); expect(ren.constitutional).toBe(0);
+    expect(ren.total).toBe(prov + Math.round((gross / 30) * 4));
+    // Rescisión justificada: prima de antigüedad, sin 90 días.
+    expect(just.seniority).toBeGreaterThan(0); expect(just.constitutional).toBe(0);
+    // Despido injustificado: 90 días + prima; los 20 días por año solo si el patrón se niega a reinstalar.
+    expect(unj.constitutional).toBeGreaterThan(0); expect(unj.twentyDays).toBe(0);
+    expect(unjR.twentyDays).toBeGreaterThan(0);
+    // Mutuo acuerdo: gratificación negociada, menor que la liquidación de ley.
+    expect(mut.gratification).toBeGreaterThan(0);
+    expect(mut.total).toBeLessThan(unj.total);
+    // Periodo de prueba: sin indemnización.
+    expect(prob.constitutional + prob.seniority + prob.gratification).toBe(0);
+    expect(new Set([ren.total, just.total, unj.total, unjR.total, mut.total]).size).toBe(5);
+  });
+
+  it("la prima de antigüedad respeta el tope de dos salarios mínimos", () => {
+    const L = laborOf(), r = REGIONS.MTY;
+    const high = terminationOf("despido_justificado", pesos(60000), 2, 0, 0, L, r);
+    expect(high.seniority).toBe(Math.round(2 * minWage(L, r) * 100 * 12 * 2));
+  });
+
+  it("despedir sin causa cuesta más que una renuncia y la causa queda registrada", () => {
+    const base = noRot(createCompany("restaurante_emergente", "t"));
+    const a = advance(base, 10), b = advance(base, 10);
+    const cook = peopleByRole(a, "cocinero")[0];
+    apply(a, { type: "terminate", id: "t1", personId: cook.id, kind: "despido_injustificado" });
+    apply(b, { type: "terminate", id: "t1", personId: cook.id, kind: "mutuo_acuerdo" });
+    expect(a.cash).toBeLessThan(b.cash);
+    expect(a.people.find((p) => p.id === cook.id)!.leftReason).toBe("despido_injustificado");
+  });
+});
+
+describe("margen de arranque recalibrado", () => {
+  it("Grupo Brasa tiene un margen operativo de restaurante (EBITDA 6–14 %) que sale de líneas explícitas", () => {
+    const s = advance(noRot(createCompany("restaurante_emergente", "m")), 90);
+    const m = s.months[1];
+    const pct = m.ebitda / m.revenue;
+    expect(pct).toBeGreaterThan(0.06);
+    expect(pct).toBeLessThan(0.14);
+    expect(m.coverage).toBeGreaterThan(0);
+    expect(s.fixedLines.length).toBeGreaterThanOrEqual(6);
+  });
+});
+
+describe("liquidez (fase 2)", () => {
+  const branch = (s: GrowthState, id = "o1") => apply(s, { type: "open_site", id, name: "Sucursal Cumbres", rent: 55000, utilities: 24000, deposit: 110000, capex: 200000, years: 8, buildDays: 45, assets: { mesas: 14 }, demandBase: 95, maturityDays: 150, preopening: 60000 });
+
+  it("la caja nunca es negativa: lo que no alcanza queda como adeudo vencido con su acreedor", () => {
+    let s = createCompany("restaurante_emergente", "liq");
+    branch(s);
+    apply(s, { type: "hire", id: "h1", roleId: "gerente_sucursal", siteId: s.sites[1].id });
+    s = advance(s, 360);
+    for (const m of s.months) expect(m.cashEnd).toBeGreaterThanOrEqual(0);
+    expect(s.cash).toBeGreaterThanOrEqual(0);
+    expect(s.overdue.length).toBeGreaterThan(0);
+    expect(s.months.at(-1)!.overdue).toBeGreaterThan(0);
+    // Y el libro sigue cuadrando.
+    for (const m of s.months) expect(m.cashEnd).toBe(m.cashBegin + m.inflows - m.outflows);
+  }, 30_000);
+
+  it("la proyección de 13 semanas avisa antes de que falte dinero (alerta antes que crisis)", () => {
+    let s = createCompany("restaurante_emergente", "liq");
+    branch(s);
+    apply(s, { type: "hire", id: "h1", roleId: "gerente_sucursal", siteId: s.sites[1].id });
+    s = advance(s, 240);
+    const alert = s.events.find((e) => e.kind === "alerta_liquidez");
+    const crisis = s.events.find((e) => e.kind === "crisis_liquidez");
+    expect(alert).toBeTruthy();
+    expect(crisis).toBeTruthy();
+    expect(alert!.day).toBeLessThan(crisis!.day);
+  }, 30_000);
+
+  it("un atraso tiene consecuencias por acreedor: proveedores a contado, recargos del fisco, clima laboral", () => {
+    let s = createCompany("restaurante_emergente", "liq");
+    branch(s);
+    apply(s, { type: "hire", id: "h1", roleId: "gerente_sucursal", siteId: s.sites[1].id });
+    s = advance(s, 330);
+    expect(s.events.some((e) => e.kind === "proveedor" && /contado/.test(e.text))).toBe(true);
+    expect(s.relations.staff).toBeLessThan(0.8);
+    expect(s.ledger.some((e) => e.account === "recargos" || e.account === "moratorios")).toBe(true);
+  }, 30_000);
+
+  it("no hay préstamo automático: sin decisión, la caja no recibe financiamiento", () => {
+    let s = createCompany("restaurante_emergente", "liq");
+    branch(s);
+    s = advance(s, 200);
+    expect(s.loans.length).toBe(0);
+    expect(s.ledger.some((e) => e.account === "prestamo" || e.account === "aportacion")).toBe(false);
+  }, 30_000);
+
+  it("el banco revisa condiciones y puede decir que no; con historial y resultado positivo, presta con costo", () => {
+    const fresh = createCompany("restaurante_emergente", "bank");
+    const r1 = apply(fresh, { type: "bank_loan", id: "b1", amount: 300000, months: 12 });
+    expect(r1.ok).toBe(false); expect(r1.refused).toBe(true);
+    expect(fresh.events.some((e) => e.kind === "rechazo")).toBe(true);
+    const s = advance(noRot(createCompany("restaurante_emergente", "bank")), 95);
+    const ok = apply(s, { type: "bank_loan", id: "b2", amount: 200000, months: 12 });
+    expect(ok.ok).toBe(true);
+    const later = advance(s, 60);
+    expect(later.loans[0].balance).toBeLessThan(later.loans[0].principal);
+    expect(later.ledger.some((e) => e.account === "intereses")).toBe(true);
+    expect(later.ledger.some((e) => e.account === "comisiones")).toBe(true);
+  }, 30_000);
+
+  it("pedir más de lo que permite la capacidad de pago se rechaza con la cifra que sí alcanza", () => {
+    const s = advance(noRot(createCompany("restaurante_emergente", "bank")), 95);
+    const r = apply(s, { type: "bank_loan", id: "b3", amount: 5_000_000, months: 12 });
+    expect(r.ok).toBe(false);
+    expect(r.reason).toMatch(/capacidad de pago alcanza/);
+  });
+
+  it("negociar con proveedores recorre pagos y cuesta sobreprecio; el factoraje solo existe si hay cuentas por cobrar", () => {
+    const s = advance(noRot(createCompany("restaurante_emergente", "prov")), 20);
+    const before = s.scheduled.filter((x) => x.account === "proveedores").map((x) => x.day);
+    const r = apply(s, { type: "negotiate_suppliers", id: "n1", extraDays: 15 });
+    if (r.ok) {
+      expect(s.scheduled.filter((x) => x.account === "proveedores").map((x) => x.day)).toEqual(before.map((d) => d + 15));
+      expect(s.supplierTerms.priceUp).toBeGreaterThan(0);
+    } else expect(r.refused).toBe(true);
+    expect(apply(s, { type: "collect_receivables", id: "f1", mode: "factoraje" }).ok).toBe(false);
+    const m = advance(noRot(createCompany("manufactura_emergente", "fac")), 20);
+    const cashBefore = m.cash;
+    expect(apply(m, { type: "collect_receivables", id: "f2", mode: "factoraje" }).ok).toBe(true);
+    const m2 = advance(m, 4);
+    expect(m2.cash).toBeGreaterThan(cashBefore);
+    expect(m2.ledger.some((e) => e.account === "factoraje")).toBe(true);
+  });
+
+  it("aportación del dueño: llega días después, desgasta su confianza y tiene límite", () => {
+    const s = createCompany("restaurante_emergente", "own2");
+    const r = apply(s, { type: "owner_equity", id: "eq1", amount: 200000 });
+    if (r.ok) {
+      expect(s.relations.owner).toBeLessThan(0.8);
+      expect(s.scheduled.some((x) => x.account === "aportacion")).toBe(true);
+      const r2 = apply(s, { type: "owner_equity", id: "eq2", amount: 900000 });
+      if (r2.ok) expect(s.equity).toBeLessThanOrEqual(500000 * 100);
+    } else expect(r.refused).toBe(true);
+  });
+
+  it("recortar tiene efecto diferido; tu sueldo no se recorta como gasto", () => {
+    const s = noRot(createCompany("restaurante_emergente", "cut"));
+    expect(apply(s, { type: "cut_costs", id: "c0", lines: ["direccion"] }).ok).toBe(false);
+    expect(apply(s, { type: "cut_costs", id: "c1", lines: ["marketing"] }).ok).toBe(true);
+    const later = advance(s, 90);
+    expect(later.sites[0].demandFactor).toBeLessThan(1);
+  });
+
+  it("posponer una sucursal en obra recorre sus pagos con penalidad; la renta sigue corriendo", () => {
+    const s = noRot(createCompany("restaurante_emergente", "def"));
+    branch(s);
+    const site = s.sites[1];
+    const pre = s.scheduled.find((x) => x.ref === "o1")!.day;
+    expect(apply(s, { type: "defer_site", id: "d1", siteId: site.id, days: 60 }).ok).toBe(true);
+    expect(s.scheduled.find((x) => x.ref === "o1" && x.account === "preapertura")!.day).toBe(pre + 60);
+    const later = advance(s, 60);
+    expect(later.ledger.some((e) => e.account === "renta" && e.ref === site.id)).toBe(true);
+  });
+
+  it("abrir sucursal exige tener el pago inicial en caja", () => {
+    const s = createCompany("restaurante_emergente", "cap");
+    s.cash = 100000_00;
+    const r = apply(s, { type: "open_site", id: "x", name: "X", rent: 1, utilities: 1, deposit: 110000, capex: 200000, years: 8, buildDays: 30, assets: { mesas: 10 }, demandBase: 50, maturityDays: 90, preopening: 1 });
+    expect(r.ok).toBe(false);
+    expect(r.reason).toMatch(/caja tiene/);
+  });
 });

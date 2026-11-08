@@ -10,7 +10,7 @@ import { ArrowRight, Building2, Check, Lock, Search } from "lucide-react";
 import { personOf } from "@/lib/ceo/cast";
 import { ARCHETYPES, INDUSTRY_PLACEHOLDER, availabilityLabel, industryOf } from "@/lib/ceo/career/taxonomy";
 import { NAME_MAX } from "@/lib/ceo/career/identity";
-import { OFFERED_ARCHETYPES, appointedByOf, canContinue, changeType, effectiveShort, industriesForType, nameExample, previewPack, searchForType, sectorsForType, typeOpen, type SetupSelection } from "@/lib/ceo/career/setup";
+import { GROWTH_CHOICES, OFFERED_ARCHETYPES, appointedByOf, canContinue, changeChoice, changeType, choiceOf, effectiveShort, growthFactsOf, growthIndustries, growthSummaryOf, industriesForType, nameExample, previewPack, searchForSel, sectorsForSel, typeOpen, type SetupSelection } from "@/lib/ceo/career/setup";
 import { Avatar, CompanyMark } from "./ui";
 
 type Sel = SetupSelection;
@@ -26,7 +26,8 @@ const Nav = ({ onBack, onNext, ok, label = "Continuar" }: { onBack: () => void; 
 const Soon = ({ dark }: { dark?: boolean }) => <span className={clsx("chip text-[10px] shrink-0", dark ? "bg-slate-100 text-slate-500" : "bg-white/10 text-white/60")}><Lock size={10} className="mr-1" />{availabilityLabel("coming_soon")}</span>;
 
 // ───────────────────────────────────────────── 1 · tipo de empresa (primero)
-export function ArchetypeStep({ sel, setSel, onBack, onNext, extra }: StepProps & { extra?: React.ReactNode }) {
+export function ArchetypeStep({ sel, setSel, onBack, onNext, extra, growth }: StepProps & { extra?: React.ReactNode; growth?: boolean }) {
+  if (growth) return <GrowthChoiceStep sel={sel} setSel={setSel} onBack={onBack} onNext={onNext} extra={extra} />;
   return (
     <section className="academy-in mt-10">
       <div className="text-xs font-semibold uppercase tracking-wider text-mint">Tu empresa · 1 de 4</div>
@@ -57,12 +58,46 @@ export function ArchetypeStep({ sel, setSel, onBack, onNext, extra }: StepProps 
   );
 }
 
+/** Empresa emergente o consolidada (Growth Engine, detrás de su interruptor). */
+function GrowthChoiceStep({ sel, setSel, onBack, onNext, extra }: StepProps & { extra?: React.ReactNode }) {
+  const cur = choiceOf(sel);
+  return (
+    <section className="academy-in mt-10">
+      <div className="text-xs font-semibold uppercase tracking-wider text-mint">Tu empresa · 1 de 4</div>
+      <h1 className="mt-2 text-3xl font-semibold leading-tight">¿Qué empresa vas a dirigir?</h1>
+      <p className="mt-3 text-white/70 text-[15px] leading-relaxed">No la fundaste: te nombran para dirigirla. Elige por dónde empezar.</p>
+      <div role="radiogroup" aria-label="Tipo de empresa" className="mt-6 space-y-3">
+        {GROWTH_CHOICES.map((x) => {
+          const on = cur === x.id;
+          const inds = x.id === "emergente" ? growthIndustries() : industriesForType("establecida");
+          return (
+            <button key={x.id} type="button" role="radio" aria-checked={on} onClick={() => setSel((s) => changeChoice(s, x.id))}
+              className={clsx("w-full text-left rounded-2xl p-4 sm:p-5 flex gap-4 items-start transition-all border-2", on ? "bg-white text-ink border-white shadow-2xl" : "bg-white/5 border-white/10 hover:bg-white/10")}>
+              <span className="flex-1 min-w-0">
+                <span className="font-semibold">{x.label}</span>
+                <span className={clsx("block text-sm mt-1 font-medium", on ? "text-slate-700" : "text-white/80")}>{x.hint}</span>
+                <span className={clsx("block text-sm mt-1", on ? "text-slate-600" : "text-white/60")}>{x.detail}</span>
+                <span className={clsx("block text-xs mt-1", on ? "text-slate-500" : "text-white/40")}>{x.appointedBy}</span>
+                <span className={clsx("block text-xs mt-2", on ? "text-indigo" : "text-mint/80")}>{inds.length === 1 ? "1 industria" : `${inds.length} industrias`}: {inds.map((i) => i.label).join(", ")}</span>
+              </span>
+              {on && <span className="h-6 w-6 rounded-full bg-indigo text-white grid place-items-center shrink-0"><Check size={14} strokeWidth={3} /></span>}
+            </button>
+          );
+        })}
+      </div>
+      {extra}
+      <Nav onBack={onBack} onNext={onNext} ok={canContinue("tipo", sel)} />
+    </section>
+  );
+}
+
 // ───────────────────────────────────────────── 2 · sector e industria (solo las del tipo elegido)
 export function IndustryStep({ sel, setSel, onBack, onNext }: StepProps) {
   const [q, setQ] = useState("");
   const a = sel.archetype;
-  const hits = useMemo(() => searchForType(q, a, 6), [q, a]);
-  const sectors = useMemo(() => sectorsForType(a), [a]);
+  const g = !!sel.growth;
+  const hits = useMemo(() => searchForSel(q, { archetype: a, growth: g }, 6), [q, a, g]);
+  const sectors = useMemo(() => sectorsForSel({ archetype: a, growth: g }), [a, g]);
   const pick = (sectorId: string, industryId?: string) => setSel((s) => {
     const sec = sectors.find((x) => x.id === sectorId);
     if (!sec) return s;
@@ -71,12 +106,12 @@ export function IndustryStep({ sel, setSel, onBack, onNext }: StepProps) {
   });
   const sector = sectors.find((x) => x.id === sel.sectorId);
   const ind = industryOf(sel.sectorId, sel.industryId);
-  const typeLabel = ARCHETYPES.find((x) => x.id === a)?.label ?? "";
+  const typeLabel = g ? "Empresa emergente" : ARCHETYPES.find((x) => x.id === a)?.label ?? "";
   return (
     <section className="academy-in mt-10">
       <div className="text-xs font-semibold uppercase tracking-wider text-mint">Tu empresa · 2 de 4 · {typeLabel}</div>
       <h1 className="mt-2 text-3xl font-semibold leading-tight">¿En qué industria vas a dirigir?</h1>
-      <p className="mt-3 text-white/70 text-[15px] leading-relaxed">Solo ves las industrias que tienen casos para una empresa {a === "startup" ? "startup" : "establecida"}. La industria define su idioma, sus números y sus dilemas.</p>
+      <p className="mt-3 text-white/70 text-[15px] leading-relaxed">Solo ves las industrias que tienen casos para una empresa {g ? "emergente" : a === "startup" ? "startup" : "establecida"}. La industria define su idioma, sus números y sus dilemas.</p>
 
       <div className="mt-6 rounded-2xl bg-white text-ink p-5 sm:p-6 space-y-4">
         <div>
@@ -177,14 +212,14 @@ export function LetterStep({ sel, name, onBack, onNext }: Omit<StepProps, "setSe
     <section className="academy-in mt-10">
       <div className="text-xs font-semibold uppercase tracking-wider text-mint">Tu empresa · 4 de 4 · {industryOf(sel.sectorId, sel.industryId)?.label}{sel.specialty ? ` · ${sel.specialty}` : ""} · {pk.city}</div>
       <h1 className="mt-2 text-3xl font-semibold leading-tight">Tu nombramiento en la Dirección General de {pk.name}</h1>
-      <p className="mt-3 text-white/70 text-[15px] leading-relaxed">{appointedByOf(sel.archetype)} {pk.pitch}</p>
+      <p className="mt-3 text-white/70 text-[15px] leading-relaxed">{sel.growth ? `Te nombra el dueño. ${growthSummaryOf(sel) ?? ""}` : `${appointedByOf(sel.archetype)} ${pk.pitch}`}</p>
       <div className="mt-6 rounded-2xl bg-white text-ink p-5">
         <div className="flex items-center gap-3"><Avatar id={chair.id} size={40} pack={pk} /><div><div className="text-sm font-semibold">{chair.name}</div><div className="text-xs text-slate-500">{chair.role}</div></div></div>
         {first && <p className="mt-3 text-[15px] font-medium">{first}:</p>}
-        <p className="mt-2 text-[15px] leading-relaxed text-slate-600 whitespace-pre-line">«{pk.welcome}»</p>
+        <p className="mt-2 text-[15px] leading-relaxed text-slate-600 whitespace-pre-line">«{sel.growth ? "Te dejo el negocio en tus manos. Tenemos clientes que quieren más de lo que hoy podemos dar, y caja para crecer con cuidado. Cada persona que sumes, cada local o contrato, se va a notar en la nómina y en la caja. Decide con los números a la vista." : pk.welcome}»</p>
       </div>
       <div className="mt-6 grid grid-cols-2 gap-3">
-        {pk.facts.map(([k, v]) => <div key={k} className="rounded-2xl bg-white/10 p-4"><div className="text-[11px] text-white/50">{k}</div><div className="mt-1 font-semibold">{v}</div></div>)}
+        {(growthFactsOf(sel) ?? pk.facts).map(([k, v]) => <div key={k} className="rounded-2xl bg-white/10 p-4"><div className="text-[11px] text-white/50">{k}</div><div className="mt-1 font-semibold">{v}</div></div>)}
       </div>
       <div className="mt-6 rounded-2xl bg-white/5 border border-white/10 p-5">
         <div className="text-xs font-semibold text-white/60 flex items-center gap-1.5"><Building2 size={13} /> Quién te va a escribir</div>

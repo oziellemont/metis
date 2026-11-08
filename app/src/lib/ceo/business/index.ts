@@ -38,7 +38,8 @@ export { closedRunsOf, reportDueOf } from "../engine";
 
 /** Números de la empresa. Null fuera de la carrera continua (las temporadas no tienen negocio). */
 export function businessOf(s: CeoState, now = nowOf(s)): Business | null {
-  if (!isContinuous(s)) return null;
+  // Empresa emergente: sus números salen del motor de crecimiento (growth/), no de esta simulación.
+  if (!isContinuous(s) || s.growth) return null;
   const p = s.companyProfile!;
   const base = companyById(p.contentPackId).kpiStart;
   const profile = profileFor(p.metricProfileId, p.contentPackId);

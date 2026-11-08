@@ -13,8 +13,8 @@
  * Cada acción replica, una a una, lo que hacen las acciones de `CeoProvider`.
  */
 import type { CeoState, CastId, LeverId, Settings, Written } from "./types";
-import { LEGACY_CONTINUOUS_RULES_VERSION } from "./rules";
-import { H, LEGACY_RULES_VERSION, advance, aliasOf, answerDilemma, decide, kpis, newState, openSeasonEpisode, pinArrived, renameCompany, setupCompany, switchCompany } from "./engine";
+import { CONTINUOUS_RULES_VERSION, LEGACY_CONTINUOUS_RULES_VERSION } from "./rules";
+import { H, LEGACY_RULES_VERSION, advance, aliasOf, answerDilemma, decide, kpis, newState, openSeasonEpisode, pinArrived, renameCompany, setupCompany, switchCompany, decideGrowthCase, parkAndOpen, resumeShelved } from "./engine";
 import { closeChange, playLever, startChange } from "./relations";
 import { crisisAccess, playCrisis, recordCrisis } from "./crisis";
 import { appoint, recordBoard } from "./journey";
@@ -49,11 +49,16 @@ export type GameAction =
   | { type: "episodeOpen"; at: number; id: string; mode?: "estandar" | "flexible" }
   | { type: "episode"; at: number; id: string; act: EpisodeAction }
   /** Carrera continua (P0-B2): crear la empresa del jugador y cambiarle el nombre (conserva su id). */
-  | { type: "setupCompany"; at: number; companyId: string; sectorId: string; industryId: string; archetype: string; displayName: string; shortName?: string; specialty?: string; rulesVersion?: number }
+  | { type: "setupCompany"; at: number; companyId: string; sectorId: string; industryId: string; archetype: string; displayName: string; shortName?: string; specialty?: string; rulesVersion?: number; growth?: boolean }
   | { type: "renameCompany"; at: number; displayName: string; shortName?: string }
   /** Negocio (P0-D): aprobar una opción de la propuesta del reporte del mes, y firmar ese reporte. */
   | { type: "allocate"; at: number; period: number; option: "a" | "b" }
-  | { type: "closePeriod"; at: number; period: number };
+  | { type: "closePeriod"; at: number; period: number }
+  /** Empresa emergente (Growth Engine): decisión de un caso de crecimiento. */
+  | { type: "growth"; at: number; caseId: string; optionId: string }
+  // Empresas guardadas (piloto Growth Engine): abrir una emergente guardando la actual, y volver a una guardada.
+  | { type: "parkOpen"; at: number; companyId: string; sectorId: string; industryId: string; archetype: string; displayName: string; shortName?: string; specialty?: string; rulesVersion?: number }
+  | { type: "resumeShelved"; at: number; id: string };
 
 /** Lo único que se puede hacer de vacaciones: reanudar o cambiar ajustes. El resto se rechaza. */
 const ALLOWED_ON_VACATION = new Set<GameAction["type"]>(["resume", "pause", "settings"]);
@@ -98,10 +103,13 @@ export function applyAction(s: CeoState, a: GameAction): { state: CeoState; appl
     case "quiet": n = startQuietDay(s, a.at, a.until); break;
     case "episodeOpen": n = openSeasonEpisode(s, a.id, a.at, a.mode); break;
     case "episode": n = a.act && a.act.at === a.at ? actEpisode(s, a.id, a.act).state : s; break;
-    case "setupCompany": n = setupCompany(s, { companyId: a.companyId, sectorId: a.sectorId, industryId: a.industryId, archetype: a.archetype, displayName: a.displayName, shortName: a.shortName, specialty: a.specialty }, a.at, a.rulesVersion ?? LEGACY_CONTINUOUS_RULES_VERSION); break;
+    case "setupCompany": n = setupCompany(s, { companyId: a.companyId, sectorId: a.sectorId, industryId: a.industryId, archetype: a.archetype, displayName: a.displayName, shortName: a.shortName, specialty: a.specialty, ...(a.growth ? { growth: true } : {}) }, a.at, a.rulesVersion ?? LEGACY_CONTINUOUS_RULES_VERSION); break;
     case "renameCompany": n = renameCompany(s, a.displayName, a.shortName, a.at); break;
     case "allocate": n = allocate(s, a.period, a.option, a.at); break;
     case "closePeriod": n = closePeriod(s, a.period, a.at); break;
+    case "growth": n = decideGrowthCase(s, a.caseId, a.optionId, a.at); break;
+    case "parkOpen": n = parkAndOpen(s, { companyId: a.companyId, sectorId: a.sectorId, industryId: a.industryId, archetype: a.archetype, displayName: a.displayName, shortName: a.shortName, specialty: a.specialty, growth: true }, a.at, a.rulesVersion ?? CONTINUOUS_RULES_VERSION); break;
+    case "resumeShelved": n = resumeShelved(s, a.id, a.at); break;
   }
   if (n === s) return { state: s, applied: false };
   return { state: { ...n, savedAt: a.at }, applied: true };
