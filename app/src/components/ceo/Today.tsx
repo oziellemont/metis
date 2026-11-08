@@ -19,6 +19,7 @@ import { nextLessonXp, rankFor } from "@/lib/ceo/engine";
 import { nudgeQuiet, shouldNudge } from "@/lib/ceo/profile";
 import { Avatar, ChannelChip, Flame, rel, until } from "./ui";
 import { headlineOf } from "@/lib/ceo/trajectory";
+import { COMPANY_STAGES } from "@/lib/ceo/career/identity";
 import { presenterOf } from "@/lib/ceo/business/report";
 import { alertsAt } from "@/lib/ceo/season-report";
 import { HealthBar, KpiBoard } from "./KpiBoard";
@@ -102,7 +103,15 @@ export function Today() {
               <div className="min-w-0"><div className="text-[11px] text-white/55">Tu mandato</div><div className="text-sm font-semibold leading-snug">{t.appointment.title}</div></div>
               <Link href="/ceo/carrera" className="shrink-0 text-[11px] font-semibold text-indigo-light hover:text-white">Tu trayectoria →</Link>
             </div>
-            <div className="mt-1 text-[12px] text-white/70">{t.active ? `Mes ${t.month} · ${t.chapter.label}` : `Día ${c.day} de ${pk.season.days}`}</div>
+            {t.active ? (
+              <div className="mt-2 rounded-xl bg-white/[.06] px-3 py-2" data-testid="etapa-actual">
+                <div className="flex items-baseline justify-between gap-2 text-[11px] text-white/55"><span>Etapa de la empresa</span><span className="tabular-nums">Mes {t.month} · {t.chapter.idx + 1} de {COMPANY_STAGES.length}</span></div>
+                <div className="mt-0.5 text-[13px] font-semibold">{t.chapter.label}</div>
+                <div className="mt-1.5 flex items-center gap-1" aria-hidden>
+                  {COMPANY_STAGES.map((st, i) => <span key={st.id} className={clsx("h-1.5 flex-1 rounded-full", i < t.chapter.idx ? "bg-mint" : i === t.chapter.idx ? "bg-white" : "bg-white/15")} />)}
+                </div>
+              </div>
+            ) : <div className="mt-1 text-[12px] text-white/70">{`Día ${c.day} de ${pk.season.days}`}</div>}
             <p className="mt-2 text-[13px] text-white/85 leading-snug">{t.moment.text}</p>
             {/* Barra madre: la salud de la empresa, con la misma escala que los cinco indicadores. */}
             <div className="mt-2.5"><HealthBar dark /></div>

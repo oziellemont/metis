@@ -81,7 +81,8 @@ describe("trayectoria del mandato", () => {
       expect(t.marked.length).toBeLessThanOrEqual(5);
       for (let i = 1; i < t.marked.length; i++) expect(t.marked[i].weight).toBeLessThanOrEqual(t.marked[i - 1].weight);
       const h = headlineOf(t);
-      expect(h).not.toBeNull();
+      if (h) expect(h.label).toBe("Compromiso abierto");
+      expect(h === null).toBe(!t.open.some((x) => x.kind === "consecuencia" || x.kind === "reporte"));
     }
   }, 120_000);
 
