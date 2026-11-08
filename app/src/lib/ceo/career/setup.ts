@@ -7,6 +7,8 @@
 import { companyById } from "../companies";
 import type { CompanyPack } from "../types";
 import { brandPack } from "./template";
+import { GROWTH_ARCHETYPE, growthTemplateFor } from "../growth/combos";
+import { TEMPLATES } from "../growth/families";
 import { cleanName, exposureOfPack, isCompanyId, newCompanyProfile, shortNameOf } from "./identity";
 import { ARCHETYPES, SECTORS, TAXONOMY_VERSION, industryOf, isOfferedCombo, isPlayableCombo, searchIndustries, OFFERED_TYPES, type CompanyArchetype, type Industry, type Sector, type Suggestion } from "./taxonomy";
 
@@ -17,6 +19,8 @@ export interface SetupSelection {
   displayName?: string;
   shortName?: string;
   specialty?: string;
+  /** Empresa emergente (Growth Engine, detrás de su interruptor). Tipo interno «pyme». */
+  growth?: boolean;
 }
 
 /** Industria jugable que usa un paquete (para preseleccionar según la experiencia declarada). */
@@ -82,11 +86,59 @@ export function effectiveShort(displayName: string | undefined, shortName: strin
   return typed ?? shortNameOf(name);
 }
 
+// ───────────────────────────────────────────── empresa emergente (Growth Engine, detrás del interruptor)
+/**
+ * Con el interruptor growth_engine, el primer paso ofrece dos tarjetas: «Empresa emergente» (tipo interno pyme, con
+ * motor de crecimiento) y «Empresa consolidada» (la establecida de siempre). Sin el interruptor, nada cambia.
+ */
+export const GROWTH_CHOICES = Object.freeze([
+  { id: "emergente", label: "Empresa emergente", hint: "Empieza dirigiendo una empresa pequeña.", detail: "Una sucursal o una planta, pocas personas y caja justa. Cada contratación, apertura o contrato cambia la nómina, la capacidad y el flujo.", appointedBy: "Te nombra el dueño." },
+  { id: "consolidada", label: "Empresa consolidada", hint: "Diriges una empresa mediana con estructura formal.", detail: "Operación predecible, mandos formales y un consejo que revisa cada mes.", appointedBy: "Te nombra el consejo." },
+] as const);
+export type GrowthChoice = (typeof GROWTH_CHOICES)[number]["id"];
+export const choiceOf = (sel: SetupSelection): GrowthChoice | null => (sel.growth ? "emergente" : sel.archetype === "establecida" ? "consolidada" : null);
+/** Industrias con empresa emergente jugable (las dos del piloto). */
+export const growthIndustries = (): Industry[] => SECTORS.flatMap((s) => s.industries.filter((i) => !!growthTemplateFor(s.id, i.id) && isPlayableCombo(s.id, i.id)));
+/** Elegir tarjeta: conserva la industria si también existe en la otra opción. */
+export function changeChoice(sel: SetupSelection, c: GrowthChoice): SetupSelection {
+  const { growth: _g, ...rest } = sel;
+  if (c === "consolidada") return changeType(rest, "establecida");
+  const keep = !!growthTemplateFor(sel.sectorId, sel.industryId);
+  const { sectorId: _s, industryId: _i, specialty: _e, ...bare } = rest;
+  return { ...(keep ? rest : bare), archetype: GROWTH_ARCHETYPE, growth: true };
+}
+/** Resumen de la empresa emergente que vas a dirigir (de la plantilla del motor; cifras reales del modelo). */
+export const growthSummaryOf = (sel: SetupSelection): string | null => {
+  const t = sel.growth ? growthTemplateFor(sel.sectorId, sel.industryId) : null;
+  return t ? TEMPLATES[t]?.summary ?? null : null;
+};
+/** Datos de la carta de nombramiento de la empresa emergente (de la plantilla del motor, nunca inventados). */
+export function growthFactsOf(sel: SetupSelection): [string, string][] | null {
+  const id = sel.growth ? growthTemplateFor(sel.sectorId, sel.industryId) : null;
+  const T = id ? TEMPLATES[id] : null;
+  if (!T) return null;
+  const site = T.sites[0];
+  const money = (n: number) => `$${Math.round(n).toLocaleString("en-US")}`;
+  return [
+    ["Personas", String(T.staff.length)],
+    [T.family === "restaurante" ? "Sucursales" : "Plantas", `${T.sites.length} · ${site.name}`],
+    ["Caja al llegar", money(T.cash)],
+    ["Renta mensual", money(site.rent)],
+  ];
+}
+const comboOk = (sel: SetupSelection) =>
+  sel.growth ? sel.archetype === GROWTH_ARCHETYPE && !!growthTemplateFor(sel.sectorId, sel.industryId) && isPlayableCombo(sel.sectorId, sel.industryId) : isOfferedCombo(sel.sectorId, sel.industryId, sel.archetype);
+/** Sectores para la selección (respeta la empresa emergente). */
+export const sectorsForSel = (sel: SetupSelection): Sector[] =>
+  sel.growth ? SECTORS.map((s) => ({ ...s, industries: s.industries.filter((i) => !!growthTemplateFor(s.id, i.id)) })).filter((s) => s.industries.length > 0) : sectorsForType(sel.archetype);
+export const searchForSel = (q: string, sel: SetupSelection, limit = 6): Suggestion[] =>
+  sel.growth ? searchIndustries(q, 40).filter((h) => !!growthTemplateFor(h.sectorId, h.industryId)).slice(0, limit) : searchForType(q, sel.archetype, limit);
+
 export type SetupStep = "tipo" | "industria" | "nombre";
 /** ¿Se puede pasar al siguiente paso con lo elegido? Orden: tipo → industria → nombre. */
 export function canContinue(step: SetupStep, sel: SetupSelection): boolean {
-  if (step === "tipo") return typeOpen(sel.archetype);
-  if (step === "industria") return canContinue("tipo", sel) && isOfferedCombo(sel.sectorId, sel.industryId, sel.archetype);
+  if (step === "tipo") return sel.growth ? sel.archetype === GROWTH_ARCHETYPE : typeOpen(sel.archetype);
+  if (step === "industria") return canContinue("tipo", sel) && comboOk(sel);
   return canContinue("industria", sel) && !!effectiveShort(sel.displayName, sel.shortName);
 }
 
@@ -106,7 +158,7 @@ export function newCompanyId(rand: () => number = Math.random): string {
   return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20)}`;
 }
 
-export interface SetupInput { companyId: string; sectorId: string; industryId: string; archetype: CompanyArchetype; displayName: string; shortName?: string; specialty?: string }
+export interface SetupInput { companyId: string; sectorId: string; industryId: string; archetype: CompanyArchetype; displayName: string; shortName?: string; specialty?: string; growth?: boolean }
 
 /** Lo que se manda a `setupCompany`. Null si algo no cuadra (misma validación que el motor). */
 export function buildSetup(sel: SetupSelection, companyId: string): SetupInput | null {
@@ -115,7 +167,7 @@ export function buildSetup(sel: SetupSelection, companyId: string): SetupInput |
   const short = sel.shortName?.trim() ? cleanName(sel.shortName)! : undefined;
   const ind = industryOf(sel.sectorId, sel.industryId)!;
   const specialty = sel.specialty && ind.specialties.includes(sel.specialty) ? sel.specialty : undefined;
-  const out: SetupInput = { companyId, sectorId: sel.sectorId!, industryId: sel.industryId!, archetype: sel.archetype!, displayName, ...(short ? { shortName: short } : {}), ...(specialty ? { specialty } : {}) };
+  const out: SetupInput = { companyId, sectorId: sel.sectorId!, industryId: sel.industryId!, archetype: sel.archetype!, displayName, ...(short ? { shortName: short } : {}), ...(specialty ? { specialty } : {}), ...(sel.growth ? { growth: true } : {}) };
   return newCompanyProfile({ ...out, at: 1 }, TAXONOMY_VERSION) ? out : null;
 }
 

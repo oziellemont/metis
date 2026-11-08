@@ -9,6 +9,7 @@
  */
 import { industryOf, isArchetype, isPlayableCombo, sectorById, type CompanyArchetype } from "./taxonomy";
 import { companyById, isCompany } from "../companies";
+import { GROWTH_ARCHETYPE, growthTemplateFor } from "../growth/combos";
 
 /** Trayectoria ilustrativa del doc P0 §4 (no es una escalera obligatoria ni se compra con dinero). */
 export const COMPANY_STAGES = [
@@ -158,6 +159,8 @@ export interface NewCompanyInput {
   shortName?: string;
   specialty?: string;
   at: number;
+  /** Empresa emergente con motor de crecimiento (fase 2). Solo industrias piloto y tipo interno «pyme». */
+  growth?: boolean;
 }
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -168,7 +171,9 @@ export const isCompanyId = (x: unknown): x is string => typeof x === "string" &&
  * Devuelve null si algo no cuadra; nunca crea una empresa a medias.
  */
 export function newCompanyProfile(i: NewCompanyInput, taxonomyVersion: number): CompanyProfile | null {
-  if (!isCompanyId(i.companyId) || !isArchetype(i.archetype) || !isPlayableCombo(i.sectorId, i.industryId, i.archetype)) return null;
+  // Empresa emergente (Growth Engine, detrás de su interruptor): otra puerta, solo para las industrias piloto.
+  const growthOk = i.growth === true && i.archetype === GROWTH_ARCHETYPE && !!growthTemplateFor(i.sectorId, i.industryId) && !!industryOf(i.sectorId, i.industryId)?.contentPackId;
+  if (!isCompanyId(i.companyId) || !isArchetype(i.archetype) || !(growthOk || (i.growth !== true && isPlayableCombo(i.sectorId, i.industryId, i.archetype)))) return null;
   if (typeof i.at !== "number" || !Number.isFinite(i.at) || i.at <= 0) return null;
   const displayName = cleanName(i.displayName);
   if (!displayName) return null;

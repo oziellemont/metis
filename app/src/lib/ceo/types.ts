@@ -325,6 +325,11 @@ export interface CeoState {
   companyProfile?: CompanyProfile;
   /** Negocio (P0-C): versión de supuestos y asignaciones de caja. Los números se reconstruyen con businessOf(). */
   business?: BusinessLog;
+  /**
+   * Empresa emergente con motor de crecimiento (Growth Engine, fase 2; detrás del interruptor growth_engine).
+   * Solo se guarda el registro (plantilla, semilla, decisiones); el estado se reconstruye. Ver growth/session.ts.
+   */
+  growth?: import("./growth/session").GrowthLog;
   /** Paso del periodo en curso a la economía real (v10): respaldo completo y marca para no repetirlo. Ver econ-migration.ts. */
   econMigration?: EconMigration;
 }

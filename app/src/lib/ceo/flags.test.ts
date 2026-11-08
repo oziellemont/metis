@@ -71,3 +71,26 @@ describe("interruptor carrera_continua (P0-B2)", () => {
     expect(resolveFlags({ global, player: { carrera_continua: true } }).carrera_continua).toBe(true);
   });
 });
+
+describe("interruptor growth_engine (crecimiento real, fase 2)", () => {
+  it("existe, arranca apagado y sin fila global sigue apagado", () => {
+    expect(ALL_OFF.growth_engine).toBe(false);
+    expect(resolveFlags({ global: [] }).growth_engine).toBe(false);
+    expect(resolveFlags({ global: null, player: { growth_engine: true } }).growth_engine).toBe(false);
+  });
+  it("solo se prende para invitados si el global lo permite por jugador", () => {
+    const global = [{ key: "growth_engine", enabled: false, value: { perPlayer: true } }];
+    expect(resolveFlags({ global }).growth_engine).toBe(false);
+    expect(resolveFlags({ global, player: { growth_engine: true } }).growth_engine).toBe(true);
+  });
+});
+
+describe("empresa emergente visible", () => {
+  it("producción: solo con el interruptor; preview y desarrollo: siempre", async () => {
+    const { growthVisible } = await import("./flags");
+    expect(growthVisible("production", false)).toBe(false);
+    expect(growthVisible("production", true)).toBe(true);
+    expect(growthVisible("preview", false)).toBe(true);
+    expect(growthVisible("development", false)).toBe(true);
+  });
+});

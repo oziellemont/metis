@@ -21,6 +21,8 @@ import { brandDeep, brandPack, brandText, type Brand } from "./career/template";
 import { industryLongFor } from "./career/lexicon";
 import { ASSUMPTIONS_VERSION, sanitizeBusiness } from "./business/model";
 import { sanitizeEpisodes } from "./episodes/engine";
+import { decideGrowth, growthBridge, growthTemplateFor, newGrowthLog, pendingGrowth, sanitizeGrowthLog } from "./growth/session";
+import { MONTH as GROWTH_MONTH } from "./growth/core";
 import { EPISODES, SEASON_EPISODES, openEpisode as openEpisodeRaw } from "./episodes/catalog";
 import { authoredFromScore, judge, prioritizes, type ContextOption } from "./judgment";
 import { SEASON_OBJECTIVES } from "./objectives";
@@ -171,6 +173,8 @@ export function migrate(raw: unknown): CeoState {
   if (out.careerMode === "continua" && out.companyProfile) out.company = out.companyProfile.contentPackId;
   if (out.settings.displayCurrency !== undefined && !isDisplayCurrency(out.settings.displayCurrency)) delete out.settings.displayCurrency;
   if (out.business !== undefined) { const b = sanitizeBusiness(out.business); if (b) out.business = b; else delete out.business; }
+  // Empresa emergente (Growth Engine): solo con empresa propia; si el registro viene dañado, se descarta.
+  if (out.growth !== undefined) { const g = out.companyProfile ? sanitizeGrowthLog(out.growth) : null; if (g) out.growth = g; else delete out.growth; }
   if (out.econMigration !== undefined) { const m = sanitizeEconMigration(out.econMigration); if (m) out.econMigration = m; else delete out.econMigration; }
   // v10 · economía real: el periodo en curso pasa una sola vez, con respaldo (econ-migration.ts).
   if (ECON_ROLLBACK) return revertV10(out);
@@ -556,9 +560,32 @@ export function kpis(s: CeoState, now = nowOf(s)): Kpis {
   }
   const ce = changeKpiEffect(s);
   for (const key of Object.keys(ce) as KpiKey[]) k[key] = clamp(k[key] + (ce[key] ?? 0));
+  // Empresa emergente: el dinero sale SOLO del motor de crecimiento (una sola fuente económica), no de P0-C ni de v10.
+  if (s.growth) {
+    const g = growthBridge(s.growth, growthDayOf(s, now)).delta;
+    for (const key of KPI_KEYS) k[key] = clamp(k[key] + g[key]);
+    return k;
+  }
   const cf = cashFlowOf(s, k, now);
   if (cf) k.caja = clamp(k.caja + cf);
   return k;
+}
+
+/**
+ * Día del motor de crecimiento para la partida: 30 días por periodo cerrado más la parte proporcional del periodo en
+ * curso (seasonDay ya respeta pausas y vacaciones). Sin jugar no avanza más allá del periodo en curso.
+ */
+export function growthDayOf(s: CeoState, now = nowOf(s)): number {
+  if (!s.growth || !s.startedAt) return 0;
+  const days = Math.max(1, packOf(s).season.days);
+  const inPeriod = Math.min(GROWTH_MONTH - 1, Math.floor(((seasonDay(s, now) - 1) * GROWTH_MONTH) / days));
+  return closedRunsOf(s).length * GROWTH_MONTH + Math.max(0, inPeriod);
+}
+/** Decide un caso de crecimiento hoy. Devuelve el mismo estado si no procede (para el diario y la reproducción). */
+export function decideGrowthCase(s: CeoState, caseId: string, optionId: string, now = nowOf(s)): CeoState {
+  if (!s.growth || !isContinuous(s)) return s;
+  const r = decideGrowth(s.growth, growthDayOf(s, now), caseId, optionId);
+  return r.ok ? { ...s, growth: r.log, lastActiveAt: now } : s;
 }
 
 /**
@@ -1143,7 +1170,9 @@ export function casesDoneOf(s: CeoState, now = nowOf(s)): boolean {
   // Reglas v3+: los casos ejecutivos no vencen; el reto final espera a que los cierres.
   const epsOk = !ruleSet(rulesVersionOf(s)).episodes?.required || episodeEntries(s, now).every((e) => e.status === "cerrado");
   // Cadena (v8+): un eslabón que ya está en camino (`after`) también se espera; no existe en periodos anteriores.
-  return epsOk && base.every((i) => done(i.id)) && !es.some((e) => e.status === "pendiente" || (e.status === "futuro" && (!e.item.trigger || !!e.item.after?.length)));
+  // Empresa emergente: los casos de crecimiento que ya llegaron también se atienden antes de cerrar el mes.
+  const growthOk = !s.growth || pendingGrowth(s.growth, growthDayOf(s, now)).length === 0;
+  return epsOk && growthOk && base.every((i) => done(i.id)) && !es.some((e) => e.status === "pendiente" || (e.status === "futuro" && (!e.item.trigger || !!e.item.after?.length)));
 }
 /** Fin del nivel: cerraste los asuntos Y el reto final (proyecto de cambio). Hasta entonces no hay veredicto. */
 export function seasonDoneOf(s: CeoState, now = nowOf(s)): boolean {
@@ -1302,7 +1331,8 @@ export function boardReviewOf(s: CeoState, now = nowOf(s)): BoardReview | null {
 
 /** Mes cuyo reporte espera tu revisión (el último cerrado), o null. Solo carrera continua. */
 export function reportDueOf(s: CeoState): number | null {
-  if (!isContinuous(s)) return null;
+  // La empresa emergente tiene su propio cierre de mes (motor de crecimiento); no usa el reporte de P0-C.
+  if (!isContinuous(s) || s.growth) return null;
   const p = closedRunsOf(s).length;
   return p >= 1 && !(s.business?.reviewed ?? []).includes(p) ? p : null;
 }
@@ -1327,7 +1357,9 @@ export function setupCompany(s: CeoState, input: Omit<NewCompanyInput, "at">, no
   if (!profile) return s;
   // Los supuestos del negocio se congelan al crear la empresa (como las reglas de una temporada).
   const v = ruleSet(rulesVersion).career === "continua" ? rulesVersion : LEGACY_CONTINUOUS_RULES_VERSION;
-  return { ...fresh(s, profile.contentPackId, s.tier, now, undefined, v), careerMode: "continua", companyProfile: profile, business: { assumptionsVersion: ASSUMPTIONS_VERSION, allocations: [] } };
+  const growth = input.growth ? newGrowthLog(growthTemplateFor(profile.sectorId, profile.industryId) ?? "", profile.companyId) : null;
+  if (input.growth && !growth) return s;
+  return { ...fresh(s, profile.contentPackId, s.tier, now, undefined, v), careerMode: "continua", companyProfile: profile, business: { assumptionsVersion: ASSUMPTIONS_VERSION, allocations: [] }, ...(growth ? { growth } : {}) };
 }
 /** Cambia el nombre de la empresa. Conserva `companyId`, decisiones, periodo y todo lo demás. */
 export function renameCompany(s: CeoState, displayName: string, shortName: string | undefined, now = nowOf(s)): CeoState {

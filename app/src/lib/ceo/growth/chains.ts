@@ -33,10 +33,11 @@ export interface OptionView {
 
 export const keyOf = (c: GCase, day: number) => (c.repeatable ? `${c.id}@${day}` : c.id);
 
-function chainOpen(c: GCase, decisions: readonly Decision[]): boolean {
+function chainOpen(c: GCase, g: GrowthState, decisions: readonly Decision[]): boolean {
   if (!c.after) return true;
   const prev = decisions.find((d) => d.caseId === c.after!.case);
-  return !!prev && c.after.options.includes(prev.optionId);
+  // El siguiente eslabón llega cuando ya se vio la consecuencia del anterior (su espera), nunca el mismo día.
+  return !!prev && c.after.options.includes(prev.optionId) && g.day >= prev.day + (caseById(prev.caseId)?.waitDays ?? 0);
 }
 
 function notDecided(c: GCase, g: GrowthState, decisions: readonly Decision[]): boolean {
@@ -49,7 +50,7 @@ function notDecided(c: GCase, g: GrowthState, decisions: readonly Decision[]): b
 
 /** Casos que hoy pueden llegar, en orden de cadena. */
 export function availableCases(g: GrowthState, decisions: readonly Decision[]): GCase[] {
-  return GROWTH_CASES.filter((c) => (c.family === "ambas" || c.family === g.family) && notDecided(c, g, decisions) && chainOpen(c, decisions) && requiresMet(g, c.requires).ok);
+  return GROWTH_CASES.filter((c) => (c.family === "ambas" || c.family === g.family) && notDecided(c, g, decisions) && chainOpen(c, g, decisions) && requiresMet(g, c.requires).ok);
 }
 
 /** Por qué un caso no llega hoy (para pruebas y para el panel de diagnóstico). */
@@ -59,7 +60,7 @@ export function whyNot(g: GrowthState, caseId: string, decisions: readonly Decis
   const out: string[] = [];
   if (c.family !== "ambas" && c.family !== g.family) out.push("industria");
   if (!notDecided(c, g, decisions)) out.push("ya decidido");
-  if (!chainOpen(c, decisions)) out.push(`espera a ${c.after!.case}`);
+  if (!chainOpen(c, g, decisions)) out.push(`espera a ${c.after!.case}`);
   out.push(...requiresMet(g, c.requires).failed);
   return out;
 }

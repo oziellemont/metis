@@ -10,7 +10,7 @@
  *  - Esta función es pura: no lee red ni reloj, para poder probarla.
  */
 
-export const FLAG_KEYS = ["ai", "ai_shadow", "events", "game_journal", "replay_shadow", "episodes", "carrera_continua"] as const;
+export const FLAG_KEYS = ["ai", "ai_shadow", "events", "game_journal", "replay_shadow", "episodes", "carrera_continua", "growth_engine"] as const;
 export type FlagKey = (typeof FLAG_KEYS)[number];
 export type Flags = Record<FlagKey, boolean>;
 
@@ -65,3 +65,9 @@ export function testToolsVisible(env: AppEnv, setting: string | undefined | null
   if (s === "visible") return true;
   return staff;
 }
+
+/**
+ * Empresa emergente (Growth Engine). En producción solo con el interruptor growth_engine (apagado por defecto).
+ * En Preview y desarrollo se ve siempre, para revisarla antes de activarla.
+ */
+export const growthVisible = (env: AppEnv, flag: boolean): boolean => flag === true || env !== "production";
