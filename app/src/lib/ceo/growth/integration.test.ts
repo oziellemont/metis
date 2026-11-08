@@ -26,7 +26,7 @@ const T0 = new Date("2026-03-02T15:00:00Z").getTime();
 const REST = { companyId: CID, sectorId: "restaurantes_alimentos", industryId: "restaurantes", archetype: GROWTH_ARCHETYPE, displayName: "Fogón Regio", growth: true };
 const MANU = { ...REST, sectorId: "manufactura", industryId: "autopartes", displayName: "Troqueles del Valle" };
 const started = (): CeoState => ({ ...newState(), name: "Ana", alias: "Ana", startedAt: T0, lastActiveAt: T0, savedAt: T0 });
-const own = (x = REST) => setupCompany(started(), x, T0, CONTINUOUS_RULES_VERSION);
+const own = (x: Omit<typeof REST, "archetype"> & { archetype: string } = REST) => setupCompany(started(), x, T0, CONTINUOUS_RULES_VERSION);
 /** Momento de la partida en que el motor va en el día `d` del periodo en curso (7 días de periodo → 30 del motor). */
 const atDay = (s: CeoState, d: number) => T0 + Math.ceil((d * packOf(s).season.days) / 30) * DAY;
 
@@ -46,7 +46,15 @@ describe("interruptor y onboarding", () => {
     expect(growthTemplateFor("comercio", "retail")).toBeNull();
     expect(newCompanyProfile({ ...REST, at: T0 }, 2)?.archetype).toBe("pyme");
     expect(newCompanyProfile({ ...REST, sectorId: "comercio", industryId: "retail", at: T0 }, 2)).toBeNull();
-    expect(newCompanyProfile({ ...REST, archetype: "establecida", at: T0 }, 2)).toBeNull();
+    // Consolidada en una industria piloto: el mismo motor con su plantilla grande.
+    expect(newCompanyProfile({ ...REST, archetype: "establecida", at: T0 }, 2)?.archetype).toBe("establecida");
+    expect(growthTemplateFor("restaurantes_alimentos", "restaurantes", "establecida")).toBe("restaurante_consolidada");
+    expect(growthTemplateFor("manufactura", "autopartes", "establecida")).toBe("manufactura_consolidada");
+    expect(newCompanyProfile({ ...REST, archetype: "startup", at: T0 }, 2)).toBeNull();
+  });
+  it("la consolidada de una industria piloto arranca con el motor y su plantilla grande", () => {
+    expect(own({ ...REST, archetype: "establecida" }).growth?.templateId).toBe("restaurante_consolidada");
+    expect(own({ ...MANU, archetype: "establecida" }).growth?.templateId).toBe("manufactura_consolidada");
   });
   it("crear la empresa emergente guarda solo el registro del motor (plantilla y semilla)", () => {
     const s = own();
@@ -136,9 +144,10 @@ describe("tiempo de la partida y persistencia", () => {
     const s = own();
     expect(pendingGrowth(s.growth!, growthDayOf(s, T0)).length).toBeGreaterThan(0);
     expect(casesDoneOf(s, T0)).toBe(false);
-    expect(casesDoneOf(decideGrowthCase(s, "ga1_cocina", "esperar", T0 + H), T0 + H)).toBe(true);
+    const both = decideGrowthCase(decideGrowthCase(s, "gf_arranque", "propio", T0 + H), "ga1_cocina", "esperar", T0 + H);
+    expect(casesDoneOf(both, T0 + H)).toBe(true);
     // El siguiente eslabón no llega el mismo día: espera a que se vea la consecuencia.
-    expect(pendingGrowth(decideGrowthCase(s, "ga1_cocina", "esperar", T0 + H).growth!, 0)).toEqual([]);
+    expect(pendingGrowth(both.growth!, 0)).toEqual([]);
   });
   it("migrate conserva un registro válido y descarta uno dañado o sin empresa propia", () => {
     const n = decideGrowthCase(own(), "ga1_cocina", "cocinero", T0 + H);
@@ -182,8 +191,12 @@ describe("onboarding con dos tarjetas (lógica pura)", async () => {
     expect(S.growthIndustries().map((i) => i.id).sort()).toEqual(["autopartes", "restaurantes"]);
     expect(S.sectorsForSel(e).flatMap((s) => s.industries.map((i) => i.id)).sort()).toEqual(["autopartes", "restaurantes"]);
     const c = S.changeChoice(e, "consolidada");
-    expect(c.growth).toBeUndefined();
+    expect(c.growth).toBe(true);
     expect(c.archetype).toBe("establecida");
+    // Consolidada: todas las industrias de la establecida; solo las piloto traen motor.
+    expect(S.sectorsForSel(c).flatMap((s) => s.industries).length).toBeGreaterThan(2);
+    expect(S.templateOfSel({ ...c, sectorId: "restaurantes_alimentos", industryId: "restaurantes" })).toBe("restaurante_consolidada");
+    expect(S.templateOfSel({ ...c, sectorId: "comercio", industryId: "retail" })).toBeNull();
     expect(S.choiceOf(c)).toBe("consolidada");
   });
   it("cambiar de tarjeta conserva la industria si existe en ambas", () => {
@@ -198,5 +211,16 @@ describe("onboarding con dos tarjetas (lógica pura)", async () => {
     expect(setupCompany(started(), setup, T0, CONTINUOUS_RULES_VERSION).growth?.templateId).toBe("manufactura_emergente");
     expect(S.growthFactsOf(sel)?.[0]).toEqual(["Personas", "15"]);
     expect(S.growthSummaryOf(sel)).toMatch(/quince personas/);
+  });
+  it("buildSetup de una consolidada piloto manda growth; una consolidada de otra industria no", () => {
+    const c = S.changeChoice({}, "consolidada");
+    const rest = S.buildSetup({ ...c, sectorId: "restaurantes_alimentos", industryId: "restaurantes", displayName: "Parrilla Regia" }, CID)!;
+    expect(rest).toMatchObject({ archetype: "establecida", growth: true });
+    expect(setupCompany(started(), rest, T0, CONTINUOUS_RULES_VERSION).growth?.templateId).toBe("restaurante_consolidada");
+    const sel = { ...c, sectorId: "restaurantes_alimentos", industryId: "restaurantes" };
+    expect(S.growthFactsOf(sel)?.[0]).toEqual(["Personas", "50"]);
+    const other = S.sectorsForSel(c).flatMap((s) => s.industries.map((i) => [s.id, i.id])).find(([s, i]) => !S.templateOfSel({ ...c, sectorId: s, industryId: i }))!;
+    const plain = S.buildSetup({ ...c, sectorId: other[0], industryId: other[1], displayName: "Grupo Horizonte" }, CID);
+    expect(plain?.growth).toBeUndefined();
   });
 });

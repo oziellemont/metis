@@ -127,11 +127,14 @@ export interface Site {
   /** Gracia negociada con el arrendador: no se paga renta antes de este día. */
   rentFreeUntil?: number;
   ref?: string;
+  /** Zona del mapa de operaciones (geo.ts). Sin dato: se ubica por nombre. */
+  zone?: string;
 }
 
 export interface Asset { id: string; siteId: string; label: string; resource: string; units: number; cost: number; years: number; activeDay: number; active: boolean; ref: string }
 
-export interface Contract { id: string; client: string; unitsPerDay: number; price: number; startDay: number; ref?: string }
+/** `siteId`: planta que surte el contrato. Sin dato (o si esa planta no opera): la planta principal. */
+export interface Contract { id: string; client: string; unitsPerDay: number; price: number; startDay: number; ref?: string; siteId?: string }
 
 export type EntryType = "devengo" | "caja";
 export interface Entry { id: string; type: EntryType; account: string; month: number; amount: number; ref?: string; text: string }
@@ -163,7 +166,13 @@ export interface MonthSummary {
   demand: number; served: number; lost: number; capacity: number; scrap: number;
   headcount: number; sites: number;
   bottleneck: string | null;
+  /** Resultado por sede (contribución antes de gastos de la empresa). */
+  bySite?: SiteMonth[];
 }
+
+/** Lo que vendió y gastó una sede en un mes (centavos). Los gastos de la empresa (dirección, contador…) no se reparten. */
+export interface SiteMonth { siteId: string; revenue: number; cogs: number; variable: number; people: number; rent: number; utilities: number; contribution: number; demand: number; served: number; lost: number; capacity: number; headcount: number }
+export interface SiteAcc { revenue: number; cogs: number; variable: number; demand: number; served: number; lost: number; capacity: number }
 
 export interface GrowthState {
   modelVersion: number;
@@ -189,7 +198,7 @@ export interface GrowthState {
   /** Decisiones ya aplicadas (idempotencia). */
   applied: string[];
   /** Acumuladores del mes en curso (operación). */
-  cur: { demand: number; served: number; lost: number; capacity: number; scrap: number; bottlenecks: Record<string, number>; cashBegin: number };
+  cur: { demand: number; served: number; lost: number; capacity: number; scrap: number; bottlenecks: Record<string, number>; cashBegin: number; bySite?: Record<string, SiteAcc> };
   attrition: boolean;
   nextId: number;
   // ── Liquidez (fase 2)
@@ -212,16 +221,17 @@ export interface GrowthState {
 
 export type Command =
   | { type: "hire"; id: string; roleId: string; siteId: string | null; salary?: number }
-  | { type: "terminate"; id: string; personId: string; kind?: import("./labor").TerminationKind; refusesReinstatement?: boolean }
-  | { type: "open_site"; id: string; name: string; rent: number; utilities: number; deposit: number; capex: number; years: number; buildDays: number; assets: Record<string, number>; demandBase: number; maturityDays: number; preopening: number; demandFactor?: number; rentFreeDays?: number }
+  | { type: "terminate"; id: string; personId: string; reason?: string; kind?: import("./labor").TerminationKind; refusesReinstatement?: boolean }
+  | { type: "open_site"; id: string; name: string; zone?: string; shifts?: number; rent: number; utilities: number; deposit: number; capex: number; years: number; buildDays: number; assets: Record<string, number>; demandBase: number; maturityDays: number; preopening: number; demandFactor?: number; rentFreeDays?: number }
   | { type: "add_asset"; id: string; siteId: string; label: string; resource: string; units: number; cost: number; years: number; leadDays: number }
   | { type: "set_shifts"; id: string; siteId: string; shifts: number }
-  | { type: "add_contract"; id: string; client: string; unitsPerDay: number; price: number; startInDays: number }
+  | { type: "add_contract"; id: string; client: string; unitsPerDay: number; price: number; startInDays: number; siteId?: string }
   // ── Decisiones de liquidez: cada una tiene condiciones, costo y puede ser rechazada.
-  | { type: "bank_loan"; id: string; amount: number; months: number }
+  | { type: "bank_loan"; id: string; amount: number; months: number; preapproved?: boolean }
   | { type: "negotiate_suppliers"; id: string; extraDays: number }
   | { type: "collect_receivables"; id: string; mode: "cobranza" | "factoraje" }
   | { type: "defer_site"; id: string; siteId: string; days: number }
   | { type: "cancel_site"; id: string; siteId: string }
-  | { type: "owner_equity"; id: string; amount: number }
+  | { type: "owner_equity"; id: string; amount: number; preapproved?: boolean }
+  | { type: "transfer"; id: string; personId: string; siteId: string }
   | { type: "cut_costs"; id: string; lines: string[] };

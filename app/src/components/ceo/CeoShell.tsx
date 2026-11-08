@@ -37,7 +37,7 @@ export function CeoShell({ children }: { children: React.ReactNode }) {
   if (c.ready && c.importFlow) return <ImportPrompt flow={c.importFlow} />;
   if (onboarding) return <>{children}</>;
   // Flujo de experiencia para usuarios actuales: pantalla completa, sin menú.
-  if ((path === "/ceo/experiencia" || path === "/ceo/empresa/nueva") && c.ready && c.s.startedAt) return <>{children}</>;
+  if (path === "/ceo/experiencia" && c.ready && c.s.startedAt) return <>{children}</>;
   if (!c.ready || !c.s.startedAt) return <div className="min-h-screen grid place-items-center bg-canvas"><span className="h-8 w-8 rounded-full border-2 border-indigo border-t-transparent animate-spin" /></div>;
 
   // 1.2: de vacaciones se ve la pantalla de descanso (salvo Ajustes); al volver de una ausencia larga, la bienvenida.

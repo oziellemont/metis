@@ -6,6 +6,8 @@ import { ArrowRight, BookOpen, Check, Briefcase, Clock, Coffee, FastForward, Fla
 import { KPI_KEYS, closedRunsOf, growthDayOf } from "@/lib/ceo/engine";
 import { growthAt, pendingGrowth } from "@/lib/ceo/growth/session";
 import { todayLineOf } from "@/lib/ceo/growth/view";
+import { alertsOf } from "@/lib/ceo/growth/ops";
+import { AlertChips } from "./GrowthPanel";
 import { TrendingUp } from "lucide-react";
 import { COHERENCE_RULES_VERSION, CONTINUOUS_RULES_VERSION, ECONOMY_RULES_VERSION } from "@/lib/ceo/rules";
 import { ETHICS_AUDIT_RULES } from "@/lib/ceo/editorial";
@@ -46,8 +48,12 @@ export function Today() {
   const growth = useMemo(() => {
     if (!c.s.growth) return null;
     const day = growthDayOf(c.s, c.now);
-    const pending = pendingGrowth(c.s.growth, day).length;
-    return { pending, line: todayLineOf(growthAt(c.s.growth, day).state, pending) };
+    const list = pendingGrowth(c.s.growth, day);
+    const g = growthAt(c.s.growth, day).state;
+    const pending = list.length;
+    const first = list[0]?.case;
+    const subject = first ? (first.subjectOf ? first.subjectOf(g) : first.subject) : null;
+    return { pending, subject, line: todayLineOf(g, pending), alerts: alertsOf(g).filter((a) => a.tone !== "good").slice(0, 2) };
   }, [c.s, c.now]);
   const waiting = c.pending.length + specials.length + epPending.length + (report ? 1 : 0) + (growth?.pending ?? 0);
   const nextLesson = open.find((l) => !c.s.lessons[l.id] && c.entries.some((e) => e.item.lesson === l.id && e.status !== "futuro")) ?? open.find((l) => !c.s.lessons[l.id]);
@@ -199,8 +205,8 @@ export function Today() {
                 <li><Link href="/ceo/empresa#crecimiento" className="flex gap-3 py-3 group" data-testid="hoy-crecimiento">
                   <span className="h-[38px] w-[38px] shrink-0 rounded-full grid place-items-center bg-indigo-soft text-indigo"><TrendingUp size={16} /></span>
                   <div className="min-w-0 flex-1">
-                    <div className="text-sm font-semibold text-ink truncate">Crecimiento de {pk.short}</div>
-                    <div className="text-sm text-slate-600">{growth.line}</div>
+                    <div className="text-sm font-semibold text-ink truncate">{growth.subject ?? `Decisión en ${pk.short}`}</div>
+                    <div className="text-sm text-slate-600">{growth.pending > 1 ? `${growth.pending} decisiones esperan en Mi empresa` : "Te espera en Mi empresa"}</div>
                   </div>
                   <ArrowRight size={16} className="text-slate-300 group-hover:text-indigo mt-3" />
                 </Link></li>
@@ -249,7 +255,12 @@ export function Today() {
         </section>
 
         <div className="space-y-4 min-w-0">
-          {growth && growth.pending === 0 && (
+          {growth && growth.alerts.length > 0 && (
+            <Link href="/ceo/empresa#crecimiento" className="block card p-4 group" data-testid="hoy-alertas">
+              <AlertChips alerts={growth.alerts} />
+            </Link>
+          )}
+          {growth && growth.pending === 0 && growth.alerts.length === 0 && (
             <Link href="/ceo/empresa#crecimiento" className="card p-4 flex gap-3 text-sm group" data-testid="hoy-pulso-crecimiento">
               <span className="h-9 w-9 shrink-0 rounded-xl bg-indigo-soft text-indigo grid place-items-center"><TrendingUp size={16} /></span>
               <span className="min-w-0 flex-1 text-slate-600">{growth.line}</span>

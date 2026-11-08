@@ -1395,7 +1395,7 @@ export function setupCompany(s: CeoState, input: Omit<NewCompanyInput, "at">, no
   if (!profile) return s;
   // Los supuestos del negocio se congelan al crear la empresa (como las reglas de una temporada).
   const v = ruleSet(rulesVersion).career === "continua" ? rulesVersion : LEGACY_CONTINUOUS_RULES_VERSION;
-  const growth = input.growth ? newGrowthLog(growthTemplateFor(profile.sectorId, profile.industryId) ?? "", profile.companyId) : null;
+  const growth = input.growth ? newGrowthLog(growthTemplateFor(profile.sectorId, profile.industryId, profile.archetype) ?? "", profile.companyId) : null;
   if (input.growth && !growth) return s;
   return { ...fresh(s, profile.contentPackId, s.tier, now, undefined, v), careerMode: "continua", companyProfile: profile, business: { assumptionsVersion: ASSUMPTIONS_VERSION, allocations: [] }, ...(growth ? { growth } : {}) };
 }

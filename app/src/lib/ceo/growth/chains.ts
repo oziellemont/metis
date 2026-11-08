@@ -24,6 +24,8 @@ export interface Decision {
 export interface OptionView {
   id: string;
   text: string;
+  short: string;
+  via?: "banco";
   outcome: string;
   ok: boolean;
   reason?: string;
@@ -50,7 +52,9 @@ function notDecided(c: GCase, g: GrowthState, decisions: readonly Decision[]): b
 
 /** Casos que hoy pueden llegar, en orden de cadena. */
 export function availableCases(g: GrowthState, decisions: readonly Decision[]): GCase[] {
-  return GROWTH_CASES.filter((c) => (c.family === "ambas" || c.family === g.family) && notDecided(c, g, decisions) && chainOpen(c, g, decisions) && requiresMet(g, c.requires).ok);
+  const base = GROWTH_CASES.filter((c) => (c.family === "ambas" || c.family === g.family) && notDecided(c, g, decisions) && chainOpen(c, g, decisions) && requiresMet(g, c.requires).ok);
+  const ids = new Set(base.map((c) => c.id));
+  return base.filter((c) => !c.notWith?.some((id) => ids.has(id)));
 }
 
 /** Por qué un caso no llega hoy (para pruebas y para el panel de diagnóstico). */
@@ -62,13 +66,16 @@ export function whyNot(g: GrowthState, caseId: string, decisions: readonly Decis
   if (!notDecided(c, g, decisions)) out.push("ya decidido");
   if (!chainOpen(c, g, decisions)) out.push(`espera a ${c.after!.case}`);
   out.push(...requiresMet(g, c.requires).failed);
+  if (!out.length && !availableCases(g, decisions).some((x) => x.id === c.id)) out.push("cede el paso a otro caso del día");
   return out;
 }
 
 export function optionsOf(g: GrowthState, c: GCase): OptionView[] {
   return c.options.map((o) => {
     const av = o.available ? o.available(g) : { ok: true };
-    return { id: o.id, text: o.text, outcome: o.outcome(g), ok: av.ok, reason: av.ok ? undefined : av.reason, score: o.score, effects: { ...(o.effects ?? {}) } };
+    const text = o.textOf ? o.textOf(g) : o.text;
+    const short = typeof o.short === "function" ? o.short(g) : o.short ?? text;
+    return { id: o.id, text, short, ...(o.via ? { via: o.via } : {}), outcome: o.outcome(g), ok: av.ok, reason: av.ok ? undefined : av.reason, score: o.score, effects: { ...(o.effects ?? {}) } };
   });
 }
 
@@ -99,7 +106,7 @@ export function decide(g0: GrowthState, caseId: string, optionId: string, decisi
   const done: Command[] = [];
   for (const raw of cmds) {
     let cmd = raw;
-    if (cmd.type === "hire" && cmd.siteId === NEW_SITE) {
+    if ((cmd.type === "hire" || cmd.type === "add_contract" || cmd.type === "transfer") && cmd.siteId === NEW_SITE) {
       const site = g.sites.find((x) => x.ref === `${key}:site`);
       if (!site) return fail("La sede nueva no se creó.");
       cmd = { ...cmd, siteId: site.id };

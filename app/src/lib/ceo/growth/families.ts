@@ -87,6 +87,24 @@ const FORJA_FIXED: FixedLine[] = [
   { id: "seguridad", label: "Vigilancia, EPP y seguridad industrial", amount: 8500, basis: "Supuesto: guardia nocturna y equipo de protección." },
 ];
 
+const PARRILLA_FIXED: FixedLine[] = [
+  { id: "direccion", label: "Dirección general (tu sueldo con carga social)", amount: 95000, basis: "Supuesto: $73,000 brutos + 30 % de carga; grupo de cinco sucursales." },
+  { id: "contador", label: "Auditoría externa y timbrado de nómina", amount: 9000, basis: "Supuesto: la contabilidad la lleva el contador interno; el despacho audita y timbra." },
+  { id: "sistemas", label: "Punto de venta, inventarios y software de las sucursales", amount: 12000, basis: "Supuesto: licencias mensuales por sucursal." },
+  { id: "seguros", label: "Seguros de los locales y responsabilidad civil", amount: 11000, basis: "Supuesto: prima anual prorrateada." },
+  { id: "mantenimiento", label: "Mantenimiento preventivo de cocinas", amount: 28000, basis: "Supuesto: campanas, refrigeración y fumigación de cinco cocinas." },
+  { id: "marketing", label: "Publicidad de la marca y redes", amount: 38000, basis: "Supuesto: pauta digital, material y promociones del grupo." },
+  { id: "permisos", label: "Licencias, protección civil y derechos", amount: 7000, basis: "Supuesto: prorrateo anual de cinco locales." },
+];
+const FORJA_GRUPO_FIXED: FixedLine[] = [
+  { id: "direccion", label: "Dirección general (tu sueldo con carga social)", amount: 130000, basis: "Supuesto: $100,000 brutos + 30 % de carga; dos plantas y más de cuarenta personas." },
+  { id: "contador", label: "Auditoría externa y asesoría fiscal", amount: 18000, basis: "Supuesto: despacho regional." },
+  { id: "sistemas", label: "ERP, CAD y comunicaciones de dos plantas", amount: 16000, basis: "Supuesto: licencias mensuales." },
+  { id: "seguros", label: "Seguros de plantas, equipo y mercancía", amount: 24000, basis: "Supuesto: prima anual prorrateada." },
+  { id: "mantenimiento", label: "Refacciones y mantenimiento mayor de prensas", amount: 42000, basis: "Supuesto: programa anual prorrateado de ocho prensas." },
+  { id: "seguridad", label: "Vigilancia, EPP y seguridad industrial", amount: 26000, basis: "Supuesto: guardias en dos plantas y equipo de protección." },
+];
+
 export interface StaffSeed { roleId: string; name: string; siteId: string | null; salary?: number; yearsBefore?: number }
 export interface Template {
   id: string;
@@ -105,10 +123,23 @@ export interface Template {
   ownerCapacity: number;
   /** Tasa anual de un crédito PyME para esta empresa (supuesto referencial, con comisión de apertura). */
   bankRate: number;
-  sites: { id: string; name: string; rent: number; utilities: number; assets: Record<string, number>; shifts: number; demandBase: number }[];
+  /**
+   * Crédito de arranque que el banco preaprueba al llegar (pesos): el tope de la oferta más grande. Supuesto de
+   * simulación: con aval del dueño y garantía de la operación, sin pedir meses de historia bajo tu gestión.
+   */
+  startCredit: number;
+  /** Tamaño de la empresa: «startup» (pequeña, para crecerla) o «consolidada» (estructura formal y varias sedes). */
+  size: "startup" | "consolidada";
+  sites: { id: string; name: string; zone: string; rent: number; utilities: number; assets: Record<string, number>; shifts: number; demandBase: number }[];
   staff: StaffSeed[];
-  contracts?: { id: string; client: string; unitsPerDay: number; price: number }[];
+  contracts?: { id: string; client: string; unitsPerDay: number; price: number; siteId?: string }[];
   summary: string;
+}
+
+/** Equipo de una sucursal: gerente, cocina, servicio y loza (los nombres son ficticios). `senior` = años del gerente. */
+function branch(siteId: string, names: string[], senior: number): StaffSeed[] {
+  const roles = ["gerente_sucursal", "cocinero", "cocinero", "cocinero", "ayudante_cocina", "mesero", "mesero", "mesero", "lavaloza", "cocinero"];
+  return names.map((name, i) => ({ roleId: roles[i], name, siteId, ...(i === 0 ? { yearsBefore: senior } : i < 3 ? { yearsBefore: 1 } : {}) }));
 }
 
 export const TEMPLATES: Readonly<Record<string, Template>> = Object.freeze({
@@ -122,8 +153,10 @@ export const TEMPLATES: Readonly<Record<string, Template>> = Object.freeze({
     fixedLines: BRASA_FIXED,
     ownerCapacity: 500000,
     bankRate: 0.24,
+    startCredit: 600000,
+    size: "startup",
     // Servicios del local: luz (incluye refrigeración y campanas), agua y drenaje, internet y teléfono. El gas va por pedido.
-    sites: [{ id: "centro", name: "Sucursal Centro", rent: 45000, utilities: 24000, assets: { mesas: 14 }, shifts: 1, demandBase: 100 }],
+    sites: [{ id: "centro", name: "Sucursal Centro", zone: "centro", rent: 45000, utilities: 24000, assets: { mesas: 14 }, shifts: 1, demandBase: 100 }],
     staff: [
       { roleId: "gerente_sucursal", name: "Mariana Treviño", siteId: "centro", yearsBefore: 3 },
       { roleId: "cocinero", name: "Raúl Garza", siteId: "centro", yearsBefore: 2 },
@@ -147,7 +180,9 @@ export const TEMPLATES: Readonly<Record<string, Template>> = Object.freeze({
     fixedLines: FORJA_FIXED,
     ownerCapacity: 1500000,
     bankRate: 0.2,
-    sites: [{ id: "planta", name: "Planta Apodaca", rent: 60000, utilities: 90000, assets: { prensa: 3 }, shifts: 1, demandBase: 0 }],
+    startCredit: 2000000,
+    size: "startup",
+    sites: [{ id: "planta", name: "Planta Apodaca", zone: "apodaca", rent: 60000, utilities: 90000, assets: { prensa: 3 }, shifts: 1, demandBase: 0 }],
     staff: [
       { roleId: "supervisor_produccion", name: "Arturo Elizondo", siteId: "planta", yearsBefore: 5 },
       ...["Juan Pérez", "Rocío Saldaña", "Luis Ibarra", "Marisol Cavazos", "Pedro Tamez", "Ana Zúñiga", "Hugo Garza", "Lety Rangel"].map((name) => ({ roleId: "operador", name, siteId: "planta" })),
@@ -163,5 +198,84 @@ export const TEMPLATES: Readonly<Record<string, Template>> = Object.freeze({
       { id: "c_frenos", client: "Frenos Apodaca", unitsPerDay: 1800, price: 10 },
     ],
     summary: "Un taller de estampado con quince personas, tres prensas y un turno. Dos clientes compran unas 4,800 piezas al día.",
+  },
+  restaurante_consolidada: {
+    id: "restaurante_consolidada",
+    family: "restaurante",
+    name: "Parrilla Regia",
+    region: "MTY",
+    startMonth: 3,
+    cash: 1800000,
+    fixedLines: PARRILLA_FIXED,
+    ownerCapacity: 2500000,
+    bankRate: 0.21,
+    startCredit: 3000000,
+    size: "consolidada",
+    sites: [
+      { id: "centro", name: "Sucursal Centro", zone: "centro", rent: 48000, utilities: 25000, assets: { mesas: 16 }, shifts: 1, demandBase: 115 },
+      { id: "san_pedro", name: "Sucursal San Pedro", zone: "san_pedro", rent: 72000, utilities: 27000, assets: { mesas: 16 }, shifts: 1, demandBase: 120 },
+      { id: "cumbres", name: "Sucursal Cumbres", zone: "cumbres", rent: 52000, utilities: 23000, assets: { mesas: 14 }, shifts: 1, demandBase: 100 },
+      { id: "guadalupe", name: "Sucursal Guadalupe", zone: "guadalupe", rent: 40000, utilities: 22000, assets: { mesas: 14 }, shifts: 1, demandBase: 70 },
+      { id: "san_nicolas", name: "Sucursal San Nicolás", zone: "san_nicolas", rent: 42000, utilities: 22000, assets: { mesas: 14 }, shifts: 1, demandBase: 100 },
+    ],
+    staff: [
+      ...branch("centro", ["Mariana Treviño", "Raúl Garza", "Lupita Ochoa", "Iván Salinas", "Diego Cantú", "Paola Rdz.", "Kevin Leal", "Sofía Montes", "Don Chuy Villarreal", "Rosa Elizondo"], 4),
+      ...branch("san_pedro", ["Andrés Sada", "Carmen Lozano", "Beto Garza", "Nancy Rocha", "Martín Ayala", "Fer Treviño", "Ximena Cruz", "Lalo Zambrano", "Doña Mary Salazar", "Toño Medina"], 3),
+      ...branch("cumbres", ["Gaby Martínez", "Rubén Cavazos", "Pepe Ibarra", "Laura Peña", "Saúl Rangel", "Daniela Ríos", "Óscar Leal", "Juanita Flores", "Manuel Torres"], 2),
+      ...branch("guadalupe", ["Héctor Villarreal", "Silvia Garza", "Alan Tamez", "Rocío Saldaña", "Marco Ruiz", "Itzel Mora", "Ramiro Solís", "Cuca Hernández", "Jaime Castro"], 2),
+      ...branch("san_nicolas", ["Patricia Leal", "Gerardo Benavides", "Toñita Sáenz", "Emilio Cantú", "Abril Garza", "Rodrigo Pérez", "Brenda Lara", "Don Pancho Ríos", "Luis Nava"], 1),
+      { roleId: "gerente_operaciones", name: "Ricardo Garza Sada", siteId: null, yearsBefore: 5 },
+      { roleId: "contador", name: "Elsa Montemayor", siteId: null, yearsBefore: 4 },
+      { roleId: "rh_generalista", name: "Lorena Villarreal", siteId: null, yearsBefore: 2 },
+    ],
+    summary: "Un grupo de cinco restaurantes con unas cincuenta personas, gerente de operaciones, contabilidad y recursos humanos. Vende cerca de 480 pedidos al día y las sucursales no rinden igual: unas se saturan y otra tiene gente de más.",
+  },
+  manufactura_consolidada: {
+    id: "manufactura_consolidada",
+    family: "manufactura",
+    name: "Grupo Forja",
+    region: "MTY",
+    startMonth: 3,
+    cash: 4200000,
+    fixedLines: FORJA_GRUPO_FIXED,
+    ownerCapacity: 5000000,
+    bankRate: 0.18,
+    startCredit: 8000000,
+    size: "consolidada",
+    sites: [
+      { id: "planta", name: "Planta Apodaca", zone: "apodaca", rent: 115000, utilities: 170000, assets: { prensa: 5 }, shifts: 2, demandBase: 0 },
+      { id: "saltillo", name: "Planta Saltillo", zone: "saltillo", rent: 70000, utilities: 85000, assets: { prensa: 3 }, shifts: 1, demandBase: 0 },
+    ],
+    staff: [
+      { roleId: "gerente_planta", name: "Alejandro Treviño", siteId: "planta", yearsBefore: 8 },
+      { roleId: "supervisor_produccion", name: "Arturo Elizondo", siteId: "planta", yearsBefore: 5 },
+      { roleId: "supervisor_produccion", name: "Norma Cantú", siteId: "planta", yearsBefore: 3 },
+      ...["Juan Pérez", "Rocío Saldaña", "Luis Ibarra", "Marisol Cavazos", "Pedro Tamez", "Ana Zúñiga", "Hugo Garza", "Lety Rangel", "Chuy Medina", "Karina Salas", "Polo Ramírez", "Vero Mata", "Neto Lozano", "Liz Ochoa", "Moy Treviño", "Sandra Rivas", "Beto Ayala", "Cris Peña"].map((name) => ({ roleId: "operador", name, siteId: "planta" })),
+      { roleId: "operador_cnc", name: "Nacho Villarreal", siteId: "planta", yearsBefore: 4 },
+      { roleId: "operador_cnc", name: "Brenda Sáenz", siteId: "planta", yearsBefore: 2 },
+      { roleId: "operador_cnc", name: "Jorge Salinas", siteId: "planta", yearsBefore: 3 },
+      { roleId: "tecnico_mantenimiento", name: "Memo Leal", siteId: "planta", yearsBefore: 3 },
+      { roleId: "tecnico_mantenimiento", name: "Raúl Benítez", siteId: "planta", yearsBefore: 1 },
+      { roleId: "inspector_calidad", name: "Karla Benavides", siteId: "planta", yearsBefore: 1 },
+      { roleId: "almacenista", name: "Toño Guajardo", siteId: "planta" },
+      { roleId: "almacenista", name: "Pily Torres", siteId: "planta" },
+      { roleId: "ingeniero_procesos", name: "Diana Garza", siteId: "planta", yearsBefore: 2 },
+      { roleId: "supervisor_produccion", name: "Samuel Aguirre", siteId: "saltillo", yearsBefore: 4 },
+      ...["Efrén Dávila", "Mayra Aguirre", "Ciro Valdés", "Yesenia Flores", "Gil Morales", "Tere Galindo", "Lupe Arizpe"].map((name) => ({ roleId: "operador", name, siteId: "saltillo" })),
+      { roleId: "operador_cnc", name: "Fabián Ramos", siteId: "saltillo", yearsBefore: 2 },
+      { roleId: "tecnico_mantenimiento", name: "Chema Cárdenas", siteId: "saltillo", yearsBefore: 2 },
+      { roleId: "inspector_calidad", name: "Olga Narro", siteId: "saltillo", yearsBefore: 1 },
+      { roleId: "almacenista", name: "Rafa Siller", siteId: "saltillo" },
+      { roleId: "auxiliar_administrativo", name: "Claudia Mier", siteId: null, yearsBefore: 2 },
+      { roleId: "auxiliar_administrativo", name: "Mónica Rdz.", siteId: null, yearsBefore: 1 },
+      { roleId: "ejecutivo_comercial", name: "Federico Lozano", siteId: null, yearsBefore: 3 },
+    ],
+    contracts: [
+      { id: "c_aceros", client: "Ensambles del Norte", unitsPerDay: 6000, price: 10, siteId: "planta" },
+      { id: "c_frenos", client: "Frenos Apodaca", unitsPerDay: 3200, price: 10, siteId: "planta" },
+      { id: "c_sistemas", client: "Sistemas Automotrices Regios", unitsPerDay: 2000, price: 10.4, siteId: "planta" },
+      { id: "c_carrocerias", client: "Carrocerías Ramos Arizpe", unitsPerDay: 4600, price: 9.8, siteId: "saltillo" },
+    ],
+    summary: "Un grupo de estampado con dos plantas (Apodaca a dos turnos y Saltillo a uno), más de cuarenta personas, ocho prensas y cuatro clientes que compran unas 15,800 piezas al día.",
   },
 });
