@@ -10,7 +10,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { allocate as allocateFn, closePeriod as closePeriodFn } from "@/lib/ceo/business/report";
-import { advance as advanceFn, reportDueOf, isContinuous, renameCompany as renameFn, setupCompany as setupFn, decideGrowthCase as decideGrowthFn, decide as decideFn, entries as entriesFn, episodeEntries as episodeEntriesFn, nextArrivalOf, openSeasonEpisode, type EpisodeEntry, healthOf, kpis as kpisFn, levelOf, migrate, newState, nowOf, packOf, pinArrived, rulesFor, rulesOf, seasonDay, seasonDoneOf, skipToNext, streakOf, switchCompany as switchFn, verdictOf, xpOf, type Verdict } from "@/lib/ceo/engine";
+import { advance as advanceFn, reportDueOf, isContinuous, renameCompany as renameFn, setupCompany as setupFn, decideGrowthCase as decideGrowthFn, parkAndOpen as parkAndOpenFn, resumeShelved as resumeShelvedFn, decide as decideFn, entries as entriesFn, episodeEntries as episodeEntriesFn, nextArrivalOf, openSeasonEpisode, type EpisodeEntry, healthOf, kpis as kpisFn, levelOf, migrate, newState, nowOf, packOf, pinArrived, rulesFor, rulesOf, seasonDay, seasonDoneOf, skipToNext, streakOf, switchCompany as switchFn, verdictOf, xpOf, type Verdict } from "@/lib/ceo/engine";
 import { aliasOf, answerDilemma as answerDilemmaFn, casesProgress, changeOpen, changeSimOf, dilemmaOfDay } from "@/lib/ceo/engine";
 import type { Dilemma } from "@/lib/ceo/dilemmas";
 import { OFFERED_TIER, sanitizeDiagnostic, sanitizeProfile, snoozeNudge, type InitialDiagnostic, type ProfessionalProfile } from "@/lib/ceo/profile";
@@ -129,6 +129,10 @@ interface Ctx {
   growthOn: boolean;
   /** Empresa emergente: decide un caso de crecimiento (devuelve false si no procede). */
   decideGrowth: (caseId: string, optionId: string) => boolean;
+  /** Abre una empresa emergente guardando la actual (nada se borra). Devuelve false si no procede. */
+  openEmergente: (setup: SetupInput) => boolean;
+  /** Vuelve a una empresa guardada (la actual se guarda). */
+  resumeCompany: (id: string) => boolean;
   /** Carrera del navegador por decidir (null si no hay nada que preguntar). */
   importFlow: ImportFlow | null;
   reset: () => void;
@@ -488,6 +492,19 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
     setTick(Date.now());
     return ok;
   }, [play, s]);
+  const openEmergente = useCallback((setup: SetupInput) => {
+    const at = nowOf(s);
+    const ok = parkAndOpenFn(s, setup, at, CONTINUOUS_RULES_VERSION) !== s;
+    if (ok) play((p) => { const t = nowOf(p); const { growth: _g, ...rest } = setup; return { n: parkAndOpenFn(p, setup, t, CONTINUOUS_RULES_VERSION), a: { type: "parkOpen", at: t, ...rest, rulesVersion: CONTINUOUS_RULES_VERSION } }; });
+    seen.current = null; setTick(Date.now());
+    return ok;
+  }, [play, s]);
+  const resumeCompany = useCallback((id: string) => {
+    const ok = resumeShelvedFn(s, id, nowOf(s)) !== s;
+    if (ok) play((p) => { const t = nowOf(p); return { n: resumeShelvedFn(p, id, t), a: { type: "resumeShelved", at: t, id } }; });
+    seen.current = null; setTick(Date.now());
+    return ok;
+  }, [play, s]);
   const advance = useCallback(() => { play((p) => { const at = nowOf(p); const rv = isContinuous(p) ? CONTINUOUS_RULES_VERSION : RULES_VERSION; return { n: advanceFn(p, at, rv), a: { type: "advance", at, rulesVersion: rv } }; }); seen.current = null; setTick(Date.now()); }, [play]);
   const signReport = useCallback((period: number, option: "a" | "b" | null) => {
     if (option) play((p) => { const at = nowOf(p); return { n: allocateFn(p, period, option, at), a: { type: "allocate", at, period, option } }; });
@@ -544,7 +561,7 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
   const value: Ctx = {
     ready, s, now, pack, rules: rulesFor(s), verdict, entries, inbox, pending, episodes, kpis: k, health: healthOf(k), xp, level: levelOf(xp), streak, day: seasonDay(s, now), seasonDone, nextArrival,
     relations, changeOpen: changeOpen(s, now), cases: casesProgress(s, now, entries), change, startChange, playLever, closeChange,
-    user, synced, toast, dismissToast: () => setToast(null), start, advance, reportDue, signReport, switchCompany, renameCompany, continuous: isContinuous(s), decide, markRead, completeLesson, dilemma, answerDilemma, updateSettings, skipNext, testTools, growthOn, decideGrowth, importFlow, reset, journey, trajectory, mastery, appoint, recordBoard, recordCrisis, saveProfile, saveDiagnostic, snoozeProfile,
+    user, synced, toast, dismissToast: () => setToast(null), start, advance, reportDue, signReport, switchCompany, renameCompany, continuous: isContinuous(s), decide, markRead, completeLesson, dilemma, answerDilemma, updateSettings, skipNext, testTools, growthOn, decideGrowth, openEmergente, resumeCompany, importFlow, reset, journey, trajectory, mastery, appoint, recordBoard, recordCrisis, saveProfile, saveDiagnostic, snoozeProfile,
     cadence: cadenceStatus(s, now), pauseCareer, resumeCareer, startQuietDay, returnDue: ready ? returnDueFn(s, now) : null, markReturnSeen, openEpisode, episodeAct, resetEpisode,
   };
   return <C.Provider value={value}>{children}</C.Provider>;

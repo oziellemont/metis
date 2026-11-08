@@ -110,7 +110,7 @@ export function sanitizeCadence(raw: unknown): CeoState["cadence"] | null {
     if (!p || (p.kind !== "vacation" && p.kind !== "quiet") || !ok(p.from)) continue;
     if (p.to !== null && !(ok(p.to) && p.to >= p.from)) continue;
     if (p.kind === "quiet" && p.to === null) continue;
-    pauses.push({ kind: p.kind, from: p.from, to: p.to as number | null, ...(p.plannedResumeAt === null || ok(p.plannedResumeAt) ? { plannedResumeAt: p.plannedResumeAt as number | null } : {}) });
+    pauses.push({ kind: p.kind, from: p.from, to: p.to as number | null, ...(p.plannedResumeAt === null || ok(p.plannedResumeAt) ? { plannedResumeAt: p.plannedResumeAt as number | null } : {}), ...(p.shelf === true && p.kind === "vacation" && p.to !== null ? { shelf: true as const } : {}) });
   }
   pauses.sort((a, b) => a.from - b.from);
   // Solo puede haber una pausa abierta: la última. Las demás abiertas (datos dañados) se cierran donde empieza la siguiente.

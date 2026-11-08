@@ -2,7 +2,7 @@
  * mêtis CEO · interruptores (feature flags) y entorno.
  *
  * Reglas:
- *  - Todo lo nuevo arranca APAGADO. Si la base no responde, todo queda apagado.
+ *  - Todo lo nuevo arranca APAGADO (salvo DEFAULT_ON, ya autorizado). Si la base no responde, todo queda apagado.
  *  - Un interruptor de jugador (ceo.players.flags) solo puede APAGAR algo global
  *    o prenderlo si el global lo permite en modo "por jugador" (value.perPlayer).
  *  - La IA, además, exige consentimiento del jugador y la llave de entorno
@@ -17,6 +17,13 @@ export type Flags = Record<FlagKey, boolean>;
 export interface GlobalFlagRow { key: string; enabled: boolean; value?: unknown }
 
 export type AppEnv = "production" | "preview" | "development";
+
+/**
+ * Interruptores que nacen PRENDIDOS cuando la base responde pero aún no tiene su fila (lanzamiento autorizado).
+ * Interruptor de emergencia: una fila con enabled = false los apaga en ≤ 60 s (ver docs/sql/growth_respaldo_y_apagado.sql);
+ * quitar la llave de esta lista los apaga con el siguiente despliegue. Si la base no responde, siguen apagados.
+ */
+export const DEFAULT_ON: readonly FlagKey[] = ["growth_engine"];
 
 export const ALL_OFF: Flags = Object.freeze(Object.fromEntries(FLAG_KEYS.map((k) => [k, false])) as Flags) as Flags;
 
@@ -47,6 +54,8 @@ export function resolveFlags({ global, player, aiConsent = false, aiEnvEnabled =
     if (row.enabled === true) out[k] = mine !== false;          // global prendido: el jugador puede salirse
     else if (perPlayer) out[k] = mine === true;                  // global "solo invitados": el jugador debe estar prendido
   }
+  // Prendidos por omisión: solo si la base respondió (global no nulo) y no trae fila para ellos.
+  if (global) for (const k of DEFAULT_ON) if (!global.some((r) => r?.key === k)) out[k] = p[k] !== false;
   if (!aiEnvEnabled || !aiConsent) { out.ai = false; out.ai_shadow = out.ai_shadow && aiEnvEnabled; }
   return out;
 }
@@ -67,7 +76,7 @@ export function testToolsVisible(env: AppEnv, setting: string | undefined | null
 }
 
 /**
- * Empresa emergente (Growth Engine). En producción solo con el interruptor growth_engine (apagado por defecto).
+ * Empresa emergente (Growth Engine). En producción, con el interruptor growth_engine (prendido salvo fila enabled = false).
  * En Preview y desarrollo se ve siempre, para revisarla antes de activarla.
  */
 export const growthVisible = (env: AppEnv, flag: boolean): boolean => flag === true || env !== "production";

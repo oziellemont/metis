@@ -2,6 +2,7 @@
  * mêtis CEO · motor del simulador. Lógica pura (sin React ni navegador) para usarla
  * igual en la app, en el cron que agenda correos/WhatsApp y en las pruebas.
  */
+import { COMPANY_SLICE_KEYS, type CompanySlice, type ShelvedCompany } from "./types";
 import type { AgreementState, Axis, CareerRun, CeoState, CrisisRating, CompanyPack, Decision, Entry, Fact, Item, KpiKey, Kpis, Option, PriorCondition, Settings, Written } from "./types";
 import { ECON_ROLLBACK, applyEconMigration, revertV10, sanitizeEconMigration } from "./econ-migration";
 import { Ledger, NO_MONEY, anchorsFor, beyondAuthority, moneyOf, nonMoney, plus, pointsOf, sumMoney, type Anchors, type Money } from "./economy";
@@ -176,9 +177,35 @@ export function migrate(raw: unknown): CeoState {
   // Empresa emergente (Growth Engine): solo con empresa propia; si el registro viene dañado, se descarta.
   if (out.growth !== undefined) { const g = out.companyProfile ? sanitizeGrowthLog(out.growth) : null; if (g) out.growth = g; else delete out.growth; }
   if (out.econMigration !== undefined) { const m = sanitizeEconMigration(out.econMigration); if (m) out.econMigration = m; else delete out.econMigration; }
+  // Empresas guardadas (piloto Growth Engine): cada una se limpia con estas mismas reglas; una dañada se descarta.
+  if (out.shelf !== undefined) { const sh = sanitizeShelf(out.shelf); if (sh.length) out.shelf = sh; else delete out.shelf; }
+  if (out.careerStart !== undefined && !(typeof out.careerStart === "number" && Number.isFinite(out.careerStart) && out.careerStart > 0)) delete out.careerStart;
   // v10 · economía real: el periodo en curso pasa una sola vez, con respaldo (econ-migration.ts).
   if (ECON_ROLLBACK) return revertV10(out);
   return applyEconMigration(out);
+}
+
+/** Empresas guardadas: máximo que se conservan. */
+export const SHELF_MAX = 4;
+/** Los campos de UNA empresa (lo que se guarda al estacionarla). */
+export function sliceOf(s: CeoState): CompanySlice {
+  const out = {} as Record<string, unknown>;
+  for (const k of COMPANY_SLICE_KEYS) if (s[k] !== undefined) out[k] = s[k];
+  return out as CompanySlice;
+}
+function sanitizeShelf(raw: unknown): ShelvedCompany[] {
+  if (!Array.isArray(raw)) return [];
+  const out: ShelvedCompany[] = [];
+  for (const e of raw.slice(0, SHELF_MAX) as Record<string, unknown>[]) {
+    if (!e || typeof e !== "object" || typeof e.id !== "string" || !e.id || e.id.length > 80 || typeof e.name !== "string" || e.name.length > 80) continue;
+    if (typeof e.parkedAt !== "number" || !Number.isFinite(e.parkedAt) || e.parkedAt <= 0 || typeof e.xp !== "number" || !Number.isFinite(e.xp) || e.xp < 0) continue;
+    if (!e.state || typeof e.state !== "object" || Array.isArray(e.state)) continue;
+    // Misma limpieza que una partida (sin la persona): lo que no pertenece a la empresa se ignora.
+    const st = migrate({ ...(e.state as object), v: 2, shelf: undefined });
+    if (!st.startedAt || out.some((x) => x.id === e.id)) continue;
+    out.push({ id: e.id, name: e.name, parkedAt: e.parkedAt, xp: Math.round(e.xp), state: sliceOf(st) });
+  }
+  return out;
 }
 
 // ───────────────────────────────────────────── tiempo y zona horaria
@@ -397,9 +424,11 @@ export function openSeasonEpisode(s: CeoState, id: string, at: number, mode?: "e
   return openEpisodeRaw(s, id, at, mode);
 }
 /** Casos ejecutivos que ya pagaste en esta misma empresa (temporadas anteriores). */
+/** Con empresas guardadas, un periodo de OTRA empresa propia del mismo paquete no cuenta como «ya pagado». */
+const sameCompanyRun = (s: CeoState, r: CareerRun) => !r.companyId || !s.companyProfile || r.companyId === s.companyProfile.companyId;
 function paidEpisodesOf(s: CeoState): Set<string> {
   const out = new Set<string>();
-  for (const r of s.career ?? []) if (r.company === s.company) (r.episodes ?? []).forEach((id) => out.add(id));
+  for (const r of s.career ?? []) if (r.company === s.company && sameCompanyRun(s, r)) (r.episodes ?? []).forEach((id) => out.add(id));
   return out;
 }
 /** XP que da en la temporada un caso ejecutivo cerrado (0 si no cuenta o si ya lo pagaste en esta empresa). */
@@ -888,7 +917,7 @@ export function answerDilemma(s: CeoState, id: string, option: number, now = now
 /** Asuntos de esta empresa que ya pagaron XP en una temporada anterior (para no pagarlos dos veces). */
 function paidItemsOf(s: CeoState): Set<string> {
   const out = new Set<string>();
-  for (const r of s.career ?? []) if (r.company === s.company) Object.keys(r.decisions ?? {}).forEach((id) => out.add(id));
+  for (const r of s.career ?? []) if (r.company === s.company && sameCompanyRun(s, r)) Object.keys(r.decisions ?? {}).forEach((id) => out.add(id));
   return out;
 }
 /**
@@ -958,7 +987,9 @@ export function nextLessonXp(s: CeoState, now = nowOf(s)): number {
 /** XP total de la carrera: empresas anteriores + la actual + lecciones. */
 export function xpOf(s: CeoState, now = nowOf(s)): number {
   const past = (s.career ?? []).reduce((a, r) => a + (r.xp || 0), 0);
-  return past + runXp(s, now) + lessonXp(s) + dilemmaXp(s) + crisisXp(s);
+  // Empresas guardadas: el XP de su periodo en curso sigue contando mientras están guardadas.
+  const shelved = (s.shelf ?? []).reduce((a, e) => a + (e.xp || 0), 0);
+  return past + shelved + runXp(s, now) + lessonXp(s) + dilemmaXp(s) + crisisXp(s);
 }
 
 export const LEVELS = [
@@ -984,6 +1015,11 @@ export function streakOf(s: CeoState, now = nowOf(s)) {
   Object.values(s.lessons).forEach((t) => days.add(dayKey(t, tz)));
   Object.values(s.dilemmas ?? {}).forEach((d) => days.add(dayKey(d.at, tz)));
   Object.values(s.episodes ?? {}).forEach((r) => r.turns.forEach((t) => days.add(dayKey(t.at, tz))));
+  // Lo jugado en empresas guardadas sigue contando para tu racha.
+  for (const e of s.shelf ?? []) {
+    Object.values(e.state.decisions ?? {}).forEach((d) => days.add(dayKey(d.at, tz)));
+    Object.values(e.state.episodes ?? {}).forEach((r) => r.turns.forEach((t) => days.add(dayKey(t.at, tz))));
+  }
   const today = dayKey(now, tz);
   const doneToday = days.has(today);
   const paused = pausedDays(s, now);
@@ -1266,6 +1302,7 @@ export function nextCompanyOf(s: CeoState): { id: string; legendary: boolean } {
 function closeRun(s: CeoState, now: number): CareerRun {
   const v = verdictOf(s, now);
   return {
+    ...(s.companyProfile ? { companyId: s.companyProfile.companyId } : {}),
     company: s.company, tier: s.tier, rulesVersion: rulesVersionOf(s), startedAt: s.startedAt ?? now, endedAt: now, kpis: v.kpis, health: v.health,
     answered: Math.round(v.answered * 100), passed: v.passed, xp: runXp(s, now), decisions: s.decisions as Record<string, Decision>,
     ...(() => { const ep = episodeEntries(s, now).filter((e) => e.status === "cerrado").map((e) => e.spec.id); return ep.length ? { episodes: ep } : {}; })(),
@@ -1309,7 +1346,8 @@ export function advance(s: CeoState, now = nowOf(s), rulesVersion: number = RULE
 export function closedRunsOf(s: Pick<CeoState, "companyProfile" | "career">) {
   const p = s.companyProfile;
   if (!p) return [];
-  return (s.career ?? []).filter((r) => r.company === p.contentPackId && r.startedAt >= p.appointedAt);
+  // Con empresas guardadas puede haber dos empresas del mismo paquete: si el periodo trae su id, debe coincidir.
+  return (s.career ?? []).filter((r) => r.company === p.contentPackId && r.startedAt >= p.appointedAt && (!r.companyId || r.companyId === p.companyId));
 }
 export interface BoardReview {
   /** Etapa en curso y la que sigue (null en la última). */
@@ -1361,6 +1399,53 @@ export function setupCompany(s: CeoState, input: Omit<NewCompanyInput, "at">, no
   if (input.growth && !growth) return s;
   return { ...fresh(s, profile.contentPackId, s.tier, now, undefined, v), careerMode: "continua", companyProfile: profile, business: { assumptionsVersion: ASSUMPTIONS_VERSION, allocations: [] }, ...(growth ? { growth } : {}) };
 }
+// ───────────────────────────────────────────── empresas guardadas (piloto Growth Engine)
+/** Identidad de la empresa en curso para guardarla (empresa propia o empresa de temporadas). */
+export const shelfIdOf = (s: CeoState) => s.companyProfile?.companyId ?? `pack:${s.company}:${s.startedAt ?? 0}`;
+/** Guarda completa la empresa en curso (reloj detenido) y deja la partida sin empresa. No toca lo de la persona. */
+function parkCurrent(s: CeoState, now: number): { base: CeoState; entry: ShelvedCompany } {
+  const id = shelfIdOf(s);
+  // Los periodos ya cerrados de esta empresa quedan marcados con su id (para no mezclarlos con otra del mismo paquete).
+  const p = s.companyProfile;
+  const career = p ? (s.career ?? []).map((r) => (!r.companyId && r.company === p.contentPackId && r.startedAt >= p.appointedAt ? { ...r, companyId: p.companyId } : r)) : s.career ?? [];
+  // Un día tranquilo que sigue corriendo termina al guardar la empresa.
+  const cadence = s.cadence ? { ...s.cadence, pauses: s.cadence.pauses.map((x) => (x.kind === "quiet" && x.from <= now && (x.to ?? now) > now ? { ...x, to: now } : x)) } : undefined;
+  const slice = sliceOf({ ...s, ...(cadence ? { cadence } : {}) });
+  const entry: ShelvedCompany = { id, name: p?.displayName ?? packOf(s).name, parkedAt: now, xp: runXp(s, now), state: slice };
+  const base: CeoState = { ...s, career, careerStart: s.careerStart ?? careerStartOfState(s) ?? now, shelf: [...(s.shelf ?? []).filter((e) => e.id !== id), entry] };
+  for (const k of COMPANY_SLICE_KEYS) delete (base as Partial<CeoState>)[k];
+  return { base: { ...newState(), ...base, decisions: {}, pinned: {}, read: {}, tier: 0, startedAt: null, ...(cadence ? { cadence: { ...cadence, pauses: cadence.pauses.filter((x) => x.to !== null) } } : {}) }, entry };
+}
+const careerStartOfState = (s: CeoState) => (s.career ?? [])[0]?.startedAt ?? s.startedAt ?? null;
+/** ¿Se puede abrir una empresa emergente guardando la actual? */
+export function canOpenEmergente(s: CeoState, now = nowOf(s)): boolean {
+  return !!s.startedAt && !s.growth && !onVacation(s, now) && (s.shelf ?? []).length < SHELF_MAX;
+}
+/**
+ * Abre una empresa emergente sin perder la actual: la empresa en curso se guarda completa (decisiones, periodo,
+ * pausas, negocio) con el reloj detenido, y tu XP, lecciones, dilemas, carrera y racha siguen siendo tuyos.
+ */
+export function parkAndOpen(s: CeoState, input: Omit<NewCompanyInput, "at">, now = nowOf(s), rulesVersion: number = CONTINUOUS_RULES_VERSION): CeoState {
+  if (!canOpenEmergente(s, now) || input.growth !== true || (s.shelf ?? []).some((e) => e.id === input.companyId)) return s;
+  const { base } = parkCurrent(s, now);
+  const opened = setupCompany({ ...base, startedAt: null }, input, now, rulesVersion);
+  if (opened === base || !opened.companyProfile) return s;
+  return { ...opened, lastActiveAt: now, savedAt: now };
+}
+/** Vuelve a una empresa guardada. La que estaba en curso se guarda; el lapso guardado cuenta como pausa. */
+export function resumeShelved(s: CeoState, id: string, now = nowOf(s)): CeoState {
+  const target = (s.shelf ?? []).find((e) => e.id === id);
+  if (!target || !s.startedAt || now < target.parkedAt || onVacation(s, now)) return s;
+  const { base } = parkCurrent(s, now);
+  const shelf = (base.shelf ?? []).filter((e) => e.id !== id);
+  const st = target.state;
+  // Mientras estuvo guardada nada vence ni llega: el lapso se agrega como una pausa cerrada (no cuenta en el límite).
+  const pauses = [...(st.cadence?.pauses ?? []), { kind: "vacation" as const, from: target.parkedAt, to: now, shelf: true as const }];
+  const out: CeoState = { ...base, ...st, cadence: { ...(st.cadence ?? { policyVersion: 1 as const }), policyVersion: 1, pauses }, shelf, lastActiveAt: now, savedAt: now };
+  if (!out.shelf?.length) delete out.shelf;
+  return out;
+}
+
 /** Cambia el nombre de la empresa. Conserva `companyId`, decisiones, periodo y todo lo demás. */
 export function renameCompany(s: CeoState, displayName: string, shortName: string | undefined, now = nowOf(s)): CeoState {
   if (!s.companyProfile) return s;

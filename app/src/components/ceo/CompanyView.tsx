@@ -1,8 +1,9 @@
 "use client";
 import clsx from "clsx";
 import { useState } from "react";
-import { BookA, Network, Pencil } from "lucide-react";
-import { KPI_KEYS } from "@/lib/ceo/engine";
+import Link from "next/link";
+import { ArrowRight, BookA, Network, Pencil, Sprout, Undo2 } from "lucide-react";
+import { KPI_KEYS, canOpenEmergente } from "@/lib/ceo/engine";
 import { COMPANIES } from "@/lib/ceo/companies";
 import { useCeo } from "./CeoProvider";
 import { CompanyOrgChart } from "./CompanyOrgChart";
@@ -58,6 +59,8 @@ export function CompanyView() {
       </section>
 
       {c.s.growth ? <GrowthPanel /> : c.continuous && <BusinessPanel />}
+
+      <MyCompanies />
 
       <section className="card p-5 sm:p-6">
         <div className="flex items-center gap-2"><Network size={17} className="text-indigo" /><h2 className="font-semibold text-ink">Organigrama</h2></div>
@@ -130,5 +133,42 @@ function Rename({ name, short }: { name: string; short: string }) {
         <button type="button" onClick={() => setOpen(false)} className="btn text-slate-500">Cancelar</button>
       </div>
     </div>
+  );
+}
+
+/** Piloto Growth Engine: abrir una empresa emergente sin perder la actual, y volver a las empresas guardadas. */
+function MyCompanies() {
+  const c = useCeo();
+  const shelf = c.s.shelf ?? [];
+  const canOpen = c.growthOn && canOpenEmergente(c.s, c.now);
+  if (!canOpen && !shelf.length) return null;
+  const fmt = (t: number) => new Date(t - (c.s.clockOffset || 0)).toLocaleDateString("es-MX", { day: "numeric", month: "short", timeZone: c.s.settings.tz });
+  return (
+    <section className="card p-5 sm:p-6" data-testid="mis-empresas">
+      {canOpen && (
+        <div className="rounded-2xl bg-indigo-soft/60 border border-indigo/15 p-4 sm:p-5">
+          <div className="flex items-center gap-2"><Sprout size={17} className="text-indigo" /><h2 className="font-semibold text-ink">Abrir una empresa emergente</h2><span className="chip bg-white text-indigo text-[10px]">Nuevo</span></div>
+          <p className="mt-1 text-sm text-slate-600 leading-relaxed">Dirige un restaurante o una planta de autopartes pequeña: contrata, abre sucursales o acepta contratos y ve cómo cambian la nómina, la capacidad y la caja. {c.pack.name} se guarda completa y puedes volver cuando quieras.</p>
+          <Link href="/ceo/empresa/nueva" className="mt-3 btn bg-indigo text-white hover:bg-indigo/90" data-testid="abrir-emergente">Abrir empresa emergente <ArrowRight size={15} /></Link>
+        </div>
+      )}
+      {shelf.length > 0 && (
+        <div className={clsx(canOpen && "mt-5")}>
+          <h2 className="font-semibold text-ink">Empresas guardadas</h2>
+          <p className="mt-1 text-sm text-slate-500">Su reloj está detenido: nada vence mientras están guardadas. Al volver, {c.pack.name} se guarda igual.</p>
+          <ul className="mt-3 space-y-2">
+            {shelf.map((e) => (
+              <li key={e.id} className="rounded-2xl border border-slate-100 p-3.5 flex flex-wrap items-center gap-3 justify-between">
+                <div className="min-w-0">
+                  <div className="text-sm font-semibold text-ink truncate">{e.name}{e.state.growth ? <span className="ml-2 chip bg-mint/20 text-ink text-[10px]">Emergente</span> : null}</div>
+                  <div className="text-xs text-slate-500">Guardada el {fmt(e.parkedAt)} · {Object.keys(e.state.decisions ?? {}).length} decisiones en su periodo</div>
+                </div>
+                <button type="button" data-testid="volver-empresa" onClick={() => window.confirm(`¿Volver a ${e.name}? ${c.pack.name} se guarda tal como está.`) && c.resumeCompany(e.id)} className="btn border border-slate-200 text-ink hover:border-indigo/40 text-sm"><Undo2 size={14} /> Volver a esta empresa</button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </section>
   );
 }

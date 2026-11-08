@@ -39,7 +39,7 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-
 export const isUuid = (x: unknown): x is string => typeof x === "string" && UUID.test(x);
 
 /** Inicio de la carrera (primera empresa). Identifica la carrera aunque se juegue en varios dispositivos. */
-export const careerStartOf = (s: Pick<CeoState, "career" | "startedAt">): number | null => (s.career ?? [])[0]?.startedAt ?? s.startedAt ?? null;
+export const careerStartOf = (s: Pick<CeoState, "career" | "startedAt"> & Partial<Pick<CeoState, "careerStart">>): number | null => s.careerStart ?? (s.career ?? [])[0]?.startedAt ?? s.startedAt ?? null;
 
 /** UUID (formato v5) a partir de 32+ caracteres hexadecimales de un hash. */
 export function uuidFromHex(hex: string): string {
@@ -132,6 +132,15 @@ export function sanitizeAction(raw: unknown): GameAction | null {
     case "renameCompany": return str(a.displayName, 40) ? { type: "renameCompany", at, displayName: a.displayName, ...(str(a.shortName, 40) ? { shortName: a.shortName } : {}) } : null;
     case "allocate": return num(a.period) && Number.isInteger(a.period) && a.period >= 1 && a.period <= 600 && (a.option === "a" || a.option === "b") ? { type: "allocate", at, period: a.period, option: a.option } : null;
     case "closePeriod": return num(a.period) && Number.isInteger(a.period) && a.period >= 1 && a.period <= 600 ? { type: "closePeriod", at, period: a.period } : null;
+    case "parkOpen": {
+      if (!isUuid(a.companyId) || !str(a.sectorId, 60) || !str(a.industryId, 60) || !str(a.archetype, 20) || !str(a.displayName, 40)) return null;
+      const out: GameAction = { type: "parkOpen", at, companyId: a.companyId, sectorId: a.sectorId, industryId: a.industryId, archetype: a.archetype, displayName: a.displayName };
+      if (str(a.shortName, 40)) out.shortName = a.shortName;
+      if (str(a.specialty, 60)) out.specialty = a.specialty;
+      if (rv(a.rulesVersion) !== null) out.rulesVersion = rv(a.rulesVersion)!;
+      return out;
+    }
+    case "resumeShelved": return str(a.id, 80) ? { type: "resumeShelved", at, id: a.id } : null;
     case "growth": return str(a.caseId, 40) && str(a.optionId, 40) ? { type: "growth", at, caseId: a.caseId, optionId: a.optionId } : null;
     case "episode": { const act = cleanEpisodeAct(a.act, at); return str(a.id, 60) && act ? { type: "episode", at, id: a.id, act } : null; }
     default: return null;
@@ -232,7 +241,13 @@ export function checkBase(raw: unknown, careerStartedAt: number, serverNow: numb
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) return { ok: false, error: "base_invalida" };
   let size = 0;
   // El respaldo de la economía real (v10) no cuenta para el límite: es la misma partida guardada dos veces.
-  try { const { econMigration: m, ...rest } = raw as Record<string, unknown>; size = JSON.stringify(rest).length + (m ? JSON.stringify({ ...(m as object), backup: undefined }).length : 0); } catch { return { ok: false, error: "base_invalida" }; }
+  // Lo mismo para las empresas guardadas: su respaldo v10 no cuenta.
+  const noBackup = (m: unknown) => (m && typeof m === "object" ? { ...(m as object), backup: undefined } : m);
+  try {
+    const { econMigration: m, shelf, ...rest } = raw as Record<string, unknown>;
+    const sh = Array.isArray(shelf) ? shelf.map((e) => (e && typeof e === "object" && (e as { state?: unknown }).state && typeof (e as { state?: unknown }).state === "object" ? { ...(e as object), state: { ...((e as { state: object }).state), econMigration: noBackup(((e as { state: Record<string, unknown> }).state).econMigration) } } : e)) : shelf;
+    size = JSON.stringify(rest).length + (m ? JSON.stringify(noBackup(m)).length : 0) + (sh ? JSON.stringify(sh).length : 0);
+  } catch { return { ok: false, error: "base_invalida" }; }
   if (size > JOURNAL_MAX_BYTES) return { ok: false, error: "base_invalida" };
   const s = migrate(raw);
   if (!s.startedAt) return { ok: false, error: "base_invalida" };

@@ -1,6 +1,6 @@
 /**
  * GET /api/ceo/interruptores → interruptores de producto que el navegador necesita conocer (solo lectura).
- * Hoy: growth_engine (empresa emergente). Sin sesión o si la base no responde, todo apagado.
+ * Hoy: growth_engine (empresa emergente). Prendido salvo que ceo.flags lo apague; si la base no responde, apagado.
  */
 import { NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";

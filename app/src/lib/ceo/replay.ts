@@ -13,8 +13,8 @@
  * Cada acción replica, una a una, lo que hacen las acciones de `CeoProvider`.
  */
 import type { CeoState, CastId, LeverId, Settings, Written } from "./types";
-import { LEGACY_CONTINUOUS_RULES_VERSION } from "./rules";
-import { H, LEGACY_RULES_VERSION, advance, aliasOf, answerDilemma, decide, kpis, newState, openSeasonEpisode, pinArrived, renameCompany, setupCompany, switchCompany, decideGrowthCase } from "./engine";
+import { CONTINUOUS_RULES_VERSION, LEGACY_CONTINUOUS_RULES_VERSION } from "./rules";
+import { H, LEGACY_RULES_VERSION, advance, aliasOf, answerDilemma, decide, kpis, newState, openSeasonEpisode, pinArrived, renameCompany, setupCompany, switchCompany, decideGrowthCase, parkAndOpen, resumeShelved } from "./engine";
 import { closeChange, playLever, startChange } from "./relations";
 import { crisisAccess, playCrisis, recordCrisis } from "./crisis";
 import { appoint, recordBoard } from "./journey";
@@ -55,7 +55,10 @@ export type GameAction =
   | { type: "allocate"; at: number; period: number; option: "a" | "b" }
   | { type: "closePeriod"; at: number; period: number }
   /** Empresa emergente (Growth Engine): decisión de un caso de crecimiento. */
-  | { type: "growth"; at: number; caseId: string; optionId: string };
+  | { type: "growth"; at: number; caseId: string; optionId: string }
+  // Empresas guardadas (piloto Growth Engine): abrir una emergente guardando la actual, y volver a una guardada.
+  | { type: "parkOpen"; at: number; companyId: string; sectorId: string; industryId: string; archetype: string; displayName: string; shortName?: string; specialty?: string; rulesVersion?: number }
+  | { type: "resumeShelved"; at: number; id: string };
 
 /** Lo único que se puede hacer de vacaciones: reanudar o cambiar ajustes. El resto se rechaza. */
 const ALLOWED_ON_VACATION = new Set<GameAction["type"]>(["resume", "pause", "settings"]);
@@ -105,6 +108,8 @@ export function applyAction(s: CeoState, a: GameAction): { state: CeoState; appl
     case "allocate": n = allocate(s, a.period, a.option, a.at); break;
     case "closePeriod": n = closePeriod(s, a.period, a.at); break;
     case "growth": n = decideGrowthCase(s, a.caseId, a.optionId, a.at); break;
+    case "parkOpen": n = parkAndOpen(s, { companyId: a.companyId, sectorId: a.sectorId, industryId: a.industryId, archetype: a.archetype, displayName: a.displayName, shortName: a.shortName, specialty: a.specialty, growth: true }, a.at, a.rulesVersion ?? CONTINUOUS_RULES_VERSION); break;
+    case "resumeShelved": n = resumeShelved(s, a.id, a.at); break;
   }
   if (n === s) return { state: s, applied: false };
   return { state: { ...n, savedAt: a.at }, applied: true };

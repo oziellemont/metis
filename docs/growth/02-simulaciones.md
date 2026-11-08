@@ -67,7 +67,7 @@ La página de revisión `/ceo/empresa/demo-crecimiento` (visible solo fuera de p
 
 Las pruebas de integración (`growth/integration.test.ts`, `growth/view.test.ts` y `growth/chains.test.ts`) verifican lo siguiente:
 
-- El interruptor `growth_engine` está apagado por omisión en producción.
+- El interruptor `growth_engine` quedó prendido en el lanzamiento piloto (ver `03-pendientes.md`); una fila `enabled = false` en `ceo.flags` lo apaga.
 - El onboarding ofrece las dos opciones solo cuando el interruptor lo permite.
 - El puente hacia los cinco indicadores es la única fuente económica; el reporte mensual anterior y la simulación P0-C se apagan cuando la partida tiene crecimiento.
 - Los efectos editoriales solo tocan Equipo, Clientes y Consejo.

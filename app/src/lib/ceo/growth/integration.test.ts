@@ -31,7 +31,7 @@ const own = (x = REST) => setupCompany(started(), x, T0, CONTINUOUS_RULES_VERSIO
 const atDay = (s: CeoState, d: number) => T0 + Math.ceil((d * packOf(s).season.days) / 30) * DAY;
 
 describe("interruptor y onboarding", () => {
-  it("growth_engine existe y arranca apagado", () => {
+  it("growth_engine existe y queda apagado si la base no responde", () => {
     expect(FLAG_KEYS).toContain("growth_engine");
     expect(ALL_OFF.growth_engine).toBe(false);
   });
