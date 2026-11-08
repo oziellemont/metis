@@ -68,7 +68,7 @@ describe("integridad contable", () => {
     apply(s, { type: "hire", id: "h1", roleId: "cocinero", siteId: "centro" });
     apply(s, { type: "hire", id: "h1", roleId: "cocinero", siteId: "centro" });
     expect(s.vacancies.length).toBe(1);
-    const o = { type: "open_site" as const, id: "sur", name: "Sucursal Sur", rent: 50000, utilities: 30000, deposit: 100000, capex: 1200000, years: 8, buildDays: 60, assets: { mesas: 14 }, demandBase: 90, maturityDays: 180, preopening: 80000 };
+    const o = { type: "open_site" as const, id: "sur", name: "Sucursal Sur", rent: 50000, utilities: 30000, deposit: 100000, capex: 250000, years: 8, buildDays: 60, assets: { mesas: 14 }, demandBase: 90, maturityDays: 180, preopening: 80000 };
     apply(s, o); const c = s.cash; apply(s, o);
     expect(s.cash).toBe(c);
     expect(s.sites.length).toBe(2);
@@ -82,11 +82,11 @@ describe("integridad contable", () => {
   it("una inversión consume caja al pagarse y el resultado solo reconoce depreciación", () => {
     const s = noRot(createCompany("manufactura_emergente", "inv"));
     const before = s.cash;
-    apply(s, { type: "add_asset", id: "prensa4", siteId: "planta", label: "Prensa de 200 t", resource: "prensa", units: 1, cost: 1800000, years: 10, leadDays: 45 });
-    expect(before - s.cash).toBe(pesos(1800000));
+    apply(s, { type: "add_asset", id: "prensa4", siteId: "planta", label: "Prensa de 200 t", resource: "prensa", units: 1, cost: 900000, years: 10, leadDays: 45 });
+    expect(before - s.cash).toBe(pesos(900000));
     const later = advance(s, 90);
     const dep = later.ledger.filter((e) => e.type === "devengo" && e.account === "depreciacion");
-    expect(dep.reduce((a, e) => a + e.amount, 0)).toBe(-Math.round(pesos(1800000) / 120) * dep.length);
+    expect(dep.reduce((a, e) => a + e.amount, 0)).toBe(-Math.round(pesos(900000) / 120) * dep.length);
     expect(later.ledger.some((e) => e.type === "devengo" && e.account === "inversion")).toBe(false);
   });
 
@@ -145,7 +145,7 @@ describe("realismo operativo", () => {
 
   it("una sucursal sin personal mínimo no abre ni produce", () => {
     const s = noRot(createCompany("restaurante_emergente", "suc"));
-    apply(s, { type: "open_site", id: "sur", name: "Sucursal Sur", rent: 50000, utilities: 30000, deposit: 100000, capex: 1200000, years: 8, buildDays: 45, assets: { mesas: 12 }, demandBase: 90, maturityDays: 180, preopening: 80000 });
+    apply(s, { type: "open_site", id: "sur", name: "Sucursal Sur", rent: 50000, utilities: 30000, deposit: 100000, capex: 250000, years: 8, buildDays: 45, assets: { mesas: 12 }, demandBase: 90, maturityDays: 180, preopening: 80000 });
     const later = advance(s, 120);
     const sur = later.sites.find((x) => x.ref === "sur")!;
     expect(sur.status).toBe("preapertura");
@@ -279,5 +279,128 @@ describe("margen de arranque recalibrado", () => {
     expect(pct).toBeLessThan(0.14);
     expect(m.coverage).toBeGreaterThan(0);
     expect(s.fixedLines.length).toBeGreaterThanOrEqual(6);
+  });
+});
+
+describe("liquidez (fase 2)", () => {
+  const branch = (s: GrowthState, id = "o1") => apply(s, { type: "open_site", id, name: "Sucursal Cumbres", rent: 55000, utilities: 24000, deposit: 110000, capex: 200000, years: 8, buildDays: 45, assets: { mesas: 14 }, demandBase: 95, maturityDays: 150, preopening: 60000 });
+
+  it("la caja nunca es negativa: lo que no alcanza queda como adeudo vencido con su acreedor", () => {
+    let s = createCompany("restaurante_emergente", "liq");
+    branch(s);
+    apply(s, { type: "hire", id: "h1", roleId: "gerente_sucursal", siteId: s.sites[1].id });
+    s = advance(s, 360);
+    for (const m of s.months) expect(m.cashEnd).toBeGreaterThanOrEqual(0);
+    expect(s.cash).toBeGreaterThanOrEqual(0);
+    expect(s.overdue.length).toBeGreaterThan(0);
+    expect(s.months.at(-1)!.overdue).toBeGreaterThan(0);
+    // Y el libro sigue cuadrando.
+    for (const m of s.months) expect(m.cashEnd).toBe(m.cashBegin + m.inflows - m.outflows);
+  }, 30_000);
+
+  it("la proyección de 13 semanas avisa antes de que falte dinero (alerta antes que crisis)", () => {
+    let s = createCompany("restaurante_emergente", "liq");
+    branch(s);
+    apply(s, { type: "hire", id: "h1", roleId: "gerente_sucursal", siteId: s.sites[1].id });
+    s = advance(s, 240);
+    const alert = s.events.find((e) => e.kind === "alerta_liquidez");
+    const crisis = s.events.find((e) => e.kind === "crisis_liquidez");
+    expect(alert).toBeTruthy();
+    expect(crisis).toBeTruthy();
+    expect(alert!.day).toBeLessThan(crisis!.day);
+  }, 30_000);
+
+  it("un atraso tiene consecuencias por acreedor: proveedores a contado, recargos del fisco, clima laboral", () => {
+    let s = createCompany("restaurante_emergente", "liq");
+    branch(s);
+    apply(s, { type: "hire", id: "h1", roleId: "gerente_sucursal", siteId: s.sites[1].id });
+    s = advance(s, 330);
+    expect(s.events.some((e) => e.kind === "proveedor" && /contado/.test(e.text))).toBe(true);
+    expect(s.relations.staff).toBeLessThan(0.8);
+    expect(s.ledger.some((e) => e.account === "recargos" || e.account === "moratorios")).toBe(true);
+  }, 30_000);
+
+  it("no hay préstamo automático: sin decisión, la caja no recibe financiamiento", () => {
+    let s = createCompany("restaurante_emergente", "liq");
+    branch(s);
+    s = advance(s, 200);
+    expect(s.loans.length).toBe(0);
+    expect(s.ledger.some((e) => e.account === "prestamo" || e.account === "aportacion")).toBe(false);
+  }, 30_000);
+
+  it("el banco revisa condiciones y puede decir que no; con historial y resultado positivo, presta con costo", () => {
+    const fresh = createCompany("restaurante_emergente", "bank");
+    const r1 = apply(fresh, { type: "bank_loan", id: "b1", amount: 300000, months: 12 });
+    expect(r1.ok).toBe(false); expect(r1.refused).toBe(true);
+    expect(fresh.events.some((e) => e.kind === "rechazo")).toBe(true);
+    const s = advance(noRot(createCompany("restaurante_emergente", "bank")), 95);
+    const ok = apply(s, { type: "bank_loan", id: "b2", amount: 200000, months: 12 });
+    expect(ok.ok).toBe(true);
+    const later = advance(s, 60);
+    expect(later.loans[0].balance).toBeLessThan(later.loans[0].principal);
+    expect(later.ledger.some((e) => e.account === "intereses")).toBe(true);
+    expect(later.ledger.some((e) => e.account === "comisiones")).toBe(true);
+  }, 30_000);
+
+  it("pedir más de lo que permite la capacidad de pago se rechaza con la cifra que sí alcanza", () => {
+    const s = advance(noRot(createCompany("restaurante_emergente", "bank")), 95);
+    const r = apply(s, { type: "bank_loan", id: "b3", amount: 5_000_000, months: 12 });
+    expect(r.ok).toBe(false);
+    expect(r.reason).toMatch(/capacidad de pago alcanza/);
+  });
+
+  it("negociar con proveedores recorre pagos y cuesta sobreprecio; el factoraje solo existe si hay cuentas por cobrar", () => {
+    const s = advance(noRot(createCompany("restaurante_emergente", "prov")), 20);
+    const before = s.scheduled.filter((x) => x.account === "proveedores").map((x) => x.day);
+    const r = apply(s, { type: "negotiate_suppliers", id: "n1", extraDays: 15 });
+    if (r.ok) {
+      expect(s.scheduled.filter((x) => x.account === "proveedores").map((x) => x.day)).toEqual(before.map((d) => d + 15));
+      expect(s.supplierTerms.priceUp).toBeGreaterThan(0);
+    } else expect(r.refused).toBe(true);
+    expect(apply(s, { type: "collect_receivables", id: "f1", mode: "factoraje" }).ok).toBe(false);
+    const m = advance(noRot(createCompany("manufactura_emergente", "fac")), 20);
+    const cashBefore = m.cash;
+    expect(apply(m, { type: "collect_receivables", id: "f2", mode: "factoraje" }).ok).toBe(true);
+    const m2 = advance(m, 4);
+    expect(m2.cash).toBeGreaterThan(cashBefore);
+    expect(m2.ledger.some((e) => e.account === "factoraje")).toBe(true);
+  });
+
+  it("aportación del dueño: llega días después, desgasta su confianza y tiene límite", () => {
+    const s = createCompany("restaurante_emergente", "own2");
+    const r = apply(s, { type: "owner_equity", id: "eq1", amount: 200000 });
+    if (r.ok) {
+      expect(s.relations.owner).toBeLessThan(0.8);
+      expect(s.scheduled.some((x) => x.account === "aportacion")).toBe(true);
+      const r2 = apply(s, { type: "owner_equity", id: "eq2", amount: 900000 });
+      if (r2.ok) expect(s.equity).toBeLessThanOrEqual(500000 * 100);
+    } else expect(r.refused).toBe(true);
+  });
+
+  it("recortar tiene efecto diferido; tu sueldo no se recorta como gasto", () => {
+    const s = noRot(createCompany("restaurante_emergente", "cut"));
+    expect(apply(s, { type: "cut_costs", id: "c0", lines: ["direccion"] }).ok).toBe(false);
+    expect(apply(s, { type: "cut_costs", id: "c1", lines: ["marketing"] }).ok).toBe(true);
+    const later = advance(s, 90);
+    expect(later.sites[0].demandFactor).toBeLessThan(1);
+  });
+
+  it("posponer una sucursal en obra recorre sus pagos con penalidad; la renta sigue corriendo", () => {
+    const s = noRot(createCompany("restaurante_emergente", "def"));
+    branch(s);
+    const site = s.sites[1];
+    const pre = s.scheduled.find((x) => x.ref === "o1")!.day;
+    expect(apply(s, { type: "defer_site", id: "d1", siteId: site.id, days: 60 }).ok).toBe(true);
+    expect(s.scheduled.find((x) => x.ref === "o1" && x.account === "preapertura")!.day).toBe(pre + 60);
+    const later = advance(s, 60);
+    expect(later.ledger.some((e) => e.account === "renta" && e.ref === site.id)).toBe(true);
+  });
+
+  it("abrir sucursal exige tener el pago inicial en caja", () => {
+    const s = createCompany("restaurante_emergente", "cap");
+    s.cash = 100000_00;
+    const r = apply(s, { type: "open_site", id: "x", name: "X", rent: 1, utilities: 1, deposit: 110000, capex: 200000, years: 8, buildDays: 30, assets: { mesas: 10 }, demandBase: 50, maturityDays: 90, preopening: 1 });
+    expect(r.ok).toBe(false);
+    expect(r.reason).toMatch(/caja tiene/);
   });
 });

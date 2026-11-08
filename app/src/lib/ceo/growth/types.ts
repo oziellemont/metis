@@ -136,7 +136,17 @@ export interface Entry { id: string; type: EntryType; account: string; month: nu
 
 export interface Scheduled { id: string; day: number; account: string; amount: number; ref?: string; text: string }
 
-export type EventKind = "vacante" | "incorporacion" | "renuncia" | "baja" | "obra" | "obra_terminada" | "apertura" | "activo" | "turno" | "contrato" | "aguinaldo" | "sin_personal";
+export type EventKind = "vacante" | "incorporacion" | "renuncia" | "baja" | "obra" | "obra_terminada" | "apertura" | "activo" | "turno" | "contrato" | "aguinaldo" | "sin_personal"
+  | "alerta_liquidez" | "crisis_liquidez" | "liquidez_resuelta" | "vencido" | "decision_financiera" | "rechazo" | "recorte" | "proveedor";
+
+/** A quién se le debe. Cada acreedor reacciona distinto a un atraso. */
+export type Creditor = "personal" | "fisco" | "arrendador" | "proveedores" | "banco" | "otros";
+/** Obligación que llegó a su fecha y no se pudo pagar completa: no es caja negativa, es una deuda vencida con consecuencias. */
+export interface Overdue { id: string; account: string; creditor: Creditor; amount: number; since: number; text: string; ref?: string }
+export interface Loan { id: string; lender: string; principal: number; balance: number; rate: number; months: number; payment: number; startDay: number; ref: string }
+/** Relaciones que reaccionan a cómo administras la liquidez (0–1). Alimentan Equipo, Clientes y Consejo. */
+export interface Relations { staff: number; suppliers: number; bank: number; owner: number; clients: number; landlord: number }
+export interface Liquidity { status: "sana" | "alerta" | "crisis"; since: number; shortWeek: number | null; gap: number }
 export interface GEvent { day: number; kind: EventKind; text: string; ref?: string; personId?: string; siteId?: string }
 
 export interface MonthSummary {
@@ -144,8 +154,10 @@ export interface MonthSummary {
   revenue: number; cogs: number; variable: number; payroll: number; employer: number; payrollTax: number; provision: number;
   coverage: number; rent: number; utilities: number; fixed: number; hiring: number; severance: number; preopening: number; depreciation: number;
   ebitda: number; operating: number;
+  /** Intereses, comisiones, factoraje, recargos y moratorios (debajo del EBITDA). */
+  financial: number;
   cashBegin: number; inflows: number; outflows: number; cashEnd: number;
-  receivables: number; payables: number;
+  receivables: number; payables: number; overdue: number; debt: number;
   demand: number; served: number; lost: number; capacity: number; scrap: number;
   headcount: number; sites: number;
   bottleneck: string | null;
@@ -178,6 +190,22 @@ export interface GrowthState {
   cur: { demand: number; served: number; lost: number; capacity: number; scrap: number; bottlenecks: Record<string, number>; cashBegin: number };
   attrition: boolean;
   nextId: number;
+  // ── Liquidez (fase 2)
+  overdue: Overdue[];
+  loans: Loan[];
+  relations: Relations;
+  liquidity: Liquidity;
+  /**
+   * Condiciones con proveedores: días extra negociados (y hasta cuándo, con el sobreprecio pactado), «solo de contado»
+   * tras un atraso (y desde cuándo se puede levantar) y suspensión de surtido mientras haya adeudo viejo.
+   */
+  supplierTerms: { extraDays: number; extraUntil: number; priceUp: number; cashOnly: boolean; cashOnlyUntil: number; suspended: boolean };
+  /** Aportaciones de capital recibidas del dueño (centavos). */
+  equity: number;
+  /** Recortes vigentes (id de línea fija → día del recorte) para aplicar sus efectos diferidos. */
+  cuts: Record<string, number>;
+  /** Copia en proyección: no genera alertas (evita recursión). */
+  projecting?: boolean;
 }
 
 export type Command =
@@ -186,4 +214,12 @@ export type Command =
   | { type: "open_site"; id: string; name: string; rent: number; utilities: number; deposit: number; capex: number; years: number; buildDays: number; assets: Record<string, number>; demandBase: number; maturityDays: number; preopening: number; demandFactor?: number }
   | { type: "add_asset"; id: string; siteId: string; label: string; resource: string; units: number; cost: number; years: number; leadDays: number }
   | { type: "set_shifts"; id: string; siteId: string; shifts: number }
-  | { type: "add_contract"; id: string; client: string; unitsPerDay: number; price: number; startInDays: number };
+  | { type: "add_contract"; id: string; client: string; unitsPerDay: number; price: number; startInDays: number }
+  // ── Decisiones de liquidez: cada una tiene condiciones, costo y puede ser rechazada.
+  | { type: "bank_loan"; id: string; amount: number; months: number }
+  | { type: "negotiate_suppliers"; id: string; extraDays: number }
+  | { type: "collect_receivables"; id: string; mode: "cobranza" | "factoraje" }
+  | { type: "defer_site"; id: string; siteId: string; days: number }
+  | { type: "cancel_site"; id: string; siteId: string }
+  | { type: "owner_equity"; id: string; amount: number }
+  | { type: "cut_costs"; id: string; lines: string[] };

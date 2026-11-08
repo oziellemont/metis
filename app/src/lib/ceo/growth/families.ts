@@ -98,6 +98,13 @@ export interface Template {
   startMonth: number;
   cash: number;
   fixedLines: FixedLine[];
+  /**
+   * Cuánto podría aportar el dueño en una emergencia (pesos), si la relación lo permite. Supuesto de la historia:
+   * no es un cheque en blanco; aportar tiene condiciones y deja huella en la relación con el consejo.
+   */
+  ownerCapacity: number;
+  /** Tasa anual de un crédito PyME para esta empresa (supuesto referencial, con comisión de apertura). */
+  bankRate: number;
   sites: { id: string; name: string; rent: number; utilities: number; assets: Record<string, number>; shifts: number; demandBase: number }[];
   staff: StaffSeed[];
   contracts?: { id: string; client: string; unitsPerDay: number; price: number }[];
@@ -113,6 +120,8 @@ export const TEMPLATES: Readonly<Record<string, Template>> = Object.freeze({
     startMonth: 3,
     cash: 420000,
     fixedLines: BRASA_FIXED,
+    ownerCapacity: 500000,
+    bankRate: 0.24,
     // Servicios del local: luz (incluye refrigeración y campanas), agua y drenaje, internet y teléfono. El gas va por pedido.
     sites: [{ id: "centro", name: "Sucursal Centro", rent: 45000, utilities: 24000, assets: { mesas: 14 }, shifts: 1, demandBase: 100 }],
     staff: [
@@ -136,6 +145,8 @@ export const TEMPLATES: Readonly<Record<string, Template>> = Object.freeze({
     startMonth: 3,
     cash: 1300000,
     fixedLines: FORJA_FIXED,
+    ownerCapacity: 1500000,
+    bankRate: 0.2,
     sites: [{ id: "planta", name: "Planta Apodaca", rent: 60000, utilities: 90000, assets: { prensa: 3 }, shifts: 1, demandBase: 0 }],
     staff: [
       { roleId: "supervisor_produccion", name: "Arturo Elizondo", siteId: "planta", yearsBefore: 5 },
