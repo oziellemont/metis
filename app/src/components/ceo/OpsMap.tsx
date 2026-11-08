@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { ChevronRight, X } from "lucide-react";
 import type { GrowthState } from "@/lib/ceo/growth/types";
 import { METRO_OUTLINE, SIERRA } from "@/lib/ceo/growth/geo";
+import { profileOf } from "@/lib/ceo/growth/models";
 import { opsMapOf, short, siteDetailOf, type MapSite, type Tone } from "@/lib/ceo/growth/ops";
 
 const DOT: Record<Tone, string> = { ok: "#4F3FE0", hot: "#F2545B", cold: "#F5A524", new: "#14C98E", build: "#94A3B8" };
@@ -49,7 +50,7 @@ export function OpsMap({ g }: { g: GrowthState }) {
             <span key={t} className="chip gap-1.5 bg-white/90 text-slate-600 px-2 py-0.5"><span className="h-1.5 w-1.5 rounded-full" style={{ background: DOT[t] }} />{TONE_LABEL[t]}</span>
           ))}
         </div>
-        {!cur && <div className="absolute right-3 bottom-3 text-[11px] text-slate-400">Toca una {g.family === "restaurante" ? "sucursal" : "planta"}</div>}
+        {!cur && <div className="absolute right-3 bottom-3 text-[11px] text-slate-400">Toca una {profileOf(g).site.one}</div>}
       </div>
 
       {cur && <SiteCard key={cur.id} x={cur} month={map.month} onClose={() => setSel(null)} onDetail={() => setDetail((d) => !d)} open={detail} />}

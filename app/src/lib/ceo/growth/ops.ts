@@ -9,6 +9,7 @@ import { fmt } from "./finance";
 import { zoneOf, ZONES } from "./geo";
 import { decide, type Decision } from "./chains";
 import { coldSite, hotSite } from "./opscases";
+import { profileOf } from "./models";
 import type { GrowthState, SiteMonth } from "./types";
 
 export const money = (cents: number) => `${cents < 0 ? "−" : ""}$${fmt(Math.abs(cents))}`;
@@ -28,7 +29,7 @@ export interface MapSite {
   use: number | null; lostPct: number | null;
   unit: string;
 }
-const unitOf = (g: GrowthState) => (g.family === "restaurante" ? "pedidos" : "piezas");
+const unitOf = (g: GrowthState) => profileOf(g).unit.many;
 const lastBySite = (g: GrowthState) => new Map((g.months.at(-1)?.bySite ?? []).map((m) => [m.siteId, m]));
 const costsOf = (m: SiteMonth) => m.cogs + m.variable + m.people + m.rent + m.utilities;
 
@@ -75,7 +76,7 @@ export function siteDetailOf(g: GrowthState, siteId: string): SiteDetail | null 
     status: x.status === "operando" ? "Operando" : x.status === "en_obra" ? `En obra · abre en unos ${Math.max(0, (x.buildDoneDay ?? g.day) - g.day)} días` : x.status === "preapertura" ? "Preapertura" : "Cerrada",
     pnl: m ? [
       ["Ventas", money(m.revenue)],
-      [g.family === "restaurante" ? "Insumos" : "Material", money(-m.cogs)],
+      [profileOf(g).labels.cogs, money(-m.cogs)],
       ["Gente", money(-m.people)],
       ["Renta y servicios", money(-(m.rent + m.utilities))],
       ["Otros variables", money(-m.variable)],
@@ -84,9 +85,9 @@ export function siteDetailOf(g: GrowthState, siteId: string): SiteDetail | null 
     ops: [
       ...(cap ? [["Capacidad", `${n(cap.perDay)} ${unit} al día`] as [string, string]] : []),
       ...(m && m.capacity > 0 ? [["Uso de la capacidad", `${Math.round((m.served / m.capacity) * 100)} %`] as [string, string]] : []),
-      ...(m ? [[g.family === "restaurante" ? "Pedidos atendidos" : "Piezas entregadas", `${n(m.served / days)} al día`] as [string, string]] : []),
-      ...(m && m.lost > 0 ? [[g.family === "restaurante" ? "Pedidos perdidos" : "Piezas no entregadas", `${n(m.lost / days)} al día`] as [string, string]] : []),
-      ...(cap ? [["Cuello de botella", BOTTLENECK[cap.bottleneck] ?? cap.bottleneck] as [string, string]] : []),
+      ...(m ? [[profileOf(g).labels.served, `${n(m.served / days)} al día`] as [string, string]] : []),
+      ...(m && m.lost > 0 ? [[profileOf(g).labels.lost, `${n(m.lost / days)} al día`] as [string, string]] : []),
+      ...(cap ? [["Cuello de botella", profileOf(g).bottleneck[cap.bottleneck] ?? BOTTLENECK[cap.bottleneck] ?? cap.bottleneck] as [string, string]] : []),
       ["Renta", `${money(x.rent)} al mes`],
       ...(x.shifts > 1 ? [["Turnos", String(x.shifts)] as [string, string]] : []),
     ],

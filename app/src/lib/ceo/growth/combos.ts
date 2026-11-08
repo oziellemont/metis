@@ -8,6 +8,7 @@
 export const GROWTH_COMBOS: Readonly<Record<string, { startup: string; consolidada: string }>> = Object.freeze({
   "restaurantes_alimentos/restaurantes": { startup: "restaurante_emergente", consolidada: "restaurante_consolidada" },
   "manufactura/autopartes": { startup: "manufactura_emergente", consolidada: "manufactura_consolidada" },
+  "manufactura/metalica_basica": { startup: "aceria_emergente", consolidada: "aceria_consolidada" },
 });
 export type GrowthSize = "startup" | "consolidada";
 /** Tipo interno con el que se guarda una StartUp del motor (el texto visible es «StartUp»). */

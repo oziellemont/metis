@@ -54,7 +54,7 @@ describe("onboarding de carrera continua · lógica pura", () => {
     expect(typeOpen("establecida")).toBe(true);
     expect(typeOpen("pyme")).toBe(false);
     expect(industriesForType("startup").map((i) => i.id)).toEqual(["software_saas"]);
-    expect(industriesForType("establecida").map((i) => i.id).sort()).toEqual(["alimentos_bebidas", "autopartes", "logistica_distribucion", "restaurantes", "retail"]);
+    expect(industriesForType("establecida").map((i) => i.id).sort()).toEqual(["alimentos_bebidas", "autopartes", "logistica_distribucion", "metalica_basica", "restaurantes", "retail"]);
     expect(industriesForType("pyme")).toEqual([]);
     expect(industriesForType(undefined)).toEqual([]);
     // Los sectores solo traen las industrias del tipo; ninguno queda vacío.

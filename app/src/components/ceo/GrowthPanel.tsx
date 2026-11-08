@@ -9,6 +9,7 @@ import { milestonesOf, resultsOf, teamOf } from "@/lib/ceo/growth/view";
 import { alertsOf, short, type Alert } from "@/lib/ceo/growth/ops";
 import { useCeo } from "./CeoProvider";
 import { GrowthCase } from "./GrowthCase";
+import { coachLine } from "@/lib/ceo/growth/learning";
 import { OpsMap } from "./OpsMap";
 
 const ALERT = {
@@ -64,6 +65,8 @@ export function GrowthPanel() {
       </div>
 
       <AlertChips alerts={alerts} />
+
+      {coachLine(log.decisions) && <p className="text-xs text-slate-500 rounded-2xl bg-slate-50 px-3 py-2" data-testid="coach">{coachLine(log.decisions)}</p>}
 
       {pending.length > 0 && (
         <div className="space-y-3" data-testid="casos-crecimiento">

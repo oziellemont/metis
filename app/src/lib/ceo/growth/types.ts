@@ -11,6 +11,8 @@ export type Level = "operativo" | "especialista" | "supervisor" | "gerente" | "d
 export interface RoleDef {
   id: string;
   family: Family;
+  /** Líneas de la familia donde existe el puesto (models.ts). Sin dato: todas las de su familia. */
+  lines?: readonly string[];
   title: string;
   func: Func;
   level: Level;
@@ -179,6 +181,8 @@ export interface GrowthState {
   laborVersion: number;
   catalogVersion: number;
   family: Family;
+  /** Línea de negocio (models.ts): restaurante, estampado, acería… Sin dato (partidas anteriores): la de la familia. */
+  line?: string;
   templateId: string;
   region: string;
   seed: string;

@@ -134,6 +134,15 @@ interface PartsLex {
   equipos: string; equipoGrande: string; equipoNuevo: string;
 }
 const PARTS: Record<string, PartsLex> = {
+  // Metálica básica: el paquete Forja con vocabulario de acería (industria propia en el catálogo).
+  "Acería de hornos de inducción": {
+    piezas: "varilla y perfiles de acero",
+    oficioPl: "fundidores", oficio: "fundidor", arte: "fundición",
+    herr: "refractario", Herr: "Refractario", afilado: "recién cambiado",
+    defecto: "inclusión", Defecto: "La inclusión", enPieza: "en la colada de varilla", piezasPl: "coladas",
+    mat: "chatarra", bajaMat: "la baja de la chatarra", filaMat: "Chatarra que nosotros compramos (patio local)",
+    equipos: "hornos y refractarios", equipoGrande: "horno de inducción de 30 toneladas", equipoNuevo: "un horno nuevo",
+  },
   "Inyección de plástico automotriz": {
     piezas: "piezas de plástico inyectado (tableros, rejillas y fascias)",
     oficioPl: "técnicos de moldeo", oficio: "técnico de moldeo", arte: "moldeo",

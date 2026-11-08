@@ -12,8 +12,9 @@
  *  6. Las decisiones se aplican una vez (`applied`); el avance por días es puro y determinista (semilla).
  * Dinero en centavos enteros. El libro tiene dos tipos de asiento: devengo (resultado) y caja (efectivo).
  */
-import { roleById } from "./catalog";
-import { FAMILIES, TABLE_TURNS, TEMPLATES, WEEKDAY, WORKDAY } from "./families";
+import { roleById, roleFits } from "./catalog";
+import { TABLE_TURNS, TEMPLATES, WEEKDAY, WORKDAY } from "./families";
+import { paramsOf, profileOf } from "./models";
 import { LABOR_VERSION, laborOf, minWage, monthlyCost, pesos, regionalSalary, regionOf, terminationOf, vacationDays, type TerminationKind } from "./labor";
 import type { Command, Entry, EntryType, GrowthState, MonthSummary, Person, Site, SiteAcc, SiteMonth } from "./types";
 import { MONTH, cashMove, clamp, clone, debtTotal, hash01, monthOf, overdueTotal, pay, payDownOverdue, post, schedule } from "./core";
@@ -22,7 +23,8 @@ import { updateLiquidity } from "./liquidity";
 
 export const GROWTH_MODEL_VERSION = 2;
 export const CATALOG_VERSION = 1;
-const fam = (s: GrowthState) => FAMILIES[s.family];
+const fam = (s: GrowthState) => paramsOf(s);
+const prof = (s: GrowthState) => profileOf(s);
 
 const active = (p: Person, day: number) => p.startDay <= day && (p.leftDay === undefined || p.leftDay > day);
 export const activePeople = (s: GrowthState, day = s.day) => s.people.filter((p) => active(p, day));
@@ -40,7 +42,7 @@ export function createCompany(templateId: keyof typeof TEMPLATES | string, seed 
   const L = laborOf();
   const s: GrowthState = {
     modelVersion: GROWTH_MODEL_VERSION, laborVersion: LABOR_VERSION, catalogVersion: CATALOG_VERSION,
-    family: T.family, templateId: T.id, region: T.region, seed, day: 0,
+    family: T.family, ...(T.line ? { line: T.line } : {}), templateId: T.id, region: T.region, seed, day: 0,
     cash: pesos(T.cash), fixedLines: T.fixedLines.map((x) => ({ ...x, amount: pesos(x.amount) })),
     people: [], vacancies: [], assets: [], contracts: [], scheduled: [], ledger: [], events: [], months: [], applied: [],
     sites: T.sites.map((x) => ({ id: x.id, name: x.name, zone: x.zone, status: "operando", assets: { ...x.assets }, shifts: x.shifts, rent: pesos(x.rent), utilities: pesos(x.utilities), demandBase: x.demandBase, demandFactor: 1, maturityDays: 0, reputation: 1, backlog: 0, openedDay: -3650 })),
@@ -86,7 +88,7 @@ function variableOf(s: GrowthState, revenue: number, units: number): number {
 
 function dayFactor(s: GrowthState, day: number): number {
   const wd = ((day % 7) + 7) % 7;
-  return s.family === "restaurante" ? WEEKDAY[wd] : WORKDAY[wd] ? 1 : 0;
+  return prof(s).week === "siete" ? WEEKDAY[wd] : WORKDAY[wd] ? 1 : 0;
 }
 
 // ─────────────────────────────────────────────── operación de un día
@@ -99,7 +101,7 @@ export function contractSite(s: GrowthState, c: { siteId?: string }): string | u
 }
 
 function siteCapacity(s: GrowthState, site: Site, day: number): { cap: Record<string, number>; produce: number; bottleneck: string; scrapRate: number } {
-  const F = fam(s);
+  const F = fam(s), P = prof(s);
   const staff = s.people.filter((p) => p.siteId === site.id && active(p, day));
   const cap: Record<string, number> = {};
   let rampScrap = 0, ops = 0;
@@ -111,7 +113,7 @@ function siteCapacity(s: GrowthState, site: Site, day: number): { cap: Record<st
   }
   const hasLead = staff.some((p) => p.roleId === F.leadRole);
   let coord = hasLead ? 1 : 0.85;
-  if (s.family === "restaurante") {
+  if (!P.asset) {
     cap.mesas = (site.assets.mesas ?? 0) * TABLE_TURNS;
     if (!cap.loza) cap.loza = 50; // sin lavaloza, la cocina lava: alcanza para poco
     const lead = roleById(F.leadRole)!;
@@ -119,16 +121,17 @@ function siteCapacity(s: GrowthState, site: Site, day: number): { cap: Record<st
   } else {
     const sup = staff.filter((p) => p.roleId === F.shiftRole).length;
     const shifts = Math.min(site.shifts, sup);
-    cap.prensa = (site.assets.prensa ?? 0) * (F.perShift!.prensa) * shifts;
+    const res = P.asset.resource;
+    cap[res] = (site.assets[res] ?? 0) * (F.perShift![res] ?? 0) * shifts;
     // Operadores reparten su jornada entre turnos; sin supervisor ningún turno arranca.
     if (shifts === 0) cap.operacion = 0;
-    if (!staff.some((p) => p.roleId === "tecnico_mantenimiento")) coord *= 0.88;
+    if (P.maintenanceRole && !staff.some((p) => p.roleId === P.maintenanceRole)) coord *= 0.88;
   }
   coord *= capacityFactor(s);
   for (const r of F.resources) cap[r] = Math.floor((cap[r] ?? 0) * coord);
   let bottleneck = F.resources[0], produce = Infinity;
   for (const r of F.resources) if (cap[r] < produce) { produce = cap[r]; bottleneck = r; }
-  const quality = staff.some((p) => p.roleId === "inspector_calidad") ? 0 : 0.02;
+  const quality = !P.qualityRole || staff.some((p) => p.roleId === P.qualityRole) ? 0 : 0.02;
   const scrapRate = (F.scrap ?? 0) + quality + (ops > 0 ? rampScrap / Math.max(1, ops) : 0);
   return { cap, produce: Math.max(0, produce), bottleneck, scrapRate };
 }
@@ -142,7 +145,7 @@ function operateDay(s: GrowthState, day: number, dry = false): DayRun {
   for (const site of s.sites) {
     if (site.status !== "operando") continue;
     const { produce, bottleneck, scrapRate } = siteCapacity(s, site, day);
-    if (s.family === "restaurante") {
+    if (prof(s).mode === "mostrador") {
       const maturity = site.maturityDays > 0 ? 0.45 + 0.55 * clamp((day - (site.openedDay ?? day)) / site.maturityDays, 0, 1) : 1;
       const demand = site.demandBase * site.demandFactor * maturity * site.reputation * w;
       const served = Math.min(demand, produce);
@@ -186,7 +189,7 @@ export function apply(s: GrowthState, cmd: Command): ApplyResult {
   switch (cmd.type) {
     case "hire": {
       const r = roleById(cmd.roleId);
-      if (!r || r.family !== s.family) return { ok: false, reason: "Ese puesto no existe en esta industria." };
+      if (!r || !roleFits(r, s.family, prof(s).id)) return { ok: false, reason: "Ese puesto no existe en esta industria." };
       if (r.minHeadcount && headcount(s) < r.minHeadcount) return { ok: false, reason: `Con ${headcount(s)} personas todavía no hace falta un ${r.title.toLowerCase()}.` };
       if (!r.companyLevel && cmd.siteId && !s.sites.some((x) => x.id === cmd.siteId && x.status !== "cerrada")) return { ok: false, reason: "Esa ubicación no existe." };
       const salary = cmd.salary !== undefined ? pesos(cmd.salary) : regionalSalary(r.salary.mid, regionOf(s.region));
@@ -241,7 +244,7 @@ export function apply(s: GrowthState, cmd: Command): ApplyResult {
     case "add_contract": {
       if (cmd.siteId && !s.sites.some((x) => x.id === cmd.siteId && x.status !== "cerrada")) return { ok: false, reason: "Esa planta no existe." };
       s.contracts.push({ id: cmd.id, client: cmd.client, unitsPerDay: cmd.unitsPerDay, price: pesos(cmd.price), startDay: s.day + cmd.startInDays, ref: cmd.id, ...(cmd.siteId ? { siteId: cmd.siteId } : {}) });
-      s.events.push({ day: s.day, kind: "contrato", text: `Se firma con ${cmd.client}: ${cmd.unitsPerDay.toLocaleString("en-US")} ${fam(s).unit.many} al día desde dentro de ${cmd.startInDays} días.`, ref: cmd.id });
+      s.events.push({ day: s.day, kind: "contrato", text: `Se firma con ${cmd.client}: ${cmd.unitsPerDay.toLocaleString("en-US")} ${prof(s).unit.many} al día desde dentro de ${cmd.startInDays} días.`, ref: cmd.id });
       break;
     }
   }
@@ -316,7 +319,7 @@ function step(s: GrowthState) {
       const lead = s.people.some((p) => p.siteId === site.id && p.roleId === F.leadRole && active(p, d));
       const ready = lead && F.resources.every((r) => cap[r] > 0);
       if (ready) { site.status = "operando"; site.openedDay = d; s.events.push({ day: d, kind: "apertura", text: `Abre ${site.name}. La demanda tarda meses en madurar.`, siteId: site.id, ref: site.ref }); }
-      else if (!s.events.some((e) => e.kind === "sin_personal" && e.siteId === site.id)) s.events.push({ day: d, kind: "sin_personal", text: `${site.name} está lista pero no puede abrir: falta personal mínimo (${lead ? "cocina o servicio" : "un responsable"}).`, siteId: site.id, ref: site.ref });
+      else if (!s.events.some((e) => e.kind === "sin_personal" && e.siteId === site.id)) s.events.push({ day: d, kind: "sin_personal", text: `${site.name} está lista pero no puede abrir: falta personal mínimo (${lead ? prof(s).missingStaff : "un responsable"}).`, siteId: site.id, ref: site.ref });
     }
   }
   // 4. Rotación (determinista por persona y día).
@@ -412,7 +415,7 @@ function closeMonth(s: GrowthState, L: ReturnType<typeof laborOf>) {
  */
 export const DELIVERY = Object.freeze({ okFill: { value: 0.95, basis: "Nivel de servicio típico exigido por armadoras/Tier 1" }, penalty: { value: 0.03, basis: "Penalización contractual por incumplimiento (supuesto referencial)" }, cancelFill: { value: 0.85, basis: "Umbral de cancelación tras dos meses (supuesto referencial)" } });
 function deliveryConsequences(s: GrowthState) {
-  if (s.family !== "manufactura") return;
+  if (prof(s).mode !== "contratos") return;
   const fillOf = (demand: number, served: number) => (demand ? served / demand : 1);
   const f = fillOf(s.cur.demand, s.cur.served);
   const prev = s.months.at(-1);
@@ -430,7 +433,7 @@ function deliveryConsequences(s: GrowthState) {
   if (prev && fillOf(prev.demand, prev.served) < DELIVERY.cancelFill.value && f < DELIVERY.cancelFill.value && live.length > 1) {
     const newest = [...live].sort((a, b) => b.startDay - a.startDay)[0];
     s.contracts = s.contracts.filter((c) => c !== newest);
-    s.events.push({ day: s.day, kind: "cancelacion", text: `${newest.client} cancela su contrato de ${newest.unitsPerDay.toLocaleString("en-US")} piezas al día después de dos meses de entregas incompletas.`, ref: newest.ref });
+    s.events.push({ day: s.day, kind: "cancelacion", text: `${newest.client} cancela su contrato de ${newest.unitsPerDay.toLocaleString("en-US")} ${prof(s).unit.many} al día después de dos meses de entregas incompletas.`, ref: newest.ref });
   }
 }
 

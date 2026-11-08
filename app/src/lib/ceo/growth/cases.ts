@@ -17,12 +17,16 @@ import { fmt, quoteCollect, quoteLoan, quoteOwner, quoteSuppliers } from "./fina
 import { overdueTotal } from "./core";
 import { regionOf, regionalSalary } from "./labor";
 import type { Command, Family, GrowthState } from "./types";
+import { lineIdOf, profileOf, type LineId } from "./models";
+import type { Area } from "../types";
 import { OPS_CASES } from "./opscases";
 import type { KpiKey } from "../types";
 
 // ───────────────────────────────────────────────── precondiciones
 export interface Requires {
   family?: Family;
+  /** Línea de negocio dentro de la familia (estampado, acería…): un caso de troqueles no llega a una acería. */
+  line?: LineId;
   minHeadcount?: number;
   maxHeadcount?: number;
   /** Sucursales o plantas operando. */
@@ -58,7 +62,7 @@ export function requiresMet(g: GrowthState, r: Requires): Check {
   const sites = g.sites.filter((x) => x.status === "operando").length;
   const has = (id: string) => activePeople(g).some((p) => p.roleId === id);
   const last = g.months.at(-1);
-  if (r.family && g.family !== r.family) failed.push("industria");
+  if ((r.family && g.family !== r.family) || (r.line && lineIdOf(g) !== r.line)) failed.push("industria");
   if (r.minHeadcount !== undefined && hc < r.minHeadcount) failed.push(`plantilla ≥ ${r.minHeadcount}`);
   if (r.maxHeadcount !== undefined && hc > r.maxHeadcount) failed.push(`plantilla ≤ ${r.maxHeadcount}`);
   if (r.minSites !== undefined && sites < r.minSites) failed.push(`sedes ≥ ${r.minSites}`);
@@ -66,7 +70,7 @@ export function requiresMet(g: GrowthState, r: Requires): Check {
   for (const id of r.roles ?? []) if (!has(id)) failed.push(`puesto ${id}`);
   for (const id of r.noRoles ?? []) if (has(id)) failed.push(`sin puesto ${id}`);
   if (r.asset) { const main = g.sites.find((x) => x.status === "operando"); if (!main || (main.assets[r.asset.resource] ?? 0) < r.asset.min) failed.push(`${r.asset.resource} ≥ ${r.asset.min}`); }
-  if (r.ownProduction && g.family !== "manufactura") failed.push("producción propia");
+  if (r.ownProduction && profileOf(g).mode !== "contratos") failed.push("producción propia");
   if (r.capacityPressure && !(last && last.lost + Math.max(0, last.demand - last.served) > 0.02 * Math.max(1, last.demand))) failed.push("presión de capacidad");
   if (r.liquidity && !r.liquidity.includes(g.liquidity.status)) failed.push(`liquidez ${r.liquidity.join("/")}`);
   if (r.minCash !== undefined && g.cash < r.minCash * 100) failed.push(`caja ≥ ${r.minCash}`);
@@ -96,10 +100,21 @@ export interface GOption {
   effects?: Partial<Record<Exclude<KpiKey, "caja" | "margen">, number>>;
   score: 0 | 1 | 2 | 3;
 }
+/** Función directiva que ejerce quien decide el caso. */
+export type Funcion = "direccion_general" | "finanzas" | "operaciones" | "personas" | "comercial";
+/**
+ * Etiquetas del caso (decisión de Oziel): industria, función directiva y competencias que pone a prueba.
+ * La industria se deduce de la familia y la línea del caso (`industryTagOf`); función y competencias se declaran.
+ */
+export interface CaseTags { funcion: Funcion; competencias: readonly Area[] }
+
 export interface GCase {
   id: string;
+  tags: CaseTags;
+  /** Principio que enseña el caso: lo que un director con oficio sabe de este tipo de decisión (una o dos frases). */
+  lesson: string;
   family: Family | "ambas";
-  chain: "A" | "B" | "liquidez" | "finanzas" | "operacion";
+  chain: "A" | "B" | "C" | "liquidez" | "finanzas" | "operacion";
   step: number;
   from: string;
   subject: string;
@@ -137,7 +152,7 @@ export const NEW_SITE = "@sede_nueva";
 
 export const CHAIN_A: readonly GCase[] = [
   {
-    id: "ga1_cocina", family: "restaurante", chain: "A", step: 1, from: "Mariana Treviño · Gerente de sucursal", waitDays: 30,
+    id: "ga1_cocina", tags: { funcion: "operaciones", competencias: ["operacion","personas"] }, lesson: "Antes de agregar estructura, resuelve el cuello de botella con la pieza más barata que lo destraba. Un mando nuevo ordena, pero no cocina más rápido.", family: "restaurante", chain: "A", step: 1, from: "Mariana Treviño · Gerente de sucursal", waitDays: 30,
     subject: "Los viernes la cocina no da",
     body: (g) => {
       const m = lastM(g); const c = capacityNow(g)[0];
@@ -162,7 +177,7 @@ export const CHAIN_A: readonly GCase[] = [
     ],
   },
   {
-    id: "ga2_sucursal", family: "restaurante", chain: "A", step: 2, from: "Don Ignacio · Dueño", waitDays: 14,
+    id: "ga2_sucursal", tags: { funcion: "direccion_general", competencias: ["estrategia","finanzas","negociacion"] }, lesson: "Una sede nueva cuesta desde la firma y vende meses después. Negociar el tiempo (gracia de renta) vale tanto como negociar el precio.", family: "restaurante", chain: "A", step: 2, from: "Don Ignacio · Dueño", waitDays: 14,
     subject: "Un local en Cumbres",
     after: { case: "ga1_cocina", options: ["cocinero", "jefe", "esperar"] },
     body: (g) => [
@@ -186,7 +201,7 @@ export const CHAIN_A: readonly GCase[] = [
     ],
   },
   {
-    id: "ga3_equipo", family: "restaurante", chain: "A", step: 3, from: "Mariana Treviño · Gerente de sucursal", waitDays: 45,
+    id: "ga3_equipo", tags: { funcion: "personas", competencias: ["personas","operacion"] }, lesson: "Abrir con lo mínimo ahorra nómina pero satura desde el primer fin de semana. El equipo de apertura se dimensiona para la demanda que viene, no para la de hoy.", family: "restaurante", chain: "A", step: 3, from: "Mariana Treviño · Gerente de sucursal", waitDays: 45,
     subject: "¿Con quién abrimos Cumbres?",
     after: { case: "ga2_sucursal", options: ["abrir", "gerente_primero"] },
     body: (g) => {
@@ -218,7 +233,7 @@ export const NUEVO_CLIENTE = Object.freeze({ client: "Ensambladora Saltillo", un
 
 export const CHAIN_B: readonly GCase[] = [
   {
-    id: "gb1_cliente", family: "manufactura", chain: "B", step: 1, from: "Claudia Mier · Administración", waitDays: 20,
+    id: "gb1_cliente", tags: { funcion: "comercial", competencias: ["clientes","estrategia","operacion"] }, lesson: "Un pedido vale lo que la planta puede cumplir. Aceptar todo solo es buen negocio si la capacidad llega antes que la primera entrega.", family: "manufactura", chain: "B", step: 1, from: "Claudia Mier · Administración", waitDays: 20,
     subject: "Un cliente nuevo quiere 2,600 piezas al día",
     body: (g) => {
       const c = capacityNow(g)[0];
@@ -230,7 +245,7 @@ export const CHAIN_B: readonly GCase[] = [
       ];
     },
     data: (g) => { const c = capacityNow(g)[0]; return [["Capacidad actual (1 turno)", `${c?.perDay.toLocaleString("en-US")} piezas/día`], ["Pedido nuevo", `${NUEVO_CLIENTE.unitsPerDay.toLocaleString("en-US")} piezas/día`], ["Precio", `$${NUEVO_CLIENTE.price} por pieza`], ["Cobro", "45 días"]]; },
-    requires: { family: "manufactura", ownProduction: true, minSites: 1, maxHeadcount: 30 },
+    requires: { family: "manufactura", line: "estampado", ownProduction: true, minSites: 1, maxHeadcount: 30 },
     options: [
       { id: "aceptar", text: "Aceptar todo el volumen", score: 3, effects: { clientes: 1 },
         outcome: () => "Se firma desde dentro de 30 días. Es el mejor negocio solo si la capacidad llega a tiempo: sin ella habrá atrasos, penalizaciones y riesgo de cancelación.",
@@ -244,7 +259,7 @@ export const CHAIN_B: readonly GCase[] = [
     ],
   },
   {
-    id: "gb2_capacidad", family: "manufactura", chain: "B", step: 2, from: "Arturo Elizondo · Supervisor de producción", waitDays: 45,
+    id: "gb2_capacidad", tags: { funcion: "operaciones", competencias: ["operacion","finanzas"] }, lesson: "Cuando el límite es la gente y no la máquina, un turno más rinde más que un activo nuevo y no compromete la caja.", family: "manufactura", chain: "B", step: 2, from: "Arturo Elizondo · Supervisor de producción", waitDays: 45,
     subject: "La planta no da con un solo turno",
     after: { case: "gb1_cliente", options: ["aceptar", "parcial"] },
     body: (g) => {
@@ -256,7 +271,7 @@ export const CHAIN_B: readonly GCase[] = [
       ];
     },
     data: (g) => [["Supervisor", `$${fmt(sal(g, "supervisor_produccion"))}`], ["Operador", `$${fmt(sal(g, "operador"))}`], ["Prensa de 200 t", "$900,000 (entrega 45 días)"]],
-    requires: { family: "manufactura", ownProduction: true },
+    requires: { family: "manufactura", line: "estampado", ownProduction: true },
     options: [
       { id: "turno", text: "Abrir segundo turno: un supervisor y cuatro operadores", score: 3, effects: { equipo: 1 },
         outcome: (g) => `Cinco vacantes; la nómina sube unos $${fmt(sal(g, "supervisor_produccion") + 4 * sal(g, "operador"))} brutos al mes. Los operadores nuevos generan más desperdicio mientras aprenden.`,
@@ -270,11 +285,11 @@ export const CHAIN_B: readonly GCase[] = [
     ],
   },
   {
-    id: "gb3_calidad", family: "manufactura", chain: "B", step: 3, from: "Karla Benavides · Calidad", waitDays: 30,
+    id: "gb3_calidad", tags: { funcion: "operaciones", competencias: ["operacion","personas"] }, lesson: "El desperdicio de la gente nueva se paga en material. Un especialista que enseña en piso reduce la curva; un inspector más solo la mide.", family: "manufactura", chain: "B", step: 3, from: "Karla Benavides · Calidad", waitDays: 30,
     subject: "El desperdicio subió con la gente nueva",
     after: { case: "gb2_capacidad", options: ["turno", "prensa"] },
     body: (g) => { const m = lastM(g); return [m ? `El mes pasado se desperdiciaron ${m.scrap.toLocaleString("en-US")} piezas (${((100 * m.scrap) / Math.max(1, m.served + m.scrap)).toFixed(1)} % de lo producido).` : "El desperdicio está subiendo.", "Los operadores nuevos todavía no dominan los troqueles. Puedo entrenarlos en piso, pero sola no alcanzo a cubrir dos turnos."]; },
-    requires: { family: "manufactura", minHeadcount: 17 },
+    requires: { family: "manufactura", line: "estampado", minHeadcount: 17 },
     options: [
       { id: "inspector", text: "Contratar un segundo inspector de calidad", score: 1, outcome: (g) => `Un inspector más cuesta $${fmt(sal(g, "inspector_calidad"))} al mes y llega en unas tres semanas.`, commands: (_g, c) => [{ type: "hire", id: `${c}:i`, roleId: "inspector_calidad", siteId: "planta" }] },
       { id: "cnc", text: "Contratar un ajustador de troqueles con experiencia", score: 3, effects: { equipo: 1 }, outcome: (g) => `Sube la capacidad y baja el desperdicio cuando termina su curva; cuesta $${fmt(sal(g, "operador_cnc"))} al mes.`, commands: (_g, c) => [{ type: "hire", id: `${c}:c`, roleId: "operador_cnc", siteId: "planta" }] },
@@ -283,9 +298,86 @@ export const CHAIN_B: readonly GCase[] = [
   },
 ];
 
+/** Cliente nuevo de la cadena C (acería): volumen y precio de la cotización, fijos en el caso. */
+export const NUEVO_CLIENTE_ACERO = Object.freeze({ client: "Desarrollos Industriales del Bajío", unitsPerDay: 8, price: 15500, startInDays: 30 });
+/** Horno de inducción adicional (cotización del proveedor, fija en el caso). */
+export const HORNO = Object.freeze({ label: "Horno de inducción de 8 t", cost: 4200000, years: 15, leadDays: 75 });
+const tons = (n: number) => `${n.toLocaleString("en-US")} t`;
+
+export const CHAIN_C: readonly GCase[] = [
+  {
+    id: "gc1_cliente", tags: { funcion: "comercial", competencias: ["clientes", "estrategia", "operacion"] }, lesson: "En acero el margen por tonelada es corto: un pedido grande a precio bajo solo conviene si llena capacidad que ya pagas. Si obliga a invertir, el precio tiene que cubrir esa inversión.",
+    family: "manufactura", chain: "C", step: 1, from: "Lucía Sáenz · Administración", waitDays: 20,
+    subject: "Una constructora pide 8 toneladas más al día",
+    body: (g) => {
+      const c = capacityNow(g)[0];
+      const daily = g.contracts.reduce((a, x) => a + x.unitsPerDay, 0);
+      return [
+        `${NUEVO_CLIENTE_ACERO.client} pide varilla: ${NUEVO_CLIENTE_ACERO.unitsPerDay} toneladas diarias a $${NUEVO_CLIENTE_ACERO.price.toLocaleString("en-US")} cada una, desde el próximo mes y con pago a 45 días. Es un precio más bajo que el de nuestros clientes actuales.`,
+        `Hoy entregamos ${tons(daily)} al día y la planta da para unas ${c ? tons(c.perDay) : "—"} con un turno. El límite es ${c?.bottleneck === "horno" ? "el tiempo de horno" : "la gente en piso de colada"}.`,
+        "La chatarra se paga casi de contado y el cliente paga a 45 días: crecer en toneladas también pide caja.",
+      ];
+    },
+    data: (g) => { const c = capacityNow(g)[0]; return [["Capacidad actual (1 turno)", `${c ? tons(c.perDay) : "—"}/día`], ["Pedido nuevo", `${tons(NUEVO_CLIENTE_ACERO.unitsPerDay)}/día`], ["Precio", `$${NUEVO_CLIENTE_ACERO.price.toLocaleString("en-US")} por tonelada`], ["Chatarra y aleaciones", "$9,700 por tonelada colada"]]; },
+    requires: { family: "manufactura", line: "aceria", ownProduction: true, minSites: 1, maxHeadcount: 30 },
+    options: [
+      { id: "aceptar", text: "Aceptar las 8 toneladas", short: "Aceptar todo", score: 3, effects: { clientes: 1 },
+        outcome: () => "Se firma desde dentro de 30 días. Con un turno no alcanza: o se abre otro turno a tiempo o habrá atrasos y penalizaciones.",
+        commands: (_g, c) => [{ type: "add_contract", id: `${c}:k`, ...NUEVO_CLIENTE_ACERO }] },
+      { id: "parcial", text: "Aceptar 3 toneladas al día por ahora", short: "Aceptar 3 t", score: 2,
+        outcome: () => "El cliente acepta empezar con menos. Los hornos lo absorben con el turno actual, sin invertir.",
+        commands: (_g, c) => [{ type: "add_contract", id: `${c}:k`, ...NUEVO_CLIENTE_ACERO, unitsPerDay: 3 }] },
+      { id: "declinar", text: "Declinar: el precio no deja margen", short: "Declinar", score: 1, effects: { clientes: -1 },
+        outcome: () => "No hay riesgo operativo ni de caja, pero la planta se queda con la capacidad ociosa que ya paga.",
+        commands: () => [] },
+    ],
+  },
+  {
+    id: "gc2_capacidad", tags: { funcion: "operaciones", competencias: ["operacion", "finanzas"] }, lesson: "Un horno es caro y tarda meses en llegar; un turno más usa los hornos que ya tienes. Primero se exprime el activo, después se compra otro.",
+    family: "manufactura", chain: "C", step: 2, from: "Rogelio Cantú · Supervisor de producción", waitDays: 45,
+    subject: "Los hornos no dan con un solo turno",
+    after: { case: "gc1_cliente", options: ["aceptar", "parcial"] },
+    body: (g) => {
+      const m = lastM(g); const c = capacityNow(g)[0];
+      return [
+        `Colamos unas ${c ? tons(c.perDay) : "—"} al día y nos piden ${tons(g.contracts.filter((x) => x.startDay <= g.day + 30).reduce((a, x) => a + x.unitsPerDay, 0))}.`,
+        m && m.lost ? `El mes pasado se dejaron de entregar ${tons(m.lost)} por falta de capacidad.` : "Todavía no se pierden entregas, pero con el contrato nuevo no vamos a alcanzar.",
+        "Un segundo turno necesita su propio supervisor y operadores de horno. Un horno nuevo tarda dos meses y medio y cuesta más de cuatro millones.",
+      ];
+    },
+    data: (g) => [["Supervisor", `$${fmt(sal(g, "supervisor_produccion"))}`], ["Operador de horno", `$${fmt(sal(g, "operador_aceria"))}`], [HORNO.label, `$${HORNO.cost.toLocaleString("en-US")} (entrega ${HORNO.leadDays} días)`]],
+    requires: { family: "manufactura", line: "aceria", ownProduction: true },
+    options: [
+      { id: "turno", text: "Abrir segundo turno: un supervisor y cuatro operadores de horno", short: "Segundo turno", score: 3, effects: { equipo: 1 },
+        outcome: (g) => `Cinco vacantes; la nómina sube unos $${fmt(sal(g, "supervisor_produccion") + 4 * sal(g, "operador_aceria"))} brutos al mes. Los operadores nuevos sacan más coladas fuera de norma mientras aprenden.`,
+        commands: (_g, c) => [{ type: "set_shifts", id: `${c}:t`, siteId: "planta", shifts: 2 }, { type: "hire", id: `${c}:s`, roleId: "supervisor_produccion", siteId: "planta" }, ...[0, 1, 2, 3].map((i) => ({ type: "hire" as const, id: `${c}:o${i}`, roleId: "operador_aceria", siteId: "planta" }))] },
+      { id: "horno", text: "Comprar otro horno y contratar dos operadores", short: "Otro horno", score: 1, available: cashOk(HORNO.cost),
+        outcome: () => `El horno consume $${HORNO.cost.toLocaleString("en-US")} de caja hoy y llega en ${HORNO.leadDays} días. Sin segundo turno, la gente sigue siendo el límite.`,
+        commands: (_g, c) => [{ type: "add_asset", id: `${c}:h`, siteId: "planta", label: HORNO.label, resource: "horno", units: 1, cost: HORNO.cost, years: HORNO.years, leadDays: HORNO.leadDays }, { type: "hire", id: `${c}:o0`, roleId: "operador_aceria", siteId: "planta" }, { type: "hire", id: `${c}:o1`, roleId: "operador_aceria", siteId: "planta" }] },
+      { id: "nada", text: "Sacar lo que se pueda con el turno actual", short: "Aguantar", score: 0, effects: { clientes: -2, equipo: -1 },
+        outcome: () => "Se acumulan atrasos; los clientes cobran penalizaciones y el más reciente puede cancelar.",
+        commands: () => [] },
+    ],
+  },
+  {
+    id: "gc3_calidad", tags: { funcion: "operaciones", competencias: ["operacion", "personas"] }, lesson: "En una acería la calidad la hace quien funde, no quien inspecciona: un maestro fundidor en piso baja el metal fuera de norma y además cuela más.",
+    family: "manufactura", chain: "C", step: 3, from: "Ing. Paula Treviño · Metalurgia", waitDays: 30,
+    subject: "Suben las coladas fuera de norma",
+    after: { case: "gc2_capacidad", options: ["turno", "horno"] },
+    body: (g) => { const m = lastM(g); return [m ? `El mes pasado se perdieron ${tons(m.scrap)} entre pérdida metálica y coladas fuera de norma (${((100 * m.scrap) / Math.max(1, m.served + m.scrap)).toFixed(1)} % de lo colado).` : "El metal fuera de norma está subiendo.", "Los operadores nuevos todavía no leen bien el baño. Puedo analizar cada colada, pero sola no alcanzo a cubrir dos turnos."]; },
+    data: (g) => [["Metalurgista", `$${fmt(sal(g, "metalurgista"))}`], ["Maestro fundidor", `$${fmt(sal(g, "maestro_fundidor"))}`]],
+    requires: { family: "manufactura", line: "aceria", minHeadcount: 18 },
+    options: [
+      { id: "metalurgista", text: "Contratar un segundo metalurgista", short: "Otro metalurgista", score: 1, outcome: (g) => `Un metalurgista más cuesta $${fmt(sal(g, "metalurgista"))} al mes: mide mejor, pero no cuela más.`, commands: (_g, c) => [{ type: "hire", id: `${c}:m`, roleId: "metalurgista", siteId: "planta" }] },
+      { id: "fundidor", text: "Contratar un maestro fundidor con experiencia", short: "Maestro fundidor", score: 3, effects: { equipo: 1 }, outcome: (g) => `Sube la capacidad y enseña en piso; cuesta $${fmt(sal(g, "maestro_fundidor"))} al mes y tarda unas seis semanas en llegar.`, commands: (_g, c) => [{ type: "hire", id: `${c}:f`, roleId: "maestro_fundidor", siteId: "planta" }] },
+      { id: "esperar", text: "Esperar a que la curva de aprendizaje haga su trabajo", short: "Esperar", score: 2, outcome: () => "La pérdida baja sola conforme aprenden, pero la chatarra perdida se paga mientras tanto.", commands: () => [] },
+    ],
+  },
+];
+
 /** Crisis de liquidez: las opciones salen de las cotizaciones del motor; las que no proceden aparecen con su razón. */
 export const LIQUIDITY_CASE: GCase = {
-  id: "gl_liquidez", family: "ambas", chain: "liquidez", step: 1, from: "Contraloría", waitDays: 14, repeatable: true,
+  id: "gl_liquidez", tags: { funcion: "finanzas", competencias: ["finanzas","negociacion"] }, lesson: "En una crisis de caja se ordena por costo y por relación: primero lo que menos cuesta y menos daña (proveedores, cobranza), al final lo que compromete la confianza del dueño.", family: "ambas", chain: "liquidez", step: 1, from: "Contraloría", waitDays: 14, repeatable: true,
   subject: "La caja no alcanza para lo que viene",
   body: (g) => {
     const od = overdueTotal(g);
@@ -320,5 +412,13 @@ export const LIQUIDITY_CASE: GCase = {
   ],
 };
 
-export const GROWTH_CASES: readonly GCase[] = [OPS_CASES[0], ...CHAIN_A, ...CHAIN_B, LIQUIDITY_CASE, ...OPS_CASES.slice(1)];
+export const GROWTH_CASES: readonly GCase[] = [OPS_CASES[0], ...CHAIN_A, ...CHAIN_B, ...CHAIN_C, LIQUIDITY_CASE, ...OPS_CASES.slice(1)];
 export const caseById = (id: string) => GROWTH_CASES.find((c) => c.id === id);
+
+/** Etiqueta de industria de un caso: la línea que exige, la familia, o «todas» si sirve a cualquier empresa del motor. */
+export function industryTagOf(c: GCase): string {
+  if (c.requires.line) return c.requires.line;
+  return c.family === "ambas" ? "todas" : c.family;
+}
+/** Etiquetas completas de un caso (industria, función directiva, competencias). */
+export const tagsOf = (c: GCase) => ({ industria: industryTagOf(c), funcion: c.tags.funcion, competencias: [...c.tags.competencias] });

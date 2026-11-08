@@ -14,6 +14,8 @@ import { START_WINDOW, fmt, startOffers } from "./finance";
 import { laborOf, regionOf, regionalSalary, terminationOf } from "./labor";
 import { ZONES, zoneOf } from "./geo";
 import { TEMPLATES } from "./families";
+import { profileOf, type ZoneOffer } from "./models";
+export { PLANT_ZONES, REST_ZONES, STEEL_ZONES } from "./models";
 import type { GCase, GOption } from "./cases";
 import type { Command, GrowthState, Person, Site, SiteMonth } from "./types";
 
@@ -39,7 +41,7 @@ const bankOption = (id: "corto" | "medio" | "largo", score: 1 | 2 | 3): GOption 
 });
 
 export const FIN_CASE: GCase = {
-  id: "gf_arranque", family: "ambas", chain: "finanzas", step: 1, from: "Dueño", waitDays: 10,
+  id: "gf_arranque", tags: { funcion: "finanzas", competencias: ["finanzas","estrategia"] }, lesson: "La deuda es buena cuando el plazo coincide con lo que financia y la operación puede pagarla. Pedir dinero sin plan pesa en la confianza de quien lo pone.", family: "ambas", chain: "finanzas", step: 1, from: "Dueño", waitDays: 10,
   fromOf: ownerName,
   subject: "¿Con qué dinero vas a crecer?",
   lead: (g) => `Caja de ${money(g.cash)}. El banco te preaprobó crédito; el dueño puede aportar. O creces con lo que hay.`,
@@ -69,14 +71,6 @@ const siteName = (g: GrowthState, id: string) => g.sites.find((x) => x.id === id
 const peopleAt = (g: GrowthState, siteId: string, roleId: string) => activePeople(g).filter((p) => p.siteId === siteId && p.roleId === roleId);
 const mature = (g: GrowthState, x: Site) => x.openedDay === undefined || x.openedDay <= 0 || g.day - x.openedDay >= x.maturityDays;
 
-/** Puesto que resuelve el cuello de botella de cada recurso (los activos como mesas o prensas no se resuelven contratando). */
-const ROLE_FOR: Record<string, { roleId: string; n: number }> = {
-  cocina: { roleId: "cocinero", n: 1 }, servicio: { roleId: "mesero", n: 1 }, loza: { roleId: "lavaloza", n: 1 },
-  operacion: { roleId: "operador", n: 2 },
-};
-/** Recurso → puesto que lo aporta, para encontrar la gente de más. */
-const SLACK_ROLE: Record<string, string> = { cocina: "cocinero", servicio: "mesero", operacion: "operador" };
-
 export interface Hot { siteId: string; lostPct: number; resource: string; roleId: string; n: number }
 /** Sede que no da abasto (más de 6 % de la demanda sin atender el mes pasado) y el puesto que lo resuelve. */
 export function hotSite(g: GrowthState): Hot | null {
@@ -87,7 +81,7 @@ export function hotSite(g: GrowthState): Hot | null {
     const cap = caps.get(m.siteId);
     if (!site || site.status !== "operando" || !cap || m.demand <= 0) continue;
     const lostPct = m.lost / m.demand;
-    const fix = ROLE_FOR[cap.bottleneck];
+    const fix = profileOf(g).roleFor[cap.bottleneck];
     if (lostPct <= 0.06 || !fix) continue;
     if (g.vacancies.some((v) => v.siteId === m.siteId && v.roleId === fix.roleId)) continue;
     if (!best || lostPct > best.lostPct) best = { siteId: m.siteId, lostPct, resource: cap.bottleneck, ...fix };
@@ -108,11 +102,12 @@ export function coldSite(g: GrowthState): Cold | null {
     const usePct = m.served / m.capacity;
     if (usePct >= 0.72) continue;
     // El recurso con más holgura respecto al cuello de botella es donde sobra gente.
-    const slack = Object.keys(SLACK_ROLE).filter((r) => cap.cap[r] !== undefined).sort((a, b) => cap.cap[b] / Math.max(1, cap.perDay) - cap.cap[a] / Math.max(1, cap.perDay))[0];
+    const P = profileOf(g);
+    const slack = Object.keys(P.slackRole).filter((r) => cap.cap[r] !== undefined).sort((a, b) => cap.cap[b] / Math.max(1, cap.perDay) - cap.cap[a] / Math.max(1, cap.perDay))[0];
     if (!slack) continue;
-    const roleId = SLACK_ROLE[slack];
+    const roleId = P.slackRole[slack];
     const staff = peopleAt(g, m.siteId, roleId);
-    if (staff.length < (roleId === "operador" ? 3 : 2)) continue;
+    if (staff.length < (P.slackMin[roleId] ?? 2)) continue;
     const person = [...staff].sort((a, b) => b.startDay - a.startDay)[0];
     const years = Math.max(0, (g.day - person.startDay) / 365);
     const severance = terminationOf("despido_injustificado", person.salary, years, person.provision, 0, L, regionOf(g.region)).total;
@@ -129,7 +124,7 @@ function donorFor(g: GrowthState, hot: Hot): Person | null {
     if (x.id === hot.siteId) continue;
     const m = lastSites(g).find((y) => y.siteId === x.id);
     const staff = peopleAt(g, x.id, hot.roleId);
-    if (m && m.demand > 0 && m.lost / m.demand < 0.01 && m.capacity > 0 && m.served / m.capacity < 0.8 && staff.length >= (hot.roleId === "operador" ? 4 : 3)) return [...staff].sort((a, b) => b.startDay - a.startDay)[0];
+    if (m && m.demand > 0 && m.lost / m.demand < 0.01 && m.capacity > 0 && m.served / m.capacity < 0.8 && staff.length >= (profileOf(g).slackMin[hot.roleId] ?? 2) + 1) return [...staff].sort((a, b) => b.startDay - a.startDay)[0];
   }
   return null;
 }
@@ -141,12 +136,12 @@ function receiverFor(g: GrowthState, cold: Cold): string | null {
 const roleTitle = (id: string, n = 1) => { const t = roleById(id)?.title.toLowerCase() ?? id; return n === 1 ? t : `${n} ${t.replace(/^(\S+)/, "$1es").replace("eses", "es")}`; };
 
 export const HIRE_CASE: GCase = {
-  id: "go_contratar", family: "ambas", chain: "operacion", step: 1, from: "Operaciones", waitDays: 30, repeatable: true,
-  fromOf: (g) => (consolidated(g) ? "Gerencia de operaciones" : "Gerencia de sucursal"),
+  id: "go_contratar", tags: { funcion: "operaciones", competencias: ["operacion","personas","clientes"] }, lesson: "Lo que no se atiende hoy se pierde y cuesta reputación. Contratar en el cuello de botella real es la inversión más rápida de recuperar.", family: "ambas", chain: "operacion", step: 1, from: "Operaciones", waitDays: 30, repeatable: true,
+  fromOf: (g) => (consolidated(g) ? "Gerencia de operaciones" : profileOf(g).mode === "mostrador" ? "Gerencia de sucursal" : "Supervisión de producción"),
   subject: "Una sede no da abasto",
   subjectOf: (g) => { const h = hotSite(g); return h ? `${siteName(g, h.siteId)} no da abasto` : "Una sede no da abasto"; },
-  lead: (g) => { const h = hotSite(g); return h ? `Se quedó sin atender el ${Math.round(h.lostPct * 100)} % de la demanda. El límite es ${h.resource === "operacion" ? "la gente en línea" : h.resource}.` : ""; },
-  body: (g) => { const h = hotSite(g); return h ? [`El mes pasado ${siteName(g, h.siteId)} dejó sin atender el ${Math.round(h.lostPct * 100)} % de su demanda.`, `El cuello de botella es ${h.resource === "operacion" ? "la gente en línea" : h.resource}: lo resuelve un ${roleTitle(h.roleId)} más.`] : []; },
+  lead: (g) => { const h = hotSite(g); return h ? `Se quedó sin atender el ${Math.round(h.lostPct * 100)} % de la demanda. El límite es ${profileOf(g).limitText(h.resource)}.` : ""; },
+  body: (g) => { const h = hotSite(g); return h ? [`El mes pasado ${siteName(g, h.siteId)} dejó sin atender el ${Math.round(h.lostPct * 100)} % de su demanda.`, `El cuello de botella es ${profileOf(g).limitText(h.resource)}: lo resuelve un ${roleTitle(h.roleId)} más.`] : []; },
   data: (g) => { const h = hotSite(g); return h ? [["Demanda sin atender", `${Math.round(h.lostPct * 100)} %`], [roleById(h.roleId)!.title, `${money(sal(g, h.roleId))} al mes`]] : []; },
   requires: { minDay: 30, liquidity: ["sana", "alerta"], when: { label: "sede saturada", test: (g) => !!hotSite(g) } },
   notWith: ["ga1_cocina", "ga3_equipo", "gb1_cliente", "gb2_capacidad", "gb3_calidad"],
@@ -168,7 +163,7 @@ export const HIRE_CASE: GCase = {
 };
 
 export const TRIM_CASE: GCase = {
-  id: "go_ajustar", family: "ambas", chain: "operacion", step: 2, from: "Finanzas", waitDays: 45, repeatable: true,
+  id: "go_ajustar", tags: { funcion: "personas", competencias: ["personas","finanzas","etica"] }, lesson: "La holgura se resuelve primero moviendo a la gente a donde rinde; despedir cuesta finiquito y confianza del equipo que se queda.", family: "ambas", chain: "operacion", step: 2, from: "Finanzas", waitDays: 45, repeatable: true,
   fromOf: (g) => (consolidated(g) ? "Contraloría" : "Administración"),
   subject: "Una sede tiene gente de más",
   subjectOf: (g) => { const c = coldSite(g); return c ? `${siteName(g, c.siteId)} tiene gente de más` : "Una sede tiene gente de más"; },
@@ -193,30 +188,13 @@ export const TRIM_CASE: GCase = {
 };
 
 // ───────────────────────────────────────────────────────────────── expansión: dónde y por qué
-interface ZoneOffer { zone: string; why: string; rent: number; utilities: number; capex: number; demandBase: number; client?: { client: string; unitsPerDay: number; price: number } }
-export const REST_ZONES: readonly ZoneOffer[] = Object.freeze([
-  { zone: "cumbres", why: "Zona residencial que crece: escuelas y plazas nuevas, poca parrilla cerca.", rent: 52000, utilities: 22000, capex: 260000, demandBase: 95 },
-  { zone: "san_nicolas", why: "Zona universitaria y familiar con mucho tráfico entre semana.", rent: 42000, utilities: 22000, capex: 240000, demandBase: 95 },
-  { zone: "san_pedro", why: "El ticket y el tráfico más altos de la ciudad, con la renta más cara.", rent: 75000, utilities: 26000, capex: 320000, demandBase: 115 },
-  { zone: "santa_catarina", why: "Zona industrial en crecimiento: comidas de negocio entre semana.", rent: 38000, utilities: 21000, capex: 230000, demandBase: 80 },
-  { zone: "guadalupe", why: "Renta baja y oficinas cerca; los fines de semana vende menos.", rent: 40000, utilities: 22000, capex: 230000, demandBase: 80 },
-  { zone: "escobedo", why: "La renta más baja; la demanda todavía se está formando.", rent: 35000, utilities: 20000, capex: 220000, demandBase: 72 },
-]);
-export const PLANT_ZONES: readonly ZoneOffer[] = Object.freeze([
-  { zone: "saltillo", why: "Junto al clúster de armadoras de Ramos Arizpe: un cliente pide surtido local.", rent: 65000, utilities: 80000, capex: 1900000, demandBase: 0, client: { client: "Carrocerías del Desierto", unitsPerDay: 3000, price: 9.8 } },
-  { zone: "escobedo", why: "Sobre la salida a Laredo: un cliente de arneses quiere entregas diarias.", rent: 70000, utilities: 80000, capex: 1900000, demandBase: 0, client: { client: "Arneses del Norte", unitsPerDay: 2600, price: 9.9 } },
-  { zone: "santa_catarina", why: "Parque industrial con mano de obra disponible y un cliente de suspensiones.", rent: 75000, utilities: 85000, capex: 1900000, demandBase: 0, client: { client: "Suspensiones Huasteca", unitsPerDay: 3000, price: 9.7 } },
-]);
-const REST_TEAM = ["gerente_sucursal", "cocinero", "cocinero", "ayudante_cocina", "mesero", "mesero", "lavaloza"];
-const PLANT_TEAM = ["supervisor_produccion", "operador", "operador", "operador", "operador", "operador", "tecnico_mantenimiento", "inspector_calidad"];
-
 /** Las dos mejores zonas libres para abrir (en orden de atractivo). */
 export function zonesFor(g: GrowthState): ZoneOffer[] {
   const used = new Set(g.sites.filter((x) => x.status !== "cerrada").map((x) => zoneOf(x).id));
-  return (g.family === "restaurante" ? REST_ZONES : PLANT_ZONES).filter((z) => !used.has(z.zone)).slice(0, 2);
+  return profileOf(g).zones.filter((z) => !used.has(z.zone)).slice(0, 2);
 }
 export const upfrontOf = (z: ZoneOffer) => z.rent * 2 + z.capex;
-const teamCost = (g: GrowthState) => (g.family === "restaurante" ? REST_TEAM : PLANT_TEAM).reduce((a, r) => a + sal(g, r), 0);
+const teamCost = (g: GrowthState) => profileOf(g).team.reduce((a, r) => a + sal(g, r), 0);
 
 const zoneOption = (i: 0 | 1, score: 2 | 3): GOption => ({
   id: i === 0 ? "zona_a" : "zona_b", text: "Abrir en otra zona", score, effects: { consejo: 1 },
@@ -227,14 +205,14 @@ const zoneOption = (i: 0 | 1, score: 2 | 3): GOption => ({
     if (!z) return { ok: false, reason: "No hay otra zona disponible." };
     return g.cash >= pesosToC(upfrontOf(z)) ? { ok: true } : { ok: false, reason: `Requiere ${pesosOf(upfrontOf(z))} hoy (depósito y obra); la caja tiene ${money(g.cash)}.` };
   },
-  outcome: (g) => { const z = zonesFor(g)[i]; return z ? `${z.why} Pagas hoy ${pesosOf(upfrontOf(z))}; renta de ${pesosOf(z.rent)} al mes y un equipo de ${g.family === "restaurante" ? REST_TEAM.length : PLANT_TEAM.length} personas (${money(teamCost(g))} al mes).` : ""; },
+  outcome: (g) => { const z = zonesFor(g)[i]; return z ? `${z.why} Pagas hoy ${pesosOf(upfrontOf(z))}; renta de ${pesosOf(z.rent)} al mes y un equipo de ${profileOf(g).team.length} personas (${money(teamCost(g))} al mes).` : ""; },
   commands: (g, c) => {
     const z = zonesFor(g)[i];
     if (!z) return [];
     const label = ZONES[z.zone].label;
-    const rest = g.family === "restaurante";
-    const cmds: Command[] = [{ type: "open_site", id: `${c}:site`, name: `${rest ? "Sucursal" : "Planta"} ${label}`, zone: z.zone, rent: z.rent, utilities: z.utilities, deposit: z.rent * 2, capex: z.capex, years: rest ? 8 : 10, buildDays: rest ? 45 : 60, assets: rest ? { mesas: 14 } : { prensa: 2 }, demandBase: z.demandBase, maturityDays: rest ? 150 : 0, preopening: rest ? 55000 : 120000 }];
-    (rest ? REST_TEAM : PLANT_TEAM).forEach((roleId, k) => cmds.push({ type: "hire", id: `${c}:h${k}`, roleId, siteId: NEW }));
+    const P = profileOf(g), o = P.openSite;
+    const cmds: Command[] = [{ type: "open_site", id: `${c}:site`, name: `${P.site.One} ${label}`, zone: z.zone, rent: z.rent, utilities: z.utilities, deposit: z.rent * 2, capex: z.capex, years: o.years, buildDays: o.buildDays, assets: { ...o.assets }, demandBase: z.demandBase, maturityDays: o.maturityDays, preopening: o.preopening }];
+    P.team.forEach((roleId, k) => cmds.push({ type: "hire", id: `${c}:h${k}`, roleId, siteId: NEW }));
     if (z.client) cmds.push({ type: "add_contract", id: `${c}:k`, ...z.client, startInDays: 80, siteId: NEW });
     return cmds;
   },
@@ -242,15 +220,15 @@ const zoneOption = (i: 0 | 1, score: 2 | 3): GOption => ({
 const pesosToC = (p: number) => Math.round(p * 100);
 
 export const EXPAND_CASE: GCase = {
-  id: "go_expandir", family: "ambas", chain: "operacion", step: 3, from: "Dueño", waitDays: 30, repeatable: true,
+  id: "go_expandir", tags: { funcion: "direccion_general", competencias: ["estrategia","finanzas"] }, lesson: "Se crece cuando la operación actual es sana y la caja aguanta la obra y los meses sin venta. La zona correcta tiene una razón concreta, no solo renta baja.", family: "ambas", chain: "operacion", step: 3, from: "Dueño", waitDays: 30, repeatable: true,
   fromOf: ownerName,
   subject: "¿Abrimos en otra zona?",
   lead: (g) => { const zs = zonesFor(g); return zs.length ? `Dos zonas posibles: ${zs.map((z) => ZONES[z.zone].label).join(" o ")}. Caja de ${money(g.cash)}.` : ""; },
   body: (g) => [
-    `Los números de los últimos meses dan para pensar en ${g.family === "restaurante" ? "otra sucursal" : "otra planta"}. Hay dos zonas con sentido, cada una por una razón distinta.`,
+    `Los números de los últimos meses dan para pensar en otra ${profileOf(g).site.one}. Hay dos zonas con sentido, cada una por una razón distinta.`,
     ...zonesFor(g).map((z) => `${ZONES[z.zone].label}: ${z.why}`),
   ],
-  data: (g) => zonesFor(g).map((z): [string, string] => [ZONES[z.zone].label, `Renta ${pesosOf(z.rent)} · inversión ${pesosOf(upfrontOf(z))}${z.client ? ` · ${z.client.unitsPerDay.toLocaleString("en-US")} piezas/día` : ` · ${z.demandBase} pedidos/día al madurar`}`]),
+  data: (g) => zonesFor(g).map((z): [string, string] => [ZONES[z.zone].label, `Renta ${pesosOf(z.rent)} · inversión ${pesosOf(upfrontOf(z))}${z.client ? ` · ${z.client.unitsPerDay.toLocaleString("en-US")} ${profileOf(g).unit.many}/día` : ` · ${z.demandBase} ${profileOf(g).unit.many}/día al madurar`}`]),
   requires: { minDay: 120, liquidity: ["sana"], when: { label: "resultados sanos y sin obra en curso", test: (g) => {
     const ms = g.months.slice(-2);
     return ms.length === 2 && ms.every((m) => m.ebitda > 0) && !g.sites.some((x) => x.status === "en_obra" || x.status === "preapertura") && zonesFor(g).length > 0 && g.sites.filter((x) => x.status === "operando").length < 9;

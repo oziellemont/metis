@@ -30,8 +30,8 @@ export const ROLES_V1: readonly RoleDef[] = Object.freeze([
   R({ id: "rh_generalista", family: "restaurante", title: "Generalista de recursos humanos", func: "rh", level: "especialista", salary: { min: 16000, mid: 18000, max: 21000 }, hireCost: 8000, fillDays: 30, rampDays: 30, rampStart: 0.7, attrition: 0.15, minHeadcount: 35, companyLevel: true }),
 
   // ─────────────────────────────── manufactura (estampado / autopartes)
-  R({ id: "operador", family: "manufactura", title: "Operador de producción", func: "produccion", level: "operativo", salary: { min: 10500, mid: 11000, max: 12500 }, hireCost: 4000, fillDays: 14, rampDays: 30, rampStart: 0.5, provides: { operacion: 600 }, attrition: 0.4, rampScrap: 0.06 }),
-  R({ id: "operador_cnc", family: "manufactura", title: "Operador CNC / ajustador de troqueles", func: "produccion", level: "especialista", salary: { min: 14000, mid: 15500, max: 17500 }, hireCost: 7000, fillDays: 30, rampDays: 45, rampStart: 0.5, provides: { operacion: 750 }, attrition: 0.25, rampScrap: 0.05 }),
+  R({ id: "operador", family: "manufactura", lines: ["estampado"], title: "Operador de producción", func: "produccion", level: "operativo", salary: { min: 10500, mid: 11000, max: 12500 }, hireCost: 4000, fillDays: 14, rampDays: 30, rampStart: 0.5, provides: { operacion: 600 }, attrition: 0.4, rampScrap: 0.06 }),
+  R({ id: "operador_cnc", family: "manufactura", lines: ["estampado"], title: "Operador CNC / ajustador de troqueles", func: "produccion", level: "especialista", salary: { min: 14000, mid: 15500, max: 17500 }, hireCost: 7000, fillDays: 30, rampDays: 45, rampStart: 0.5, provides: { operacion: 750 }, attrition: 0.25, rampScrap: 0.05 }),
   R({ id: "supervisor_produccion", family: "manufactura", title: "Supervisor de producción", func: "produccion", level: "supervisor", salary: { min: 21000, mid: 24000, max: 28000 }, hireCost: 10000, fillDays: 30, rampDays: 30, rampStart: 0.7, span: 12, attrition: 0.15 }),
   R({ id: "tecnico_mantenimiento", family: "manufactura", title: "Técnico de mantenimiento", func: "mantenimiento", level: "especialista", salary: { min: 16000, mid: 17500, max: 19500 }, hireCost: 7000, fillDays: 25, rampDays: 30, rampStart: 0.7, attrition: 0.2 }),
   R({ id: "inspector_calidad", family: "manufactura", title: "Inspector de calidad", func: "calidad", level: "especialista", salary: { min: 14500, mid: 16000, max: 18000 }, hireCost: 6000, fillDays: 20, rampDays: 21, rampStart: 0.7, attrition: 0.2 }),
@@ -40,9 +40,15 @@ export const ROLES_V1: readonly RoleDef[] = Object.freeze([
   R({ id: "auxiliar_administrativo", family: "manufactura", title: "Auxiliar administrativo y contable", func: "finanzas", level: "especialista", salary: { min: 13000, mid: 14000, max: 16000 }, hireCost: 5000, fillDays: 20, rampDays: 30, rampStart: 0.7, attrition: 0.2, companyLevel: true }),
   R({ id: "ingeniero_procesos", family: "manufactura", title: "Ingeniero de procesos", func: "produccion", level: "especialista", salary: { min: 26000, mid: 29000, max: 34000 }, hireCost: 15000, fillDays: 40, rampDays: 60, rampStart: 0.5, attrition: 0.18, minHeadcount: 25 }),
   R({ id: "gerente_planta", family: "manufactura", title: "Gerente de planta", func: "operaciones", level: "gerente", salary: { min: 50000, mid: 56000, max: 65000 }, hireCost: 45000, fillDays: 60, rampDays: 60, rampStart: 0.6, span: 8, attrition: 0.12, minHeadcount: 40 }),
+  // ─────────────────────────────── manufactura · metálica básica (acería de hornos de inducción)
+  R({ id: "operador_aceria", family: "manufactura", lines: ["aceria"], title: "Operador de horno y colada", func: "produccion", level: "operativo", salary: { min: 12500, mid: 13500, max: 15500 }, hireCost: 6000, fillDays: 18, rampDays: 45, rampStart: 0.5, provides: { operacion: 2.6 }, attrition: 0.3, rampScrap: 0.05 }),
+  R({ id: "maestro_fundidor", family: "manufactura", lines: ["aceria"], title: "Maestro fundidor", func: "produccion", level: "especialista", salary: { min: 21000, mid: 24000, max: 28000 }, hireCost: 12000, fillDays: 45, rampDays: 60, rampStart: 0.6, provides: { operacion: 4 }, attrition: 0.12, rampScrap: 0.03 }),
+  R({ id: "metalurgista", family: "manufactura", lines: ["aceria"], title: "Metalurgista de control de calidad", func: "calidad", level: "especialista", salary: { min: 25000, mid: 28000, max: 33000 }, hireCost: 14000, fillDays: 40, rampDays: 30, rampStart: 0.7, attrition: 0.15 }),
   R({ id: "director_operaciones", family: "manufactura", title: "Director de operaciones", func: "direccion", level: "director", salary: { min: 90000, mid: 110000, max: 130000 }, hireCost: 110000, fillDays: 90, rampDays: 90, rampStart: 0.5, span: 6, attrition: 0.1, minHeadcount: 120, companyLevel: true }),
 ]);
 
 const BY_ID = new Map(ROLES_V1.map((r) => [r.id, r]));
 export const roleById = (id: string): RoleDef | undefined => BY_ID.get(id);
-export const rolesOf = (f: Family): RoleDef[] => ROLES_V1.filter((r) => r.family === f);
+export const rolesOf = (f: Family, line?: string): RoleDef[] => ROLES_V1.filter((r) => r.family === f && (!line || !r.lines || r.lines.includes(line)));
+/** ¿Existe este puesto en la empresa (misma familia y, si el puesto es de una línea, la misma línea)? */
+export const roleFits = (r: RoleDef, family: Family, line: string): boolean => r.family === family && (!r.lines || r.lines.includes(line));
