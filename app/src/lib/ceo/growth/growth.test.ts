@@ -4,7 +4,7 @@
 import { describe, expect, it } from "vitest";
 import { activePeople, advance, apply, capacityNow, createCompany, headcount, peopleByRole } from "./engine";
 import { ROLES_V1, roleById } from "./catalog";
-import { burdenOf, laborOf, monthlyCost, pesos } from "./labor";
+import { burdenOf, laborOf, minWage, monthlyCost, pesos, REGIONS, regionOf, terminationOf, vacationDays } from "./labor";
 import type { GrowthState } from "./types";
 
 const noRot = (s: GrowthState) => { s.attrition = false; return s; };
@@ -14,20 +14,20 @@ describe("costo laboral", () => {
   it("ningún salario del catálogo queda debajo del mínimo 2026 y cada rol declara fuente y confianza", () => {
     const L = laborOf();
     for (const r of ROLES_V1) {
-      expect(r.salary.min * 100).toBeGreaterThanOrEqual(pesos(L.minWageDaily.value * 30));
+      expect(r.salary.min * 100).toBeGreaterThanOrEqual(pesos(minWage(L, REGIONS.MTY) * 30));
       expect(r.salary.min).toBeLessThanOrEqual(r.salary.mid);
       expect(r.salary.mid).toBeLessThanOrEqual(r.salary.max);
       expect(r.salarySource.length).toBeGreaterThan(20);
     }
-    expect(L.minWageDaily.value).toBe(315.04);
+    expect(L.minWageDaily.value.general).toBe(315.04);
     expect(L.minWageDaily.confidence).toBe("oficial");
   });
 
   it("un operador, un gerente y un ingeniero no cuestan lo mismo; la carga patronal es plausible (25–45 %)", () => {
-    const costs = ["operador", "gerente_planta", "ingeniero_procesos"].map((id) => monthlyCost(pesos(roleById(id)!.salary.mid), "NL", laborOf()).total);
+    const costs = ["operador", "gerente_planta", "ingeniero_procesos"].map((id) => monthlyCost(pesos(roleById(id)!.salary.mid), REGIONS.MTY, laborOf()).total);
     expect(new Set(costs).size).toBe(3);
     for (const id of ["mesero", "cocinero", "gerente_sucursal", "operador", "director_operaciones"]) {
-      const b = burdenOf(pesos(roleById(id)!.salary.mid), "NL");
+      const b = burdenOf(pesos(roleById(id)!.salary.mid), REGIONS.MTY);
       expect(b).toBeGreaterThan(0.25);
       expect(b).toBeLessThan(0.45);
     }
@@ -213,4 +213,71 @@ describe("realismo operativo", () => {
       expect(s.months.slice(-3).reduce((a, m) => a + m.operating, 0)).toBeGreaterThan(0);
     }
   }, 60_000);
+});
+
+describe("regiones y terminaciones (fase 2)", () => {
+  it("el piloto es Monterrey; otra región cambia salarios y nómina estatal sin tocar el motor", () => {
+    expect(REGIONS.MTY.enabled).toBe(true);
+    expect(Object.values(REGIONS).filter((r) => r.enabled).map((r) => r.id)).toEqual(["MTY"]);
+    const s = createCompany("restaurante_emergente", "r");
+    expect(s.region).toBe("MTY");
+    const gross = pesos(12500);
+    const mty = monthlyCost(gross, REGIONS.MTY, laborOf());
+    const cdmx = monthlyCost(gross, REGIONS.CDMX, laborOf());
+    expect(cdmx.payrollTax).toBeGreaterThan(mty.payrollTax);
+    expect(regionOf("XX").id).toBe("MTY");
+  });
+
+  it("la tabla de vacaciones sigue la reforma: 12, 14, 16, 18, 20 y luego +2 cada cinco años", () => {
+    const L = laborOf();
+    expect([0, 1, 2, 3, 4, 5, 9, 10, 15].map((y) => vacationDays(y, L))).toEqual([12, 14, 16, 18, 20, 22, 22, 24, 26]);
+  });
+
+  it("cada causa de terminación tiene su propio cálculo", () => {
+    const L = laborOf(), r = REGIONS.MTY, gross = pesos(15000), prov = pesos(2000);
+    const of = (k: Parameters<typeof terminationOf>[0], years = 3, refuse = false) => terminationOf(k, gross, years, prov, 4, L, r, refuse);
+    const ren = of("renuncia"), just = of("despido_justificado"), unj = of("despido_injustificado"), unjR = of("despido_injustificado", 3, true), mut = of("mutuo_acuerdo"), prob = of("periodo_prueba", 0.05);
+    // Renuncia con menos de 15 años: solo finiquito (proporcionales y vacaciones), sin prima de antigüedad.
+    expect(ren.seniority).toBe(0); expect(ren.constitutional).toBe(0);
+    expect(ren.total).toBe(prov + Math.round((gross / 30) * 4));
+    // Rescisión justificada: prima de antigüedad, sin 90 días.
+    expect(just.seniority).toBeGreaterThan(0); expect(just.constitutional).toBe(0);
+    // Despido injustificado: 90 días + prima; los 20 días por año solo si el patrón se niega a reinstalar.
+    expect(unj.constitutional).toBeGreaterThan(0); expect(unj.twentyDays).toBe(0);
+    expect(unjR.twentyDays).toBeGreaterThan(0);
+    // Mutuo acuerdo: gratificación negociada, menor que la liquidación de ley.
+    expect(mut.gratification).toBeGreaterThan(0);
+    expect(mut.total).toBeLessThan(unj.total);
+    // Periodo de prueba: sin indemnización.
+    expect(prob.constitutional + prob.seniority + prob.gratification).toBe(0);
+    expect(new Set([ren.total, just.total, unj.total, unjR.total, mut.total]).size).toBe(5);
+  });
+
+  it("la prima de antigüedad respeta el tope de dos salarios mínimos", () => {
+    const L = laborOf(), r = REGIONS.MTY;
+    const high = terminationOf("despido_justificado", pesos(60000), 2, 0, 0, L, r);
+    expect(high.seniority).toBe(Math.round(2 * minWage(L, r) * 100 * 12 * 2));
+  });
+
+  it("despedir sin causa cuesta más que una renuncia y la causa queda registrada", () => {
+    const base = noRot(createCompany("restaurante_emergente", "t"));
+    const a = advance(base, 10), b = advance(base, 10);
+    const cook = peopleByRole(a, "cocinero")[0];
+    apply(a, { type: "terminate", id: "t1", personId: cook.id, kind: "despido_injustificado" });
+    apply(b, { type: "terminate", id: "t1", personId: cook.id, kind: "mutuo_acuerdo" });
+    expect(a.cash).toBeLessThan(b.cash);
+    expect(a.people.find((p) => p.id === cook.id)!.leftReason).toBe("despido_injustificado");
+  });
+});
+
+describe("margen de arranque recalibrado", () => {
+  it("Grupo Brasa tiene un margen operativo de restaurante (EBITDA 6–14 %) que sale de líneas explícitas", () => {
+    const s = advance(noRot(createCompany("restaurante_emergente", "m")), 90);
+    const m = s.months[1];
+    const pct = m.ebitda / m.revenue;
+    expect(pct).toBeGreaterThan(0.06);
+    expect(pct).toBeLessThan(0.14);
+    expect(m.coverage).toBeGreaterThan(0);
+    expect(s.fixedLines.length).toBeGreaterThanOrEqual(6);
+  });
 });

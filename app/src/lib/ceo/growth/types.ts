@@ -47,11 +47,19 @@ export interface FamilyParams {
   unit: { one: string; many: string };
   /** Precio por unidad (pesos). En manufactura, cada contrato trae el suyo. */
   price: number;
+  /** IVA incluido en el precio al público (0.16 en restaurante: el menú se publica con IVA). La venta se registra neta. */
+  vatInPrice?: number;
   /** Costo de ventas: % del precio (restaurante) o costo de material por pieza producida (manufactura, pesos). */
   cogsPct?: number;
   materialPerUnit?: number;
-  /** Gastos variables sobre la venta (comisiones de terminal, energía variable). */
-  varPct: number;
+  /**
+   * Gastos variables explícitos (v2): cada línea es un % de la venta o un monto por unidad, con su supuesto.
+   * Ejemplos: comisión de terminal sobre la parte cobrada con tarjeta, comisión de plataformas de reparto sobre la
+   * parte de pedidos a domicilio, gas por pedido, energía por pieza, fletes.
+   */
+  variableLines: readonly VariableLine[];
+  /** Cobertura de descansos y vacaciones del personal operativo (fracción de su sueldo pagada a eventuales). 0 = no aplica. */
+  restCoverage: number;
   /** Días de cobro y de pago a proveedores. */
   dso: number;
   supplierDays: number;
@@ -69,6 +77,9 @@ export interface FamilyParams {
   backlogDays: number;
 }
 
+export interface VariableLine { id: string; label: string; pctOfSales?: number; perUnit?: number; basis: string }
+export interface FixedLine { id: string; label: string; amount: number; basis: string }
+
 export interface Person {
   id: string;
   roleId: string;
@@ -79,7 +90,7 @@ export interface Person {
   hiredDay: number;
   startDay: number;
   leftDay?: number;
-  leftReason?: "renuncia" | "despido";
+  leftReason?: import("./labor").TerminationKind;
   /** Persona que ya estaba antes de tu llegada. */
   founding?: boolean;
   /** Decisión que la trajo. */
@@ -131,7 +142,7 @@ export interface GEvent { day: number; kind: EventKind; text: string; ref?: stri
 export interface MonthSummary {
   month: number;
   revenue: number; cogs: number; variable: number; payroll: number; employer: number; payrollTax: number; provision: number;
-  rent: number; utilities: number; fixed: number; hiring: number; severance: number; preopening: number; depreciation: number;
+  coverage: number; rent: number; utilities: number; fixed: number; hiring: number; severance: number; preopening: number; depreciation: number;
   ebitda: number; operating: number;
   cashBegin: number; inflows: number; outflows: number; cashEnd: number;
   receivables: number; payables: number;
@@ -150,8 +161,8 @@ export interface GrowthState {
   seed: string;
   day: number;
   cash: number;
-  /** Gastos fijos de la empresa por mes (centavos): contador externo, sistemas, seguros, dirección general. */
-  companyFixed: number;
+  /** Gastos fijos de la empresa por mes (centavos), por línea explícita (contador, sistemas, seguros, dirección…). */
+  fixedLines: FixedLine[];
   people: Person[];
   vacancies: Vacancy[];
   sites: Site[];
@@ -171,7 +182,7 @@ export interface GrowthState {
 
 export type Command =
   | { type: "hire"; id: string; roleId: string; siteId: string | null; salary?: number }
-  | { type: "terminate"; id: string; personId: string }
+  | { type: "terminate"; id: string; personId: string; kind?: import("./labor").TerminationKind; refusesReinstatement?: boolean }
   | { type: "open_site"; id: string; name: string; rent: number; utilities: number; deposit: number; capex: number; years: number; buildDays: number; assets: Record<string, number>; demandBase: number; maturityDays: number; preopening: number; demandFactor?: number }
   | { type: "add_asset"; id: string; siteId: string; label: string; resource: string; units: number; cost: number; years: number; leadDays: number }
   | { type: "set_shifts"; id: string; siteId: string; shifts: number }
