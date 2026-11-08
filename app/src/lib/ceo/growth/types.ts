@@ -1,0 +1,178 @@
+/**
+ * mêtis CEO · Growth Engine · tipos (núcleo aislado, fase 1).
+ * Dinero en CENTAVOS enteros dentro del estado; los catálogos se escriben en pesos y se convierten al usarlos.
+ * Tiempo: días simulados (1 mes = 30 días). El día 0 es la llegada del director. Nada depende del reloj real.
+ */
+
+export type Family = "restaurante" | "manufactura";
+export type Func = "produccion" | "servicio" | "operaciones" | "ventas" | "finanzas" | "rh" | "calidad" | "mantenimiento" | "logistica" | "direccion";
+export type Level = "operativo" | "especialista" | "supervisor" | "gerente" | "director";
+
+export interface RoleDef {
+  id: string;
+  family: Family;
+  title: string;
+  func: Func;
+  level: Level;
+  /** Salario bruto mensual en pesos. */
+  salary: { min: number; mid: number; max: number };
+  /** Reclutamiento, alta, uniforme o equipo personal y capacitación inicial (pesos, una vez). */
+  hireCost: number;
+  /** Días para cubrir la vacante. */
+  fillDays: number;
+  /** Días para llegar a productividad plena y productividad del primer día (0–1). */
+  rampDays: number;
+  rampStart: number;
+  /** Capacidad que aporta a productividad plena (unidades por día de cada recurso de su sitio). */
+  provides?: Record<string, number>;
+  /** Personas que puede supervisar. */
+  span?: number;
+  /** Rotación anual esperada (0.6 = 60 %). */
+  attrition: number;
+  /** Desperdicio extra de una persona en curva de aprendizaje (manufactura). */
+  rampScrap?: number;
+  /** Plantilla a partir de la cual el puesto tiene sentido. */
+  minHeadcount?: number;
+  /** Puesto de la empresa, no de un sitio. */
+  companyLevel?: boolean;
+  salarySource: string;
+  confidence: "oficial" | "referencial" | "supuesto";
+}
+
+export interface FamilyParams {
+  family: Family;
+  /** Recursos que limitan lo que un sitio puede atender. Si alguno vale 0, el sitio no puede operar. */
+  resources: readonly string[];
+  /** Unidad de venta (pedido, pieza) para los textos. */
+  unit: { one: string; many: string };
+  /** Precio por unidad (pesos). En manufactura, cada contrato trae el suyo. */
+  price: number;
+  /** Costo de ventas: % del precio (restaurante) o costo de material por pieza producida (manufactura, pesos). */
+  cogsPct?: number;
+  materialPerUnit?: number;
+  /** Gastos variables sobre la venta (comisiones de terminal, energía variable). */
+  varPct: number;
+  /** Días de cobro y de pago a proveedores. */
+  dso: number;
+  supplierDays: number;
+  /** Desperdicio base (manufactura). */
+  scrap?: number;
+  /** Rol que dirige un sitio; sin él el sitio no abre. */
+  leadRole: string;
+  /** Cuántas personas coordina el director general directamente cuando no hay mandos. */
+  baseSpan: number;
+  /** Capacidad de máquina por turno y unidad de activo (manufactura). */
+  perShift?: Record<string, number>;
+  /** Roles que deben existir por turno (manufactura: un supervisor por turno). */
+  shiftRole?: string;
+  /** Días durante los que una demanda insatisfecha se puede atender después (backlog). 0 = se pierde (restaurante). */
+  backlogDays: number;
+}
+
+export interface Person {
+  id: string;
+  roleId: string;
+  name: string;
+  siteId: string | null;
+  /** Salario bruto mensual (centavos). */
+  salary: number;
+  hiredDay: number;
+  startDay: number;
+  leftDay?: number;
+  leftReason?: "renuncia" | "despido";
+  /** Persona que ya estaba antes de tu llegada. */
+  founding?: boolean;
+  /** Decisión que la trajo. */
+  ref?: string;
+  /** Provisión de aguinaldo y prima vacacional acumulada y no pagada (centavos). */
+  provision: number;
+  daysThisMonth: number;
+}
+
+export interface Vacancy { id: string; roleId: string; siteId: string | null; openedDay: number; fillDay: number; salary: number; ref: string }
+
+export type SiteStatus = "en_obra" | "preapertura" | "operando" | "cerrada";
+export interface Site {
+  id: string;
+  name: string;
+  status: SiteStatus;
+  /** Capacidad que aportan los activos: unidades/día (restaurante: mesas) o por turno (manufactura). */
+  assets: Record<string, number>;
+  shifts: number;
+  /** Renta mensual (centavos). */
+  rent: number;
+  /** Servicios fijos del sitio por mes (centavos). */
+  utilities: number;
+  /** Demanda madura en unidades por día (restaurante). */
+  demandBase: number;
+  /** Escenario: qué tanto se cumple la demanda proyectada (1 = la proyección; lo decide la semilla). */
+  demandFactor: number;
+  /** Días hasta que la demanda madura. */
+  maturityDays: number;
+  reputation: number;
+  backlog: number;
+  buildDoneDay?: number;
+  openedDay?: number;
+  ref?: string;
+}
+
+export interface Asset { id: string; siteId: string; label: string; resource: string; units: number; cost: number; years: number; activeDay: number; active: boolean; ref: string }
+
+export interface Contract { id: string; client: string; unitsPerDay: number; price: number; startDay: number; ref?: string }
+
+export type EntryType = "devengo" | "caja";
+export interface Entry { id: string; type: EntryType; account: string; month: number; amount: number; ref?: string; text: string }
+
+export interface Scheduled { id: string; day: number; account: string; amount: number; ref?: string; text: string }
+
+export type EventKind = "vacante" | "incorporacion" | "renuncia" | "baja" | "obra" | "obra_terminada" | "apertura" | "activo" | "turno" | "contrato" | "aguinaldo" | "sin_personal";
+export interface GEvent { day: number; kind: EventKind; text: string; ref?: string; personId?: string; siteId?: string }
+
+export interface MonthSummary {
+  month: number;
+  revenue: number; cogs: number; variable: number; payroll: number; employer: number; payrollTax: number; provision: number;
+  rent: number; utilities: number; fixed: number; hiring: number; severance: number; preopening: number; depreciation: number;
+  ebitda: number; operating: number;
+  cashBegin: number; inflows: number; outflows: number; cashEnd: number;
+  receivables: number; payables: number;
+  demand: number; served: number; lost: number; capacity: number; scrap: number;
+  headcount: number; sites: number;
+  bottleneck: string | null;
+}
+
+export interface GrowthState {
+  modelVersion: number;
+  laborVersion: number;
+  catalogVersion: number;
+  family: Family;
+  templateId: string;
+  region: string;
+  seed: string;
+  day: number;
+  cash: number;
+  /** Gastos fijos de la empresa por mes (centavos): contador externo, sistemas, seguros, dirección general. */
+  companyFixed: number;
+  people: Person[];
+  vacancies: Vacancy[];
+  sites: Site[];
+  assets: Asset[];
+  contracts: Contract[];
+  scheduled: Scheduled[];
+  ledger: Entry[];
+  events: GEvent[];
+  months: MonthSummary[];
+  /** Decisiones ya aplicadas (idempotencia). */
+  applied: string[];
+  /** Acumuladores del mes en curso (operación). */
+  cur: { demand: number; served: number; lost: number; capacity: number; scrap: number; bottlenecks: Record<string, number>; cashBegin: number };
+  attrition: boolean;
+  nextId: number;
+}
+
+export type Command =
+  | { type: "hire"; id: string; roleId: string; siteId: string | null; salary?: number }
+  | { type: "terminate"; id: string; personId: string }
+  | { type: "open_site"; id: string; name: string; rent: number; utilities: number; deposit: number; capex: number; years: number; buildDays: number; assets: Record<string, number>; demandBase: number; maturityDays: number; preopening: number; demandFactor?: number }
+  | { type: "add_asset"; id: string; siteId: string; label: string; resource: string; units: number; cost: number; years: number; leadDays: number }
+  | { type: "set_shifts"; id: string; siteId: string; shifts: number }
+  | { type: "add_contract"; id: string; client: string; unitsPerDay: number; price: number; startInDays: number };
