@@ -182,7 +182,7 @@ export function newCompanyProfile(i: NewCompanyInput, taxonomyVersion: number): 
   const shortName = i.shortName === undefined ? shortNameOf(displayName) : cleanName(i.shortName);
   if (!shortName) return null;
   const ind = industryOf(i.sectorId, i.industryId)!;
-  const specialty = typeof i.specialty === "string" && ind.specialties.includes(i.specialty) ? i.specialty : undefined;
+  const specialty = typeof i.specialty === "string" && ind.specialties.includes(i.specialty) ? i.specialty : ind.defaultSpecialty;
   return {
     companyId: i.companyId.toLowerCase(),
     sectorId: i.sectorId,
@@ -247,7 +247,7 @@ export function sanitizeCompanyProfile(raw: unknown): CompanyProfile | null {
   if (!displayName || typeof r.appointedAt !== "number" || !Number.isFinite(r.appointedAt) || r.appointedAt <= 0) return null;
   const ind = industryOf(r.sectorId, r.industryId)!;
   const shortName = cleanName(r.shortName) ?? shortNameOf(displayName);
-  const specialty = typeof r.specialty === "string" && ind.specialties.includes(r.specialty) ? r.specialty : undefined;
+  const specialty = typeof r.specialty === "string" && ind.specialties.includes(r.specialty) ? r.specialty : ind.defaultSpecialty;
   return {
     companyId: r.companyId.toLowerCase(),
     sectorId: r.sectorId,

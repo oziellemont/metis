@@ -10,6 +10,7 @@ import { project13 } from "./liquidity";
 import { caseById } from "./cases";
 import type { Decision } from "./chains";
 import type { GrowthState, MonthSummary } from "./types";
+import { profileOf } from "./models";
 
 const money = (cents: number) => `${cents < 0 ? "−" : ""}$${fmt(Math.abs(cents))}`;
 const pct = (x: number) => `${(x * 100).toFixed(1)} %`;
@@ -47,7 +48,7 @@ export function teamOf(g: GrowthState): TeamView {
 export interface SiteView { name: string; status: string; capacity: string; bottleneck: string | null; rent: string; note: string }
 export function sitesOf(g: GrowthState): SiteView[] {
   const caps = new Map(capacityNow(g).map((c) => [c.site, c]));
-  const unit = g.family === "restaurante" ? "pedidos" : "piezas";
+  const unit = profileOf(g).unit.many;
   return g.sites.filter((x) => x.status !== "cerrada").map((x) => {
     const c = caps.get(x.name);
     const status = x.status === "operando" ? (x.openedDay !== undefined && x.openedDay > 0 && g.day - x.openedDay < x.maturityDays ? "Operando · madurando" : "Operando") : x.status === "en_obra" ? "En obra" : x.status === "preapertura" ? "Preapertura" : x.status;
@@ -141,11 +142,11 @@ export function compareStates(a: GrowthState, b: GrowthState): Compare[] {
   if (ma && mb) out.push(
     row("Ventas del último mes", ma.revenue, mb.revenue, money),
     row("EBITDA del último mes", ma.ebitda, mb.ebitda, money),
-    ...(a.family === "manufactura" ? [
-      row("Piezas al día comprometidas por contrato", a.contracts.reduce((s, c) => s + c.unitsPerDay, 0), b.contracts.reduce((s, c) => s + c.unitsPerDay, 0), n),
+    ...(profileOf(a).mode === "contratos" ? [
+      row(profileOf(a).labels.committed, a.contracts.reduce((s, c) => s + c.unitsPerDay, 0), b.contracts.reduce((s, c) => s + c.unitsPerDay, 0), n),
       row("Penalizaciones pagadas (acumulado)", a.months.reduce((s, m) => s + m.penalties, 0), b.months.reduce((s, m) => s + m.penalties, 0), money, "down"),
     ] : []),
-    row(a.family === "restaurante" ? "Pedidos no atendidos" : "Piezas no entregadas", ma.lost + Math.max(0, ma.demand - ma.served - ma.lost), mb.lost + Math.max(0, mb.demand - mb.served - mb.lost), n, "down"),
+    row(profileOf(a).labels.lostCompare, ma.lost + Math.max(0, ma.demand - ma.served - ma.lost), mb.lost + Math.max(0, mb.demand - mb.served - mb.lost), n, "down"),
   );
   return out;
 }

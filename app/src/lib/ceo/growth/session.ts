@@ -12,6 +12,7 @@ import { advance, createCompany } from "./engine";
 import { availableCases, decide, optionsOf, type Decision, type OptionView } from "./chains";
 import { caseById, type GCase } from "./cases";
 import { kpiBridge, type Bridge } from "./bridge";
+import { adaptiveOrder } from "./learning";
 import { TEMPLATES } from "./families";
 import type { GrowthState } from "./types";
 import type { KpiKey } from "../types";
@@ -101,7 +102,8 @@ export function growthBridge(log: GrowthLog, day: number): Bridge {
 /** Casos de crecimiento que hoy esperan decisión, con sus opciones calculadas por el motor. */
 export function pendingGrowth(log: GrowthLog, day: number): { case: GCase; options: OptionView[] }[] {
   const g = growthAt(log, day).state;
-  return availableCases(g, log.decisions).map((c) => ({ case: c, options: optionsOf(g, c) }));
+  // Capa adaptativa: mismo conjunto de casos, en el orden que más le sirve al jugador (learning.ts).
+  return adaptiveOrder(availableCases(g, log.decisions), log.decisions).map((c) => ({ case: c, options: optionsOf(g, c) }));
 }
 
 /** Decide un caso hoy. Devuelve el registro nuevo, o el mismo si no procede (con la razón). */

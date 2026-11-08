@@ -55,6 +55,33 @@ export const FAMILIES: Readonly<Record<string, FamilyParams>> = Object.freeze({
     perShift: { prensa: 1800 },
     backlogDays: 5,
   },
+  /**
+   * Acería de hornos de inducción (metálica básica): funde chatarra y vende palanquilla y varilla por tonelada.
+   * Supuestos de simulación (no son datos de mercado): precio neto de $15,800 por tonelada; chatarra y aleaciones
+   * por $9,700 por tonelada colada (rendimiento metálico incluido); 4 % de pérdida metálica y fuera de norma.
+   */
+  aceria: {
+    family: "manufactura",
+    resources: ["horno", "operacion"],
+    unit: { one: "tonelada", many: "toneladas" },
+    price: 15800,
+    materialPerUnit: 9700,
+    variableLines: [
+      { id: "energia", label: "Energía eléctrica de hornos", perUnit: 1850, basis: "Supuesto: unos 650 kWh por tonelada a tarifa industrial en media tensión." },
+      { id: "refractarios", label: "Refractarios, oxígeno y consumibles", perUnit: 450, basis: "Supuesto: $450 por tonelada buena." },
+      { id: "fletes", label: "Fletes a clientes", pctOfSales: 0.02, basis: "Supuesto: 2 % de la venta (entregas en el área metropolitana y Saltillo)." },
+    ],
+    restCoverage: 0.03,
+    dso: 45,
+    // La chatarra se paga casi de contado: los centros de acopio dan poco crédito.
+    supplierDays: 15,
+    scrap: 0.04,
+    leadRole: "supervisor_produccion",
+    shiftRole: "supervisor_produccion",
+    baseSpan: 10,
+    perShift: { horno: 14 },
+    backlogDays: 3,
+  },
 });
 
 /** Rotaciones de mesa por día (comida y cena). */
@@ -87,6 +114,23 @@ const FORJA_FIXED: FixedLine[] = [
   { id: "seguridad", label: "Vigilancia, EPP y seguridad industrial", amount: 8500, basis: "Supuesto: guardia nocturna y equipo de protección." },
 ];
 
+const HUASTECA_FIXED: FixedLine[] = [
+  { id: "direccion", label: "Dirección general (tu sueldo con carga social)", amount: 75000, basis: "Supuesto: $58,000 brutos + 30 % de carga; acería de dos hornos y dieciséis personas." },
+  { id: "contador", label: "Contador externo y auditoría fiscal", amount: 12000, basis: "Supuesto: despacho local." },
+  { id: "sistemas", label: "ERP, básculas y comunicaciones", amount: 8000, basis: "Supuesto: licencias mensuales." },
+  { id: "seguros", label: "Seguro de planta, hornos y mercancía", amount: 25000, basis: "Supuesto: prima anual prorrateada." },
+  { id: "mantenimiento", label: "Bobinas, revestimiento de hornos y mantenimiento mayor", amount: 45000, basis: "Supuesto: programa anual prorrateado." },
+  { id: "seguridad", label: "Seguridad industrial, EPP y cumplimiento ambiental", amount: 30000, basis: "Supuesto: equipo aluminizado, monitoreo de emisiones y guardia." },
+];
+const HUASTECA_GRUPO_FIXED: FixedLine[] = [
+  { id: "direccion", label: "Dirección general (tu sueldo con carga social)", amount: 150000, basis: "Supuesto: $115,000 brutos + 30 % de carga; dos plantas y más de cincuenta personas." },
+  { id: "contador", label: "Auditoría externa y asesoría fiscal", amount: 22000, basis: "Supuesto: despacho regional." },
+  { id: "sistemas", label: "ERP, básculas y comunicaciones de dos plantas", amount: 18000, basis: "Supuesto: licencias mensuales." },
+  { id: "seguros", label: "Seguros de plantas, hornos y mercancía", amount: 60000, basis: "Supuesto: prima anual prorrateada." },
+  { id: "mantenimiento", label: "Bobinas, revestimiento de hornos y mantenimiento mayor", amount: 120000, basis: "Supuesto: programa anual prorrateado de cinco hornos." },
+  { id: "seguridad", label: "Seguridad industrial, EPP y cumplimiento ambiental", amount: 75000, basis: "Supuesto: dos plantas, monitoreo de emisiones y guardias." },
+];
+
 const PARRILLA_FIXED: FixedLine[] = [
   { id: "direccion", label: "Dirección general (tu sueldo con carga social)", amount: 95000, basis: "Supuesto: $73,000 brutos + 30 % de carga; grupo de cinco sucursales." },
   { id: "contador", label: "Auditoría externa y timbrado de nómina", amount: 9000, basis: "Supuesto: la contabilidad la lleva el contador interno; el despacho audita y timbra." },
@@ -109,6 +153,8 @@ export interface StaffSeed { roleId: string; name: string; siteId: string | null
 export interface Template {
   id: string;
   family: "restaurante" | "manufactura";
+  /** Línea de negocio dentro de la familia (models.ts). Sin dato: la de siempre (restaurante o estampado). */
+  line?: import("./models").LineId;
   name: string;
   /** Región de `REGIONS` (labor.ts). Los salarios del catálogo se ajustan con su índice. */
   region: string;
@@ -141,6 +187,12 @@ function branch(siteId: string, names: string[], senior: number): StaffSeed[] {
   const roles = ["gerente_sucursal", "cocinero", "cocinero", "cocinero", "ayudante_cocina", "mesero", "mesero", "mesero", "lavaloza", "cocinero"];
   return names.map((name, i) => ({ roleId: roles[i], name, siteId, ...(i === 0 ? { yearsBefore: senior } : i < 3 ? { yearsBefore: 1 } : {}) }));
 }
+
+/** Nombres ficticios para plantillas grandes (deterministas: siempre la misma lista). */
+const FIRST = ["Juan", "Rocío", "Luis", "Marisol", "Pedro", "Ana", "Hugo", "Lety", "Chuy", "Karina", "Polo", "Vero", "Neto", "Liz", "Moy", "Sandra", "Beto", "Cris", "Efrén", "Mayra", "Ciro", "Yesenia", "Gil", "Tere", "Lupe", "Ramiro", "Nora", "Iván", "Diana", "Toño"];
+const LAST = ["Garza", "Treviño", "Cantú", "Salinas", "Elizondo", "Cavazos", "Villarreal", "Leal", "Rangel", "Tamez", "Zúñiga", "Ibarra", "Sáenz", "Ochoa", "Lozano", "Mata", "Rivas", "Ayala"];
+const crew = (roleId: string, siteId: string, n: number, from: number): StaffSeed[] =>
+  Array.from({ length: n }, (_, i) => ({ roleId, siteId, name: `${FIRST[(from + i) % FIRST.length]} ${LAST[(from * 7 + i * 5) % LAST.length]}` }));
 
 export const TEMPLATES: Readonly<Record<string, Template>> = Object.freeze({
   restaurante_emergente: {
@@ -277,5 +329,83 @@ export const TEMPLATES: Readonly<Record<string, Template>> = Object.freeze({
       { id: "c_carrocerias", client: "Carrocerías Ramos Arizpe", unitsPerDay: 4600, price: 9.8, siteId: "saltillo" },
     ],
     summary: "Un grupo de estampado con dos plantas (Apodaca a dos turnos y Saltillo a uno), más de cuarenta personas, ocho prensas y cuatro clientes que compran unas 15,800 piezas al día.",
+  },
+  aceria_emergente: {
+    id: "aceria_emergente",
+    family: "manufactura",
+    line: "aceria",
+    name: "Aceros Huasteca",
+    region: "MTY",
+    startMonth: 3,
+    cash: 3500000,
+    fixedLines: HUASTECA_FIXED,
+    ownerCapacity: 4000000,
+    bankRate: 0.19,
+    startCredit: 6000000,
+    size: "startup",
+    sites: [{ id: "planta", name: "Planta Santa Catarina", zone: "santa_catarina", rent: 110000, utilities: 260000, assets: { horno: 2 }, shifts: 1, demandBase: 0 }],
+    staff: [
+      { roleId: "supervisor_produccion", name: "Rogelio Cantú", siteId: "planta", yearsBefore: 6 },
+      { roleId: "maestro_fundidor", name: "Don Fermín Elizondo", siteId: "planta", yearsBefore: 12 },
+      ...["Javier Rangel", "Óscar Tamez", "Lalo Ibarra", "Neto Garza", "Pancho Salinas", "Rubén Ochoa", "Toño Mata", "Gerardo Rivas", "Chava Leal", "Memo Zúñiga"].map((name) => ({ roleId: "operador_aceria", name, siteId: "planta" })),
+      { roleId: "tecnico_mantenimiento", name: "Ramiro Benítez", siteId: "planta", yearsBefore: 4 },
+      { roleId: "metalurgista", name: "Ing. Paula Treviño", siteId: "planta", yearsBefore: 2 },
+      { roleId: "almacenista", name: "Beto Cavazos", siteId: "planta" },
+      { roleId: "auxiliar_administrativo", name: "Lucía Sáenz", siteId: null, yearsBefore: 3 },
+    ],
+    contracts: [
+      { id: "c_varilla", client: "Constructora Cumbres del Norte", unitsPerDay: 14, price: 15900 },
+      { id: "c_palanquilla", client: "Laminados Regios", unitsPerDay: 10, price: 15660 },
+    ],
+    summary: "Una acería pequeña con dieciséis personas, dos hornos de inducción y un turno. Dos clientes compran unas 24 toneladas al día de varilla y palanquilla; los hornos dan para poco más.",
+  },
+  aceria_consolidada: {
+    id: "aceria_consolidada",
+    family: "manufactura",
+    line: "aceria",
+    name: "Grupo Acerero Huasteca",
+    region: "MTY",
+    startMonth: 3,
+    cash: 9000000,
+    fixedLines: HUASTECA_GRUPO_FIXED,
+    ownerCapacity: 10000000,
+    bankRate: 0.17,
+    startCredit: 15000000,
+    size: "consolidada",
+    sites: [
+      { id: "planta", name: "Planta Santa Catarina", zone: "santa_catarina", rent: 190000, utilities: 470000, assets: { horno: 3 }, shifts: 2, demandBase: 0 },
+      { id: "saltillo", name: "Planta Saltillo", zone: "saltillo", rent: 90000, utilities: 250000, assets: { horno: 2 }, shifts: 1, demandBase: 0 },
+    ],
+    staff: [
+      { roleId: "gerente_planta", name: "Ing. Alfonso Garza", siteId: "planta", yearsBefore: 9 },
+      { roleId: "supervisor_produccion", name: "Rogelio Cantú", siteId: "planta", yearsBefore: 6 },
+      { roleId: "supervisor_produccion", name: "Imelda Rocha", siteId: "planta", yearsBefore: 3 },
+      { roleId: "maestro_fundidor", name: "Don Fermín Elizondo", siteId: "planta", yearsBefore: 12 },
+      { roleId: "maestro_fundidor", name: "Saúl Villarreal", siteId: "planta", yearsBefore: 7 },
+      { roleId: "maestro_fundidor", name: "Nacho Treviño", siteId: "planta", yearsBefore: 5 },
+      ...crew("operador_aceria", "planta", 28, 0),
+      { roleId: "tecnico_mantenimiento", name: "Ramiro Benítez", siteId: "planta", yearsBefore: 4 },
+      { roleId: "tecnico_mantenimiento", name: "Julio Cárdenas", siteId: "planta", yearsBefore: 2 },
+      { roleId: "metalurgista", name: "Ing. Paula Treviño", siteId: "planta", yearsBefore: 2 },
+      { roleId: "almacenista", name: "Beto Cavazos", siteId: "planta" },
+      { roleId: "almacenista", name: "Pily Rangel", siteId: "planta" },
+      { roleId: "ingeniero_procesos", name: "Ing. Sofía Lozano", siteId: "planta", yearsBefore: 3 },
+      { roleId: "supervisor_produccion", name: "Arnulfo Aguirre", siteId: "saltillo", yearsBefore: 5 },
+      { roleId: "maestro_fundidor", name: "Efraín Dávila", siteId: "saltillo", yearsBefore: 8 },
+      ...crew("operador_aceria", "saltillo", 9, 13),
+      { roleId: "tecnico_mantenimiento", name: "Chema Arizpe", siteId: "saltillo", yearsBefore: 2 },
+      { roleId: "metalurgista", name: "Ing. Olga Narro", siteId: "saltillo", yearsBefore: 1 },
+      { roleId: "almacenista", name: "Rafa Siller", siteId: "saltillo" },
+      { roleId: "auxiliar_administrativo", name: "Lucía Sáenz", siteId: null, yearsBefore: 3 },
+      { roleId: "auxiliar_administrativo", name: "Mónica Galindo", siteId: null, yearsBefore: 1 },
+      { roleId: "ejecutivo_comercial", name: "Federico Morales", siteId: null, yearsBefore: 4 },
+    ],
+    contracts: [
+      { id: "c_varilla", client: "Constructora Cumbres del Norte", unitsPerDay: 30, price: 15900, siteId: "planta" },
+      { id: "c_palanquilla", client: "Laminados Regios", unitsPerDay: 24, price: 15660, siteId: "planta" },
+      { id: "c_estructuras", client: "Estructuras Metálicas del Golfo", unitsPerDay: 18, price: 16100, siteId: "planta" },
+      { id: "c_saltillo", client: "Perfiles de Ramos Arizpe", unitsPerDay: 22, price: 15750, siteId: "saltillo" },
+    ],
+    summary: "Un grupo acerero con dos plantas (Santa Catarina a dos turnos y Saltillo a uno), más de sesenta personas, cinco hornos de inducción y cuatro clientes que compran unas 94 toneladas al día.",
   },
 });

@@ -9,6 +9,7 @@ import type { CompanyPack } from "../types";
 import { brandPack } from "./template";
 import { GROWTH_ARCHETYPE, GROWTH_ARCHETYPES, growthTemplateFor } from "../growth/combos";
 import { TEMPLATES } from "../growth/families";
+import { profileOf } from "../growth/models";
 import { cleanName, exposureOfPack, isCompanyId, newCompanyProfile, shortNameOf } from "./identity";
 import { ARCHETYPES, SECTORS, TAXONOMY_VERSION, industryOf, isOfferedCombo, isPlayableCombo, searchIndustries, OFFERED_TYPES, type CompanyArchetype, type Industry, type Sector, type Suggestion } from "./taxonomy";
 
@@ -129,7 +130,7 @@ export function growthFactsOf(sel: SetupSelection): [string, string][] | null {
   const rent = T.sites.reduce((a, x) => a + x.rent, 0);
   return [
     ["Personas", String(T.staff.length)],
-    [T.family === "restaurante" ? "Sucursales" : "Plantas", T.sites.length === 1 ? `1 · ${site.name}` : String(T.sites.length)],
+    [profileOf(T).site.Many, T.sites.length === 1 ? `1 · ${site.name}` : String(T.sites.length)],
     ["Caja al llegar", money(T.cash)],
     ["Renta mensual", money(rent)],
   ];
@@ -187,7 +188,7 @@ export function previewPack(sel: SetupSelection): CompanyPack | null {
   const pk = companyById(ind.contentPackId);
   const name = cleanName(sel.displayName);
   const short = effectiveShort(sel.displayName, sel.shortName);
-  const specialty = sel.specialty && ind.specialties.includes(sel.specialty) ? sel.specialty : undefined;
+  const specialty = sel.specialty && ind.specialties.includes(sel.specialty) ? sel.specialty : ind.defaultSpecialty;
   // Sin nombre todavía se muestra igual con el vocabulario de la especialidad elegida.
   return brandPack(pk, { name: name && short ? name : pk.name, short: name && short ? short : pk.short, city: exposureOfPack(pk.id).baseCity, ...(specialty ? { specialty } : {}) });
 }

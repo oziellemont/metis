@@ -188,8 +188,8 @@ describe("onboarding con dos tarjetas (lógica pura)", async () => {
     const e = S.changeChoice({}, "emergente");
     expect(e).toEqual({ archetype: "pyme", growth: true });
     expect(S.canContinue("tipo", e)).toBe(true);
-    expect(S.growthIndustries().map((i) => i.id).sort()).toEqual(["autopartes", "restaurantes"]);
-    expect(S.sectorsForSel(e).flatMap((s) => s.industries.map((i) => i.id)).sort()).toEqual(["autopartes", "restaurantes"]);
+    expect(S.growthIndustries().map((i) => i.id).sort()).toEqual(["autopartes", "metalica_basica", "restaurantes"]);
+    expect(S.sectorsForSel(e).flatMap((s) => s.industries.map((i) => i.id)).sort()).toEqual(["autopartes", "metalica_basica", "restaurantes"]);
     const c = S.changeChoice(e, "consolidada");
     expect(c.growth).toBe(true);
     expect(c.archetype).toBe("establecida");

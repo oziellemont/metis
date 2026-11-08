@@ -85,7 +85,7 @@ describe("desplegables dependientes", () => {
 describe("disponibilidad: «Próximamente» bloquea", () => {
   it("solo es jugable lo que tiene paquete existente, métricas y un tipo soportado", () => {
     const playable = all.filter((i) => i.availability === "available");
-    expect(playable.map((i) => i.contentPackId).sort()).toEqual(["brasa", "cumbre", "forja", "kubit", "puntomadero", "vertice"]);
+    expect([...new Set(playable.map((i) => i.contentPackId))].sort()).toEqual(["brasa", "cumbre", "forja", "kubit", "puntomadero", "vertice"]);
     for (const i of playable) {
       expect(COMPANIES.some((c) => c.id === i.contentPackId)).toBe(true);
       expect(i.metricProfileId).toBeTruthy();

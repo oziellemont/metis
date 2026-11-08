@@ -48,6 +48,8 @@ export interface IndustrySeed {
   focus?: boolean;
   /** Ramas concretas dentro de la industria (botanas, arneses, 3PL…). Dan color a nombres y casos; no son otra industria. */
   specialties?: string[];
+  /** Especialidad que se usa si el jugador no elige ninguna (cuando el paquete se escribió para otra rama). */
+  defaultSpecialty?: string;
 }
 export interface SectorSeed {
   id: string;
@@ -72,6 +74,7 @@ export interface Industry {
   availability: Availability;
   focus: boolean;
   specialties: string[];
+  defaultSpecialty?: string;
 }
 export interface Sector {
   id: string;
@@ -90,6 +93,7 @@ const SECTOR_DATA: SectorSeed[] = [
     { id: "alimentos_bebidas", label: "Alimentos y bebidas", aliases: ["alimentos", "bebidas", "snacks", "botanas", "lacteos", "panaderia", "refrescos", "consumo masivo", "food"], pack: "cumbre", archetypes: ["pyme", "establecida"], offer: ["establecida"], metric: "alimentos", focus: true, specialties: ["Botanas y snacks", "Panadería y galletas", "Lácteos", "Bebidas no alcohólicas", "Salsas y condimentos", "Alimentos congelados", "Café"] },
     { id: "autopartes", label: "Autopartes", aliases: ["autopartes", "auto parts", "tier 1", "proveedor automotriz", "automotriz"], pack: "forja", archetypes: ["establecida"], metric: "autopartes", focus: true, specialties: ["Estampado y soldadura", "Inyección de plástico automotriz", "Arneses eléctricos", "Frenos y suspensión", "Interiores"] },
     { id: "manufactura_general", label: "Manufactura industrial general", aliases: ["manufactura", "fabrica", "planta", "industrial", "maquila", "metalmecanica", "plasticos", "empaques"], metric: "manufactura", focus: true, specialties: ["Metalmecánica", "Plásticos y empaques", "Maquinaria y equipo", "Manufactura por contrato", "Muebles y mobiliario"] },
+    { id: "metalica_basica", label: "Metálica básica y productos de metal", aliases: ["acero", "aceria", "acerera", "siderurgia", "fundicion", "varilla", "palanquilla", "aluminio", "estructuras metalicas", "metalica basica"], pack: "forja", archetypes: ["establecida"], metric: "autopartes", specialties: ["Acería de hornos de inducción"], defaultSpecialty: "Acería de hornos de inducción" },
     { id: "electronica", label: "Electrónica y componentes", aliases: ["electronica", "semiconductores"] },
     { id: "quimica_farmaceutica", label: "Química y farmacéutica", aliases: ["quimica", "farmaceutica", "laboratorio farmaceutico"] },
     { id: "textil_confeccion", label: "Textil, confección y calzado", aliases: ["textil", "ropa", "calzado", "moda"] },
@@ -187,7 +191,7 @@ const toIndustry = (s: SectorSeed, i: IndustrySeed): Industry => {
     id: i.id, sectorId: s.id, label: i.label, family: s.family, aliases: i.aliases ?? [],
     contentPackId: i.pack, metricProfileId: i.metric, supportedArchetypes: supported,
     offeredArchetypes: supported.filter((a) => (OFFERED_TYPES as readonly string[]).includes(a) && (!i.offer || i.offer.includes(a))),
-    availability: supported.length ? "available" : "coming_soon", focus: !!i.focus, specialties: i.specialties ?? [],
+    availability: supported.length ? "available" : "coming_soon", focus: !!i.focus, specialties: i.specialties ?? [], ...(i.defaultSpecialty ? { defaultSpecialty: i.defaultSpecialty } : {}),
   };
 };
 

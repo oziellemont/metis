@@ -8,6 +8,7 @@ import type { Decision, OptionView } from "@/lib/ceo/growth/chains";
 import type { GrowthState } from "@/lib/ceo/growth/types";
 import { startOffers } from "@/lib/ceo/growth/finance";
 import { impactOf, money, short, type Impact } from "@/lib/ceo/growth/ops";
+import { growthLesson, type GrowthLesson } from "@/lib/ceo/growth/learning";
 
 const initials = (s: string) => s.split(/[\s·]+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase();
 
@@ -33,6 +34,7 @@ export function GrowthCase({ g, k, options, decisions, onDecide, index = 0 }: { 
   const [more, setMore] = useState(false);
   const [call, setCall] = useState(false);
   const [done, setDone] = useState<string | null>(null);
+  const [lesson, setLesson] = useState<GrowthLesson | null>(null);
   const impacts = useMemo(() => Object.fromEntries(options.map((o) => [o.id, o.ok ? impactOf(g, k.id, o.id, decisions) : null])), [g, k.id, options, decisions]);
   const bank = options.filter((o) => o.via === "banco");
   const plain = options.filter((o) => o.via !== "banco");
@@ -40,15 +42,33 @@ export function GrowthCase({ g, k, options, decisions, onDecide, index = 0 }: { 
   const subject = k.subjectOf ? k.subjectOf(g) : k.subject;
   const lead = k.lead ? k.lead(g) : k.body(g)[0];
   const chosen = options.find((o) => o.id === pick);
-  const go = (id: string) => { if (onDecide(id)) setDone(options.find((o) => o.id === id)?.short ?? ""); };
+  const go = (id: string) => { const L = growthLesson(g, k, id, (x) => impacts[x] ?? null); if (onDecide(id)) { setLesson(L); setDone(options.find((o) => o.id === id)?.short ?? ""); } };
   const Icon = k.chain === "finanzas" ? Landmark : k.chain === "operacion" && /abrir|expandir|zona/i.test(k.id + subject) ? Building2 : Users;
 
-  if (done !== null) return (
-    <div className="rounded-3xl bg-ink text-white p-5 flex items-center gap-3 ceo-pop" data-testid="caso-decidido">
-      <span className="h-9 w-9 rounded-full bg-mint grid place-items-center shrink-0"><Check size={18} strokeWidth={3} /></span>
-      <div className="min-w-0"><div className="text-sm font-semibold">{done}</div><div className="text-xs text-white/60">Decidido. Lo verás en los números de los próximos días.</div></div>
-    </div>
-  );
+  if (done !== null) {
+    const L = lesson;
+    const tone = L?.verdict === "solida" ? "bg-mint" : L?.verdict === "aceptable" ? "bg-amber-400" : "bg-coral";
+    const label = L?.verdict === "solida" ? "Decisión sólida" : L?.verdict === "aceptable" ? "Decisión aceptable" : "Decisión con riesgo";
+    return (
+      <div className="rounded-3xl bg-ink text-white p-5 ceo-pop space-y-3" data-testid="caso-decidido">
+        <div className="flex items-center gap-3">
+          <span className={clsx("h-9 w-9 rounded-full grid place-items-center shrink-0", L ? tone : "bg-mint")}><Check size={18} strokeWidth={3} /></span>
+          <div className="min-w-0"><div className="text-sm font-semibold">{done}</div><div className="text-xs text-white/60">{L ? label : "Decidido"}. Lo verás en los números de los próximos días.</div></div>
+        </div>
+        {L && (
+          <div className="grid gap-2 text-xs" data-testid="aprendizaje">
+            <div><span className="text-white/50">Ganaste: </span>{L.gained.join(" · ")}</div>
+            {L.sacrificed.length > 0 && <div><span className="text-white/50">Sacrificaste: </span>{L.sacrificed.join(" · ")}</div>}
+            {L.otherPath && <div><span className="text-white/50">Otro camino: </span>{L.otherPath}</div>}
+            <div className="rounded-2xl bg-white/10 p-3 leading-snug"><span className="font-semibold">Principio: </span>{L.principle}</div>
+            <div className="flex flex-wrap gap-1.5 pt-1">
+              {[L.tags.industria, L.tags.funcion, ...L.tags.competencias].filter(Boolean).map((t) => <span key={t} className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] text-white/70">{t}</span>)}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <article className="rounded-3xl border border-slate-100 bg-white p-4 sm:p-5 tree-pop" style={{ animationDelay: `${index * 120}ms` }} data-testid="caso-crecimiento">
