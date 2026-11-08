@@ -12,7 +12,7 @@ import { GrowthPanel } from "./GrowthPanel";
 import { KpiBoard } from "./KpiBoard";
 import { CompanyMark } from "./ui";
 import { NAME_MAX } from "@/lib/ceo/career/identity";
-import { effectiveShort } from "@/lib/ceo/career/setup";
+import { effectiveShort, growthFactsOf, growthSummaryOf } from "@/lib/ceo/career/setup";
 import { industryOf } from "@/lib/ceo/career/taxonomy";
 
 /** Tu empresa: ficha, mapa de relaciones, cómo se mide y glosario de la industria. */
@@ -23,6 +23,8 @@ export function CompanyView() {
   const canSwitch = !c.continuous && Object.keys(c.s.decisions).length === 0 && (c.s.career ?? []).length === 0;
   const prof = c.s.companyProfile;
   const industry = prof ? industryOf(prof.sectorId, prof.industryId)?.label ?? pk.industry : pk.industry;
+  // Empresa emergente: la descripción y los datos salen de la plantilla del motor (no de la empresa grande del paquete).
+  const growthSel = c.s.growth && prof ? { growth: true, sectorId: prof.sectorId, industryId: prof.industryId } : null;
   const terms = pk.glossary.filter((g) => !q || (g.term + g.def).toLowerCase().includes(q.toLowerCase()));
 
   return (
@@ -33,11 +35,11 @@ export function CompanyView() {
           <div className="min-w-0">
             <div className="text-[11px] font-semibold uppercase tracking-wider text-indigo">{industry}{prof?.specialty ? ` · ${prof.specialty}` : ""} · {pk.city}</div>
             <h1 className="text-2xl font-semibold text-ink">{pk.name}</h1>
-            <p className="mt-2 text-sm text-slate-600 leading-relaxed">{pk.pitch}</p>
+            <p className="mt-2 text-sm text-slate-600 leading-relaxed">{growthSel ? growthSummaryOf(growthSel) ?? pk.pitch : pk.pitch}</p>
           </div>
         </div>
         <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {pk.facts.map(([k, v]) => <div key={k} className="rounded-2xl bg-canvas p-3.5"><div className="text-[11px] text-slate-400">{k}</div><div className="mt-0.5 text-sm font-semibold text-ink">{v}</div></div>)}
+          {((growthSel && growthFactsOf(growthSel)) || pk.facts).map(([k, v]) => <div key={k} className="rounded-2xl bg-canvas p-3.5"><div className="text-[11px] text-slate-400">{k}</div><div className="mt-0.5 text-sm font-semibold text-ink">{v}</div></div>)}
         </div>
         {c.continuous && prof && <Rename name={prof.displayName} short={prof.shortName} />}
         {canSwitch && (
