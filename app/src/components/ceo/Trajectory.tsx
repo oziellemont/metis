@@ -1,6 +1,6 @@
 "use client";
 import clsx from "clsx";
-import { AlertTriangle, Flag, Milestone as MilestoneIcon, RefreshCw, ShieldCheck, Sparkles } from "lucide-react";
+import { AlertTriangle, Check, Flag, Lock, Milestone as MilestoneIcon, RefreshCw, ShieldCheck, Sparkles } from "lucide-react";
 import { KPI_KEYS } from "@/lib/ceo/engine";
 import { COMPANY_STAGES } from "@/lib/ceo/career/identity";
 import type { MilestoneKind, Trajectory as T } from "@/lib/ceo/trajectory";
@@ -45,10 +45,23 @@ export function Trajectory({ t, short, now, kpiLabel }: { t: T; short: string; n
             </div>
           )}
           {t.active && (
-            <ol aria-label="Capítulos de la empresa" className="mt-6 flex flex-wrap gap-1.5 text-[11px]">
-              {COMPANY_STAGES.map((st, i) => (
-                <li key={st.id} className={clsx("rounded-full px-2.5 py-1", i === t.chapter.idx ? "bg-white text-ink font-semibold" : i < t.chapter.idx ? "bg-white/15 text-white/80" : "bg-white/[.06] text-white/45")}>{st.label}</li>
-              ))}
+            <ol aria-label="Capítulos de la empresa" data-testid="ruta-etapas" className="mt-6 grid gap-0 sm:grid-cols-6">
+              {COMPANY_STAGES.map((st, i) => {
+                const done = i < t.chapter.idx, now = i === t.chapter.idx, last = i === COMPANY_STAGES.length - 1;
+                return (
+                  <li key={st.id} aria-current={now ? "step" : undefined} className={clsx("relative flex sm:flex-col items-center sm:items-start gap-3 sm:gap-2 pb-4 sm:pb-0 sm:pr-2", !done && !now && "opacity-50")}>
+                    {/* Hilo que conecta con la siguiente etapa: vertical en móvil, horizontal en escritorio. */}
+                    {!last && <span aria-hidden className={clsx("absolute left-4 top-8 bottom-0 w-0.5 sm:left-8 sm:right-0 sm:top-4 sm:bottom-auto sm:h-0.5 sm:w-auto", done ? "bg-mint" : "bg-white/15")} />}
+                    <span className={clsx("relative z-10 h-8 w-8 shrink-0 rounded-full grid place-items-center text-xs font-semibold", done ? "bg-mint text-white" : now ? "bg-white text-indigo ring-4 ring-white/20" : "bg-white/10 text-white/60")}>
+                      {done ? <Check size={14} strokeWidth={3} /> : now ? i + 1 : <Lock size={12} />}
+                    </span>
+                    <span className="min-w-0">
+                      <span className={clsx("block text-[12px] leading-snug", now ? "font-semibold text-white" : done ? "text-white/85" : "text-white/70")}>{st.label}</span>
+                      <span className="block text-[10.5px] text-white/50">{done ? "Superada" : now ? "Etapa actual" : "Por desbloquear"}</span>
+                    </span>
+                  </li>
+                );
+              })}
             </ol>
           )}
           {t.active && t.chapter.next && <p className="mt-3 text-[12px] text-white/55 max-w-2xl">{t.chapter.next.text} Los capítulos describen el momento de {short}, no un rango tuyo.</p>}

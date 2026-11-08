@@ -187,12 +187,10 @@ export function trajectoryOf(s: CeoState, now: number): Trajectory {
   };
 }
 
-/** Última línea de hito o compromiso para el resumen de Hoy (lo más relevante que sigue abierto, o el último hito). */
+/** Compromiso abierto más relevante para el resumen de Hoy. Si no hay ninguno, no se muestra nada. */
 export function headlineOf(t: Trajectory): { label: string; text: string } | null {
   const c = t.open.find((x) => x.kind === "consecuencia") ?? t.open.find((x) => x.kind === "reporte");
-  if (c) return { label: "Compromiso abierto", text: c.subject };
-  const m = t.milestones.at(-1);
-  return m ? { label: "Último hito", text: m.title } : null;
+  return c ? { label: "Compromiso abierto", text: c.subject } : null;
 }
 
 /**
