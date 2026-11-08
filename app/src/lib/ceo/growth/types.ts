@@ -124,6 +124,8 @@ export interface Site {
   backlog: number;
   buildDoneDay?: number;
   openedDay?: number;
+  /** Gracia negociada con el arrendador: no se paga renta antes de este día. */
+  rentFreeUntil?: number;
   ref?: string;
 }
 
@@ -137,7 +139,7 @@ export interface Entry { id: string; type: EntryType; account: string; month: nu
 export interface Scheduled { id: string; day: number; account: string; amount: number; ref?: string; text: string }
 
 export type EventKind = "vacante" | "incorporacion" | "renuncia" | "baja" | "obra" | "obra_terminada" | "apertura" | "activo" | "turno" | "contrato" | "aguinaldo" | "sin_personal"
-  | "alerta_liquidez" | "crisis_liquidez" | "liquidez_resuelta" | "vencido" | "decision_financiera" | "rechazo" | "recorte" | "proveedor";
+  | "alerta_liquidez" | "crisis_liquidez" | "liquidez_resuelta" | "vencido" | "decision_financiera" | "rechazo" | "recorte" | "proveedor" | "incumplimiento" | "cancelacion";
 
 /** A quién se le debe. Cada acreedor reacciona distinto a un atraso. */
 export type Creditor = "personal" | "fisco" | "arrendador" | "proveedores" | "banco" | "otros";
@@ -152,7 +154,7 @@ export interface GEvent { day: number; kind: EventKind; text: string; ref?: stri
 export interface MonthSummary {
   month: number;
   revenue: number; cogs: number; variable: number; payroll: number; employer: number; payrollTax: number; provision: number;
-  coverage: number; rent: number; utilities: number; fixed: number; hiring: number; severance: number; preopening: number; depreciation: number;
+  coverage: number; rent: number; utilities: number; fixed: number; hiring: number; severance: number; preopening: number; penalties: number; depreciation: number;
   ebitda: number; operating: number;
   /** Intereses, comisiones, factoraje, recargos y moratorios (debajo del EBITDA). */
   financial: number;
@@ -211,7 +213,7 @@ export interface GrowthState {
 export type Command =
   | { type: "hire"; id: string; roleId: string; siteId: string | null; salary?: number }
   | { type: "terminate"; id: string; personId: string; kind?: import("./labor").TerminationKind; refusesReinstatement?: boolean }
-  | { type: "open_site"; id: string; name: string; rent: number; utilities: number; deposit: number; capex: number; years: number; buildDays: number; assets: Record<string, number>; demandBase: number; maturityDays: number; preopening: number; demandFactor?: number }
+  | { type: "open_site"; id: string; name: string; rent: number; utilities: number; deposit: number; capex: number; years: number; buildDays: number; assets: Record<string, number>; demandBase: number; maturityDays: number; preopening: number; demandFactor?: number; rentFreeDays?: number }
   | { type: "add_asset"; id: string; siteId: string; label: string; resource: string; units: number; cost: number; years: number; leadDays: number }
   | { type: "set_shifts"; id: string; siteId: string; shifts: number }
   | { type: "add_contract"; id: string; client: string; unitsPerDay: number; price: number; startInDays: number }

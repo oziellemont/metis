@@ -195,7 +195,7 @@ export function apply(s: GrowthState, cmd: Command): ApplyResult {
       const upfront = pesos(cmd.deposit) + pesos(cmd.capex);
       if (s.cash < upfront) return { ok: false, reason: `Firmar el local y arrancar la obra exige pagar hoy $${fmt(upfront)} (depósito y acondicionamiento); la caja tiene $${fmt(s.cash)}.` };
       const id = `site${s.nextId++}`;
-      s.sites.push({ id, name: cmd.name, status: "en_obra", assets: {}, shifts: 1, rent: pesos(cmd.rent), utilities: pesos(cmd.utilities), demandBase: cmd.demandBase, demandFactor: cmd.demandFactor ?? 0.75 + 0.4 * hash01(`${s.seed}|${cmd.id}|demanda`), maturityDays: cmd.maturityDays, reputation: 1, backlog: 0, buildDoneDay: s.day + cmd.buildDays, ref: cmd.id });
+      s.sites.push({ id, name: cmd.name, status: "en_obra", assets: {}, shifts: 1, rent: pesos(cmd.rent), utilities: pesos(cmd.utilities), demandBase: cmd.demandBase, demandFactor: cmd.demandFactor ?? 0.75 + 0.4 * hash01(`${s.seed}|${cmd.id}|demanda`), maturityDays: cmd.maturityDays, reputation: 1, backlog: 0, buildDoneDay: s.day + cmd.buildDays, rentFreeUntil: cmd.rentFreeDays ? s.day + cmd.rentFreeDays : undefined, ref: cmd.id });
       cashMove(s, "deposito", -pesos(cmd.deposit), `Depósito en garantía de ${cmd.name}`, cmd.id);
       cashMove(s, "inversion", -pesos(cmd.capex), `Acondicionamiento y equipo de ${cmd.name}`, cmd.id);
       for (const [res, units] of Object.entries(cmd.assets)) s.assets.push({ id: `a${s.nextId++}`, siteId: id, label: `Equipo de ${cmd.name}`, resource: res, units, cost: Math.round(pesos(cmd.capex) / Object.keys(cmd.assets).length), years: cmd.years, activeDay: s.day + cmd.buildDays, active: false, ref: cmd.id });
@@ -346,7 +346,10 @@ function closeMonth(s: GrowthState, L: ReturnType<typeof laborOf>) {
   schedule(s, (m + 1) * MONTH + 16, "isn", -isn, "Pago del impuesto sobre nómina del mes anterior");
   for (const site of s.sites) {
     if (site.status === "cerrada") continue;
-    post(s, "devengo", "renta", -site.rent, `Renta de ${site.name}`, site.id); pay(s, "renta", site.rent, `Renta de ${site.name}`, site.id);
+    // Gracia de renta: se prorratea por los días del mes que quedan fuera del periodo sin renta.
+    const free = site.rentFreeUntil !== undefined ? clamp(site.rentFreeUntil - m * MONTH, 0, MONTH) : 0;
+    const rent = Math.round((site.rent * (MONTH - free)) / MONTH);
+    if (rent) { post(s, "devengo", "renta", -rent, `Renta de ${site.name}`, site.id); pay(s, "renta", rent, `Renta de ${site.name}`, site.id); }
     if (site.status === "operando") { post(s, "devengo", "servicios", -site.utilities, `Servicios de ${site.name}`, site.id); pay(s, "servicios", site.utilities, `Servicios de ${site.name}`, site.id); }
   }
   for (const f of s.fixedLines) { post(s, "devengo", "fijos", -f.amount, f.label, f.id); pay(s, "fijos", f.amount, f.label, f.id); }
@@ -359,8 +362,38 @@ function closeMonth(s: GrowthState, L: ReturnType<typeof laborOf>) {
     for (const p of s.people) if (active(p, d)) p.provision = 0;
     s.events.push({ day: d, kind: "aguinaldo", text: "Se paga el aguinaldo: la caja lo resiente aunque el gasto ya estaba en los meses anteriores." });
   }
+  deliveryConsequences(s);
   s.months.push(summarize(s, m));
   s.cur = { demand: 0, served: 0, lost: 0, capacity: 0, scrap: 0, bottlenecks: {}, cashBegin: s.cash };
+}
+
+/**
+ * Manufactura: incumplir entregas tiene costo contractual. Supuestos de contrato (fase 2):
+ *  - Cumplimiento < 95 % en el mes: la relación con clientes baja y se cobra una penalización del 3 % sobre lo no entregado.
+ *  - Dos meses seguidos < 85 %: el cliente más reciente cancela su contrato (lo nuevo es lo primero que se pierde).
+ */
+export const DELIVERY = Object.freeze({ okFill: { value: 0.95, basis: "Nivel de servicio típico exigido por armadoras/Tier 1" }, penalty: { value: 0.03, basis: "Penalización contractual por incumplimiento (supuesto referencial)" }, cancelFill: { value: 0.85, basis: "Umbral de cancelación tras dos meses (supuesto referencial)" } });
+function deliveryConsequences(s: GrowthState) {
+  if (s.family !== "manufactura") return;
+  const fillOf = (demand: number, served: number) => (demand ? served / demand : 1);
+  const f = fillOf(s.cur.demand, s.cur.served);
+  const prev = s.months.at(-1);
+  if (f >= DELIVERY.okFill.value) { s.relations.clients = clamp(s.relations.clients + 0.02, 0, 1); return; }
+  s.relations.clients = clamp(s.relations.clients - (DELIVERY.okFill.value - f), 0, 1);
+  const live = s.contracts.filter((c) => c.startDay <= s.day);
+  const units = live.reduce((a, c) => a + c.unitsPerDay, 0);
+  const price = units ? live.reduce((a, c) => a + c.price * c.unitsPerDay, 0) / units : 0;
+  const penalty = Math.round((s.cur.demand - s.cur.served) * price * DELIVERY.penalty.value);
+  if (penalty > 0) {
+    post(s, "devengo", "penalizaciones", -penalty, "Penalización por entregas incompletas");
+    pay(s, "penalizaciones", penalty, "Penalización por entregas incompletas");
+    if (!s.projecting) s.events.push({ day: s.day, kind: "incumplimiento", text: `Se entregó el ${Math.round(f * 100)} % de lo comprometido. Los clientes aplican una penalización de $${fmt(penalty)} y la relación se deteriora.` });
+  }
+  if (prev && fillOf(prev.demand, prev.served) < DELIVERY.cancelFill.value && f < DELIVERY.cancelFill.value && live.length > 1) {
+    const newest = [...live].sort((a, b) => b.startDay - a.startDay)[0];
+    s.contracts = s.contracts.filter((c) => c !== newest);
+    s.events.push({ day: s.day, kind: "cancelacion", text: `${newest.client} cancela su contrato de ${newest.unitsPerDay.toLocaleString("en-US")} piezas al día después de dos meses de entregas incompletas.`, ref: newest.ref });
+  }
 }
 
 function summarize(s: GrowthState, m: number): MonthSummary {
@@ -370,12 +403,12 @@ function summarize(s: GrowthState, m: number): MonthSummary {
   const outflows = -cashE.filter((e) => e.amount < 0).reduce((a, e) => a + e.amount, 0);
   const g = (k: string) => -acc("devengo", k);
   const revenue = acc("devengo", "ventas");
-  const ebitda = revenue - ["costo_ventas", "variables", "nomina", "cobertura", "cuotas", "isn", "provision", "renta", "servicios", "fijos", "contratacion", "indemnizacion", "preapertura"].reduce((a, k) => a + g(k), 0);
+  const ebitda = revenue - ["costo_ventas", "variables", "nomina", "cobertura", "cuotas", "isn", "provision", "renta", "servicios", "fijos", "contratacion", "indemnizacion", "preapertura", "penalizaciones"].reduce((a, k) => a + g(k), 0);
   const financial = ["intereses", "comisiones", "factoraje", "recargos", "moratorios"].reduce((a, k) => a + g(k), 0);
   const top = Object.entries(s.cur.bottlenecks).sort((a, b) => b[1] - a[1])[0];
   return {
     month: m + 1, revenue, cogs: g("costo_ventas"), variable: g("variables"), payroll: g("nomina"), employer: g("cuotas"), payrollTax: g("isn"), provision: g("provision"),
-    coverage: g("cobertura"), rent: g("renta"), utilities: g("servicios"), fixed: g("fijos"), hiring: g("contratacion"), severance: g("indemnizacion"), preopening: g("preapertura"), depreciation: g("depreciacion"),
+    coverage: g("cobertura"), rent: g("renta"), utilities: g("servicios"), fixed: g("fijos"), hiring: g("contratacion"), severance: g("indemnizacion"), preopening: g("preapertura"), penalties: g("penalizaciones"), depreciation: g("depreciacion"),
     ebitda, operating: ebitda - g("depreciacion"), financial,
     cashBegin: s.cur.cashBegin, inflows, outflows, cashEnd: s.cash,
     receivables: s.scheduled.filter((x) => x.account === "cobro").reduce((a, x) => a + x.amount, 0),
