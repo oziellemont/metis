@@ -1,0 +1,12 @@
+startup conservadora A1 ventas 169 EBITDA 9.8 oper 5.6 neta 3.5 FL 5.4 caja12 8.9 | 24m caja min 4.1 final 12.4
+startup equilibrada A1 ventas 200 EBITDA 12.3 oper 8.1 neta 4.9 FL 0.8 caja12 5.1 | 24m caja min 2.0 final 8.9
+startup agresiva A1 ventas 257 EBITDA 16.2 oper 12.0 neta 6.8 FL -3.7 caja12 3.5 | 24m caja min 0.7 final 6.6
+consolidada conservadora A1 ventas 868 EBITDA 123.7 oper 88.9 neta 51.5 FL 75.2 caja12 81.1 | 24m caja min 30.3 final 130.5
+consolidada equilibrada A1 ventas 868 EBITDA 131.9 oper 96.1 neta 56.1 FL 81.2 caja12 75.1 | 24m caja min 29.9 final 131.0
+consolidada agresiva A1 ventas 946 EBITDA 137.6 oper 99.5 neta 54.8 FL 46.9 caja12 33.4 | 24m caja min 11.5 final 95.8
+startup_estres conservadora A1 ventas 167 EBITDA 7.3 oper 3.1 neta 1.7 FL 4.5 caja12 8.0 | 24m caja min 3.2 final 6.0
+startup_estres equilibrada A1 ventas 197 EBITDA 9.3 oper 5.1 neta 2.8 FL -0.0 caja12 4.3 | 24m caja min -2.0 final 2.0
+startup_estres agresiva A1 ventas 253 EBITDA 12.1 oper 7.9 neta 4.2 FL -4.6 caja12 2.5 | 24m caja min -6.1 final -1.6
+consolidada_estres conservadora A1 ventas 855 EBITDA 111.0 oper 76.2 neta 43.6 FL 73.9 caja12 79.8 | 24m caja min 30.3 final 106.6
+consolidada_estres equilibrada A1 ventas 855 EBITDA 119.3 oper 83.5 neta 48.1 FL 79.9 caja12 73.8 | 24m caja min 29.9 final 107.1
+consolidada_estres agresiva A1 ventas 930 EBITDA 121.6 oper 83.5 neta 44.7 FL 45.8 caja12 32.3 | 24m caja min 11.5 final 65.7
