@@ -19,6 +19,8 @@
 import { STEEL as K, TERMS, BASE, TEMPLATES_V2, isProductionDay, marketIndex, type Product, type Scenario, type SteelTemplate } from "./params";
 
 export const STEEL_MODEL_VERSION = 1;
+/** Rendimiento anual de la caja invertida a la vista (pagaré bancario, neto). */
+export const CASH_YIELD = 0.07;
 export const MONTH = 30;
 const PRE_DAYS = 420;
 const c = (pesos: number) => Math.round(pesos * 100);
@@ -38,7 +40,7 @@ export interface Sched { day: number; dir: "in" | "out"; acc: string; creditor?:
 export interface Overdue { acc: string; creditor: Creditor; amount: number; since: number; label: string }
 export interface SLoan { id: string; lender: string; balance: number; rate: number; monthsLeft: number; startDay: number; ref: string }
 export interface Crew { label: string; n: number; gross: number; perShift: number; ramp: { n: number; since: number }[] }
-export interface Mod { key: "scrapPrice" | "yieldMelt" | "energy" | "availability" | "maquilaFee" | "demand" | "safety"; add?: number; mult?: number; until: number; ref: string }
+export interface Mod { key: "scrapPrice" | "yieldMelt" | "energy" | "availability" | "maquilaFee" | "demand" | "safety" | "consumables"; add?: number; mult?: number; from?: number; until: number; ref: string }
 export interface SEvent { day: number; kind: string; text: string; ref?: string }
 export type Liquidity = "sana" | "alerta" | "crisis";
 
@@ -76,17 +78,19 @@ export interface SteelState {
   equity: number;
   events: SEvent[];
   months: SteelMonth[];
-  cur: { demand: number; sold: number; short: number; produced: number; capacity: number; cashBegin: number; lowFillPrev: boolean };
+  cur: { demand: number; sold: number; short: number; produced: number; capacity: number; cashBegin: number; lowFillPrev: boolean; cashSum: number };
   applied: string[];
   nextId: number;
   liquidity: Liquidity;
+  /** Efectos diferidos de una decisión (se aplican el día indicado, con el mismo motor). */
+  pending: { day: number; cmd: SteelCommand }[];
 }
 
 // ───────────────────────────────────────────────────────── contabilidad
 /** Cuentas de resultados (todo lo demás es balance). */
-const PL = new Set(["ventas", "costo_ventas", "nomina", "cuotas", "aguinaldo", "renta", "servicios", "fijos", "fletes", "penalizaciones", "otros_gastos", "contratacion", "indemnizaciones", "depreciacion", "intereses", "recargos", "factoraje", "comisiones", "ptu", "isr", "otros_ingresos"]);
+const PL = new Set(["ventas", "costo_ventas", "nomina", "cuotas", "aguinaldo", "renta", "servicios", "fijos", "fletes", "penalizaciones", "otros_gastos", "contratacion", "indemnizaciones", "depreciacion", "intereses", "recargos", "factoraje", "comisiones", "ptu", "isr", "otros_ingresos", "rendimientos"]);
 const EBITDA_ACC = ["ventas", "costo_ventas", "nomina", "cuotas", "aguinaldo", "renta", "servicios", "fijos", "fletes", "penalizaciones", "otros_gastos", "contratacion", "indemnizaciones", "otros_ingresos"];
-const FIN_ACC = ["intereses", "recargos", "factoraje", "comisiones"];
+const FIN_ACC = ["intereses", "recargos", "factoraje", "comisiones", "rendimientos"];
 const LIAB = ["chatarra", "acreedores", "activo_por_pagar", "cfe", "imss", "aguinaldo_pp", "isr_pp", "ptu_pp", "deuda"];
 export const monthOf = (d: number) => Math.floor(d / MONTH);
 const calOf = (s: SteelState, d: number) => { const t = TEMPLATES_V2[s.templateId].startMonth - 1 + monthOf(d); return { month: (((t % 12) + 12) % 12) + 1, year: Math.floor(t / 12) }; };
@@ -150,7 +154,7 @@ function event(s: SteelState, kind: string, text: string, ref?: string) { if (s.
 // ───────────────────────────────────────────────────────── parámetros vivos (escenario y modificadores de casos)
 function modded(s: SteelState, key: Mod["key"], base: number): number {
   let v = base;
-  for (const m of s.mods) if (m.key === key && s.day < m.until) { if (m.mult !== undefined) v *= m.mult; if (m.add !== undefined) v += m.add; }
+  for (const m of s.mods) if (m.key === key && s.day < m.until && s.day >= (m.from ?? -Infinity)) { if (m.mult !== undefined) v *= m.mult; if (m.add !== undefined) v += m.add; }
   return v;
 }
 const scen = (s: SteelState) => (s.day >= 0 ? s.scenario : BASE);
@@ -189,8 +193,8 @@ export function createSteel(templateId: string, seed = "metis", scenario: Scenar
     relations: { staff: 0.8, suppliers: 0.8, bank: 0.8, owner: 0.8, clients: 0.8 },
     supply: { scrapCashOnly: false, scrapStopped: false, consumablesStopped: false, powerCut: false, scrapExtraDays: 0, scrapExtraUntil: 0, scrapPriceUp: 0 },
     mods: [], flags: {}, safety: 0.8, equity: 0, events: [], months: [],
-    cur: { demand: 0, sold: 0, short: 0, produced: 0, capacity: 0, cashBegin: 0, lowFillPrev: false },
-    applied: [], nextId: 1, liquidity: "sana",
+    cur: { demand: 0, sold: 0, short: 0, produced: 0, capacity: 0, cashBegin: 0, lowFillPrev: false, cashSum: 0 },
+    applied: [], nextId: 1, liquidity: "sana", pending: [],
   };
   // Capital inicial: activos fijos y una caja de arranque para operar la historia previa.
   const book = c(T.assets.reduce((a, x) => a + x.book, 0));
@@ -250,10 +254,15 @@ export function capacity(s: SteelState): Capacity {
   if (s.supply.powerCut) avail = 0;
   if (overdueTotal(s, "personal")) avail *= 0.88;
   avail *= 0.85 + 0.15 * s.relations.staff;
-  const melt = P.furnaces * P.tPerFurnaceShift * P.shifts * avail * crewFactor(s, "horno");
-  const caster = (P.casterTpd / P.templateShifts) * P.shifts * avail * crewFactor(s, "colada");
+  // El turno de noche rinde menos (fatiga, menos supervisión, mantenimiento correctivo sin apoyo de día).
+  const effShifts = P.shifts >= 3 ? P.shifts - 0.15 : P.shifts;
+  // Horno recién instalado: arranca al 50 % y llega a su capacidad en cuatro meses (curva de puesta en marcha).
+  const ramp = s.flags.furnaceRampSince !== undefined ? Math.min(1, 0.5 + 0.5 * (s.day - Number(s.flags.furnaceRampSince)) / 120) : 1;
+  const furnacesEff = P.furnaces - (1 - ramp);
+  const melt = furnacesEff * P.tPerFurnaceShift * effShifts * avail * crewFactor(s, "horno");
+  const caster = (P.casterTpd / P.templateShifts) * effShifts * avail * crewFactor(s, "colada");
   const billet = Math.min(melt, caster);
-  const rollingOwn = P.rollingActive ? P.rollingTpd * (s.supply.powerCut ? 0 : 1) * crewFactor(s, "laminacion") * Math.min(1, avail / 0.98) : 0;
+  const rollingOwn = P.rollingActive ? (P.rollingTpd + Number(s.flags.rollAdd ?? 0)) * (s.supply.powerCut ? 0 : 1) * crewFactor(s, "laminacion") * Math.min(1, avail / 0.98) : 0;
   const maquila = s.supply.consumablesStopped ? 0 : P.maquilaTpd;
   return { melt, caster, billet, rollingOwn, maquila, limit: s.supply.powerCut ? "corte de energía" : melt <= caster ? "hornos" : "colada" };
 }
@@ -262,6 +271,7 @@ export function capacity(s: SteelState): Capacity {
 function step(s: SteelState) {
   const d = s.day;
   activateAssets(s);
+  if (s.pending.length) { const due = s.pending.filter((x) => x.day <= d); if (due.length) { s.pending = s.pending.filter((x) => x.day > d); for (const x of due) applyInner(s, x.cmd); } }
   // 1. Cobros y pagos del día: primero entra el dinero, luego se paga por prioridad.
   const today = s.sched.filter((x) => x.day === d);
   if (today.length) s.sched = s.sched.filter((x) => x.day !== d);
@@ -272,6 +282,7 @@ function step(s: SteelState) {
   // 2. Operación.
   if (isProductionDay(d)) operate(s);
   // 3. Cierre de mes.
+  s.cur.cashSum += Math.max(0, cashOf(s));
   if ((d + 1) % MONTH === 0) closeMonth(s);
   s.day++;
 }
@@ -320,8 +331,9 @@ function operate(s: SteelState) {
   if (produce > 0) {
     const scrapUse = produce * spb;
     const scrapCost = takeAvg(s, "scrap", scrapUse);
-    const alloys = Math.round(produce * c(K.alloys.value));
-    const refr = Math.round(produce * c(K.refractories.value));
+    const cons = modded(s, "consumables", 1);
+    const alloys = Math.round(produce * c(K.alloys.value) * cons);
+    const refr = Math.round(produce * c(K.refractories.value) * cons);
     const energy = Math.round((produce / K.yieldCast.value) * K.kwhPerLiquidTon.value * c(px.kwh));
     tx(s, [["inventario", alloys + refr + energy], ["acreedores", -(alloys + refr)], ["cfe", -energy]]);
     s.cfeUnbilled += energy;
@@ -354,7 +366,7 @@ function operate(s: SteelState) {
 const dem = (k: SContract, px: { demand: number; steel: number }) => {
   const b = k.beta ?? 1;
   // Desviación de demanda amplificada por la beta; además, si el precio cae, el cliente de beta alta compra menos volumen.
-  return Math.max(0.3, 1 + (px.demand - 1) * b + (px.steel - 1) * 2 * (b - 1));
+  return Math.max(0.3, 1 + (px.demand - 1) * b + (px.steel - 1) * 2 * Math.max(0, b - 1));
 };
 
 function takeAvg(s: SteelState, kind: "scrap" | "billet" | "rebar", t: number): number {
@@ -449,7 +461,7 @@ function closeMonth(s: SteelState) {
   const cal = calOf(s, s.day);
   const next17 = (m + 1) * MONTH + 16;
   // Nómina: sueldos se pagan hoy; cuotas e ISN el 17 del mes siguiente; aguinaldo y prima se provisionan y se pagan en diciembre.
-  let gross = 0;
+  let gross = Number(s.flags.nightPremium ?? 0);
   for (const cr of Object.values(s.crews)) gross += cr.n * cr.gross;
   const load = Math.round(gross * K.employerLoad.value), xmas = Math.round(gross * K.christmasBonus.value);
   tx(s, [["nomina", gross], ["acreedores_nomina", -gross]]);
@@ -462,7 +474,9 @@ function closeMonth(s: SteelState) {
   const maint = scen(s).maintenance;
   tx(s, [["renta", s.rent], ["acreedores", -s.rent]]); schedule(s, s.day + 1, "out", "acreedores", s.rent, "Renta de planta", "acreedores");
   let fixed = 0;
-  for (const f of s.fixed) fixed += f.id === "mantenimiento" ? Math.round(f.amount * maint) : f.amount;
+  // Operar más turnos que los de diseño deja menos ventanas de mantenimiento preventivo: el correctivo cuesta 25 % más.
+  const extraShift = s.plant.shifts > s.plant.templateShifts ? 1.25 : 1;
+  for (const f of s.fixed) fixed += f.id === "mantenimiento" ? Math.round(f.amount * maint * extraShift) : f.amount;
   tx(s, [["fijos", fixed], ["acreedores", -fixed]]); schedule(s, s.day + 1, "out", "acreedores", fixed, "Gastos fijos de la empresa", "acreedores");
   tx(s, [["servicios", s.siteUtilities], ["cfe", -s.siteUtilities]]);
   const bill = s.cfeUnbilled + s.siteUtilities; s.cfeUnbilled = 0;
@@ -482,6 +496,9 @@ function closeMonth(s: SteelState) {
     payLiability(s, "deuda", "banco", interest + principal, `Pago del crédito con ${l.lender}`);
     l.balance -= principal; l.monthsLeft = Math.max(0, l.monthsLeft - 1);
   }
+  // Rendimiento de la caja: inversión a la vista en el banco (tasa neta de comisiones), sobre el saldo promedio del mes.
+  const yieldCash = Math.round((s.cur.cashSum / MONTH) * CASH_YIELD / 12);
+  if (yieldCash > 0) tx(s, [["caja", yieldCash], ["rendimientos", -yieldCash]], "financiamiento");
   // Penalizaciones por entregas incompletas y cancelación del contrato más reciente.
   const fill = s.cur.demand > 0 ? (s.cur.demand - s.cur.short) / s.cur.demand : 1;
   if (fill < 0.95 && s.day >= 0) {
@@ -511,7 +528,7 @@ function closeMonth(s: SteelState) {
   // Capital de trabajo y resumen.
   if (s.day >= 0) s.months.push(summary(s, m));
   updateLiquidity(s);
-  s.cur = { demand: 0, sold: 0, short: 0, produced: 0, capacity: 0, cashBegin: cashOf(s), lowFillPrev: s.cur.lowFillPrev };
+  s.cur = { demand: 0, sold: 0, short: 0, produced: 0, capacity: 0, cashBegin: cashOf(s), lowFillPrev: s.cur.lowFillPrev, cashSum: 0 };
 }
 /** Inversión: entra al activo fijo y se paga como inversión (no como operación). */
 function capex(s: SteelState, amount: number, inDays: number, label: string, ref?: string, parts: [number, number][] = [[1, inDays]]) {
@@ -664,7 +681,7 @@ export function reconcile(s: SteelState): Record<string, number> {
 // ───────────────────────────────────────────────────────── decisiones
 export type SteelCommand =
   | { type: "add_contract"; id: string; client: string; product: Product; tpd: number; price: number; dso: number; startInDays: number; payDelay?: number; beta?: number }
-  | { type: "change_contract"; id: string; contractId: string; price?: number; tpd?: number; dso?: number; payDelay?: number }
+  | { type: "change_contract"; id: string; contractId: string; price?: number; tpd?: number; dso?: number; payDelay?: number; beta?: number }
   | { type: "drop_contract"; id: string; contractId: string }
   | { type: "hire"; id: string; crew: string; n: number; gross?: number }
   | { type: "fire"; id: string; crew: string; n: number }
@@ -680,12 +697,19 @@ export type SteelCommand =
   | { type: "payment_plan"; id: string; months: number }
   | { type: "pause_capex"; id: string; on: boolean }
   | { type: "one_off"; id: string; label: string; amount: number; capex?: boolean; payInDays: number; account?: "otros_gastos" | "otros_ingresos" }
-  | { type: "modify"; id: string; key: Mod["key"]; add?: number; mult?: number; days: number }
+  | { type: "modify"; id: string; key: Mod["key"]; add?: number; mult?: number; days: number; inDays?: number }
   | { type: "maquila_capacity"; id: string; tpd: number }
   | { type: "safety"; id: string; delta: number }
   | { type: "downtime"; id: string; days: number }
   | { type: "flag"; id: string; key: string; value: string | number | boolean }
-  | { type: "relation"; id: string; key: keyof SteelState["relations"]; delta: number };
+  | { type: "relation"; id: string; key: keyof SteelState["relations"]; delta: number }
+  | { type: "later"; id: string; inDays: number; cmd: SteelCommand }
+  | { type: "add_fixed"; id: string; label: string; amount: number }
+  | { type: "remove_fixed"; id: string; fixedId: string }
+  | { type: "buy_scrap"; id: string; tons: number }
+  | { type: "expand_rolling"; id: string; capex: number; tpd: number; crew: number; leadDays: number }
+  | { type: "dividend"; id: string; amount: number }
+  | { type: "prepay_debt"; id: string; amount: number };
 
 export interface SteelResult { ok: boolean; reason?: string }
 const SEVERANCE_MONTHS = 4.2;
@@ -739,6 +763,7 @@ function applyInner(s: SteelState, cmd: SteelCommand): SteelResult {
       if (cmd.tpd !== undefined) k.tpd = cmd.tpd;
       if (cmd.dso !== undefined) k.dso = cmd.dso;
       if (cmd.payDelay !== undefined) k.payDelay = cmd.payDelay;
+      if (cmd.beta !== undefined) k.beta = cmd.beta;
       return { ok: true };
     }
     case "drop_contract": {
@@ -786,6 +811,8 @@ function applyInner(s: SteelState, cmd: SteelCommand): SteelResult {
         s.siteUtilities = Math.round(s.siteUtilities / (1 + 0.12 * (from - to)));
       }
       s.plant.shifts = to;
+      // Prima nocturna: la jornada de noche es de 7 horas y se paga como de 8 (LFT); se modela como 15 % sobre las cuadrillas de producción del tercer turno.
+      s.flags.nightPremium = to >= 3 ? crews.reduce((a, id) => a + Math.round(s.crews[id].perShift * s.crews[id].gross * 0.15), 0) : 0;
       event(s, "turno", `La planta pasa a ${to} turno${to > 1 ? "s" : ""}.`, cmd.id);
       return { ok: true };
     }
@@ -915,27 +942,76 @@ function applyInner(s: SteelState, cmd: SteelCommand): SteelResult {
       return { ok: true };
     }
     case "modify":
-      s.mods.push({ key: cmd.key, add: cmd.add, mult: cmd.mult, until: s.day + cmd.days, ref: cmd.id });
+      s.mods.push({ key: cmd.key, add: cmd.add, mult: cmd.mult, from: s.day + (cmd.inDays ?? 0), until: s.day + (cmd.inDays ?? 0) + cmd.days, ref: cmd.id });
       return { ok: true };
     case "maquila_capacity": s.plant.maquilaTpd = cmd.tpd; return { ok: true };
     case "safety": s.safety = clamp(s.safety + cmd.delta, 0.2, 0.98); return { ok: true };
     case "downtime": s.mods.push({ key: "availability", mult: 0, until: s.day + cmd.days, ref: cmd.id }); return { ok: true };
     case "flag": s.flags[cmd.key] = cmd.value; return { ok: true };
     case "relation": s.relations[cmd.key] = clamp(s.relations[cmd.key] + cmd.delta); return { ok: true };
+    case "later": s.pending.push({ day: s.day + Math.max(1, cmd.inDays), cmd: cmd.cmd }); return { ok: true };
+    case "add_fixed": s.fixed.push({ id: cmd.id, label: cmd.label, amount: c(cmd.amount) }); return { ok: true };
+    case "remove_fixed": s.fixed = s.fixed.filter((f) => f.id !== cmd.fixedId); return { ok: true };
+    case "buy_scrap": {
+      if (s.supply.scrapStopped) return { ok: false, reason: "Los chatarreros tienen suspendidas las entregas." };
+      const px = prices(s);
+      const v = Math.round(cmd.tons * c(px.scrap));
+      if (s.supply.scrapCashOnly) {
+        if (v > cashOf(s)) return { ok: false, reason: `Solo venden de contado y la compra cuesta $${fmt(v)}; la caja tiene $${fmt(cashOf(s))}.` };
+        tx(s, [["inventario", v], ["caja", -v]]);
+      } else {
+        tx(s, [["inventario", v], ["chatarra", -v]]);
+        schedule(s, s.day + TERMS.scrap + s.supply.scrapExtraDays, "out", "chatarra", v, "Compra adelantada de chatarra", "chatarra", cmd.id);
+      }
+      s.inv.scrapT += cmd.tons; s.inv.scrapV += v;
+      event(s, "compra", `Se compran ${Math.round(cmd.tons).toLocaleString("en-US")} t de chatarra adelantadas por $${fmt(v)}.`, cmd.id);
+      return { ok: true };
+    }
+    case "expand_rolling": {
+      if (!s.plant.rollingActive) return { ok: false, reason: "La planta no tiene laminador propio." };
+      const cost = c(cmd.capex);
+      if (cashOf(s) < cost * 0.4) return { ok: false, reason: `El anticipo (40 %) es de $${fmt(Math.round(cost * 0.4))}; la caja tiene $${fmt(cashOf(s))}.` };
+      capex(s, cost, 0, "Ampliación del tren de laminación", cmd.id, [[0.4, 10], [0.6, cmd.leadDays]]);
+      s.pending.push({ day: s.day + cmd.leadDays, cmd: { type: "flag", id: `${cmd.id}:on`, key: "rollAdd", value: cmd.tpd } });
+      s.pending.push({ day: s.day + cmd.leadDays, cmd: { type: "hire", id: `${cmd.id}:crew`, crew: "laminacion", n: cmd.crew } });
+      event(s, "inversion", `Se amplía el laminador en ${cmd.tpd} t diarias: queda listo en ${cmd.leadDays} días.`, cmd.id);
+      return { ok: true };
+    }
+    case "dividend": {
+      const x = c(cmd.amount);
+      const reserve = Object.values(s.crews).reduce((a, cr) => a + cr.n * cr.gross, 0) * 2;
+      if (s.overdue.length) return { ok: false, reason: "Con adeudos vencidos no se pueden repartir dividendos." };
+      if (cashOf(s) - x < reserve) return { ok: false, reason: `Después del dividendo la caja quedaría por debajo de dos nóminas ($${fmt(reserve)}).` };
+      tx(s, [["capital", x], ["caja", -x]], "financiamiento");
+      s.relations.owner = clamp(s.relations.owner + 0.1);
+      event(s, "dividendo", `Se reparten $${fmt(x)} de dividendos a los accionistas.`, cmd.id);
+      return { ok: true };
+    }
+    case "prepay_debt": {
+      const loan = [...s.loans].filter((l) => l.balance > 0).sort((a, b) => b.rate - a.rate)[0];
+      if (!loan) return { ok: false, reason: "No hay créditos por pagar." };
+      const x = Math.min(c(cmd.amount), loan.balance, Math.max(0, cashOf(s)));
+      if (x <= 0) return { ok: false, reason: "No hay caja para prepagar." };
+      tx(s, [["deuda", x], ["caja", -x]], "financiamiento");
+      loan.balance -= x;
+      s.relations.bank = clamp(s.relations.bank + 0.05);
+      event(s, "credito", `Se prepagan $${fmt(x)} del crédito con ${loan.lender}.`, cmd.id);
+      return { ok: true };
+    }
   }
 }
 
 /** Horno nuevo: se agrega a la capacidad el día que llega (se revisa en `tick` de activos). */
 function pendingFurnace(s: SteelState, cmd: Extract<SteelCommand, { type: "add_furnace" }>, day: number) {
   const list = (s.flags.furnaces as string | undefined) ? JSON.parse(String(s.flags.furnaces)) : [];
-  list.push({ day, t: cmd.tPerShift ?? s.plant.tPerFurnaceShift, util: cmd.utilities, ref: cmd.id });
+  list.push({ day, t: cmd.tPerShift ?? s.plant.tPerFurnaceShift, util: cmd.utilities, ref: cmd.id, cost: cmd.cost });
   s.flags.furnaces = JSON.stringify(list);
 }
 
 /** Activos que entran en operación (horno, laminador, patio). Se llama al inicio de cada día. */
 export function activateAssets(s: SteelState) {
   if (s.flags.furnaces) {
-    const list: { day: number; t: number; util: number; ref: string; done?: boolean }[] = JSON.parse(String(s.flags.furnaces));
+    const list: { day: number; t: number; util: number; ref: string; cost?: number; done?: boolean }[] = JSON.parse(String(s.flags.furnaces));
     let changed = false;
     for (const f of list) if (!f.done && s.day >= f.day) {
       f.done = true; changed = true;
@@ -943,6 +1019,10 @@ export function activateAssets(s: SteelState) {
       s.plant.furnaces += 1;
       s.plant.casterTpd = Math.max(s.plant.casterTpd, s.plant.furnaces * s.plant.tPerFurnaceShift * s.plant.templateShifts * 1.05);
       s.siteUtilities += c(f.util);
+      s.flags.furnaceRampSince = s.day;
+      // Puesta en marcha: pruebas en caliente, primera campaña de refractario y técnicos del fabricante.
+      const commissioning = Math.round(c(f.cost ?? 0) * 0.04);
+      if (commissioning > 0) { tx(s, [["otros_gastos", commissioning], ["acreedores", -commissioning]]); schedule(s, s.day + 30, "out", "acreedores", commissioning, "Puesta en marcha del horno nuevo", "acreedores", f.ref); }
       const add = Math.round(s.crews.horno.perShift / (s.plant.furnaces - 1));
       s.crews.horno.perShift += add;
       applyInner(s, { type: "hire", id: `${f.ref}:h`, crew: "horno", n: add * s.plant.shifts });

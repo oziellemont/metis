@@ -2,7 +2,7 @@
  * Acería v2 · estrategias de referencia (conservadora, equilibrada, agresiva) y corrida de sensibilidad.
  * Sirven para validar el motor: las tres enfrentan exactamente el mismo mercado y ninguna debe ganar siempre por diseño.
  */
-import { createSteel, runSteel, applySteel, cashOf, overdueTotal, balanceSheet, liquidityOptions, investedCapital, type SteelCommand, type SteelState } from "./engine";
+import { createSteel, runSteel, applySteel, cashOf, overdueTotal, balanceSheet, liquidityOptions, type SteelCommand, type SteelState } from "./engine";
 import { BASE, STEEL, type Scenario } from "./params";
 
 export type StrategyId = "conservadora" | "equilibrada" | "agresiva";
@@ -40,12 +40,9 @@ export interface RunResult {
   templateId: string; strategy: StrategyId; scenario: string;
   revenue: number; ebitda: number; margin: number; net: number; taxesPaid: number; freeCash: number;
   cashMin: number; cashEnd: number; debtEnd: number; overdueDays: number; overdueMax: number; equityEnd: number; ownerIn: number;
-  /** Valor económico agregado (EVA) del periodo: NOPAT menos el costo del capital invertido promedio. */
+  /** Valor para el dueño: utilidad neta menos el costo del capital adicional aportado. */
   value: number; rejected: string[]; actions: string[]; state: SteelState;
 }
-
-/** Costo de capital promedio (deuda bancaria después de impuestos y capital del dueño). */
-export const WACC = 0.12;
 
 /** Orden en que un director razonable usa las alternativas de liquidez (lo más barato y reversible primero). */
 const MANAGE_ORDER = ["convenio", "plazo", "factoraje", "credito", "capex", "aportacion", "remate"];
@@ -55,7 +52,7 @@ export function runStrategy(templateId: string, k: StrategyId, scenario: Scenari
   const steps = plan(templateId, k);
   const rejected: string[] = [];
   const actions: string[] = [];
-  let cashMin = cashOf(s), overdueDays = 0, overdueMax = 0, capitalDays = 0;
+  let cashMin = cashOf(s), overdueDays = 0, overdueMax = 0;
   const equity0 = balanceSheet(s).equity;
   for (let d = 0; d < days; d++) {
     for (const x of steps.filter((y) => y.day === d)) { const r = applySteel(s, x.cmd); if (!r.ok) rejected.push(`${x.cmd.id}: ${r.reason}`); }
@@ -67,7 +64,6 @@ export function runStrategy(templateId: string, k: StrategyId, scenario: Scenari
     }
     runSteel(s, 1);
     cashMin = Math.min(cashMin, cashOf(s));
-    capitalDays += investedCapital(s);
     const od = overdueTotal(s);
     if (od > 0) overdueDays++;
     overdueMax = Math.max(overdueMax, od);
@@ -76,11 +72,10 @@ export function runStrategy(templateId: string, k: StrategyId, scenario: Scenari
   const sum = (f: (m: (typeof ms)[number]) => number) => ms.reduce((a, m) => a + f(m), 0);
   const revenue = sum((m) => m.revenue), ebitda = sum((m) => m.ebitda), net = sum((m) => m.net);
   const ownerIn = s.equity;
-  // Valor económico agregado: utilidad operativa después de PTU e ISR, menos el costo del capital invertido promedio
-  // (activo fijo + capital de trabajo) al costo de capital. Así, crecer con clientes a 60 días o con un horno nuevo
-  // solo crea valor si lo que rinde supera lo que cuesta el dinero que inmoviliza.
-  const operating = sum((m) => m.operating - m.ptu);
-  const value = Math.round(operating * (1 - STEEL.isr.value) - (capitalDays / days) * WACC * (days / 360));
+  // Valor para el dueño: utilidad neta del periodo (incluye intereses pagados y el rendimiento de la caja que no se
+  // invirtió) menos el costo del capital adicional que el dueño tuvo que aportar. Así, inmovilizar dinero en clientes
+  // a 60 días o en un horno solo crea valor si rinde más que dejarlo en el banco y que el costo de la deuda.
+  const value = net - Math.round(ownerIn * STEEL.costOfEquity.value * (days / 360));
   return {
     templateId, strategy: k, scenario: scenario.id, revenue, ebitda, margin: revenue ? ebitda / revenue : 0, net,
     taxesPaid: -sum((m) => m.cashTaxes), freeCash: sum((m) => m.freeCashFlow), cashMin, cashEnd: cashOf(s), debtEnd: ms[ms.length - 1]?.debt ?? 0,
