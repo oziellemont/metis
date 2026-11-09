@@ -19,7 +19,7 @@ import type { KpiKey, Kpis } from "../types";
 import { isSteelCaseId, isSteelTemplate, steelAt, steelBridge, steelDecide, steelPending } from "./steel/session";
 import { isRetailCaseId, isRetailTemplate, retailAt, retailBridge, retailDecide, retailPending } from "./retail/session";
 import { endWorld, isWorldCaseId, openWorld, sanitizeWorld, type WorldOpenInput, type WorldPrefs } from "../world/episodes";
-import { referenceOption } from "../world/cases";
+import { REASONABLE, referenceOption } from "../world/cases";
 import type { WorldEpisode, Zone } from "../world/types";
 
 /** Plantillas con motor contable propio (acería v2 y cadena de conveniencia): registro con decisiones por caso del selector. */
@@ -166,8 +166,6 @@ export function growthDelta(log: GrowthLog, day: number): Kpis {
 }
 
 // ───────────────────────────────────────────────────────── World Events · justicia en los indicadores
-/** Opciones razonables (defendibles con lo que se sabía): nunca se castigan después, aunque el pronóstico cambie. */
-const REASONABLE = new Set(["protocolo", "preventivo", "inspeccion", "apoyo"]);
 const bridgeOf = (log: GrowthLog, day: number): Kpis => (isRetailLog(log) ? retailBridge(retailOf(log, day).state).delta : steelBridge(steelOf(log, day).state).delta);
 /**
  * Lo que el acontecimiento le habría hecho a cualquiera con una preparación razonable (impacto externo) se separa de

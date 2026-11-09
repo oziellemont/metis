@@ -9,7 +9,7 @@ import { caseById as steelCase, previewOption } from "@/lib/ceo/growth/steel/cas
 import { cashOf, debtOf, overdueTotal, CREDITOR_LABEL, headcountOf, type SteelState } from "@/lib/ceo/growth/steel/engine";
 import { AREA_LABEL } from "@/lib/ceo/growth/steel/cases";
 import { useCeo } from "./CeoProvider";
-import { ExternalImpacts, WorldBadge } from "./WorldBits";
+import { ExternalImpacts, WorldBadge, WorldRadar } from "./WorldBits";
 import { AlertChips } from "./GrowthPanel";
 import type { Alert } from "@/lib/ceo/growth/ops";
 
@@ -75,6 +75,7 @@ export function SteelPanel() {
 
       <AlertChips alerts={steelAlerts(s)} />
       <ExternalImpacts hits={external} />
+      <WorldRadar items={c.worldRadar} />
 
       {done && !pending && (
         <div className="rounded-3xl bg-ink text-white p-5 ceo-pop space-y-2" data-testid="caso-decidido">

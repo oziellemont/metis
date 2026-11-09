@@ -26,6 +26,7 @@ import { ceoWhatsappText, fromHeader, sendWhatsapp } from "@/lib/ceo/notify";
 import type { CeoState } from "@/lib/ceo/types";
 import { worldJobs } from "@/lib/ceo/world/notify";
 import { worldEmail } from "@/lib/ceo/emails";
+import { pushConfigured, pushFor, pushKey, sendPush, type PushJob, type PushSub } from "@/lib/ceo/push";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -45,6 +46,12 @@ export async function GET(req: NextRequest) {
   if (error) return NextResponse.json({ error: error.message, hint: error.code === "42703" ? "Falta correr la migración 0014_ceo_correos.sql" : undefined }, { status: 500 });
 
   const out: { user: string; key: string; subject: string; at?: string; ok: boolean; error?: string }[] = [];
+  // Avisos al celular (Web Push, gratis): suscripciones de todos los jugadores en una sola consulta.
+  const subs = new Map<string, PushSub[]>();
+  if (pushConfigured()) {
+    const { data: rows } = await sb.from("push_subscriptions").select("user_id, endpoint, p256dh, auth").limit(5000);
+    for (const r of rows ?? []) subs.set(r.user_id, [...(subs.get(r.user_id) ?? []), { endpoint: r.endpoint, keys: { p256dh: r.p256dh, auth: r.auth } }]);
+  }
   for (const p of players ?? []) {
     if (Date.now() - real > 50_000) break; // margen antes del límite de 60 s; lo que falte sale en la siguiente corrida
     const s: CeoState = migrate(p.state);
@@ -61,13 +68,34 @@ export async function GET(req: NextRequest) {
     }
     const jobs = jobsFor(s, sent, real, { plan });
     const wjobs = worldJobs(s, sent, nowOf(s, real));
-    if (!jobs.length && !wjobs.length) continue;
-    const to = (p.email as string | null) || s.settings.email || "";
     let changed = false;
+    // Celular (Web Push): mismas reglas que el correo pero con su propia bitácora («push:<clave>»), así un correo
+    // programado para más tarde no impide que el aviso al celular salga cuando el asunto ya llegó.
+    const mine = subs.get(p.user_id) ?? [];
+    if (mine.length) {
+      const psent: Sent = { welcome: 1 };
+      for (const [k, v] of Object.entries(sent)) if (k.startsWith("push:")) psent[k.slice(5)] = v as Sent[string];
+      const company = packOf(s).short;
+      const pjobs = [...worldJobs(s, psent, nowOf(s, real)).map((w) => ({ ...w, kind: "world" as const })), ...jobsFor(s, psent, real, {})] as PushJob[];
+      for (const j of pjobs) {
+        const msg = pushFor(j, company);
+        if (!msg) continue;
+        let ok = false;
+        for (const sub of mine) {
+          const r = dry ? { ok: true, gone: false } : await sendPush(sub, msg);
+          if (r.ok) ok = true;
+          else if (r.gone && !dry) await sb.from("push_subscriptions").delete().eq("endpoint", sub.endpoint);
+        }
+        out.push({ user: p.user_id, key: pushKey(j.key), subject: msg.title, ok });
+        if (ok && !dry) { sent[pushKey(j.key)] = real; changed = true; }
+      }
+    }
+    if (!jobs.length && !wjobs.length) { if (changed) await sb.from("players").update({ sent }).eq("user_id", p.user_id); continue; }
+    const to = (p.email as string | null) || s.settings.email || "";
     // World Events: un correo por acontecimiento y revisión, solo con el caso abierto y la preferencia activada.
     for (const w of wjobs) {
       if (!to || !p.notify_email) { if (!dry) { sent[w.key] = real; changed = true; } continue; }
-      const m = worldEmail({ pack: packOf(s), name: p.name ?? "", appUrl, event: w.world.name, label: w.world.label, source: w.world.source.name, sourceUrl: w.world.source.url, assets: w.world.assets, subjectLine: w.subject, daysLeft: w.world.daysLeft, forecast: w.world.status === "pronostico" });
+      const m = worldEmail({ pack: packOf(s), name: p.name ?? "", appUrl, event: w.world.name, label: w.world.label, source: w.world.source.name, sourceUrl: w.world.source.url, assets: w.world.assets, subjectLine: w.subject, daysLeft: w.world.daysLeft, forecast: w.world.status === "pronostico", official: !!w.world.facts });
       const r = dry ? { ok: true, error: undefined as string | undefined } : await sendMail({ to, from: fromHeader(m), subject: m.subject, html: m.html, text: m.text, idempotencyKey: `ceo:${p.user_id}:${w.key}`, tags: [{ name: "app", value: "ceo" }, { name: "tipo", value: "mundo" }] });
       out.push({ user: p.user_id, key: w.key, subject: m.subject, ok: r.ok, error: r.error });
       if (r.ok && !dry) { sent[w.key] = real; changed = true; }

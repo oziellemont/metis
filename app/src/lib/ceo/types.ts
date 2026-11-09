@@ -206,7 +206,7 @@ export interface Settings {
   /** World Events: «Acontecimientos reales en mi carrera» (opt-in; apagado si no existe). */
   worldEvents?: boolean;
   /** Familias que el jugador no quiere recibir (clima, sismo, macro). */
-  worldMute?: ("clima" | "sismo" | "macro")[];
+  worldMute?: import("./world/types").Family[];
 }
 
 /** Respuesta escrita (evaluada con IA): tu texto, la calidad 0–3 y la nota del mentor. */

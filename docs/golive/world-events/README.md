@@ -31,10 +31,20 @@ Acontecimientos reales (huracanes y sismos) que tocan las sedes de la empresa qu
 
 ## Modo ejercicio
 
-En Ajustes → herramientas de prueba: «Huracán de ejercicio» y «Sismo de ejercicio». Abren un caso hipotético con desenlace guionado; no requieren la preferencia de eventos reales.
+En Ajustes → herramientas de prueba: «Huracán de ejercicio», «Sismo de ejercicio», «Dólar de ejercicio», «Tasa de ejercicio» y «Arancel de ejercicio». Abren un caso hipotético; no requieren la preferencia de eventos reales. Los económicos solo aparecen si la empresa tiene la exposición correspondiente.
 
-## Límites actuales
+## Economía y noticias (fuentes oficiales, sin llave)
 
-- Familias activas: clima (ciclones) y sismo. Macro (tasa, tipo de cambio, aranceles) tiene el motor listo pero sin fuente conectada (falta `BANXICO_TOKEN`; aranceles WTO/USITC/DOF pendientes).
-- Aviso por correo; Web Push pendiente de llaves VAPID.
-- GDELT (noticias) no se usa todavía.
+- Tipo de cambio FIX (indicador 158) y TIIE de fondeo (175) del Banco de México, leídos del Diario Oficial (API SIDOF). Movimiento material: 3 % o más del dólar, o ¼ de punto de tasa, contra 20 publicaciones atrás.
+- Decretos arancelarios del DOF: se leen fracciones, tasa nueva y fecha de vigencia. Solo abren caso si la tasa anterior está verificada en `TARIFF_BASE` (`world/econfeed.ts`), la medida ya está vigente y la fracción coincide con lo que la empresa vende o importa. Si no, quedan en el radar.
+- Federal Register (EE. UU.): medidas comerciales que mencionan a México, al radar.
+- Radar de noticias: publicaciones del DOF clasificadas (gobierno, energía, impuestos, trabajo, puertos e infraestructura, comercio). Es informativo y respeta las familias apagadas.
+- GDELT (noticias internacionales) es opcional con `WORLD_GDELT=1` porque limita por frecuencia.
+- Quién recibe qué: la cadena de tiendas no tiene compras en dólares ni importaciones, así que solo recibe bajas de tasa (oportunidad de refinanciar). La acería compacta recibe dólar (consumibles importados). La integrada recibe dólar, tasa y aranceles de varilla y alambrón.
+
+## Avisos al celular (Web Push, gratis)
+
+1. Variables en Vercel: `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` (`mailto:...`). Redeploy.
+2. Migración `0022_ceo_avisos_celular.sql` (revertir: `docs/sql/0022_revertir.sql`).
+3. El jugador entra a Ajustes → «Avisos en el celular» → Activar. En iPhone primero «Compartir → Agregar a pantalla de inicio» y abrir desde el ícono (iOS 16.4+). En Android basta Chrome.
+4. El cron diario manda: asunto nuevo, asunto por vencer y acontecimiento real. El resumen y la racha siguen solo por correo. Suscripciones vencidas se borran solas.

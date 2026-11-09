@@ -3,13 +3,14 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Target, Bell, Cloud, Globe2, LogOut, Clock, FastForward, Mail, RotateCcw, Save, Volume2, Zap } from "lucide-react";
-import { FAMILY_LABEL, type Family } from "@/lib/ceo/world/types";
+import { FAMILIES, FAMILY_LABEL, type Family } from "@/lib/ceo/world/types";
 import { playChime, setSoundOn, soundOn } from "@/lib/ceo/celebrate";
 import { ceoSignOut } from "@/lib/ceo/auth-client";
 import { useCeo } from "./CeoProvider";
 import clsx from "clsx";
 import { DAILY_GOALS, DEFAULT_DAILY_GOAL, SESSION_MINUTES, weeklyProjectionText } from "@/lib/ceo/onboarding";
 import { CadenceCard } from "./Cadence";
+import { PushCard } from "./PushCard";
 import { EPISODES } from "@/lib/ceo/episodes/catalog";
 
 const TZS = ["America/Monterrey", "America/Mexico_City", "America/Cancun", "America/Tijuana", "America/Hermosillo", "America/Bogota", "America/Lima", "America/Santiago", "America/Argentina/Buenos_Aires", "Europe/Madrid"];
@@ -87,12 +88,12 @@ export function CeoSettings() {
           <div className="rounded-2xl bg-slate-50 p-4 text-sm" data-testid="ajuste-mundo">
             <label className="flex items-start gap-3">
               <input type="checkbox" checked={f.worldEvents === true} onChange={(e) => set("worldEvents", e.target.checked)} className="accent-indigo h-4 w-4 mt-0.5" data-testid="opt-in-mundo" />
-              <span><b className="inline-flex items-center gap-1 text-ink"><Globe2 size={14} /> Acontecimientos reales en mi carrera</b><br /><span className="text-slate-500">Cuando un huracán o un sismo real, reportado por fuentes oficiales, alcance una zona donde tu empresa tiene sedes, te llegará un caso para decidir. Lo que pase en tu empresa es una simulación; nunca se afirma que hubo daño real. Si no tienes sedes en la zona, no llega nada.</span></span>
+              <span><b className="inline-flex items-center gap-1 text-ink"><Globe2 size={14} /> Acontecimientos reales en mi carrera</b><br /><span className="text-slate-500">Cuando algo real, reportado por fuentes oficiales, toque a tu empresa, te llegará un caso para decidir: un huracán o un sismo cerca de tus sedes, un movimiento fuerte del tipo de cambio o de la tasa de interés, o un cambio de aranceles en lo que vendes o importas. Lo que pase en tu empresa es una simulación; nunca se afirma que hubo daño real. Si no te toca, no llega nada.</span></span>
             </label>
             {f.worldEvents === true && (
               <div className="mt-3 pl-7 space-y-1.5">
                 <div className="text-xs text-slate-500">Recibir:</div>
-                {(["clima", "sismo"] as Family[]).map((fam) => {
+                {FAMILIES.map((fam: Family) => {
                   const muted = (f.worldMute ?? []).includes(fam);
                   const off = c.worldOff.includes(fam);
                   return (
@@ -102,7 +103,7 @@ export function CeoSettings() {
                     </label>
                   );
                 })}
-                <p className="text-xs text-slate-400">Fuentes: GDACS (ONU y Comisión Europea), Centro Nacional de Huracanes (NOAA) y Servicio Geológico de EUA (USGS). No sustituye los avisos de Protección Civil.</p>
+                <p className="text-xs text-slate-400">Fuentes: GDACS (ONU y Comisión Europea), Centro Nacional de Huracanes (NOAA) y Servicio Geológico de EUA (USGS) para clima y sismos; Diario Oficial de la Federación (tipo de cambio FIX y TIIE del Banco de México, decretos y aranceles) y Federal Register de EE. UU. para economía, comercio y gobierno. Gobierno y noticias generales llegan como radar informativo. No sustituye los avisos de Protección Civil ni la asesoría de tu agente aduanal.</p>
               </div>
             )}
           </div>
@@ -111,6 +112,7 @@ export function CeoSettings() {
           <input type="checkbox" checked={sound} onChange={(e) => toggleSound(e.target.checked)} className="accent-indigo h-4 w-4 mt-0.5" />
           <span><b className="inline-flex items-center gap-1 text-ink"><Volume2 size={14} /> Sonido al lograr algo</b><br /><span className="text-slate-500">Un tono breve cuando el consejo aprueba tu cierre, logras un cambio o terminas una lección. Se guarda en este dispositivo.</span></span>
         </label>
+        <PushCard />
         {perm !== "granted" && typeof Notification !== "undefined" && (
           <button type="button" onClick={() => Notification.requestPermission().then(setPerm)} className="inline-flex items-center gap-2 text-sm text-indigo font-medium"><Bell size={15} /> Activar avisos en este navegador</button>
         )}
@@ -149,6 +151,9 @@ export function CeoSettings() {
               <span className="text-xs text-slate-500 w-full">World Events: abre un ejercicio hipotético (no es un acontecimiento real) para probar el caso y el impacto simulado.</span>
               <button type="button" onClick={() => c.worldExercise("ciclon")} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-ink hover:bg-slate-50"><Globe2 size={15} /> Huracán de ejercicio</button>
               <button type="button" onClick={() => c.worldExercise("sismo")} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-ink hover:bg-slate-50"><Globe2 size={15} /> Sismo de ejercicio</button>
+              <button type="button" onClick={() => c.worldExercise("tipo_cambio")} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-ink hover:bg-slate-50"><Globe2 size={15} /> Dólar de ejercicio</button>
+              <button type="button" onClick={() => c.worldExercise("tasa")} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-ink hover:bg-slate-50"><Globe2 size={15} /> Tasa de ejercicio</button>
+              <button type="button" onClick={() => c.worldExercise("arancel")} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-ink hover:bg-slate-50"><Globe2 size={15} /> Arancel de ejercicio</button>
             </div>
           )}
           <Link href="/ceo/evaluacion-ia" className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-indigo hover:underline">Evaluación de la IA de los casos</Link>

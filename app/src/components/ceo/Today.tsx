@@ -221,9 +221,9 @@ export function Today() {
                   <span className={clsx("h-[38px] w-[38px] shrink-0 rounded-full grid place-items-center", growth.world.mode === "real" ? "bg-coral/10 text-coral" : "bg-amber-50 text-amber-700")}><Globe2 size={16} /></span>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2"><span className="text-sm font-semibold text-ink">{growth.world.name}</span><span className={clsx("chip text-[10px]", growth.world.mode === "real" ? "bg-coral/10 text-coral" : "bg-amber-50 text-amber-700")}>{growth.world.label}</span></div>
-                    <div className="text-sm text-slate-600">Activo expuesto: {growth.world.assets.join("; ") || "sedes de la empresa"}</div>
+                    <div className="text-sm text-slate-600">{growth.world.facts ? "Lo que toca de tu empresa" : "Activo expuesto"}: {growth.world.assets.join("; ") || (growth.world.facts ? "contratos de la empresa" : "sedes de la empresa")}</div>
                     <div className="text-sm text-slate-600">Decisión: {growth.subject}</div>
-                    <div className="mt-0.5 text-[11px] text-slate-500">Fuente: {growth.world.source.name}{growth.world.also ? ` y ${growth.world.also.name}` : ""} · {growth.world.status === "pronostico" ? "pronóstico, puede cambiar" : "ya ocurrió"} · Plazo: {growth.world.daysLeft === 0 ? "hoy" : growth.world.daysLeft === 1 ? "1 día" : `${growth.world.daysLeft} días`}</div>
+                    <div className="mt-0.5 text-[11px] text-slate-500">Fuente: {growth.world.source.name}{growth.world.also ? ` y ${growth.world.also.name}` : ""} · {growth.world.facts ? "dato oficial ya publicado" : growth.world.status === "pronostico" ? "pronóstico, puede cambiar" : "ya ocurrió"} · Plazo: {growth.world.daysLeft === 0 ? "hoy" : growth.world.daysLeft === 1 ? "1 día" : `${growth.world.daysLeft} días`}</div>
                   </div>
                   <ArrowRight size={16} className="text-slate-300 group-hover:text-indigo mt-3" />
                 </Link></li>

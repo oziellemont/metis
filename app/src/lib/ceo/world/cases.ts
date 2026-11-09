@@ -16,10 +16,13 @@ import type { SCase, SOption } from "../growth/steel/cases";
 import { exposureOf, type Site } from "./exposure";
 import { caseIdOf, deadlineOf, exposedSites, outcomeOf } from "./episodes";
 import { zoneRank, type WorldEpisode, type Zone } from "./types";
+import { ECON_REASONABLE, econRetailCase, econRetailImpact, econSteelCase, econSteelImpact } from "./econ";
 
 export const WORLD_RULES_VERSION = 1;
 /** Opción de referencia (protocolo estándar): la que se usa para separar «impacto externo» de «impacto de mi decisión». */
-export const referenceOption = (ep: Pick<WorldEpisode, "status">) => (ep.status === "observado" ? "inspeccion" : "protocolo");
+export const referenceOption = (ep: Pick<WorldEpisode, "status" | "facts">) => (ep.facts ? "base" : ep.status === "observado" ? "inspeccion" : "protocolo");
+/** Opciones razonables (defendibles con lo que se sabía): nunca se castigan después, aunque el pronóstico cambie. */
+export const REASONABLE: ReadonlySet<string> = new Set(["protocolo", "preventivo", "inspeccion", "apoyo", ...ECON_REASONABLE]);
 /** Nivel de preparación de cada opción ante un pronóstico. */
 const MITIGATION: Record<string, 0 | 1 | 2> = { monitorear: 0, protocolo: 1, preventivo: 2 };
 export const mitigationOf = (optionId: string | null | undefined): 0 | 1 | 2 => MITIGATION[optionId ?? "protocolo"] ?? 1;
@@ -58,6 +61,7 @@ function retailExposed(s: RetailState, z: Record<string, Zone>) {
 }
 
 export function retailWorldCase(s: RetailState, ep: WorldEpisode): RCase {
+  if (ep.facts) return econRetailCase(s, ep);
   const x = retailExposed(s, ep.sites);
   const red = isRed(ep.sites);
   const n = Math.max(1, x.stores);
@@ -98,6 +102,7 @@ export function retailWorldCase(s: RetailState, ep: WorldEpisode): RCase {
 
 /** Impacto simulado en la cadena cuando el acontecimiento llega con fuerza. `optionId` es la preparación elegida. */
 export function retailImpact(s: RetailState, ep: WorldEpisode, optionId: string | null): { commands: RetailCommand[]; text: string } {
+  if (ep.facts) return econRetailImpact(s, ep, optionId);
   const z = outcomeOf(ep) ?? {};
   const m = ep.status === "observado" ? 1 : mitigationOf(optionId);
   const k = `w:${ep.id}:imp`;
@@ -147,6 +152,7 @@ const big = (s: SteelState) => TEMPLATES_V2[s.templateId].kind === "integrada";
 const sz = (s: SteelState, a: number, b: number) => (big(s) ? b : a);
 
 export function steelWorldCase(s: SteelState, ep: WorldEpisode): SCase {
+  if (ep.facts) return econSteelCase(s, ep);
   const list = sitesIn(s.templateId, ep.sites);
   const plantZone = ep.sites.planta ?? "ninguna";
   const redPlant = plantZone === "roja";
@@ -182,6 +188,7 @@ export function steelWorldCase(s: SteelState, ep: WorldEpisode): SCase {
 }
 
 export function steelImpact(s: SteelState, ep: WorldEpisode, optionId: string | null): { commands: SteelCommand[]; text: string } {
+  if (ep.facts) return econSteelImpact(s, ep, optionId);
   const z = outcomeOf(ep) ?? {};
   const m = ep.status === "observado" ? 1 : mitigationOf(optionId);
   const k = `w:${ep.id}:imp`;
