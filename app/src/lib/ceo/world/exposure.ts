@@ -8,7 +8,7 @@
  * Las coordenadas son de las ciudades donde opera la empresa ficticia (centro aproximado del área), no de una
  * dirección real. El radio cubre el área de operación.
  */
-export const EXPOSURE_VERSION = 1;
+export const EXPOSURE_VERSION = 2;
 
 export type SiteKind = "tiendas" | "cedis" | "planta" | "patio";
 export interface Site {
@@ -26,6 +26,8 @@ export interface Site {
 export interface CurrencyFlow { what: string; currency: "MXN" | "USD"; share: number; hedged: number }
 export interface DebtLine { ref: string; kind: "fija" | "variable"; currency: "MXN" | "USD"; index?: "TIIE" | "SOFR" }
 export interface TradeLine { what: string; hs?: string; origin: string; destination: string; importerOfRecord: boolean }
+/** Productos que la empresa vende, con su fracción arancelaria (4 dígitos) y mercado. */
+export interface ProductLine { what: string; hs: string[]; market: "México" | "EE. UU." }
 export interface Exposure {
   v: number;
   engine: "retail" | "steel";
@@ -35,6 +37,8 @@ export interface Exposure {
   sells: CurrencyFlow[];
   debt: DebtLine[];
   trade: TradeLine[];
+  /** Lo que vende (para medidas comerciales sobre productos que compiten con importaciones o que se exportan). */
+  products?: ProductLine[];
 }
 
 const MTY = { lat: 25.6866, lon: -100.3161 };
@@ -59,7 +63,8 @@ export const EXPOSURE: Readonly<Record<string, Exposure>> = Object.freeze({
     buys: [{ what: "Chatarra nacional", currency: "MXN", share: 0.85, hedged: 0 }, { what: "Refractarios y consumibles importados", currency: "USD", share: 0.04, hedged: 0 }],
     sells: [{ what: "Palanquilla a relaminadoras nacionales", currency: "MXN", share: 1, hedged: 0 }],
     debt: [],
-    trade: [{ what: "Refractarios", origin: "EE. UU.", destination: "México", importerOfRecord: false }],
+    trade: [{ what: "Refractarios", hs: "6902", origin: "EE. UU.", destination: "México", importerOfRecord: false }],
+    products: [{ what: "Palanquilla de acero", hs: ["7207"], market: "México" }],
   },
   miniaceria_integrada_v2: {
     v: EXPOSURE_VERSION, engine: "steel",
@@ -70,7 +75,8 @@ export const EXPOSURE: Readonly<Record<string, Exposure>> = Object.freeze({
     buys: [{ what: "Chatarra nacional", currency: "MXN", share: 0.8, hedged: 0 }, { what: "Refractarios y consumibles importados", currency: "USD", share: 0.05, hedged: 0 }],
     sells: [{ what: "Varilla y palanquilla en el mercado nacional", currency: "MXN", share: 1, hedged: 0 }],
     debt: [{ ref: "plantilla", kind: "fija", currency: "MXN" }],
-    trade: [{ what: "Refractarios", origin: "EE. UU.", destination: "México", importerOfRecord: false }],
+    trade: [{ what: "Refractarios", hs: "6902", origin: "EE. UU.", destination: "México", importerOfRecord: false }],
+    products: [{ what: "Varilla corrugada", hs: ["7214", "7213"], market: "México" }, { what: "Palanquilla de acero", hs: ["7207"], market: "México" }],
   },
 } satisfies Record<string, Exposure>);
 

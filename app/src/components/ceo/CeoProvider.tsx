@@ -22,7 +22,7 @@ import { masteryOf, type Mastery } from "@/lib/ceo/mastery";
 import { appEnvOf, growthVisible, testToolsVisible, worldVisible } from "@/lib/ceo/flags";
 import { exerciseInput, trackedOf, worldActions } from "@/lib/ceo/world/client";
 import { exposureOf } from "@/lib/ceo/world/exposure";
-import type { Family, WorldCandidate } from "@/lib/ceo/world/types";
+import { isFamily, type Family, type WorldCandidate } from "@/lib/ceo/world/types";
 import { closeChange as closeChangeFn, playLever as playLeverFn, relationsOf, startChange as startChangeFn } from "@/lib/ceo/relations";
 import type { ChangeSim } from "@/lib/ceo/change";
 import type { CastId, CeoState, CompanyPack, Entry, Kpis, LeverId, Settings, Written } from "@/lib/ceo/types";
@@ -257,7 +257,7 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
         if (!alive) return;
         if (env === "production" && j?.growth_engine === true) setGrowthOn(true);
         if (env === "production" && j?.world_events === true) setWorldFlag(true);
-        if (Array.isArray(j?.world_off)) setWorldOff(j.world_off.filter((f: unknown): f is Family => f === "clima" || f === "sismo" || f === "macro"));
+        if (Array.isArray(j?.world_off)) setWorldOff(j.world_off.filter(isFamily));
       }).catch(() => { /* apagado */ });
       if (env === "production" && sb) {
         void sb.auth.getSession().then(async (r) => {

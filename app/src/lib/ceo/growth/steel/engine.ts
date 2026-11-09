@@ -709,7 +709,8 @@ export type SteelCommand =
   | { type: "buy_scrap"; id: string; tons: number }
   | { type: "expand_rolling"; id: string; capex: number; tpd: number; crew: number; leadDays: number }
   | { type: "dividend"; id: string; amount: number }
-  | { type: "prepay_debt"; id: string; amount: number };
+  | { type: "prepay_debt"; id: string; amount: number }
+  | { type: "refinance"; id: string; rate: number; months: number; fee: number };
 
 export interface SteelResult { ok: boolean; reason?: string }
 const SEVERANCE_MONTHS = 4.2;
@@ -985,6 +986,16 @@ function applyInner(s: SteelState, cmd: SteelCommand): SteelResult {
       tx(s, [["capital", x], ["caja", -x]], "financiamiento");
       s.relations.owner = clamp(s.relations.owner + 0.1);
       event(s, "dividendo", `Se reparten $${fmt(x)} de dividendos a los accionistas.`, cmd.id);
+      return { ok: true };
+    }
+    case "refinance": {
+      const loan = s.loans.find((l) => l.ref === "plantilla" && l.balance > 0);
+      if (!loan) return { ok: false, reason: "No hay crédito que refinanciar." };
+      if (s.relations.bank < 0.6 || s.overdue.length) return { ok: false, reason: "Con atrasos o mala relación, el banco no refinancia." };
+      loan.rate = cmd.rate; loan.monthsLeft = cmd.months;
+      const fee = c(cmd.fee);
+      tx(s, [["comisiones", fee], ["acreedores", -fee]]); schedule(s, s.day + 5, "out", "acreedores", fee, "Comisión y gastos del refinanciamiento", "acreedores", cmd.id);
+      event(s, "credito", `Se refinancia el crédito: ${(cmd.rate * 100).toFixed(1)} % anual a ${cmd.months} meses.`, cmd.id);
       return { ok: true };
     }
     case "prepay_debt": {

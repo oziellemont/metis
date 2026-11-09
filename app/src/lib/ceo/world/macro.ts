@@ -9,9 +9,72 @@
  *  - Arancel: solo con fecha de vigencia ya cumplida, fracción arancelaria (HS), origen y destino que coinciden, y solo si
  *    la empresa es el importador que lo paga. Un anuncio no cobra nada.
  */
-import type { CurrencyFlow, DebtLine, TradeLine } from "./exposure";
+import { exposureOf, type CurrencyFlow, type DebtLine, type TradeLine } from "./exposure";
+import type { Facts, Kind } from "./types";
 
-export const MACRO_RULES_VERSION = 1;
+export const MACRO_RULES_VERSION = 2;
+
+// ───────────────────────────────────────────────────────────── umbrales de un movimiento «material» (B7)
+/** Tipo de cambio: 3 % o más contra 20 publicaciones atrás (unas cuatro semanas hábiles). */
+export const FX_MIN = 0.03;
+/** TIIE de fondeo: un cuarto de punto o más contra 20 publicaciones atrás (una decisión de Banxico). */
+export const RATE_MIN = 0.25;
+/** Publicaciones hacia atrás para comparar. */
+export const LOOKBACK_PUBS = 20;
+/** Margen mínimo (puntos) para que un refinanciamiento a tasa fija valga la comisión. */
+export const REFI_MIN_PTS = 0.25;
+
+/** Revisión mayor de un movimiento del tipo de cambio: 1 (3–5 %), 2 (5–8 %), 3 (8 % o más). */
+export const fxRev = (ch: number) => (Math.abs(ch) >= 0.08 ? 3 : Math.abs(ch) >= 0.05 ? 2 : Math.abs(ch) >= FX_MIN ? 1 : 0);
+/** Revisión mayor de un movimiento de la tasa: 1 (¼ a ½ punto), 2 (½ a 1), 3 (1 punto o más). */
+export const rateRev = (pts: number) => (Math.abs(pts) >= 1 ? 3 : Math.abs(pts) >= 0.5 ? 2 : Math.abs(pts) >= RATE_MIN - 1e-9 ? 1 : 0);
+
+/** Parte en moneda extranjera sin cubrir de una lista de flujos (0 a 1). */
+export const openShare = (fs: readonly CurrencyFlow[]) => fs.filter((f) => f.currency !== "MXN").reduce((a, f) => a + f.share * (1 - Math.max(0, Math.min(1, f.hedged))), 0);
+
+// ───────────────────────────────────────────────────────────── medidas comerciales con regla aprobada (B6)
+/**
+ * Reglas aprobadas para medidas comerciales. Una medida solo abre caso si su regla existe, la fracción arancelaria
+ * coincide con lo que la empresa compra o vende, y tiene fecha de vigencia. Lo demás es informativo (radar).
+ *  - mx_import_competencia: México cambia el arancel de importación de un producto que la empresa VENDE en México
+ *    (efecto indirecto: el producto importado que compite cuesta más o menos). Hipótesis H1 versionada en econ.ts.
+ *  - mx_import_insumo: México grava un insumo que la empresa IMPORTA como importador de registro (costo directo).
+ */
+export const TRADE_RULES = ["mx_import_competencia", "mx_import_insumo"] as const;
+export type TradeRule = (typeof TRADE_RULES)[number];
+export interface TradeMatch { rule: TradeRule; what: string }
+
+/** Regla que aplica a una medida mexicana de importación (fracciones de 4 dígitos) para una plantilla. */
+export function tradeMatch(templateId: string, chapters: readonly string[]): TradeMatch | null {
+  const x = exposureOf(templateId);
+  if (!x) return null;
+  const has = (hs: readonly string[] | undefined) => !!hs?.some((h) => chapters.some((c) => h.startsWith(c) || c.startsWith(h)));
+  const prod = (x.products ?? []).find((p) => p.market === "México" && has(p.hs));
+  if (prod) return { rule: "mx_import_competencia", what: prod.what };
+  const line = x.trade.find((t) => t.destination === "México" && t.importerOfRecord && t.hs && has([t.hs]));
+  if (line) return { rule: "mx_import_insumo", what: line.what };
+  return null;
+}
+
+/**
+ * ¿Un dato económico o una medida comercial toca a esta empresa? Sin exposición no hay caso (B7, B9):
+ *  - Tipo de cambio: solo con compras o ventas en dólares sin cubrir y un movimiento de 3 % o más.
+ *  - Tasa: la deuda fija no cambia. Una BAJADA de un cuarto de punto o más abre una oportunidad de refinanciar a quien
+ *    tiene crédito a tasa fija. Una subida no le cobra nada a nadie (no hay deuda variable en las plantillas actuales).
+ *  - Arancel: regla aprobada que coincide con la exposición, con fecha de vigencia.
+ */
+export function factsExposed(templateId: string, kind: Kind, facts: Facts | undefined, observedAt = Infinity): boolean {
+  const x = exposureOf(templateId);
+  if (!x || !facts) return false;
+  if (kind === "tipo_cambio") return facts.t === "fx" && facts.from > 0 && Math.abs(facts.to / facts.from - 1) >= FX_MIN - 1e-9 && openShare([...x.buys, ...x.sells]) > 0;
+  if (kind === "tasa") return facts.t === "tasa" && facts.to - facts.from <= -RATE_MIN + 1e-9 && x.debt.some((d) => d.kind === "fija" && d.currency === "MXN");
+  if (kind === "arancel") {
+    if (facts.t !== "arancel" || !facts.effective || !facts.rule || !facts.hs?.length || facts.from === facts.to) return false;
+    if (Date.parse(facts.effective) > observedAt) return false; // anunciada, todavía no vigente: no hay caso
+    return tradeMatch(templateId, facts.hs)?.rule === facts.rule;
+  }
+  return false;
+}
 
 export interface LoanLike { ref: string; balance: number; rate: number }
 

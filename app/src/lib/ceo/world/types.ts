@@ -15,12 +15,31 @@ export const zoneRank = (z: Zone): number => ZONES.indexOf(z);
 export const maxZone = (a: Zone, b: Zone): Zone => (zoneRank(a) >= zoneRank(b) ? a : b);
 
 /** Familias con apagado propio (interruptor por familia y preferencia del jugador). */
-export type Family = "clima" | "sismo" | "macro";
-export const FAMILIES: readonly Family[] = ["clima", "sismo", "macro"];
-export const FAMILY_LABEL: Readonly<Record<Family, string>> = Object.freeze({ clima: "Clima (huracanes y tormentas)", sismo: "Sismos", macro: "Economía (tasas y tipo de cambio)" });
+export type Family = "clima" | "sismo" | "macro" | "comercio" | "gobierno" | "noticias";
+export const FAMILIES: readonly Family[] = ["clima", "sismo", "macro", "comercio", "gobierno", "noticias"];
+export const FAMILY_LABEL: Readonly<Record<Family, string>> = Object.freeze({
+  clima: "Clima (huracanes y tormentas)", sismo: "Sismos", macro: "Economía (tasas y tipo de cambio)", comercio: "Comercio exterior y aranceles",
+  gobierno: "Gobierno y regulación (energía, combustibles, impuestos, trabajo)", noticias: "Noticias generales (bloqueos, huelgas, conflictos)",
+});
+export const isFamily = (x: unknown): x is Family => (FAMILIES as readonly unknown[]).includes(x);
 
-/** Tipos de acontecimiento con reglas de impacto aprobadas. */
-export type Kind = "ciclon" | "sismo";
+/** Tipos de acontecimiento con reglas de impacto aprobadas. ciclon y sismo son geográficos (zonas por sede). */
+export type Kind = "ciclon" | "sismo" | "tipo_cambio" | "tasa" | "arancel";
+export const GEO_KINDS: readonly Kind[] = ["ciclon", "sismo"];
+export const KINDS: readonly Kind[] = ["ciclon", "sismo", "tipo_cambio", "tasa", "arancel"];
+export const isGeo = (k: Kind): boolean => GEO_KINDS.includes(k);
+/** Fuentes oficiales (y el ejercicio de prueba). */
+export type Src = "gdacs" | "dof" | "fr" | "ejercicio";
+export const SRCS: readonly Src[] = ["gdacs", "dof", "fr", "ejercicio"];
+
+/**
+ * Datos verificados de un acontecimiento no geográfico (lo que se congeló al abrir el episodio).
+ *  - fx: tipo de cambio FIX (pesos por dólar) publicado en el DOF, de `since` a `until`.
+ *  - tasa: TIIE de fondeo (puntos porcentuales) de `since` a `until`.
+ *  - arancel: medida oficial (`rule` aprobada), arancel `from`→`to` (0.35 = 35 %), fracciones `hs` (4 dígitos) y fecha
+ *    de vigencia `effective`. Solo se abre caso si ya está vigente.
+ */
+export interface Facts { t: "fx" | "tasa" | "arancel"; from: number; to: number; since: string; until: string; rule?: string; effective?: string; hs?: string[] }
 
 /** Urgencia de la tarjeta en Hoy (B8). Nunca se copian urgencias de Protección Civil como si mêtis fuera autoridad. */
 export type Urgency = "urgente" | "importante" | "informativa";
@@ -32,7 +51,7 @@ export interface SourceRef { name: string; url: string }
  * Solo llegan candidatos con al menos una sede en zona; sin exposición no hay candidato.
  */
 export interface WorldCandidate {
-  src: "gdacs";
+  src: Exclude<Src, "ejercicio">;
   /** Identificador oficial del acontecimiento en la fuente (p. ej. «tc1001346»). */
   ev: string;
   /** Revisión mayor para esta empresa: la zona más alta de sus sedes (2 = naranja, 3 = roja). */
@@ -53,12 +72,14 @@ export interface WorldCandidate {
   /** La fuente ya lo da por terminado. */
   ended: boolean;
   urgency: Urgency;
+  /** Solo acontecimientos no geográficos. */
+  facts?: Facts;
 }
 
 /** Episodio congelado dentro de la partida (GrowthLog.world). Es lo que sabía el jugador cuando llegó. */
 export interface WorldEpisode {
   id: string;
-  src: "gdacs" | "ejercicio";
+  src: Src;
   ev: string;
   rev: number;
   family: Family;
@@ -79,11 +100,15 @@ export interface WorldEpisode {
   end?: { day: number; at: number; sites: Record<string, Zone> };
   /** Solo ejercicios hipotéticos: desenlace guionado, congelado desde el inicio. */
   script?: { inDays: number; sites: Record<string, Zone> };
+  /** Solo acontecimientos no geográficos (tipo de cambio, tasa, arancel). */
+  facts?: Facts;
 }
 
 /** Días simulados que un pronóstico puede quedar abierto antes de cerrarse sin daño confirmado. */
 export const FORECAST_WINDOW = 8;
 /** Días simulados para responder a un acontecimiento ya observado (sismo). */
 export const OBSERVED_WINDOW = 5;
+/** Días simulados para responder a un dato económico o una medida comercial; ese día empieza el efecto. */
+export const MACRO_WINDOW = 5;
 /** Máximo de episodios guardados por empresa. */
 export const MAX_EPISODES = 60;
