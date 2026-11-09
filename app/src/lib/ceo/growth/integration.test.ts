@@ -196,7 +196,8 @@ describe("onboarding con dos tarjetas (lógica pura)", async () => {
     // Consolidada: todas las industrias de la establecida; solo las piloto traen motor.
     expect(S.sectorsForSel(c).flatMap((s) => s.industries).length).toBeGreaterThan(2);
     expect(S.templateOfSel({ ...c, sectorId: "restaurantes_alimentos", industryId: "restaurantes" })).toBe("restaurante_consolidada");
-    expect(S.templateOfSel({ ...c, sectorId: "comercio", industryId: "retail" })).toBeNull();
+    expect(S.templateOfSel({ ...c, sectorId: "comercio", industryId: "retail" })).toBe("conveniencia_regional_v2");
+    expect(S.templateOfSel({ ...c, sectorId: "comercio", industryId: "farmacias" })).toBeNull();
     expect(S.choiceOf(c)).toBe("consolidada");
   });
   it("cambiar de tarjeta conserva la industria si existe en ambas", () => {

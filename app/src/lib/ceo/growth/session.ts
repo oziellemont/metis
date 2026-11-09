@@ -17,6 +17,10 @@ import { TEMPLATES } from "./families";
 import type { GrowthState } from "./types";
 import type { KpiKey, Kpis } from "../types";
 import { isSteelCaseId, isSteelTemplate, steelAt, steelBridge, steelDecide, steelPending } from "./steel/session";
+import { isRetailCaseId, isRetailTemplate, retailAt, retailBridge, retailDecide, retailPending } from "./retail/session";
+
+/** Plantillas con motor contable propio (acería v2 y cadena de conveniencia): registro con decisiones por caso del selector. */
+const isOwnEngine = (id: string) => isSteelTemplate(id) || isRetailTemplate(id);
 
 export const GROWTH_LOG_VERSION = 1;
 
@@ -30,21 +34,21 @@ export interface GrowthLog {
 }
 
 export function newGrowthLog(templateId: string, seed: string): GrowthLog | null {
-  return TEMPLATES[templateId] || isSteelTemplate(templateId) ? { v: GROWTH_LOG_VERSION, templateId, seed: String(seed).slice(0, 80), decisions: [] } : null;
+  return TEMPLATES[templateId] || isOwnEngine(templateId) ? { v: GROWTH_LOG_VERSION, templateId, seed: String(seed).slice(0, 80), decisions: [] } : null;
 }
 
 export function sanitizeGrowthLog(raw: unknown): GrowthLog | null {
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
   const r = raw as Record<string, unknown>;
-  if (typeof r.templateId !== "string" || !(TEMPLATES[r.templateId] || isSteelTemplate(r.templateId)) || typeof r.seed !== "string" || !r.seed) return null;
+  if (typeof r.templateId !== "string" || !(TEMPLATES[r.templateId] || isOwnEngine(r.templateId)) || typeof r.seed !== "string" || !r.seed) return null;
   const decisions: Decision[] = [];
   let lastDay = -1;
-  const steel = isSteelTemplate(r.templateId);
+  const steel = isSteelTemplate(r.templateId), retail = isRetailTemplate(r.templateId), own = steel || retail;
   for (const d of Array.isArray(r.decisions) ? r.decisions : []) {
     const x = d as Record<string, unknown>;
-    if (!x || typeof x.caseId !== "string" || !(steel ? isSteelCaseId(x.caseId) : caseById(x.caseId)) || typeof x.optionId !== "string" || typeof x.key !== "string") continue;
+    if (!x || typeof x.caseId !== "string" || !(steel ? isSteelCaseId(x.caseId) : retail ? isRetailCaseId(x.caseId) : caseById(x.caseId)) || typeof x.optionId !== "string" || typeof x.key !== "string") continue;
     if (typeof x.day !== "number" || !Number.isInteger(x.day) || x.day < 0 || x.day < lastDay) continue;
-    decisions.push({ caseId: x.caseId, key: x.key, optionId: x.optionId, day: x.day, ...(steel && x.source === "ia" ? { source: "ia" as const } : {}) });
+    decisions.push({ caseId: x.caseId, key: x.key, optionId: x.optionId, day: x.day, ...(own && x.source === "ia" ? { source: "ia" as const } : {}) });
     lastDay = x.day;
   }
   return { v: GROWTH_LOG_VERSION, templateId: r.templateId, seed: r.seed.slice(0, 80), decisions };
@@ -60,6 +64,7 @@ export interface Rebuilt { state: GrowthState; rejected: number }
 /** Estado del motor en el día `day` para este registro. Las decisiones que ya no proceden se descartan (y se cuentan). */
 export function growthAt(log: GrowthLog, day: number): Rebuilt {
   if (isSteelTemplate(log.templateId)) throw new Error("La acería v2 se reconstruye con steelOf (growth/steel/session.ts).");
+  if (isRetailTemplate(log.templateId)) throw new Error("La cadena de conveniencia se reconstruye con retailOf (growth/retail/session.ts).");
   const key = logKey(log);
   const target = Math.max(0, Math.floor(day));
   const hit = CACHE.get(key);
@@ -90,7 +95,7 @@ export function growthAt(log: GrowthLog, day: number): Rebuilt {
 
 /** Efectos editoriales acumulados de las decisiones (solo Equipo, Clientes y Consejo). */
 export function editorialOf(log: GrowthLog): Partial<Record<KpiKey, number>> {
-  if (isSteelTemplate(log.templateId)) return {};
+  if (isOwnEngine(log.templateId)) return {};
   const out: Partial<Record<KpiKey, number>> = {};
   for (const d of log.decisions) {
     const o = caseById(d.caseId)?.options.find((x) => x.id === d.optionId);
@@ -105,7 +110,7 @@ export function growthBridge(log: GrowthLog, day: number): Bridge {
 
 /** Casos de crecimiento que hoy esperan decisión, con sus opciones calculadas por el motor. */
 export function pendingGrowth(log: GrowthLog, day: number): { case: GCase; options: OptionView[] }[] {
-  if (isSteelTemplate(log.templateId)) return [];
+  if (isOwnEngine(log.templateId)) return [];
   const g = growthAt(log, day).state;
   // Capa adaptativa: mismo conjunto de casos, en el orden que más le sirve al jugador (learning.ts).
   return adaptiveOrder(availableCases(g, log.decisions), log.decisions).map((c) => ({ case: c, options: optionsOf(g, c) }));
@@ -115,6 +120,10 @@ export function pendingGrowth(log: GrowthLog, day: number): { case: GCase; optio
 export function decideGrowth(log: GrowthLog, day: number, caseId: string, optionId: string): { log: GrowthLog; ok: boolean; reason?: string } {
   if (isSteelTemplate(log.templateId)) {
     const r = steelDecide(log.templateId, log.seed, log.decisions, day, caseId, optionId);
+    return r.ok ? { log: { ...log, decisions: r.decisions }, ok: true } : { log, ok: false, reason: r.reason };
+  }
+  if (isRetailTemplate(log.templateId)) {
+    const r = retailDecide(log.templateId, log.seed, log.decisions, day, caseId, optionId);
     return r.ok ? { log: { ...log, decisions: r.decisions }, ok: true } : { log, ok: false, reason: r.reason };
   }
   if (log.decisions.length && day < log.decisions.at(-1)!.day) return { log, ok: false, reason: "No se puede decidir en el pasado." };
@@ -131,11 +140,19 @@ export const isSteelLog = (log: GrowthLog | undefined | null): boolean => !!log 
 export const steelOf = (log: GrowthLog, day: number) => steelAt(log.templateId, log.seed, log.decisions, day);
 /** Caso de la acería v2 que espera decisión hoy, o null. */
 export const steelPendingOf = (log: GrowthLog, day: number) => steelPending(log.templateId, log.seed, log.decisions, day);
+/** ¿El registro es de la cadena de conveniencia (Retail v2, motor contable propio en growth/retail)? */
+export const isRetailLog = (log: GrowthLog | undefined | null): boolean => !!log && isRetailTemplate(log.templateId);
+/** Estado de la cadena de conveniencia hoy (solo para registros de Retail v2). */
+export const retailOf = (log: GrowthLog, day: number) => retailAt(log.templateId, log.seed, log.decisions, day);
+/** Caso de la cadena de conveniencia que espera decisión hoy, o null. */
+export const retailPendingOf = (log: GrowthLog, day: number) => retailPending(log.templateId, log.seed, log.decisions, day);
 /** Cuántas decisiones esperan hoy (cualquier motor). */
 export function growthPendingCount(log: GrowthLog, day: number): number {
+  if (isRetailLog(log)) return retailPendingOf(log, day) ? 1 : 0;
   return isSteelLog(log) ? (steelPendingOf(log, day) ? 1 : 0) : pendingGrowth(log, day).length;
 }
 /** Puntos de los 5 indicadores (cualquier motor). */
 export function growthDelta(log: GrowthLog, day: number): Kpis {
+  if (isRetailLog(log)) return retailBridge(retailOf(log, day).state).delta;
   return isSteelLog(log) ? steelBridge(steelOf(log, day).state).delta : growthBridge(log, day).delta;
 }

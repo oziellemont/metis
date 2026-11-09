@@ -10,6 +10,7 @@ import { brandPack } from "./template";
 import { GROWTH_ARCHETYPE, GROWTH_ARCHETYPES, growthTemplateFor } from "../growth/combos";
 import { TEMPLATES } from "../growth/families";
 import { TEMPLATES_V2 } from "../growth/steel/params";
+import { TEMPLATES_RETAIL } from "../growth/retail/params";
 import { profileOf } from "../growth/models";
 import { cleanName, exposureOfPack, isCompanyId, newCompanyProfile, shortNameOf } from "./identity";
 import { ARCHETYPES, SECTORS, TAXONOMY_VERSION, industryOf, isOfferedCombo, isPlayableCombo, searchIndustries, OFFERED_TYPES, type CompanyArchetype, type Industry, type Sector, type Suggestion } from "./taxonomy";
@@ -119,7 +120,7 @@ export function changeChoice(sel: SetupSelection, c: GrowthChoice): SetupSelecti
 /** Resumen de la empresa que vas a dirigir (de la plantilla del motor; cifras reales del modelo). */
 export const growthSummaryOf = (sel: SetupSelection): string | null => {
   const t = templateOfSel(sel);
-  return t ? TEMPLATES[t]?.summary ?? TEMPLATES_V2[t]?.summary ?? null : null;
+  return t ? TEMPLATES[t]?.summary ?? TEMPLATES_V2[t]?.summary ?? TEMPLATES_RETAIL[t]?.summary ?? null : null;
 };
 /** Datos de la carta de nombramiento (de la plantilla del motor, nunca inventados). */
 export function growthFactsOf(sel: SetupSelection): [string, string][] | null {
@@ -132,6 +133,18 @@ export function growthFactsOf(sel: SetupSelection): [string, string][] | null {
       ["Planta", S.kind === "integrada" ? "Fusión, colada y laminación" : "Fusión y colada"],
       ["Caja al llegar", m(S.cash)],
       ["Renta mensual", m(S.rent)],
+    ];
+  }
+  const R = id ? TEMPLATES_RETAIL[id] : null;
+  if (R) {
+    const m = (n: number) => `$${Math.round(n).toLocaleString("en-US")}`;
+    const stores = R.groups.reduce((a, g) => a + g.n, 0);
+    const people = R.groups.reduce((a, g) => a + g.n * (1 + g.staff), 0) + R.crews.reduce((a, x) => a + x.n, 0);
+    return [
+      ["Personas", people.toLocaleString("en-US")],
+      ["Tiendas", `${stores} · 24 horas`],
+      ["Caja al llegar", m(R.cash)],
+      ["Deuda", R.debt ? m(R.debt.amount) : "$0"],
     ];
   }
   const T = id ? TEMPLATES[id] : null;

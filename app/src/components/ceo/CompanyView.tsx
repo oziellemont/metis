@@ -9,7 +9,8 @@ import { CompanyOrgChart } from "./CompanyOrgChart";
 import { BusinessPanel } from "./BusinessPanel";
 import { GrowthPanel } from "./GrowthPanel";
 import { SteelPanel } from "./SteelPanel";
-import { isSteelLog } from "@/lib/ceo/growth/session";
+import { RetailPanel } from "./RetailPanel";
+import { isRetailLog, isSteelLog } from "@/lib/ceo/growth/session";
 import { KpiBoard } from "./KpiBoard";
 import { CompanyMark } from "./ui";
 import { NAME_MAX } from "@/lib/ceo/career/identity";
@@ -61,7 +62,7 @@ export function CompanyView() {
         <KpiBoard />
       </section>
 
-      {c.s.growth ? (isSteelLog(c.s.growth) ? <SteelPanel /> : <GrowthPanel />) : c.continuous && <BusinessPanel />}
+      {c.s.growth ? (isRetailLog(c.s.growth) ? <RetailPanel /> : isSteelLog(c.s.growth) ? <SteelPanel /> : <GrowthPanel />) : c.continuous && <BusinessPanel />}
 
       <MyCompanies />
 
