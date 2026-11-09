@@ -12,7 +12,7 @@ const ok = (s: RetailState) => {
 };
 
 describe("retail v2 · contabilidad", () => {
-  it("apagado para jugadores hasta que se autorice", () => expect(RETAIL_V2_ENABLED).toBe(false));
+  it("encendido: autorizado para empresas nuevas", () => expect(RETAIL_V2_ENABLED).toBe(true));
 
   it("la partida doble cuadra y cada saldo concilia durante 24 meses, sin quedarse sin caja", () => {
     const s = createRetail(ID);

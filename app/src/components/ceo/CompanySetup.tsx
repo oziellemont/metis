@@ -11,6 +11,7 @@ import { personOf } from "@/lib/ceo/cast";
 import { ARCHETYPES, INDUSTRY_PLACEHOLDER, availabilityLabel, industryOf } from "@/lib/ceo/career/taxonomy";
 import { NAME_MAX } from "@/lib/ceo/career/identity";
 import { GROWTH_CHOICES, OFFERED_ARCHETYPES, appointedByOf, canContinue, changeChoice, changeType, choiceOf, effectiveShort, growthFactsOf, growthIndustries, growthSummaryOf, industriesForType, templateOfSel, nameExample, previewPack, searchForSel, sectorsForSel, typeOpen, type SetupSelection } from "@/lib/ceo/career/setup";
+import { isRetailTemplate } from "@/lib/ceo/growth/retail/session";
 import { Avatar, CompanyMark } from "./ui";
 
 type Sel = SetupSelection;
@@ -155,7 +156,7 @@ export function IndustryStep({ sel, setSel, onBack, onNext }: StepProps) {
             </div>
           )}
         </div>
-        {ind && canContinue("industria", sel) && ind.specialties.length > 0 && (
+        {ind && canContinue("industria", sel) && ind.specialties.length > 0 && !isRetailTemplate(templateOfSel(sel) ?? "") && (
           <div>
             <label className="label" htmlFor="ind-spec">Especialidad (opcional)</label>
             <select id="ind-spec" className="input" value={sel.specialty ?? ""} onChange={(e) => setSel((s) => ({ ...s, specialty: e.target.value || undefined }))}>

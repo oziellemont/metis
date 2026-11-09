@@ -124,5 +124,5 @@ export const TEMPLATES_RETAIL: Readonly<Record<string, RetailTemplate>> = Object
   },
 });
 
-/** Interruptor para jugadores: apagado hasta que se autorice. Con false, Retail sigue por el camino de siempre. */
-export const RETAIL_V2_ENABLED = false;
+/** Interruptor para jugadores: encendido (autorizado). Con false, Retail vuelve al camino de siempre para empresas nuevas. */
+export const RETAIL_V2_ENABLED = true;

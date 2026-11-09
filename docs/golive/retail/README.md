@@ -1,6 +1,6 @@
 # Retail v2 · Cadena de tiendas de conveniencia
 
-Estado: construido y probado, **apagado** (`RETAIL_V2_ENABLED = false` en `app/src/lib/ceo/growth/retail/params.ts`) hasta que Oziel autorice.
+Estado: **encendido** para empresas consolidadas nuevas de Retail (`RETAIL_V2_ENABLED = true`, autorizado por Oziel). Las partidas existentes no cambian.
 
 ## Enfoque
 

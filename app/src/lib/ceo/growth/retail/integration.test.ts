@@ -1,11 +1,13 @@
 /**
- * Retail v2 · integración con la partida. Con el interruptor apagado, Retail sigue igual que siempre; la plantilla
- * de conveniencia ya funciona de punta a punta (registro, reconstrucción, indicadores, IA acotada) para encenderla.
+ * Retail v2 · integración con la partida. Encendido: las empresas consolidadas nuevas de Retail usan la cadena de
+ * conveniencia de punta a punta (registro, reconstrucción, indicadores, IA acotada). No hay StartUp de Retail.
  */
 import { describe, expect, it } from "vitest";
 import { growthTemplateFor, GROWTH_COMBOS, RETAIL_COMBO } from "../combos";
 import { decideGrowth, growthDelta, growthPendingCount, isRetailLog, isSteelLog, newGrowthLog, pendingGrowth, retailOf, retailPendingOf, sanitizeGrowthLog } from "../session";
-import { growthFactsOf, growthSummaryOf } from "../../career/setup";
+import { growthFactsOf, growthIndustries, growthSummaryOf } from "../../career/setup";
+import { newCompanyProfile } from "../../career/identity";
+import { TAXONOMY_VERSION } from "../../career/taxonomy";
 import { RETAIL_CADENCE, retailBridge, retailDecide, retailEligibleIds, retailPending, type RetailDecision } from "./session";
 import { RETAIL_V2_ENABLED } from "./params";
 
@@ -13,13 +15,17 @@ const ID = "conveniencia_regional_v2";
 const firstDay = (seed: string) => { for (let d = 0; d < 120; d++) if (retailPending(ID, seed, [], d)) return d; throw new Error("Sin casos."); };
 
 describe("retail v2 · interruptor", () => {
-  it("apagado: Retail no cambia para nadie", () => {
-    expect(RETAIL_V2_ENABLED).toBe(false);
-    expect(GROWTH_COMBOS["comercio/retail"]).toBeUndefined();
-    expect(growthTemplateFor("comercio", "retail", "establecida")).toBeNull();
-  });
-  it("al encenderlo: solo empresa consolidada (cadena de conveniencia), sin StartUp", () => {
+  it("encendido: solo empresa consolidada (cadena de conveniencia), sin StartUp", () => {
+    expect(RETAIL_V2_ENABLED).toBe(true);
     expect(RETAIL_COMBO).toEqual({ startup: null, consolidada: ID });
+    expect(GROWTH_COMBOS["comercio/retail"]).toEqual(RETAIL_COMBO);
+    expect(growthTemplateFor("comercio", "retail", "establecida")).toBe(ID);
+    expect(growthTemplateFor("comercio", "retail", "pyme")).toBeNull();
+    expect(growthIndustries().some((i) => i.id === "retail")).toBe(false);
+  });
+  it("crea la empresa consolidada de Retail con el motor de conveniencia", () => {
+    const p = newCompanyProfile({ companyId: "6f1c2a3b-4d5e-4f60-8a7b-9c0d1e2f3a4b", archetype: "establecida", sectorId: "comercio", industryId: "retail", displayName: "Tiendas Al Paso", growth: true, at: 1 }, TAXONOMY_VERSION);
+    expect(p).not.toBeNull();
   });
 });
 
@@ -82,11 +88,12 @@ describe("retail v2 · registro de la partida", () => {
     expect(retailPending(ID, "ia", [], d, "caso_inventado")!.c.id).toBe(ids[0]);
   });
 
-  it("la carta de nombramiento usaría datos de la plantilla (cuando se encienda)", () => {
-    // Con el interruptor apagado, la selección de Retail no trae plantilla del motor.
+  it("la carta de nombramiento usa datos de la plantilla", () => {
     const sel = { growth: true, archetype: "establecida" as const, sectorId: "comercio", industryId: "retail" };
-    expect(growthSummaryOf(sel)).toBeNull();
-    expect(growthFactsOf(sel)).toBeNull();
+    expect(growthSummaryOf(sel)).toBeTruthy();
+    const facts = Object.fromEntries(growthFactsOf(sel)!);
+    expect(facts["Tiendas"]).toBe("340 · 24 horas");
+    expect(facts["Caja al llegar"]).toBe("$110,000,000");
   });
 
   it("recorrido de dos años con decisiones equilibradas: cuadra, sin vencidos crónicos", () => {
