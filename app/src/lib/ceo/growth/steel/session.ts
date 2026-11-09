@@ -8,10 +8,13 @@
  * Ritmo: llega un caso cada `CADENCE` días (el selector adaptable elige cuál). Si hay pagos vencidos, el caso de
  * liquidez llega de inmediato. Si la liquidez está en alerta, se ofrece en el siguiente turno.
  */
-import { advanceSteel, cashOf, createSteel, debtOf, overdueTotal, MONTH, fmt, type SteelState } from "./engine";
+import { advanceSteel, applySteel, cashOf, createSteel, debtOf, overdueTotal, MONTH, fmt, type SteelState } from "./engine";
 import { STEEL_CASES, caseById as steelCaseById, decideSteel, liquidityCase, nextCase, optionCheck, rank, type LogEntry, type SCase } from "./cases";
 import { TEMPLATES_V2 } from "./params";
 import type { KpiKey, Kpis } from "../../types";
+import { caseIdOf, episodeIdOfCase, isWorldCaseId, openEpisode, regularLastDay, timeline, worldSig, worldViewOf, type ExternalHit, type WorldView } from "../../world/episodes";
+import { steelImpact, steelWorldCase } from "../../world/cases";
+import type { WorldEpisode } from "../../world/types";
 
 export const STEEL_CADENCE = 12;
 export const isSteelTemplate = (id: string | undefined | null): boolean => !!id && !!TEMPLATES_V2[id];
@@ -19,42 +22,56 @@ export const isSteelTemplate = (id: string | undefined | null): boolean => !!id 
 export interface SteelDecision { caseId: string; key: string; optionId: string; day: number; source?: "motor" | "ia" }
 
 /** El caso existe (o es un caso de liquidez, que se arma con el estado del día). */
-export const isSteelCaseId = (id: string) => /^liq@\d+$/.test(id) || !!steelCaseById(id);
+export const isSteelCaseId = (id: string) => /^liq@\d+$/.test(id) || isWorldCaseId(id) || !!steelCaseById(id);
 
 // ───────────────────────────────────────────────────────── reconstrucción
-export interface SteelRebuilt { state: SteelState; log: LogEntry[]; rejected: number }
+/** `external`: impactos simulados de acontecimientos reales (o ejercicios) que llegaron con fuerza a una sede. */
+export interface SteelRebuilt { state: SteelState; log: LogEntry[]; rejected: number; external: ExternalHit[] }
 const CACHE = new Map<string, { day: number; r: SteelRebuilt }>();
-const CACHE_MAX = 4;
-const keyOf = (templateId: string, seed: string, ds: readonly SteelDecision[]) => `${templateId}|${seed}|${ds.map((d) => `${d.caseId}:${d.optionId}@${d.day}`).join(",")}`;
+const CACHE_MAX = 12;
+const keyOf = (templateId: string, seed: string, ds: readonly SteelDecision[], world?: readonly WorldEpisode[]) => `${templateId}|${seed}|${ds.map((d) => `${d.caseId}:${d.optionId}@${d.day}`).join(",")}|${worldSig(world)}`;
 
-function resolveCase(s: SteelState, caseId: string): SCase | null {
+function resolveCase(s: SteelState, caseId: string, world?: readonly WorldEpisode[]): SCase | null {
   if (caseId.startsWith("liq@")) { const c = liquidityCase(s); return c ? { ...c, id: caseId } : null; }
+  if (isWorldCaseId(caseId)) { const ep = world?.find((e) => e.id === episodeIdOfCase(caseId)); return ep ? steelWorldCase(s, ep) : null; }
   return steelCaseById(caseId) ?? null;
 }
 
 /** Estado de la acería en el día `day`. Las decisiones que ya no proceden se descartan y se cuentan. */
-export function steelAt(templateId: string, seed: string, decisions: readonly SteelDecision[], day: number): SteelRebuilt {
-  const key = keyOf(templateId, seed, decisions);
+export function steelAt(templateId: string, seed: string, decisions: readonly SteelDecision[], day: number, world?: readonly WorldEpisode[]): SteelRebuilt {
+  const key = keyOf(templateId, seed, decisions, world);
   const target = Math.max(0, Math.floor(day));
   const hit = CACHE.get(key);
-  const lastDecision = decisions.at(-1)?.day ?? -1;
   if (hit && hit.day === target) return hit.r;
+  const steps = timeline(decisions, world, target);
+  const lastStep = steps.at(-1)?.day ?? -1;
   let r: SteelRebuilt;
-  if (hit && hit.day < target && hit.day >= lastDecision) {
-    r = { state: advanceSteel(hit.r.state, target - hit.r.state.day), log: hit.r.log, rejected: hit.r.rejected };
+  if (hit && hit.day < target && hit.day >= lastStep) {
+    r = { state: advanceSteel(hit.r.state, target - hit.r.state.day), log: hit.r.log, rejected: hit.r.rejected, external: hit.r.external };
   } else {
     let s = createSteel(templateId, seed);
     const log: LogEntry[] = [];
+    const external: ExternalHit[] = [];
+    const chosen = new Map<string, string>();
     let rejected = 0;
-    for (const d of decisions) {
-      if (d.day > target) break;
-      if (d.day > s.day) s = advanceSteel(s, d.day - s.day);
-      const c = resolveCase(s, d.caseId);
+    for (const st of steps) {
+      if (st.day > s.day) s = advanceSteel(s, st.day - s.day);
+      if (st.ep) {
+        const imp = steelImpact(s, st.ep, chosen.get(st.ep.id) ?? null);
+        const done: string[] = [];
+        for (const cmd of imp.commands) if (applySteel(s, cmd).ok) done.push(`${cmd.type}:${cmd.id}`);
+        s.events.push({ day: s.day, kind: "mundo", text: imp.text, ref: caseIdOf(st.ep) });
+        external.push({ id: st.ep.id, day: s.day, text: imp.text, mode: st.ep.mode, commands: done });
+        continue;
+      }
+      const d = st.d!;
+      const c = resolveCase(s, d.caseId, world);
       const res = c ? decideSteel(s, c, d.optionId, log, d.source ?? "motor") : { ok: false };
       if (!res.ok) rejected++;
+      else if (isWorldCaseId(d.caseId)) chosen.set(episodeIdOfCase(d.caseId), d.optionId);
     }
     if (target > s.day) s = advanceSteel(s, target - s.day);
-    r = { state: s, log, rejected };
+    r = { state: s, log, rejected, external };
   }
   CACHE.delete(key);
   CACHE.set(key, { day: target, r });
@@ -64,40 +81,44 @@ export function steelAt(templateId: string, seed: string, decisions: readonly St
 
 // ───────────────────────────────────────────────────────── casos pendientes
 export interface SteelOptionView { id: string; label: string; detail: string; stance: string; ok: boolean; reason?: string; blocked: boolean }
-export interface SteelPending { c: SCase; subject: string; from: string; body: string[]; data: [string, string][]; lesson: string; options: SteelOptionView[]; why: string; source: "motor" | "ia" }
+export interface SteelPending { c: SCase; subject: string; from: string; body: string[]; data: [string, string][]; lesson: string; options: SteelOptionView[]; why: string; source: "motor" | "ia"; world?: WorldView }
 
-/** El caso que hoy espera decisión (uno a la vez), o null. `aiPick` solo se usa si es elegible. */
-export function steelPending(templateId: string, seed: string, decisions: readonly SteelDecision[], day: number, aiPick?: string): SteelPending | null {
-  const { state: s, log } = steelAt(templateId, seed, decisions, day);
-  const last = decisions.at(-1)?.day ?? -Infinity;
-  const due = s.day - last >= STEEL_CADENCE;
-  // Pagos vencidos: el caso de liquidez no espera turno (salvo que se acabe de decidir uno hoy).
-  if (!due && !(s.liquidity === "crisis" && last < s.day)) return null;
-  const n = nextCase(s, log, aiPick);
-  if (!n) return null;
-  const c = n.c;
+function viewOf(s: SteelState, c: SCase, why: string, source: "motor" | "ia", world?: WorldView): SteelPending {
   const people = TEMPLATES_V2[s.templateId].people;
   return {
-    c, subject: c.subject, from: people[c.from] ?? c.from, body: c.body(s), data: c.data ? c.data(s) : [], lesson: c.lesson, why: n.why, source: n.source,
+    c, subject: c.subject, from: people[c.from] ?? c.from, body: c.body(s), data: c.data ? c.data(s) : [], lesson: c.lesson, why, source, ...(world ? { world } : {}),
     options: c.options.map((o) => { const chk = optionCheck(s, o); return { id: o.id, label: o.label, detail: o.detail(s), stance: o.stance, ok: chk.ok, reason: chk.reason, blocked: !!o.blocked }; }),
   };
 }
 
+/** El caso que hoy espera decisión (uno a la vez), o null. Un acontecimiento externo con sedes expuestas va primero. */
+export function steelPending(templateId: string, seed: string, decisions: readonly SteelDecision[], day: number, aiPick?: string, world?: readonly WorldEpisode[]): SteelPending | null {
+  const { state: s, log } = steelAt(templateId, seed, decisions, day, world);
+  const ep = openEpisode(world, decisions, s.day);
+  if (ep) return viewOf(s, steelWorldCase(s, ep), "acontecimiento externo con sedes expuestas", "motor", worldViewOf(ep, s.day, templateId));
+  const last = regularLastDay(decisions);
+  const due = s.day - last >= STEEL_CADENCE;
+  // Pagos vencidos: el caso de liquidez no espera turno (salvo que se acabe de decidir uno hoy).
+  if (!due && !(s.liquidity === "crisis" && last < s.day)) return null;
+  const n = nextCase(s, log, aiPick);
+  return n ? viewOf(s, n.c, n.why, n.source) : null;
+}
+
 /** Decide el caso pendiente. Devuelve la lista nueva, o la misma con la razón si no procede. */
-export function steelDecide(templateId: string, seed: string, decisions: readonly SteelDecision[], day: number, caseId: string, optionId: string, source: "motor" | "ia" = "motor"): { decisions: SteelDecision[]; ok: boolean; reason?: string } {
+export function steelDecide(templateId: string, seed: string, decisions: readonly SteelDecision[], day: number, caseId: string, optionId: string, source: "motor" | "ia" = "motor", world?: readonly WorldEpisode[]): { decisions: SteelDecision[]; ok: boolean; reason?: string } {
   const same = [...decisions];
   if (decisions.length && day < decisions.at(-1)!.day) return { decisions: same, ok: false, reason: "No se puede decidir en el pasado." };
-  const p = steelPending(templateId, seed, decisions, day);
+  const p = steelPending(templateId, seed, decisions, day, undefined, world);
   if (!p || p.c.id !== caseId) return { decisions: same, ok: false, reason: "Ese caso no está esperando decisión hoy." };
-  const s = advanceSteel(steelAt(templateId, seed, decisions, day).state, 0);
+  const s = advanceSteel(steelAt(templateId, seed, decisions, day, world).state, 0);
   const res = decideSteel(s, p.c, optionId, [], source);
   if (!res.ok) return { decisions: same, ok: false, reason: res.reason };
   return { decisions: [...decisions, { caseId, key: `${caseId}@${day}`, optionId, day: Math.floor(day), ...(source === "ia" ? { source } : {}) }], ok: true };
 }
 
 /** Casos que el selector consideraría hoy, en su orden (para la IA: solo puede elegir de esta lista). */
-export function steelEligibleIds(templateId: string, seed: string, decisions: readonly SteelDecision[], day: number): string[] {
-  const { state, log } = steelAt(templateId, seed, decisions, day);
+export function steelEligibleIds(templateId: string, seed: string, decisions: readonly SteelDecision[], day: number, world?: readonly WorldEpisode[]): string[] {
+  const { state, log } = steelAt(templateId, seed, decisions, day, world);
   return rank(state, log).map((x) => x.c.id);
 }
 

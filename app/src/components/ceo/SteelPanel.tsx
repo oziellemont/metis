@@ -9,6 +9,7 @@ import { caseById as steelCase, previewOption } from "@/lib/ceo/growth/steel/cas
 import { cashOf, debtOf, overdueTotal, CREDITOR_LABEL, headcountOf, type SteelState } from "@/lib/ceo/growth/steel/engine";
 import { AREA_LABEL } from "@/lib/ceo/growth/steel/cases";
 import { useCeo } from "./CeoProvider";
+import { ExternalImpacts, WorldBadge } from "./WorldBits";
 import { AlertChips } from "./GrowthPanel";
 import type { Alert } from "@/lib/ceo/growth/ops";
 
@@ -42,14 +43,14 @@ export function SteelPanel() {
   const data = useMemo(() => {
     if (!log) return null;
     const r = steelOf(log, day);
-    return { s: r.state, audit: r.log, pending: steelPendingOf(log, day), bridge: steelBridge(r.state) };
+    return { s: r.state, audit: r.log, external: r.external, pending: steelPendingOf(log, day), bridge: steelBridge(r.state) };
   }, [log, day]);
   const [pick, setPick] = useState<string | null>(null);
   const [more, setMore] = useState(false);
   const [done, setDone] = useState<{ label: string; lesson: string } | null>(null);
   const preview = useMemo(() => (data?.pending && pick ? previewOption(data.s, data.pending.c, pick) : null), [data, pick]);
   if (!data || !log) return null;
-  const { s, pending, bridge, audit } = data;
+  const { s, pending, bridge, audit, external } = data;
   const m = s.months.at(-1);
   const pk = c.pack;
 
@@ -73,6 +74,7 @@ export function SteelPanel() {
       </div>
 
       <AlertChips alerts={steelAlerts(s)} />
+      <ExternalImpacts hits={external} />
 
       {done && !pending && (
         <div className="rounded-3xl bg-ink text-white p-5 ceo-pop space-y-2" data-testid="caso-decidido">
@@ -83,6 +85,7 @@ export function SteelPanel() {
 
       {pending && (
         <article className="rounded-3xl border border-slate-100 bg-white p-4 sm:p-5 tree-pop" data-testid="caso-aceria">
+          {pending.world && <WorldBadge w={pending.world} />}
           <div className="text-[11px] text-slate-400">{pending.from} · {AREA_LABEL[pending.c.area]}{pending.c.safety ? " · seguridad" : ""}</div>
           <h3 className="font-semibold text-ink leading-snug">{pending.subject}</h3>
           <div className="mt-2 space-y-2 text-[13px] text-slate-600 leading-relaxed">{pending.body.map((p, i) => <p key={i}>{p}</p>)}</div>

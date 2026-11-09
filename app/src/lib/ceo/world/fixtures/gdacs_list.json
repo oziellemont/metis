@@ -1,0 +1,125 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.2,
+          15.8
+        ]
+      },
+      "properties": {
+        "eventtype": "TC",
+        "eventid": 1001346,
+        "episodeid": 10,
+        "eventname": "MURASU-26",
+        "name": "Tropical Cyclone MURASU-26",
+        "alertlevel": "Red",
+        "iscurrent": "false",
+        "country": "India",
+        "fromdate": "2026-11-01T00:00:00",
+        "todate": "2026-11-03T06:00:00",
+        "datemodified": "2026-11-04T06:01:20",
+        "severitydata": {
+          "severitytext": "Hurricane/Typhoon > 74 mph (maximum wind speed of 157 km/h)"
+        },
+        "url": {
+          "report": "https://www.gdacs.org/report.aspx?eventid=1001346&episodeid=10&eventtype=TC",
+          "geometry": "https://www.gdacs.org/gdacsapi/api/polygons/getgeometry?eventtype=TC&eventid=1001346&episodeid=10"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          81.8,
+          16.4
+        ]
+      },
+      "properties": {
+        "eventtype": "TC",
+        "eventid": 1001345,
+        "episodeid": 10,
+        "eventname": "ARNAB-26",
+        "name": "Tropical Cyclone ARNAB-26",
+        "alertlevel": "Red",
+        "iscurrent": "false",
+        "country": "India",
+        "fromdate": "2026-10-26T00:00:00",
+        "todate": "2026-10-28T06:00:00",
+        "datemodified": "2026-10-29T08:02:06",
+        "severitydata": {
+          "severitytext": "Tropical Storm (maximum wind speed of 222 km/h)"
+        },
+        "url": {
+          "report": "https://www.gdacs.org/report.aspx?eventid=1001345&episodeid=10&eventtype=TC",
+          "geometry": "https://www.gdacs.org/gdacsapi/api/polygons/getgeometry?eventtype=TC&eventid=1001345&episodeid=10"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          127.4,
+          31.2
+        ]
+      },
+      "properties": {
+        "eventtype": "TC",
+        "eventid": 1001338,
+        "episodeid": 46,
+        "eventname": "CHAMPI-26",
+        "name": "Tropical Cyclone CHAMPI-26",
+        "alertlevel": "Red",
+        "iscurrent": "false",
+        "country": "Philippines, Guam, Northern Mariana Islands, Japan, China, South Korea",
+        "fromdate": "2026-10-14T12:00:00",
+        "todate": "2026-10-25T18:00:00",
+        "datemodified": "2026-10-26T22:00:19",
+        "severitydata": {
+          "severitytext": "Tropical Storm (maximum wind speed of 296 km/h)"
+        },
+        "url": {
+          "report": "https://www.gdacs.org/report.aspx?eventid=1001338&episodeid=46&eventtype=TC",
+          "geometry": "https://www.gdacs.org/gdacsapi/api/polygons/getgeometry?eventtype=TC&eventid=1001338&episodeid=46"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          93.7797,
+          32.3805
+        ]
+      },
+      "properties": {
+        "eventtype": "EQ",
+        "eventid": 1573141,
+        "episodeid": 1741837,
+        "eventname": "",
+        "name": "Earthquake in China",
+        "alertlevel": "Orange",
+        "iscurrent": "false",
+        "country": "China",
+        "fromdate": "2026-10-22T14:33:40",
+        "todate": "2026-10-22T14:33:40",
+        "datemodified": "2026-11-04T02:04:22",
+        "severitydata": {
+          "severitytext": "Magnitude 7M, Depth:18km"
+        },
+        "url": {
+          "report": "https://www.gdacs.org/report.aspx?eventid=1573141&episodeid=1741837&eventtype=EQ",
+          "geometry": "https://www.gdacs.org/gdacsapi/api/polygons/getgeometry?eventtype=EQ&eventid=1573141&episodeid=1741837"
+        }
+      }
+    }
+  ]
+}

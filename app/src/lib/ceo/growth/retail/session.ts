@@ -5,51 +5,70 @@
  * siempre igual con el motor determinista. Llega un caso cada `RETAIL_CADENCE` días (el selector adaptable elige
  * cuál); con pagos vencidos, el caso de liquidez llega de inmediato.
  */
-import { advanceRetail, cashOf, createRetail, debtOf, overdueTotal, MONTH, fmt, type RetailState } from "./engine";
+import { advanceRetail, applyRetail, cashOf, createRetail, debtOf, overdueTotal, MONTH, fmt, type RetailState } from "./engine";
 import { RETAIL_CASES, caseById as retailCaseById, decideRetail, liquidityCase, nextCase, optionCheck, rank, type LogEntry, type RCase } from "./cases";
 import { TEMPLATES_RETAIL } from "./params";
 import type { KpiKey, Kpis } from "../../types";
+import { caseIdOf, episodeIdOfCase, isWorldCaseId, openEpisode, regularLastDay, timeline, worldSig, worldViewOf, type ExternalHit, type WorldView } from "../../world/episodes";
+import { retailImpact, retailWorldCase } from "../../world/cases";
+import type { WorldEpisode } from "../../world/types";
 
 export const RETAIL_CADENCE = 12;
 export const isRetailTemplate = (id: string | undefined | null): boolean => !!id && !!TEMPLATES_RETAIL[id];
 
 export interface RetailDecision { caseId: string; key: string; optionId: string; day: number; source?: "motor" | "ia" }
 
-export const isRetailCaseId = (id: string) => /^liq@\d+$/.test(id) || !!retailCaseById(id);
+export const isRetailCaseId = (id: string) => /^liq@\d+$/.test(id) || isWorldCaseId(id) || !!retailCaseById(id);
 
 // ───────────────────────────────────────────────────────── reconstrucción
-export interface RetailRebuilt { state: RetailState; log: LogEntry[]; rejected: number }
+/** `external`: impactos simulados de acontecimientos reales (o ejercicios) que llegaron con fuerza a una sede. */
+export interface RetailRebuilt { state: RetailState; log: LogEntry[]; rejected: number; external: ExternalHit[] }
 const CACHE = new Map<string, { day: number; r: RetailRebuilt }>();
-const CACHE_MAX = 4;
-const keyOf = (templateId: string, seed: string, ds: readonly RetailDecision[]) => `${templateId}|${seed}|${ds.map((d) => `${d.caseId}:${d.optionId}@${d.day}`).join(",")}`;
+const CACHE_MAX = 12;
+const keyOf = (templateId: string, seed: string, ds: readonly RetailDecision[], world?: readonly WorldEpisode[]) => `${templateId}|${seed}|${ds.map((d) => `${d.caseId}:${d.optionId}@${d.day}`).join(",")}|${worldSig(world)}`;
+const cloneR = (r: RetailRebuilt): RetailRebuilt => ({ state: r.state, log: r.log, rejected: r.rejected, external: r.external });
 
-function resolveCase(s: RetailState, caseId: string): RCase | null {
+function resolveCase(s: RetailState, caseId: string, world?: readonly WorldEpisode[]): RCase | null {
   if (caseId.startsWith("liq@")) { const c = liquidityCase(s); return c ? { ...c, id: caseId } : null; }
+  if (isWorldCaseId(caseId)) { const ep = world?.find((e) => e.id === episodeIdOfCase(caseId)); return ep ? retailWorldCase(s, ep) : null; }
   return retailCaseById(caseId) ?? null;
 }
 
-export function retailAt(templateId: string, seed: string, decisions: readonly RetailDecision[], day: number): RetailRebuilt {
-  const key = keyOf(templateId, seed, decisions);
+/** Estado de la cadena en el día `day`, con las decisiones y los episodios externos congelados (`world`). */
+export function retailAt(templateId: string, seed: string, decisions: readonly RetailDecision[], day: number, world?: readonly WorldEpisode[]): RetailRebuilt {
+  const key = keyOf(templateId, seed, decisions, world);
   const target = Math.max(0, Math.floor(day));
   const hit = CACHE.get(key);
-  const lastDecision = decisions.at(-1)?.day ?? -1;
   if (hit && hit.day === target) return hit.r;
+  const steps = timeline(decisions, world, target);
+  const lastStep = steps.at(-1)?.day ?? -1;
   let r: RetailRebuilt;
-  if (hit && hit.day < target && hit.day >= lastDecision) {
-    r = { state: advanceRetail(hit.r.state, target - hit.r.state.day), log: hit.r.log, rejected: hit.r.rejected };
+  if (hit && hit.day < target && hit.day >= lastStep) {
+    r = { ...cloneR(hit.r), state: advanceRetail(hit.r.state, target - hit.r.state.day) };
   } else {
     let s = createRetail(templateId, seed);
     const log: LogEntry[] = [];
+    const external: ExternalHit[] = [];
+    const chosen = new Map<string, string>();
     let rejected = 0;
-    for (const d of decisions) {
-      if (d.day > target) break;
-      if (d.day > s.day) s = advanceRetail(s, d.day - s.day);
-      const c = resolveCase(s, d.caseId);
+    for (const st of steps) {
+      if (st.day > s.day) s = advanceRetail(s, st.day - s.day);
+      if (st.ep) {
+        const imp = retailImpact(s, st.ep, chosen.get(st.ep.id) ?? null);
+        const done: string[] = [];
+        for (const cmd of imp.commands) if (applyRetail(s, cmd).ok) done.push(`${cmd.type}:${cmd.id}`);
+        s.events.push({ day: s.day, kind: "mundo", text: imp.text, ref: caseIdOf(st.ep) });
+        external.push({ id: st.ep.id, day: s.day, text: imp.text, mode: st.ep.mode, commands: done });
+        continue;
+      }
+      const d = st.d!;
+      const c = resolveCase(s, d.caseId, world);
       const res = c ? decideRetail(s, c, d.optionId, log, d.source ?? "motor") : { ok: false };
       if (!res.ok) rejected++;
+      else if (isWorldCaseId(d.caseId)) chosen.set(episodeIdOfCase(d.caseId), d.optionId);
     }
     if (target > s.day) s = advanceRetail(s, target - s.day);
-    r = { state: s, log, rejected };
+    r = { state: s, log, rejected, external };
   }
   CACHE.delete(key);
   CACHE.set(key, { day: target, r });
@@ -59,36 +78,41 @@ export function retailAt(templateId: string, seed: string, decisions: readonly R
 
 // ───────────────────────────────────────────────────────── casos pendientes
 export interface RetailOptionView { id: string; label: string; detail: string; stance: string; ok: boolean; reason?: string; blocked: boolean }
-export interface RetailPending { c: RCase; subject: string; from: string; body: string[]; data: [string, string][]; lesson: string; options: RetailOptionView[]; why: string; source: "motor" | "ia" }
+export interface RetailPending { c: RCase; subject: string; from: string; body: string[]; data: [string, string][]; lesson: string; options: RetailOptionView[]; why: string; source: "motor" | "ia"; world?: WorldView }
 
-export function retailPending(templateId: string, seed: string, decisions: readonly RetailDecision[], day: number, aiPick?: string): RetailPending | null {
-  const { state: s, log } = retailAt(templateId, seed, decisions, day);
-  const last = decisions.at(-1)?.day ?? -Infinity;
-  const due = s.day - last >= RETAIL_CADENCE;
-  if (!due && !(s.liquidity === "crisis" && last < s.day)) return null;
-  const n = nextCase(s, log, aiPick);
-  if (!n) return null;
-  const c = n.c;
+function viewOf(s: RetailState, c: RCase, why: string, source: "motor" | "ia", world?: WorldView): RetailPending {
   const people = TEMPLATES_RETAIL[s.templateId].people;
   return {
-    c, subject: c.subject, from: people[c.from] ?? c.from, body: c.body(s), data: c.data ? c.data(s) : [], lesson: c.lesson, why: n.why, source: n.source,
+    c, subject: c.subject, from: people[c.from] ?? c.from, body: c.body(s), data: c.data ? c.data(s) : [], lesson: c.lesson, why, source, ...(world ? { world } : {}),
     options: c.options.map((o) => { const chk = optionCheck(s, o); return { id: o.id, label: o.label, detail: o.blocked ? "" : o.detail(s), stance: o.stance, ok: chk.ok, reason: chk.reason, blocked: !!o.blocked }; }),
   };
 }
 
-export function retailDecide(templateId: string, seed: string, decisions: readonly RetailDecision[], day: number, caseId: string, optionId: string, source: "motor" | "ia" = "motor"): { decisions: RetailDecision[]; ok: boolean; reason?: string } {
+/** El caso que hoy espera decisión. Un acontecimiento externo con sedes expuestas va primero y no espera turno. */
+export function retailPending(templateId: string, seed: string, decisions: readonly RetailDecision[], day: number, aiPick?: string, world?: readonly WorldEpisode[]): RetailPending | null {
+  const { state: s, log } = retailAt(templateId, seed, decisions, day, world);
+  const ep = openEpisode(world, decisions, s.day);
+  if (ep) return viewOf(s, retailWorldCase(s, ep), "acontecimiento externo con sedes expuestas", "motor", worldViewOf(ep, s.day, templateId));
+  const last = regularLastDay(decisions);
+  const due = s.day - last >= RETAIL_CADENCE;
+  if (!due && !(s.liquidity === "crisis" && last < s.day)) return null;
+  const n = nextCase(s, log, aiPick);
+  return n ? viewOf(s, n.c, n.why, n.source) : null;
+}
+
+export function retailDecide(templateId: string, seed: string, decisions: readonly RetailDecision[], day: number, caseId: string, optionId: string, source: "motor" | "ia" = "motor", world?: readonly WorldEpisode[]): { decisions: RetailDecision[]; ok: boolean; reason?: string } {
   const same = [...decisions];
   if (decisions.length && day < decisions.at(-1)!.day) return { decisions: same, ok: false, reason: "No se puede decidir en el pasado." };
-  const p = retailPending(templateId, seed, decisions, day);
+  const p = retailPending(templateId, seed, decisions, day, undefined, world);
   if (!p || p.c.id !== caseId) return { decisions: same, ok: false, reason: "Ese caso no está esperando decisión hoy." };
-  const s = advanceRetail(retailAt(templateId, seed, decisions, day).state, 0);
+  const s = advanceRetail(retailAt(templateId, seed, decisions, day, world).state, 0);
   const res = decideRetail(s, p.c, optionId, [], source);
   if (!res.ok) return { decisions: same, ok: false, reason: res.reason };
   return { decisions: [...decisions, { caseId, key: `${caseId}@${day}`, optionId, day: Math.floor(day), ...(source === "ia" ? { source } : {}) }], ok: true };
 }
 
-export function retailEligibleIds(templateId: string, seed: string, decisions: readonly RetailDecision[], day: number): string[] {
-  const { state, log } = retailAt(templateId, seed, decisions, day);
+export function retailEligibleIds(templateId: string, seed: string, decisions: readonly RetailDecision[], day: number, world?: readonly WorldEpisode[]): string[] {
+  const { state, log } = retailAt(templateId, seed, decisions, day, world);
   return rank(state, log).map((x) => x.c.id);
 }
 

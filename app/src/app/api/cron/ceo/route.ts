@@ -24,6 +24,8 @@ import { jobsFor, type Sent } from "@/lib/ceo/schedule";
 import { renderJob } from "@/lib/ceo/mailer";
 import { ceoWhatsappText, fromHeader, sendWhatsapp } from "@/lib/ceo/notify";
 import type { CeoState } from "@/lib/ceo/types";
+import { worldJobs } from "@/lib/ceo/world/notify";
+import { worldEmail } from "@/lib/ceo/emails";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -58,9 +60,18 @@ export async function GET(req: NextRequest) {
       continue;
     }
     const jobs = jobsFor(s, sent, real, { plan });
-    if (!jobs.length) continue;
+    const wjobs = worldJobs(s, sent, nowOf(s, real));
+    if (!jobs.length && !wjobs.length) continue;
     const to = (p.email as string | null) || s.settings.email || "";
     let changed = false;
+    // World Events: un correo por acontecimiento y revisión, solo con el caso abierto y la preferencia activada.
+    for (const w of wjobs) {
+      if (!to || !p.notify_email) { if (!dry) { sent[w.key] = real; changed = true; } continue; }
+      const m = worldEmail({ pack: packOf(s), name: p.name ?? "", appUrl, event: w.world.name, label: w.world.label, source: w.world.source.name, sourceUrl: w.world.source.url, assets: w.world.assets, subjectLine: w.subject, daysLeft: w.world.daysLeft, forecast: w.world.status === "pronostico" });
+      const r = dry ? { ok: true, error: undefined as string | undefined } : await sendMail({ to, from: fromHeader(m), subject: m.subject, html: m.html, text: m.text, idempotencyKey: `ceo:${p.user_id}:${w.key}`, tags: [{ name: "app", value: "ceo" }, { name: "tipo", value: "mundo" }] });
+      out.push({ user: p.user_id, key: w.key, subject: m.subject, ok: r.ok, error: r.error });
+      if (r.ok && !dry) { sent[w.key] = real; changed = true; }
+    }
     for (const job of jobs) {
       const at = "at" in job && job.at ? new Date(job.at).toISOString() : undefined;
       // Sin correo o con avisos apagados: se anota como resuelto para no reintentar (la bienvenida espera a que haya correo).

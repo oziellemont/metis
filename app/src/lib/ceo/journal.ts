@@ -26,6 +26,8 @@ const MAX_ACTIVE_RULES = Math.max(RULES_VERSION, CONTINUOUS_RULES_VERSION);
 // v9 nunca se publicó (fue una propuesta): quien la pida recibe la vigente.
 const rv = (v: unknown): number | null => (num(v) && Number.isInteger(v) && v >= 1 ? (v === PROPOSED_RULES_VERSION ? MAX_ACTIVE_RULES : Math.min(v, MAX_ACTIVE_RULES)) : null);
 import type { CeoState } from "./types";
+import { cleanWorldInput, cleanZones } from "./world/episodes";
+import { FAMILIES, type Family } from "./world/types";
 
 export const JOURNAL_MAX_EVENTS = 50;
 export const JOURNAL_MAX_BYTES = 256 * 1024;
@@ -66,6 +68,8 @@ function cleanSettings(x: unknown): Record<string, unknown> | undefined {
   }
   if (r.dailyGoal === 1 || r.dailyGoal === 2 || r.dailyGoal === 3) out.dailyGoal = r.dailyGoal;
   if (r.displayCurrency === "MXN" || r.displayCurrency === "USD") out.displayCurrency = r.displayCurrency;
+  if (typeof r.worldEvents === "boolean") out.worldEvents = r.worldEvents;
+  if (Array.isArray(r.worldMute)) out.worldMute = [...new Set(r.worldMute.filter((f): f is Family => (FAMILIES as readonly unknown[]).includes(f)))];
   if (r.sessionMinutes === 3 || r.sessionMinutes === 5 || r.sessionMinutes === 8 || r.sessionMinutes === 12) out.sessionMinutes = r.sessionMinutes;
   return out; // correo y teléfono nunca entran al diario
 }
@@ -142,6 +146,8 @@ export function sanitizeAction(raw: unknown): GameAction | null {
     }
     case "resumeShelved": return str(a.id, 80) ? { type: "resumeShelved", at, id: a.id } : null;
     case "growth": return str(a.caseId, 40) && str(a.optionId, 40) ? { type: "growth", at, caseId: a.caseId, optionId: a.optionId } : null;
+    case "world": { const ep = cleanWorldInput(a.ep); return ep ? { type: "world", at, ep } : null; }
+    case "worldEnd": { const sites = cleanZones(a.sites); return str(a.id, 30) && sites ? { type: "worldEnd", at, id: a.id, sites } : null; }
     case "episode": { const act = cleanEpisodeAct(a.act, at); return str(a.id, 60) && act ? { type: "episode", at, id: a.id, act } : null; }
     default: return null;
   }

@@ -22,7 +22,9 @@ import { brandDeep, brandPack, brandText, type Brand } from "./career/template";
 import { industryLongFor } from "./career/lexicon";
 import { ASSUMPTIONS_VERSION, sanitizeBusiness } from "./business/model";
 import { sanitizeEpisodes } from "./episodes/engine";
-import { decideGrowth, growthDelta, growthPendingCount, growthTemplateFor, newGrowthLog, sanitizeGrowthLog } from "./growth/session";
+import { decideGrowth, endWorldLog, growthDelta, growthPendingCount, growthTemplateFor, newGrowthLog, openWorldLog, sanitizeGrowthLog } from "./growth/session";
+import type { WorldOpenInput } from "./world/episodes";
+import type { Zone } from "./world/types";
 import { MONTH as GROWTH_MONTH } from "./growth/core";
 import { EPISODES, SEASON_EPISODES, openEpisode as openEpisodeRaw } from "./episodes/catalog";
 import { authoredFromScore, judge, prioritizes, type ContextOption } from "./judgment";
@@ -615,6 +617,23 @@ export function decideGrowthCase(s: CeoState, caseId: string, optionId: string, 
   if (!s.growth || !isContinuous(s)) return s;
   const r = decideGrowth(s.growth, growthDayOf(s, now), caseId, optionId);
   return r.ok ? { ...s, growth: r.log, lastActiveAt: now } : s;
+}
+
+/**
+ * World Events: congela en la partida un acontecimiento real (o un ejercicio hipotético) con sedes expuestas.
+ * Requiere la preferencia del jugador para los reales («Acontecimientos reales en mi carrera») y que la familia no
+ * esté silenciada. El episodio cae siempre en el día simulado del periodo abierto: nunca reescribe meses cerrados.
+ */
+export function openWorldEvent(s: CeoState, inp: WorldOpenInput, now = nowOf(s)): CeoState {
+  if (!s.growth || !isContinuous(s)) return s;
+  const log = openWorldLog(s.growth, inp, growthDayOf(s, now), now, { worldEvents: s.settings.worldEvents === true, worldMute: s.settings.worldMute ?? [] });
+  return log ? { ...s, growth: log } : s;
+}
+/** World Events: cierra un pronóstico real con lo observado (llega el impacto simulado si hubo zona naranja o roja). */
+export function endWorldEvent(s: CeoState, id: string, observed: Record<string, Zone>, now = nowOf(s)): CeoState {
+  if (!s.growth || !isContinuous(s)) return s;
+  const log = endWorldLog(s.growth, id, observed, growthDayOf(s, now), now);
+  return log ? { ...s, growth: log } : s;
 }
 
 /**

@@ -10,7 +10,7 @@ import { alertsOf } from "@/lib/ceo/growth/ops";
 import { AlertChips } from "./GrowthPanel";
 import { steelAlerts } from "./SteelPanel";
 import { retailAlerts } from "./RetailPanel";
-import { TrendingUp } from "lucide-react";
+import { Globe2, TrendingUp } from "lucide-react";
 import { COHERENCE_RULES_VERSION, CONTINUOUS_RULES_VERSION, ECONOMY_RULES_VERSION } from "@/lib/ceo/rules";
 import { ETHICS_AUDIT_RULES } from "@/lib/ceo/editorial";
 import { firstName, personOf } from "@/lib/ceo/cast";
@@ -54,20 +54,20 @@ export function Today() {
       const st = retailOf(c.s.growth, day).state;
       const p = retailPendingOf(c.s.growth, day);
       const last = st.months.at(-1);
-      return { pending: p ? 1 : 0, subject: p?.subject ?? null, line: last ? `Mes ${last.month}: ventas por $${Math.round(last.revenue / 1e8 * 10) / 10} M en ${last.stores} tiendas y EBITDA de ${((100 * last.ebitda) / Math.max(1, last.revenue)).toFixed(1)} %.` : "Las tiendas operan; el primer mes todavía no cierra.", alerts: retailAlerts(st).filter((a) => a.tone !== "good").slice(0, 2) };
+      return { world: p?.world ?? null, pending: p ? 1 : 0, subject: p?.subject ?? null, line: last ? `Mes ${last.month}: ventas por $${Math.round(last.revenue / 1e8 * 10) / 10} M en ${last.stores} tiendas y EBITDA de ${((100 * last.ebitda) / Math.max(1, last.revenue)).toFixed(1)} %.` : "Las tiendas operan; el primer mes todavía no cierra.", alerts: retailAlerts(st).filter((a) => a.tone !== "good").slice(0, 2) };
     }
     if (isSteelLog(c.s.growth)) {
       const st = steelOf(c.s.growth, day).state;
       const p = steelPendingOf(c.s.growth, day);
       const last = st.months.at(-1);
-      return { pending: p ? 1 : 0, subject: p?.subject ?? null, line: last ? `Mes ${last.month}: ventas por $${Math.round(last.revenue / 1e8 * 10) / 10} M y EBITDA de ${((100 * last.ebitda) / Math.max(1, last.revenue)).toFixed(1)} %.` : "La planta opera; el primer mes todavía no cierra.", alerts: steelAlerts(st).filter((a) => a.tone !== "good").slice(0, 2) };
+      return { world: p?.world ?? null, pending: p ? 1 : 0, subject: p?.subject ?? null, line: last ? `Mes ${last.month}: ventas por $${Math.round(last.revenue / 1e8 * 10) / 10} M y EBITDA de ${((100 * last.ebitda) / Math.max(1, last.revenue)).toFixed(1)} %.` : "La planta opera; el primer mes todavía no cierra.", alerts: steelAlerts(st).filter((a) => a.tone !== "good").slice(0, 2) };
     }
     const list = pendingGrowth(c.s.growth, day);
     const g = growthAt(c.s.growth, day).state;
     const pending = list.length;
     const first = list[0]?.case;
     const subject = first ? (first.subjectOf ? first.subjectOf(g) : first.subject) : null;
-    return { pending, subject, line: todayLineOf(g, pending), alerts: alertsOf(g).filter((a) => a.tone !== "good").slice(0, 2) };
+    return { world: null, pending, subject, line: todayLineOf(g, pending), alerts: alertsOf(g).filter((a) => a.tone !== "good").slice(0, 2) };
   }, [c.s, c.now]);
   const waiting = c.pending.length + specials.length + epPending.length + (report ? 1 : 0) + (growth?.pending ?? 0);
   const nextLesson = open.find((l) => !c.s.lessons[l.id] && c.entries.some((e) => e.item.lesson === l.id && e.status !== "futuro")) ?? open.find((l) => !c.s.lessons[l.id]);
@@ -99,6 +99,7 @@ export function Today() {
     ? (c.continuous ? (v.passed ? "El consejo ya tiene tu evaluación." : "El consejo quiere hablar de los rubros bajos.") : v.passed ? "Te espera otra empresa." : "El consejo pide otra vuelta.")
     : waiting ? `${waiting} ${waiting === 1 ? "asunto espera" : "asuntos esperan"} tu decisión.` : "Todo al día. Durante el día llegarán más asuntos.";
   const cta = c.seasonDone ? null
+    : growth?.world ? { href: "/ceo/empresa#crecimiento", label: `Atender: ${growth.world.name}` }
     : report ? { href: report.href, label: `Revisar el cierre del mes ${report.period}` }
     : c.pending[0] ? { href: `/ceo/caso/${c.pending[0].item.id}`, label: `Atender: ${firstName(pk, c.pending[0].item.from)}` }
     : epPending[0] ? { href: `/ceo/episodio/${epPending[0].spec.id}`, label: `Atender: ${firstName(pk, epPending[0].spec.from)}` }
@@ -215,7 +216,19 @@ export function Today() {
                   <ArrowRight size={16} className="text-slate-300 group-hover:text-indigo mt-3" />
                 </Link></li>
               )}
-              {growth && growth.pending > 0 && (
+              {growth?.world && (
+                <li><Link href="/ceo/empresa#crecimiento" className="flex gap-3 py-3 group" data-testid="hoy-mundo">
+                  <span className={clsx("h-[38px] w-[38px] shrink-0 rounded-full grid place-items-center", growth.world.mode === "real" ? "bg-coral/10 text-coral" : "bg-amber-50 text-amber-700")}><Globe2 size={16} /></span>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2"><span className="text-sm font-semibold text-ink">{growth.world.name}</span><span className={clsx("chip text-[10px]", growth.world.mode === "real" ? "bg-coral/10 text-coral" : "bg-amber-50 text-amber-700")}>{growth.world.label}</span></div>
+                    <div className="text-sm text-slate-600">Activo expuesto: {growth.world.assets.join("; ") || "sedes de la empresa"}</div>
+                    <div className="text-sm text-slate-600">Decisión: {growth.subject}</div>
+                    <div className="mt-0.5 text-[11px] text-slate-500">Fuente: {growth.world.source.name}{growth.world.also ? ` y ${growth.world.also.name}` : ""} · {growth.world.status === "pronostico" ? "pronóstico, puede cambiar" : "ya ocurrió"} · Plazo: {growth.world.daysLeft === 0 ? "hoy" : growth.world.daysLeft === 1 ? "1 día" : `${growth.world.daysLeft} días`}</div>
+                  </div>
+                  <ArrowRight size={16} className="text-slate-300 group-hover:text-indigo mt-3" />
+                </Link></li>
+              )}
+              {growth && growth.pending > 0 && !growth.world && (
                 <li><Link href="/ceo/empresa#crecimiento" className="flex gap-3 py-3 group" data-testid="hoy-crecimiento">
                   <span className="h-[38px] w-[38px] shrink-0 rounded-full grid place-items-center bg-indigo-soft text-indigo"><TrendingUp size={16} /></span>
                   <div className="min-w-0 flex-1">
