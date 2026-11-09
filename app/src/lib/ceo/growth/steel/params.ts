@@ -151,5 +151,5 @@ export const TEMPLATES_V2: Readonly<Record<string, SteelTemplate>> = Object.free
   },
 });
 
-/** Activación para jugadores: apagada hasta la comparación final y la prueba completa del recorrido. */
-export const STEEL_V2_ENABLED = false;
+/** Activación para jugadores (autorizada): las acerías nuevas usan la v2; las partidas guardadas con la v1 siguen con su motor. */
+export const STEEL_V2_ENABLED = true;

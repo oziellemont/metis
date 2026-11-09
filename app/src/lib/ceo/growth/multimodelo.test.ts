@@ -117,8 +117,8 @@ describe("casos etiquetados y aprendizaje", () => {
 
 describe("Manufactura como industria completa", () => {
   it("Metálica básica (acería) es jugable en StartUp y Consolidada", () => {
-    expect(growthTemplateFor("manufactura", "metalica_basica", "pyme")).toBe("aceria_emergente");
-    expect(growthTemplateFor("manufactura", "metalica_basica", "establecida")).toBe("aceria_consolidada");
+    expect(growthTemplateFor("manufactura", "metalica_basica", "pyme")).toBe("aceria_compacta_v2");
+    expect(growthTemplateFor("manufactura", "metalica_basica", "establecida")).toBe("miniaceria_integrada_v2");
     expect(isPlayableCombo("manufactura", "metalica_basica", "establecida")).toBe(true);
     expect(searchIndustries("acería")[0]?.industryId).toBe("metalica_basica");
     expect(searchIndustries("acero")[0]?.industryId).toBe("metalica_basica");

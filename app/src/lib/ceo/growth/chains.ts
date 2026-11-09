@@ -19,6 +19,8 @@ export interface Decision {
   key: string;
   optionId: string;
   day: number;
+  /** Solo acería v2: quién eligió el caso (la IA entre los elegibles, o el selector del motor). */
+  source?: "motor" | "ia";
 }
 
 export interface OptionView {

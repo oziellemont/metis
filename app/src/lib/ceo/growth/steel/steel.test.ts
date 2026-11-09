@@ -12,7 +12,7 @@ const ok = (s: SteelState) => {
 };
 
 describe("acería v2 · contabilidad", () => {
-  it("sigue apagada para jugadores", () => expect(STEEL_V2_ENABLED).toBe(false));
+  it("activa para empresas nuevas (autorizado por Oziel)", () => expect(STEEL_V2_ENABLED).toBe(true));
 
   for (const id of IDS) {
     it(`${id}: la partida doble cuadra y cada saldo concilia con su detalle durante 24 meses`, () => {
