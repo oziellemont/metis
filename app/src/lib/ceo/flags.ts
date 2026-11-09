@@ -10,7 +10,7 @@
  *  - Esta función es pura: no lee red ni reloj, para poder probarla.
  */
 
-export const FLAG_KEYS = ["ai", "ai_shadow", "events", "game_journal", "replay_shadow", "episodes", "carrera_continua", "growth_engine"] as const;
+export const FLAG_KEYS = ["ai", "ai_shadow", "events", "game_journal", "replay_shadow", "episodes", "carrera_continua", "growth_engine", "world_events"] as const;
 export type FlagKey = (typeof FLAG_KEYS)[number];
 export type Flags = Record<FlagKey, boolean>;
 
@@ -80,3 +80,19 @@ export function testToolsVisible(env: AppEnv, setting: string | undefined | null
  * En Preview y desarrollo se ve siempre, para revisarla antes de activarla.
  */
 export const growthVisible = (env: AppEnv, flag: boolean): boolean => flag === true || env !== "production";
+
+/**
+ * World Events (acontecimientos reales). APAGADO por omisión en producción: se prende con la fila «world_events» de
+ * ceo.flags (enabled = true para todos, o value.perPlayer = true para invitados con ceo.players.flags.world_events).
+ * Además, cada jugador decide en Ajustes («Acontecimientos reales en mi carrera»). En Preview y desarrollo se ve siempre.
+ */
+export const worldVisible = (env: AppEnv, flag: boolean): boolean => flag === true || env !== "production";
+/**
+ * Apagado rápido por familia: value.off de la fila «world_events» (p. ej. {"off": ["clima"]}). Se aplica en ≤ 60 s.
+ * Familias desconocidas se ignoran.
+ */
+export function worldFamiliesOff(global: GlobalFlagRow[] | null | undefined): ("clima" | "sismo" | "macro")[] {
+  const row = (global ?? []).find((r) => r?.key === "world_events");
+  const off = isObj(row?.value) && Array.isArray(row!.value.off) ? row!.value.off : [];
+  return [...new Set(off.filter((f): f is "clima" | "sismo" | "macro" => f === "clima" || f === "sismo" || f === "macro"))];
+}

@@ -18,6 +18,9 @@ import type { GrowthState } from "./types";
 import type { KpiKey, Kpis } from "../types";
 import { isSteelCaseId, isSteelTemplate, steelAt, steelBridge, steelDecide, steelPending } from "./steel/session";
 import { isRetailCaseId, isRetailTemplate, retailAt, retailBridge, retailDecide, retailPending } from "./retail/session";
+import { endWorld, isWorldCaseId, openWorld, sanitizeWorld, type WorldOpenInput, type WorldPrefs } from "../world/episodes";
+import { referenceOption } from "../world/cases";
+import type { WorldEpisode, Zone } from "../world/types";
 
 /** Plantillas con motor contable propio (acería v2 y cadena de conveniencia): registro con decisiones por caso del selector. */
 const isOwnEngine = (id: string) => isSteelTemplate(id) || isRetailTemplate(id);
@@ -31,6 +34,8 @@ export interface GrowthLog {
   templateId: string;
   seed: string;
   decisions: Decision[];
+  /** World Events: episodios externos congelados (solo motores propios con exposición). */
+  world?: WorldEpisode[];
 }
 
 export function newGrowthLog(templateId: string, seed: string): GrowthLog | null {
@@ -51,7 +56,10 @@ export function sanitizeGrowthLog(raw: unknown): GrowthLog | null {
     decisions.push({ caseId: x.caseId, key: x.key, optionId: x.optionId, day: x.day, ...(own && x.source === "ia" ? { source: "ia" as const } : {}) });
     lastDay = x.day;
   }
-  return { v: GROWTH_LOG_VERSION, templateId: r.templateId, seed: r.seed.slice(0, 80), decisions };
+  const out: GrowthLog = { v: GROWTH_LOG_VERSION, templateId: r.templateId, seed: r.seed.slice(0, 80), decisions };
+  const world = own ? sanitizeWorld(r.world, r.templateId) : undefined;
+  if (world?.length) out.world = world;
+  return out;
 }
 
 // ───────────────────────────────────────────── reconstrucción (con caché incremental)
@@ -119,11 +127,11 @@ export function pendingGrowth(log: GrowthLog, day: number): { case: GCase; optio
 /** Decide un caso hoy. Devuelve el registro nuevo, o el mismo si no procede (con la razón). */
 export function decideGrowth(log: GrowthLog, day: number, caseId: string, optionId: string): { log: GrowthLog; ok: boolean; reason?: string } {
   if (isSteelTemplate(log.templateId)) {
-    const r = steelDecide(log.templateId, log.seed, log.decisions, day, caseId, optionId);
+    const r = steelDecide(log.templateId, log.seed, log.decisions, day, caseId, optionId, "motor", log.world);
     return r.ok ? { log: { ...log, decisions: r.decisions }, ok: true } : { log, ok: false, reason: r.reason };
   }
   if (isRetailTemplate(log.templateId)) {
-    const r = retailDecide(log.templateId, log.seed, log.decisions, day, caseId, optionId);
+    const r = retailDecide(log.templateId, log.seed, log.decisions, day, caseId, optionId, "motor", log.world);
     return r.ok ? { log: { ...log, decisions: r.decisions }, ok: true } : { log, ok: false, reason: r.reason };
   }
   if (log.decisions.length && day < log.decisions.at(-1)!.day) return { log, ok: false, reason: "No se puede decidir en el pasado." };
@@ -137,22 +145,69 @@ export function decideGrowth(log: GrowthLog, day: number, caseId: string, option
 /** ¿El registro es de una acería v2? (motor contable propio en growth/steel). */
 export const isSteelLog = (log: GrowthLog | undefined | null): boolean => !!log && isSteelTemplate(log.templateId);
 /** Estado de la acería v2 hoy (solo para registros de acería v2). */
-export const steelOf = (log: GrowthLog, day: number) => steelAt(log.templateId, log.seed, log.decisions, day);
+export const steelOf = (log: GrowthLog, day: number) => steelAt(log.templateId, log.seed, log.decisions, day, log.world);
 /** Caso de la acería v2 que espera decisión hoy, o null. */
-export const steelPendingOf = (log: GrowthLog, day: number) => steelPending(log.templateId, log.seed, log.decisions, day);
+export const steelPendingOf = (log: GrowthLog, day: number) => steelPending(log.templateId, log.seed, log.decisions, day, undefined, log.world);
 /** ¿El registro es de la cadena de conveniencia (Retail v2, motor contable propio en growth/retail)? */
 export const isRetailLog = (log: GrowthLog | undefined | null): boolean => !!log && isRetailTemplate(log.templateId);
 /** Estado de la cadena de conveniencia hoy (solo para registros de Retail v2). */
-export const retailOf = (log: GrowthLog, day: number) => retailAt(log.templateId, log.seed, log.decisions, day);
+export const retailOf = (log: GrowthLog, day: number) => retailAt(log.templateId, log.seed, log.decisions, day, log.world);
 /** Caso de la cadena de conveniencia que espera decisión hoy, o null. */
-export const retailPendingOf = (log: GrowthLog, day: number) => retailPending(log.templateId, log.seed, log.decisions, day);
+export const retailPendingOf = (log: GrowthLog, day: number) => retailPending(log.templateId, log.seed, log.decisions, day, undefined, log.world);
 /** Cuántas decisiones esperan hoy (cualquier motor). */
 export function growthPendingCount(log: GrowthLog, day: number): number {
   if (isRetailLog(log)) return retailPendingOf(log, day) ? 1 : 0;
   return isSteelLog(log) ? (steelPendingOf(log, day) ? 1 : 0) : pendingGrowth(log, day).length;
 }
-/** Puntos de los 5 indicadores (cualquier motor). */
+/** Puntos de los 5 indicadores (cualquier motor). Sin castigo por haber estado expuesto a un acontecimiento externo. */
 export function growthDelta(log: GrowthLog, day: number): Kpis {
-  if (isRetailLog(log)) return retailBridge(retailOf(log, day).state).delta;
-  return isSteelLog(log) ? steelBridge(steelOf(log, day).state).delta : growthBridge(log, day).delta;
+  if (isRetailLog(log) || isSteelLog(log)) return ownDelta(log, day);
+  return growthBridge(log, day).delta;
+}
+
+// ───────────────────────────────────────────────────────── World Events · justicia en los indicadores
+/** Opciones razonables (defendibles con lo que se sabía): nunca se castigan después, aunque el pronóstico cambie. */
+const REASONABLE = new Set(["protocolo", "preventivo", "inspeccion", "apoyo"]);
+const bridgeOf = (log: GrowthLog, day: number): Kpis => (isRetailLog(log) ? retailBridge(retailOf(log, day).state).delta : steelBridge(steelOf(log, day).state).delta);
+/**
+ * Lo que el acontecimiento le habría hecho a cualquiera con una preparación razonable (impacto externo) se separa de
+ * lo que se debe a la decisión del jugador:
+ *   indicadores = real − (con acontecimiento y preparación razonable − sin acontecimiento).
+ * Con una opción razonable el resultado es el mismo que sin acontecimiento (ni premio ni castigo por la exposición);
+ * con una opción arriesgada cuenta la diferencia contra el protocolo estándar.
+ */
+export function ownDelta(log: GrowthLog, day: number): Kpis {
+  const real = bridgeOf(log, day);
+  if (!log.world?.length) return real;
+  const ext = externalOf(log, day);
+  const out = { ...real };
+  for (const k of Object.keys(out) as KpiKey[]) out[k] = Math.round(Math.max(-30, Math.min(30, real[k] - ext[k])));
+  return out;
+}
+/** Efecto del acontecimiento con preparación razonable (puntos por indicador). */
+export function externalOf(log: GrowthLog, day: number): Kpis {
+  const zero = { caja: 0, margen: 0, equipo: 0, clientes: 0, consejo: 0 } as Kpis;
+  if (!log.world?.length) return zero;
+  const fair = log.decisions.map((d) => {
+    if (!isWorldCaseId(d.caseId)) return d;
+    const ep = log.world!.find((e) => `w:${e.id}` === d.caseId);
+    return ep && !REASONABLE.has(d.optionId) ? { ...d, optionId: referenceOption(ep) } : d;
+  });
+  const none: GrowthLog = { ...log, decisions: log.decisions.filter((d) => !isWorldCaseId(d.caseId)), world: undefined };
+  const withRef = bridgeOf({ ...log, decisions: fair }, day), without = bridgeOf(none, day);
+  for (const k of Object.keys(zero) as KpiKey[]) zero[k] = withRef[k] - without[k];
+  return zero;
+}
+
+/** Abre (o actualiza antes de decidir) un episodio externo en el registro. null si no procede. */
+export function openWorldLog(log: GrowthLog, inp: WorldOpenInput, day: number, at: number, prefs: WorldPrefs): GrowthLog | null {
+  if (!isOwnEngine(log.templateId)) return null;
+  const world = openWorld(log, inp, day, at, prefs);
+  return world ? { ...log, world } : null;
+}
+/** Cierra un pronóstico real con lo observado. null si no procede. */
+export function endWorldLog(log: GrowthLog, id: string, observed: Record<string, Zone>, day: number, at: number): GrowthLog | null {
+  if (!isOwnEngine(log.templateId)) return null;
+  const world = endWorld(log, id, observed, day, at);
+  return world ? { ...log, world } : null;
 }

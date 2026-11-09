@@ -2,7 +2,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Target, Bell, Cloud, LogOut, Clock, FastForward, Mail, RotateCcw, Save, Volume2, Zap } from "lucide-react";
+import { Target, Bell, Cloud, Globe2, LogOut, Clock, FastForward, Mail, RotateCcw, Save, Volume2, Zap } from "lucide-react";
+import { FAMILY_LABEL, type Family } from "@/lib/ceo/world/types";
 import { playChime, setSoundOn, soundOn } from "@/lib/ceo/celebrate";
 import { ceoSignOut } from "@/lib/ceo/auth-client";
 import { useCeo } from "./CeoProvider";
@@ -82,6 +83,30 @@ export function CeoSettings() {
             ))}
           </div>
         </div>
+        {c.worldOn && (
+          <div className="rounded-2xl bg-slate-50 p-4 text-sm" data-testid="ajuste-mundo">
+            <label className="flex items-start gap-3">
+              <input type="checkbox" checked={f.worldEvents === true} onChange={(e) => set("worldEvents", e.target.checked)} className="accent-indigo h-4 w-4 mt-0.5" data-testid="opt-in-mundo" />
+              <span><b className="inline-flex items-center gap-1 text-ink"><Globe2 size={14} /> Acontecimientos reales en mi carrera</b><br /><span className="text-slate-500">Cuando un huracán o un sismo real, reportado por fuentes oficiales, alcance una zona donde tu empresa tiene sedes, te llegará un caso para decidir. Lo que pase en tu empresa es una simulación; nunca se afirma que hubo daño real. Si no tienes sedes en la zona, no llega nada.</span></span>
+            </label>
+            {f.worldEvents === true && (
+              <div className="mt-3 pl-7 space-y-1.5">
+                <div className="text-xs text-slate-500">Recibir:</div>
+                {(["clima", "sismo"] as Family[]).map((fam) => {
+                  const muted = (f.worldMute ?? []).includes(fam);
+                  const off = c.worldOff.includes(fam);
+                  return (
+                    <label key={fam} className={clsx("flex items-center gap-2", off && "opacity-50")}>
+                      <input type="checkbox" disabled={off} checked={!muted && !off} onChange={(e) => set("worldMute", e.target.checked ? (f.worldMute ?? []).filter((x) => x !== fam) : [...(f.worldMute ?? []), fam])} className="accent-indigo h-4 w-4" />
+                      {FAMILY_LABEL[fam]}{off && <span className="text-xs text-slate-400"> · pausado por el equipo mêtis</span>}
+                    </label>
+                  );
+                })}
+                <p className="text-xs text-slate-400">Fuentes: GDACS (ONU y Comisión Europea), Centro Nacional de Huracanes (NOAA) y Servicio Geológico de EUA (USGS). No sustituye los avisos de Protección Civil.</p>
+              </div>
+            )}
+          </div>
+        )}
         <label className="flex items-start gap-3 rounded-2xl bg-slate-50 p-4 text-sm">
           <input type="checkbox" checked={sound} onChange={(e) => toggleSound(e.target.checked)} className="accent-indigo h-4 w-4 mt-0.5" />
           <span><b className="inline-flex items-center gap-1 text-ink"><Volume2 size={14} /> Sonido al lograr algo</b><br /><span className="text-slate-500">Un tono breve cuando el consejo aprueba tu cierre, logras un cambio o terminas una lección. Se guarda en este dispositivo.</span></span>
@@ -119,6 +144,13 @@ export function CeoSettings() {
               </li>
             ))}
           </ul>
+          {c.worldOn && (
+            <div className="mt-3 flex flex-wrap items-center gap-2" data-testid="ejercicio-mundo">
+              <span className="text-xs text-slate-500 w-full">World Events: abre un ejercicio hipotético (no es un acontecimiento real) para probar el caso y el impacto simulado.</span>
+              <button type="button" onClick={() => c.worldExercise("ciclon")} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-ink hover:bg-slate-50"><Globe2 size={15} /> Huracán de ejercicio</button>
+              <button type="button" onClick={() => c.worldExercise("sismo")} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-ink hover:bg-slate-50"><Globe2 size={15} /> Sismo de ejercicio</button>
+            </div>
+          )}
           <Link href="/ceo/evaluacion-ia" className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-indigo hover:underline">Evaluación de la IA de los casos</Link>
         </div>
         </>)}

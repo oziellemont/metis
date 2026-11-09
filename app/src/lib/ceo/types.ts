@@ -203,6 +203,10 @@ export interface Settings {
   sessionMinutes?: 3 | 5 | 8 | 12;
   /** Moneda en que el jugador quiere VER las cifras (solo pantalla; la simulación siempre es en MXN). */
   displayCurrency?: DisplayCurrency;
+  /** World Events: «Acontecimientos reales en mi carrera» (opt-in; apagado si no existe). */
+  worldEvents?: boolean;
+  /** Familias que el jugador no quiere recibir (clima, sismo, macro). */
+  worldMute?: ("clima" | "sismo" | "macro")[];
 }
 
 /** Respuesta escrita (evaluada con IA): tu texto, la calidad 0–3 y la nota del mentor. */

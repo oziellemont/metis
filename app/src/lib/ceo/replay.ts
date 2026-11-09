@@ -14,7 +14,9 @@
  */
 import type { CeoState, CastId, LeverId, Settings, Written } from "./types";
 import { CONTINUOUS_RULES_VERSION, LEGACY_CONTINUOUS_RULES_VERSION } from "./rules";
-import { H, LEGACY_RULES_VERSION, advance, aliasOf, answerDilemma, decide, kpis, newState, openSeasonEpisode, pinArrived, renameCompany, setupCompany, switchCompany, decideGrowthCase, parkAndOpen, resumeShelved } from "./engine";
+import { H, LEGACY_RULES_VERSION, advance, aliasOf, answerDilemma, decide, kpis, newState, openSeasonEpisode, pinArrived, renameCompany, setupCompany, switchCompany, decideGrowthCase, parkAndOpen, resumeShelved, openWorldEvent, endWorldEvent } from "./engine";
+import type { WorldOpenInput } from "./world/episodes";
+import type { Zone } from "./world/types";
 import { closeChange, playLever, startChange } from "./relations";
 import { crisisAccess, playCrisis, recordCrisis } from "./crisis";
 import { appoint, recordBoard } from "./journey";
@@ -56,6 +58,9 @@ export type GameAction =
   | { type: "closePeriod"; at: number; period: number }
   /** Empresa emergente (Growth Engine): decisión de un caso de crecimiento. */
   | { type: "growth"; at: number; caseId: string; optionId: string }
+  /** World Events: congelar un acontecimiento real (o ejercicio) y cerrar un pronóstico con lo observado. */
+  | { type: "world"; at: number; ep: WorldOpenInput }
+  | { type: "worldEnd"; at: number; id: string; sites: Record<string, Zone> }
   // Empresas guardadas (piloto Growth Engine): abrir una emergente guardando la actual, y volver a una guardada.
   | { type: "parkOpen"; at: number; companyId: string; sectorId: string; industryId: string; archetype: string; displayName: string; shortName?: string; specialty?: string; rulesVersion?: number }
   | { type: "resumeShelved"; at: number; id: string };
@@ -108,6 +113,8 @@ export function applyAction(s: CeoState, a: GameAction): { state: CeoState; appl
     case "allocate": n = allocate(s, a.period, a.option, a.at); break;
     case "closePeriod": n = closePeriod(s, a.period, a.at); break;
     case "growth": n = decideGrowthCase(s, a.caseId, a.optionId, a.at); break;
+    case "world": n = openWorldEvent(s, a.ep, a.at); break;
+    case "worldEnd": n = endWorldEvent(s, a.id, a.sites, a.at); break;
     case "parkOpen": n = parkAndOpen(s, { companyId: a.companyId, sectorId: a.sectorId, industryId: a.industryId, archetype: a.archetype, displayName: a.displayName, shortName: a.shortName, specialty: a.specialty, growth: true }, a.at, a.rulesVersion ?? CONTINUOUS_RULES_VERSION); break;
     case "resumeShelved": n = resumeShelved(s, a.id, a.at); break;
   }

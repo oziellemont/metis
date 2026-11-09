@@ -19,7 +19,10 @@ import type { CrisisRating } from "@/lib/ceo/types";
 import { trajectoryOf, type Trajectory } from "@/lib/ceo/trajectory";
 import { appoint as appointFn, recordBoard as recordBoardFn, enrollJourney, journeyOf, STAGES, type JourneyView } from "@/lib/ceo/journey";
 import { masteryOf, type Mastery } from "@/lib/ceo/mastery";
-import { appEnvOf, growthVisible, testToolsVisible } from "@/lib/ceo/flags";
+import { appEnvOf, growthVisible, testToolsVisible, worldVisible } from "@/lib/ceo/flags";
+import { exerciseInput, trackedOf, worldActions } from "@/lib/ceo/world/client";
+import { exposureOf } from "@/lib/ceo/world/exposure";
+import type { Family, WorldCandidate } from "@/lib/ceo/world/types";
 import { closeChange as closeChangeFn, playLever as playLeverFn, relationsOf, startChange as startChangeFn } from "@/lib/ceo/relations";
 import type { ChangeSim } from "@/lib/ceo/change";
 import type { CastId, CeoState, CompanyPack, Entry, Kpis, LeverId, Settings, Written } from "@/lib/ceo/types";
@@ -29,7 +32,7 @@ import { claimLegacy, finishImport, importIdFor, kvOf, legacyOwners, LEGACY_KEY,
 import { playerRow } from "@/lib/ceo/player-row";
 import { CONTINUOUS_RULES_VERSION, RULES_VERSION } from "@/lib/ceo/rules";
 import { flushOnce, logAction } from "@/lib/ceo/journal-client";
-import { blockedOnVacation, type GameAction } from "@/lib/ceo/replay";
+import { applyAction, blockedOnVacation, type GameAction } from "@/lib/ceo/replay";
 import { actEpisode, restartEpisode as restartEpisodeFn } from "@/lib/ceo/episodes/catalog";
 import type { EpisodeAction } from "@/lib/ceo/episodes/engine";
 import { onVacation } from "@/lib/ceo/pausetime";
@@ -129,6 +132,12 @@ interface Ctx {
   growthOn: boolean;
   /** Empresa emergente: decide un caso de crecimiento (devuelve false si no procede). */
   decideGrowth: (caseId: string, optionId: string) => boolean;
+  /** World Events: el equipo lo tiene disponible (interruptor world_events o Preview) y la empresa tiene sedes. */
+  worldOn: boolean;
+  /** World Events: familias apagadas por el equipo (interruptor por familia). */
+  worldOff: Family[];
+  /** Herramientas de prueba: abre un ejercicio hipotético (huracán o sismo guionado). */
+  worldExercise: (kind?: "ciclon" | "sismo") => boolean;
   /** Abre una empresa emergente guardando la actual (nada se borra). Devuelve false si no procede. */
   openEmergente: (setup: SetupInput) => boolean;
   /** Vuelve a una empresa guardada (la actual se guarda). */
@@ -172,6 +181,8 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
   const seen = useRef<Set<string> | null>(null);
   const [testTools, setTestTools] = useState(true);
   const [growthOn, setGrowthOn] = useState(false);
+  const [worldFlag, setWorldFlag] = useState(false);
+  const [worldOff, setWorldOff] = useState<Family[]>([]);
 
   const [plan, setPlan] = useState<ImportFlow["plan"] | null>(null);
   const [importBusy, setImportBusy] = useState(false);
@@ -241,7 +252,13 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
       const env = appEnvOf(process.env.NEXT_PUBLIC_VERCEL_ENV, process.env.NODE_ENV);
       setTestTools(testToolsVisible(env, process.env.NEXT_PUBLIC_CEO_TEST_TOOLS, false));
       setGrowthOn(growthVisible(env, false));
-      if (env === "production") void fetch("/api/ceo/interruptores").then((r) => r.json()).then((j) => { if (alive && j?.growth_engine === true) setGrowthOn(true); }).catch(() => { /* apagado */ });
+      setWorldFlag(worldVisible(env, false));
+      void fetch("/api/ceo/interruptores").then((r) => r.json()).then((j) => {
+        if (!alive) return;
+        if (env === "production" && j?.growth_engine === true) setGrowthOn(true);
+        if (env === "production" && j?.world_events === true) setWorldFlag(true);
+        if (Array.isArray(j?.world_off)) setWorldOff(j.world_off.filter((f: unknown): f is Family => f === "clima" || f === "sismo" || f === "macro"));
+      }).catch(() => { /* apagado */ });
       if (env === "production" && sb) {
         void sb.auth.getSession().then(async (r) => {
           if (!r.data.session) return;
@@ -492,6 +509,38 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
     setTick(Date.now());
     return ok;
   }, [play, s]);
+  // World Events: consultar acontecimientos reales cada 15 min (pestaña visible) solo si el jugador lo activó.
+  const templateId = s.growth?.templateId ?? null;
+  const worldOn = worldFlag && !!exposureOf(templateId);
+  const worldWanted = worldOn && s.settings.worldEvents === true && !!user;
+  const worldTick = Math.floor(now / (15 * 60_000));
+  useEffect(() => {
+    if (!worldWanted || !templateId) return;
+    let alive = true;
+    const tracked = trackedOf(s).join(",");
+    void fetch(`/api/ceo/mundo?t=${encodeURIComponent(templateId)}${tracked ? `&tracked=${tracked}` : ""}`).then((r) => r.json()).then((j: { on?: boolean; candidates?: WorldCandidate[]; off?: Family[] }) => {
+      if (!alive || !j?.on || !Array.isArray(j.candidates) || !j.candidates.length) return;
+      play((p) => {
+        const at = nowOf(p);
+        for (const a of worldActions(p, j.candidates!, at, j.off ?? [])) {
+          const r = applyAction(p, a);
+          if (r.applied) return { n: r.state, a };
+        }
+        return { n: p, a: { type: "settings", at, patch: {} } };
+      });
+    }).catch(() => { /* fuente caída: el juego sigue */ });
+    return () => { alive = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [worldWanted, templateId, worldTick, play]);
+  const worldExercise = useCallback((kind: "ciclon" | "sismo" = "ciclon") => {
+    if (!s.growth) return false;
+    const at0 = nowOf(s);
+    const ep = exerciseInput(s.growth.templateId, at0, kind);
+    if (!ep || applyAction(s, { type: "world", at: at0, ep }).state === s) return false;
+    play((p) => { const at = nowOf(p); const r = applyAction(p, { type: "world", at, ep }); return { n: r.state, a: { type: "world", at, ep } }; });
+    setTick(Date.now());
+    return true;
+  }, [play, s]);
   const openEmergente = useCallback((setup: SetupInput) => {
     const at = nowOf(s);
     const ok = parkAndOpenFn(s, setup, at, CONTINUOUS_RULES_VERSION) !== s;
@@ -561,7 +610,7 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
   const value: Ctx = {
     ready, s, now, pack, rules: rulesFor(s), verdict, entries, inbox, pending, episodes, kpis: k, health: healthOf(k), xp, level: levelOf(xp), streak, day: seasonDay(s, now), seasonDone, nextArrival,
     relations, changeOpen: changeOpen(s, now), cases: casesProgress(s, now, entries), change, startChange, playLever, closeChange,
-    user, synced, toast, dismissToast: () => setToast(null), start, advance, reportDue, signReport, switchCompany, renameCompany, continuous: isContinuous(s), decide, markRead, completeLesson, dilemma, answerDilemma, updateSettings, skipNext, testTools, growthOn, decideGrowth, openEmergente, resumeCompany, importFlow, reset, journey, trajectory, mastery, appoint, recordBoard, recordCrisis, saveProfile, saveDiagnostic, snoozeProfile,
+    user, synced, toast, dismissToast: () => setToast(null), start, advance, reportDue, signReport, switchCompany, renameCompany, continuous: isContinuous(s), decide, markRead, completeLesson, dilemma, answerDilemma, updateSettings, skipNext, testTools, growthOn, decideGrowth, worldOn, worldOff, worldExercise, openEmergente, resumeCompany, importFlow, reset, journey, trajectory, mastery, appoint, recordBoard, recordCrisis, saveProfile, saveDiagnostic, snoozeProfile,
     cadence: cadenceStatus(s, now), pauseCareer, resumeCareer, startQuietDay, returnDue: ready ? returnDueFn(s, now) : null, markReturnSeen, openEpisode, episodeAct, resetEpisode,
   };
   return <C.Provider value={value}>{children}</C.Provider>;
