@@ -20,7 +20,8 @@ import { trajectoryOf, type Trajectory } from "@/lib/ceo/trajectory";
 import { appoint as appointFn, recordBoard as recordBoardFn, enrollJourney, journeyOf, STAGES, type JourneyView } from "@/lib/ceo/journey";
 import { masteryOf, type Mastery } from "@/lib/ceo/mastery";
 import { appEnvOf, growthVisible, testToolsVisible, worldVisible } from "@/lib/ceo/flags";
-import { exerciseInput, trackedOf, worldActions } from "@/lib/ceo/world/client";
+import { exerciseInput, trackedOf, worldActions, type ExerciseKind } from "@/lib/ceo/world/client";
+import type { RadarItem } from "@/lib/ceo/world/econfeed";
 import { exposureOf } from "@/lib/ceo/world/exposure";
 import { isFamily, type Family, type WorldCandidate } from "@/lib/ceo/world/types";
 import { closeChange as closeChangeFn, playLever as playLeverFn, relationsOf, startChange as startChangeFn } from "@/lib/ceo/relations";
@@ -137,7 +138,9 @@ interface Ctx {
   /** World Events: familias apagadas por el equipo (interruptor por familia). */
   worldOff: Family[];
   /** Herramientas de prueba: abre un ejercicio hipotético (huracán o sismo guionado). */
-  worldExercise: (kind?: "ciclon" | "sismo") => boolean;
+  worldExercise: (kind?: ExerciseKind) => boolean;
+  /** Publicaciones oficiales informativas (sin efecto en la empresa) de la última consulta. */
+  worldRadar: RadarItem[];
   /** Abre una empresa emergente guardando la actual (nada se borra). Devuelve false si no procede. */
   openEmergente: (setup: SetupInput) => boolean;
   /** Vuelve a una empresa guardada (la actual se guarda). */
@@ -514,12 +517,15 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
   const worldOn = worldFlag && !!exposureOf(templateId);
   const worldWanted = worldOn && s.settings.worldEvents === true && !!user;
   const worldTick = Math.floor(now / (15 * 60_000));
+  const [worldRadar, setWorldRadar] = useState<RadarItem[]>([]);
   useEffect(() => {
     if (!worldWanted || !templateId) return;
     let alive = true;
     const tracked = trackedOf(s).join(",");
-    void fetch(`/api/ceo/mundo?t=${encodeURIComponent(templateId)}${tracked ? `&tracked=${tracked}` : ""}`).then((r) => r.json()).then((j: { on?: boolean; candidates?: WorldCandidate[]; off?: Family[] }) => {
-      if (!alive || !j?.on || !Array.isArray(j.candidates) || !j.candidates.length) return;
+    void fetch(`/api/ceo/mundo?t=${encodeURIComponent(templateId)}${tracked ? `&tracked=${tracked}` : ""}`).then((r) => r.json()).then((j: { on?: boolean; candidates?: WorldCandidate[]; off?: Family[]; radar?: RadarItem[] }) => {
+      if (!alive || !j?.on) return;
+      if (Array.isArray(j.radar)) { const mute = s.settings.worldMute ?? []; setWorldRadar(j.radar.filter((r) => !mute.includes(r.family)).slice(0, 20)); }
+      if (!Array.isArray(j.candidates) || !j.candidates.length) return;
       play((p) => {
         const at = nowOf(p);
         for (const a of worldActions(p, j.candidates!, at, j.off ?? [])) {
@@ -532,7 +538,7 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
     return () => { alive = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [worldWanted, templateId, worldTick, play]);
-  const worldExercise = useCallback((kind: "ciclon" | "sismo" = "ciclon") => {
+  const worldExercise = useCallback((kind: ExerciseKind = "ciclon") => {
     if (!s.growth) return false;
     const at0 = nowOf(s);
     const ep = exerciseInput(s.growth.templateId, at0, kind);
@@ -610,7 +616,7 @@ export function CeoProvider({ children }: { children: React.ReactNode }) {
   const value: Ctx = {
     ready, s, now, pack, rules: rulesFor(s), verdict, entries, inbox, pending, episodes, kpis: k, health: healthOf(k), xp, level: levelOf(xp), streak, day: seasonDay(s, now), seasonDone, nextArrival,
     relations, changeOpen: changeOpen(s, now), cases: casesProgress(s, now, entries), change, startChange, playLever, closeChange,
-    user, synced, toast, dismissToast: () => setToast(null), start, advance, reportDue, signReport, switchCompany, renameCompany, continuous: isContinuous(s), decide, markRead, completeLesson, dilemma, answerDilemma, updateSettings, skipNext, testTools, growthOn, decideGrowth, worldOn, worldOff, worldExercise, openEmergente, resumeCompany, importFlow, reset, journey, trajectory, mastery, appoint, recordBoard, recordCrisis, saveProfile, saveDiagnostic, snoozeProfile,
+    user, synced, toast, dismissToast: () => setToast(null), start, advance, reportDue, signReport, switchCompany, renameCompany, continuous: isContinuous(s), decide, markRead, completeLesson, dilemma, answerDilemma, updateSettings, skipNext, testTools, growthOn, decideGrowth, worldOn, worldOff, worldExercise, worldRadar: worldWanted ? worldRadar : [], openEmergente, resumeCompany, importFlow, reset, journey, trajectory, mastery, appoint, recordBoard, recordCrisis, saveProfile, saveDiagnostic, snoozeProfile,
     cadence: cadenceStatus(s, now), pauseCareer, resumeCareer, startQuietDay, returnDue: ready ? returnDueFn(s, now) : null, markReturnSeen, openEpisode, episodeAct, resetEpisode,
   };
   return <C.Provider value={value}>{children}</C.Provider>;

@@ -8,7 +8,7 @@ import { retailBridge } from "@/lib/ceo/growth/retail/session";
 import { caseById as retailCase, previewOption, AREA_LABEL } from "@/lib/ceo/growth/retail/cases";
 import { cashOf, debtOf, overdueTotal, CREDITOR_LABEL, headcountOf, storesOpen, type RetailState } from "@/lib/ceo/growth/retail/engine";
 import { useCeo } from "./CeoProvider";
-import { ExternalImpacts, WorldBadge } from "./WorldBits";
+import { ExternalImpacts, WorldBadge, WorldRadar } from "./WorldBits";
 import { AlertChips } from "./GrowthPanel";
 import type { Alert } from "@/lib/ceo/growth/ops";
 
@@ -75,6 +75,7 @@ export function RetailPanel() {
 
       <AlertChips alerts={retailAlerts(s)} />
       <ExternalImpacts hits={external} />
+      <WorldRadar items={c.worldRadar} />
 
       {done && !pending && (
         <div className="rounded-3xl bg-ink text-white p-5 ceo-pop space-y-2" data-testid="caso-decidido">

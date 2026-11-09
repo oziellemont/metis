@@ -14,8 +14,9 @@
  * se muestra como «radar» (informativo, sin efecto en la empresa).
  */
 import { getJson } from "./connectors";
-import { FX_MIN, LOOKBACK_PUBS, RATE_MIN, fxRev, rateRev } from "./macro";
-import type { Facts, Family } from "./types";
+import { exposureOf } from "./exposure";
+import { FX_MIN, LOOKBACK_PUBS, RATE_MIN, factsExposed, fxRev, rateRev, tradeMatch } from "./macro";
+import type { Facts, Family, WorldCandidate } from "./types";
 
 export const SIDOF = "https://sidof.segob.gob.mx/dof/sidof";
 export const DOF_SERIES = (cod: number, from: string, to: string) => `${SIDOF}/indicadores/${cod}/${from}/${to}`;
@@ -213,3 +214,59 @@ export async function loadEconFeed(now = Date.now(), fetcher: (url: string) => P
 }
 export const resetEconCache = () => { cache = null; inflight = null; gdeltAt = 0; };
 const hash = (s: string) => { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return h.toString(36); };
+
+// ─────────────────────────────────────────────────────────────── candidatos por plantilla
+/**
+ * Arancel vigente verificado por fracción (4 dígitos), para saber «de cuánto a cuánto» cambia con un decreto nuevo (el
+ * decreto solo publica la tasa nueva). Fuente: DOF 29-12-2025, nota 5777376 (vigente desde el 1-1-2026), tasa más común
+ * de las fracciones de ese capítulo. Sin tasa verificada no hay caso: la medida queda en el radar.
+ */
+export const TARIFF_BASE_VERSION = 1;
+export const TARIFF_BASE: Readonly<Record<string, { rate: number; source: string }>> = Object.freeze({
+  "7213": { rate: 0.35, source: "DOF 29-12-2025 (5777376)" },
+  "7214": { rate: 0.35, source: "DOF 29-12-2025 (5777376)" },
+});
+/** Arancel verificado de un grupo de fracciones (null si falta alguna). */
+export function baseRateFor(chapters: readonly string[]): number | null {
+  const r = chapters.map((c) => TARIFF_BASE[c]?.rate);
+  if (!r.length || r.some((x) => x === undefined)) return null;
+  const count = new Map<number, number>();
+  for (const x of r as number[]) count.set(x, (count.get(x) ?? 0) + 1);
+  return [...count.entries()].sort((a, b) => b[1] - a[1])[0][0];
+}
+const tariffRev = (d: number) => (Math.abs(d) >= 0.15 ? 3 : Math.abs(d) >= 0.05 ? 2 : 1);
+
+/** Candidatos económicos y comerciales para una plantilla (solo los que tocan su exposición). */
+export function econCandidatesFor(feed: EconFeed, templateId: string, opts: { off?: readonly Family[]; now?: number } = {}): WorldCandidate[] {
+  const x = exposureOf(templateId);
+  if (!x) return [];
+  const now = opts.now ?? feed.at;
+  const out: WorldCandidate[] = [];
+  const base = { observed: {}, sites: {}, ended: false, status: "observado" as const };
+  if (!opts.off?.includes("macro")) for (const m of feed.moves) {
+    if (!factsExposed(templateId, m.kind, m.facts, now)) continue;
+    out.push({ ...base, src: "dof", ev: m.ev, rev: m.rev, family: "macro", kind: m.kind, name: m.name, severity: m.severity, facts: m.facts,
+      source: { name: "Banco de México vía Diario Oficial de la Federación", url: "https://www.dof.gob.mx/indicadores.php" },
+      observedAt: Date.parse(`${m.facts.until}T12:00:00Z`) || now, urgency: m.rev >= 3 ? "urgente" : "importante" });
+  }
+  if (!opts.off?.includes("comercio")) for (const t of feed.tariffs) {
+    if (!t.effective || Date.parse(t.effective) > now) continue; // anunciada, todavía no vigente: radar
+    const groups = [...(x.products ?? []).filter((p) => p.market === "México").map((p) => p.hs), ...x.trade.filter((l) => l.destination === "México" && l.importerOfRecord && l.hs).map((l) => [l.hs as string])];
+    for (const hs of groups) {
+      const to = rateFor(t.rows, hs), from = baseRateFor(hs);
+      if (to === null || from === null || Math.abs(to - from) < 0.005) continue;
+      const m = tradeMatch(templateId, hs);
+      if (!m) continue;
+      const facts: Facts = { t: "arancel", from, to, since: t.date, until: t.effective, effective: t.effective, rule: m.rule, hs: hs.filter((h) => t.rows.some((r) => r.hs === h)) };
+      if (!factsExposed(templateId, "arancel", facts, now)) continue;
+      out.push({ ...base, src: "dof", ev: t.id, rev: tariffRev(to - from), family: "comercio", kind: "arancel", name: `${to > from ? "Sube" : "Baja"} el arancel de importación: ${m.what.toLowerCase()}`.slice(0, 80),
+        severity: `Arancel ${Math.round(from * 100)} % → ${Math.round(to * 100)} % (fracciones ${facts.hs!.join(", ")})`, facts, source: { name: "Diario Oficial de la Federación", url: t.url },
+        observedAt: Date.parse(`${t.effective}T12:00:00Z`) || now, urgency: "importante" });
+      break; // una medida = un caso por empresa
+    }
+  }
+  return out.sort((a, b) => b.rev - a.rev || b.observedAt - a.observedAt);
+}
+
+/** Radar informativo (sin efecto en la empresa) filtrado por familias apagadas. */
+export const radarFor = (feed: EconFeed, off: readonly Family[] = []) => feed.radar.filter((r) => !off.includes(r.family));

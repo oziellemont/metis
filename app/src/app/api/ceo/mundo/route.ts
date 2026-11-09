@@ -1,7 +1,9 @@
 /**
  * GET /api/ceo/mundo?t=<plantilla>&tracked=<ev1,ev2> → acontecimientos reales con sedes expuestas para esa plantilla.
  *
- * Fuentes oficiales (GDACS, corroborado con NHC y USGS), caché de 10 minutos en el servidor. Sin exposición no hay
+ * Fuentes oficiales: GDACS (corroborado con NHC y USGS) para clima y sismos, caché de 10 minutos; Diario Oficial de la
+ * Federación (tipo de cambio FIX y TIIE de Banxico, decretos y acuerdos) y Federal Register para economía, comercio y
+ * gobierno, caché de 1 hora. El «radar» son publicaciones informativas sin efecto en la empresa. Sin exposición no hay
  * candidato. Respeta el interruptor world_events (en producción) y el apagado por familia (value.off).
  * La preferencia del jugador y la deduplicación se aplican en la partida (engine.openWorldEvent).
  */
@@ -11,6 +13,7 @@ import { flagsFor, globalFlagRows } from "@/lib/ceo/flags-server";
 import { appEnvOf, worldFamiliesOff, worldVisible } from "@/lib/ceo/flags";
 import { candidatesFor, loadFeed } from "@/lib/ceo/world/feed";
 import { exposureOf } from "@/lib/ceo/world/exposure";
+import { econCandidatesFor, loadEconFeed, radarFor } from "@/lib/ceo/world/econfeed";
 
 export const dynamic = "force-dynamic";
 
@@ -27,9 +30,10 @@ export async function GET(req: Request) {
     if (!on) return NextResponse.json({ on: false, candidates: [] });
     if (!exposureOf(t)) return NextResponse.json({ on: true, candidates: [], reason: "plantilla sin sedes registradas" });
     const off = worldFamiliesOff(await globalFlagRows());
-    const feed = await loadFeed();
+    const [feed, econ] = await Promise.all([loadFeed(), loadEconFeed(Date.now(), undefined, { gdelt: process.env.WORLD_GDELT === "1" }).catch(() => null)]);
+    const candidates = [...candidatesFor(feed, t, { off, tracked }), ...(econ ? econCandidatesFor(econ, t, { off, now: Date.now() }) : [])];
     return NextResponse.json(
-      { on: true, off, at: feed.at, sources: feed.sources, candidates: candidatesFor(feed, t, { off, tracked }) },
+      { on: true, off, at: feed.at, sources: { ...feed.sources, ...(econ ? econ.sources : {}) }, candidates, radar: econ ? radarFor(econ, off) : [] },
       { headers: { "cache-control": "private, max-age=120" } },
     );
   } catch {

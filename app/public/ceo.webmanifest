@@ -1,0 +1,16 @@
+{
+  "name": "mêtis CEO",
+  "short_name": "mêtis CEO",
+  "description": "Dirige una empresa simulada: decide y ve las consecuencias.",
+  "start_url": "/ceo",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#141735",
+  "theme_color": "#141735",
+  "lang": "es-MX",
+  "icons": [
+    { "src": "/brand/app-icono-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/brand/app-icono-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/brand/app-icono-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

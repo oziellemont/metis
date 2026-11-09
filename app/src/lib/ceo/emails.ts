@@ -341,19 +341,19 @@ export function seasonEmail(i: { pack?: CompanyPack; name: string; appUrl: strin
 }
 
 // ───────────────────────────────────────────────────────── 8 · World Events (acontecimiento real con sedes expuestas)
-export function worldEmail(i: { pack?: CompanyPack; name: string; appUrl: string; event: string; label: string; source: string; sourceUrl: string; assets: string[]; subjectLine: string; daysLeft: number; forecast: boolean }): Mailable {
+export function worldEmail(i: { pack?: CompanyPack; name: string; appUrl: string; event: string; label: string; source: string; sourceUrl: string; assets: string[]; subjectLine: string; daysLeft: number; forecast: boolean; official?: boolean }): Mailable {
   const pk = packIn(i);
   const first = firstOf(i.name);
   const subject = `${first ? first + ", " : ""}${i.event}: decisión pendiente en ${pk.short}`;
   const preheader = `${i.label}. Plazo: ${i.daysLeft === 0 ? "hoy" : i.daysLeft === 1 ? "1 día" : `${i.daysLeft} días`}.`;
   const body = `
     <div style="margin:0 0 14px">${chip(i.label, "#FDECEC", CORAL)}</div>
-    ${p(`${esc(i.source)} reporta <b style="color:${INK}">${esc(i.event)}</b>${i.forecast ? " (pronóstico; la trayectoria puede cambiar)" : ""}.`)}
-    ${i.assets.length ? p(`Activos expuestos de tu empresa: ${i.assets.map(esc).join("; ")}.`) : ""}
+    ${p(`${esc(i.source)} ${i.official ? "publicó" : "reporta"} <b style="color:${INK}">${esc(i.event)}</b>${i.forecast ? " (pronóstico; la trayectoria puede cambiar)" : ""}.`)}
+    ${i.assets.length ? p(`${i.official ? "Lo que toca de tu empresa" : "Activos expuestos de tu empresa"}: ${i.assets.map(esc).join("; ")}.`) : ""}
     ${p(`Decisión: ${esc(i.subjectLine)}`)}
-    ${p(`Lo que pase en tu empresa es una simulación que depende de tus sedes y de lo que decidas. Plazo para decidir: ${i.daysLeft === 0 ? "hoy" : i.daysLeft === 1 ? "1 día" : `${i.daysLeft} días`}.`)}
+    ${p(`Lo que pase en tu empresa es una simulación que depende de ${i.official ? "tus contratos" : "tus sedes"} y de lo que decidas. Plazo para decidir: ${i.daysLeft === 0 ? "hoy" : i.daysLeft === 1 ? "1 día" : `${i.daysLeft} días`}.`)}
     ${button("Decidir ahora", base(i.appUrl) + "/ceo/empresa#crecimiento")}
-    ${p(`Fuente oficial: <a href="${esc(i.sourceUrl)}" style="color:${MUTED}">${esc(i.source)}</a>. No sustituye los avisos de Protección Civil.`, `font-size:12px;color:${MUTED};margin:16px 0 0`)}`;
+    ${p(`Fuente oficial: <a href="${esc(i.sourceUrl)}" style="color:${MUTED}">${esc(i.source)}</a>.${i.official ? "" : " No sustituye los avisos de Protección Civil."}`, `font-size:12px;color:${MUTED};margin:16px 0 0`)}`;
   const html = shell({ pack: pk, preheader, title: subject, body, appUrl: i.appUrl });
   const text = `${i.label}\n${i.source} reporta ${i.event}.\nActivos expuestos: ${i.assets.join("; ")}\nDecisión: ${i.subjectLine}\n${base(i.appUrl)}/ceo/empresa\nFuente: ${i.sourceUrl}`;
   return { subject, html, text, fromName: `Operaciones · ${pk.short}`, preheader };
