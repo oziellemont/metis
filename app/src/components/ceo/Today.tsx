@@ -4,10 +4,11 @@ import { useEffect, useMemo } from "react";
 import clsx from "clsx";
 import { ArrowRight, BookOpen, Check, Briefcase, Clock, Coffee, FastForward, Flag, Hourglass, Trophy } from "lucide-react";
 import { KPI_KEYS, closedRunsOf, growthDayOf } from "@/lib/ceo/engine";
-import { growthAt, pendingGrowth } from "@/lib/ceo/growth/session";
+import { growthAt, isSteelLog, pendingGrowth, steelOf, steelPendingOf } from "@/lib/ceo/growth/session";
 import { todayLineOf } from "@/lib/ceo/growth/view";
 import { alertsOf } from "@/lib/ceo/growth/ops";
 import { AlertChips } from "./GrowthPanel";
+import { steelAlerts } from "./SteelPanel";
 import { TrendingUp } from "lucide-react";
 import { COHERENCE_RULES_VERSION, CONTINUOUS_RULES_VERSION, ECONOMY_RULES_VERSION } from "@/lib/ceo/rules";
 import { ETHICS_AUDIT_RULES } from "@/lib/ceo/editorial";
@@ -48,6 +49,12 @@ export function Today() {
   const growth = useMemo(() => {
     if (!c.s.growth) return null;
     const day = growthDayOf(c.s, c.now);
+    if (isSteelLog(c.s.growth)) {
+      const st = steelOf(c.s.growth, day).state;
+      const p = steelPendingOf(c.s.growth, day);
+      const last = st.months.at(-1);
+      return { pending: p ? 1 : 0, subject: p?.subject ?? null, line: last ? `Mes ${last.month}: ventas por $${Math.round(last.revenue / 1e8 * 10) / 10} M y EBITDA de ${((100 * last.ebitda) / Math.max(1, last.revenue)).toFixed(1)} %.` : "La planta opera; el primer mes todavía no cierra.", alerts: steelAlerts(st).filter((a) => a.tone !== "good").slice(0, 2) };
+    }
     const list = pendingGrowth(c.s.growth, day);
     const g = growthAt(c.s.growth, day).state;
     const pending = list.length;

@@ -22,7 +22,7 @@ import { brandDeep, brandPack, brandText, type Brand } from "./career/template";
 import { industryLongFor } from "./career/lexicon";
 import { ASSUMPTIONS_VERSION, sanitizeBusiness } from "./business/model";
 import { sanitizeEpisodes } from "./episodes/engine";
-import { decideGrowth, growthBridge, growthTemplateFor, newGrowthLog, pendingGrowth, sanitizeGrowthLog } from "./growth/session";
+import { decideGrowth, growthDelta, growthPendingCount, growthTemplateFor, newGrowthLog, sanitizeGrowthLog } from "./growth/session";
 import { MONTH as GROWTH_MONTH } from "./growth/core";
 import { EPISODES, SEASON_EPISODES, openEpisode as openEpisodeRaw } from "./episodes/catalog";
 import { authoredFromScore, judge, prioritizes, type ContextOption } from "./judgment";
@@ -591,7 +591,7 @@ export function kpis(s: CeoState, now = nowOf(s)): Kpis {
   for (const key of Object.keys(ce) as KpiKey[]) k[key] = clamp(k[key] + (ce[key] ?? 0));
   // Empresa emergente: el dinero sale SOLO del motor de crecimiento (una sola fuente económica), no de P0-C ni de v10.
   if (s.growth) {
-    const g = growthBridge(s.growth, growthDayOf(s, now)).delta;
+    const g = growthDelta(s.growth, growthDayOf(s, now));
     for (const key of KPI_KEYS) k[key] = clamp(k[key] + g[key]);
     return k;
   }
@@ -1207,7 +1207,7 @@ export function casesDoneOf(s: CeoState, now = nowOf(s)): boolean {
   const epsOk = !ruleSet(rulesVersionOf(s)).episodes?.required || episodeEntries(s, now).every((e) => e.status === "cerrado");
   // Cadena (v8+): un eslabón que ya está en camino (`after`) también se espera; no existe en periodos anteriores.
   // Empresa emergente: los casos de crecimiento que ya llegaron también se atienden antes de cerrar el mes.
-  const growthOk = !s.growth || pendingGrowth(s.growth, growthDayOf(s, now)).length === 0;
+  const growthOk = !s.growth || growthPendingCount(s.growth, growthDayOf(s, now)) === 0;
   return epsOk && growthOk && base.every((i) => done(i.id)) && !es.some((e) => e.status === "pendiente" || (e.status === "futuro" && (!e.item.trigger || !!e.item.after?.length)));
 }
 /** Fin del nivel: cerraste los asuntos Y el reto final (proyecto de cambio). Hasta entonces no hay veredicto. */

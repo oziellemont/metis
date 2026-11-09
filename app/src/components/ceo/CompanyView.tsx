@@ -8,6 +8,8 @@ import { useCeo } from "./CeoProvider";
 import { CompanyOrgChart } from "./CompanyOrgChart";
 import { BusinessPanel } from "./BusinessPanel";
 import { GrowthPanel } from "./GrowthPanel";
+import { SteelPanel } from "./SteelPanel";
+import { isSteelLog } from "@/lib/ceo/growth/session";
 import { KpiBoard } from "./KpiBoard";
 import { CompanyMark } from "./ui";
 import { NAME_MAX } from "@/lib/ceo/career/identity";
@@ -59,7 +61,7 @@ export function CompanyView() {
         <KpiBoard />
       </section>
 
-      {c.s.growth ? <GrowthPanel /> : c.continuous && <BusinessPanel />}
+      {c.s.growth ? (isSteelLog(c.s.growth) ? <SteelPanel /> : <GrowthPanel />) : c.continuous && <BusinessPanel />}
 
       <MyCompanies />
 
