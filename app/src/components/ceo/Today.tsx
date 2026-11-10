@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useEffect, useMemo } from "react";
 import clsx from "clsx";
-import { ArrowRight, BookOpen, Check, Briefcase, Clock, Coffee, FastForward, Flag, Hourglass, Trophy } from "lucide-react";
+import { ArrowRight, BookOpen, Check, Briefcase, Clock, Coffee, Flag, Trophy } from "lucide-react";
 import { KPI_KEYS, closedRunsOf, growthDayOf } from "@/lib/ceo/engine";
 import { growthAt, isRetailLog, isSteelLog, pendingGrowth, retailOf, retailPendingOf, steelOf, steelPendingOf } from "@/lib/ceo/growth/session";
 import { todayLineOf } from "@/lib/ceo/growth/view";
@@ -159,10 +159,16 @@ export function Today() {
           </section>
 
           {/* decisiones: lo principal */}
-          <section className="mt-10 min-w-0">
-            <div className="flex items-center justify-between"><h2 className="text-xs font-semibold uppercase tracking-[.18em] text-white/55">Esperando tu decisión</h2><Link href="/ceo/bandeja" className="text-xs font-medium text-white/65 hover:text-white transition-colors">Bandeja →</Link></div>
-            {waiting === 0 ? <p className="mt-3 text-sm text-white/60">Nada pendiente. Aprovecha para repasar la teoría en mêtis Academy.</p> : (
-              <ul className="mt-3 space-y-2.5">
+          {/* Sin título propio: el número grande de arriba ya dice cuántos asuntos esperan. */}
+          <section data-testid="hoy-decisiones" aria-label="Asuntos por resolver" className="mt-10 min-w-0">
+            {waiting === 0 ? (
+              <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                <p className="text-sm text-white/60">Nada pendiente. Aprovecha para repasar la teoría en mêtis Academy.</p>
+                <Link href="/ceo/bandeja" className="shrink-0 text-xs font-medium text-white/65 hover:text-white transition-colors">Bandeja →</Link>
+              </div>
+            ) : (<>
+              <div className="flex justify-end"><Link href="/ceo/bandeja" className="text-xs font-medium text-white/65 hover:text-white transition-colors">Bandeja →</Link></div>
+              <ul className="mt-2 space-y-2.5">
                 {report && (
                   <li><Link href={report.href} className={clsx(glass, "flex gap-3 px-4 py-3.5 group")}>
                     <Avatar id={report.from} size={38} />
@@ -230,13 +236,7 @@ export function Today() {
                   </Link></li>
                 ))}
               </ul>
-            )}
-            {!c.seasonDone && c.nextArrival && (
-              <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-dashed border-white/15 px-4 py-2.5 text-xs text-white/55">
-                <span className="inline-flex items-center gap-1.5"><Hourglass size={12} /> Durante el día llegarán más asuntos.</span>
-                {c.testTools && <button onClick={c.skipNext} className="inline-flex items-center gap-1 font-medium text-white/75 hover:text-white transition-colors"><FastForward size={12} /> Adelantar el reloj (modo prueba)</button>}
-              </div>
-            )}
+            </>)}
           </section>
 
           {/* V5/V6 · el encargo y las reglas se ven ANTES de decidir */}

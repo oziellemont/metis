@@ -132,7 +132,8 @@ describe("landing de MÊTIS CEO · bloques", () => {
     const S = C.HOW.slides;
     expect(S.tabs).toEqual(["Llega el correo", "Lo ves en Hoy", "Ya decidiste"]);
     expect(S.today.title).toBe("Esperando tu decisión");
-    expect(readFileSync("src/components/ceo/Today.tsx", "utf8")).toContain(S.today.title);
+    // Hoy ya no lleva ese título (el número grande de asuntos lo dice); la demo lo conserva como rótulo de la escena.
+    expect(readFileSync("src/components/ceo/Today.tsx", "utf8")).toContain('data-testid="hoy-decisiones"');
     expect(sn.preview).toContain(S.inbox.preview.replace("Para mantener sus dos frentes de anaquel necesitamos ", "").replace("…", ""));
     // la bandeja del día 2: los asuntos y los remitentes son los del juego
     for (const it of S.today.items) {

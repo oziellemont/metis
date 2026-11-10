@@ -35,17 +35,22 @@ describe("Hoy · una sola experiencia", () => {
   });
   it("orden: bienvenida, decisiones, estado de la empresa (con acceso a Empresa), mandato, aprendizaje", () => {
     const i = (t: string) => today.indexOf(t);
-    expect(i("{greeting}")).toBeLessThan(i("Esperando tu decisión"));
-    expect(i("Esperando tu decisión")).toBeLessThan(i("Tu empresa hoy"));
+    expect(i("{greeting}")).toBeLessThan(i('data-testid="hoy-decisiones"'));
+    expect(i('data-testid="hoy-decisiones"')).toBeLessThan(i("Tu empresa hoy"));
     expect(i("Tu empresa hoy")).toBeLessThan(i("Tu mandato"));
     expect(i("Tu mandato")).toBeLessThan(i("mêtis Academy · {nextLesson.minutes}"));
     expect(today).toContain('href="/ceo/empresa"');
   });
-  it("no se muestra la hora de llegada del siguiente asunto (se conserva la sorpresa)", () => {
+  it("no se muestra la hora de llegada del siguiente asunto ni textos repetidos en Hoy", () => {
     for (const src of [today, inbox]) {
       expect(src).not.toMatch(/clock\(c\.nextArrival\)/);
       expect(src).not.toMatch(/until\(c\.nextArrival/);
     }
-    expect(today).toContain("Durante el día llegarán más asuntos.");
+    // Hoy no repite lo que ya dice el número grande ni muestra el aviso de llegada ni el botón de prueba.
+    expect(today).not.toContain("Esperando tu decisión");
+    expect(today).not.toMatch(/<Hourglass[^\n]*Durante el día llegarán más asuntos/);
+    expect(today).not.toContain("c.nextArrival &&");
+    expect(today).not.toContain("c.skipNext");
+    expect(today).toContain("Nada pendiente. Aprovecha para repasar la teoría en mêtis Academy.");
   });
 });
