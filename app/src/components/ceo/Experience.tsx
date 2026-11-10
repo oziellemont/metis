@@ -29,7 +29,7 @@ export function Experience() {
     <main className="min-h-screen bg-gradient-to-br from-[#0F1130] via-[#1A1650] to-[#2B1F8A] text-white">
       <div className="relative max-w-3xl mx-auto px-5 py-8 sm:py-14">
         <div className="flex items-center justify-between">
-          <span className="flex items-center gap-2"><Logo variant="light" height={26} /><span className="chip bg-white text-ink text-[10px] tracking-wider">CEO</span></span>
+          <span className="flex items-center gap-2"><Logo variant="light" height={26} /></span>
           {phase === "q" ? <Segments total={5} at={q} /> : <button type="button" onClick={exit} className="text-xs text-white/60 hover:text-white">Volver a mi perfil</button>}
         </div>
         <div key={phase}>

@@ -23,7 +23,7 @@ function Frame({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <header className="mx-auto w-full max-w-md px-5 h-16 flex items-center">
-        <Link href="/" aria-label="MÊTIS CEO, inicio" className="flex items-center gap-2 rounded"><Logo height={26} priority /><span className="chip bg-ink text-white text-[10px] tracking-wider">CEO</span></Link>
+        <Link href="/" aria-label="MÊTIS CEO, inicio" className="flex items-center gap-2 rounded"><Logo height={26} priority /></Link>
       </header>
       <main id="contenido" className="flex-1 mx-auto w-full max-w-md px-5 pb-16 pt-6 sm:pt-12">{children}</main>
       <footer className="mx-auto w-full max-w-md px-5 pb-8 text-[12px] text-slate-400 flex gap-4">

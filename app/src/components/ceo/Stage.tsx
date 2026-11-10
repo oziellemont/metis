@@ -59,7 +59,7 @@ export function Stage({ steps, at, reach, exit = "/ceo", onExit, overlay, top, o
       <div aria-hidden className="pointer-events-none fixed -left-24 bottom-0 h-72 w-72 rounded-full bg-mint/15 blur-3xl" />
       <div className="relative mx-auto max-w-2xl min-h-screen flex flex-col px-5 pt-6 pb-0 sm:pt-10">
         <div className="flex items-center justify-between gap-3">
-          <span className="flex items-center gap-2"><Logo variant="light" height={24} /><span className="chip bg-white text-ink text-[10px] tracking-wider">CEO</span></span>
+          <span className="flex items-center gap-2"><Logo variant="light" height={24} /></span>
           <div className="flex items-center gap-3">
             {top}
             {onExit

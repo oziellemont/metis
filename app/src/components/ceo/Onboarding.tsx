@@ -74,7 +74,7 @@ export function Onboarding() {
       <div aria-hidden className="pointer-events-none fixed -left-24 bottom-0 h-72 w-72 rounded-full bg-mint/15 blur-3xl" />
       <div className={clsx("relative mx-auto px-5 py-8 sm:py-14", step === 1 && phase === "start" ? "max-w-4xl" : "max-w-2xl")}>
         <div className="flex items-center justify-between">
-          <span className="flex items-center gap-2"><Logo variant="light" height={26} /><span className="chip bg-white text-ink text-[10px] tracking-wider">CEO</span></span>
+          <span className="flex items-center gap-2"><Logo variant="light" height={26} /></span>
           <div className="flex gap-1.5">{Array.from({ length: STEPS }, (_, i) => i).map((i) => <span key={i} className={clsx("h-1.5 rounded-full transition-all", i === step ? "w-6 bg-mint" : i < step ? "w-3 bg-white/60" : "w-3 bg-white/20")} />)}</div>
         </div>
 

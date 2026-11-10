@@ -29,7 +29,7 @@ import { headlineOf } from "@/lib/ceo/trajectory";
 import { COMPANY_STAGES } from "@/lib/ceo/career/identity";
 import { presenterOf } from "@/lib/ceo/business/report";
 import { alertsAt } from "@/lib/ceo/season-report";
-import { HealthBar, KpiBoard } from "./KpiBoard";
+import { KpiBoard } from "./KpiBoard";
 
 export function Today() {
   const c = useCeo();
@@ -107,240 +107,254 @@ export function Today() {
     : growth?.pending ? { href: "/ceo/empresa#crecimiento", label: "Atender: caso de crecimiento" }
     : null;
 
+  // Mismo lenguaje que las pantallas de decisión: translúcido en reposo, un poco más claro al pasar el cursor.
+  const glass = "rounded-2xl border bg-white/[.06] border-white/[.12] transition-all hover:bg-white/10";
+  const soft = "rounded-xl bg-white/[.08] px-3.5 py-2.5 text-[13px] text-white/85 leading-relaxed";
+  const primary = cta ?? (c.seasonDone ? null : waiting === 0 ? { href: "/ceo/academy", label: "Explorar Academy" } : null);
+  const stageTotal = COMPANY_STAGES.length;
+
   return (
-    <div className="space-y-5">
-      {c.cadence === "quiet_day" ? (
-        <section className="card p-4 flex flex-wrap items-center gap-3 text-sm">
-          <span className="h-9 w-9 shrink-0 rounded-xl bg-mint-soft text-sob grid place-items-center"><Coffee size={16} /></span>
-          <span className="flex-1 min-w-0"><b className="text-ink">Hoy es tu día tranquilo.</b> <span className="text-slate-500">No llegan asuntos nuevos y tus plazos están detenidos hasta mañana.</span></span>
-          <button type="button" onClick={c.resumeCareer} className="text-indigo font-medium">Volver al ritmo normal</button>
-        </section>
-      ) : <DilemmaPrompt />}
-
-      {/* bienvenida + tu progreso: una sola franja */}
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#141735] via-[#1E1A5E] to-[#2B1F8A] p-5 sm:p-7 text-white">
-        <div aria-hidden className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-indigo-light/30 blur-3xl" />
-        <div aria-hidden className="absolute right-24 bottom-[-80px] h-48 w-48 rounded-full bg-mint/20 blur-3xl" />
-        <div className="relative grid grid-cols-[minmax(0,1fr)] gap-5 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] md:items-center">
-          <div className="min-w-0">
-            <div className="text-xs text-white/60 truncate">{pk.name} · {pk.industry}{c.s.tier > 0 ? ` · Exigencia ${c.rules.name}` : ""}</div>
-            <h1 className="mt-1.5 text-2xl sm:text-[28px] font-semibold leading-tight">{greeting}</h1>
-            <p className="mt-1 text-[15px] text-white/75">{sub}</p>
-            {cta && <Link href={cta.href} className="mt-4 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-ink hover:bg-white/90">{cta.label} <ArrowRight size={15} /></Link>}
-            {c.seasonDone && <Link href="/ceo/carrera" className="mt-4 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-ink"><Trophy size={15} /> Ver el veredicto del consejo</Link>}
+    <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_400px] xl:grid-cols-[minmax(0,1fr)_420px] lg:min-h-screen text-white">
+      {/* centro de mando: fondo mêtis */}
+      <div className="relative min-w-0 overflow-hidden">
+        <div aria-hidden className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-indigo-light/25 blur-3xl" />
+        <div aria-hidden className="pointer-events-none absolute -left-24 bottom-0 h-72 w-72 rounded-full bg-mint/10 blur-3xl" />
+        <div className="relative flex flex-col lg:min-h-screen px-5 sm:px-8 xl:px-12 pt-6 pb-8 lg:pt-7 lg:pb-10">
+          {/* Constancia: hábito, separado del mandato. No es requisito de nada. */}
+          <div className="hidden lg:flex items-center justify-end gap-4 text-sm" aria-label="Constancia">
+            <span className="flex items-center gap-1" aria-hidden>
+              {c.streak.week.map((d) => <span key={d.key} title={d.label} className={clsx("h-1.5 w-1.5 rounded-full", d.on ? "bg-gradient-to-br from-amber to-coral" : d.paused ? "border border-dashed border-white/30" : d.today ? "bg-white/50" : "bg-white/15")} />)}
+            </span>
+            <span className={clsx("inline-flex items-center gap-1.5", c.streak.atRisk && !c.streak.doneToday ? "text-amber" : "text-white/85")} title={!c.streak.doneToday && c.streak.atRisk ? "Decide o estudia hoy para conservar tu racha." : undefined}>
+              <Flame on={c.streak.days > 0 && c.streak.doneToday} size={16} /> <b className="font-semibold tabular-nums">{c.streak.days}</b> {c.streak.days === 1 ? "día" : "días"} de racha
+            </span>
+            <span className="h-4 w-px bg-white/20" />
+            <span className="tabular-nums text-white/85"><b className="font-semibold text-white">{c.xp}</b> XP</span>
           </div>
 
-          <div className="min-w-0 rounded-2xl bg-white/[.08] border border-white/[.12] backdrop-blur p-3.5 sm:p-4" aria-label="Tu mandato" data-testid="resumen-mandato">
-            <div className="flex items-baseline justify-between gap-2">
-              <div className="min-w-0"><div className="text-[11px] text-white/55">Tu mandato</div><div className="text-sm font-semibold leading-snug">{t.appointment.title}</div></div>
-              <Link href="/ceo/carrera" className="shrink-0 text-[11px] font-semibold text-indigo-light hover:text-white">Tu trayectoria →</Link>
-            </div>
-            {t.active ? (
-              <div className="mt-2 rounded-xl bg-white/[.06] px-3 py-2" data-testid="etapa-actual">
-                <div className="flex items-baseline justify-between gap-2 text-[11px] text-white/55"><span>Etapa de la empresa</span><span className="tabular-nums">Mes {t.month} · {t.chapter.idx + 1} de {COMPANY_STAGES.length}</span></div>
-                <div className="mt-0.5 text-[13px] font-semibold">{t.chapter.label}</div>
-                <div className="mt-1.5 flex items-center gap-1" aria-hidden>
-                  {COMPANY_STAGES.map((st, i) => <span key={st.id} className={clsx("h-1.5 flex-1 rounded-full", i < t.chapter.idx ? "bg-mint" : i === t.chapter.idx ? "bg-white" : "bg-white/15")} />)}
-                </div>
-              </div>
-            ) : <div className="mt-1 text-[12px] text-white/70">{`Día ${c.day} de ${pk.season.days}`}</div>}
-            <p className="mt-2 text-[13px] text-white/85 leading-snug">{t.moment.text}</p>
-            {/* Barra madre: la salud de la empresa, con la misma escala que los cinco indicadores. */}
-            <div className="mt-2.5"><HealthBar dark /></div>
-            {headline && <p className="mt-2 text-[12px] text-white/65 truncate"><span className="text-white/45">{headline.label}:</span> {headline.text}</p>}
-            {/* Constancia: hábito, separado del mandato. No es requisito de nada. */}
-            <div className="mt-3 pt-3 border-t border-white/10" aria-label="Constancia">
-              <div className="flex items-center justify-between gap-2 sm:gap-3">
-                <div className="flex items-center gap-2 sm:gap-2.5">
-                  <span className={clsx("h-8 w-8 sm:h-9 sm:w-9 rounded-xl grid place-items-center shrink-0", c.streak.doneToday ? "bg-gradient-to-br from-amber to-coral" : "bg-white/10")}><Flame on={c.streak.doneToday} size={19} white /></span>
-                  <div><div className="text-[11px] text-white/55 leading-none">Racha</div><div className="mt-1 whitespace-nowrap text-[15px] font-semibold tabular-nums leading-none">{c.streak.days} {c.streak.days === 1 ? "día" : "días"}</div></div>
-                </div>
-                <div className="flex gap-[3px] sm:gap-1.5">
-                  {c.streak.week.map((d) => <span key={d.key} title={d.label} className={clsx("h-4 w-4 sm:h-5 sm:w-5 rounded-full grid place-items-center", d.on ? "bg-gradient-to-br from-amber to-coral text-white" : d.paused ? "border border-dashed border-white/30" : d.today ? "bg-white/20 ring-2 ring-white/40" : "bg-white/10")}>{d.on && <Check size={9} strokeWidth={3} />}<span className="sr-only">{d.label}{d.paused ? " en pausa" : ""}</span></span>)}
-                </div>
-                <div className="text-right"><div className="text-[11px] text-white/55 leading-none">XP</div><div className="mt-1 text-[15px] font-semibold tabular-nums leading-none">{c.xp}</div></div>
-              </div>
-              {!c.streak.doneToday && c.streak.atRisk && <div className="mt-2 text-[11px] text-white/55">Decide o estudia hoy para conservar tu racha.</div>}
-            </div>
-          </div>
-        </div>
-      </section>
+          {c.cadence === "quiet_day" ? (
+            <section className={clsx(glass, "mt-4 p-4 flex flex-wrap items-center gap-3 text-sm")}>
+              <span className="h-9 w-9 shrink-0 rounded-xl bg-mint/15 text-mint grid place-items-center"><Coffee size={16} /></span>
+              <span className="flex-1 min-w-0"><b className="text-white">Hoy es tu día tranquilo.</b> <span className="text-white/65">No llegan asuntos nuevos y tus plazos están detenidos hasta mañana.</span></span>
+              <button type="button" onClick={c.resumeCareer} className="btn text-white/70 hover:text-white">Volver al ritmo normal</button>
+            </section>
+          ) : <DilemmaPrompt />}
 
-      {mandate && (
-        <section data-testid="encargo-periodo" className="card p-4 sm:p-5">
-          {newRules && (
-            <p data-testid="aviso-reglas-nuevas" className="mb-3 rounded-xl bg-indigo-soft/50 px-3.5 py-2.5 text-[13px] text-ink">
-              <b>Desde este mes el consejo evalúa de otra forma.</b> Ya no basta con tener los cinco indicadores en la línea: revisa tu encargo, la salud de la empresa y qué tan bien razonas. Tus meses anteriores conservan la evaluación que ya recibiste.
-            </p>
-          )}
-          {ethicsRules && (
-            <p data-testid="aviso-lineas-rojas" className="mb-3 rounded-xl bg-indigo-soft/50 px-3.5 py-2.5 text-[13px] text-ink">
-              <b>Desde este mes hay más líneas rojas.</b> Prometerle a un cliente algo que no existe y encubrirlo, mover a quien denuncia, darle al equipo una explicación falsa, mantener una fecha que solo se cumple haciendo trampa u ocultar un error culpando a otro ya no se compensan con buenos números. Tus meses anteriores conservan su evaluación.
-            </p>
-          )}
-          {coherenceRules && (
-            <p data-testid="aviso-coherencia" className="mb-3 rounded-xl bg-indigo-soft/50 px-3.5 py-2.5 text-[13px] text-ink">
-              <b>Desde este mes el consejo es más justo con tu criterio.</b> Si una respuesta es defendible aunque tenga un costo, cuenta como bien razonada. Lo que depende de que otra persona acepte cuenta cuando responde, no antes. Y dejar vencer un asunto ético grave cuenta igual que decidir mal. Tus meses anteriores conservan su evaluación.
-            </p>
-          )}
-          {econRules && (
-            <p data-testid="aviso-economia" className="mb-3 rounded-xl bg-indigo-soft/50 px-3.5 py-2.5 text-[13px] text-ink">
-              <b>Desde ahora Caja y Margen se mueven con dinero real.</b> Cada asunto registra lo que se paga, se cobra o se concede, con su monto y su fecha: un descuento baja el margen desde que lo firmas; un pago sale de la caja el día que ocurre; un ahorro cuenta cuando se mide. No conceder no suma, y un monto chico para el tamaño de tu empresa no mueve el indicador. Una concesión o inversión grande sin pasar por el consejo le cuesta su confianza.{c.s.econMigration ? " Tu periodo en curso se recalculó con estas reglas: tus decisiones, tu historial y tu racha siguen igual." : ""}
-            </p>
-          )}
-          <div className="flex items-baseline justify-between gap-2"><h2 className="font-semibold text-ink text-sm">Con qué te va a evaluar el consejo {c.continuous ? "este mes" : "esta temporada"}</h2><Link href="/ceo/carrera" className="shrink-0 text-[11px] font-semibold text-indigo">Detalle →</Link></div>
-          <p className="mt-1 text-sm text-slate-600">Tu encargo: <b className="text-ink">{mandate.objectiveText}</b></p>
-          <ul className="mt-2 grid gap-1.5 sm:grid-cols-3 text-[12.5px] text-slate-600">
-            <li className="rounded-xl bg-slate-50 px-3 py-2"><b className="text-ink">Objetivos:</b> {mandate.objectives.map((o) => pk.kpiLabel[o.kpi]).join(" y ")} en {v.passLine} o más al cierre.</li>
-            <li className="rounded-xl bg-slate-50 px-3 py-2"><b className="text-ink">Empresa sana:</b> salud promedio de {mandate.healthMin} o más y ningún indicador debajo de {mandate.floor}; caja y consejo arriba de 40.</li>
-            <li className="rounded-xl bg-slate-50 px-3 py-2"><b className="text-ink">Criterio:</b> al menos {Math.round(mandate.judgment.min * 100)} % de asuntos bien razonados. Los que dejes vencer cuentan en contra.</li>
-          </ul>
-          <p className="mt-2 text-[11px] text-slate-500">Sin líneas rojas (seguridad, fraude, represalias, ocultar riesgos). Al cierre, la operación del mes genera caja: lo que deja el negocio, más o menos los cambios de precio y costo que firmaste.</p>
-        </section>
-      )}
-
-      <div className="grid gap-5 lg:grid-cols-[1.55fr_1fr] items-start">
-        {/* decisiones: lo principal */}
-        <section className="card p-5 sm:p-6 min-w-0">
-          <div className="flex items-center justify-between"><h2 className="font-semibold text-ink">Esperando tu decisión</h2><Link href="/ceo/bandeja" className="text-xs font-medium text-indigo">Bandeja →</Link></div>
-          {waiting === 0 ? <p className="mt-4 text-sm text-slate-500">Nada pendiente. Aprovecha para repasar la teoría en mêtis Academy.</p> : (
-            <ul className="mt-2 divide-y divide-slate-100">
-              {report && (
-                <li><Link href={report.href} className="flex gap-3 py-3 group">
-                  <Avatar id={report.from} size={38} />
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2"><span className="text-sm font-semibold text-ink truncate">{personOf(pk, report.from).name}</span><span className="chip bg-indigo-soft text-indigo text-[10px]">Reporte</span></div>
-                    <div className="text-sm text-slate-600 truncate">Cierre del mes {report.period}: tus números y una decisión de caja</div>
-                    <div className="mt-0.5 text-[11px] text-indigo font-medium">El siguiente mes se cierra después de firmarlo</div>
-                  </div>
-                  <ArrowRight size={16} className="text-slate-300 group-hover:text-indigo mt-3" />
-                </Link></li>
+          {/* bienvenida */}
+          <section className="academy-in mt-4 lg:mt-6">
+            <div className="text-[13px] text-white/70 truncate">{pk.name} / {pk.industry}{c.s.tier > 0 ? ` · Exigencia ${c.rules.name}` : ""}</div>
+            <div className="mt-2 text-xs font-semibold uppercase tracking-[.18em] text-indigo-light">{t.active ? `Director General · Día ${c.day}` : `Día ${c.day} de ${pk.season.days}`}</div>
+            <h1 className="mt-3 max-w-[16ch] text-4xl sm:text-5xl xl:text-[56px] font-semibold leading-[1.05] tracking-tight">{greeting}</h1>
+            <div className="mt-7 flex flex-wrap items-center gap-x-8 gap-y-5">
+              {c.seasonDone ? <p className="text-[15px] text-white/75">{sub}</p> : (
+                <div className="flex items-center gap-5">
+                  <span className="text-7xl sm:text-[88px] font-semibold leading-none tabular-nums">{waiting}</span>
+                  <span className="h-14 w-px bg-white/25" />
+                  <span className="text-lg sm:text-xl leading-snug text-white/85">{waiting === 1 ? "Asunto" : "Asuntos"}<br />por resolver</span>
+                </div>
               )}
-              {growth?.world && (
-                <li><Link href="/ceo/empresa#crecimiento" className="flex gap-3 py-3 group" data-testid="hoy-mundo">
-                  <span className={clsx("h-[38px] w-[38px] shrink-0 rounded-full grid place-items-center", growth.world.mode === "real" ? "bg-coral/10 text-coral" : "bg-amber-50 text-amber-700")}><Globe2 size={16} /></span>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2"><span className="text-sm font-semibold text-ink">{growth.world.name}</span><span className={clsx("chip text-[10px]", growth.world.mode === "real" ? "bg-coral/10 text-coral" : "bg-amber-50 text-amber-700")}>{growth.world.label}</span></div>
-                    <div className="text-sm text-slate-600">{growth.world.facts ? "Lo que toca de tu empresa" : "Activo expuesto"}: {growth.world.assets.join("; ") || (growth.world.facts ? "contratos de la empresa" : "sedes de la empresa")}</div>
-                    <div className="text-sm text-slate-600">Decisión: {growth.subject}</div>
-                    <div className="mt-0.5 text-[11px] text-slate-500">Fuente: {growth.world.source.name}{growth.world.also ? ` y ${growth.world.also.name}` : ""} · {growth.world.facts ? "dato oficial ya publicado" : growth.world.status === "pronostico" ? "pronóstico, puede cambiar" : "ya ocurrió"} · Plazo: {growth.world.daysLeft === 0 ? "hoy" : growth.world.daysLeft === 1 ? "1 día" : `${growth.world.daysLeft} días`}</div>
-                  </div>
-                  <ArrowRight size={16} className="text-slate-300 group-hover:text-indigo mt-3" />
-                </Link></li>
-              )}
-              {growth && growth.pending > 0 && !growth.world && (
-                <li><Link href="/ceo/empresa#crecimiento" className="flex gap-3 py-3 group" data-testid="hoy-crecimiento">
-                  <span className="h-[38px] w-[38px] shrink-0 rounded-full grid place-items-center bg-indigo-soft text-indigo"><TrendingUp size={16} /></span>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-sm font-semibold text-ink truncate">{growth.subject ?? `Decisión en ${pk.short}`}</div>
-                    <div className="text-sm text-slate-600">{growth.pending > 1 ? `${growth.pending} decisiones esperan en Mi empresa` : "Te espera en Mi empresa"}</div>
-                  </div>
-                  <ArrowRight size={16} className="text-slate-300 group-hover:text-indigo mt-3" />
-                </Link></li>
-              )}
-              {specials.map((t) => (
-                <li key={t.id}><Link href={t.href} className="flex gap-3 py-3 group">
-                  <span className={clsx("h-[38px] w-[38px] shrink-0 rounded-full grid place-items-center", t.id === "crisis" ? "bg-coral/10 text-coral" : "bg-indigo-soft text-indigo")}><Flag size={16} /></span>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2"><span className="text-sm font-semibold text-ink truncate">Consejo de {pk.short}</span></div>
-                    <div className="text-sm text-slate-600 truncate">{t.subject}</div>
-                    <div className="mt-0.5 text-[11px] text-slate-400">{t.label}</div>
-                  </div>
-                  <ArrowRight size={16} className="text-slate-300 group-hover:text-indigo mt-3" />
-                </Link></li>
-              ))}
-              {epPending.map((e) => (
-                <li key={e.spec.id}><Link href={`/ceo/episodio/${e.spec.id}`} className="flex gap-3 py-3 group">
-                  <Avatar id={e.spec.from} size={38} />
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2"><span className="text-sm font-semibold text-ink truncate">{personOf(pk, e.spec.from).name}</span><ChannelChip c={e.spec.channel} /></div>
-                    <div className="text-sm text-slate-600 truncate">{e.spec.subject}</div>
-                    <div className="mt-0.5 text-[11px] text-indigo font-medium">Caso ejecutivo · unos {e.spec.minutes} min{e.run ? " · en curso" : ""}</div>
-                  </div>
-                  <ArrowRight size={16} className="text-slate-300 group-hover:text-indigo mt-3" />
-                </Link></li>
-              ))}
-              {c.pending.map((e) => (
-                <li key={e.item.id}><Link href={`/ceo/caso/${e.item.id}`} className="flex gap-3 py-3 group">
-                  <Avatar id={e.item.from} size={38} />
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2"><span className="text-sm font-semibold text-ink truncate">{personOf(pk, e.item.from).name}</span><ChannelChip c={e.item.channel} /></div>
-                    <div className="text-sm text-slate-600 truncate">{e.item.subject}</div>
-                    <div className={clsx("mt-0.5 text-[11px] inline-flex items-center gap-1", e.deadline - c.now < 3 * 3_600_000 ? "text-coral font-medium" : "text-slate-400")}><Clock size={11} /> Vence en {until(e.deadline, c.now)}</div>
-                  </div>
-                  <ArrowRight size={16} className="text-slate-300 group-hover:text-indigo mt-3" />
-                </Link></li>
-              ))}
-            </ul>
-          )}
-          {!c.seasonDone && c.nextArrival && (
-            <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-dashed border-slate-200 px-4 py-2.5 text-xs text-slate-500">
-              <span className="inline-flex items-center gap-1.5"><Hourglass size={12} /> Durante el día llegarán más asuntos.</span>
-              {c.testTools && <button onClick={c.skipNext} className="inline-flex items-center gap-1 font-medium text-indigo hover:underline"><FastForward size={12} /> Adelantar el reloj (modo prueba)</button>}
+              {primary && <Link href={primary.href} className="btn bg-white text-ink hover:bg-white/90 px-5 py-3 text-[15px] font-semibold">{primary.label} <ArrowRight size={16} /></Link>}
+              {c.seasonDone && <Link href="/ceo/carrera" className="btn bg-white text-ink hover:bg-white/90 px-5 py-3 text-[15px] font-semibold"><Trophy size={15} /> Ver el veredicto del consejo</Link>}
             </div>
-          )}
-        </section>
-
-        <div className="space-y-4 min-w-0">
-          {growth && growth.alerts.length > 0 && (
-            <Link href="/ceo/empresa#crecimiento" className="block card p-4 group" data-testid="hoy-alertas">
-              <AlertChips alerts={growth.alerts} />
-            </Link>
-          )}
-          {growth && growth.pending === 0 && growth.alerts.length === 0 && (
-            <Link href="/ceo/empresa#crecimiento" className="card p-4 flex gap-3 text-sm group" data-testid="hoy-pulso-crecimiento">
-              <span className="h-9 w-9 shrink-0 rounded-xl bg-indigo-soft text-indigo grid place-items-center"><TrendingUp size={16} /></span>
-              <span className="min-w-0 flex-1 text-slate-600">{growth.line}</span>
-              <ArrowRight size={15} className="text-slate-300 group-hover:text-indigo mt-2.5" />
-            </Link>
-          )}
-          {/* estado de la empresa, compacto */}
-          <section className="card p-5">
-            <div className="flex items-baseline justify-between gap-2"><h2 className="font-semibold text-ink text-sm">Tu empresa hoy</h2><span className="text-[11px] text-slate-400"><b className="text-ink tabular-nums">{passed}/5</b> en {v.passLine} o más</span></div>
-            <KpiBoard />
-            {alerts.length > 0 && (
-              <ul data-testid="alertas-tendencia" className="mt-3.5 space-y-1.5">
-                {alerts.map((a) => (
-                  <li key={a.kpi + a.kind} data-level={a.level} className={clsx("rounded-xl px-3 py-2 text-[12px] leading-snug", a.level === "critico" ? "bg-coral-soft/60 text-ink" : a.level === "riesgo" ? "bg-amber-50 text-ink" : "bg-slate-50 text-slate-600")}>{a.text}</li>
-                ))}
-              </ul>
-            )}
-            <Link href="/ceo/empresa" className="mt-3.5 inline-flex items-center gap-1 text-xs font-semibold text-indigo">{c.continuous ? "Ver números completos en Empresa" : "Ver tu empresa"} <ArrowRight size={13} /></Link>
           </section>
 
-          {nextLesson && (
-            <Link href={`/ceo/academy/${nextLesson.id}`} className="card p-4 flex gap-3 items-center hover:-translate-y-0.5 transition-transform">
-              <span className="h-10 w-10 rounded-xl bg-indigo-soft text-indigo grid place-items-center shrink-0"><BookOpen size={18} /></span>
-              <div className="min-w-0"><div className="text-[10px] font-semibold uppercase tracking-wider text-indigo">mêtis Academy · {nextLesson.minutes} min{nextLessonXp(c.s, c.now) > 0 ? ` · +${nextLessonXp(c.s, c.now)} XP` : ""}</div><div className="text-sm font-semibold text-ink leading-snug mt-0.5 truncate">{nextLesson.title}</div></div>
-            </Link>
-          )}
-
-          <section className="card p-4">
-            <h2 className="font-semibold text-ink text-[13px]">Lo último que decidiste</h2>
-            {lastDecided.length === 0 ? <p className="mt-1.5 text-xs text-slate-500">Todavía nada. Tu primera decisión te espera.</p> : (
-              <ul className="mt-2 space-y-2.5">
-                {lastDecided.map((e) => (
-                  <li key={e.item.id}><Link href={`/ceo/caso/${e.item.id}`} className="block">
-                    <div className="text-[11px] text-slate-400 truncate">{rel(e.decision!.at, c.now)} · {e.item.subject}</div>
-                    <div className="text-xs text-slate-600 line-clamp-2">{e.option?.outcome}</div>
+          {/* decisiones: lo principal */}
+          <section className="mt-10 min-w-0">
+            <div className="flex items-center justify-between"><h2 className="text-xs font-semibold uppercase tracking-[.18em] text-white/55">Esperando tu decisión</h2><Link href="/ceo/bandeja" className="text-xs font-medium text-white/65 hover:text-white transition-colors">Bandeja →</Link></div>
+            {waiting === 0 ? <p className="mt-3 text-sm text-white/60">Nada pendiente. Aprovecha para repasar la teoría en mêtis Academy.</p> : (
+              <ul className="mt-3 space-y-2.5">
+                {report && (
+                  <li><Link href={report.href} className={clsx(glass, "flex gap-3 px-4 py-3.5 group")}>
+                    <Avatar id={report.from} size={38} />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2"><span className="text-sm font-semibold truncate">{personOf(pk, report.from).name}</span><span className="chip bg-white/10 text-white text-[10px]">Reporte</span></div>
+                      <div className="text-sm text-white/70 truncate">Cierre del mes {report.period}: tus números y una decisión de caja</div>
+                      <div className="mt-0.5 text-[11px] text-indigo-light font-medium">El siguiente mes se cierra después de firmarlo</div>
+                    </div>
+                    <ArrowRight size={16} className="text-white/30 group-hover:text-white transition-colors mt-3" />
+                  </Link></li>
+                )}
+                {growth?.world && (
+                  <li><Link href="/ceo/empresa#crecimiento" className={clsx(glass, "flex gap-3 px-4 py-3.5 group")} data-testid="hoy-mundo">
+                    <span className={clsx("h-[38px] w-[38px] shrink-0 rounded-full grid place-items-center", growth.world.mode === "real" ? "bg-coral/20 text-coral" : "bg-amber/20 text-amber")}><Globe2 size={16} /></span>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2"><span className="text-sm font-semibold">{growth.world.name}</span><span className={clsx("chip text-[10px]", growth.world.mode === "real" ? "bg-coral/20 text-coral" : "bg-amber/20 text-amber")}>{growth.world.label}</span></div>
+                      <div className="text-sm text-white/70">{growth.world.facts ? "Lo que toca de tu empresa" : "Activo expuesto"}: {growth.world.assets.join("; ") || (growth.world.facts ? "contratos de la empresa" : "sedes de la empresa")}</div>
+                      <div className="text-sm text-white/70">Decisión: {growth.subject}</div>
+                      <div className="mt-0.5 text-[11px] text-white/50">Fuente: {growth.world.source.name}{growth.world.also ? ` y ${growth.world.also.name}` : ""} · {growth.world.facts ? "dato oficial ya publicado" : growth.world.status === "pronostico" ? "pronóstico, puede cambiar" : "ya ocurrió"} · Plazo: {growth.world.daysLeft === 0 ? "hoy" : growth.world.daysLeft === 1 ? "1 día" : `${growth.world.daysLeft} días`}</div>
+                    </div>
+                    <ArrowRight size={16} className="text-white/30 group-hover:text-white transition-colors mt-3" />
+                  </Link></li>
+                )}
+                {growth && growth.pending > 0 && !growth.world && (
+                  <li><Link href="/ceo/empresa#crecimiento" className={clsx(glass, "flex gap-3 px-4 py-3.5 group")} data-testid="hoy-crecimiento">
+                    <span className="h-[38px] w-[38px] shrink-0 rounded-full grid place-items-center bg-white/10 text-white"><TrendingUp size={16} /></span>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-sm font-semibold truncate">{growth.subject ?? `Decisión en ${pk.short}`}</div>
+                      <div className="text-sm text-white/70">{growth.pending > 1 ? `${growth.pending} decisiones esperan en Mi empresa` : "Te espera en Mi empresa"}</div>
+                    </div>
+                    <ArrowRight size={16} className="text-white/30 group-hover:text-white transition-colors mt-3" />
+                  </Link></li>
+                )}
+                {specials.map((t) => (
+                  <li key={t.id}><Link href={t.href} className={clsx(glass, "flex gap-3 px-4 py-3.5 group")}>
+                    <span className={clsx("h-[38px] w-[38px] shrink-0 rounded-full grid place-items-center", t.id === "crisis" ? "bg-coral/20 text-coral" : "bg-white/10 text-white")}><Flag size={16} /></span>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2"><span className="text-sm font-semibold truncate">Consejo de {pk.short}</span></div>
+                      <div className="text-sm text-white/70 truncate">{t.subject}</div>
+                      <div className="mt-0.5 text-[11px] text-white/50">{t.label}</div>
+                    </div>
+                    <ArrowRight size={16} className="text-white/30 group-hover:text-white transition-colors mt-3" />
+                  </Link></li>
+                ))}
+                {epPending.map((e) => (
+                  <li key={e.spec.id}><Link href={`/ceo/episodio/${e.spec.id}`} className={clsx(glass, "flex gap-3 px-4 py-3.5 group")}>
+                    <Avatar id={e.spec.from} size={38} />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2"><span className="text-sm font-semibold truncate">{personOf(pk, e.spec.from).name}</span><ChannelChip c={e.spec.channel} /></div>
+                      <div className="text-sm text-white/70 truncate">{e.spec.subject}</div>
+                      <div className="mt-0.5 text-[11px] text-indigo-light font-medium">Caso ejecutivo · unos {e.spec.minutes} min{e.run ? " · en curso" : ""}</div>
+                    </div>
+                    <ArrowRight size={16} className="text-white/30 group-hover:text-white transition-colors mt-3" />
+                  </Link></li>
+                ))}
+                {c.pending.map((e) => (
+                  <li key={e.item.id}><Link href={`/ceo/caso/${e.item.id}`} className={clsx(glass, "flex gap-3 px-4 py-3.5 group")}>
+                    <Avatar id={e.item.from} size={38} />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2"><span className="text-sm font-semibold truncate">{personOf(pk, e.item.from).name}</span><ChannelChip c={e.item.channel} /></div>
+                      <div className="text-sm text-white/70 truncate">{e.item.subject}</div>
+                      <div className={clsx("mt-0.5 text-[11px] inline-flex items-center gap-1", e.deadline - c.now < 3 * 3_600_000 ? "text-coral font-medium" : "text-white/50")}><Clock size={11} /> Vence en {until(e.deadline, c.now)}</div>
+                    </div>
+                    <ArrowRight size={16} className="text-white/30 group-hover:text-white transition-colors mt-3" />
                   </Link></li>
                 ))}
               </ul>
             )}
+            {!c.seasonDone && c.nextArrival && (
+              <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-dashed border-white/15 px-4 py-2.5 text-xs text-white/55">
+                <span className="inline-flex items-center gap-1.5"><Hourglass size={12} /> Durante el día llegarán más asuntos.</span>
+                {c.testTools && <button onClick={c.skipNext} className="inline-flex items-center gap-1 font-medium text-white/75 hover:text-white transition-colors"><FastForward size={12} /> Adelantar el reloj (modo prueba)</button>}
+              </div>
+            )}
           </section>
+
+          {/* V5/V6 · el encargo y las reglas se ven ANTES de decidir */}
+          {mandate && (
+            <section data-testid="encargo-periodo" className="mt-auto pt-10">
+              <div className="rounded-2xl border border-white/[.12] bg-white/[.06] backdrop-blur p-5 sm:p-6">
+                {newRules && (
+                  <p data-testid="aviso-reglas-nuevas" className={clsx(soft, "mb-4")}>
+                    <b className="text-white">Desde este mes el consejo evalúa de otra forma.</b> Ya no basta con tener los cinco indicadores en la línea: revisa tu encargo, la salud de la empresa y qué tan bien razonas. Tus meses anteriores conservan la evaluación que ya recibiste.
+                  </p>
+                )}
+                {ethicsRules && (
+                  <p data-testid="aviso-lineas-rojas" className={clsx(soft, "mb-4")}>
+                    <b className="text-white">Desde este mes hay más líneas rojas.</b> Prometerle a un cliente algo que no existe y encubrirlo, mover a quien denuncia, darle al equipo una explicación falsa, mantener una fecha que solo se cumple haciendo trampa u ocultar un error culpando a otro ya no se compensan con buenos números. Tus meses anteriores conservan su evaluación.
+                  </p>
+                )}
+                {coherenceRules && (
+                  <p data-testid="aviso-coherencia" className={clsx(soft, "mb-4")}>
+                    <b className="text-white">Desde este mes el consejo es más justo con tu criterio.</b> Si una respuesta es defendible aunque tenga un costo, cuenta como bien razonada. Lo que depende de que otra persona acepte cuenta cuando responde, no antes. Y dejar vencer un asunto ético grave cuenta igual que decidir mal. Tus meses anteriores conservan su evaluación.
+                  </p>
+                )}
+                {econRules && (
+                  <p data-testid="aviso-economia" className={clsx(soft, "mb-4")}>
+                    <b className="text-white">Desde ahora Caja y Margen se mueven con dinero real.</b> Cada asunto registra lo que se paga, se cobra o se concede, con su monto y su fecha: un descuento baja el margen desde que lo firmas; un pago sale de la caja el día que ocurre; un ahorro cuenta cuando se mide. No conceder no suma, y un monto chico para el tamaño de tu empresa no mueve el indicador. Una concesión o inversión grande sin pasar por el consejo le cuesta su confianza.{c.s.econMigration ? " Tu periodo en curso se recalculó con estas reglas: tus decisiones, tu historial y tu racha siguen igual." : ""}
+                  </p>
+                )}
+                <h2 className="text-[11px] font-semibold uppercase tracking-[.25em] text-white/55">Misión del consejo {c.continuous ? "· este mes" : "· esta temporada"}</h2>
+                <p className="mt-2 text-xl sm:text-2xl font-semibold leading-snug">{mandate.objectiveText}</p>
+                <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 text-[13px] text-white/75">
+                  {mandate.objectives.map((o) => <span key={o.kpi} className="tabular-nums">{pk.kpiLabel[o.kpi]} ≥{v.passLine}</span>).flatMap((x, i) => i ? [<span key={`s${i}`} className="text-white/35">·</span>, x] : [x])}
+                  <span className="text-white/35">·</span><span className="tabular-nums" title={`Salud promedio de ${mandate.healthMin} o más y ningún indicador debajo de ${mandate.floor}; caja y consejo arriba de 40.`}>Salud ≥{mandate.healthMin}</span>
+                  <span className="text-white/35">·</span><span className="tabular-nums" title="Asuntos bien razonados. Los que dejes vencer cuentan en contra.">Criterio ≥{Math.round(mandate.judgment.min * 100)} %</span>
+                  <span className="hidden sm:block h-4 w-px bg-white/20 mx-1" />
+                  <Link href="/ceo/carrera" className="inline-flex items-center gap-1 font-semibold text-white/90 hover:text-white transition-colors">Ver criterios <ArrowRight size={13} /></Link>
+                </div>
+                <p className="mt-3 text-[11px] text-white/45 leading-relaxed">Ningún indicador debajo de {mandate.floor}; caja y consejo arriba de 40. Sin líneas rojas (seguridad, fraude, represalias, ocultar riesgos). Al cierre, la operación del mes genera caja: lo que deja el negocio, más o menos los cambios de precio y costo que firmaste.</p>
+              </div>
+            </section>
+          )}
+
+          {nudge && (
+            <section className={clsx(glass, "mt-5 px-4 py-3 flex flex-wrap items-center gap-3 academy-in hover:bg-white/[.06]")}>
+              <span className="h-8 w-8 shrink-0 rounded-lg bg-white/10 grid place-items-center"><Briefcase size={15} /></span>
+              <div className="flex-1 min-w-[180px] text-sm"><b>Cuéntanos tu experiencia</b> <span className="text-white/60">· cinco preguntas, cerca de un minuto. No cambia tu avance.</span></div>
+              <div className="flex gap-2 shrink-0">
+                <button type="button" onClick={() => { track("aviso_perfil_pospuesto", { veces: (c.s.profileNudge?.dismissed ?? 0) + 1 }); c.snoozeProfile(); }} className="btn text-white/70 hover:text-white text-xs">Ahora no</button>
+                <Link href="/ceo/experiencia" className="btn bg-white text-ink hover:bg-white/90 text-xs font-semibold">Completar perfil</Link>
+              </div>
+            </section>
+          )}
         </div>
       </div>
 
-      {nudge && (
-        <section className="card px-4 py-3 flex flex-wrap items-center gap-3 academy-in">
-          <span className="h-8 w-8 shrink-0 rounded-lg bg-indigo-soft text-indigo grid place-items-center"><Briefcase size={15} /></span>
-          <div className="flex-1 min-w-[180px] text-sm"><b className="text-ink">Cuéntanos tu experiencia</b> <span className="text-slate-500">· cinco preguntas, cerca de un minuto. No cambia tu avance.</span></div>
-          <div className="flex gap-2 shrink-0">
-            <button type="button" onClick={() => { track("aviso_perfil_pospuesto", { veces: (c.s.profileNudge?.dismissed ?? 0) + 1 }); c.snoozeProfile(); }} className="btn-ghost text-xs">Ahora no</button>
-            <Link href="/ceo/experiencia" className="btn-primary text-xs">Completar perfil</Link>
-          </div>
+      {/* panel de la empresa: blanco, a la derecha */}
+      <aside className="relative mx-3 mb-4 lg:m-0 rounded-3xl lg:rounded-none lg:rounded-l-[28px] bg-white text-ink px-5 sm:px-7 py-6 lg:py-8 lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto shadow-[0_0_60px_-20px_rgba(15,17,48,.6)]">
+        <h2 className="sr-only">Tu empresa hoy</h2>
+        <KpiBoard hero />
+        <div className="mt-4 flex items-center gap-3 border-t border-slate-100 pt-4">
+          <span className={clsx("h-9 w-9 shrink-0 rounded-full grid place-items-center", passed === 5 ? "bg-indigo-soft text-indigo" : "bg-slate-100 text-slate-500")}><Check size={17} strokeWidth={2.6} /></span>
+          <span className="text-[15px] font-semibold"><span className="tabular-nums">{passed}/5</span> indicadores en {v.passLine} o más</span>
+        </div>
+        {alerts.length > 0 && (
+          <ul data-testid="alertas-tendencia" className="mt-3 space-y-1.5">
+            {alerts.map((a) => (
+              <li key={a.kpi + a.kind} data-level={a.level} className={clsx("rounded-xl px-3 py-2 text-[12px] leading-snug", a.level === "critico" ? "bg-coral-soft/60 text-ink" : a.level === "riesgo" ? "bg-amber-50 text-ink" : "bg-slate-50 text-slate-600")}>{a.text}</li>
+            ))}
+          </ul>
+        )}
+        {growth && growth.alerts.length > 0 && (
+          <Link href="/ceo/empresa#crecimiento" className="mt-3 block rounded-xl border border-slate-100 p-3 transition-colors hover:bg-slate-50" data-testid="hoy-alertas">
+            <AlertChips alerts={growth.alerts} />
+          </Link>
+        )}
+        {growth && growth.pending === 0 && growth.alerts.length === 0 && (
+          <Link href="/ceo/empresa#crecimiento" className="mt-3 flex gap-3 rounded-xl border border-slate-100 p-3 text-sm transition-colors hover:bg-slate-50 group" data-testid="hoy-pulso-crecimiento">
+            <span className="h-9 w-9 shrink-0 rounded-xl bg-indigo-soft text-indigo grid place-items-center"><TrendingUp size={16} /></span>
+            <span className="min-w-0 flex-1 text-slate-600">{growth.line}</span>
+            <ArrowRight size={15} className="text-slate-300 group-hover:text-indigo transition-colors mt-2.5" />
+          </Link>
+        )}
+        <Link href="/ceo/empresa" className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-indigo hover:text-indigo-light transition-colors">{c.continuous ? "Ver números completos en Empresa" : "Ver tu empresa"} <ArrowRight size={13} /></Link>
+
+        {/* tu mandato: etapa de la empresa y momento */}
+        <section className="mt-6 border-t border-slate-100 pt-5" aria-label="Tu mandato" data-testid="resumen-mandato">
+          {t.active ? (
+            <div data-testid="etapa-actual">
+              <div className="flex items-baseline justify-between gap-2"><span className="text-[15px] font-semibold">{t.chapter.label}</span><span className="text-[13px] text-slate-500 tabular-nums">Mes {t.month} · {t.chapter.idx + 1} de {stageTotal}</span></div>
+              <div className="mt-3 flex items-center gap-1.5" aria-hidden>
+                {COMPANY_STAGES.map((st, i) => <span key={st.id} className={clsx("h-2.5 flex-1 rounded-full", i < t.chapter.idx ? "bg-indigo/45" : i === t.chapter.idx ? "bg-indigo" : "bg-indigo-soft")} />)}
+              </div>
+            </div>
+          ) : <div className="text-[15px] font-semibold">{`Día ${c.day} de ${pk.season.days}`}</div>}
+          <p className="mt-3 text-[13px] text-slate-600 leading-snug">{t.moment.text}</p>
+          {headline && <p className="mt-1.5 text-[12px] text-slate-500 truncate"><span className="text-slate-400">{headline.label}:</span> {headline.text}</p>}
+          <div className="mt-2 flex items-baseline justify-between gap-2 text-[12px]"><span className="text-slate-400 truncate">{t.appointment.title}</span><Link href="/ceo/carrera" className="shrink-0 font-semibold text-indigo hover:text-indigo-light transition-colors">Tu trayectoria →</Link></div>
         </section>
-      )}
+
+        {nextLesson && (
+          <Link href={`/ceo/academy/${nextLesson.id}`} className="mt-5 flex gap-3 items-center rounded-2xl border border-slate-100 p-3.5 transition-all hover:bg-indigo-soft/50 hover:border-indigo-soft">
+            <span className="h-10 w-10 rounded-xl bg-indigo-soft text-indigo grid place-items-center shrink-0"><BookOpen size={18} /></span>
+            <div className="min-w-0"><div className="text-[10px] font-semibold uppercase tracking-wider text-indigo">mêtis Academy · {nextLesson.minutes} min{nextLessonXp(c.s, c.now) > 0 ? ` · +${nextLessonXp(c.s, c.now)} XP` : ""}</div><div className="text-sm font-semibold text-ink leading-snug mt-0.5 truncate">{nextLesson.title}</div></div>
+          </Link>
+        )}
+
+        <section className="mt-5">
+          <h2 className="font-semibold text-ink text-[13px]">Lo último que decidiste</h2>
+          {lastDecided.length === 0 ? <p className="mt-1.5 text-xs text-slate-500">Todavía nada. Tu primera decisión te espera.</p> : (
+            <ul className="mt-2 space-y-1">
+              {lastDecided.map((e) => (
+                <li key={e.item.id}><Link href={`/ceo/caso/${e.item.id}`} className="block rounded-lg -mx-2 px-2 py-1.5 transition-colors hover:bg-slate-50">
+                  <div className="text-[11px] text-slate-400 truncate">{rel(e.decision!.at, c.now)} · {e.item.subject}</div>
+                  <div className="text-xs text-slate-600 line-clamp-2">{e.option?.outcome}</div>
+                </Link></li>
+              ))}
+            </ul>
+          )}
+        </section>
+      </aside>
     </div>
   );
 }
