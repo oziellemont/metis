@@ -22,10 +22,12 @@ describe("Empresa · cinco pestañas", () => {
     expect(read("empresa/OperacionTab.tsx")).toMatch(/<GrowthPanel \/>/);
     expect(read("GrowthPanel.tsx")).toContain('id="crecimiento"');
   });
-  it("salud empresarial y desempeño operativo se muestran por separado", () => {
+  it("el encabezado es sencillo: sin datos de salud ni KPI, solo nombre y selector", () => {
     const v = read("CompanyView.tsx");
-    expect(v).toContain("Salud empresarial");
-    expect(v).toContain("Desempeño operativo");
+    expect(v).not.toContain("Salud empresarial");
+    expect(v).not.toContain("Desempeño operativo");
+    expect(v).toContain('role="tablist"');
+    expect(read("empresa/OperacionTab.tsx")).toContain("en meta");
   });
   it("lo que salió de Empresa vive en otra pantalla", () => {
     expect(read("CeoSettings.tsx")).toContain("<RenameCompany />");
