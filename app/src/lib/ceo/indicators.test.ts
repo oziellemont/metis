@@ -119,11 +119,13 @@ describe("pantallas: barras con detalle en Hoy, Mi empresa y el resultado", () =
     expect(board).toContain("function HealthHero");
     expect(today.indexOf("Tu empresa hoy")).toBeLessThan(today.indexOf("<KpiBoard hero />"));
   });
-  it("Mi empresa abre el mismo panel", () => {
-    expect(company).toContain("<KpiBoard hero />");
+  it("Mi empresa abre el mismo detalle, en ventana centrada", () => {
+    expect(company).toContain('<KpiBoard hero detail="centro" />');
   });
   it("el panel explica estado, último movimiento, causas, pendientes, historial y qué puedes hacer", () => {
-    for (const x of ["Salud de la empresa", "Último movimiento", "Por qué está así", "Pendiente de respuesta", "Historial", "Qué puedes hacer", 'role="dialog"', "Escape"]) expect(board).toContain(x);
+    for (const x of ["Salud de la empresa", "Último movimiento", "Por qué está así", "Pendiente de respuesta", "Historial", "Qué puedes hacer"]) expect(board).toContain(x);
+    expect(board).toContain("<DetailDialog");
+    for (const x of ['role="dialog"', 'aria-modal="true"', '"Escape"']) expect(src("DetailDialog.tsx")).toContain(x);
   });
   it("el resultado de una decisión usa barras antes → después, no etiquetas sueltas", () => {
     expect(caseView).toContain("<ResultBars");

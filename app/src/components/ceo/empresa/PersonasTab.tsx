@@ -1,19 +1,20 @@
 "use client";
 /**
  * Empresa · Personas. Vista ejecutiva: presidente del consejo, consejeros, tus reportes directos y las relaciones
- * clave que piden atención. Al tocar a alguien se abre su perfil (rol, relación, intereses, alianzas y conflictos,
- * historial). El organigrama completo queda a un botón.
+ * clave que piden atención. Al tocar a alguien se abre su perfil en una ventana centrada (rol, relación, intereses,
+ * alianzas y conflictos, historial). El organigrama completo queda a un botón.
  */
 import clsx from "clsx";
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Network, X } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Network } from "lucide-react";
 import { firstName, personOf } from "@/lib/ceo/cast";
 import { orgParts } from "@/lib/ceo/org-chart";
 import { entryRipples, moodOf, REL_START } from "@/lib/ceo/relations";
 import type { CastId, Person } from "@/lib/ceo/types";
 import { useCeo } from "../CeoProvider";
 import { CompanyOrgChart } from "../CompanyOrgChart";
+import { DetailDialog } from "../DetailDialog";
 import { Avatar, Delta, rel } from "../ui";
 import { Panel } from "./shared";
 
@@ -115,18 +116,8 @@ function Profile({ id, onClose }: { id: CastId; onClose: () => void }) {
     if (e.status !== "decidido" && e.status !== "vencido") return [];
     return [{ id: e.item.id, subject: e.item.subject, at: e.decision?.at ?? e.deadline, delta: hit, expired: e.status === "vencido" }];
   }).reverse().slice(0, 6), [c.entries, pk, id]);
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    ref.current?.focus();
-    const k = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
-    window.addEventListener("keydown", k);
-    return () => window.removeEventListener("keydown", k);
-  }, [onClose]);
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-stretch sm:justify-end" role="dialog" aria-modal="true" aria-labelledby="perfil-nombre">
-      <button type="button" aria-label="Cerrar" onClick={onClose} className="absolute inset-0 bg-ink/40" />
-      <div ref={ref} tabIndex={-1} data-testid="perfil-persona" className="relative w-full sm:w-[420px] max-h-[88vh] sm:max-h-none overflow-y-auto rounded-t-3xl sm:rounded-none bg-white p-5 sm:p-6 shadow-2xl outline-none academy-in">
-        <button type="button" onClick={onClose} aria-label="Cerrar" className="absolute right-4 top-4 h-8 w-8 grid place-items-center rounded-full hover:bg-slate-100 text-slate-500"><X size={16} /></button>
+    <DetailDialog variant="centro" labelledBy="perfil-nombre" testid="perfil-persona" scrollKey={id} onClose={onClose}>
         <div className="flex items-center gap-3 pr-8">
           <Avatar id={id} size={48} pack={pk} />
           <div className="min-w-0"><h2 id="perfil-nombre" className="text-lg font-semibold text-ink">{p.name}</h2><div className="text-[13px] text-slate-500">{p.role}</div></div>
@@ -165,8 +156,7 @@ function Profile({ id, onClose }: { id: CastId; onClose: () => void }) {
             </ol>
           ) : <p className="text-sm text-slate-500">Todavía no han tratado ningún asunto juntos este periodo.</p>}
         </Sec>
-      </div>
-    </div>
+    </DetailDialog>
   );
 }
 
