@@ -18,15 +18,15 @@ export const maxZone = (a: Zone, b: Zone): Zone => (zoneRank(a) >= zoneRank(b) ?
 export type Family = "clima" | "sismo" | "macro" | "comercio" | "gobierno" | "noticias";
 export const FAMILIES: readonly Family[] = ["clima", "sismo", "macro", "comercio", "gobierno", "noticias"];
 export const FAMILY_LABEL: Readonly<Record<Family, string>> = Object.freeze({
-  clima: "Clima (huracanes y tormentas)", sismo: "Sismos", macro: "Economía (tasas y tipo de cambio)", comercio: "Comercio exterior y aranceles",
+  clima: "Clima (huracanes, tormentas e inundaciones)", sismo: "Sismos", macro: "Economía (tasas y tipo de cambio)", comercio: "Comercio exterior y aranceles",
   gobierno: "Gobierno y regulación (energía, combustibles, impuestos, trabajo)", noticias: "Noticias generales (bloqueos, huelgas, conflictos)",
 });
 export const isFamily = (x: unknown): x is Family => (FAMILIES as readonly unknown[]).includes(x);
 
-/** Tipos de acontecimiento con reglas de impacto aprobadas. ciclon y sismo son geográficos (zonas por sede). */
-export type Kind = "ciclon" | "sismo" | "tipo_cambio" | "tasa" | "arancel";
-export const GEO_KINDS: readonly Kind[] = ["ciclon", "sismo"];
-export const KINDS: readonly Kind[] = ["ciclon", "sismo", "tipo_cambio", "tasa", "arancel"];
+/** Tipos de acontecimiento con reglas de impacto aprobadas. ciclon, sismo e inundacion son geográficos (zonas por sede). */
+export type Kind = "ciclon" | "sismo" | "inundacion" | "tipo_cambio" | "tasa" | "arancel";
+export const GEO_KINDS: readonly Kind[] = ["ciclon", "sismo", "inundacion"];
+export const KINDS: readonly Kind[] = ["ciclon", "sismo", "inundacion", "tipo_cambio", "tasa", "arancel"];
 export const isGeo = (k: Kind): boolean => GEO_KINDS.includes(k);
 /** Fuentes oficiales (y el ejercicio de prueba). */
 export type Src = "gdacs" | "dof" | "fr" | "ejercicio";
@@ -102,7 +102,20 @@ export interface WorldEpisode {
   script?: { inDays: number; sites: Record<string, Zone> };
   /** Solo acontecimientos no geográficos (tipo de cambio, tasa, arancel). */
   facts?: Facts;
+  /**
+   * Versión de las reglas de consecuencias con que se abrió (ausente = 1). Se congela al abrir: una partida con
+   * episodios v1 se reconstruye siempre igual. v2 = impacto inevitable + parte evitable según la decisión + costo y
+   * consecuencias futuras (ver world/climate2.ts y growth/session.ts · externalOf).
+   */
+  rv?: number;
 }
+/** Versión de reglas que reciben los episodios nuevos. */
+export const RULES_V = 2;
+/**
+ * Solo dentro de la reconstrucción contrafactual (nunca se guarda): aplicar únicamente la parte inevitable del
+ * impacto, sin la decisión del jugador. Así se separa lo que no dependía de nadie de lo que dependió de la decisión.
+ */
+export type ReplayEpisode = WorldEpisode & { only?: "inevitable" };
 
 /** Días simulados que un pronóstico puede quedar abierto antes de cerrarse sin daño confirmado. */
 export const FORECAST_WINDOW = 8;

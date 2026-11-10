@@ -9,7 +9,7 @@
  *
  * Caché de 10 minutos en memoria. Cualquier fuente caída devuelve una lista vacía (el juego sigue igual).
  */
-import { GDACS_LIST, NHC_URL, USGS_URL, getJson, nhcFor, parseEqGeometry, parseGdacsList, parseNhc, parseTcGeometry, parseUsgs, usgsFor, type GdacsEvent, type ZoneLayer } from "./connectors";
+import { GDACS_LIST, NHC_URL, USGS_URL, getJson, nhcFor, parseEqGeometry, parseFlGeometry, parseGdacsList, parseNhc, parseTcGeometry, parseUsgs, usgsFor, type GdacsEvent, type ZoneLayer } from "./connectors";
 import { exposedTemplates, exposureOf } from "./exposure";
 import { haversineKm } from "./geo";
 import { PREFILTER_KM, candidateFor } from "./match";
@@ -47,10 +47,10 @@ export async function loadFeed(now = Date.now(), fetcher: (url: string) => Promi
     for (const ev of near.slice(0, 8)) {
       const g = ev.geometryUrl ? await fetcher(ev.geometryUrl) : null;
       if (!g) continue;
-      const layers = ev.type === "TC" ? parseTcGeometry(g, ev.to) : parseEqGeometry(g);
+      const layers = ev.type === "TC" ? parseTcGeometry(g, ev.to) : ev.type === "FL" ? parseFlGeometry(g) : parseEqGeometry(g);
       let also: FeedEvent["also"];
       if (ev.type === "TC") { const st = nhcFor(ev, storms); if (st?.advisory) also = { name: "Centro Nacional de Huracanes (NOAA)", url: st.advisory }; }
-      else { const q = usgsFor(ev, quakes); if (q?.url) also = { name: "Servicio Geológico de EUA (USGS)", url: q.url }; }
+      else if (ev.type === "EQ") { const q = usgsFor(ev, quakes); if (q?.url) also = { name: "Servicio Geológico de EUA (USGS)", url: q.url }; }
       events.push({ ev, layers, ...(also ? { also } : {}) });
     }
     const feed: Feed = { at: now, ok: !!list, events, sources: { gdacs: !!list, nhc: !!nhcRaw, usgs: !!usgsRaw } };

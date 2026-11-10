@@ -19,9 +19,14 @@ import type { RCase, ROption } from "../growth/retail/cases";
 import { cashOf as steelCash, type SteelCommand, type SteelState } from "../growth/steel/engine";
 import type { SCase, SOption } from "../growth/steel/cases";
 import { caseIdOf, deadlineOf, exposedLinesOf } from "./episodes";
+import { exposureOf } from "./exposure";
+import { usIncidence, US_INEVITABLE_VOL, US_PASS, US_VOL_KEEP } from "./macro";
 import type { Facts, WorldEpisode } from "./types";
 
-export const ECON_RULES_VERSION = 1;
+export const ECON_RULES_VERSION = 2;
+/** H4 · Arancel de EE. UU. a lo que la empresa exporta: días que dura el efecto en volumen y días para redirigir. */
+export const US_DAYS = 120;
+export const REDIRECT_DISCOUNT = 0.04;
 export const CONSUMABLES_USD = 0.5;
 export const FX_DAYS = 60;
 export const REFI_FEE = 0.0075;
@@ -45,7 +50,7 @@ function head(ep: WorldEpisode, s: { day: number }, templateId: string): string[
     : f.t === "tasa"
       ? `La TIIE de fondeo que publica el Banco de México en el Diario Oficial pasó de ${f.from.toFixed(2)} % (${dmy(f.since)}) a ${f.to.toFixed(2)} % (${dmy(f.until)}).`
       : `${ep.source.name} publicó: ${ep.name}. Arancel de ${pct(f.from, 0)} a ${pct(f.to, 0)}${f.effective ? `, vigente desde el ${dmy(f.effective)}` : ""}.`;
-  const lines = exposedLinesOf(templateId, ep.kind);
+  const lines = exposedLinesOf(templateId, ep.kind, f.rule);
   return [
     ep.mode === "ejercicio" ? `Ejercicio hipotético: imagina este dato. ${what} No es un dato real.` : what,
     lines.length ? `Lo que toca de tu empresa: ${lines.join("; ")}.` : "",
@@ -142,6 +147,7 @@ export function econSteelCase(s: SteelState, ep: WorldEpisode): SCase {
       requires: () => ok, options,
     };
   }
+  if (f.rule === "us_232_acero") return usSteelCase(s, ep);
   // arancel (H3)
   const d = tariffDemand(f);
   const up = f.to > f.from;
@@ -168,8 +174,9 @@ export function econSteelCase(s: SteelState, ep: WorldEpisode): SCase {
   };
 }
 
-export function econSteelImpact(_s: SteelState, ep: WorldEpisode, optionId: string | null): { commands: SteelCommand[]; text: string } {
+export function econSteelImpact(s: SteelState, ep: WorldEpisode, optionId: string | null, inevitableOnly = false): { commands: SteelCommand[]; text: string; parts?: { inevitable: string[]; evitable: string[]; future: string[] } } {
   const f = ep.facts!;
+  if (f.rule === "us_232_acero") return usSteelImpact(s, ep, optionId, inevitableOnly);
   const k = `w:${ep.id}:imp`;
   const lbl = ep.mode === "ejercicio" ? "Ejercicio hipotético" : "Dato real, impacto simulado";
   const o = optionId ?? "base";
@@ -186,4 +193,66 @@ export function econSteelImpact(_s: SteelState, ep: WorldEpisode, optionId: stri
   const days = o === "contrato" ? TARIFF_DAYS * 2 : TARIFF_DAYS;
   const mult = Math.round((1 + eff) * 10_000) / 10_000;
   return { commands: [{ type: "modify", id: `${k}:dem`, key: "demand", mult, days }], text: `${lbl}: con el arancel ${f.to > f.from ? "más alto" : "más bajo"}, la demanda de tus clientes se mueve ${pct(mult - 1)} durante ${days} días.` };
+}
+
+// ─────────────────────────────────────────────────────────────── H4 · arancel de EE. UU. a la exportación de acero
+/** Contrato de exportación vigente (lo abre una decisión del jugador; la plantilla inicial no exporta). */
+export const exportContractOf = (s: SteelState) => {
+  const tag = exposureOf(s.templateId)?.profile.exportContracts?.clientTag;
+  return tag ? s.contracts.find((k) => k.startDay <= s.day && k.tpd > 0 && k.client.includes(tag)) ?? null : null;
+};
+const usTerms = (s: SteelState) => exposureOf(s.templateId)?.profile.exportContracts ?? null;
+
+function usSteelCase(s: SteelState, ep: WorldEpisode): SCase {
+  const f = ep.facts!;
+  const k0 = exportContractOf(s);
+  const t = usTerms(s);
+  const delta = f.to - f.from;
+  const inc = usIncidence(!!t?.importerOfRecord, delta);
+  const price = k0 ? k0.price / 100 : 0, tpd = k0?.tpd ?? 0;
+  const monthly = Math.round(price * tpd * 30);
+  const options: SOption[] = [
+    { id: "base", stance: "equilibrada", label: "Mantener el precio pactado y dejar que el comprador absorba el arancel",
+      detail: () => `Con entrega ${t?.incoterm ?? "DAP"} el arancel lo paga el comprador al importar. Sin descuento, compra cerca de ${pct(inc.inevitableVol + inc.keepVol, 0)} menos durante ${US_DAYS} días.`, commands: () => [] },
+    { id: "compartir", stance: "prudente", label: `Compartir el golpe: ${pct(inc.shareDiscount, 0)} de descuento por ${US_DAYS} días`,
+      detail: () => `El comprador sigue pagando el arancel, pero con el descuento solo recorta lo inevitable (cerca de ${pct(inc.inevitableVol, 0)} del volumen). Cuesta ${mx(Math.round(monthly * inc.shareDiscount))} al mes en precio.`,
+      commands: (st, k) => { const c = exportContractOf(st); return c ? [{ type: "change_contract", id: `${k}:desc`, contractId: c.id, price: Math.round((c.price / 100) * (1 - inc.shareDiscount)) }, { type: "later", id: `${k}:fin`, inDays: US_DAYS, cmd: { type: "change_contract", id: `${k}:fin`, contractId: c.id, price: Math.round(c.price / 100) } }] : []; } },
+    { id: "redirigir", stance: "prudente", label: "Redirigir la mitad del volumen al mercado nacional",
+      detail: () => `La mitad de las toneladas de exportación pasa a relaminadoras nacionales con ${pct(REDIRECT_DISCOUNT, 0)} de descuento sobre el precio de exportación, a partir de 20 días. Menos dependencia del arancel; el cliente de Houston lo resiente.`,
+      commands: (st, k) => { const c = exportContractOf(st); if (!c) return []; const half = Math.max(1, Math.round(c.tpd / 2)); return [{ type: "change_contract", id: `${k}:mitad`, contractId: c.id, tpd: c.tpd - half }, { type: "add_contract", id: `${k}:nac`, client: "Relaminadora nacional (volumen redirigido)", product: c.product, tpd: half, price: Math.round((c.price / 100) * (1 - REDIRECT_DISCOUNT)), dso: 30, startInDays: 20 }, { type: "relation", id: `${k}:cl`, key: "clients", delta: -0.01 }]; } },
+    { id: "ddp", stance: "arriesgada", label: "Ofrecer entrega DDP: tu empresa importa y paga el arancel",
+      detail: () => `El comprador no ve el arancel y no recorta por precio, pero tu empresa pasa a ser importadora de registro en EE. UU.: el ${pct(f.to, 0)} sale de tu precio (cerca de ${mx(Math.round(monthly * delta))} al mes por el aumento) más el despacho.`,
+      commands: (st, k) => { const c = exportContractOf(st); return c ? [{ type: "change_contract", id: `${k}:ddp`, contractId: c.id, price: Math.round((c.price / 100) * (1 - delta)) }, { type: "add_fixed", id: `${k}:agente`, label: "Agente aduanal y fianza de importación en EE. UU.", amount: 35_000 }] : []; } },
+  ];
+  return {
+    id: caseIdOf(ep), area: "clientes", from: "admin", minDay: 0,
+    subject: `${ep.name}: ¿qué haces con tu exportación a Texas?`,
+    body: () => [...head(ep, s, s.templateId), `Quién paga: con entrega ${t?.incoterm ?? "DAP"} el importador de registro es ${t?.counterpart ?? "el comprador"}. A tu empresa no le cobran el arancel; le llega por precio y volumen. Solo si vendes DDP lo pagas tú.`],
+    data: () => [sourceRow(ep), ["Contrato de exportación", k0 ? `${tpd} t diarias a ${mx(price)}` : "Sin contrato vigente"], ["Venta mensual expuesta", mx(monthly)], ["Quién paga el arancel", inc.payer === "empresa" ? "Tu empresa (DDP)" : "El comprador (importador de registro)"], ["Caja", mx(steelCash(s) / 100)]],
+    lesson: "Un arancel lo paga quien importa. Al exportador le llega de forma indirecta: el comprador pide descuento o compra menos. Una parte no se evita (el producto mexicano se encarece para todos en ese mercado); lo que se decide es cuánto volumen defender, a qué precio y con qué dependencia de un solo mercado.",
+    requires: () => ok, options,
+  };
+}
+
+function usSteelImpact(s: SteelState, ep: WorldEpisode, optionId: string | null, inevitableOnly: boolean): { commands: SteelCommand[]; text: string; parts: { inevitable: string[]; evitable: string[]; future: string[] } } {
+  const f = ep.facts!;
+  const k = `w:${ep.id}:imp`;
+  const lbl = ep.mode === "ejercicio" ? "Ejercicio hipotético" : "Dato real, impacto simulado";
+  const c = exportContractOf(s);
+  const t = usTerms(s);
+  const inc = usIncidence(!!t?.importerOfRecord, f.to - f.from);
+  const o = inevitableOnly ? "inevitable" : optionId ?? "base";
+  const parts = { inevitable: [] as string[], evitable: [] as string[], future: [] as string[] };
+  if (!c) return { commands: [], text: `${lbl}: ${ep.name}. Ya no hay contrato de exportación vigente: sin efecto.`, parts };
+  const loss = o === "ddp" ? 0 : o === "base" ? inc.inevitableVol + inc.keepVol : inc.inevitableVol;
+  const tpd = Math.max(0, Math.round(c.tpd * (1 - Math.min(0.9, loss)) * 10) / 10); // décimas de tonelada: 4 % de 12 t sí cuenta
+  const cmds: SteelCommand[] = [];
+  if (tpd !== c.tpd) cmds.push({ type: "change_contract", id: `${k}:vol`, contractId: c.id, tpd }, { type: "later", id: `${k}:vuelve`, inDays: US_DAYS, cmd: { type: "change_contract", id: `${k}:vuelve`, contractId: c.id, tpd: c.tpd } });
+  parts.inevitable.push(`El acero mexicano se encarece en EE. UU. para todos: el comprador recorta cerca de ${pct(inc.inevitableVol, 0)} del volumen por ${US_DAYS} días, se decida lo que se decida (hipótesis H4: ${US_INEVITABLE_VOL} × el aumento).`);
+  if (o === "base") parts.evitable.push(`Sin compartir el golpe, el comprador recorta otro ${pct(inc.keepVol, 0)} (H4: ${US_VOL_KEEP} × el aumento).`);
+  if (o === "compartir") parts.future.push(`El descuento de ${pct(inc.shareDiscount, 0)} (H4: ${US_PASS} × el aumento) vence a los ${US_DAYS} días.`);
+  if (o === "ddp") parts.future.push("Tu empresa queda como importadora de registro: el arancel completo sale de tu precio mientras siga la medida.");
+  if (o === "ddp") parts.inevitable.splice(0, 1, "Con DDP el comprador no ve el arancel: el volumen se sostiene, pero el arancel lo pagas tú.");
+  const text = `${lbl}: ${ep.name}. El contrato de exportación pasa de ${c.tpd.toLocaleString("es-MX")} a ${tpd.toLocaleString("es-MX")} t diarias por ${US_DAYS} días${o === "ddp" ? " (DDP: el arancel lo pagas tú)" : " (el arancel lo paga el comprador)"}.`;
+  return { commands: cmds, text, parts };
 }

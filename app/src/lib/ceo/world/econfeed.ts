@@ -15,7 +15,7 @@
  */
 import { getJson } from "./connectors";
 import { exposureOf } from "./exposure";
-import { FX_MIN, LOOKBACK_PUBS, RATE_MIN, factsExposed, fxRev, rateRev, tradeMatch } from "./macro";
+import { FX_MIN, LOOKBACK_PUBS, RATE_MIN, US_MEASURES, US_RECENT_DAYS, factsExposed, fxRev, rateRev, tradeMatch, usExportLine } from "./macro";
 import type { Facts, Family, WorldCandidate } from "./types";
 
 export const SIDOF = "https://sidof.segob.gob.mx/dof/sidof";
@@ -264,6 +264,20 @@ export function econCandidatesFor(feed: EconFeed, templateId: string, opts: { of
         observedAt: Date.parse(`${t.effective}T12:00:00Z`) || now, urgency: "importante" });
       break; // una medida = un caso por empresa
     }
+  }
+  // Medidas de EE. UU. verificadas en el Federal Register: solo el cambio de tasa vigente más reciente, y solo si entró
+  // en vigor hace menos de US_RECENT_DAYS. Lo que ya regía antes es el entorno de la partida, no un acontecimiento nuevo.
+  const lastUs = [...US_MEASURES].filter((m) => m.from !== m.to && Date.parse(`${m.effective}T12:00:00Z`) <= now).at(-1);
+  if (!opts.off?.includes("comercio") && lastUs) for (const m of [lastUs]) {
+    const eff = Date.parse(`${m.effective}T12:00:00Z`);
+    if (now - eff > US_RECENT_DAYS * 86_400_000) continue;
+    const line = usExportLine(templateId, m.hs);
+    if (!line) continue;
+    const facts: Facts = { t: "arancel", from: m.from, to: m.to, since: m.signed, until: m.effective, effective: m.effective, rule: m.rule, hs: m.hs.filter((h) => exposureOf(templateId)?.profile.exportContracts?.hs.includes(h) || x.profile.lines.some((l) => l.flow === "exportacion" && l.hs.includes(h))) };
+    if (!facts.hs!.length || !factsExposed(templateId, "arancel", facts, now)) continue;
+    out.push({ ...base, src: "fr", ev: m.id, rev: tariffRev(m.to - m.from), family: "comercio", kind: "arancel", name: m.title.slice(0, 80),
+      severity: `Arancel de EE. UU. ${Math.round(m.from * 100)} % → ${Math.round(m.to * 100)} % (${m.doc})`, facts, source: { name: "Federal Register (Gobierno de EE. UU.)", url: m.url },
+      observedAt: eff, urgency: "importante" });
   }
   return out.sort((a, b) => b.rev - a.rev || b.observedAt - a.observedAt);
 }

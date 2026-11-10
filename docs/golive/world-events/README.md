@@ -44,7 +44,7 @@ En Ajustes → herramientas de prueba: «Huracán de ejercicio», «Sismo de eje
 
 ## Avisos al celular (Web Push, gratis)
 
-1. Variables en Vercel: `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` (`mailto:...`). Redeploy.
-2. Migración `0022_ceo_avisos_celular.sql` (revertir: `docs/sql/0022_revertir.sql`).
+1. Migraciones `0022_ceo_avisos_celular.sql` y `0023_ceo_secretos_servidor.sql` (revertir: `docs/sql/0022_revertir.sql`, `docs/sql/0023_revertir.sql`).
+2. Llaves: no hay que crear ni copiar ninguna. El servidor genera el par la primera vez y lo guarda en `ceo.server_secrets`, que solo lee el servidor. La llave privada nunca se muestra. Para rotar: `docs/sql/rotar_llaves_avisos.sql`. (Opcional: `VAPID_SUBJECT` = `mailto:...`.)
 3. El jugador entra a Ajustes → «Avisos en el celular» → Activar. En iPhone primero «Compartir → Agregar a pantalla de inicio» y abrir desde el ícono (iOS 16.4+). En Android basta Chrome.
 4. El cron diario manda: asunto nuevo, asunto por vencer y acontecimiento real. El resumen y la racha siguen solo por correo. Suscripciones vencidas se borran solas.

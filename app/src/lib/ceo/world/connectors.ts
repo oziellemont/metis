@@ -1,7 +1,8 @@
 /**
  * World Events · conectores (solo servidor para la red; los parsers son puros y se prueban con datos de ejemplo).
  *
- *  - GDACS (JRC / ONU): lista de eventos y geometrías oficiales (zonas de viento de ciclones, intensidad de sismos).
+ *  - GDACS (JRC / ONU): lista de eventos y geometrías oficiales (zonas de viento de ciclones, intensidad de sismos,
+ *    área afectada por inundaciones).
  *    Fuente principal: https://www.gdacs.org/gdacsapi/ · uso libre con atribución.
  *  - NOAA/NHC: tormentas activas del Atlántico y Pacífico (corroboración y enlace al aviso oficial).
  *  - USGS: sismos de magnitud 4.5+ de la última semana (corroboración y enlace).
@@ -13,7 +14,7 @@ import { haversineKm, type Geometry } from "./geo";
 import type { Zone } from "./types";
 
 export interface GdacsEvent {
-  type: "TC" | "EQ";
+  type: "TC" | "EQ" | "FL";
   eventId: number;
   episodeId: number;
   name: string;
@@ -44,7 +45,7 @@ export function parseGdacsList(json: unknown): GdacsEvent[] {
   for (const f of feats) {
     const p = (f as { properties?: Record<string, unknown> })?.properties;
     const g = (f as { geometry?: { type?: string; coordinates?: unknown } })?.geometry;
-    if (!p || (p.eventtype !== "TC" && p.eventtype !== "EQ")) continue;
+    if (!p || (p.eventtype !== "TC" && p.eventtype !== "EQ" && p.eventtype !== "FL")) continue;
     const c = g?.type === "Point" && Array.isArray(g.coordinates) ? (g.coordinates as number[]) : [];
     const eventId = n(p.eventid), episodeId = n(p.episodeid), lon = n(c[0]), lat = n(c[1]);
     if (![eventId, episodeId, lat, lon].every(Number.isFinite)) continue;
@@ -104,6 +105,27 @@ export function parseEqGeometry(json: unknown): ZoneLayer[] {
   return out;
 }
 
+const FL_ZONE: Record<string, Exclude<Zone, "ninguna">> = { Red: "roja", Orange: "naranja", Green: "verde" };
+/**
+ * Zonas de una inundación (getgeometry de GDACS, eventlist=FL). Solo cuenta el área afectada (`Poly_Affected`) con el
+ * nivel de alerta del evento: Red → roja, Orange → naranja, Green → verde. El área global (`Poly_Global`, la cuenca
+ * completa) y el centroide se ignoran. GDACS publica inundaciones ya observadas: no hay capa de pronóstico.
+ */
+export function parseFlGeometry(json: unknown): ZoneLayer[] {
+  const feats = (json as { features?: unknown[] })?.features;
+  if (!Array.isArray(feats)) return [];
+  const out: ZoneLayer[] = [];
+  for (const f of feats) {
+    const p = (f as { properties?: Record<string, unknown> })?.properties ?? {};
+    const g = (f as { geometry?: Geometry })?.geometry;
+    if (s(p.Class) !== "Poly_Affected" || !g || (g.type !== "Polygon" && g.type !== "MultiPolygon")) continue;
+    const zone = FL_ZONE[s(p.alertlevel)];
+    if (!zone) continue;
+    out.push({ zone, forecast: false, date: s(p.todate), geometry: g });
+  }
+  return out;
+}
+
 export interface NhcStorm { id: string; name: string; classification: string; lat: number; lon: number; advisory: string; updated: string }
 export function parseNhc(json: unknown): NhcStorm[] {
   const list = (json as { activeStorms?: unknown[] })?.activeStorms;
@@ -141,7 +163,7 @@ export function usgsFor(ev: GdacsEvent, quakes: UsgsQuake[]): UsgsQuake | null {
 }
 
 // ─────────────────────────────────────────────────────────────── red (solo servidor)
-export const GDACS_LIST = (fromDate: string) => `https://www.gdacs.org/gdacsapi/api/events/geteventlist/SEARCH?eventlist=TC;EQ&fromdate=${fromDate}`;
+export const GDACS_LIST = (fromDate: string) => `https://www.gdacs.org/gdacsapi/api/events/geteventlist/SEARCH?eventlist=TC;EQ;FL&fromdate=${fromDate}`;
 export const NHC_URL = "https://www.nhc.noaa.gov/CurrentStorms.json";
 export const USGS_URL = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_week.geojson";
 export const BANXICO_URL = (serie: string) => `https://www.banxico.org.mx/SieAPIRest/service/v1/series/${serie}/datos/oportuno`;

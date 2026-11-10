@@ -18,9 +18,10 @@ import type { GrowthState } from "./types";
 import type { KpiKey, Kpis } from "../types";
 import { isSteelCaseId, isSteelTemplate, steelAt, steelBridge, steelDecide, steelPending } from "./steel/session";
 import { isRetailCaseId, isRetailTemplate, retailAt, retailBridge, retailDecide, retailPending } from "./retail/session";
-import { endWorld, isWorldCaseId, openWorld, sanitizeWorld, type WorldOpenInput, type WorldPrefs } from "../world/episodes";
-import { REASONABLE, referenceOption } from "../world/cases";
-import type { WorldEpisode, Zone } from "../world/types";
+import { endWorld, hitOf, isWorldCaseId, openWorld, sanitizeWorld, type WorldOpenInput, type WorldPrefs } from "../world/episodes";
+import { REASONABLE, REASONABLE_V2, referenceOption } from "../world/cases";
+import { exportContractOf } from "../world/econ";
+import type { ReplayEpisode, WorldEpisode, Zone } from "../world/types";
 
 /** Plantillas con motor contable propio (acería v2 y cadena de conveniencia): registro con decisiones por caso del selector. */
 const isOwnEngine = (id: string) => isSteelTemplate(id) || isRetailTemplate(id);
@@ -182,24 +183,40 @@ export function ownDelta(log: GrowthLog, day: number): Kpis {
   for (const k of Object.keys(out) as KpiKey[]) out[k] = Math.round(Math.max(-30, Math.min(30, real[k] - ext[k])));
   return out;
 }
-/** Efecto del acontecimiento con preparación razonable (puntos por indicador). */
+/**
+ * Efecto externo (puntos por indicador).
+ * Reglas v1 (episodios sin `rv`): el acontecimiento con preparación razonable, exactamente como antes.
+ * Reglas v2 (`rv` ≥ 2, clima y arancel de EE. UU.): sólo la parte inevitable cuenta como externa; lo que el jugador
+ * mitiga, lo que le cuesta y las consecuencias futuras son suyas. Si la amenaza no llegó, una preparación razonable
+ * no se castiga (su costo se trata como externo, igual que en v1).
+ */
 export function externalOf(log: GrowthLog, day: number): Kpis {
   const zero = { caja: 0, margen: 0, equipo: 0, clientes: 0, consejo: 0 } as Kpis;
   if (!log.world?.length) return zero;
-  const fair = log.decisions.map((d) => {
-    if (!isWorldCaseId(d.caseId)) return d;
+  const inev = new Set(log.world.filter(usesInevitable).map((e) => e.id));
+  const fair = log.decisions.flatMap((d) => {
+    if (!isWorldCaseId(d.caseId)) return [d];
     const ep = log.world!.find((e) => `w:${e.id}` === d.caseId);
-    return ep && !REASONABLE.has(d.optionId) ? { ...d, optionId: referenceOption(ep) } : d;
+    if (!ep) return [d];
+    if (inev.has(ep.id)) return [];
+    const ok = ((ep.rv ?? 1) >= 2 ? REASONABLE_V2 : REASONABLE).has(d.optionId);
+    return [ok ? d : { ...d, optionId: referenceOption(ep) }];
   });
+  const world = inev.size ? log.world.map((e) => (inev.has(e.id) ? ({ ...e, only: "inevitable" } as ReplayEpisode) : e)) : log.world;
   const none: GrowthLog = { ...log, decisions: log.decisions.filter((d) => !isWorldCaseId(d.caseId)), world: undefined };
-  const withRef = bridgeOf({ ...log, decisions: fair }, day), without = bridgeOf(none, day);
+  const withRef = bridgeOf({ ...log, decisions: fair, world }, day), without = bridgeOf(none, day);
   for (const k of Object.keys(zero) as KpiKey[]) zero[k] = withRef[k] - without[k];
   return zero;
 }
+/** Episodios v2 que llegaron con fuerza y cuyas reglas separan lo inevitable de lo evitable. */
+export const usesInevitable = (ep: WorldEpisode): boolean => (ep.rv ?? 1) >= 2 && hitOf(ep) && (!ep.facts || ep.facts.rule === "us_232_acero");
 
 /** Abre (o actualiza antes de decidir) un episodio externo en el registro. null si no procede. */
 export function openWorldLog(log: GrowthLog, inp: WorldOpenInput, day: number, at: number, prefs: WorldPrefs): GrowthLog | null {
   if (!isOwnEngine(log.templateId)) return null;
+  // Arancel de EE. UU. a la exportación: solo si la partida tiene hoy un contrato de exportación vigente (quien no
+  // exporta no recibe el caso, aunque su plantilla podría exportar).
+  if (inp.facts?.rule === "us_232_acero" && (!isSteelLog(log) || !exportContractOf(steelOf(log, Math.floor(day)).state))) return null;
   const world = openWorld(log, inp, day, at, prefs);
   return world ? { ...log, world } : null;
 }

@@ -1,12 +1,12 @@
 /**
  * POST   /api/ceo/push { subscription } → guarda la suscripción de este navegador (avisos al celular, gratis).
  * DELETE /api/ceo/push { endpoint }     → la quita (el jugador apagó los avisos en este dispositivo).
- * GET    /api/ceo/push                  → { configured, publicKey } (si el servidor tiene llaves).
+ * GET    /api/ceo/push                  → { configured, publicKey }. Solo la llave PÚBLICA; la privada nunca sale del servidor.
  * Exige sesión; escribe con el cliente de la sesión (RLS: cada quien solo ve y toca las suyas).
  */
 import { NextResponse } from "next/server";
-import { supabaseServer } from "@/lib/supabase/server";
-import { cleanPushSub, pushConfigured } from "@/lib/ceo/push";
+import { supabaseCeoAdmin, supabaseServer } from "@/lib/supabase/server";
+import { cleanPushSub, vapidKeys, type SecretStore } from "@/lib/ceo/push";
 
 export const dynamic = "force-dynamic";
 
@@ -17,15 +17,18 @@ async function who() {
   return { sb, uid: data.user?.id ?? null };
 }
 
+const serverKeys = () => vapidKeys(supabaseCeoAdmin() as unknown as SecretStore | null);
+
 export async function GET() {
-  return NextResponse.json({ configured: pushConfigured(), publicKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? null });
+  const k = await serverKeys();
+  return NextResponse.json({ configured: !!k, publicKey: k?.publicKey ?? null });
 }
 
 export async function POST(req: Request) {
   const { sb, uid } = await who();
   if (!sb) return NextResponse.json({ ok: false, error: "sin_backend" }, { status: 503 });
   if (!uid) return NextResponse.json({ ok: false, error: "sin_sesion" }, { status: 401 });
-  if (!pushConfigured()) return NextResponse.json({ ok: false, error: "sin_llaves" }, { status: 503 });
+  if (!(await serverKeys())) return NextResponse.json({ ok: false, error: "sin_llaves" }, { status: 503 });
   const body = (await req.json().catch(() => null)) as { subscription?: unknown } | null;
   const sub = cleanPushSub(body?.subscription);
   if (!sub) return NextResponse.json({ ok: false, error: "suscripcion_invalida" }, { status: 400 });

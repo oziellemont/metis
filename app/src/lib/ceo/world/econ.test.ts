@@ -5,6 +5,7 @@
  */
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import { createECDH, randomBytes } from "node:crypto";
 import fixFx from "./fixtures/dof_fix_serie.json";
 import fondeoFx from "./fixtures/dof_fondeo_serie.json";
 import notasFx from "./fixtures/dof_notas.json";
@@ -264,7 +265,9 @@ describe("cliente: candidatos económicos y ejercicios", () => {
 
 // ─────────────────────────────────────────────────────────────── avisos al celular
 describe("avisos al celular (Web Push)", () => {
-  const good = { endpoint: "https://fcm.googleapis.com/fcm/send/abc123", keys: { p256dh: "BKHqFhZPtg__mRKpvP13jtaFEmLXkZ0qy8lA5Jwf2MLt946ZIXi0EP5HNS9Bq0lSzWJWdox2LRMAFKA7_fXP3AI", auth: "P7arV2pkWjjy3dZKGSlq" } };
+  // Suscripción de prueba generada en cada corrida (sin llaves fijas en el código).
+  const ecdh = createECDH("prime256v1"); ecdh.generateKeys();
+  const good = { endpoint: "https://fcm.googleapis.com/fcm/send/abc123", keys: { p256dh: ecdh.getPublicKey().toString("base64url"), auth: randomBytes(16).toString("base64url") } };
   it("solo acepta suscripciones de servicios de push conocidos", () => {
     expect(cleanPushSub(good)).toEqual(good);
     expect(cleanPushSub({ ...good, endpoint: "https://web.push.apple.com/QW1" })).not.toBeNull();

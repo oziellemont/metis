@@ -40,9 +40,48 @@ export const openShare = (fs: readonly CurrencyFlow[]) => fs.filter((f) => f.cur
  *    (efecto indirecto: el producto importado que compite cuesta más o menos). Hipótesis H1 versionada en econ.ts.
  *  - mx_import_insumo: México grava un insumo que la empresa IMPORTA como importador de registro (costo directo).
  */
-export const TRADE_RULES = ["mx_import_competencia", "mx_import_insumo"] as const;
+export const TRADE_RULES = ["mx_import_competencia", "mx_import_insumo", "us_232_acero"] as const;
 export type TradeRule = (typeof TRADE_RULES)[number];
 export interface TradeMatch { rule: TradeRule; what: string }
+
+/**
+ * Medidas de EE. UU. verificadas (Federal Register) para acero mexicano. Solo estas abren caso; lo demás va al radar.
+ *  - us_232_acero: Sección 232 sobre artículos de acero (incluye palanquilla 7207, varilla 7214 y alambrón 7213).
+ * El arancel lo paga el IMPORTADOR DE REGISTRO en EE. UU. A un exportador mexicano que vende DAP o FCA le llega de
+ * forma indirecta (el comprador pide descuento o compra menos); solo si vende DDP lo paga él directamente.
+ */
+export interface UsMeasure { id: string; rule: "us_232_acero"; doc: string; url: string; title: string; signed: string; effective: string; from: number; to: number; hs: string[]; note: string }
+export const US_MEASURES: readonly UsMeasure[] = Object.freeze([
+  { id: "fr202502833", rule: "us_232_acero", doc: "Proclamación 10896 · FR 2025-02833", url: "https://www.federalregister.gov/documents/2025/02/18/2025-02833/adjusting-imports-of-steel-into-the-united-states", title: "EE. UU. elimina el acuerdo con México: 25 % a su acero", signed: "2025-02-10", effective: "2025-03-12", from: 0, to: 0.25, hs: ["7206", "7207", "7208", "7213", "7214", "7215", "7216"], note: "Los acuerdos alternativos con México dejan de surtir efecto a las 12:01 a. m. del 12 de marzo de 2025." },
+  { id: "fr202510524", rule: "us_232_acero", doc: "Proclamación 10947 · FR 2025-10524", url: "https://www.federalregister.gov/documents/2025/06/09/2025-10524/adjusting-imports-of-aluminum-and-steel-into-the-united-states", title: "EE. UU. sube de 25 % a 50 % el arancel al acero", signed: "2025-06-03", effective: "2025-06-04", from: 0.25, to: 0.5, hs: ["7206", "7207", "7208", "7213", "7214", "7215", "7216"], note: "Artículos de acero de las fracciones 7206.10 a 7216.50, entre otras." },
+  { id: "fr202606960", rule: "us_232_acero", doc: "Proclamación 11021 · FR 2026-06960", url: "https://www.federalregister.gov/documents/2026/04/09/2026-06960/strengthening-actions-taken-to-adjust-imports-of-aluminum-steel-and-copper-into-the-united-states", title: "EE. UU. mantiene 50 % al acero y lo cobra sobre el valor completo", signed: "2026-04-02", effective: "2026-04-06", from: 0.5, to: 0.5, hs: ["7206", "7207", "7208", "7213", "7214", "7215", "7216"], note: "Sin cambio de tasa para artículos de acero: no abre caso (solo radar)." },
+  { id: "fr202611314", rule: "us_232_acero", doc: "Proclamación 11032 · FR 2026-11314", url: "https://www.federalregister.gov/documents/2026/06/04/2026-11314/further-adjusting-the-tariff-regimes-for-imports-of-aluminum-steel-and-copper-into-the-united-states", title: "EE. UU. ajusta derivados y contenido T-MEC; el acero sigue en 50 %", signed: "2026-06-01", effective: "2026-06-08", from: 0.5, to: 0.5, hs: ["7206", "7207", "7208", "7213", "7214", "7215", "7216"], note: "Cambia derivados y contenido regional; no cambia el 50 % de los artículos de acero." },
+]);
+/** Días después de entrar en vigor en que una medida de EE. UU. todavía cuenta como acontecimiento nuevo. */
+export const US_RECENT_DAYS = 120;
+/** Arancel vigente de EE. UU. para el acero mexicano en una fecha (ISO), según la tabla verificada. */
+export function usSteelRateAt(dateIso: string): { rate: number; measure: UsMeasure | null } {
+  const t = Date.parse(dateIso);
+  let out: { rate: number; measure: UsMeasure | null } = { rate: 0, measure: null };
+  for (const m of US_MEASURES) if (Date.parse(m.effective) <= t) out = { rate: m.to, measure: m };
+  return out;
+}
+
+/** Hipótesis H4 (versionada en ECON_RULES_VERSION): cómo le llega a un exportador un arancel que paga su comprador. */
+export const US_INEVITABLE_VOL = 0.4;
+export const US_PASS = 0.4;
+export const US_VOL_KEEP = 1.2;
+/**
+ * Incidencia de un cambio de arancel en EE. UU. sobre una línea de exportación (sin estado del motor).
+ *  - DDP (la empresa es importadora de registro): cargo directo = valor aduanero × cambio del arancel.
+ *  - DAP, FCA y demás (el comprador es importador): nada directo. El comprador compra menos (parte inevitable:
+ *    US_INEVITABLE_VOL × cambio) y, si el precio no se comparte, compra todavía menos (US_VOL_KEEP × cambio).
+ */
+export function usIncidence(importerOfRecord: boolean, delta: number): { payer: "empresa" | "comprador"; direct: number; inevitableVol: number; keepVol: number; shareDiscount: number } {
+  const d = Math.max(-0.5, Math.min(0.5, delta));
+  if (importerOfRecord) return { payer: "empresa", direct: d, inevitableVol: Math.max(0, US_INEVITABLE_VOL * d), keepVol: 0, shareDiscount: 0 };
+  return { payer: "comprador", direct: 0, inevitableVol: Math.max(0, US_INEVITABLE_VOL * d), keepVol: Math.max(0, US_VOL_KEEP * d), shareDiscount: Math.max(0, US_PASS * d) };
+}
 
 /** Regla que aplica a una medida mexicana de importación (fracciones de 4 dígitos) para una plantilla. */
 export function tradeMatch(templateId: string, chapters: readonly string[]): TradeMatch | null {
@@ -71,9 +110,24 @@ export function factsExposed(templateId: string, kind: Kind, facts: Facts | unde
   if (kind === "arancel") {
     if (facts.t !== "arancel" || !facts.effective || !facts.rule || !facts.hs?.length || facts.from === facts.to) return false;
     if (Date.parse(facts.effective) > observedAt) return false; // anunciada, todavía no vigente: no hay caso
+    // Medida de EE. UU.: posible solo si el perfil registra exportación de esa categoría a EE. UU. La exposición real
+    // (un contrato de exportación vigente) la confirma la partida al abrir el episodio (growth/session.ts).
+    if (facts.rule === "us_232_acero") return usExportLine(templateId, facts.hs) !== null;
     return tradeMatch(templateId, facts.hs)?.rule === facts.rule;
   }
   return false;
+}
+
+/** Línea de exportación a EE. UU. del perfil (registrada o la que abriría un contrato de exportación). */
+export function usExportLine(templateId: string, chapters: readonly string[]) {
+  const p = exposureOf(templateId)?.profile;
+  if (!p) return null;
+  const has = (hs: readonly string[]) => hs.some((h) => chapters.some((c) => h.startsWith(c) || c.startsWith(h)));
+  const line = p.lines.find((l) => l.flow === "exportacion" && l.destination === "EE. UU." && has(l.hs));
+  if (line) return { what: line.what, incoterm: line.incoterm, importerOfRecord: line.importerOfRecord, counterpart: line.counterpart, clientTag: null as string | null };
+  const k = p.exportContracts;
+  if (k && k.destination === "EE. UU." && has(k.hs)) return { what: k.what, incoterm: k.incoterm, importerOfRecord: k.importerOfRecord, counterpart: k.counterpart, clientTag: k.clientTag };
+  return null;
 }
 
 export interface LoanLike { ref: string; balance: number; rate: number }

@@ -21,7 +21,7 @@ import { exerciseInput, worldActions } from "./client";
 import { worldJobs } from "./notify";
 import { offset, siteTouches } from "./geo";
 import { decideGrowth, endWorldLog, externalOf, growthDelta, newGrowthLog, openWorldLog, retailOf, retailPendingOf, sanitizeGrowthLog, steelOf, steelPendingOf, type GrowthLog } from "../growth/session";
-import { createRetail } from "../growth/retail/engine";
+import { cashOf, createRetail } from "../growth/retail/engine";
 import { createSteel } from "../growth/steel/engine";
 import { RETAIL_CADENCE } from "../growth/retail/session";
 import { ALL_OFF, FLAG_KEYS, resolveFlags, worldFamiliesOff, worldVisible } from "../flags";
@@ -31,7 +31,7 @@ import { applyAction, replay, type GameAction } from "../replay";
 import { sanitizeAction } from "../journal";
 import type { CeoState } from "../types";
 import type { Geometry } from "./geo";
-import type { WorldCandidate } from "./types";
+import type { WorldCandidate, WorldEpisode } from "./types";
 
 const RETAIL = "conveniencia_regional_v2", STEEL = "aceria_compacta_v2", BIG = "miniaceria_integrada_v2";
 const MTY = { lat: 25.6866, lon: -100.3161 };
@@ -212,6 +212,8 @@ describe("B9.9 · apagado por familia y preferencia del jugador", () => {
 
 // ───────────────────────────────────────────────────────── casos e impacto en los motores
 const openedRetail = (inp: WorldOpenInput, day: number, seed = "w1"): GrowthLog => openWorldLog(newGrowthLog(RETAIL, seed)!, inp, day, 1, ON)!;
+/** Simula una partida guardada antes de las reglas v2 (episodio sin `rv`). */
+const asV1 = (log: GrowthLog): GrowthLog => ({ ...log, world: log.world?.map(({ rv: _rv, ...e }) => e) });
 
 describe("caso externo dentro del motor (cadena de conveniencia)", () => {
   it("llega primero, con la etiqueta obligatoria, la fuente y el plazo; la opción insegura aparece bloqueada", () => {
@@ -275,8 +277,9 @@ describe("B9.8 · sin «delta libre»: todo entra con comandos del motor", () =>
 });
 
 describe("B9.7 · un pronóstico que cambia no castiga la prevención razonable", () => {
+  // Partidas existentes (reglas v1, episodio sin `rv`): el comportamiento no cambia.
   const forecastLog = (option: string, observed: Record<string, "roja" | "naranja" | "ninguna">) => {
-    let log = openedRetail(input(), 20, "fair");
+    let log = asV1(openedRetail(input(), 20, "fair"));
     log = decideGrowth(log, 20, "w:tc1001400", option).log;
     return endWorldLog(log, "tc1001400", observed, 23, 5)!;
   };
@@ -304,7 +307,8 @@ describe("B9.7 · un pronóstico que cambia no castiga la prevención razonable"
   });
   it("el impacto real es menor con más preparación (monitorear > protocolo > preventivo en pérdidas)", () => {
     const s = createRetail(RETAIL, "x");
-    const ep = { ...input(), id: "tc1", at: 1, day: 0, end: { day: 3, at: 2, sites: { mty: "roja" as const } } };
+    const ep = { ...input(), id: "tc1", at: 1, day: 0, end: { day: 3, at: 2, sites: { mty: "roja" as const } } } as WorldEpisode;
+    delete ep.rv;
     const cost = (m: string) => retailImpact(s, ep, m).commands.reduce((a, c) => a + (c.type === "one_off" ? c.amount : 0), 0);
     expect(cost("monitorear")).toBeGreaterThan(cost("protocolo"));
     expect(cost("protocolo")).toBeGreaterThan(cost("preventivo"));
@@ -319,8 +323,8 @@ describe("acería: mismo flujo con paro, reparaciones y chatarra", () => {
     expect(p.options.find((o) => o.id === "fundir")).toMatchObject({ blocked: true, ok: false });
     const st = createSteel(STEEL, "x");
     const ep = { ...log.world![0], end: { day: 18, at: 2, sites: { planta: "roja" as const } } };
-    const days = (m: string) => steelImpact(st, ep, m).commands.find((c) => c.type === "downtime");
-    expect((days("monitorear") as { days: number }).days).toBeGreaterThan((days("preventivo") as { days: number }).days);
+    const days = (m: string) => steelImpact(st, ep, m).commands.filter((c) => c.type === "downtime").reduce((a, c) => a + (c as { days: number }).days, 0);
+    expect(days("monitorear")).toBeGreaterThan(days("integral"));
     const done = endWorldLog(decideGrowth(log, 15, "w:tc1001400", "protocolo").log, "tc1001400", { planta: "roja" }, 18, 3)!;
     expect(steelOf(done, 30).external).toHaveLength(1);
   });
@@ -348,7 +352,7 @@ describe("B9.6 · partida y diario: reproducción idéntica", () => {
   it("abrir, decidir y cerrar se reproduce igual desde el diario y desde la partida guardada", () => {
     const s0 = retailGame({ worldEvents: true });
     const t1 = T0 + DAY, t2 = T0 + DAY + 3_600_000, t3 = T0 + 3 * DAY;
-    const acts: GameAction[] = [{ type: "world", at: t1, ep: input() }, { type: "growth", at: t2, caseId: "w:tc1001400", optionId: "preventivo" }, { type: "worldEnd", at: t3, id: "tc1001400", sites: { mty: "roja", cedis: "naranja" } }];
+    const acts: GameAction[] = [{ type: "world", at: t1, ep: input() }, { type: "growth", at: t2, caseId: "w:tc1001400", optionId: "integral" }, { type: "worldEnd", at: t3, id: "tc1001400", sites: { mty: "roja", cedis: "naranja" } }];
     let s = s0;
     for (const a of acts) { const r = applyAction(s, a); expect(r.applied).toBe(true); s = r.state; }
     const r = replay(acts, s0);
@@ -432,3 +436,51 @@ describe("textos", () => {
 });
 
 void RETAIL_CADENCE; void SALTILLO;
+
+describe("reglas v2 · consecuencias reales (impacto inevitable + mitigación)", () => {
+  const forecastLog = (option: string, observed: Record<string, "roja" | "naranja" | "ninguna">) => {
+    let log = openedRetail(input(), 20, "fair");
+    expect(log.world![0].rv).toBe(2);
+    log = decideGrowth(log, 20, "w:tc1001400", option).log;
+    return endWorldLog(log, "tc1001400", observed, 23, 5)!;
+  };
+  const cash = (l: GrowthLog, d: number) => cashOf(retailOf(l, d).state);
+  it("ninguna decisión neutraliza un golpe fuerte: aun con preparación integral la caja queda por debajo de no haber tenido acontecimiento", () => {
+    const base = newGrowthLog(RETAIL, "fair")!;
+    for (const opt of ["integral", "inventario", "protocolo", "monitorear"]) expect(cash(forecastLog(opt, { mty: "roja", cedis: "roja" }), 60)).toBeLessThan(cash(base, 60));
+  });
+  it("la preparación sí importa: el golpe es mayor con monitorear que con protocolo, y mayor con protocolo que con la integral", () => {
+    const s = createRetail(RETAIL, "x");
+    const log = openedRetail(input(), 0, "x");
+    const ep = { ...log.world![0], end: { day: 3, at: 2, sites: { mty: "roja" as const, cedis: "roja" as const } } };
+    const loss = (m: string | null) => retailImpact(s, ep, m).commands.reduce((a, c) => a + (c.type === "one_off" ? (c.account === "otros_ingresos" ? -c.amount : c.amount) : 0), 0);
+    const inev = retailImpact(s, { ...ep, only: "inevitable" } as WorldEpisode, null);
+    expect(loss("monitorear")).toBeGreaterThan(loss("protocolo"));
+    expect(loss("protocolo")).toBeGreaterThan(loss("integral"));
+    expect(inev.commands.length).toBeGreaterThan(0);
+    expect(retailImpact(s, ep, "integral").parts?.inevitable.length).toBeGreaterThan(0);
+    expect(retailImpact(s, ep, "monitorear").parts?.evitable.length).toBeGreaterThan(0);
+  });
+  it("lo inevitable no se le cobra al jugador en los indicadores; lo que deja sin cubrir sí", () => {
+    const integral = growthDelta(forecastLog("integral", { mty: "roja", cedis: "roja" }), 60);
+    const risky = growthDelta(forecastLog("monitorear", { mty: "roja", cedis: "roja" }), 60);
+    const sum = (k: Record<string, number>) => Object.values(k).reduce((a, b) => a + b, 0);
+    expect(sum(risky)).toBeLessThan(sum(integral));
+    expect(Object.values(externalOf(forecastLog("integral", { mty: "roja", cedis: "roja" }), 60)).some((v) => v !== 0)).toBe(true);
+  });
+  it("si la amenaza no llega, una preparación razonable no se castiga", () => {
+    const base = newGrowthLog(RETAIL, "fair")!;
+    for (const opt of ["protocolo", "integral"]) expect(growthDelta(forecastLog(opt, { mty: "ninguna", cedis: "ninguna" }), 60)).toEqual(growthDelta(base, 60));
+  });
+  it("el desglose (inevitable, evitable, futuro) y la versión de reglas viajan en el impacto registrado", () => {
+    const r = retailOf(forecastLog("protocolo", { mty: "roja", cedis: "roja" }), 40);
+    expect(r.external[0].rv).toBe(2);
+    expect(r.external[0].parts?.inevitable.length).toBeGreaterThan(0);
+  });
+  it("una partida guardada con reglas v1 se reproduce igual (sin rv no hay desglose)", () => {
+    let log = asV1(openedRetail(input(), 20, "fair"));
+    log = endWorldLog(decideGrowth(log, 20, "w:tc1001400", "preventivo").log, "tc1001400", { mty: "roja" }, 23, 5)!;
+    expect(retailOf(log, 40).external[0].rv).toBeUndefined();
+    expect(growthDelta(log, 60)).toEqual(growthDelta(newGrowthLog(RETAIL, "fair")!, 60));
+  });
+});
