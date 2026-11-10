@@ -1,4 +1,5 @@
 "use client";
+import { RenameCompany } from "./empresa/Relocated";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -40,6 +41,8 @@ export function CeoSettings() {
       <h1 className="text-2xl font-semibold text-ink">Ajustes</h1>
 
       <AccountCard />
+
+      <RenameCompany />
 
       <section className="card p-5 sm:p-6 space-y-4">
         <h2 className="font-semibold text-ink">Tú</h2>

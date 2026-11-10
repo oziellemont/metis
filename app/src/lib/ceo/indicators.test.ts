@@ -112,7 +112,7 @@ describe("reglas v9: definidas, nunca activas (v10 las incluye)", () => {
 });
 
 describe("pantallas: barras con detalle en Hoy, Mi empresa y el resultado", () => {
-  const today = src("Today.tsx"), company = src("CompanyView.tsx"), board = src("KpiBoard.tsx"), caseView = src("CaseView.tsx");
+  const today = src("Today.tsx"), company = src("empresa/ResumenTab.tsx"), board = src("KpiBoard.tsx"), caseView = src("CaseView.tsx");
   it("Hoy: salud en grande y tablero clicable en «Tu empresa hoy»", () => {
     // Centro de mando: la salud en grande abre el panel lateral, con el mismo tablero clicable.
     expect(today).toContain("<KpiBoard hero />");
@@ -120,7 +120,7 @@ describe("pantallas: barras con detalle en Hoy, Mi empresa y el resultado", () =
     expect(today.indexOf("Tu empresa hoy")).toBeLessThan(today.indexOf("<KpiBoard hero />"));
   });
   it("Mi empresa abre el mismo panel", () => {
-    expect(company).toContain("<KpiBoard />");
+    expect(company).toContain("<KpiBoard hero />");
   });
   it("el panel explica estado, último movimiento, causas, pendientes, historial y qué puedes hacer", () => {
     for (const x of ["Salud de la empresa", "Último movimiento", "Por qué está así", "Pendiente de respuesta", "Historial", "Qué puedes hacer", 'role="dialog"', "Escape"]) expect(board).toContain(x);

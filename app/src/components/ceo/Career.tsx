@@ -1,4 +1,5 @@
 "use client";
+import { CompanySwitch, MyCompanies } from "./empresa/Relocated";
 import Link from "next/link";
 import clsx from "clsx";
 import { useEffect, useState } from "react";
@@ -48,6 +49,8 @@ export function Career() {
   return (
     <div className="space-y-5">
       <Trajectory t={t} short={pk.short} now={c.now} kpiLabel={pk.kpiLabel} />
+
+      <CompanySwitch />
 
       {/* veredicto */}
       <section className="card p-6 sm:p-8">
@@ -152,6 +155,8 @@ export function Career() {
           })}
         </div>
       </section>}
+
+      <MyCompanies />
     </div>
   );
 }
