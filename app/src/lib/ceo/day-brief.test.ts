@@ -49,9 +49,17 @@ describe("Hoy · resumen del día", () => {
   it("la medianoche se calcula en la zona del usuario", () => {
     expect(dayStartOf(start + 10 * H + 1234, "America/Monterrey")).toBe(start);
   });
-  it("Hoy muestra el resumen y ya no muestra avisos internos de reglas", () => {
+  it("Hoy no muestra el recuadro «Tu día», ni los avisos de color bajo los indicadores, ni avisos internos de reglas", () => {
     const src = readFileSync("src/components/ceo/Today.tsx", "utf8");
-    expect(src).toContain('data-testid="resumen-dia"');
+    expect(src).not.toMatch(/resumen-dia|Tu día|dayBriefOf/);
+    expect(src).not.toMatch(/alertas-tendencia|alertsAt/);
+    // Lo que queda en su lugar: la misión del consejo a la izquierda y, a la derecha, el tablero con su conteo.
+    expect(src).toContain('data-testid="encargo-periodo"');
+    expect(src).toContain("<KpiBoard hero />");
+    expect(src).toMatch(/indicadores en \{v\.passLine\} o más/);
+    // Los avisos de tendencia siguen disponibles en Empresa · Resumen.
+    expect(readFileSync("src/components/ceo/empresa/ResumenTab.tsx", "utf8")).toContain("alertsAt(");
+    expect(readFileSync("src/lib/ceo/guide.ts", "utf8")).not.toContain("Tu día");
     expect(src).not.toMatch(/aviso-economia|aviso-coherencia|aviso-lineas-rojas|aviso-reglas-nuevas|dinero real/);
   });
 });

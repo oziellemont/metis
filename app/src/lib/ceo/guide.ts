@@ -53,7 +53,6 @@ const GUIDES: Record<string, CeoGuide> = {
     purpose: "Tu centro de mando: lo que espera tu decisión y cómo amanece la empresa.",
     shows: [
       "El número grande son los asuntos por resolver; abajo está la lista para abrirlos.",
-      "«Tu día» resume en pocas líneas lo que ya decidiste, lo que se venció y lo que viene.",
       "«Misión del consejo» es el encargo del periodo: objetivos, salud y criterio.",
       "En el panel blanco están la salud de la empresa, tu mandato y tu siguiente lección.",
     ],

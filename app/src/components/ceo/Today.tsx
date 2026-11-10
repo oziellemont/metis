@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useEffect, useMemo } from "react";
 import clsx from "clsx";
-import { ArrowRight, BookOpen, Check, Briefcase, Clock, Coffee, Flag, Trophy, CircleCheck, CircleAlert, Hourglass, Eye } from "lucide-react";
+import { ArrowRight, BookOpen, Check, Briefcase, Clock, Coffee, Flag, Trophy } from "lucide-react";
 import { KPI_KEYS, growthDayOf } from "@/lib/ceo/engine";
 import { growthAt, isRetailLog, isSteelLog, pendingGrowth, retailOf, retailPendingOf, steelOf, steelPendingOf } from "@/lib/ceo/growth/session";
 import { todayLineOf } from "@/lib/ceo/growth/view";
@@ -18,7 +18,7 @@ import { track } from "@/lib/ceo/events";
 import { DilemmaPrompt } from "./DilemmaPrompt";
 import { boardAccess } from "@/lib/ceo/board";
 import { crisisAccess } from "@/lib/ceo/crisis";
-import { dayBriefOf, dayStartOf, specialTasks, type BriefKind } from "@/lib/ceo/today";
+import { specialTasks } from "@/lib/ceo/today";
 import { rankOf } from "@/lib/ceo/lessons";
 import { nextLessonXp, rankFor } from "@/lib/ceo/engine";
 import { nudgeQuiet, shouldNudge } from "@/lib/ceo/profile";
@@ -26,7 +26,6 @@ import { Avatar, ChannelChip, Flame, rel, until } from "./ui";
 import { headlineOf } from "@/lib/ceo/trajectory";
 import { COMPANY_STAGES } from "@/lib/ceo/career/identity";
 import { presenterOf } from "@/lib/ceo/business/report";
-import { alertsAt } from "@/lib/ceo/season-report";
 import { KpiBoard } from "./KpiBoard";
 
 export function Today() {
@@ -71,31 +70,8 @@ export function Today() {
   const nextLesson = open.find((l) => !c.s.lessons[l.id] && c.entries.some((e) => e.item.lesson === l.id && e.status !== "futuro")) ?? open.find((l) => !c.s.lessons[l.id]);
 
   const passed = KPI_KEYS.filter((k) => v.approved[k]).length;
-  // Avisos de tendencia: lo que se está desgastando, antes de que sea tarde (máximo dos, los más graves).
-  const alerts = useMemo(() => {
-    if (c.seasonDone) return [];
-    const rank = { critico: 0, riesgo: 1, aviso: 2 } as const;
-    return alertsAt(c.s, c.now).filter((a) => a.kind !== "saturacion" || a.level !== "aviso").sort((a, b) => rank[a.level] - rank[b.level]).slice(0, 2);
-  }, [c.s, c.now, c.seasonDone]);
   // V5/V6 · el encargo y las reglas se ven ANTES de decidir: nadie reprueba por una regla que no conocía.
   const mandate = v.v5 && !c.seasonDone ? v.v5 : null;
-  // Resumen del día: lo que ya pasó hoy y lo que viene, en cuatro líneas a lo mucho.
-  const brief = useMemo(() => {
-    if (c.seasonDone) return [];
-    const tz = c.s.settings?.tz || "America/Monterrey";
-    return dayBriefOf({
-      now: c.now,
-      dayStart: dayStartOf(c.now, tz),
-      decided: c.entries.filter((e) => e.status === "decidido" && e.decision).map((e) => ({ subject: e.item.subject, at: e.decision!.at })),
-      expired: c.entries.filter((e) => e.status === "vencido").map((e) => ({ subject: e.item.subject, deadline: e.deadline })),
-      pending: c.pending.map((e) => ({ subject: e.item.subject, who: firstName(pk, e.item.from), deadline: e.deadline })),
-      world: growth?.world ? { name: growth.world.name, label: growth.world.label, daysLeft: growth.world.daysLeft } : null,
-      report: c.reportDue,
-      nextArrival: c.nextArrival,
-      quiet: c.cadence === "quiet_day",
-      alert: alerts.find((a) => a.level !== "aviso")?.text ?? growth?.alerts[0]?.text ?? null,
-    });
-  }, [c.seasonDone, c.s.settings, c.now, c.entries, c.pending, growth, c.reportDue, c.nextArrival, c.cadence, alerts, pk]);
   const t = c.trajectory;
   const headline = headlineOf(t);
   const greeting = c.seasonDone
@@ -245,23 +221,7 @@ export function Today() {
           </section>
 
           {/* V5/V6 · el encargo y las reglas se ven ANTES de decidir */}
-          {(brief.length > 0 || mandate) && <div className="mt-auto pt-10 space-y-5">
-          {brief.length > 0 && (
-            <section data-testid="resumen-dia" aria-label="Tu día" className="rounded-2xl border border-white/[.12] bg-white/[.06] backdrop-blur px-5 py-4 sm:px-6">
-              <h2 className="text-[11px] font-semibold uppercase tracking-[.25em] text-white/55">Tu día</h2>
-              <ul className="mt-2.5 space-y-1.5">
-                {brief.map((l, i) => {
-                  const Icon = BRIEF_ICON[l.kind];
-                  return (
-                    <li key={i} data-kind={l.kind} className="flex gap-2.5 text-[14px] leading-snug text-white/85">
-                      <Icon size={15} className={clsx("mt-[2px] shrink-0", BRIEF_TONE[l.kind])} aria-hidden />
-                      <span className="min-w-0">{l.text}</span>
-                    </li>
-                  );
-                })}
-              </ul>
-            </section>
-          )}
+          {mandate && <div className="mt-auto pt-10 space-y-5">
           {mandate && (
             <section data-testid="encargo-periodo">
               <div className="rounded-2xl border border-white/[.12] bg-white/[.06] backdrop-blur p-5 sm:p-6">
@@ -301,13 +261,6 @@ export function Today() {
           <span className={clsx("h-9 w-9 shrink-0 rounded-full grid place-items-center", passed === 5 ? "bg-indigo-soft text-indigo" : "bg-slate-100 text-slate-500")}><Check size={17} strokeWidth={2.6} /></span>
           <span className="text-[15px] font-semibold"><span className="tabular-nums">{passed}/5</span> indicadores en {v.passLine} o más</span>
         </div>
-        {alerts.length > 0 && (
-          <ul data-testid="alertas-tendencia" className="mt-3 space-y-1.5">
-            {alerts.map((a) => (
-              <li key={a.kpi + a.kind} data-level={a.level} className={clsx("rounded-xl px-3 py-2 text-[12px] leading-snug", a.level === "critico" ? "bg-coral-soft/60 text-ink" : a.level === "riesgo" ? "bg-amber-50 text-ink" : "bg-slate-50 text-slate-600")}>{a.text}</li>
-            ))}
-          </ul>
-        )}
         {growth && growth.alerts.length > 0 && (
           <Link href="/ceo/empresa#crecimiento" className="mt-3 block rounded-xl border border-slate-100 p-3 transition-colors hover:bg-slate-50" data-testid="hoy-alertas">
             <AlertChips alerts={growth.alerts} />
@@ -361,6 +314,3 @@ export function Today() {
     </div>
   );
 }
-
-const BRIEF_ICON: Record<BriefKind, typeof Clock> = { hecho: CircleCheck, vencido: CircleAlert, mundo: Globe2, viene: Hourglass, ojo: Eye };
-const BRIEF_TONE: Record<BriefKind, string> = { hecho: "text-mint", vencido: "text-coral", mundo: "text-amber", viene: "text-indigo-light", ojo: "text-amber" };

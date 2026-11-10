@@ -1,4 +1,4 @@
-"""Capturas de Hoy (escritorio y móvil) para revisar el resumen del día."""
+"""Capturas de Hoy (escritorio y móvil): confirma que no aparecen el recuadro «Tu día» ni los avisos bajo los indicadores."""
 import json, os, sys
 from playwright.sync_api import sync_playwright
 
@@ -28,10 +28,8 @@ with sync_playwright() as p:
         pg.on("pageerror", lambda e: errs.append(str(e)))
         pg.goto(BASE + "/ceo", wait_until="networkidle"); pg.wait_for_timeout(1500); dismiss(pg)
         pg.screenshot(path=f"{out}/{dev}-hoy.png", full_page=True)
-        box = pg.locator('[data-testid="resumen-dia"]')
-        if box.count():
-            box.screenshot(path=f"{out}/{dev}-resumen-dia.png")
-            print(dev, "resumen:", box.inner_text().replace("\n", " | "))
+        print(dev, "recuadro «Tu día»:", pg.locator('[data-testid="resumen-dia"]').count(), "| avisos bajo los indicadores:", pg.locator('[data-testid="alertas-tendencia"]').count(), "| misión del consejo:", pg.locator('[data-testid="encargo-periodo"]').count())
+        pg.screenshot(path=f"{out}/{dev}-hoy-pantalla.png")
         print(dev, "aviso economía visible:", pg.get_by_text("dinero real").count() > 0)
         print(dev, "errores:", errs)
         ctx.close()
