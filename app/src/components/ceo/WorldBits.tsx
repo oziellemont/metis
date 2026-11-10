@@ -5,7 +5,7 @@
  *    fuente oficial con enlace, estado (pronóstico u observado) y plazo.
  *  - WorldRadar: publicaciones oficiales recientes que pueden importar a las empresas (decretos, aranceles, energía,
  *    impuestos, trabajo). Son informativas: no mueven la empresa hasta que exista una regla aprobada y exposición.
- *  - ExternalImpacts: impactos externos separados de las decisiones propias (no cuentan contra el jugador si su
+ *  - ExternalImpacts: impactos externos separados de las decisiones propias, con desglose inevitable / evitable / futuro (v2) (antes: no cuentan contra el jugador si su
  *    preparación fue razonable).
  */
 import clsx from "clsx";
@@ -31,11 +31,25 @@ export function WorldBadge({ w }: { w: WorldView }) {
 
 export function ExternalImpacts({ hits }: { hits: readonly ExternalHit[] }) {
   if (!hits.length) return null;
+  const v2 = hits.some((h) => (h.rv ?? 1) >= 2);
   return (
     <div className="rounded-2xl bg-canvas p-3.5 text-[12px] leading-snug" data-testid="impactos-externos">
       <div className="font-semibold text-slate-600">Impacto externo</div>
-      <p className="mt-0.5 text-slate-500">Lo que trajo el acontecimiento se muestra aparte. Con una preparación razonable no te resta en los indicadores; solo cuenta lo que dependió de tu decisión.</p>
-      <ul className="mt-2 space-y-1.5">{hits.slice(-3).reverse().map((h) => <li key={h.id} className="text-slate-600">Día {h.day}: {h.text}</li>)}</ul>
+      <p className="mt-0.5 text-slate-500">{v2
+        ? "Lo inevitable le habría pasado a cualquiera y no te resta en los indicadores. Lo que dependió de tu decisión (lo que mitigaste, lo que costó y lo que viene después) sí cuenta."
+        : "Lo que trajo el acontecimiento se muestra aparte. Con una preparación razonable no te resta en los indicadores; solo cuenta lo que dependió de tu decisión."}</p>
+      <ul className="mt-2 space-y-2">{hits.slice(-3).reverse().map((h) => (
+        <li key={h.id} className="text-slate-600">
+          Día {h.day}: {h.text}
+          {h.parts && (h.parts.inevitable.length + h.parts.evitable.length + h.parts.future.length) > 0 && (
+            <dl className="mt-1 space-y-0.5 pl-2 border-l-2 border-slate-200" data-testid="desglose-impacto">
+              {h.parts.inevitable.length > 0 && <div><dt className="inline font-semibold text-slate-500">Inevitable: </dt><dd className="inline">{h.parts.inevitable.join(" ")}</dd></div>}
+              {h.parts.evitable.length > 0 && <div><dt className="inline font-semibold text-amber-700">Dependió de tu decisión: </dt><dd className="inline">{h.parts.evitable.join(" ")}</dd></div>}
+              {h.parts.future.length > 0 && <div><dt className="inline font-semibold text-slate-500">Lo que viene: </dt><dd className="inline">{h.parts.future.join(" ")}</dd></div>}
+            </dl>
+          )}
+        </li>
+      ))}</ul>
     </div>
   );
 }

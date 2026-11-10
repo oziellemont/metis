@@ -23,6 +23,16 @@ const rewrittenTo = (r: Response) => { const h = r.headers.get("x-middleware-rew
 
 beforeEach(() => { currentUser = null; memberships = []; delete process.env.CEO_REQUIRE_LOGIN; delete process.env.VERCEL_ENV; });
 
+describe("MÊTIS Assess vive aparte de CEO", () => {
+  it("/assess no se reescribe a /ceo ni pide la sesión del simulador (el candidato entra con su enlace)", async () => {
+    for (const u of ["https://metis.ceo/assess", "https://metis.ceo/assess/c/abc", "https://metis.ceo/assess/v/x"]) {
+      const r = await call(u);
+      expect(rewrittenTo(r), u).toBeNull();
+      expect(loc(r), u).toBeNull();
+    }
+  });
+});
+
 describe("metis.ceo sin sesión", () => {
   it("la landing sigue pública", async () => {
     const r = await call("https://metis.ceo/");

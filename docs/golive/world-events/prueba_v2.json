@@ -1,0 +1,401 @@
+{
+  "generado": "2026-11-10T00:56:46.304Z",
+  "etiqueta": "SIMULACIÓN (ejercicio hipotético). No es un acontecimiento real.",
+  "inundacion": {
+    "empresa": "Miniacería integrada (plantilla miniaceria_integrada_v2)",
+    "sede": "Planta de corte y doblado de Campeche (12 % de las entregas, inventario de $9,000,000)",
+    "episodio": {
+      "nombre": "Inundación de ejercicio en Campeche",
+      "estado": "pronostico",
+      "severidad": "Lluvias intensas: desbordamiento esperado en 48 horas (hipotético)",
+      "zonas": {
+        "campeche": "roja"
+      },
+      "reglas": 2,
+      "fuente": "Ejercicio de mêtis",
+      "desenlaceGuionado": {
+        "inDays": 2,
+        "sites": {
+          "campeche": "roja"
+        }
+      }
+    },
+    "caso": {
+      "asunto": "Inundación de ejercicio en Campeche: Planta de corte y doblado de Campeche (surte al sureste) en la zona de riesgo",
+      "cuerpo": [
+        "Ejercicio hipotético: imagina que Ejercicio de mêtis reporta Inundación de ejercicio en Campeche (Lluvias intensas: desbordamiento esperado en 48 horas (hipotético)). No es un acontecimiento real.",
+        "Según el área inundada que reporta la fuente, quedan expuestas: Planta de corte y doblado de Campeche (surte al sureste) (zona roja). El agua puede subir o bajar en los próximos días.",
+        "Hay una parte del daño que nadie puede evitar si el fenómeno llega con fuerza. Lo que decidas cambia el resto: seguridad del personal, continuidad de la operación, inventario, proveedores, clientes y caja. Cada frente cubierto cuesta; cada frente sin cubrir tiene consecuencias después.",
+        "Lo que pase en tu empresa es una simulación con las reglas del motor. Plazo para decidir: 2 días."
+      ],
+      "datos": [
+        [
+          "Fuente",
+          "Ejercicio de mêtis"
+        ],
+        [
+          "Estado",
+          "Amenaza confirmada (puede cambiar)"
+        ],
+        [
+          "Sedes en zona",
+          "1"
+        ],
+        [
+          "Personas en planta",
+          "152"
+        ],
+        [
+          "Ventas que salen de la sede expuesta",
+          "12 %"
+        ]
+      ],
+      "leccion": "Ante una amenaza confirmada se decide con lo que se sabe hoy. Las personas van primero; después, lo que detiene la operación y lo que se pierde para siempre (inventario, clientes). Ninguna preparación borra todo el daño: lo que se compra es reducir la parte evitable."
+    },
+    "sinEvento": {
+      "d60": {
+        "caja": 25826933,
+        "capital": 383714200,
+        "ventasAcum": 142909000,
+        "seguridad": 0.8,
+        "personal": 0.92,
+        "clientes": 0.84
+      },
+      "d120": {
+        "caja": 29425922,
+        "capital": 392819538,
+        "ventasAcum": 285818000,
+        "seguridad": 0.8,
+        "personal": 1,
+        "clientes": 0.88
+      }
+    },
+    "opciones": [
+      {
+        "id": "protocolo",
+        "etiqueta": "Protocolo de inundación: personas e instalaciones",
+        "detalle": "Cubre: seguridad del personal y continuidad.  En la bodega: personal a casa y nave asegurada. $120,000. No mueve inventario ni avisa a proveedores, clientes o aseguradora.",
+        "postura": "equilibrada",
+        "bloqueada": false,
+        "impacto": "Ejercicio hipotético: Inundación de ejercicio en Campeche llegó con fuerza a la operación. Parte inevitable: 5 días sin surtir desde la sede afectada, reparaciones por $400,000. Frentes cubiertos: seguridad del personal, continuidad operativa. Por lo no cubierto: $2,700,000 de producto dañado. El seguro paga $160,000 en 90 días.",
+        "desglose": {
+          "inevitable": [
+            "5 días sin surtir desde la sede inundada (12 % de las entregas), reparaciones inevitables por $400,000."
+          ],
+          "evitable": [
+            "Sin proteger inventario: producto dañado por $2,700,000.",
+            "Sin asegurar proveedores: chatarra de emergencia 4 % más cara por 20 días."
+          ],
+          "future": [
+            "Sin aviso a clientes: entregas incumplidas sin explicación; compran 3 % menos durante un mes.",
+            "El seguro paga $160,000 (40 % de las reparaciones) en 90 días."
+          ]
+        },
+        "vsSinEvento": {
+          "caja60": -1703495,
+          "caja120": -4892886,
+          "capital120": -3196814,
+          "seguridad": 0.01,
+          "personal": 0,
+          "clientes": -0.04
+        },
+        "indicadoresJugador120": {
+          "caja": 0,
+          "margen": 1,
+          "equipo": 4,
+          "clientes": 1,
+          "consejo": 1
+        },
+        "externoInevitable120": {
+          "caja": 0,
+          "margen": 0,
+          "equipo": 0,
+          "clientes": 0,
+          "consejo": 0
+        },
+        "indicadoresSinEvento120": {
+          "caja": 1,
+          "margen": 1,
+          "equipo": 4,
+          "clientes": 2,
+          "consejo": 1
+        }
+      },
+      {
+        "id": "inventario",
+        "etiqueta": "Protocolo, más inventario y abasto",
+        "detalle": "Además del protocolo: sacar la varilla de la bodega a tierra alta, cubrir producto terminado y asegurar chatarra con proveedores alternos. $380,000. No cubre clientes ni caja.",
+        "postura": "equilibrada",
+        "bloqueada": false,
+        "impacto": "Ejercicio hipotético: Inundación de ejercicio en Campeche llegó con fuerza a la operación. Parte inevitable: 5 días sin surtir desde la sede afectada, reparaciones por $400,000. Frentes cubiertos: seguridad del personal, continuidad operativa, inventario, proveedores y abasto. El seguro paga $160,000 en 90 días.",
+        "desglose": {
+          "inevitable": [
+            "5 días sin surtir desde la sede inundada (12 % de las entregas), reparaciones inevitables por $400,000."
+          ],
+          "evitable": [],
+          "future": [
+            "Sin aviso a clientes: entregas incumplidas sin explicación; compran 3 % menos durante un mes.",
+            "El seguro paga $160,000 (40 % de las reparaciones) en 90 días."
+          ]
+        },
+        "vsSinEvento": {
+          "caja60": 1384495,
+          "caja120": -1768765,
+          "capital120": -1228889,
+          "seguridad": 0.02,
+          "personal": 0,
+          "clientes": -0.04
+        },
+        "indicadoresJugador120": {
+          "caja": 1,
+          "margen": 1,
+          "equipo": 5,
+          "clientes": 1,
+          "consejo": 1
+        },
+        "externoInevitable120": {
+          "caja": 0,
+          "margen": 0,
+          "equipo": 0,
+          "clientes": 0,
+          "consejo": 0
+        },
+        "indicadoresSinEvento120": {
+          "caja": 1,
+          "margen": 1,
+          "equipo": 4,
+          "clientes": 2,
+          "consejo": 1
+        }
+      },
+      {
+        "id": "integral",
+        "etiqueta": "Plan completo de seis frentes",
+        "detalle": "Personal, continuidad, inventario, proveedores, clientes (reprogramar entregas con aviso) y caja (pólizas revisadas y evidencia documentada para el seguro). $560,000.",
+        "postura": "prudente",
+        "bloqueada": false,
+        "impacto": "Ejercicio hipotético: Inundación de ejercicio en Campeche llegó con fuerza a la operación. Parte inevitable: 5 días sin surtir desde la sede afectada, reparaciones por $400,000. Frentes cubiertos: seguridad del personal, continuidad operativa, inventario, proveedores y abasto, clientes, caja y seguro. El seguro paga $280,000 en 30 días.",
+        "desglose": {
+          "inevitable": [
+            "5 días sin surtir desde la sede inundada (12 % de las entregas), reparaciones inevitables por $400,000."
+          ],
+          "evitable": [],
+          "future": [
+            "El seguro paga $280,000 (70 % de las reparaciones) en 30 días."
+          ]
+        },
+        "vsSinEvento": {
+          "caja60": -624436,
+          "caja120": -1039112,
+          "capital120": -689493,
+          "seguridad": 0.03,
+          "personal": 0,
+          "clientes": 0.01
+        },
+        "indicadoresJugador120": {
+          "caja": 1,
+          "margen": 1,
+          "equipo": 5,
+          "clientes": 2,
+          "consejo": 1
+        },
+        "externoInevitable120": {
+          "caja": 0,
+          "margen": 0,
+          "equipo": 0,
+          "clientes": 0,
+          "consejo": 0
+        },
+        "indicadoresSinEvento120": {
+          "caja": 1,
+          "margen": 1,
+          "equipo": 4,
+          "clientes": 2,
+          "consejo": 1
+        }
+      },
+      {
+        "id": "monitorear",
+        "etiqueta": "Monitorear y seguir operando",
+        "detalle": "Sin gasto hoy. Si llega con fuerza, ningún frente está cubierto.",
+        "postura": "arriesgada",
+        "bloqueada": false,
+        "impacto": "Ejercicio hipotético: Inundación de ejercicio en Campeche llegó con fuerza a la operación. Parte inevitable: 5 días sin surtir desde la sede afectada, reparaciones por $400,000. Frentes cubiertos: ninguno. Por lo no cubierto: $2,700,000 de producto dañado. El seguro paga $160,000 en 90 días.",
+        "desglose": {
+          "inevitable": [
+            "5 días sin surtir desde la sede inundada (12 % de las entregas), reparaciones inevitables por $400,000."
+          ],
+          "evitable": [
+            "Sin asegurar la continuidad: 4 días más sin surtir desde la sede afectada.",
+            "Sin proteger inventario: producto dañado por $2,700,000.",
+            "Sin asegurar proveedores: chatarra de emergencia 4 % más cara por 20 días."
+          ],
+          "future": [
+            "Sin aviso a clientes: entregas incumplidas sin explicación; compran 3 % menos durante un mes.",
+            "Personal expuesto durante el fenómeno: baja la seguridad y la confianza del equipo.",
+            "El seguro paga $160,000 (40 % de las reparaciones) en 90 días."
+          ]
+        },
+        "vsSinEvento": {
+          "caja60": -1339913,
+          "caja120": -4956240,
+          "capital120": -3256849,
+          "seguridad": -0.06,
+          "personal": -0.01,
+          "clientes": -0.04
+        },
+        "indicadoresJugador120": {
+          "caja": 0,
+          "margen": 1,
+          "equipo": 2,
+          "clientes": 1,
+          "consejo": 1
+        },
+        "externoInevitable120": {
+          "caja": 0,
+          "margen": 0,
+          "equipo": 0,
+          "clientes": 0,
+          "consejo": 0
+        },
+        "indicadoresSinEvento120": {
+          "caja": 1,
+          "margen": 1,
+          "equipo": 4,
+          "clientes": 2,
+          "consejo": 1
+        }
+      }
+    ]
+  },
+  "arancel": {
+    "empresa": "Miniacería integrada con contrato de exportación DAP a Houston (12 t diarias de palanquilla a $11,400, dentro de la capacidad libre de la planta)",
+    "episodio": {
+      "nombre": "EE. UU. sube el arancel al acero (ejercicio)",
+      "severidad": "Arancel de EE. UU. 50 % → 60 % (hipotético)",
+      "hechos": {
+        "t": "arancel",
+        "from": 0.5,
+        "to": 0.6,
+        "since": "2026-11-10",
+        "until": "2026-11-10",
+        "rule": "us_232_acero",
+        "effective": "2026-11-10",
+        "hs": [
+          "7207"
+        ]
+      }
+    },
+    "caso": {
+      "asunto": "EE. UU. sube el arancel al acero (ejercicio): ¿qué haces con tu exportación a Texas?",
+      "cuerpo": [
+        "Ejercicio hipotético: imagina este dato. Ejercicio de mêtis publicó: EE. UU. sube el arancel al acero (ejercicio). Arancel de 50 % a 60 %, vigente desde el 10/11/2026. No es un dato real.",
+        "Lo que toca de tu empresa: Palanquilla de acero vendida a EE. UU. con entrega DAP: el arancel lo paga el comprador (importador de registro).",
+        "Lo que pase en tu empresa es una simulación: depende de tus contratos y de lo que decidas. Plazo para decidir: 5 días.",
+        "Quién paga: con entrega DAP el importador de registro es Comprador de Houston (importador de registro en EE. UU.). A tu empresa no le cobran el arancel; le llega por precio y volumen. Solo si vendes DDP lo pagas tú."
+      ],
+      "datos": [
+        [
+          "Fuente",
+          "Ejercicio de mêtis"
+        ],
+        [
+          "Contrato de exportación",
+          "12 t diarias a $11,400"
+        ],
+        [
+          "Venta mensual expuesta",
+          "$4,104,000"
+        ],
+        [
+          "Quién paga el arancel",
+          "El comprador (importador de registro)"
+        ],
+        [
+          "Caja",
+          "$26,615,709"
+        ]
+      ]
+    },
+    "opciones": [
+      {
+        "id": "base",
+        "etiqueta": "Mantener el precio pactado y dejar que el comprador absorba el arancel",
+        "detalle": "Con entrega DAP el arancel lo paga el comprador al importar. Sin descuento, compra cerca de 16 % menos durante 120 días.",
+        "impacto": "Ejercicio hipotético: EE. UU. sube el arancel al acero (ejercicio). El contrato de exportación pasa de 12 a 10.1 t diarias por 120 días (el arancel lo paga el comprador).",
+        "desglose": {
+          "inevitable": [
+            "El acero mexicano se encarece en EE. UU. para todos: el comprador recorta cerca de 4 % del volumen por 120 días, se decida lo que se decida (hipótesis H4: 0.4 × el aumento)."
+          ],
+          "evitable": [
+            "Sin compartir el golpe, el comprador recorta otro 12 % (H4: 1.2 × el aumento)."
+          ],
+          "future": []
+        },
+        "vsSinMedida150": {
+          "caja": -249969,
+          "capital": -200061,
+          "clientes": 0
+        }
+      },
+      {
+        "id": "compartir",
+        "etiqueta": "Compartir el golpe: 4 % de descuento por 120 días",
+        "detalle": "El comprador sigue pagando el arancel, pero con el descuento solo recorta lo inevitable (cerca de 4 % del volumen). Cuesta $164,160 al mes en precio.",
+        "impacto": "Ejercicio hipotético: EE. UU. sube el arancel al acero (ejercicio). El contrato de exportación pasa de 12 a 11.5 t diarias por 120 días (el arancel lo paga el comprador).",
+        "desglose": {
+          "inevitable": [
+            "El acero mexicano se encarece en EE. UU. para todos: el comprador recorta cerca de 4 % del volumen por 120 días, se decida lo que se decida (hipótesis H4: 0.4 × el aumento)."
+          ],
+          "evitable": [],
+          "future": [
+            "El descuento de 4 % (H4: 0.4 × el aumento) vence a los 120 días."
+          ]
+        },
+        "vsSinMedida150": {
+          "caja": -596140,
+          "capital": -397746,
+          "clientes": 0
+        }
+      },
+      {
+        "id": "redirigir",
+        "etiqueta": "Redirigir la mitad del volumen al mercado nacional",
+        "detalle": "La mitad de las toneladas de exportación pasa a relaminadoras nacionales con 4 % de descuento sobre el precio de exportación, a partir de 20 días. Menos dependencia del arancel; el cliente de Houston lo resiente.",
+        "impacto": "Ejercicio hipotético: EE. UU. sube el arancel al acero (ejercicio). El contrato de exportación pasa de 6 a 5.8 t diarias por 120 días (el arancel lo paga el comprador).",
+        "desglose": {
+          "inevitable": [
+            "El acero mexicano se encarece en EE. UU. para todos: el comprador recorta cerca de 4 % del volumen por 120 días, se decida lo que se decida (hipótesis H4: 0.4 × el aumento)."
+          ],
+          "evitable": [],
+          "future": []
+        },
+        "vsSinMedida150": {
+          "caja": -386545,
+          "capital": -326982,
+          "clientes": -0.01
+        }
+      },
+      {
+        "id": "ddp",
+        "etiqueta": "Ofrecer entrega DDP: tu empresa importa y paga el arancel",
+        "detalle": "El comprador no ve el arancel y no recorta por precio, pero tu empresa pasa a ser importadora de registro en EE. UU.: el 60 % sale de tu precio (cerca de $410,400 al mes por el aumento) más el despacho.",
+        "impacto": "Ejercicio hipotético: EE. UU. sube el arancel al acero (ejercicio). El contrato de exportación pasa de 12 a 12 t diarias por 120 días (DDP: el arancel lo pagas tú).",
+        "desglose": {
+          "inevitable": [
+            "Con DDP el comprador no ve el arancel: el volumen se sostiene, pero el arancel lo pagas tú."
+          ],
+          "evitable": [],
+          "future": [
+            "Tu empresa queda como importadora de registro: el arancel completo sale de tu precio mientras siga la medida."
+          ]
+        },
+        "vsSinMedida150": {
+          "caja": -1556198,
+          "capital": -1257317,
+          "clientes": 0
+        }
+      }
+    ]
+  }
+}

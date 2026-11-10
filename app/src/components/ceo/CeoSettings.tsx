@@ -151,9 +151,11 @@ export function CeoSettings() {
               <span className="text-xs text-slate-500 w-full">World Events: abre un ejercicio hipotético (no es un acontecimiento real) para probar el caso y el impacto simulado.</span>
               <button type="button" onClick={() => c.worldExercise("ciclon")} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-ink hover:bg-slate-50"><Globe2 size={15} /> Huracán de ejercicio</button>
               <button type="button" onClick={() => c.worldExercise("sismo")} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-ink hover:bg-slate-50"><Globe2 size={15} /> Sismo de ejercicio</button>
+              <button type="button" onClick={() => c.worldExercise("inundacion")} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-ink hover:bg-slate-50"><Globe2 size={15} /> Inundación de ejercicio</button>
               <button type="button" onClick={() => c.worldExercise("tipo_cambio")} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-ink hover:bg-slate-50"><Globe2 size={15} /> Dólar de ejercicio</button>
               <button type="button" onClick={() => c.worldExercise("tasa")} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-ink hover:bg-slate-50"><Globe2 size={15} /> Tasa de ejercicio</button>
               <button type="button" onClick={() => c.worldExercise("arancel")} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-ink hover:bg-slate-50"><Globe2 size={15} /> Arancel de ejercicio</button>
+              <button type="button" onClick={() => c.worldExercise("arancel_eeuu")} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-ink hover:bg-slate-50"><Globe2 size={15} /> Arancel de EE. UU. de ejercicio</button>
             </div>
           )}
           <Link href="/ceo/evaluacion-ia" className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-indigo hover:underline">Evaluación de la IA de los casos</Link>

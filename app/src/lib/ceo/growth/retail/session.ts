@@ -58,7 +58,7 @@ export function retailAt(templateId: string, seed: string, decisions: readonly R
         const done: string[] = [];
         for (const cmd of imp.commands) if (applyRetail(s, cmd).ok) done.push(`${cmd.type}:${cmd.id}`);
         s.events.push({ day: s.day, kind: "mundo", text: imp.text, ref: caseIdOf(st.ep) });
-        external.push({ id: st.ep.id, day: s.day, text: imp.text, mode: st.ep.mode, commands: done });
+        external.push({ id: st.ep.id, day: s.day, text: imp.text, mode: st.ep.mode, commands: done, ...(imp.parts ? { parts: imp.parts } : {}), ...(st.ep.rv ? { rv: st.ep.rv } : {}) });
         continue;
       }
       const d = st.d!;

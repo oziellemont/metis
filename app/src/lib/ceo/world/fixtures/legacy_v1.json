@@ -1,0 +1,636 @@
+{
+ "conveniencia_regional_v2|ciclon|protocolo": {
+  "cash": 12786188128,
+  "kpis": {
+   "caja": 2,
+   "margen": 0,
+   "equipo": 2,
+   "clientes": 1,
+   "consejo": 0
+  },
+  "external": [
+   {
+    "day": 18,
+    "commands": [
+     "modify:w:xtc361600:imp:d1:mty",
+     "modify:w:xtc361600:imp:d2:mty",
+     "modify:w:xtc361600:imp:d1:nuevas",
+     "modify:w:xtc361600:imp:d2:nuevas",
+     "modify:w:xtc361600:imp:log",
+     "one_off:w:xtc361600:imp:merma",
+     "one_off:w:xtc361600:imp:rep"
+    ]
+   }
+  ]
+ },
+ "conveniencia_regional_v2|ciclon|preventivo": {
+  "cash": 12922734322,
+  "kpis": {
+   "caja": 2,
+   "margen": 0,
+   "equipo": 2,
+   "clientes": 1,
+   "consejo": 0
+  },
+  "external": [
+   {
+    "day": 18,
+    "commands": [
+     "modify:w:xtc361600:imp:d1:mty",
+     "modify:w:xtc361600:imp:d2:mty",
+     "modify:w:xtc361600:imp:d1:nuevas",
+     "modify:w:xtc361600:imp:d2:nuevas",
+     "modify:w:xtc361600:imp:log",
+     "one_off:w:xtc361600:imp:merma",
+     "one_off:w:xtc361600:imp:rep",
+     "relation:w:xtc361600:imp:st"
+    ]
+   }
+  ]
+ },
+ "conveniencia_regional_v2|ciclon|monitorear": {
+  "cash": 12075768356,
+  "kpis": {
+   "caja": 2,
+   "margen": -1,
+   "equipo": 0,
+   "clientes": 1,
+   "consejo": 0
+  },
+  "external": [
+   {
+    "day": 18,
+    "commands": [
+     "modify:w:xtc361600:imp:d1:mty",
+     "modify:w:xtc361600:imp:d2:mty",
+     "modify:w:xtc361600:imp:d1:nuevas",
+     "modify:w:xtc361600:imp:d2:nuevas",
+     "modify:w:xtc361600:imp:log",
+     "one_off:w:xtc361600:imp:merma",
+     "one_off:w:xtc361600:imp:rep",
+     "relation:w:xtc361600:imp:st",
+     "safety:w:xtc361600:imp:s"
+    ]
+   }
+  ]
+ },
+ "conveniencia_regional_v2|sismo|inspeccion": {
+  "cash": 12516012168,
+  "kpis": {
+   "caja": 2,
+   "margen": 0,
+   "equipo": 2,
+   "clientes": 1,
+   "consejo": 0
+  },
+  "external": [
+   {
+    "day": 15,
+    "commands": [
+     "modify:w:xeq361600:imp:d1:mty",
+     "modify:w:xeq361600:imp:d2:mty",
+     "modify:w:xeq361600:imp:d1:nuevas",
+     "modify:w:xeq361600:imp:d2:nuevas",
+     "modify:w:xeq361600:imp:log",
+     "one_off:w:xeq361600:imp:merma",
+     "one_off:w:xeq361600:imp:rep"
+    ]
+   }
+  ]
+ },
+ "conveniencia_regional_v2|sismo|apoyo": {
+  "cash": 12322735094,
+  "kpis": {
+   "caja": 2,
+   "margen": 0,
+   "equipo": 2,
+   "clientes": 1,
+   "consejo": 0
+  },
+  "external": [
+   {
+    "day": 15,
+    "commands": [
+     "modify:w:xeq361600:imp:d1:mty",
+     "modify:w:xeq361600:imp:d2:mty",
+     "modify:w:xeq361600:imp:d1:nuevas",
+     "modify:w:xeq361600:imp:d2:nuevas",
+     "modify:w:xeq361600:imp:log",
+     "one_off:w:xeq361600:imp:merma",
+     "one_off:w:xeq361600:imp:rep"
+    ]
+   }
+  ]
+ },
+ "conveniencia_regional_v2|tasa|base": {
+  "cash": 14592135714,
+  "kpis": {
+   "caja": 2,
+   "margen": 0,
+   "equipo": 2,
+   "clientes": 1,
+   "consejo": 0
+  },
+  "external": [
+   {
+    "day": 20,
+    "commands": []
+   }
+  ]
+ },
+ "conveniencia_regional_v2|tasa|refinanciar": {
+  "cash": 14477452393,
+  "kpis": {
+   "caja": 2,
+   "margen": 0,
+   "equipo": 2,
+   "clientes": 1,
+   "consejo": 0
+  },
+  "external": [
+   {
+    "day": 20,
+    "commands": []
+   }
+  ]
+ },
+ "conveniencia_regional_v2|tasa|refinanciar_largo": {
+  "cash": 14701513070,
+  "kpis": {
+   "caja": 2,
+   "margen": 0,
+   "equipo": 2,
+   "clientes": 1,
+   "consejo": 0
+  },
+  "external": [
+   {
+    "day": 20,
+    "commands": []
+   }
+  ]
+ },
+ "aceria_compacta_v2|ciclon|protocolo": {
+  "cash": 133873667,
+  "kpis": {
+   "caja": -2,
+   "margen": 2,
+   "equipo": 4,
+   "clientes": 2,
+   "consejo": 1
+  },
+  "external": [
+   {
+    "day": 18,
+    "commands": [
+     "downtime:w:xtc361600:imp:paro",
+     "one_off:w:xtc361600:imp:rep"
+    ]
+   }
+  ]
+ },
+ "aceria_compacta_v2|ciclon|preventivo": {
+  "cash": 156112863,
+  "kpis": {
+   "caja": -2,
+   "margen": 2,
+   "equipo": 4,
+   "clientes": 2,
+   "consejo": 1
+  },
+  "external": [
+   {
+    "day": 18,
+    "commands": [
+     "downtime:w:xtc361600:imp:paro",
+     "one_off:w:xtc361600:imp:rep"
+    ]
+   }
+  ]
+ },
+ "aceria_compacta_v2|ciclon|monitorear": {
+  "cash": 38922766,
+  "kpis": {
+   "caja": -4,
+   "margen": -3,
+   "equipo": 1,
+   "clientes": 2,
+   "consejo": -1
+  },
+  "external": [
+   {
+    "day": 18,
+    "commands": [
+     "downtime:w:xtc361600:imp:paro",
+     "one_off:w:xtc361600:imp:rep",
+     "safety:w:xtc361600:imp:s",
+     "relation:w:xtc361600:imp:st"
+    ]
+   }
+  ]
+ },
+ "aceria_compacta_v2|sismo|inspeccion": {
+  "cash": 8307,
+  "kpis": {
+   "caja": -2,
+   "margen": 2,
+   "equipo": 4,
+   "clientes": 2,
+   "consejo": 1
+  },
+  "external": [
+   {
+    "day": 15,
+    "commands": [
+     "downtime:w:xeq361600:imp:paro",
+     "one_off:w:xeq361600:imp:rep"
+    ]
+   }
+  ]
+ },
+ "aceria_compacta_v2|sismo|apoyo": {
+  "cash": 8130,
+  "kpis": {
+   "caja": -2,
+   "margen": 2,
+   "equipo": 4,
+   "clientes": 2,
+   "consejo": 1
+  },
+  "external": [
+   {
+    "day": 15,
+    "commands": [
+     "downtime:w:xeq361600:imp:paro",
+     "one_off:w:xeq361600:imp:rep"
+    ]
+   }
+  ]
+ },
+ "aceria_compacta_v2|tipo_cambio|base": {
+  "cash": 220333202,
+  "kpis": {
+   "caja": -2,
+   "margen": 2,
+   "equipo": 4,
+   "clientes": 2,
+   "consejo": 1
+  },
+  "external": [
+   {
+    "day": 20,
+    "commands": [
+     "modify:w:xfx361600:imp:cons"
+    ]
+   }
+  ]
+ },
+ "aceria_compacta_v2|tipo_cambio|nacional": {
+  "cash": 212584520,
+  "kpis": {
+   "caja": -2,
+   "margen": 2,
+   "equipo": 4,
+   "clientes": 2,
+   "consejo": 1
+  },
+  "external": [
+   {
+    "day": 20,
+    "commands": [
+     "modify:w:xfx361600:imp:cons"
+    ]
+   }
+  ]
+ },
+ "aceria_compacta_v2|tipo_cambio|trasladar": {
+  "cash": 245677837,
+  "kpis": {
+   "caja": -2,
+   "margen": 3,
+   "equipo": 4,
+   "clientes": 1,
+   "consejo": 1
+  },
+  "external": [
+   {
+    "day": 20,
+    "commands": [
+     "modify:w:xfx361600:imp:cons"
+    ]
+   }
+  ]
+ },
+ "aceria_compacta_v2|arancel|base": {
+  "cash": 192655991,
+  "kpis": {
+   "caja": -2,
+   "margen": 2,
+   "equipo": 4,
+   "clientes": 2,
+   "consejo": 1
+  },
+  "external": [
+   {
+    "day": 20,
+    "commands": [
+     "modify:w:xar361600:imp:dem"
+    ]
+   }
+  ]
+ },
+ "aceria_compacta_v2|arancel|contrato": {
+  "cash": 192655991,
+  "kpis": {
+   "caja": -2,
+   "margen": 2,
+   "equipo": 4,
+   "clientes": 2,
+   "consejo": 1
+  },
+  "external": [
+   {
+    "day": 20,
+    "commands": [
+     "modify:w:xar361600:imp:dem"
+    ]
+   }
+  ]
+ },
+ "aceria_compacta_v2|arancel|precio": {
+  "cash": 267351363,
+  "kpis": {
+   "caja": -1,
+   "margen": 6,
+   "equipo": 4,
+   "clientes": 0,
+   "consejo": 3
+  },
+  "external": [
+   {
+    "day": 20,
+    "commands": [
+     "modify:w:xar361600:imp:dem"
+    ]
+   }
+  ]
+ },
+ "miniaceria_integrada_v2|ciclon|protocolo": {
+  "cash": 1997157669,
+  "kpis": {
+   "caja": 0,
+   "margen": 1,
+   "equipo": 4,
+   "clientes": 2,
+   "consejo": 0
+  },
+  "external": [
+   {
+    "day": 18,
+    "commands": [
+     "modify:w:xtc361600:imp:chatarra",
+     "downtime:w:xtc361600:imp:paro",
+     "one_off:w:xtc361600:imp:rep"
+    ]
+   }
+  ]
+ },
+ "miniaceria_integrada_v2|ciclon|preventivo": {
+  "cash": 2120667766,
+  "kpis": {
+   "caja": 0,
+   "margen": 1,
+   "equipo": 4,
+   "clientes": 2,
+   "consejo": 0
+  },
+  "external": [
+   {
+    "day": 18,
+    "commands": [
+     "modify:w:xtc361600:imp:chatarra",
+     "downtime:w:xtc361600:imp:paro",
+     "one_off:w:xtc361600:imp:rep"
+    ]
+   }
+  ]
+ },
+ "miniaceria_integrada_v2|ciclon|monitorear": {
+  "cash": 1947775906,
+  "kpis": {
+   "caja": 0,
+   "margen": -2,
+   "equipo": 1,
+   "clientes": 2,
+   "consejo": -1
+  },
+  "external": [
+   {
+    "day": 18,
+    "commands": [
+     "modify:w:xtc361600:imp:chatarra",
+     "downtime:w:xtc361600:imp:paro",
+     "one_off:w:xtc361600:imp:rep",
+     "safety:w:xtc361600:imp:s",
+     "relation:w:xtc361600:imp:st"
+    ]
+   }
+  ]
+ },
+ "miniaceria_integrada_v2|sismo|inspeccion": {
+  "cash": 1702543461,
+  "kpis": {
+   "caja": 0,
+   "margen": 1,
+   "equipo": 4,
+   "clientes": 2,
+   "consejo": 0
+  },
+  "external": [
+   {
+    "day": 15,
+    "commands": [
+     "modify:w:xeq361600:imp:chatarra",
+     "downtime:w:xeq361600:imp:paro",
+     "one_off:w:xeq361600:imp:rep"
+    ]
+   }
+  ]
+ },
+ "miniaceria_integrada_v2|sismo|apoyo": {
+  "cash": 1631804644,
+  "kpis": {
+   "caja": 0,
+   "margen": 1,
+   "equipo": 4,
+   "clientes": 2,
+   "consejo": 0
+  },
+  "external": [
+   {
+    "day": 15,
+    "commands": [
+     "modify:w:xeq361600:imp:chatarra",
+     "downtime:w:xeq361600:imp:paro",
+     "one_off:w:xeq361600:imp:rep"
+    ]
+   }
+  ]
+ },
+ "miniaceria_integrada_v2|tipo_cambio|base": {
+  "cash": 2340237565,
+  "kpis": {
+   "caja": 0,
+   "margen": 1,
+   "equipo": 4,
+   "clientes": 2,
+   "consejo": 0
+  },
+  "external": [
+   {
+    "day": 20,
+    "commands": [
+     "modify:w:xfx361600:imp:cons"
+    ]
+   }
+  ]
+ },
+ "miniaceria_integrada_v2|tipo_cambio|nacional": {
+  "cash": 2327097561,
+  "kpis": {
+   "caja": 0,
+   "margen": 1,
+   "equipo": 4,
+   "clientes": 2,
+   "consejo": 0
+  },
+  "external": [
+   {
+    "day": 20,
+    "commands": [
+     "modify:w:xfx361600:imp:cons"
+    ]
+   }
+  ]
+ },
+ "miniaceria_integrada_v2|tipo_cambio|trasladar": {
+  "cash": 2481286991,
+  "kpis": {
+   "caja": 0,
+   "margen": 2,
+   "equipo": 4,
+   "clientes": 1,
+   "consejo": 0
+  },
+  "external": [
+   {
+    "day": 20,
+    "commands": [
+     "modify:w:xfx361600:imp:cons"
+    ]
+   }
+  ]
+ },
+ "miniaceria_integrada_v2|tasa|base": {
+  "cash": 2359772910,
+  "kpis": {
+   "caja": 0,
+   "margen": 1,
+   "equipo": 4,
+   "clientes": 2,
+   "consejo": 0
+  },
+  "external": [
+   {
+    "day": 20,
+    "commands": []
+   }
+  ]
+ },
+ "miniaceria_integrada_v2|tasa|refinanciar": {
+  "cash": 2321576447,
+  "kpis": {
+   "caja": 0,
+   "margen": 1,
+   "equipo": 4,
+   "clientes": 2,
+   "consejo": 0
+  },
+  "external": [
+   {
+    "day": 20,
+    "commands": []
+   }
+  ]
+ },
+ "miniaceria_integrada_v2|tasa|refinanciar_largo": {
+  "cash": 2371346836,
+  "kpis": {
+   "caja": 0,
+   "margen": 1,
+   "equipo": 4,
+   "clientes": 2,
+   "consejo": 0
+  },
+  "external": [
+   {
+    "day": 20,
+    "commands": []
+   }
+  ]
+ },
+ "miniaceria_integrada_v2|arancel|base": {
+  "cash": 2125675456,
+  "kpis": {
+   "caja": 0,
+   "margen": 1,
+   "equipo": 4,
+   "clientes": 2,
+   "consejo": 0
+  },
+  "external": [
+   {
+    "day": 20,
+    "commands": [
+     "modify:w:xar361600:imp:dem"
+    ]
+   }
+  ]
+ },
+ "miniaceria_integrada_v2|arancel|contrato": {
+  "cash": 2125675456,
+  "kpis": {
+   "caja": 0,
+   "margen": 1,
+   "equipo": 4,
+   "clientes": 2,
+   "consejo": 0
+  },
+  "external": [
+   {
+    "day": 20,
+    "commands": [
+     "modify:w:xar361600:imp:dem"
+    ]
+   }
+  ]
+ },
+ "miniaceria_integrada_v2|arancel|precio": {
+  "cash": 2444090269,
+  "kpis": {
+   "caja": 1,
+   "margen": 4,
+   "equipo": 4,
+   "clientes": 0,
+   "consejo": 1
+  },
+  "external": [
+   {
+    "day": 20,
+    "commands": [
+     "modify:w:xar361600:imp:dem"
+    ]
+   }
+  ]
+ }
+}

@@ -15,14 +15,19 @@ import { TEMPLATES_V2 } from "../growth/steel/params";
 import type { SCase, SOption } from "../growth/steel/cases";
 import { exposureOf, type Site } from "./exposure";
 import { caseIdOf, deadlineOf, exposedSites, outcomeOf } from "./episodes";
-import { zoneRank, type WorldEpisode, type Zone } from "./types";
+import { zoneRank, type ReplayEpisode, type WorldEpisode, type Zone } from "./types";
 import { ECON_REASONABLE, econRetailCase, econRetailImpact, econSteelCase, econSteelImpact } from "./econ";
+import { OPTION_FRONTS, retailImpact2, retailWorldCase2, steelImpact2, steelWorldCase2 } from "./climate2";
 
-export const WORLD_RULES_VERSION = 1;
+export const WORLD_RULES_VERSION = 2;
+/** ¿El episodio usa las reglas de consecuencias v2? (los abiertos antes no traen rv y siguen con v1). */
+export const isV2 = (ep: Pick<WorldEpisode, "rv">) => (ep.rv ?? 1) >= 2;
 /** Opción de referencia (protocolo estándar): la que se usa para separar «impacto externo» de «impacto de mi decisión». */
 export const referenceOption = (ep: Pick<WorldEpisode, "status" | "facts">) => (ep.facts ? "base" : ep.status === "observado" ? "inspeccion" : "protocolo");
 /** Opciones razonables (defendibles con lo que se sabía): nunca se castigan después, aunque el pronóstico cambie. */
 export const REASONABLE: ReadonlySet<string> = new Set(["protocolo", "preventivo", "inspeccion", "apoyo", ...ECON_REASONABLE]);
+/** v2: preparaciones defendibles ante una amenaza que al final no llegó (no se castigan). */
+export const REASONABLE_V2: ReadonlySet<string> = new Set([...Object.entries(OPTION_FRONTS).filter(([, f]) => f.includes("personal")).map(([k]) => k), ...ECON_REASONABLE, "compartir", "redirigir"]);
 /** Nivel de preparación de cada opción ante un pronóstico. */
 const MITIGATION: Record<string, 0 | 1 | 2> = { monitorear: 0, protocolo: 1, preventivo: 2 };
 export const mitigationOf = (optionId: string | null | undefined): 0 | 1 | 2 => MITIGATION[optionId ?? "protocolo"] ?? 1;
@@ -62,6 +67,7 @@ function retailExposed(s: RetailState, z: Record<string, Zone>) {
 
 export function retailWorldCase(s: RetailState, ep: WorldEpisode): RCase {
   if (ep.facts) return econRetailCase(s, ep);
+  if (isV2(ep)) return retailWorldCase2(s, ep);
   const x = retailExposed(s, ep.sites);
   const red = isRed(ep.sites);
   const n = Math.max(1, x.stores);
@@ -101,8 +107,9 @@ export function retailWorldCase(s: RetailState, ep: WorldEpisode): RCase {
 }
 
 /** Impacto simulado en la cadena cuando el acontecimiento llega con fuerza. `optionId` es la preparación elegida. */
-export function retailImpact(s: RetailState, ep: WorldEpisode, optionId: string | null): { commands: RetailCommand[]; text: string } {
-  if (ep.facts) return econRetailImpact(s, ep, optionId);
+export function retailImpact(s: RetailState, ep: WorldEpisode, optionId: string | null): { commands: RetailCommand[]; text: string; parts?: { inevitable: string[]; evitable: string[]; future: string[] } } {
+  if (ep.facts) return econRetailImpact(s, ep, (ep as ReplayEpisode).only ? null : optionId);
+  if (isV2(ep)) return retailImpact2(s, ep, optionId);
   const z = outcomeOf(ep) ?? {};
   const m = ep.status === "observado" ? 1 : mitigationOf(optionId);
   const k = `w:${ep.id}:imp`;
@@ -153,6 +160,7 @@ const sz = (s: SteelState, a: number, b: number) => (big(s) ? b : a);
 
 export function steelWorldCase(s: SteelState, ep: WorldEpisode): SCase {
   if (ep.facts) return econSteelCase(s, ep);
+  if (isV2(ep)) return steelWorldCase2(s, ep);
   const list = sitesIn(s.templateId, ep.sites);
   const plantZone = ep.sites.planta ?? "ninguna";
   const redPlant = plantZone === "roja";
@@ -187,8 +195,9 @@ export function steelWorldCase(s: SteelState, ep: WorldEpisode): SCase {
   return { ...base, options };
 }
 
-export function steelImpact(s: SteelState, ep: WorldEpisode, optionId: string | null): { commands: SteelCommand[]; text: string } {
-  if (ep.facts) return econSteelImpact(s, ep, optionId);
+export function steelImpact(s: SteelState, ep: WorldEpisode, optionId: string | null): { commands: SteelCommand[]; text: string; parts?: { inevitable: string[]; evitable: string[]; future: string[] } } {
+  if (ep.facts) return econSteelImpact(s, ep, (ep as ReplayEpisode).only ? null : optionId, (ep as ReplayEpisode).only === "inevitable");
+  if (isV2(ep)) return steelImpact2(s, ep, optionId);
   const z = outcomeOf(ep) ?? {};
   const m = ep.status === "observado" ? 1 : mitigationOf(optionId);
   const k = `w:${ep.id}:imp`;

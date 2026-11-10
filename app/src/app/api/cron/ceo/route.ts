@@ -26,7 +26,7 @@ import { ceoWhatsappText, fromHeader, sendWhatsapp } from "@/lib/ceo/notify";
 import type { CeoState } from "@/lib/ceo/types";
 import { worldJobs } from "@/lib/ceo/world/notify";
 import { worldEmail } from "@/lib/ceo/emails";
-import { pushConfigured, pushFor, pushKey, sendPush, type PushJob, type PushSub } from "@/lib/ceo/push";
+import { pushFor, pushKey, sendPush, vapidKeys, type PushJob, type PushSub, type SecretStore } from "@/lib/ceo/push";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -48,7 +48,8 @@ export async function GET(req: NextRequest) {
   const out: { user: string; key: string; subject: string; at?: string; ok: boolean; error?: string }[] = [];
   // Avisos al celular (Web Push, gratis): suscripciones de todos los jugadores en una sola consulta.
   const subs = new Map<string, PushSub[]>();
-  if (pushConfigured()) {
+  const keys = await vapidKeys(sb as unknown as SecretStore);
+  if (keys) {
     const { data: rows } = await sb.from("push_subscriptions").select("user_id, endpoint, p256dh, auth").limit(5000);
     for (const r of rows ?? []) subs.set(r.user_id, [...(subs.get(r.user_id) ?? []), { endpoint: r.endpoint, keys: { p256dh: r.p256dh, auth: r.auth } }]);
   }
@@ -82,7 +83,7 @@ export async function GET(req: NextRequest) {
         if (!msg) continue;
         let ok = false;
         for (const sub of mine) {
-          const r = dry ? { ok: true, gone: false } : await sendPush(sub, msg);
+          const r = dry ? { ok: true, gone: false } : await sendPush(sub, msg, keys);
           if (r.ok) ok = true;
           else if (r.gone && !dry) await sb.from("push_subscriptions").delete().eq("endpoint", sub.endpoint);
         }

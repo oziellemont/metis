@@ -13,7 +13,7 @@
 import { exposureOf } from "./exposure";
 import { factsExposed } from "./macro";
 import { revOf, topZone } from "./match";
-import { FORECAST_WINDOW, KINDS, MACRO_WINDOW, MAX_EPISODES, OBSERVED_WINDOW, SRCS, ZONES, isFamily, isGeo, zoneRank, type Facts, type Family, type Kind, type SourceRef, type WorldEpisode, type Zone } from "./types";
+import { FORECAST_WINDOW, KINDS, MACRO_WINDOW, MAX_EPISODES, OBSERVED_WINDOW, RULES_V, SRCS, ZONES, isFamily, isGeo, zoneRank, type Facts, type Family, type Kind, type ReplayEpisode, type SourceRef, type WorldEpisode, type Zone } from "./types";
 
 export const WORLD_CASE_PREFIX = "w:";
 export const caseIdOf = (ep: Pick<WorldEpisode, "id">) => `${WORLD_CASE_PREFIX}${ep.id}`;
@@ -59,7 +59,7 @@ export function cleanFacts(x: unknown): Facts | null {
   if (r.t === "arancel" && !out.rule) return null;
   return out;
 }
-const FACTS_OF: Record<Kind, Facts["t"] | null> = { ciclon: null, sismo: null, tipo_cambio: "fx", tasa: "tasa", arancel: "arancel" };
+const FACTS_OF: Record<Kind, Facts["t"] | null> = { ciclon: null, sismo: null, inundacion: null, tipo_cambio: "fx", tasa: "tasa", arancel: "arancel" };
 
 export function cleanWorldInput(x: unknown): WorldOpenInput | null {
   const r = x as Record<string, unknown> | null;
@@ -69,7 +69,7 @@ export function cleanWorldInput(x: unknown): WorldOpenInput | null {
   if (typeof r.rev !== "number" || !Number.isInteger(r.rev) || r.rev < 0 || r.rev > 9) return null;
   if (!isFamily(r.family) || !(KINDS as readonly unknown[]).includes(r.kind)) return null;
   const kind = r.kind as Kind;
-  // Cada fuente trae solo lo que sabe medir: GDACS ciclones y sismos; DOF tipo de cambio, tasa y aranceles; Federal Register aranceles.
+  // Cada fuente trae solo lo que sabe medir: GDACS ciclones, sismos e inundaciones; DOF tipo de cambio, tasa y aranceles; Federal Register aranceles.
   if ((r.src === "gdacs" && !isGeo(kind)) || (r.src === "dof" && isGeo(kind)) || (r.src === "fr" && kind !== "arancel")) return null;
   const facts = FACTS_OF[kind] ? cleanFacts(r.facts) : null;
   if (FACTS_OF[kind] && facts?.t !== FACTS_OF[kind]) return null;
@@ -103,6 +103,7 @@ export function sanitizeWorld(raw: unknown, templateId: string): WorldEpisode[] 
     if (!inp || !str(r.id, 30) || typeof r.day !== "number" || !Number.isInteger(r.day) || r.day < lastDay || typeof r.at !== "number") continue;
     if (out.some((e) => e.id === r.id)) continue;
     const ep: WorldEpisode = { ...inp, id: r.id, day: r.day, at: Math.round(r.at), sites: onlySites(templateId, inp.sites) };
+    if (typeof r.rv === "number" && Number.isInteger(r.rv) && r.rv >= 2 && r.rv <= 9) ep.rv = r.rv; // sin rv: reglas v1 (partidas anteriores)
     const end = r.end as Record<string, unknown> | undefined;
     const es = cleanZones(end?.sites);
     if (end && es && typeof end.day === "number" && Number.isInteger(end.day) && end.day >= ep.day && typeof end.at === "number") ep.end = { day: end.day, at: Math.round(end.at), sites: onlySites(templateId, es) };
@@ -177,7 +178,7 @@ export function openWorld(log: WorldLogLike, inp: WorldOpenInput, day: number, a
   }
   if (world.some((e) => unresolved(e, log.decisions, d))) return null; // máximo uno sin resolver
   const id = inp.src === "ejercicio" ? `x${inp.ev}` : inp.ev;
-  const ep: WorldEpisode = { id, src: inp.src, ev: inp.ev, rev, family: inp.family, kind: inp.kind, mode: inp.mode, name: inp.name, status: inp.status, severity: inp.severity, source: inp.source, ...(inp.also ? { also: inp.also } : {}), observedAt: inp.observedAt, at: Math.round(at), day: d, sites, ...(inp.script ? { script: { inDays: inp.script.inDays, sites: onlySites(log.templateId, inp.script.sites) } } : {}), ...(inp.facts ? { facts: inp.facts } : {}) };
+  const ep: WorldEpisode = { id, src: inp.src, ev: inp.ev, rev, family: inp.family, kind: inp.kind, mode: inp.mode, name: inp.name, status: inp.status, severity: inp.severity, source: inp.source, ...(inp.also ? { also: inp.also } : {}), observedAt: inp.observedAt, at: Math.round(at), day: d, rv: RULES_V, sites, ...(inp.script ? { script: { inDays: inp.script.inDays, sites: onlySites(log.templateId, inp.script.sites) } } : {}), ...(inp.facts ? { facts: inp.facts } : {}) };
   return [...world, ep].slice(-MAX_EPISODES);
 }
 
@@ -203,29 +204,30 @@ export function timeline<D extends { day: number }>(decisions: readonly D[], wor
   return out.filter((x) => x.day <= target).sort((a, b) => a.day - b.day || a.ord - b.ord || a.i - b.i);
 }
 /** Firma del registro externo (para cachés). */
-export const worldSig = (world: readonly WorldEpisode[] | undefined) => (world ?? []).map((e) => `${e.id}.${e.rev}@${e.day}${e.end ? `>${e.end.day}` : ""}`).join(",");
+export const worldSig = (world: readonly WorldEpisode[] | undefined) => (world ?? []).map((e) => `${e.id}.${e.rev}@${e.day}${e.end ? `>${e.end.day}` : ""}${(e as ReplayEpisode).only ? "!i" : ""}`).join(",");
 
 /** Sedes expuestas (naranja o roja) en lo que se sabía al decidir. */
 export const exposedSites = (z: Record<string, Zone>): string[] => Object.entries(z).filter(([, v]) => zoneRank(v) >= zoneRank("naranja")).map(([k]) => k);
 
 /** Impacto externo aplicado en la reconstrucción (se muestra aparte de las decisiones propias). */
-export interface ExternalHit { id: string; day: number; text: string; mode: WorldEpisode["mode"]; commands: string[] }
+export interface ExternalHit { id: string; day: number; text: string; mode: WorldEpisode["mode"]; commands: string[]; parts?: { inevitable: string[]; evitable: string[]; future: string[] }; rv?: number }
 /** Lo que la interfaz necesita para etiquetar el caso externo. */
 export interface WorldView { kind: Kind; facts?: Facts; assets: string[]; id: string; mode: WorldEpisode["mode"]; label: string; name: string; status: WorldEpisode["status"]; source: SourceRef; also?: SourceRef; deadline: number; daysLeft: number; family: Family }
 export function worldViewOf(ep: WorldEpisode, day: number, templateId: string): WorldView {
   const deadline = deadlineOf(ep);
   return {
     id: ep.id, kind: ep.kind, ...(ep.facts ? { facts: ep.facts } : {}), mode: ep.mode, name: ep.name, status: ep.status, source: ep.source, ...(ep.also ? { also: ep.also } : {}), family: ep.family, deadline, daysLeft: Math.max(0, deadline - day),
-    assets: ep.facts ? exposedLinesOf(templateId, ep.kind) : (exposureOf(templateId)?.sites ?? []).filter((x) => zoneRank(ep.sites[x.id] ?? "ninguna") >= zoneRank("naranja")).map((x) => `${x.label} (zona ${ep.sites[x.id]})`),
+    assets: ep.facts ? exposedLinesOf(templateId, ep.kind, ep.facts.rule) : (exposureOf(templateId)?.sites ?? []).filter((x) => zoneRank(ep.sites[x.id] ?? "ninguna") >= zoneRank("naranja")).map((x) => `${x.label} (zona ${ep.sites[x.id]})`),
     label: ep.mode === "ejercicio" ? "Ejercicio hipotético · No es un acontecimiento real" : "Evento real · Simulación de impacto en tu empresa",
   };
 }
 /** Líneas de la exposición que mueve un acontecimiento no geográfico (lo que se muestra como «activo expuesto»). */
-export function exposedLinesOf(templateId: string, kind: Kind): string[] {
+export function exposedLinesOf(templateId: string, kind: Kind, rule?: string): string[] {
   const x = exposureOf(templateId);
   if (!x) return [];
   if (kind === "tipo_cambio") return [...x.buys, ...x.sells].filter((f) => f.currency !== "MXN").map((f) => `${f.what} (${f.currency})`);
   if (kind === "tasa") return x.debt.map((d) => (d.kind === "fija" ? "Crédito bancario a tasa fija" : `Crédito a tasa variable (${d.index ?? "TIIE"})`));
+  if (kind === "arancel" && rule === "us_232_acero") { const k = x.profile.exportContracts; return k ? [`${k.what} vendida a ${k.destination} con entrega ${k.incoterm}: el arancel lo paga ${k.importerOfRecord ? "tu empresa" : "el comprador (importador de registro)"}`] : []; }
   if (kind === "arancel") return [...(x.products ?? []).map((p) => `${p.what} (venta en ${p.market})`), ...x.trade.filter((t) => t.importerOfRecord).map((t) => `${t.what} (${t.origin} → ${t.destination})`)];
   return [];
 }

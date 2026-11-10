@@ -14,7 +14,7 @@ const APP_PREFIXES = ["/inicio", "/scorecard", "/carga", "/mapa", "/equipo", "/i
 const CEO_HOSTS = ["metis.ceo", "www.metis.ceo"];
 /** Dominio anterior de mêtis CEO: todo se manda a metis.ceo (vía /mudanza, que se lleva la partida guardada). */
 const OLD_CEO_HOSTS = ["metisalign.app", "www.metisalign.app"];
-const CEO_PASSTHROUGH = ["/ceo", "/entrar", "/api", "/auth", "/login", "/_next", "/brand", "/mudanza", "/simulador", "/legal", "/sw.js", "/manifest.webmanifest", "/ceo.webmanifest"];
+const CEO_PASSTHROUGH = ["/ceo", "/assess", "/entrar", "/api", "/auth", "/login", "/_next", "/brand", "/mudanza", "/simulador", "/legal", "/sw.js", "/manifest.webmanifest", "/ceo.webmanifest"];
 /** Páginas legales de metis.ceo: «/privacidad» → «/legal/privacidad». */
 const CEO_LEGAL: Record<string, string> = { "/privacidad": "/legal/privacidad", "/terminos": "/legal/terminos" };
 

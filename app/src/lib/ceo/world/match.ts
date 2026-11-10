@@ -39,7 +39,7 @@ export const revOf = (z: Record<string, Zone>): number => { const t = topZone(z)
 export const urgencyOf = (z: Record<string, Zone>): Urgency => (topZone(z) === "roja" ? "urgente" : topZone(z) === "naranja" ? "importante" : "informativa");
 
 /** Distancia máxima (km) del centro del acontecimiento a una sede para siquiera pedir su geometría. */
-export const PREFILTER_KM = { TC: 1500, EQ: 500 } as const;
+export const PREFILTER_KM = { TC: 1500, EQ: 500, FL: 400 } as const;
 
 /**
  * Candidato para una plantilla. null si ninguna sede queda en zona naranja o roja (y no se está siguiendo un episodio
@@ -50,11 +50,11 @@ export function candidateFor(templateId: string, ev: GdacsEvent, layers: readonl
   const rev = revOf(z.sites);
   if (!rev && !opts.tracked) return null;
   const ended = !ev.current;
-  const kind = ev.type === "TC" ? "ciclon" : "sismo";
-  const observedOnly = kind === "sismo" || ended;
+  const kind = ev.type === "TC" ? "ciclon" : ev.type === "FL" ? "inundacion" : "sismo";
+  const observedOnly = kind !== "ciclon" || ended;
   return {
-    src: "gdacs", ev: `${ev.type.toLowerCase()}${ev.eventId}`, rev, family: kind === "ciclon" ? "clima" : "sismo", kind,
-    name: kind === "ciclon" ? `Ciclón tropical ${ev.name}` : `Sismo${ev.country ? ` en ${ev.country}` : ""}`,
+    src: "gdacs", ev: `${ev.type.toLowerCase()}${ev.eventId}`, rev, family: kind === "sismo" ? "sismo" : "clima", kind,
+    name: kind === "ciclon" ? `Ciclón tropical ${ev.name}` : kind === "inundacion" ? `Inundación${ev.country ? ` en ${ev.country}` : ""}` : `Sismo${ev.country ? ` en ${ev.country}` : ""}`,
     status: observedOnly ? "observado" : "pronostico",
     severity: ev.severity,
     source: { name: "GDACS (ONU y Comisión Europea)", url: ev.report || "https://www.gdacs.org/" },
