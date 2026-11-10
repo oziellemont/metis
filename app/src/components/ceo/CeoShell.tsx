@@ -48,51 +48,66 @@ export function CeoShell({ children }: { children: React.ReactNode }) {
 
   const active = (h: string) => (h === "/ceo" ? path === "/ceo" : path.startsWith(h));
   const n = c.pending.length + (c.reportDue !== null ? 1 : 0);
+  // Hoy es el centro de mando: ocupa todo el ancho con el fondo mêtis y trae su propio encabezado.
+  const home = path === "/ceo";
+  // Mismo lenguaje que las pantallas de decisión y el alta: translúcido en reposo, más claro al pasar; el activo, índigo con halo.
+  const railCls = (on: boolean) => clsx("group relative h-11 w-11 rounded-xl grid place-items-center transition-all", on ? "bg-indigo text-white shadow-[0_0_0_4px_rgba(109,93,246,.35)]" : "text-white/60 hover:bg-white/10 hover:text-white");
 
   return (
-    <div className="min-h-screen bg-canvas">
-      {/* escritorio */}
-      <aside className="hidden lg:flex fixed inset-y-0 left-0 w-60 flex-col bg-white border-r border-slate-100 px-4 py-5">
-        <Link href="/ceo" className="flex items-center gap-2 px-2"><Logo height={26} /><span className="chip bg-ink text-white text-[10px] tracking-wider">CEO</span></Link>
-        <div className="mt-6 px-3">
-          <div className="flex items-center gap-1.5 text-[13px] font-semibold text-ink min-w-0"><Building2 size={13} className="shrink-0 text-indigo" /><span className="truncate">{c.pack.name}</span></div>
-          <div className="mt-0.5 text-[11px] text-slate-400">Día {c.day} · {c.s.name || "CEO"}</div>
-        </div>
-        <nav className="mt-4 space-y-1">
+    <div className={clsx("min-h-screen", home ? "bg-gradient-to-br from-[#0F1130] via-[#1A1650] to-[#2B1F8A]" : "bg-canvas")}>
+      {/* escritorio: riel de íconos */}
+      <aside className="hidden lg:flex fixed inset-y-0 left-0 z-30 w-[76px] flex-col items-center bg-[#0F1130] border-r border-white/[.06] py-5">
+        <Link href="/ceo" aria-label="mêtis, inicio" className="h-11 w-11 grid place-items-center rounded-xl transition-colors hover:bg-white/10"><Logo variant="icon" height={26} /></Link>
+        <nav className="mt-7 flex flex-col items-center gap-2" aria-label="Menú">
           {NAV.map(({ href, label, Icon, badge }) => (
-            <Link key={href} href={href} className={clsx("flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors", active(href) ? "bg-indigo-soft text-indigo" : "text-slate-500 hover:bg-slate-50 hover:text-ink")}>
-              <Icon size={18} /> <span className="flex-1">{label}</span>
-              {badge && n > 0 && <span className="h-5 min-w-5 px-1.5 rounded-full bg-coral text-white text-[11px] font-semibold grid place-items-center">{n}</span>}
+            <Link key={href} href={href} aria-label={label} aria-current={active(href) ? "page" : undefined} className={railCls(active(href))}>
+              <Icon size={20} strokeWidth={active(href) ? 2.2 : 1.9} />
+              {badge && n > 0 && <span className="absolute -top-1 -right-1 h-[18px] min-w-[18px] px-1 rounded-full bg-coral text-white text-[10px] font-semibold grid place-items-center ring-2 ring-[#0F1130]">{n}</span>}
+              <span className="pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-lg bg-white px-2.5 py-1 text-xs font-medium text-ink opacity-0 -translate-x-1 shadow-lg transition-all group-hover:opacity-100 group-hover:translate-x-0">{label}</span>
             </Link>
           ))}
         </nav>
-        <div className="mt-auto space-y-1">
-          <div className={clsx("flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm", c.streak.atRisk ? "bg-amber-soft text-amber" : "text-ink")}>
-            <Flame on={c.streak.days > 0 && c.streak.doneToday} /> <b className="tabular-nums">{c.streak.days}</b> <span className="text-slate-500">{c.streak.days === 1 ? "día" : "días"} de racha</span>
-          </div>
-          <Link href="/ceo/ajustes" className={clsx("flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium", active("/ceo/ajustes") ? "bg-indigo-soft text-indigo" : "text-slate-500 hover:bg-slate-50")}><Settings size={18} /> Ajustes</Link>
+        <div className="mt-auto flex flex-col items-center gap-3">
+          <span className="h-px w-8 bg-white/15" />
+          <Link href="/ceo/ajustes" aria-label="Ajustes" className={railCls(active("/ceo/ajustes"))}>
+            <Settings size={20} strokeWidth={1.9} />
+            <span className="pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-lg bg-white px-2.5 py-1 text-xs font-medium text-ink opacity-0 -translate-x-1 shadow-lg transition-all group-hover:opacity-100 group-hover:translate-x-0">Ajustes</span>
+          </Link>
         </div>
       </aside>
 
       {/* móvil: barra superior */}
-      <header className="lg:hidden sticky top-0 z-30 bg-white/90 backdrop-blur border-b border-slate-100 px-4 h-14 flex items-center justify-between">
-        <Link href="/ceo" className="flex items-center gap-1.5"><Logo variant="icon" height={26} /><span className="chip bg-ink text-white text-[10px] tracking-wider">CEO</span></Link>
+      <header className="lg:hidden sticky top-0 z-30 bg-[#0F1130]/95 backdrop-blur border-b border-white/[.06] px-4 h-14 flex items-center justify-between text-white">
+        <Link href="/ceo" aria-label="mêtis, inicio" className="flex items-center"><Logo variant="light" height={24} /></Link>
         <div className="flex items-center gap-3 text-sm">
           <span className={clsx("inline-flex items-center gap-1 font-semibold tabular-nums", c.streak.atRisk && "text-amber")}><Flame on={c.streak.days > 0 && c.streak.doneToday} size={17} /> {c.streak.days}</span>
-          <span className="inline-flex items-center gap-1 font-semibold tabular-nums text-indigo">{c.xp} <span className="text-[10px] text-slate-400">XP</span></span>
-          <Link href="/ceo/ajustes" aria-label="Ajustes" className="text-slate-400"><Settings size={18} /></Link>
+          <span className="inline-flex items-center gap-1 font-semibold tabular-nums">{c.xp} <span className="text-[10px] text-white/50">XP</span></span>
+          <Link href="/ceo/ajustes" aria-label="Ajustes" className="h-8 w-8 grid place-items-center rounded-full text-white/60 transition-colors hover:bg-white/10 hover:text-white"><Settings size={18} /></Link>
         </div>
       </header>
 
-      <main className="lg:pl-60 pb-24 lg:pb-10">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-5 sm:py-8">{children}</div>
+      <main className={clsx("lg:pl-[76px] pb-24 lg:pb-0", !home && "lg:pb-10")}>
+        {home ? children : (
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-5 sm:py-8">
+            {/* escritorio: empresa y día a la izquierda; racha y XP a la derecha */}
+            <div className="hidden lg:flex items-center justify-between gap-4 mb-6 text-sm">
+              <div className="flex items-center gap-1.5 min-w-0 font-semibold text-ink"><Building2 size={14} className="shrink-0 text-indigo" /><span className="truncate">{c.pack.name}</span><span className="font-normal text-slate-400">· Día {c.day}</span></div>
+              <div className="flex items-center gap-4 shrink-0">
+                <span className={clsx("inline-flex items-center gap-1.5", c.streak.atRisk ? "text-amber" : "text-ink")}><Flame on={c.streak.days > 0 && c.streak.doneToday} size={16} /> <b className="tabular-nums">{c.streak.days}</b> <span className="text-slate-500">{c.streak.days === 1 ? "día" : "días"} de racha</span></span>
+                <span className="h-4 w-px bg-slate-200" />
+                <span className="font-semibold tabular-nums text-ink">{c.xp} <span className="text-slate-500 font-normal">XP</span></span>
+              </div>
+            </div>
+            {children}
+          </div>
+        )}
       </main>
 
       {/* móvil: barra inferior */}
-      <nav className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-white border-t border-slate-100 grid grid-cols-6 pb-[env(safe-area-inset-bottom)]">
+      <nav className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-[#0F1130] border-t border-white/[.06] grid grid-cols-6 pb-[env(safe-area-inset-bottom)]">
         {NAV.filter((x) => !x.desktop).map(({ href, label, Icon, badge }) => (
-          <Link key={href} href={href} className={clsx("relative flex flex-col items-center gap-0.5 py-2 text-[10px] font-medium", active(href) ? "text-indigo" : "text-slate-400")}>
-            <Icon size={21} strokeWidth={active(href) ? 2.4 : 2} /> {label}
+          <Link key={href} href={href} className={clsx("relative flex flex-col items-center gap-0.5 py-2 text-[10px] font-medium transition-colors", active(href) ? "text-white" : "text-white/50 hover:text-white")}>
+            <span className={clsx("h-7 w-11 rounded-full grid place-items-center transition-colors", active(href) ? "bg-indigo" : "")}><Icon size={19} strokeWidth={active(href) ? 2.3 : 1.9} /></span> {label}
             {badge && n > 0 && <span className="absolute top-1 left-1/2 ml-2 h-4 min-w-4 px-1 rounded-full bg-coral text-white text-[10px] font-semibold grid place-items-center">{n}</span>}
           </Link>
         ))}

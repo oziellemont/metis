@@ -58,7 +58,7 @@ export function CaseDemo({ t }: { t: Copy }) {
 
         <div className="relative px-5 sm:px-6 pt-5">
           <div className="flex items-center justify-between gap-3">
-            <span className="flex items-center gap-2"><Logo height={20} /><span className="chip bg-ink text-white text-[10px] tracking-wider">CEO</span></span>
+            <span className="flex items-center gap-2"><Logo height={20} /></span>
             <span className="text-[11px] text-slate-400">{C.label}</span>
           </div>
           <ol className="mt-5 grid grid-cols-5 gap-2" aria-label={C.stepOf.replace("{n}", String(step + 1)).replace("{t}", String(C.steps.length))}>

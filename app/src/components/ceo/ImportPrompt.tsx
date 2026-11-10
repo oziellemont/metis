@@ -43,7 +43,7 @@ export function ImportPrompt({ flow }: { flow: ImportFlow }) {
   return (
     <main className="min-h-screen bg-canvas px-5 py-10 grid place-items-center">
       <div className="w-full max-w-xl">
-        <div className="flex items-center gap-2"><Logo height={24} /><span className="chip bg-ink text-white text-[10px] tracking-wider">CEO</span></div>
+        <div className="flex items-center gap-2"><Logo height={24} /></div>
         <section className="card mt-6 p-6 sm:p-8">
           <h1 className="text-xl font-semibold text-ink">Encontramos una carrera guardada en este navegador</h1>
           <p className="mt-2 text-sm text-slate-500">

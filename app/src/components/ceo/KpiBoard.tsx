@@ -47,21 +47,40 @@ export function HealthBar({ dark, onOpen }: { dark?: boolean; onOpen?: () => voi
   return <button type="button" data-testid="barra-salud" onClick={onOpen} aria-label={`Salud de la empresa: ${h.value} de 100. Ver qué la mueve`} className="block w-full text-left rounded-lg -mx-1 px-1 py-0.5 hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo">{body}</button>;
 }
 
+/**
+ * Salud de la empresa en grande, para el centro de mando de Hoy: la cifra, la barra con la línea del consejo y la
+ * distancia a esa línea. Se toca igual que la barra madre y abre el mismo detalle.
+ */
+function HealthHero({ onOpen }: { onOpen: () => void }) {
+  const h = useHealth();
+  return (
+    <button type="button" data-testid="barra-salud" onClick={onOpen} aria-label={`Salud de la empresa: ${h.value} de 100. Ver qué la mueve`}
+      className="block w-full text-left rounded-2xl -mx-2 px-2 py-1.5 transition-colors hover:bg-indigo-soft/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo">
+      <span className="block text-[15px] font-semibold text-ink">Salud de la empresa</span>
+      <span className="mt-2 flex items-baseline gap-1.5"><span className="text-[56px] font-semibold leading-none tracking-tight tabular-nums text-ink">{h.value}</span><span className="text-2xl text-slate-400 tabular-nums">/100</span></span>
+      <Bar value={h.value} line={h.min} className="mt-4 h-3" />
+      <span className="mt-2 block text-[12px] text-slate-500">
+        {h.cushion >= 0 ? `${h.cushion} ${h.cushion === 1 ? "punto" : "puntos"} arriba` : `${-h.cushion} ${h.cushion === -1 ? "punto" : "puntos"} debajo`} de la salud mínima del consejo ({h.min})
+      </span>
+    </button>
+  );
+}
+
 type Open = KpiKey | "salud" | null;
 
 /**
  * Tablero de indicadores: barra madre de salud + cinco barras. Cada barra se puede tocar y abre el mismo panel de
  * detalle (en Hoy y en Mi empresa): estado, último movimiento, causas principales, historial y lo que puedes hacer.
  */
-export function KpiBoard({ compact }: { compact?: boolean }) {
+export function KpiBoard({ compact, hero }: { compact?: boolean; hero?: boolean }) {
   const c = useCeo();
   const pk = c.pack;
   const v = c.verdict;
   const [open, setOpen] = useState<Open>(null);
   return (
     <>
-      <div className="mt-3 pb-3 border-b border-slate-100"><HealthBar onOpen={() => setOpen("salud")} /></div>
-      <div className={clsx("mt-3", compact ? "space-y-1" : "space-y-1.5")} data-testid="barras-indicadores">
+      {hero ? <HealthHero onOpen={() => setOpen("salud")} /> : <div className="mt-3 pb-3 border-b border-slate-100"><HealthBar onOpen={() => setOpen("salud")} /></div>}
+      <div className={clsx(hero ? "mt-5" : "mt-3", compact ? "space-y-1" : "space-y-1.5")} data-testid="barras-indicadores">
         {KPI_KEYS.map((k) => (
           <button key={k} type="button" onClick={() => setOpen(k)} title={pk.kpiHint[k]} aria-label={`${pk.kpiLabel[k]}: ${c.kpis[k]} de 100. Ver qué lo movió`}
             className="w-full grid grid-cols-[72px_1fr_auto] items-center gap-3 rounded-lg -mx-1 px-1 py-1 text-left hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo">

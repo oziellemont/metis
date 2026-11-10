@@ -113,11 +113,11 @@ describe("reglas v9: definidas, nunca activas (v10 las incluye)", () => {
 
 describe("pantallas: barras con detalle en Hoy, Mi empresa y el resultado", () => {
   const today = src("Today.tsx"), company = src("CompanyView.tsx"), board = src("KpiBoard.tsx"), caseView = src("CaseView.tsx");
-  it("Hoy: barra madre en «Tu mandato» (debajo del estado) y tablero clicable en «Tu empresa hoy»", () => {
-    expect(today).toContain("<HealthBar dark />");
-    expect(today.indexOf("t.moment.text")).toBeLessThan(today.indexOf("<HealthBar dark />"));
-    expect(today.indexOf("<HealthBar dark />")).toBeLessThan(today.indexOf('aria-label="Constancia"'));
-    expect(today.indexOf("Tu empresa hoy")).toBeLessThan(today.indexOf("<KpiBoard />"));
+  it("Hoy: salud en grande y tablero clicable en «Tu empresa hoy»", () => {
+    // Centro de mando: la salud en grande abre el panel lateral, con el mismo tablero clicable.
+    expect(today).toContain("<KpiBoard hero />");
+    expect(board).toContain("function HealthHero");
+    expect(today.indexOf("Tu empresa hoy")).toBeLessThan(today.indexOf("<KpiBoard hero />"));
   });
   it("Mi empresa abre el mismo panel", () => {
     expect(company).toContain("<KpiBoard />");
