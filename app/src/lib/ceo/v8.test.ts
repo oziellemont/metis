@@ -346,12 +346,11 @@ describe("v8 · activación", () => {
     // El veredicto del mes v7 no cambia por existir v8.
     expect(verdictOf(closed.state, closed.at)).toEqual(before);
   }, 120_000);
-  it("Hoy avisa una sola vez del cambio a v8, al pasar de un mes v6/v7 a uno v8", async () => {
+  it("Hoy no muestra avisos internos de cambio de reglas al jugador", async () => {
     const { readFileSync } = await import("node:fs");
     const src = readFileSync("src/components/ceo/Today.tsx", "utf8");
-    expect(src).toContain("curV >= COHERENCE_RULES_VERSION && prevV >= 6 && prevV < COHERENCE_RULES_VERSION");
-    expect(src).toContain('data-testid="aviso-coherencia"');
-    expect(src).toMatch(/Tus meses anteriores conservan su evaluación/);
+    expect(src).not.toContain('data-testid="aviso-coherencia"');
+    expect(src).not.toMatch(/Tus meses anteriores conservan su evaluación/);
   });
   it("cruzar una línea roja nunca cuenta como bien razonado en v8 (aunque ayude al tablero)", () => {
     const item = seasonItems(own("cumbre", T0, V8)).find((x) => x.id === "c-mant-dosificador") ?? COMPANIES.flatMap((c) => c.items ?? []).find((x: Item) => x.id === "c-mant-dosificador");

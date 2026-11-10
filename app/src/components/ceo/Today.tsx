@@ -2,8 +2,8 @@
 import Link from "next/link";
 import { useEffect, useMemo } from "react";
 import clsx from "clsx";
-import { ArrowRight, BookOpen, Check, Briefcase, Clock, Coffee, Flag, Trophy } from "lucide-react";
-import { KPI_KEYS, closedRunsOf, growthDayOf } from "@/lib/ceo/engine";
+import { ArrowRight, BookOpen, Check, Briefcase, Clock, Coffee, Flag, Trophy, CircleCheck, CircleAlert, Hourglass, Eye } from "lucide-react";
+import { KPI_KEYS, growthDayOf } from "@/lib/ceo/engine";
 import { growthAt, isRetailLog, isSteelLog, pendingGrowth, retailOf, retailPendingOf, steelOf, steelPendingOf } from "@/lib/ceo/growth/session";
 import { todayLineOf } from "@/lib/ceo/growth/view";
 import { alertsOf } from "@/lib/ceo/growth/ops";
@@ -11,8 +11,6 @@ import { AlertChips } from "./GrowthPanel";
 import { steelAlerts } from "./SteelPanel";
 import { retailAlerts } from "./RetailPanel";
 import { Globe2, TrendingUp } from "lucide-react";
-import { COHERENCE_RULES_VERSION, CONTINUOUS_RULES_VERSION, ECONOMY_RULES_VERSION } from "@/lib/ceo/rules";
-import { ETHICS_AUDIT_RULES } from "@/lib/ceo/editorial";
 import { firstName, personOf } from "@/lib/ceo/cast";
 import { LESSONS } from "@/lib/ceo/lessons";
 import { useCeo } from "./CeoProvider";
@@ -20,7 +18,7 @@ import { track } from "@/lib/ceo/events";
 import { DilemmaPrompt } from "./DilemmaPrompt";
 import { boardAccess } from "@/lib/ceo/board";
 import { crisisAccess } from "@/lib/ceo/crisis";
-import { specialTasks } from "@/lib/ceo/today";
+import { dayBriefOf, dayStartOf, specialTasks, type BriefKind } from "@/lib/ceo/today";
 import { rankOf } from "@/lib/ceo/lessons";
 import { nextLessonXp, rankFor } from "@/lib/ceo/engine";
 import { nudgeQuiet, shouldNudge } from "@/lib/ceo/profile";
@@ -81,15 +79,23 @@ export function Today() {
   }, [c.s, c.now, c.seasonDone]);
   // V5/V6 · el encargo y las reglas se ven ANTES de decidir: nadie reprueba por una regla que no conocía.
   const mandate = v.v5 && !c.seasonDone ? v.v5 : null;
-  const prevRun = c.continuous ? closedRunsOf(c.s).at(-1) : undefined;
-  // Aviso de cambio de reglas al pasar de un periodo a otro: de v4 a la evaluación V5 (v6+), o de v6 a la auditoría ética (v7).
-  const curV = c.s.rulesVersion ?? 1, prevV = prevRun?.rulesVersion ?? 1;
-  const newRules = !!mandate && !!prevRun && curV >= 6 && curV <= CONTINUOUS_RULES_VERSION && prevV < 6;
-  const ethicsRules = !!mandate && !!prevRun && curV >= ETHICS_AUDIT_RULES && prevV >= 6 && prevV < ETHICS_AUDIT_RULES;
-  // v8 · coherencia: se avisa una sola vez, en el primer mes v8 después de un mes v6/v7.
-  const coherenceRules = !!mandate && !!prevRun && curV >= COHERENCE_RULES_VERSION && prevV >= 6 && prevV < COHERENCE_RULES_VERSION;
-  // v10 · economía real: se avisa en el primer mes v10 (también si la partida se pasó a v10 a mitad del mes).
-  const econRules = !!mandate && curV >= ECONOMY_RULES_VERSION && (!!c.s.econMigration || (!!prevRun && prevV >= 6 && prevV < ECONOMY_RULES_VERSION));
+  // Resumen del día: lo que ya pasó hoy y lo que viene, en cuatro líneas a lo mucho.
+  const brief = useMemo(() => {
+    if (c.seasonDone) return [];
+    const tz = c.s.settings?.tz || "America/Monterrey";
+    return dayBriefOf({
+      now: c.now,
+      dayStart: dayStartOf(c.now, tz),
+      decided: c.entries.filter((e) => e.status === "decidido" && e.decision).map((e) => ({ subject: e.item.subject, at: e.decision!.at })),
+      expired: c.entries.filter((e) => e.status === "vencido").map((e) => ({ subject: e.item.subject, deadline: e.deadline })),
+      pending: c.pending.map((e) => ({ subject: e.item.subject, who: firstName(pk, e.item.from), deadline: e.deadline })),
+      world: growth?.world ? { name: growth.world.name, label: growth.world.label, daysLeft: growth.world.daysLeft } : null,
+      report: c.reportDue,
+      nextArrival: c.nextArrival,
+      quiet: c.cadence === "quiet_day",
+      alert: alerts.find((a) => a.level !== "aviso")?.text ?? growth?.alerts[0]?.text ?? null,
+    });
+  }, [c.seasonDone, c.s.settings, c.now, c.entries, c.pending, growth, c.reportDue, c.nextArrival, c.cadence, alerts, pk]);
   const t = c.trajectory;
   const headline = headlineOf(t);
   const greeting = c.seasonDone
@@ -109,7 +115,6 @@ export function Today() {
 
   // Mismo lenguaje que las pantallas de decisión: translúcido en reposo, un poco más claro al pasar el cursor.
   const glass = "rounded-2xl border bg-white/[.06] border-white/[.12] transition-all hover:bg-white/10";
-  const soft = "rounded-xl bg-white/[.08] px-3.5 py-2.5 text-[13px] text-white/85 leading-relaxed";
   const primary = cta ?? (c.seasonDone ? null : waiting === 0 ? { href: "/ceo/academy", label: "Explorar Academy" } : null);
   const stageTotal = COMPANY_STAGES.length;
 
@@ -240,29 +245,26 @@ export function Today() {
           </section>
 
           {/* V5/V6 · el encargo y las reglas se ven ANTES de decidir */}
+          {(brief.length > 0 || mandate) && <div className="mt-auto pt-10 space-y-5">
+          {brief.length > 0 && (
+            <section data-testid="resumen-dia" aria-label="Tu día" className="rounded-2xl border border-white/[.12] bg-white/[.06] backdrop-blur px-5 py-4 sm:px-6">
+              <h2 className="text-[11px] font-semibold uppercase tracking-[.25em] text-white/55">Tu día</h2>
+              <ul className="mt-2.5 space-y-1.5">
+                {brief.map((l, i) => {
+                  const Icon = BRIEF_ICON[l.kind];
+                  return (
+                    <li key={i} data-kind={l.kind} className="flex gap-2.5 text-[14px] leading-snug text-white/85">
+                      <Icon size={15} className={clsx("mt-[2px] shrink-0", BRIEF_TONE[l.kind])} aria-hidden />
+                      <span className="min-w-0">{l.text}</span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          )}
           {mandate && (
-            <section data-testid="encargo-periodo" className="mt-auto pt-10">
+            <section data-testid="encargo-periodo">
               <div className="rounded-2xl border border-white/[.12] bg-white/[.06] backdrop-blur p-5 sm:p-6">
-                {newRules && (
-                  <p data-testid="aviso-reglas-nuevas" className={clsx(soft, "mb-4")}>
-                    <b className="text-white">Desde este mes el consejo evalúa de otra forma.</b> Ya no basta con tener los cinco indicadores en la línea: revisa tu encargo, la salud de la empresa y qué tan bien razonas. Tus meses anteriores conservan la evaluación que ya recibiste.
-                  </p>
-                )}
-                {ethicsRules && (
-                  <p data-testid="aviso-lineas-rojas" className={clsx(soft, "mb-4")}>
-                    <b className="text-white">Desde este mes hay más líneas rojas.</b> Prometerle a un cliente algo que no existe y encubrirlo, mover a quien denuncia, darle al equipo una explicación falsa, mantener una fecha que solo se cumple haciendo trampa u ocultar un error culpando a otro ya no se compensan con buenos números. Tus meses anteriores conservan su evaluación.
-                  </p>
-                )}
-                {coherenceRules && (
-                  <p data-testid="aviso-coherencia" className={clsx(soft, "mb-4")}>
-                    <b className="text-white">Desde este mes el consejo es más justo con tu criterio.</b> Si una respuesta es defendible aunque tenga un costo, cuenta como bien razonada. Lo que depende de que otra persona acepte cuenta cuando responde, no antes. Y dejar vencer un asunto ético grave cuenta igual que decidir mal. Tus meses anteriores conservan su evaluación.
-                  </p>
-                )}
-                {econRules && (
-                  <p data-testid="aviso-economia" className={clsx(soft, "mb-4")}>
-                    <b className="text-white">Desde ahora Caja y Margen se mueven con dinero real.</b> Cada asunto registra lo que se paga, se cobra o se concede, con su monto y su fecha: un descuento baja el margen desde que lo firmas; un pago sale de la caja el día que ocurre; un ahorro cuenta cuando se mide. No conceder no suma, y un monto chico para el tamaño de tu empresa no mueve el indicador. Una concesión o inversión grande sin pasar por el consejo le cuesta su confianza.{c.s.econMigration ? " Tu periodo en curso se recalculó con estas reglas: tus decisiones, tu historial y tu racha siguen igual." : ""}
-                  </p>
-                )}
                 <h2 className="text-[11px] font-semibold uppercase tracking-[.25em] text-white/55">Misión del consejo {c.continuous ? "· este mes" : "· esta temporada"}</h2>
                 <p className="mt-2 text-xl sm:text-2xl font-semibold leading-snug">{mandate.objectiveText}</p>
                 <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 text-[13px] text-white/75">
@@ -276,6 +278,7 @@ export function Today() {
               </div>
             </section>
           )}
+          </div>}
 
           {nudge && (
             <section className={clsx(glass, "mt-5 px-4 py-3 flex flex-wrap items-center gap-3 academy-in hover:bg-white/[.06]")}>
@@ -358,3 +361,6 @@ export function Today() {
     </div>
   );
 }
+
+const BRIEF_ICON: Record<BriefKind, typeof Clock> = { hecho: CircleCheck, vencido: CircleAlert, mundo: Globe2, viene: Hourglass, ojo: Eye };
+const BRIEF_TONE: Record<BriefKind, string> = { hecho: "text-mint", vencido: "text-coral", mundo: "text-amber", viene: "text-indigo-light", ojo: "text-amber" };
