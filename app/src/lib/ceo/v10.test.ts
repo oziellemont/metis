@@ -232,11 +232,11 @@ describe("v10 · continuidad de partidas", () => {
     expect(r.months).toHaveLength(1);
     expect(verdictOf(r.months[0].state, r.months[0].at).v5).toBeTruthy();
   }, 120_000);
-  it("Hoy avisa del cambio a la economía real y a las partidas pasadas les confirma que nada de lo suyo se perdió", async () => {
+  it("Hoy no le muestra al jugador el aviso interno de la economía real", async () => {
     const { readFileSync } = await import("node:fs");
     const src = readFileSync("src/components/ceo/Today.tsx", "utf8");
-    expect(src).toContain('data-testid="aviso-economia"');
-    expect(src).toMatch(/tus decisiones, tu historial y tu racha siguen igual/);
+    expect(src).not.toContain('data-testid="aviso-economia"');
+    expect(src).not.toMatch(/mueven con dinero real/);
   });
 });
 
