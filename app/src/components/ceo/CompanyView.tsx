@@ -7,9 +7,7 @@
 import clsx from "clsx";
 import { useEffect, useState } from "react";
 import { useCeo } from "./CeoProvider";
-import { useHealth } from "./KpiBoard";
 import { industryOf } from "@/lib/ceo/career/taxonomy";
-import { useBusiness } from "./empresa/shared";
 import { ResumenTab } from "./empresa/ResumenTab";
 import { FinanzasTab } from "./empresa/FinanzasTab";
 import { OperacionTab } from "./empresa/OperacionTab";
@@ -20,8 +18,6 @@ import { EMPRESA_TABS, tabOfHash, type EmpresaTab } from "./empresa/tabs";
 export function CompanyView() {
   const c = useCeo();
   const pk = c.pack;
-  const h = useHealth();
-  const biz = useBusiness();
   const [tab, setTab] = useState<EmpresaTab>("resumen");
   const prof = c.s.companyProfile;
   const industry = prof ? industryOf(prof.sectorId, prof.industryId)?.label ?? pk.industry : pk.industry;
@@ -50,19 +46,6 @@ export function CompanyView() {
       <header className="pt-1 text-center">
         <div className="text-[12px] text-slate-500 truncate">{industry}{prof?.specialty ? ` · ${prof.specialty}` : ""} · {pk.city}</div>
         <h1 className="mt-0.5 text-[22px] sm:text-2xl font-semibold leading-tight text-ink truncate">{pk.name}</h1>
-        <div className="mt-1.5 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[13px] text-slate-500">
-          <span data-testid="chip-salud">
-            Salud empresarial <b className={clsx("tabular-nums", h.cushion >= 0 ? "text-ink" : "text-coral")}>{h.value}/100</b>
-          </span>
-          {biz && biz.score.total > 0 && (
-            <>
-              <span aria-hidden className="hidden sm:inline text-slate-300">·</span>
-              <span data-testid="chip-operacion">
-                Desempeño operativo <b className="tabular-nums text-ink">{biz.score.met} de {biz.score.total}</b> KPI en meta
-              </span>
-            </>
-          )}
-        </div>
         <div className="mt-5 flex justify-center">
           <nav role="tablist" aria-label="Secciones de la empresa"
             className="flex w-full sm:w-auto items-center gap-0.5 sm:gap-1 rounded-full border border-slate-200 bg-white p-1 shadow-[0_1px_2px_rgba(23,26,58,.06),0_6px_20px_-10px_rgba(23,26,58,.18)]">
