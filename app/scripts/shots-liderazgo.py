@@ -11,7 +11,7 @@ with sync_playwright() as p:
         ctx = b.new_context(viewport=vp, is_mobile=dev == "mobile")
         ctx.add_init_script(f"try {{ if (!localStorage.getItem('metis-ceo-v1')) localStorage.setItem('metis-ceo-v1', {json.dumps(seed)}); }} catch (e) {{}}")
         pg = ctx.new_page()
-        pg.goto(BASE + "/ceo/perfil", wait_until="networkidle"); pg.wait_for_timeout(1500)
+        pg.goto(BASE + "/ceo/carrera#perfil", wait_until="networkidle"); pg.wait_for_timeout(1500)
         for label in ["Recordar más tarde", "Ahora no", "Más tarde"]:
             btn = pg.get_by_role("button", name=label)
             if btn.count():

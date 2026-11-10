@@ -26,7 +26,8 @@ describe("Empresa · cinco pestañas", () => {
     const v = read("CompanyView.tsx");
     expect(v).not.toContain("Salud empresarial");
     expect(v).not.toContain("Desempeño operativo");
-    expect(v).toContain('role="tablist"');
+    expect(v).toContain("<PillTabs");
+    expect(read("PillTabs.tsx")).toContain('role="tablist"');
     expect(read("empresa/OperacionTab.tsx")).toContain("en meta");
   });
   it("lo que salió de Empresa vive en otra pantalla", () => {

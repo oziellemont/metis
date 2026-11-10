@@ -7,7 +7,7 @@ seed = open("/tmp/seed.json").read()
 out = sys.argv[1] if len(sys.argv) > 1 else "/workspace/shots"
 import os
 os.makedirs(out, exist_ok=True)
-PAGES = [("hoy", "/ceo"), ("carrera", "/ceo/carrera"), ("perfil", "/ceo/perfil"), ("landing", "/simulador")]
+PAGES = [("hoy", "/ceo"), ("carrera", "/ceo/carrera"), ("perfil", "/ceo/carrera#perfil"), ("landing", "/simulador")]
 with sync_playwright() as p:
     b = p.chromium.launch(args=["--no-sandbox"])
     for dev, vp in [("desktop", {"width": 1366, "height": 900}), ("mobile", {"width": 390, "height": 844})]:

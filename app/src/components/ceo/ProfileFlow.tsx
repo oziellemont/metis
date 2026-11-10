@@ -27,7 +27,7 @@ function Choice({ on, onClick, children, sub }: { on: boolean; onClick: () => vo
     </button>
   );
 }
-function Foot({ onBack, onSkip, onNext, next = "Siguiente", nextOff, note = "Puedes cambiarlo después en Perfil." }: { onBack?: () => void; onSkip?: () => void; onNext: () => void; next?: string; nextOff?: boolean; note?: string }) {
+function Foot({ onBack, onSkip, onNext, next = "Siguiente", nextOff, note = "Puedes cambiarlo después en Carrera, en Mi perfil." }: { onBack?: () => void; onSkip?: () => void; onNext: () => void; next?: string; nextOff?: boolean; note?: string }) {
   return (
     <div className="mt-8 pt-5 border-t border-white/10 flex flex-wrap items-center gap-4">
       {onBack && <button type="button" onClick={onBack} className="inline-flex items-center gap-1.5 text-sm text-white/65 hover:text-white"><ArrowLeft size={14} /> Atrás</button>}

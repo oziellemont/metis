@@ -3,7 +3,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import clsx from "clsx";
-import { Home, Inbox, GraduationCap, UserRound, Settings, X, Building2, Network, Route } from "lucide-react";
+import { Home, Inbox, GraduationCap, Settings, X, Building2, Network, Route } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { useCeo } from "./CeoProvider";
 import { Flame } from "./ui";
@@ -20,7 +20,7 @@ const NAV: { href: string; label: string; Icon: typeof Home; badge?: boolean; de
   { href: "/ceo/academy", label: "Academy", Icon: GraduationCap },
   // «Ranking» (/ceo/ranking) se ocultó del menú y de la barra móvil: el avance no se compara entre jugadores.
   // La página sigue existiendo; para volver a mostrarla basta con regresar el enlace.
-  { href: "/ceo/perfil", label: "Perfil", Icon: UserRound },
+  // «Perfil» ya no es una página aparte: vive dentro de Carrera, en la vista «Mi perfil» (/ceo/carrera#perfil).
 ];
 
 export function CeoShell({ children }: { children: React.ReactNode }) {
@@ -104,7 +104,7 @@ export function CeoShell({ children }: { children: React.ReactNode }) {
       </main>
 
       {/* móvil: barra inferior */}
-      <nav className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-[#0F1130] border-t border-white/[.06] grid grid-cols-6 pb-[env(safe-area-inset-bottom)]">
+      <nav className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-[#0F1130] border-t border-white/[.06] grid grid-cols-5 pb-[env(safe-area-inset-bottom)]">
         {NAV.filter((x) => !x.desktop).map(({ href, label, Icon, badge }) => (
           <Link key={href} href={href} className={clsx("relative flex flex-col items-center gap-0.5 py-2 text-[10px] font-medium transition-colors", active(href) ? "text-white" : "text-white/50 hover:text-white")}>
             <span className={clsx("h-7 w-11 rounded-full grid place-items-center transition-colors", active(href) ? "bg-indigo" : "")}><Icon size={19} strokeWidth={active(href) ? 2.3 : 1.9} /></span> {label}
