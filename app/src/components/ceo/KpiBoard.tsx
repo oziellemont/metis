@@ -1,12 +1,13 @@
 "use client";
 import Link from "next/link";
 import clsx from "clsx";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowRight, X } from "lucide-react";
+import { useMemo, useState } from "react";
+import { ArrowRight } from "lucide-react";
 import { KPI_KEYS } from "@/lib/ceo/engine";
 import { SOURCE_LABEL, ZONE_LABEL, decisionChange, healthState, indicatorDetail, thresholdsOf, type Movement, type Zone } from "@/lib/ceo/indicators";
 import type { KpiKey } from "@/lib/ceo/types";
 import { useCeo } from "./CeoProvider";
+import { DetailDialog, type DetailVariant } from "./DetailDialog";
 import { Bar, BarChange, Delta, directionOf, rel, until } from "./ui";
 
 const ZONE_CLS: Record<Zone, string> = {
@@ -69,10 +70,11 @@ function HealthHero({ onOpen }: { onOpen: () => void }) {
 type Open = KpiKey | "salud" | null;
 
 /**
- * Tablero de indicadores: barra madre de salud + cinco barras. Cada barra se puede tocar y abre el mismo panel de
+ * Tablero de indicadores: barra madre de salud + cinco barras. Cada barra se puede tocar y abre el mismo
  * detalle (en Hoy y en Mi empresa): estado, último movimiento, causas principales, historial y lo que puedes hacer.
+ * En Hoy se abre como panel a la derecha; en Mi empresa (`detail="centro"`), como ventana centrada.
  */
-export function KpiBoard({ compact, hero }: { compact?: boolean; hero?: boolean }) {
+export function KpiBoard({ compact, hero, detail = "lado" }: { compact?: boolean; hero?: boolean; detail?: DetailVariant }) {
   const c = useCeo();
   const pk = c.pack;
   const v = c.verdict;
@@ -91,28 +93,16 @@ export function KpiBoard({ compact, hero }: { compact?: boolean; hero?: boolean 
         ))}
       </div>
       <p className="mt-2 text-[11px] text-slate-400">Toca una barra para ver qué la movió y cuándo.</p>
-      {open && <IndicatorDrawer which={open} onClose={() => setOpen(null)} onPick={setOpen} />}
+      {open && <IndicatorDrawer which={open} variant={detail} onClose={() => setOpen(null)} onPick={setOpen} />}
     </>
   );
 }
 
-function IndicatorDrawer({ which, onClose, onPick }: { which: Exclude<Open, null>; onClose: () => void; onPick: (o: Open) => void }) {
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const prev = document.activeElement as HTMLElement | null;
-    ref.current?.focus();
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
-    window.addEventListener("keydown", onKey);
-    return () => { window.removeEventListener("keydown", onKey); prev?.focus?.(); };
-  }, [onClose]);
+function IndicatorDrawer({ which, variant, onClose, onPick }: { which: Exclude<Open, null>; variant: DetailVariant; onClose: () => void; onPick: (o: Open) => void }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-stretch sm:justify-end" role="dialog" aria-modal="true" aria-labelledby="detalle-indicador">
-      <button type="button" aria-label="Cerrar" onClick={onClose} className="absolute inset-0 bg-ink/40" />
-      <div ref={ref} tabIndex={-1} data-testid="panel-indicador" className="relative w-full sm:w-[420px] max-h-[88vh] sm:max-h-none overflow-y-auto rounded-t-3xl sm:rounded-none bg-white p-5 sm:p-6 shadow-2xl outline-none academy-in">
-        <button type="button" onClick={onClose} aria-label="Cerrar" className="absolute right-4 top-4 h-8 w-8 grid place-items-center rounded-full hover:bg-slate-100 text-slate-500"><X size={16} /></button>
-        {which === "salud" ? <HealthDetail onPick={onPick} /> : <KpiDetail k={which} onClose={onClose} />}
-      </div>
-    </div>
+    <DetailDialog variant={variant} labelledBy="detalle-indicador" testid="panel-indicador" scrollKey={which} onClose={onClose}>
+      {which === "salud" ? <HealthDetail onPick={onPick} /> : <KpiDetail k={which} onClose={onClose} />}
+    </DetailDialog>
   );
 }
 

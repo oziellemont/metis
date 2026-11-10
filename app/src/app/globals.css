@@ -42,6 +42,13 @@ body { font-feature-settings: "tnum" 1; }
 .help-in { animation: help-in .22s ease-out both; transform-origin: bottom right; }
 @media (prefers-reduced-motion: reduce) { .help-ring, .help-in { animation: none; } }
 
+/* mêtis CEO · ventana de detalle centrada: entra con un leve acercamiento; el fondo solo se desenfoca */
+@keyframes detail-in { from { opacity: 0; transform: translateY(6px) scale(.97); } to { opacity: 1; transform: none; } }
+.detail-in { animation: detail-in .2s ease-out both; }
+@keyframes detail-fade { from { opacity: 0; } to { opacity: 1; } }
+.detail-fade { animation: detail-fade .2s ease-out both; }
+@media (prefers-reduced-motion: reduce) { .detail-in, .detail-fade { animation: none; } }
+
 /* Hero de la página pública: barra de avance de cada escena */
 @keyframes hero-progress { from { width: 0%; } to { width: 100%; } }
 .hero-progress { animation: hero-progress linear both; }

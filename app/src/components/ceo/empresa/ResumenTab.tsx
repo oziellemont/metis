@@ -105,7 +105,7 @@ export function ResumenTab({ go }: { go: (t: EmpresaTab) => void }) {
         </div>
 
         <aside className="rounded-3xl bg-white border border-slate-100 p-5 sm:p-6 self-start" aria-label="Salud de la empresa" data-testid="indicadores-empresa">
-          <KpiBoard hero />
+          <KpiBoard hero detail="centro" />
         </aside>
       </div>
 
