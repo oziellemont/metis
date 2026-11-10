@@ -8,7 +8,6 @@ import clsx from "clsx";
 import { useEffect, useState } from "react";
 import { useCeo } from "./CeoProvider";
 import { useHealth } from "./KpiBoard";
-import { CompanyMark } from "./ui";
 import { industryOf } from "@/lib/ceo/career/taxonomy";
 import { useBusiness } from "./empresa/shared";
 import { ResumenTab } from "./empresa/ResumenTab";
@@ -47,33 +46,37 @@ export function CompanyView() {
 
   return (
     <div className="space-y-5" data-testid="empresa">
-      {/* encabezado: morado profundo, sin brillos decorativos */}
-      <header className="rounded-3xl bg-gradient-to-br from-[#0F1130] via-[#1A1650] to-[#2B1F8A] px-5 pt-5 pb-3 sm:px-7 sm:pt-6 text-white">
-        <div className="flex flex-wrap items-center gap-4">
-          <CompanyMark name={pk.name} size={48} tone="glass" />
-          <div className="min-w-0 flex-1">
-            <div className="text-[12px] text-white/60 truncate">{industry}{prof?.specialty ? ` · ${prof.specialty}` : ""} · {pk.city}</div>
-            <h1 className="text-[22px] sm:text-2xl font-semibold leading-tight truncate">{pk.name}</h1>
-          </div>
-          <div className="flex flex-wrap gap-2 text-[13px]">
-            <span data-testid="chip-salud" className="rounded-xl bg-white/[.08] border border-white/[.12] px-3 py-1.5">
-              Salud empresarial <b className="tabular-nums">{h.value}/100</b> <span className="text-white/60">· {h.cushion >= 0 ? "supera el mínimo" : "debajo del mínimo"}</span>
-            </span>
-            {biz && biz.score.total > 0 && (
-              <span data-testid="chip-operacion" className="rounded-xl bg-white/[.08] border border-white/[.12] px-3 py-1.5">
-                Desempeño operativo: <b className="tabular-nums">{biz.score.met} de {biz.score.total}</b> KPI en meta
+      {/* encabezado sencillo: nombre, dos datos en una línea y selector tipo pill centrado */}
+      <header className="pt-1 text-center">
+        <div className="text-[12px] text-slate-500 truncate">{industry}{prof?.specialty ? ` · ${prof.specialty}` : ""} · {pk.city}</div>
+        <h1 className="mt-0.5 text-[22px] sm:text-2xl font-semibold leading-tight text-ink truncate">{pk.name}</h1>
+        <div className="mt-1.5 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[13px] text-slate-500">
+          <span data-testid="chip-salud">
+            Salud empresarial <b className={clsx("tabular-nums", h.cushion >= 0 ? "text-ink" : "text-coral")}>{h.value}/100</b>
+          </span>
+          {biz && biz.score.total > 0 && (
+            <>
+              <span aria-hidden className="hidden sm:inline text-slate-300">·</span>
+              <span data-testid="chip-operacion">
+                Desempeño operativo <b className="tabular-nums text-ink">{biz.score.met} de {biz.score.total}</b> KPI en meta
               </span>
-            )}
-          </div>
+            </>
+          )}
         </div>
-        <nav role="tablist" aria-label="Secciones de la empresa" className="mt-5 -mx-1 flex gap-1 overflow-x-auto">
-          {EMPRESA_TABS.map((t) => (
-            <button key={t.id} type="button" role="tab" id={`tab-${t.id}`} aria-selected={tab === t.id} aria-controls={`panel-${t.id}`} onClick={() => go(t.id)}
-              className={clsx("shrink-0 rounded-xl px-4 py-2 text-sm font-medium transition-all", tab === t.id ? "bg-white text-ink" : "text-white/70 hover:text-white hover:bg-white/10")}>
-              {t.label}
-            </button>
-          ))}
-        </nav>
+        <div className="mt-5 flex justify-center">
+          <nav role="tablist" aria-label="Secciones de la empresa"
+            className="flex w-full sm:w-auto items-center gap-0.5 sm:gap-1 rounded-full border border-slate-200 bg-white p-1 shadow-[0_1px_2px_rgba(23,26,58,.06),0_6px_20px_-10px_rgba(23,26,58,.18)]">
+            {EMPRESA_TABS.map((t) => (
+              <button key={t.id} type="button" role="tab" id={`tab-${t.id}`} aria-selected={tab === t.id} aria-controls={`panel-${t.id}`} onClick={() => go(t.id)}
+                className={clsx(
+                  "flex-1 sm:flex-none min-w-0 whitespace-nowrap rounded-full px-1.5 sm:px-5 py-2 text-[12px] sm:text-sm font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-light/50",
+                  tab === t.id ? "bg-indigo text-white shadow-[0_2px_8px_-2px_rgba(79,63,224,.55)]" : "text-slate-500 hover:text-ink hover:bg-slate-50",
+                )}>
+                {t.label}
+              </button>
+            ))}
+          </nav>
+        </div>
       </header>
 
       <div role="tabpanel" id={`panel-${tab}`} aria-labelledby={`tab-${tab}`} className="space-y-5 academy-in" key={tab}>
