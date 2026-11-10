@@ -227,9 +227,9 @@ function Board({ sim }: { sim: ChangeSim }) {
         </section>
       )}
 
-      {/* barra de acción */}
+      {/* barra de acción: deja libre la esquina del botón de la guía */}
       {lv && !finished && (
-        <div className="fixed inset-x-0 bottom-[72px] lg:bottom-4 z-30 px-3 lg:pl-64 academy-in">
+        <div className="fixed inset-x-0 bottom-[72px] lg:bottom-4 z-30 pl-3 pr-[4.25rem] lg:pl-64 lg:pr-20 academy-in">
           <div className="mx-auto max-w-3xl rounded-2xl bg-ink text-white shadow-2xl p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center gap-3">
             <div className="flex-1 min-w-0">
               <div className="text-sm font-semibold">{lv.name} <span className="font-normal text-white/60">· {lv.weeks} {lv.weeks === 1 ? "semana" : "semanas"}</span></div>

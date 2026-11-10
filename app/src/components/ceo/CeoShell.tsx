@@ -9,6 +9,7 @@ import { useCeo } from "./CeoProvider";
 import { Flame } from "./ui";
 import { ImportPrompt } from "./ImportPrompt";
 import { RestScreen, ReturnScreen } from "./Cadence";
+import { CeoGuide } from "./CeoGuide";
 
 const NAV: { href: string; label: string; Icon: typeof Home; badge?: boolean; desktop?: boolean }[] = [
   { href: "/ceo", label: "Hoy", Icon: Home },
@@ -112,6 +113,9 @@ export function CeoShell({ children }: { children: React.ReactNode }) {
           </Link>
         ))}
       </nav>
+
+      {/* Guía de la pantalla: botón fijo abajo a la derecha */}
+      <CeoGuide />
 
       {/* aviso de mensaje nuevo */}
       {c.toast && !path.includes(c.toast.id) && (
