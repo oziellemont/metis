@@ -12,7 +12,7 @@ import { Avatar, Flame, rel } from "./ui";
 import { ProfileEditor } from "./ProfileFlow";
 import { EXP_AREAS, GOALS, INDUSTRIES, ROLES, YEARS, diagnosticOffered, labelOf, profileAnswered } from "@/lib/ceo/profile";
 
-export function Profile() {
+export function Profile({ onCareer }: { onCareer?: () => void } = {}) {
   const c = useCeo();
   const p = profileOf(c.s, c.now);
   const badges = badgesOf(c.s, c.now);
@@ -36,7 +36,9 @@ export function Profile() {
           <div>
             <div className="text-xs text-white/60">{c.s.name}</div>
             <div data-testid="perfil-cargo" className="mt-0.5 text-base font-semibold">{t.appointment.title}</div>
-            <Link href="/ceo/carrera" className="text-[11px] text-white/60 hover:text-white">{t.active ? `Mes ${t.month} · ${t.chapter.label} · ver trayectoria →` : "Ver trayectoria →"}</Link>
+            {onCareer
+              ? <button type="button" onClick={onCareer} className="block text-left text-[11px] text-white/60 hover:text-white">{t.active ? `Mes ${t.month} · ${t.chapter.label} · ver trayectoria →` : "Ver trayectoria →"}</button>
+              : <Link href="/ceo/carrera" className="text-[11px] text-white/60 hover:text-white">{t.active ? `Mes ${t.month} · ${t.chapter.label} · ver trayectoria →` : "Ver trayectoria →"}</Link>}
             <div className="mt-2 text-sm text-white/70">Tu estilo de dirección</div>
             <h1 className="text-3xl font-semibold">{p.archetype.name}</h1>
             <p className="mt-2 text-sm text-white/80 max-w-md">{p.archetype.text}</p>

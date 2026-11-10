@@ -22,7 +22,7 @@ export function Experience() {
   const [q, setQ] = useState(0);
   const [p, setP] = useState<ProfessionalProfile | undefined>(c.s.profile);
   const [d, setD] = useState<InitialDiagnostic | undefined>(c.s.diagnostic);
-  const exit = () => router.replace("/ceo/perfil#experiencia");
+  const exit = () => router.replace("/ceo/carrera#experiencia");
   const saved = (np: ProfessionalProfile) => { track(c.s.profile?.answeredAt ? "perfil_editado" : "perfil_respondido", { secs: np.secs ?? 0, omitidas: np.skipped.length, fuente: np.source }); c.saveProfile(np); setP(np); setPhase(canDiag ? "offer" : "start"); };
 
   return (

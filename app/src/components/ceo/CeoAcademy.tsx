@@ -67,7 +67,7 @@ export function CeoAcademyHome() {
 
       {forYou && (
         <div className="mt-6 flex flex-wrap items-center gap-3">
-          <p className="flex-1 min-w-0 text-xs text-slate-500">{order === "ti" ? "Ordenadas según lo que has demostrado y lo que nos contaste. Al menos 1 de cada 3 es de un área que no elegiste." : "Todas las rutas en su orden original."} <Link href="/ceo/perfil#experiencia" className="text-indigo font-medium">Tu experiencia</Link></p>
+          <p className="flex-1 min-w-0 text-xs text-slate-500">{order === "ti" ? "Ordenadas según lo que has demostrado y lo que nos contaste. Al menos 1 de cada 3 es de un área que no elegiste." : "Todas las rutas en su orden original."} <Link href="/ceo/carrera#experiencia" className="text-indigo font-medium">Tu experiencia</Link></p>
           <div className="inline-flex rounded-xl bg-slate-100 p-1 text-xs">
             {(["ti", "todas"] as const).map((o) => <button key={o} type="button" onClick={() => setOrder(o)} aria-pressed={order === o} className={clsx("rounded-lg px-3 py-1.5 font-medium", order === o ? "bg-white text-ink shadow-sm" : "text-slate-500")}>{o === "ti" ? "Para ti" : "Orden original"}</button>)}
           </div>
