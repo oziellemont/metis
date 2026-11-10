@@ -88,7 +88,7 @@ export function CeoShell({ children }: { children: React.ReactNode }) {
 
       <main className={clsx("lg:pl-[76px] pb-24 lg:pb-0", !home && "lg:pb-10")}>
         {home ? children : (
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-5 sm:py-8">
+          <div className={clsx("mx-auto px-4 sm:px-6 py-5 sm:py-8", path.startsWith("/ceo/empresa") ? "max-w-6xl" : "max-w-5xl")}>
             {/* escritorio: empresa y día a la izquierda; racha y XP a la derecha */}
             <div className="hidden lg:flex items-center justify-between gap-4 mb-6 text-sm">
               <div className="flex items-center gap-1.5 min-w-0 font-semibold text-ink"><Building2 size={14} className="shrink-0 text-indigo" /><span className="truncate">{c.pack.name}</span><span className="font-normal text-slate-400">· Día {c.day}</span></div>

@@ -1,4 +1,5 @@
 "use client";
+import { IndustryGlossary } from "./empresa/Relocated";
 import Link from "next/link";
 import { useCallback, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -126,6 +127,8 @@ export function CeoAcademyHome() {
           );
         })}
       </div>
+
+      <div className="mt-6"><IndustryGlossary /></div>
     </div>
   );
 }

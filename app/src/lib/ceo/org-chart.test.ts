@@ -19,7 +19,7 @@ describe("organigrama de Mi empresa", () => {
     expect(o.externos.map((p) => p.id).sort()).toEqual(["roberto", "sofia"]);
   });
   it("Mi empresa usa el organigrama; el caso ya no muestra «Quién está en juego»", () => {
-    const empresa = readFileSync("src/components/ceo/CompanyView.tsx", "utf8");
+    const empresa = readFileSync("src/components/ceo/empresa/PersonasTab.tsx", "utf8");
     expect(empresa).toContain("<CompanyOrgChart");
     const caso = readFileSync("src/components/ceo/CaseView.tsx", "utf8");
     expect(caso).not.toMatch(/Quién está en juego|WhoIsInvolved|OrgMap/);
