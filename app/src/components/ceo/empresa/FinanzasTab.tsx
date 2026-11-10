@@ -57,7 +57,7 @@ export function FinanzasTab() {
       {prev && sPrev && (
         <Panel title={`Contra ${monthName(prev).toLowerCase()}`} testid="finanzas-comparacion">
           <table className="w-full text-sm tabular-nums">
-            <thead><tr className="text-left text-[11px] text-slate-400"><th className="pb-2 font-medium" /><th className="pb-2 font-medium text-right"><span className="inline-flex items-center gap-1.5">{monthName(prev)} <StageTag stage={stageOf(prev)} /></span></th><th className="pb-2 font-medium text-right"><span className="inline-flex items-center gap-1.5">{monthName(now)} <StageTag stage={stageOf(now)} /></span></th><th className="pb-2 font-medium text-right">Cambio</th></tr></thead>
+            <thead><tr className="text-left text-[11px] text-slate-400"><th className="pb-2 font-medium" /><th className="pb-2 font-medium text-right"><span className="inline-flex flex-col items-end gap-1 sm:flex-row sm:items-center sm:gap-1.5">{monthName(prev)} <StageTag stage={stageOf(prev)} /></span></th><th className="pb-2 font-medium text-right"><span className="inline-flex flex-col items-end gap-1 sm:flex-row sm:items-center sm:gap-1.5">{monthName(now)} <StageTag stage={stageOf(now)} /></span></th><th className="pb-2 font-medium text-right">Cambio</th></tr></thead>
             <tbody className="divide-y divide-slate-100">
               {([["Ventas", sPrev.revenue, sNow.revenue], ["EBITDA", sPrev.ebitda, sNow.ebitda], ["Caja al cierre", sPrev.cashEnd, sNow.cashEnd]] as const).map(([k, a, b]) => {
                 const d = Math.round((b - a) * 10 ** digits) / 10 ** digits;

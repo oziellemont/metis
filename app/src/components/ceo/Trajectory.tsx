@@ -69,7 +69,7 @@ export function Trajectory({ t, short, now, kpiLabel }: { t: T; short: string; n
       </section>
 
       {t.active && (
-        <div className="grid gap-5 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
           <section data-testid="compromisos-abiertos" className="card p-5 sm:p-6">
             <h2 className="font-semibold text-ink">Compromisos y consecuencias abiertas</h2>
             {t.open.length === 0

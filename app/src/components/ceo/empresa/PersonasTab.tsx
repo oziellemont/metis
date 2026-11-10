@@ -34,16 +34,16 @@ export function PersonasTab() {
 
   return (
     <>
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
         <div className="space-y-5 min-w-0">
           <Panel title="Consejo" testid="personas-consejo">
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               {chair && <PersonCard p={chair} rel={r(chair.id)} tag="Presidencia" onOpen={setSel} />}
               {board.map((p) => <PersonCard key={p.id} p={p} rel={r(p.id)} onOpen={setSel} />)}
             </div>
           </Panel>
           <Panel title="Te reportan" testid="personas-comite">
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               {direct.map((p) => <PersonCard key={p.id} p={p} rel={r(p.id)} onOpen={setSel} />)}
             </div>
           </Panel>

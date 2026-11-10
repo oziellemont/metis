@@ -88,7 +88,7 @@ export function ConsejoTab() {
 
       {board.length > 0 && (
         <Panel title="Tus consejeros" testid="consejo-relaciones">
-          <ul className="grid gap-3 sm:grid-cols-2">
+          <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {board.map((p) => {
               const r = c.relations[p.id] ?? REL_START;
               const m = moodOf(r);

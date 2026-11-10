@@ -74,7 +74,7 @@ export function CeoAcademyHome() {
         </div>
       )}
 
-      <div className={clsx("grid gap-4 sm:grid-cols-2", forYou ? "mt-3" : "mt-6")}>
+      <div className={clsx("grid grid-cols-1 gap-4 sm:grid-cols-2", forYou ? "mt-3" : "mt-6")}>
         {tracks.map((t) => {
           const h = hintOf.get(t.id);
           const Icon = ICON[t.icon];
