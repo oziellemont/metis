@@ -986,6 +986,6 @@ Total: 41 temas.
 
 Esta matriz dice qué se enseña y qué se exige. El contenido que la llena se construye por etapas:
 
-- La clasificación del contenido que ya existe y la medición de cuánto cubre cada academia y nivel (entrega 1.2).
+- El contenido que ya existe está clasificado y medido en `03-clasificacion.md`: cubre parte de los niveles 2 a 4 y nada de los niveles 1, 5 y 6.
 - Las lecciones y ejercicios de fundamentos del Nivel 1 y los casos de los niveles donde falte cobertura (entregas 3.1, 3.5 y 5.1).
 - Los ejemplos de este documento son modelos de redacción. Todavía no son actividades jugables.

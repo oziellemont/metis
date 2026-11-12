@@ -34,7 +34,7 @@ Estado: `[x]` hecho y publicado · `[ ]` pendiente.
 
 ### Fase 1 · Cimientos
 - [x] 1.1 Catálogo de las seis academias, sus habilidades, los niveles visibles 1 a 6+ y el catálogo de temas prioritarios, con versión. 52 habilidades con prerrequisitos, 41 temas, 8 formatos de actividad y la escala interna de dominio de 0 a 5.
-- [ ] 1.2 Clasificación de todo el contenido existente: una academia principal, hasta dos secundarias, habilidades y nivel, conservando identificadores. Incluye la medición de cobertura por academia y nivel.
+- [x] 1.2 Clasificación de todo el contenido existente: una academia principal, hasta dos secundarias, habilidades y nivel, conservando identificadores. Incluye la medición de cobertura por academia y nivel.
 - [ ] 1.3 Registro de evidencias que no se reescribe: competencia principal y secundarias, dificultad, evidencia observable, calidad del razonamiento, transferencia, resultado, retroalimentación, fecha, versión de rúbrica y confianza.
 - [ ] 1.4 Cálculo de dominio nuevo: dominio, confianza, vigencia y cobertura por habilidad; tres estados (declarado, en desarrollo, respaldado por evaluaciones); barra general con criterios públicos; protección contra repeticiones y atajos. Puntos y rachas no cuentan.
 - [ ] 1.5 Estructura de datos nueva, con su archivo para instalarla y su archivo para deshacerla.
@@ -98,7 +98,7 @@ Estado: `[x]` hecho y publicado · `[ ]` pendiente.
 | Núm. | Punto | Entrega | Estado |
 |---|---|---|---|
 | CA1 | Empezar a practicar sin crear ni nombrar una empresa | 3.1, 3.6 | Pendiente |
-| CA2 | Cada reto etiquetado con academia, habilidades y nivel; su aprendizaje se recupera en Academy | 1.1, 1.2, 3.5 | En curso: catálogo listo |
+| CA2 | Cada reto etiquetado con academia, habilidades y nivel; su aprendizaje se recupera en Academy | 1.1, 1.2, 3.5 | En curso: catálogo listo y contenido existente clasificado; falta mostrarlo en Academy |
 | CA3 | Las seis barras y la general usan la misma fuente en Hoy, Perfil y Academy | 1.4, 3.3 | Pendiente |
 | CA4 | Completar una lección sin demostrar comprensión no sube de nivel | 1.4 | Pendiente |
 | CA5 | Un profesional con diagnóstico sólido empieza arriba del Nivel 1, con evaluación provisional honesta | 2.2, 2.4 | Pendiente |
@@ -154,3 +154,4 @@ Los 10 objetivos del usuario (sección 1 del documento) y la regla de producto s
 | 12 nov 2026 | 1.1, 1.6 | Catálogo de aprendizaje y matriz curricular con su documento. Todavía no cambia ninguna pantalla ni toca datos. Los ejemplos de actividad son modelos de redacción, no actividades jugables. |
 | 12 nov 2026 | Repositorio | Inventario de los archivos ajenos (205, sin borrar nada) y revisión de lo que implica pasar el repositorio a privado. Documento: `02-repositorio.md`. La limpieza y el cambio a privado esperan autorización. |
 | 12 nov 2026 | Pruebas | Hallazgo: la revisión «Pruebas» pasó en las propuestas #188 y #189, pero la corrida posterior sobre `main` falló por tiempo agotado en una prueba lenta (sin error de contenido). Se subió el límite de tiempo a 20 segundos. Desde ahora, después de cada fusión también se revisa la corrida sobre `main`. |
+| 12 nov 2026 | 1.2 | Clasificación de las 335 piezas del simulador (259 actividades evaluables y 76 de teoría) con academia, habilidades y nivel, sin cambiar identificadores. Medición de cobertura: de 268 casillas del currículo, 92 tienen al menos una actividad; los niveles 1, 5 y 6 no tienen ninguna. Documento: `03-clasificacion.md`. La clasificación es criterio editorial y falta revisar una muestra. |
