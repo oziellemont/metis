@@ -14,6 +14,16 @@ Este archivo es la referencia de avance. Se actualiza al cerrar cada entrega.
 6. **El historial anterior no se convierte en evidencia nueva.** Lo jugado en el simulador se conserva aparte.
 7. **Cierre de fase con visto bueno.** Al terminar cada fase se reporta qué quedó hecho, qué se comprobó, qué no se pudo comprobar y qué queda pendiente.
 
+### Instrucciones de Oziel al aprobar la Fase 0 (12 de noviembre de 2026)
+
+8. **Tres cosas separadas.** Nivel general (continuo: 1, 2, 3… sin etapa final), dominio demostrado de cada habilidad y progreso hacia el siguiente nivel. Las seis academias están en todos los niveles; cada habilidad tiene sus evidencias, su dominio y su necesidad de repaso.
+9. **Programa completo, no reclasificación.** El contenido existente se clasifica, pero el programa se construye: fundamentos reales en el Nivel 1 (conceptos, vocabulario, documentos, indicadores) y exigencia creciente hasta integración, pensamiento crítico, negociación y decisiones con incertidumbre.
+10. **Dominio solo con evidencia suficiente.** Leer, acumular puntos o completar actividades no lo sube. El cálculo considera calidad del razonamiento, dificultad, transferencia, consistencia y evaluaciones sin ayuda.
+11. **Respaldo antes de migrar.** Ninguna migración que cambie la estructura de progreso se corre sin el respaldo de producción ejecutado y verificado. El motor y sus pruebas se construyen primero, sin depender de la base.
+12. **Repositorio.** Pasa a privado después de comprobar que GitHub, Vercel y SuperNinja siguen funcionando. Los archivos ajenos se inventarían con dependencias y riesgos; su limpieza va en un cambio aparte y autorizado. No se elimina nada sin comprobarlo.
+13. **Prioridad.** Que MÊTIS enseñe. Los casos siguen siendo situaciones empresariales realistas, con personas, conversaciones, consecuencias y decisiones difíciles.
+14. **Revisión después de fusionar.** Además de la revisión de cada propuesta, después de cada fusión se comprueba que la corrida de «Pruebas» sobre `main` termine bien y que la publicación en producción quede confirmada.
+
 ## Fases y entregas
 
 Estado: `[x]` hecho y publicado · `[ ]` pendiente.
@@ -23,12 +33,12 @@ Estado: `[x]` hecho y publicado · `[ ]` pendiente.
 - [x] 0.2 Red de seguridad: lista de identificadores del contenido que no se puede perder, con su prueba; archivo de respaldo de datos probado en una base local.
 
 ### Fase 1 · Cimientos
-- [ ] 1.1 Catálogo de las seis academias, sus habilidades, los niveles visibles 1 a 6+ y el catálogo de temas prioritarios, con versión.
+- [x] 1.1 Catálogo de las seis academias, sus habilidades, los niveles visibles 1 a 6+ y el catálogo de temas prioritarios, con versión. 52 habilidades con prerrequisitos, 41 temas, 8 formatos de actividad y la escala interna de dominio de 0 a 5.
 - [ ] 1.2 Clasificación de todo el contenido existente: una academia principal, hasta dos secundarias, habilidades y nivel, conservando identificadores. Incluye la medición de cobertura por academia y nivel.
 - [ ] 1.3 Registro de evidencias que no se reescribe: competencia principal y secundarias, dificultad, evidencia observable, calidad del razonamiento, transferencia, resultado, retroalimentación, fecha, versión de rúbrica y confianza.
 - [ ] 1.4 Cálculo de dominio nuevo: dominio, confianza, vigencia y cobertura por habilidad; tres estados (declarado, en desarrollo, respaldado por evaluaciones); barra general con criterios públicos; protección contra repeticiones y atajos. Puntos y rachas no cuentan.
 - [ ] 1.5 Estructura de datos nueva, con su archivo para instalarla y su archivo para deshacerla.
-- [ ] 1.6 Documento de currículo: habilidades, prerrequisitos, niveles y al menos cinco ejemplos progresivos por academia.
+- [x] 1.6 Documento de currículo: habilidades, prerrequisitos, niveles y al menos cinco ejemplos progresivos por academia. Ver `01-curriculo.md`: qué se pide en cada nivel por habilidad, fundamentos del Nivel 1 y seis ejemplos por academia. Se adelantó a petición de Oziel.
 
 ### Fase 2 · Entrada: perfil, temas, diagnóstico y ruta
 - [ ] 2.1 Registro corto: situación, experiencia, para qué se usa MÊTIS, al menos cinco temas prioritarios, frecuencia y minutos. Las cuentas existentes lo completan desde su perfil.
@@ -88,7 +98,7 @@ Estado: `[x]` hecho y publicado · `[ ]` pendiente.
 | Núm. | Punto | Entrega | Estado |
 |---|---|---|---|
 | CA1 | Empezar a practicar sin crear ni nombrar una empresa | 3.1, 3.6 | Pendiente |
-| CA2 | Cada reto etiquetado con academia, habilidades y nivel; su aprendizaje se recupera en Academy | 1.2, 3.5 | Pendiente |
+| CA2 | Cada reto etiquetado con academia, habilidades y nivel; su aprendizaje se recupera en Academy | 1.1, 1.2, 3.5 | En curso: catálogo listo |
 | CA3 | Las seis barras y la general usan la misma fuente en Hoy, Perfil y Academy | 1.4, 3.3 | Pendiente |
 | CA4 | Completar una lección sin demostrar comprensión no sube de nivel | 1.4 | Pendiente |
 | CA5 | Un profesional con diagnóstico sólido empieza arriba del Nivel 1, con evaluación provisional honesta | 2.2, 2.4 | Pendiente |
@@ -100,7 +110,7 @@ Estado: `[x]` hecho y publicado · `[ ]` pendiente.
 | CA11 | Partidas y simulaciones actuales recuperables | 0.2, 3.6, 5.3, 8.2 | En curso: red de seguridad lista |
 | CA12 | Revisión de respuestas obvias, dificultad real, progresión entre industrias y estimación de dominio | 5.1, 5.2 | Pendiente |
 | EN1 | Diagnóstico del estado actual con mapa de impacto por pantalla | 0.1 | Hecho |
-| EN2 | Documento de currículo de las seis academias | 1.6 | Pendiente |
+| EN2 | Documento de currículo de las seis academias | 1.6 | Hecho: matriz y documento. El contenido que la llena se construye en 3.1, 3.5 y 5.1 |
 | EN3 | Especificación y calibración del diagnóstico de entrada y de regreso | 2.4, 4.4 | Pendiente |
 | EN4 | Rúbricas con versión y cálculo de dominio con evidencias y confianza | 1.3, 1.4 | Pendiente |
 | EN5 | Plan de migración sin pérdida, cambios reversibles y pruebas de regresión | 0.2, 5.3 | En curso: respaldo y pruebas listos |
@@ -133,10 +143,14 @@ Los 10 objetivos del usuario (sección 1 del documento) y la regla de producto s
 
 1. Cómo se aprueban los casos nuevos. Propuesta: lotes por academia con hoja resumen y revisión de una muestra.
 2. Revisión legal del aviso de privacidad antes de la Fase 6.
-3. Archivos que no son de la aplicación dentro del repositorio, y si el repositorio pasa a privado.
+3. Repositorio: Oziel prefiere pasarlo a privado. El inventario y la revisión están en `02-repositorio.md`. Falta que Oziel confirme su plan de Vercel (el plan gratuito puede no publicar desde un repositorio privado cuando los cambios los firma SuperNinja) y que autorice, por separado, la limpieza de los archivos ajenos.
+4. Nombres de la escala interna de dominio (Sin evidencia, Inicial, En desarrollo, Demostrado, Consistente, Transferible). Son propuesta; el documento de origen solo pide una escala de 0 a 5.
 
 ## Bitácora
 
 | Fecha | Entrega | Qué se hizo |
 |---|---|---|
 | 12 nov 2026 | 0.1, 0.2 | Auditoría, lista de identificadores con su prueba y respaldo de datos probado en base local. El respaldo no se ha corrido en producción. |
+| 12 nov 2026 | 1.1, 1.6 | Catálogo de aprendizaje y matriz curricular con su documento. Todavía no cambia ninguna pantalla ni toca datos. Los ejemplos de actividad son modelos de redacción, no actividades jugables. |
+| 12 nov 2026 | Repositorio | Inventario de los archivos ajenos (205, sin borrar nada) y revisión de lo que implica pasar el repositorio a privado. Documento: `02-repositorio.md`. La limpieza y el cambio a privado esperan autorización. |
+| 12 nov 2026 | Pruebas | Hallazgo: la revisión «Pruebas» pasó en las propuestas #188 y #189, pero la corrida posterior sobre `main` falló por tiempo agotado en una prueba lenta (sin error de contenido). Se subió el límite de tiempo a 20 segundos. Desde ahora, después de cada fusión también se revisa la corrida sobre `main`. |
