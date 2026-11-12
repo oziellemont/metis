@@ -35,9 +35,9 @@ Estado: `[x]` hecho y publicado · `[ ]` pendiente.
 ### Fase 1 · Cimientos
 - [x] 1.1 Catálogo de las seis academias, sus habilidades, los niveles visibles 1 a 6+ y el catálogo de temas prioritarios, con versión. 52 habilidades con prerrequisitos, 41 temas, 8 formatos de actividad y la escala interna de dominio de 0 a 5.
 - [x] 1.2 Clasificación de todo el contenido existente: una academia principal, hasta dos secundarias, habilidades y nivel, conservando identificadores. Incluye la medición de cobertura por academia y nivel.
-- [ ] 1.3 Registro de evidencias que no se reescribe: competencia principal y secundarias, dificultad, evidencia observable, calidad del razonamiento, transferencia, resultado, retroalimentación, fecha, versión de rúbrica y confianza.
-- [ ] 1.4 Cálculo de dominio nuevo: dominio, confianza, vigencia y cobertura por habilidad; tres estados (declarado, en desarrollo, respaldado por evaluaciones); barra general con criterios públicos; protección contra repeticiones y atajos. Puntos y rachas no cuentan.
-- [ ] 1.5 Estructura de datos nueva, con su archivo para instalarla y su archivo para deshacerla.
+- [x] 1.3 Registro de evidencias que no se reescribe: competencia principal y secundarias, dificultad, evidencia observable, calidad del razonamiento, transferencia, resultado, retroalimentación, fecha, versión de rúbrica y confianza. Construido y probado sin depender de la base de datos; todavía no recibe respuestas reales (eso llega con 1.5 y 3.1).
+- [x] 1.4 Cálculo de dominio nuevo: dominio, confianza, vigencia y cobertura por habilidad; tres estados (declarado, en desarrollo, respaldado por evaluaciones); barra general con criterios públicos; protección contra repeticiones y atajos. Puntos y rachas no cuentan. Ver `04-dominio.md`. Construido y probado por separado; todavía no alimenta ninguna pantalla (eso llega con 1.5 y 3.3).
+- [ ] 1.5 Estructura de datos nueva, con su archivo para instalarla y su archivo para deshacerla. En espera: no se prepara para producción hasta que Oziel corra y verifique el respaldo (`docs/sql/metis2_respaldo.sql`).
 - [x] 1.6 Documento de currículo: habilidades, prerrequisitos, niveles y al menos cinco ejemplos progresivos por academia. Ver `01-curriculo.md`: qué se pide en cada nivel por habilidad, fundamentos del Nivel 1 y seis ejemplos por academia. Se adelantó a petición de Oziel.
 
 ### Fase 2 · Entrada: perfil, temas, diagnóstico y ruta
@@ -99,8 +99,8 @@ Estado: `[x]` hecho y publicado · `[ ]` pendiente.
 |---|---|---|---|
 | CA1 | Empezar a practicar sin crear ni nombrar una empresa | 3.1, 3.6 | Pendiente |
 | CA2 | Cada reto etiquetado con academia, habilidades y nivel; su aprendizaje se recupera en Academy | 1.1, 1.2, 3.5 | En curso: catálogo listo y contenido existente clasificado; falta mostrarlo en Academy |
-| CA3 | Las seis barras y la general usan la misma fuente en Hoy, Perfil y Academy | 1.4, 3.3 | Pendiente |
-| CA4 | Completar una lección sin demostrar comprensión no sube de nivel | 1.4 | Pendiente |
+| CA3 | Las seis barras y la general usan la misma fuente en Hoy, Perfil y Academy | 1.4, 3.3 | En curso: existe un solo cálculo para las seis barras y la general; falta conectarlo a las pantallas |
+| CA4 | Completar una lección sin demostrar comprensión no sube de nivel | 1.4 | En curso: el cálculo nuevo lo impide y hay pruebas que lo comprueban; en producción sigue el cálculo anterior hasta conectarlo (1.5, 3.3) |
 | CA5 | Un profesional con diagnóstico sólido empieza arriba del Nivel 1, con evaluación provisional honesta | 2.2, 2.4 | Pendiente |
 | CA6 | Las decisiones no modifican Caja, Margen, Clientes, Equipo ni Consejo | 3.1 | Pendiente |
 | CA7 | No existen «Tomar el mando», «Gobernar la complejidad» ni Consejo como barreras | 3.6 | Pendiente |
@@ -112,7 +112,7 @@ Estado: `[x]` hecho y publicado · `[ ]` pendiente.
 | EN1 | Diagnóstico del estado actual con mapa de impacto por pantalla | 0.1 | Hecho |
 | EN2 | Documento de currículo de las seis academias | 1.6 | Hecho: matriz y documento. El contenido que la llena se construye en 3.1, 3.5 y 5.1 |
 | EN3 | Especificación y calibración del diagnóstico de entrada y de regreso | 2.4, 4.4 | Pendiente |
-| EN4 | Rúbricas con versión y cálculo de dominio con evidencias y confianza | 1.3, 1.4 | Pendiente |
+| EN4 | Rúbricas con versión y cálculo de dominio con evidencias y confianza | 1.3, 1.4 | En curso: registro y cálculo listos, con versión y confianza; cada evidencia guarda la versión de su rúbrica. Las rúbricas de cada actividad se escriben con el contenido (3.1, 5.1) |
 | EN5 | Plan de migración sin pérdida, cambios reversibles y pruebas de regresión | 0.2, 5.3 | En curso: respaldo y pruebas listos |
 | EN6 | Demostración de Hoy y Academy en computadora y celular, con dos recorridos | 5.4 | Pendiente |
 | EN7 | Pruebas automáticas, métricas editoriales y simulación de varias semanas | 5.1, 5.2 | Pendiente |
@@ -120,14 +120,14 @@ Estado: `[x]` hecho y publicado · `[ ]` pendiente.
 | AD1 | CV opcional en el registro, con extracción y revisión del usuario | 6.2 | Pendiente |
 | AD2 | Diagnóstico integrado con tres fuentes; lo declarado no asigna dominio | 6.4 | Pendiente |
 | AD3 | Mi progreso, Mi perfil y Mi CV separados; historial anterior aparte | 3.6, 5.3, 7.2 | Pendiente |
-| AD4 | Cada actividad evaluable registra los siete grupos de datos de la adenda | 1.3, 1.4 | Pendiente |
+| AD4 | Cada actividad evaluable registra los siete grupos de datos de la adenda | 1.3, 1.4 | En curso: el registro exige los siete grupos y rechaza lo incompleto; falta que las actividades lo llenen (1.5, 3.1) |
 | AD5 | CV evolutivo: plantilla, edición, sugerencias con evidencia, aprobar o rechazar, descargar | 7.1 a 7.5 | Pendiente |
 | AD6 | Cambio de puesto, empresa, función u objetivo, sin perder historial | 6.5 | Pendiente |
 | AD7 | Privacidad y control del usuario sobre su CV | 6.1, 7.5 | Pendiente |
 | AD8 | Auditoría de lo reutilizable y demostración completa de ocho pasos | 0.1, 8.1 | En curso: auditoría hecha |
 | EX1 | Flujo de cuatro pasos: preparar, revisar, previsualizar, exportar | 7.2 | Pendiente |
 | EX2 | Descarga disponible en cualquier momento | 7.3 | Pendiente |
-| EX3 | Sugerencias desde competencias granulares; distinguir declarado, en desarrollo y respaldado | 1.4, 7.1 | Pendiente |
+| EX3 | Sugerencias desde competencias granulares; distinguir declarado, en desarrollo y respaldado | 1.4, 7.1 | En curso: el cálculo ya distingue los tres estados por habilidad; falta usarlos en el CV |
 | EX4 | Conservar diseño cuando sea posible; plantilla alternativa compatible con lectores automáticos | 7.4 | Pendiente |
 | EX5 | Modelo del CV con versiones como única fuente; PDF seleccionable y Word editable verificados | 6.3, 7.3 | Pendiente |
 | EX6 | Lo no demostrado nunca se agrega solo; la experiencia original queda intacta | 7.6, 8.2 | Pendiente |
@@ -145,6 +145,8 @@ Los 10 objetivos del usuario (sección 1 del documento) y la regla de producto s
 2. Revisión legal del aviso de privacidad antes de la Fase 6.
 3. Repositorio: Oziel prefiere pasarlo a privado. El inventario y la revisión están en `02-repositorio.md`. Falta que Oziel confirme su plan de Vercel (el plan gratuito puede no publicar desde un repositorio privado cuando los cambios los firma SuperNinja) y que autorice, por separado, la limpieza de los archivos ajenos.
 4. Nombres de la escala interna de dominio (Sin evidencia, Inicial, En desarrollo, Demostrado, Consistente, Transferible). Son propuesta; el documento de origen solo pide una escala de 0 a 5.
+5. Umbrales del cálculo de dominio (`04-dominio.md`): cuántos aciertos, en cuántas situaciones, cuántos días de espera, qué parte de cada academia. Son un punto de partida razonado, sin datos reales detrás. Oziel puede ajustarlos ahora; en cualquier caso se revisan con datos de uso en la Fase 5.
+6. Respaldo de producción: falta que Oziel corra `docs/sql/metis2_respaldo.sql` en Supabase y confirme los dos conteos. Sin eso no se prepara la entrega 1.5.
 
 ## Bitácora
 
@@ -155,3 +157,4 @@ Los 10 objetivos del usuario (sección 1 del documento) y la regla de producto s
 | 12 nov 2026 | Repositorio | Inventario de los archivos ajenos (205, sin borrar nada) y revisión de lo que implica pasar el repositorio a privado. Documento: `02-repositorio.md`. La limpieza y el cambio a privado esperan autorización. |
 | 12 nov 2026 | Pruebas | Hallazgo: la revisión «Pruebas» pasó en las propuestas #188 y #189, pero la corrida posterior sobre `main` falló por tiempo agotado en una prueba lenta (sin error de contenido). Se subió el límite de tiempo a 20 segundos. Desde ahora, después de cada fusión también se revisa la corrida sobre `main`. |
 | 12 nov 2026 | 1.2 | Clasificación de las 335 piezas del simulador (259 actividades evaluables y 76 de teoría) con academia, habilidades y nivel, sin cambiar identificadores. Medición de cobertura: de 268 casillas del currículo, 92 tienen al menos una actividad; los niveles 1, 5 y 6 no tienen ninguna. Documento: `03-clasificacion.md`. La clasificación es criterio editorial y falta revisar una muestra. |
+| 12 nov 2026 | 1.3, 1.4 | Registro de evidencias que solo crece (anular conserva el original) y cálculo de dominio con reglas públicas y con versión. Construidos sin depender de la base de datos, con 79 pruebas propias. No cambian ninguna pantalla ni tocan datos: Hoy, Perfil y Academy siguen con el cálculo anterior. Los umbrales son un punto de partida sin datos reales. Documento: `04-dominio.md`. |
