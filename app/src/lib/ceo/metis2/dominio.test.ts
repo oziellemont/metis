@@ -522,6 +522,16 @@ describe("nivel general: continuo, de uno en uno y sin retroceso", () => {
     const fails = logOf(levelSkills(3).flatMap((s) => [0, 1, 2, 3].map((i) => fail({ skills: [s], level: 3, at: T0 + i * HOUR }))));
     expect(nextLevelState(fails, state, { now: NOW })).toBe(state);
     expect(nextLevelState(emptyLog(), state, { now: NOW + 2_000 * DAY })).toBe(state);
+
+    // Anular después todas las evidencias con las que se subió tampoco quita el nivel alcanzado.
+    const list = [...demonstrateAll(1), integrator(1)];
+    const log = logOf(list);
+    const reached = nextLevelState(log, L1, { now: NOW });
+    expect(reached.level).toBe(2);
+    const annulled = list.reduce((l, e) => annulEvidence(l, { id: e.id, at: NOW, reason: "Rúbrica con error." }), log);
+    expect(screen(annulled).counted).toHaveLength(0);
+    expect(nextLevelState(annulled, reached, { now: NOW + DAY })).toBe(reached);
+    expect(levelProgress(annulled, reached, { now: NOW + DAY })).toMatchObject({ level: 2, bar: 0 });
   });
 
   it("un nivel guardado con un valor raro se lee como nivel válido", () => {
