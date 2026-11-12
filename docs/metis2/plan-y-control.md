@@ -32,6 +32,21 @@ Idea guía que dio Oziel: una aplicación de idiomas presenta una unidad para ap
 
 Estado: registrado como tarea. No se ha construido nada. Sus entregas son 1.7, 1.8, 3.8, 3.9 y 5.7, y sus doce puntos están en la lista de control con la clave «EC».
 
+### Instrucciones de Oziel al aprobar las entregas 1.1, 1.2, 1.3, 1.4 y 1.6 (12 de noviembre de 2026)
+
+Deben quedar incorporadas antes de conectar el sistema nuevo al progreso real de los usuarios. La propuesta completa está en `05-ajustes-propuestos.md`.
+
+16. **Executive Challenge con las seis academias.** Historia completa, decisiones encadenadas, documentos, personajes y consecuencias, con evidencia evaluable en las seis áreas. Aprobar una sola decisión no sustituye la comprobación de conocimientos. En niveles altos, sesiones más largas que se pueden pausar y reanudar.
+17. **Carga y progresión razonables.** Medir cuántas actividades reales pide cada ascenso. Desde el Nivel 4 no todas las personas vuelven a acreditar las 52 habilidades: se separan habilidades troncales, de profundización y temas elegidos. Las seis academias siguen en todos los niveles.
+18. **Aprendizaje inmersivo.** Nada de «teoría para leer y después preguntas»: situaciones, documentos, conversaciones, decisiones, explicación en contexto, nueva aplicación y repasos. Consultar teoría durante la práctica es normal; después hay una comprobación independiente y sin apoyo.
+19. **Reglas de dominio con versión y sin validar.** Los nombres de los grados se aceptan de forma provisional. Los umbrales numéricos no están validados: se calibran con escenarios antes de darlos por definitivos. La velocidad no es motivo automático para invalidar una evidencia.
+20. **Fundamentación académica (prioritaria).** Matriz de trazabilidad que relacione habilidades, objetivos y niveles con fuentes oficiales de Harvard Business School, Stanford GSB, MIT Sloan, Wharton e INSEAD, separando lo respaldado de lo que es decisión pedagógica propia. No se reproducen materiales protegidos.
+21. **Reincorporación.** El nivel histórico nunca se borra. Tras más de 30 días, la persona puede practicar temporalmente en un nivel inferior sin perder el acreditado.
+22. **Niveles 6 en adelante.** Cada nivel nuevo introduce objetivos nuevos, mayor complejidad, combinaciones nuevas de habilidades o especializaciones. No son las mismas 52 habilidades con otros casos.
+23. **Auditoría editorial.** Muestra estratificada de 30 casos, de las seis academias y de distintos niveles, con contenido original y rúbricas propuestas.
+24. **Candados técnicos.** La migración 1.5 no se ejecuta hasta verificar el archivo de respaldo y sus resultados en producción. Los 205 archivos ajenos no se borran. El repositorio pasa a privado solo después de confirmar el plan de Vercel y las publicaciones de SuperNinja.
+25. **Orden.** Primero la propuesta de ajustes y el registro de qué cambia; mientras tanto sigue el trabajo de la especificación del diagnóstico y del diseño de las primeras experiencias del Nivel 1.
+
 ## Fases y entregas
 
 Estado: `[x]` hecho y publicado · `[ ]` pendiente.
@@ -44,11 +59,17 @@ Estado: `[x]` hecho y publicado · `[ ]` pendiente.
 - [x] 1.1 Catálogo de las seis academias, sus habilidades, los niveles visibles 1 a 6+ y el catálogo de temas prioritarios, con versión. 52 habilidades con prerrequisitos, 41 temas, 8 formatos de actividad y la escala interna de dominio de 0 a 5.
 - [x] 1.2 Clasificación de todo el contenido existente: una academia principal, hasta dos secundarias, habilidades y nivel, conservando identificadores. Incluye la medición de cobertura por academia y nivel.
 - [x] 1.3 Registro de evidencias que no se reescribe: competencia principal y secundarias, dificultad, evidencia observable, calidad del razonamiento, transferencia, resultado, retroalimentación, fecha, versión de rúbrica y confianza. Construido y probado sin depender de la base de datos; todavía no recibe respuestas reales (eso llega con 1.5 y 3.1).
-- [x] 1.4 Cálculo de dominio nuevo: dominio, confianza, vigencia y cobertura por habilidad; tres estados (declarado, en desarrollo, respaldado por evaluaciones); barra general con criterios públicos; protección contra repeticiones y atajos. Puntos y rachas no cuentan. Ver `04-dominio.md`. Construido y probado por separado; todavía no alimenta ninguna pantalla (eso llega con 1.5 y 3.3).
+- [x] 1.4 Cálculo de dominio nuevo: dominio, confianza, vigencia y cobertura por habilidad; tres estados (declarado, en desarrollo, respaldado por evaluaciones); barra general con criterios públicos; protección contra repeticiones y atajos. Puntos y rachas no cuentan. Ver `04-dominio.md`. Construido y probado por separado; todavía no alimenta ninguna pantalla (eso llega con 1.5 y 3.3). Reglas en la versión 2: la rapidez de una respuesta ya no la descarta. Los umbrales siguen sin validar.
 - [ ] 1.5 Estructura de datos nueva, con su archivo para instalarla y su archivo para deshacerla. En espera: no se prepara para producción hasta que Oziel corra y verifique el respaldo (`docs/sql/metis2_respaldo.sql`).
 - [ ] 1.7 Executive Challenge en la matriz curricular: para cada nivel, qué objetivos de aprendizaje evalúa, qué habilidades de las seis academias cubre, cuántas decisiones tiene, qué apoyos, reportes y conversaciones incluye, y qué hace equivalentes a dos variantes. Pocas decisiones, situaciones sencillas y apoyo en los niveles iniciales; después, análisis financiero, escenarios, negociación, incertidumbre, conflictos entre áreas y decisiones de mayor alcance. Se agrega a `01-curriculo.md`. No depende de la base de datos.
 - [ ] 1.8 Executive Challenge en el cálculo de dominio: el tercer criterio para pasar de nivel deja de ser «un reto integrador que cruce dos academias» (regla vigente, descrita en `04-dominio.md`) y pasa a ser el Executive Challenge del nivel, con las seis academias. Cada decisión deja su evidencia por habilidad; se evalúan comprensión, razonamiento, integración, anticipación de consecuencias y adaptación, no la opción elegida ni el resultado económico del caso. Si no se alcanza, queda el historial y se habilita otra variante. Cambia la versión de las reglas. No depende de la base de datos.
 - [x] 1.6 Documento de currículo: habilidades, prerrequisitos, niveles y al menos cinco ejemplos progresivos por academia. Ver `01-curriculo.md`: qué se pide en cada nivel por habilidad, fundamentos del Nivel 1 y seis ejemplos por academia. Se adelantó a petición de Oziel.
+
+- [x] 1.9 Propuesta de ajustes al cálculo de dominio y a la arquitectura curricular, con la tabla de qué cambia frente a la versión actual y la medición de la carga por nivel. Ver `05-ajustes-propuestos.md`. Es documento: espera el visto bueno de Oziel.
+- [ ] 1.10 Matriz de trazabilidad académica (prioritaria): las 52 habilidades frente a fuentes oficiales de las cinco escuelas, con institución, curso o componente, fuente verificable, concepto y su conversión en actividad original. Las páginas oficiales de los cinco programas ya están consultadas; falta el detalle curso por curso.
+- [ ] 1.11 Escenarios de calibración de los umbrales: diez personas de ejemplo con el resultado justo escrito antes de correr el cálculo, y comparación de valores (aciertos, días de espera, parte por academia).
+- [ ] 1.12 Ajustes al cálculo y al currículo, después del visto bueno de 1.9: programa por nivel con troncales, profundización y temas elegidos; modos de aprendizaje y de comprobación en el registro de evidencias; nivel de práctica temporal; fichas de los niveles 6 en adelante. Cada cambio sube la versión de sus reglas. No depende de la base de datos.
+- [ ] 1.13 Muestra estratificada de 30 casos para la auditoría editorial: cinco por academia, de los niveles que hoy tienen contenido, con texto original, clasificación y rúbrica propuesta.
 
 ### Fase 2 · Entrada: perfil, temas, diagnóstico y ruta
 - [ ] 2.1 Registro corto: situación, experiencia, para qué se usa MÊTIS, al menos cinco temas prioritarios, frecuencia y minutos. Las cuentas existentes lo completan desde su perfil.
@@ -57,6 +78,7 @@ Estado: `[x]` hecho y publicado · `[ ]` pendiente.
 - [ ] 2.4 Calibración con tres perfiles de ejemplo (novato, gerente, directivo) y documento de especificación del diagnóstico.
 
 ### Fase 3 · Experiencia principal
+- [ ] 3.0 Diseño de las primeras experiencias inmersivas de fundamentos del Nivel 1, en documento y antes de construir: situación, documentos, conversación, decisión, explicación en contexto, nueva aplicación y repasos, con su comprobación independiente.
 - [ ] 3.1 Reto sin empresa propia: la empresa y los personajes pertenecen al caso; las consecuencias se explican dentro del caso. Formatos: caso breve, caso aplicado, caso encadenado e interacción inmersiva.
 - [ ] 3.2 Retroalimentación en seis partes: qué hiciste, qué consideraste bien, qué faltó, otra ruta defendible, qué aprendiste y revisar teoría.
 - [ ] 3.3 Hoy nuevo: «Tu criterio ejecutivo» con la barra general y las seis barras; al tocar una barra se ve por qué avanzó.
@@ -71,7 +93,7 @@ Estado: `[x]` hecho y publicado · `[ ]` pendiente.
 - [ ] 4.1 Correos firmados por MÊTIS: reto del día, recomendación de Academy, repaso y cierre semanal, con tope de frecuencia.
 - [ ] 4.2 Avisos al celular y preferencias de comunicación editables.
 - [ ] 4.3 «Pausar MÊTIS» hasta 14 días: congela racha y recordatorios, muestra fecha de regreso y permite reanudar antes. Sin pausas encadenadas automáticas.
-- [ ] 4.4 Regreso tras más de 30 días sin práctica: bienvenida y diagnóstico de reincorporación, con los casos límite (día 30, día 31, pausa, zona horaria, varios dispositivos).
+- [ ] 4.4 Regreso tras más de 30 días sin práctica: bienvenida y diagnóstico de reincorporación, con los casos límite (día 30, día 31, pausa, zona horaria, varios dispositivos). El nivel acreditado nunca baja; el diagnóstico indica qué reforzar y la persona puede practicar temporalmente con una exigencia menor.
 - [ ] 4.5 Repaso espaciado: calendario de repasos por habilidad.
 - [ ] 4.6 Hechos reales verificados como contexto de casos, separando la noticia real de la hipótesis del caso.
 
@@ -106,7 +128,7 @@ Estado: `[x]` hecho y publicado · `[ ]` pendiente.
 
 ## Lista de control
 
-«CA» criterios de aceptación obligatorios, «EN» entregables de la sección 15, «AD» apartados de la adenda, «EX» flujo de exportación, «EC» MÊTIS Executive Challenge.
+«CA» criterios de aceptación obligatorios, «EN» entregables de la sección 15, «AD» apartados de la adenda, «EX» flujo de exportación, «EC» MÊTIS Executive Challenge, «AJ» ajustes pedidos por Oziel al aprobar la primera parte de la Fase 1.
 
 | Núm. | Punto | Entrega | Estado |
 |---|---|---|---|
@@ -156,6 +178,16 @@ Estado: `[x]` hecho y publicado · `[ ]` pendiente.
 | EC10 | Variantes equivalentes, para que memorizar respuestas no permita avanzar | 1.7, 3.8, 5.7 | Pendiente |
 | EC11 | Reporte de cada nivel completado: habilidades demostradas, aspectos por reforzar y conocimientos que se desbloquean | 3.9 | Pendiente |
 | EC12 | Se siente como culminación y logro, no como barrera frustrante: se puede pausar y reanudar, y hay una ruta clara de mejora | 3.8, 3.9 | Pendiente |
+| AJ1 | Executive Challenge con las seis academias; una sola decisión no basta para aprobar | 1.7, 1.8, 3.8 | Propuesta escrita (1.9); espera visto bueno |
+| AJ2 | Carga medida por nivel; desde el Nivel 4 no se vuelven a acreditar las 52 habilidades | 1.9, 1.12 | En curso: carga medida con pruebas; propuesta de troncales, profundización y temas elegidos espera visto bueno |
+| AJ3 | Experiencias inmersivas en lugar de teoría y preguntas; comprobación independiente y sin apoyo | 1.12, 3.0, 3.1 | Propuesta escrita (1.9); espera visto bueno |
+| AJ4 | Reglas con versión; umbrales sin validar hasta calibrarlos; la velocidad no invalida | 1.4, 1.11 | En curso: la velocidad ya no descarta (versión 2); falta la calibración |
+| AJ5 | Matriz de trazabilidad con fuentes oficiales de las cinco escuelas | 1.10 | En curso: páginas oficiales consultadas; falta la matriz habilidad por habilidad |
+| AJ6 | Reincorporación sin perder el nivel acreditado, con práctica temporal en un nivel menor | 1.12, 4.4 | Propuesta escrita (1.9); espera visto bueno |
+| AJ7 | Niveles 6 en adelante con objetivos, complejidad, combinaciones o especializaciones nuevas | 1.12 | Propuesta escrita (1.9); espera visto bueno |
+| AJ8 | Muestra estratificada de 30 casos para auditoría editorial | 1.13 | Pendiente |
+| AJ9 | No ejecutar 1.5 sin respaldo verificado; no borrar los 205 archivos; repositorio privado solo tras confirmar Vercel | 1.5 | Vigente: nada de eso se ha hecho |
+| AJ10 | Especificación del diagnóstico y diseño de las primeras experiencias del Nivel 1 | 2.4, 3.0 | Pendiente |
 
 Los 10 objetivos del usuario (sección 1 del documento) y la regla de producto se revisan en cada entrega: cada una indica a qué objetivo responde y con qué evidencia se comprueba.
 
@@ -169,14 +201,15 @@ Los 10 objetivos del usuario (sección 1 del documento) y la regla de producto s
 1. Cómo se aprueban los casos nuevos. Propuesta: lotes por academia con hoja resumen y revisión de una muestra.
 2. Revisión legal del aviso de privacidad antes de la Fase 6.
 3. Repositorio: Oziel prefiere pasarlo a privado. El inventario y la revisión están en `02-repositorio.md`. Falta que Oziel confirme su plan de Vercel (el plan gratuito puede no publicar desde un repositorio privado cuando los cambios los firma SuperNinja) y que autorice, por separado, la limpieza de los archivos ajenos.
-4. Nombres de la escala interna de dominio (Sin evidencia, Inicial, En desarrollo, Demostrado, Consistente, Transferible). Son propuesta; el documento de origen solo pide una escala de 0 a 5.
-5. Umbrales del cálculo de dominio (`04-dominio.md`): cuántos aciertos, en cuántas situaciones, cuántos días de espera, qué parte de cada academia. Son un punto de partida razonado, sin datos reales detrás. Oziel puede ajustarlos ahora; en cualquier caso se revisan con datos de uso en la Fase 5.
+4. Nombres de la escala interna de dominio (Sin evidencia, Inicial, En desarrollo, Demostrado, Consistente, Transferible). Oziel los aceptó de forma provisional el 12 de noviembre de 2026.
+5. Umbrales del cálculo de dominio (`04-dominio.md`): cuántos aciertos, en cuántas situaciones, cuántos días de espera, qué parte de cada academia. Oziel indicó que no están validados: se calibran con escenarios (entrega 1.11) antes de darlos por definitivos y se revisan otra vez con datos de uso en la Fase 5. Revisar en especial los tres aciertos, las esperas de siete días, el 60 % por academia y los tiempos.
 6. Respaldo de producción: falta que Oziel corra `docs/sql/metis2_respaldo.sql` en Supabase y confirme los dos conteos. Sin eso no se prepara la entrega 1.5.
 7. Executive Challenge, puntos de diseño por resolver en 1.7 y 1.8:
    - Apoyo en los niveles iniciales. La regla vigente dice que una respuesta con ayuda no cuenta como acierto. Hay que separar el apoyo que forma parte del diseño del reto (cuenta) de la ayuda que la persona pide (no cuenta).
    - Cuándo se habilita. Propuesta: cuando ya se cumplen la cobertura en las seis academias y la evidencia suficiente, para que llegue como culminación y no como obstáculo.
    - Reintento. Cuánto se espera antes de otra oportunidad, qué repaso se pide antes y cuántas variantes hacen falta por nivel.
    - Niveles 7 en adelante. No tienen tope: hay que decidir cómo se generan retos de cierre nuevos sin repetir.
+8. Las siete decisiones del apartado 13 de `05-ajustes-propuestos.md`: programa de 30 habilidades desde el Nivel 4, tronco común de los niveles 2 y 3, media barra por aprender y media por demostrar, regla de aprobación del Executive Challenge, niveles 6 en adelante solo con ficha y contenido nuevos, diagnóstico de reincorporación opcional u obligatorio, y habilidades de análisis de datos y de economía para decisiones.
 
 ## Bitácora
 
@@ -189,3 +222,4 @@ Los 10 objetivos del usuario (sección 1 del documento) y la regla de producto s
 | 12 nov 2026 | 1.2 | Clasificación de las 335 piezas del simulador (259 actividades evaluables y 76 de teoría) con academia, habilidades y nivel, sin cambiar identificadores. Medición de cobertura: de 268 casillas del currículo, 92 tienen al menos una actividad; los niveles 1, 5 y 6 no tienen ninguna. Documento: `03-clasificacion.md`. La clasificación es criterio editorial y falta revisar una muestra. |
 | 12 nov 2026 | 1.3, 1.4 | Registro de evidencias que solo crece (anular conserva el original) y cálculo de dominio con reglas públicas y con versión. Construidos sin depender de la base de datos, con 79 pruebas propias. No cambian ninguna pantalla ni tocan datos: Hoy, Perfil y Academy siguen con el cálculo anterior. Los umbrales son un punto de partida sin datos reales. Documento: `04-dominio.md`. |
 | 12 nov 2026 | Requisito nuevo | Oziel agrega el MÊTIS Executive Challenge: cada nivel cierra con una simulación ejecutiva integral de las seis academias. Queda registrado como tarea, sin construir: regla 15, entregas 1.7, 1.8, 3.8, 3.9 y 5.7, y doce puntos «EC» en la lista de control. La regla vigente del cálculo (reto integrador de dos academias) no se ha cambiado. |
+| 12 nov 2026 | 1.9 y reglas versión 2 | Oziel aprueba 1.1, 1.2, 1.3, 1.4 y 1.6 y pide diez ajustes (reglas 16 a 25). Hecho: la rapidez deja de descartar respuestas (reglas versión 2); medición con pruebas de cuántos aciertos pide cada nivel (34 a 59 en el Nivel 1; 66 a 119 del Nivel 4 en adelante, donde cada ascenso vuelve a pedir las 52 habilidades); propuesta de ajustes en `05-ajustes-propuestos.md`. Consultadas las páginas oficiales de los cinco programas de referencia. No se cambió nada más del cálculo ni del currículo: espera visto bueno. No se ejecutó la migración 1.5 ni se borró ningún archivo. |

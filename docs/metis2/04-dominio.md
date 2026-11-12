@@ -1,6 +1,6 @@
 # MÊTIS 2.0 · Cómo se calcula el dominio
 
-Reglas versión 1 · registro de evidencias versión 1.
+Reglas versión 2 · registro de evidencias versión 1.
 Este documento se genera a partir de las mismas reglas que usa el cálculo. No se edita a mano.
 
 ## En una frase
@@ -52,12 +52,13 @@ Resultado de 70 % o más. Si la actividad evaluó el razonamiento, además el ra
 | Caso | Regla |
 |---|---|
 | Repetir la misma situación | Solo vuelve a contar si pasaron 7 días sin verla. Dos redacciones de la misma situación son la misma situación. Verla de nuevo reinicia la espera. |
-| Responder sin leer | Una respuesta más rápida que el mínimo de su formato no cuenta (Ejercicio: 2 s; Caso breve: 3 s; Caso aplicado: 6 s; Interacción inmersiva: 10 s; Caso encadenado: 10 s; Reto integrador: 20 s; Repaso y transferencia: 3 s). |
 | Calificación poco confiable | Si la confianza de la calificación es menor a 50 %, no cuenta ni a favor ni en contra. |
 | Respuesta con ayuda | Queda registrada y sirve para aprender, pero no cuenta como acierto. |
 | Dificultad menor a la del nivel | No cuenta para el nivel actual. Lo demostrado en una dificultad mayor sí cuenta para las menores. |
 
 Estas respuestas no se borran: quedan en el registro con la razón por la que no contaron.
+
+La rapidez no descarta nada. El tiempo de respuesta se guarda como dato, pero una respuesta rápida cuenta igual que una lenta: responder rápido no significa responder sin comprender.
 
 ## Grados de dominio de una habilidad
 
@@ -131,8 +132,17 @@ Del nivel 7 en adelante la dificultad es la del tramo 6 y solo cuenta evidencia 
 
 Lo declarado nunca sube el dominio ni el nivel.
 
+## Cambios entre versiones
+
+| Versión | Qué cambió |
+|---|---|
+| 1 | Primera versión. |
+| 2 | La rapidez de una respuesta deja de ser motivo para descartarla. Antes, una respuesta más rápida que un mínimo por formato no contaba. |
+
+Los ajustes que están propuestos y todavía no aplicados se describen en `05-ajustes-propuestos.md`.
+
 ## Límites de esta versión
 
-- Los números de estas reglas son un punto de partida razonado. Deben ajustarse con datos reales de uso, y cada ajuste cambia la versión de las reglas.
+- Los números de estas reglas no están validados. Son un punto de partida razonado, pendiente de calibración; cada ajuste cambia la versión de las reglas.
 - Este cálculo está construido y probado por separado. En esta entrega no está conectado a las pantallas ni a la base de datos: Hoy, Perfil y Academy siguen mostrando el cálculo anterior hasta las entregas 1.5 y 3.3.
 - La calidad del razonamiento depende de las rúbricas de cada actividad, que se revisan en la Fase 2.
