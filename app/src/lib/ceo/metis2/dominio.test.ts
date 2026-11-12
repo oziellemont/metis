@@ -3,7 +3,7 @@
  *
  * Lo que estas pruebas aseguran:
  *  - una habilidad solo se demuestra con evidencia suficiente; nunca por leer teoría, por puntos o por completar actividades;
- *  - repetir, responder sin leer o responder con ayuda no cuenta;
+ *  - repetir la misma situación o responder con ayuda no cuenta; la rapidez no descarta nada;
  *  - pesan la calidad del razonamiento, la dificultad, la transferencia, la consistencia y las respuestas sin ayuda;
  *  - un tropiezo no borra lo demostrado y una pausa no envejece nada;
  *  - la barra general no es un promedio: exige cobertura en las seis academias, evidencia suficiente y reto integrador;
@@ -72,7 +72,7 @@ const NOW = T0 + 3 * DAY;
 
 describe("reglas", () => {
   it("tienen versión y no se pueden cambiar en marcha", () => {
-    expect(MASTERY_RULES_VERSION).toBe(1);
+    expect(MASTERY_RULES_VERSION).toBe(2);
     expect(Object.isFrozen(RULES)).toBe(true);
     expect(Object.isFrozen(RULES.level)).toBe(true);
     expect(() => { (RULES as { pass: number }).pass = 0; }).toThrow(TypeError);
@@ -175,19 +175,30 @@ describe("protección contra repeticiones y atajos", () => {
     expect(e.missing).toEqual(["Faltan 2 situaciones distintas."]);
   });
 
-  it("una respuesta más rápida que la lectura mínima no cuenta; si no se midió el tiempo, sí", () => {
-    const fast = ev({ skills: ["fin.flujo"], format: "aplicado", seconds: RULES.minSeconds.aplicado - 1 });
-    const edge = ev({ skills: ["fin.flujo"], format: "aplicado", seconds: RULES.minSeconds.aplicado });
+  it("la rapidez no descarta nada: una respuesta rápida cuenta igual que una lenta", () => {
+    const instant = ev({ skills: ["fin.flujo"], format: "aplicado", seconds: 0 });
+    const fast = ev({ skills: ["fin.flujo"], format: "integrador", seconds: 1 });
+    const slow = ev({ skills: ["fin.flujo"], seconds: 600 });
     const unmeasured = ev({ skills: ["fin.flujo"], seconds: null });
-    const s = screen(logOf([fast, edge, unmeasured]));
-    expect(s.ignored).toEqual([{ id: fast.id, why: "sin_lectura" }]);
-    expect(s.counted).toHaveLength(2);
+    const s = screen(logOf([instant, fast, slow, unmeasured]));
+    expect(s.ignored).toEqual([]);
+    expect(s.counted).toHaveLength(4);
+    expect("minSeconds" in RULES).toBe(false);
+    // Tres aciertos rápidos demuestran lo mismo que tres lentos.
+    const quick = [0, 1, 2].map((i) => ev({ skills: ["fin.flujo"], seconds: 1, at: T0 + i * HOUR }));
+    const calm = [0, 1, 2].map((i) => ev({ skills: ["fin.flujo"], seconds: 300, at: T0 + i * HOUR }));
+    const a = est(quick, "fin.flujo");
+    const b = est(calm, "fin.flujo");
+    expect(a.stage).toBe(3);
+    expect({ ...a, lastAt: 0 }).toEqual({ ...b, lastAt: 0 });
   });
 
-  it("responder al vuelo y luego repetir con calma tampoco cuenta", () => {
+  it("responder rápido y repetir enseguida la misma situación: cuenta la primera, no la repetición", () => {
     const fast = ev({ skills: ["fin.flujo"], group: "caja-1", seconds: 1, at: T0 });
     const again = ev({ skills: ["fin.flujo"], group: "caja-1", seconds: 90, at: T0 + HOUR });
-    expect(screen(logOf([fast, again])).ignored.map((x) => x.why)).toEqual(["sin_lectura", "repetida"]);
+    const s = screen(logOf([fast, again]));
+    expect(s.counted.map((e) => e.id)).toEqual([fast.id]);
+    expect(s.ignored).toEqual([{ id: again.id, why: "repetida" }]);
   });
 
   it("una calificación poco confiable no cuenta ni a favor ni en contra", () => {
@@ -620,7 +631,7 @@ describe("anulaciones, orden y repetibilidad", () => {
         return ev({
           skills: second === main || rnd() < 0.6 ? [main] : [main, second], level: (1 + Math.floor(rnd() * 5)) as Demand, format: pick(formats),
           at: T0 + i * HOUR, group: rnd() < 0.2 ? `g${Math.floor(rnd() * 6)}` : undefined, context: pick(["restaurante", "software", "clinica"]),
-          result: rnd(), reasoning: rnd() < 0.5 ? null : rnd(), aided: rnd() < 0.2, transfer: rnd() < 0.2, seconds: rnd() < 0.1 ? 1 : 200, confidence: rnd() < 0.1 ? 0.3 : 1,
+          result: rnd(), reasoning: rnd() < 0.5 ? null : rnd(), aided: rnd() < 0.2, transfer: rnd() < 0.2, seconds: rnd() < 0.3 ? 1 : 200, confidence: rnd() < 0.1 ? 0.3 : 1,
         });
       });
       const log = logOf(list);
@@ -659,6 +670,74 @@ describe("anulaciones, orden y repetibilidad", () => {
         q.academies.forEach((a, i) => expect(a.bar).toBeLessThanOrEqual(p.academies[i].bar));
       }
     }
+  });
+});
+
+describe("carga: cuántas actividades pide subir de nivel con estas reglas", () => {
+  /** Habilidades que se demuestran en el recorrido más corto: en cada academia, solo el mínimo exigido. */
+  function chosenOf(level: Demand): string[] {
+    const all = levelSkills(level);
+    return ACADEMY_IDS.flatMap((a) => {
+      const mine = all.filter((s) => skillById(s)!.academy === a);
+      return mine.slice(0, Math.ceil(mine.length * RULES.level.academyShare));
+    });
+  }
+  const reasoningOf = (level: Demand) => (level >= 3 ? 0.8 : null);
+
+  /**
+   * Recorrido más corto posible: cada actividad evalúa tres habilidades, todas se aciertan y una de ellas hace
+   * de reto integrador. No puede haber uno más corto: cada habilidad demostrada pide dos aciertos como habilidad
+   * principal y cada actividad tiene una sola habilidad principal.
+   */
+  function shortest(level: Demand): Evidence[] {
+    const all = levelSkills(level);
+    const acts = chosenOf(level).flatMap((s) => [0, 1].map(() => ({ main: s, extra: [] as string[] })));
+    for (const need of all) {
+      const slot = acts.find((x) => x.main !== need && x.extra.length < 2 && !x.extra.includes(need));
+      if (!slot) throw new Error("sin espacio");
+      slot.extra.push(need);
+    }
+    const cross = acts.findIndex((x) => new Set([x.main, ...x.extra].map((s) => skillById(s)!.academy)).size >= 2);
+    return acts.map((x, i) => ev({ skills: [x.main, ...x.extra], level, at: T0 + i * HOUR, reasoning: i === cross ? 0.8 : reasoningOf(level), format: i === cross ? "integrador" : "aplicado" }));
+  }
+
+  /** Recorrido con una habilidad por actividad, todas acertadas, más el reto integrador. */
+  function oneByOne(level: Demand): Evidence[] {
+    const chosen = chosenOf(level);
+    const rest = levelSkills(level).filter((s) => !chosen.includes(s));
+    let i = 0;
+    const one = (s: string) => ev({ skills: [s], level, at: T0 + i++ * HOUR, reasoning: reasoningOf(level) });
+    return [...chosen.flatMap((s) => [one(s), one(s), one(s)]), ...rest.map(one), integrator(level, T0 + 30 * DAY)];
+  }
+
+  const LEVELS: Demand[] = [1, 2, 3, 4, 5, 6];
+  const ready = (list: Evidence[], level: Demand) => levelProgress(logOf(list), { level, since: T0 }, { now: T0 + 31 * DAY }).ready;
+
+  it("mínimo absoluto por nivel, con el reto integrador incluido: 34, 54, 64 y 66 actividades acertadas", () => {
+    const counts = LEVELS.map((level) => {
+      const list = shortest(level);
+      expect(ready(list, level)).toBe(true);
+      // Sin la primera actividad, el nivel ya no se cumple.
+      expect(ready(list.slice(1), level)).toBe(false);
+      expect(list.length).toBe(2 * chosenOf(level).length);
+      return list.length;
+    });
+    expect(counts).toEqual([34, 54, 64, 66, 66, 66]);
+  });
+
+  it("con una habilidad por actividad y sin fallar ninguna: 59, 94, 114 y 119 actividades", () => {
+    const counts = LEVELS.map((level) => {
+      const list = oneByOne(level);
+      expect(ready(list, level)).toBe(true);
+      expect(ready(list.slice(1), level)).toBe(false);
+      return list.length;
+    });
+    expect(counts).toEqual([59, 94, 114, 119, 119, 119]);
+  });
+
+  it("del nivel 4 en adelante cada ascenso vuelve a pedir las 52 habilidades", () => {
+    for (const level of [4, 5, 6, 7, 12]) expect(levelProgress(emptyLog(), { level, since: T0 }, { now: NOW }).skills).toHaveLength(52);
+    expect(LEVELS.map((l) => chosenOf(l).length)).toEqual([17, 27, 32, 33, 33, 33]);
   });
 });
 

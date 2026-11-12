@@ -19,10 +19,15 @@
  *
  * Todo es determinista y no depende de la base de datos: el mismo registro da siempre el mismo resultado.
  */
-import { ACADEMIES, SKILLS, academyById, skillById, tramoOf, type AcademyId, type Demand, type FormatId, type MasteryStage, type Skill } from "./academias";
+import { ACADEMIES, SKILLS, academyById, skillById, tramoOf, type AcademyId, type Demand, type MasteryStage, type Skill } from "./academias";
 import { academiesOf, activeEvidence, type Evidence, type EvidenceLog } from "./evidencias";
 
-export const MASTERY_RULES_VERSION = 1;
+/**
+ * Versión de las reglas.
+ *  1 · Primera versión.
+ *  2 · La rapidez de una respuesta deja de ser motivo para descartarla (instrucción de Oziel, 12 nov 2026).
+ */
+export const MASTERY_RULES_VERSION = 2;
 const DAY = 86_400_000;
 
 /**
@@ -37,8 +42,6 @@ export const RULES = Object.freeze({
   spacingDays: 7,
   /** Una calificación con confianza menor que esto no cuenta ni a favor ni en contra. */
   minConfidence: 0.5,
-  /** Una respuesta más rápida que esto no pudo leerse: no cuenta. Segundos por formato. */
-  minSeconds: Object.freeze({ leccion: 0, ejercicio: 2, flash: 3, repaso: 3, aplicado: 6, inmersivo: 10, encadenado: 10, integrador: 20 } as Record<FormatId, number>),
   /** Respuestas recientes sin ayuda que se revisan para ver si el desempeño se sostiene. */
   recent: 5,
   /** Grado 3 · Demostrado. `recentFails`: fallos tolerados entre las respuestas recientes. */
@@ -67,15 +70,17 @@ export const RULES = Object.freeze({
 /** Acierto según las reglas. */
 export const isPass = (e: Pick<Evidence, "result" | "reasoning">) => e.result >= RULES.pass && (e.reasoning === null || e.reasoning >= RULES.reasoningFloor);
 
-export type IgnoredWhy = "repetida" | "sin_lectura" | "calificacion_dudosa";
+export type IgnoredWhy = "repetida" | "calificacion_dudosa";
 export interface Screened { counted: Evidence[]; ignored: { id: string; why: IgnoredWhy }[] }
 
 /**
  * Protección contra repeticiones y atajos. Recorre las evidencias vigentes en orden de fecha y deja fuera:
- *  - «sin_lectura»: respuestas más rápidas que el mínimo del formato;
  *  - «repetida»: la misma situación (mismo grupo) vista hace menos de `spacingDays` días;
  *  - «calificacion_dudosa»: respuestas cuya calificación tiene confianza menor que `minConfidence`.
  * Una situación vista, cuente o no, reinicia la espera: no sirve mirar la respuesta y contestar de nuevo.
+ *
+ * El tiempo de respuesta se guarda en la evidencia como dato, pero no descarta nada: responder rápido no significa
+ * responder sin comprender.
  */
 export function screen(log: EvidenceLog): Screened {
   const counted: Evidence[] = [];
@@ -84,7 +89,6 @@ export function screen(log: EvidenceLog): Screened {
   for (const e of activeEvidence(log)) {
     const seen = lastSeen.get(e.activity.group);
     lastSeen.set(e.activity.group, e.at);
-    if (e.seconds !== undefined && e.seconds < RULES.minSeconds[e.activity.format]) { ignored.push({ id: e.id, why: "sin_lectura" }); continue; }
     if (seen !== undefined && e.at - seen < RULES.spacingDays * DAY) { ignored.push({ id: e.id, why: "repetida" }); continue; }
     if (e.confidence < RULES.minConfidence) { ignored.push({ id: e.id, why: "calificacion_dudosa" }); continue; }
     counted.push(e);
