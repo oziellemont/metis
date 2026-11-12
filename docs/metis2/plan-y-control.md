@@ -47,6 +47,17 @@ Deben quedar incorporadas antes de conectar el sistema nuevo al progreso real de
 24. **Candados técnicos.** La migración 1.5 no se ejecuta hasta verificar el archivo de respaldo y sus resultados en producción. Los 205 archivos ajenos no se borran. El repositorio pasa a privado solo después de confirmar el plan de Vercel y las publicaciones de SuperNinja.
 25. **Orden.** Primero la propuesta de ajustes y el registro de qué cambia; mientras tanto sigue el trabajo de la especificación del diagnóstico y del diseño de las primeras experiencias del Nivel 1.
 
+### Instrucciones de Oziel al entregar el Repositorio Académico v1.0 (12 de noviembre de 2026)
+
+El paquete trae el Atlas de 52 habilidades, doce fuentes, seis experiencias del Nivel 1, el Executive Challenge del Nivel 1 y el estándar editorial. El detalle está en `06-repositorio-academico.md`.
+
+26. **Nada del Repositorio Académico acredita por sí solo.** Sus materiales no acreditan dominio, no suben niveles y no agregan habilidades al CV hasta que las evaluaciones estén validadas.
+27. **No se simplifica.** Las experiencias no se convierten en cuestionarios ni en preguntas de opción múltiple. Se conservan documentos, conversaciones, decisiones, teoría en contexto y evaluación independiente: se aprende mientras se explora, se decide, se reciben consecuencias y se vuelve a aplicar el concepto.
+28. **Trazabilidad completa.** Cada pieza mantiene la cadena fuentes, competencias, experiencias y evaluaciones, y se distingue lo que viene del paquete de lo que se redactó o se añadió al convertir.
+29. **Primero una piloto.** Se construye una experiencia completa, se comprueba en computadora y en celular, y Oziel revisa su calidad educativa y de interacción antes de integrar el resto.
+30. **Estado por separado.** Cada reporte distingue lo importado, lo probado, lo revisado por una persona, lo publicado y lo validado con usuarios.
+31. **Los archivos del paquete no se copian al repositorio mientras sea público.** Esta no es instrucción de Oziel: es una precaución de SuperNinja, porque el paquete trae las respuestas de las evaluaciones. Se guarda su huella para saber con qué versión se trabajó. Sí quedó en el repositorio, como parte de la aplicación, el contenido de la experiencia piloto, incluidas las respuestas de su variante. Oziel puede cambiar este criterio.
+
 ## Fases y entregas
 
 Estado: `[x]` hecho y publicado · `[ ]` pendiente.
@@ -66,7 +77,7 @@ Estado: `[x]` hecho y publicado · `[ ]` pendiente.
 - [x] 1.6 Documento de currículo: habilidades, prerrequisitos, niveles y al menos cinco ejemplos progresivos por academia. Ver `01-curriculo.md`: qué se pide en cada nivel por habilidad, fundamentos del Nivel 1 y seis ejemplos por academia. Se adelantó a petición de Oziel.
 
 - [x] 1.9 Propuesta de ajustes al cálculo de dominio y a la arquitectura curricular, con la tabla de qué cambia frente a la versión actual y la medición de la carga por nivel. Ver `05-ajustes-propuestos.md`. Es documento: espera el visto bueno de Oziel.
-- [ ] 1.10 Matriz de trazabilidad académica (prioritaria): las 52 habilidades frente a fuentes oficiales de las cinco escuelas, con institución, curso o componente, fuente verificable, concepto y su conversión en actividad original. Las páginas oficiales de los cinco programas ya están consultadas; falta el detalle curso por curso.
+- [ ] 1.10 Matriz de trazabilidad académica (prioritaria): las 52 habilidades frente a fuentes oficiales de las cinco escuelas, con institución, curso o componente, fuente verificable, concepto y su conversión en actividad original. Las páginas oficiales de los cinco programas ya están consultadas. El Repositorio Académico aporta el Atlas con fuentes para las 52 habilidades: la correspondencia de identificadores (52 de 52) y la lectura de las doce fuentes están en `06-repositorio-academico.md`, con ocho observaciones de exactitud. Falta resolver esas observaciones y el detalle curso por curso.
 - [ ] 1.11 Escenarios de calibración de los umbrales: diez personas de ejemplo con el resultado justo escrito antes de correr el cálculo, y comparación de valores (aciertos, días de espera, parte por academia).
 - [ ] 1.12 Ajustes al cálculo y al currículo, después del visto bueno de 1.9: programa por nivel con troncales, profundización y temas elegidos; modos de aprendizaje y de comprobación en el registro de evidencias; nivel de práctica temporal; fichas de los niveles 6 en adelante. Cada cambio sube la versión de sus reglas. No depende de la base de datos.
 - [ ] 1.13 Muestra estratificada de 30 casos para la auditoría editorial: cinco por academia, de los niveles que hoy tienen contenido, con texto original, clasificación y rúbrica propuesta.
@@ -78,7 +89,13 @@ Estado: `[x]` hecho y publicado · `[ ]` pendiente.
 - [ ] 2.4 Calibración con tres perfiles de ejemplo (novato, gerente, directivo) y documento de especificación del diagnóstico.
 
 ### Fase 3 · Experiencia principal
-- [ ] 3.0 Diseño de las primeras experiencias inmersivas de fundamentos del Nivel 1, en documento y antes de construir: situación, documentos, conversación, decisión, explicación en contexto, nueva aplicación y repasos, con su comprobación independiente.
+- [ ] 3.0 Diseño de las primeras experiencias inmersivas de fundamentos del Nivel 1, en documento y antes de construir: situación, documentos, conversación, decisión, explicación en contexto, nueva aplicación y repasos, con su comprobación independiente. El Repositorio Académico v1.0 trae el diseño de seis; se trabaja en las entregas 3.0a a 3.0f.
+- [x] 3.0a Repositorio Académico v1.0: lectura completa de los diez archivos, correspondencia de los 52 identificadores editoriales con el catálogo, lectura de las doce fuentes, trazabilidad del lote y ajustes técnicos necesarios. Ver `06-repositorio-academico.md`.
+- [x] 3.0b Experiencia piloto EDIT-N1-002 «Hay utilidad; ¿por qué no hay efectivo?»: mensaje, dos documentos tocables, dos decisiones encadenadas con consecuencias, comprobación sobre los documentos, dato nuevo, respuesta escrita, concepto siempre a la mano y variante independiente con cifras por escribir. Entrada por enlace (`/piloto/utilidad-y-efectivo`), fuera del menú. No registra evidencia ni toca dominio, niveles o perfil. Probada con pruebas automáticas y recorrida en pantalla de computadora y de celular.
+- [ ] 3.0c Revisión de Oziel de la piloto (calidad educativa y de interacción) y respuesta a las observaciones editoriales del paquete. Nada más se integra antes de esto.
+- [ ] 3.0d Conversión de las otras cinco experiencias del lote (EDIT-N1-001, 003, 004, 005 y 006), con los tipos de interacción que piden: clasificar frases, diagrama de flujo, mapa de actores, orden de riesgos y mensaje en tres partes. Tres recorridos de prueba por experiencia (quien sabe, quien empieza y al azar).
+- [ ] 3.0e Executive Challenge del Nivel 1: versión B y banco de variantes antes de usarlo como requisito de ascenso. Depende de 1.7, 1.8 y de las decisiones del documento 05.
+- [ ] 3.0f Las 18 habilidades restantes del Nivel 1, según el plan de producción del paquete.
 - [ ] 3.1 Reto sin empresa propia: la empresa y los personajes pertenecen al caso; las consecuencias se explican dentro del caso. Formatos: caso breve, caso aplicado, caso encadenado e interacción inmersiva.
 - [ ] 3.2 Retroalimentación en seis partes: qué hiciste, qué consideraste bien, qué faltó, otra ruta defendible, qué aprendiste y revisar teoría.
 - [ ] 3.3 Hoy nuevo: «Tu criterio ejecutivo» con la barra general y las seis barras; al tocar una barra se ve por qué avanzó.
@@ -128,7 +145,7 @@ Estado: `[x]` hecho y publicado · `[ ]` pendiente.
 
 ## Lista de control
 
-«CA» criterios de aceptación obligatorios, «EN» entregables de la sección 15, «AD» apartados de la adenda, «EX» flujo de exportación, «EC» MÊTIS Executive Challenge, «AJ» ajustes pedidos por Oziel al aprobar la primera parte de la Fase 1.
+«CA» criterios de aceptación obligatorios, «EN» entregables de la sección 15, «AD» apartados de la adenda, «EX» flujo de exportación, «EC» MÊTIS Executive Challenge, «AJ» ajustes pedidos por Oziel al aprobar la primera parte de la Fase 1, «RA» Repositorio Académico.
 
 | Núm. | Punto | Entrega | Estado |
 |---|---|---|---|
@@ -180,14 +197,26 @@ Estado: `[x]` hecho y publicado · `[ ]` pendiente.
 | EC12 | Se siente como culminación y logro, no como barrera frustrante: se puede pausar y reanudar, y hay una ruta clara de mejora | 3.8, 3.9 | Pendiente |
 | AJ1 | Executive Challenge con las seis academias; una sola decisión no basta para aprobar | 1.7, 1.8, 3.8 | Propuesta escrita (1.9); espera visto bueno |
 | AJ2 | Carga medida por nivel; desde el Nivel 4 no se vuelven a acreditar las 52 habilidades | 1.9, 1.12 | En curso: carga medida con pruebas; propuesta de troncales, profundización y temas elegidos espera visto bueno |
-| AJ3 | Experiencias inmersivas en lugar de teoría y preguntas; comprobación independiente y sin apoyo | 1.12, 3.0, 3.1 | Propuesta escrita (1.9); espera visto bueno |
+| AJ3 | Experiencias inmersivas en lugar de teoría y preguntas; comprobación independiente y sin apoyo | 1.12, 3.0, 3.1 | Propuesta escrita (1.9); espera visto bueno. Una experiencia piloto construida con este formato (3.0b); espera revisión |
 | AJ4 | Reglas con versión; umbrales sin validar hasta calibrarlos; la velocidad no invalida | 1.4, 1.11 | En curso: la velocidad ya no descarta (versión 2); falta la calibración |
-| AJ5 | Matriz de trazabilidad con fuentes oficiales de las cinco escuelas | 1.10 | En curso: páginas oficiales consultadas; falta la matriz habilidad por habilidad |
+| AJ5 | Matriz de trazabilidad con fuentes oficiales de las cinco escuelas | 1.10 | En curso: el Atlas del Repositorio Académico da la matriz de las 52 habilidades; doce fuentes leídas, con ocho observaciones de exactitud por resolver |
 | AJ6 | Reincorporación sin perder el nivel acreditado, con práctica temporal en un nivel menor | 1.12, 4.4 | Propuesta escrita (1.9); espera visto bueno |
 | AJ7 | Niveles 6 en adelante con objetivos, complejidad, combinaciones o especializaciones nuevas | 1.12 | Propuesta escrita (1.9); espera visto bueno |
 | AJ8 | Muestra estratificada de 30 casos para auditoría editorial | 1.13 | Pendiente |
 | AJ9 | No ejecutar 1.5 sin respaldo verificado; no borrar los 205 archivos; repositorio privado solo tras confirmar Vercel | 1.5 | Vigente: nada de eso se ha hecho |
-| AJ10 | Especificación del diagnóstico y diseño de las primeras experiencias del Nivel 1 | 2.4, 3.0 | Pendiente |
+| AJ10 | Especificación del diagnóstico y diseño de las primeras experiencias del Nivel 1 | 2.4, 3.0 | En curso: diseño de seis experiencias recibido y una piloto construida; la especificación del diagnóstico sigue pendiente |
+| RA1 | Revisar completos los diez archivos del paquete | 3.0a | Hecho |
+| RA2 | Correspondencia de identificadores editoriales con las 52 habilidades | 3.0a | Hecho: 52 de 52, con prueba |
+| RA3 | Revisión de exactitud de las fuentes | 3.0a, 1.10 | Hecho en parte: doce direcciones abiertas y leídas; no se comparó cada habilidad con el temario de cada curso |
+| RA4 | Integración sin perder datos, historias, interacciones ni rúbricas; ajustes técnicos | 3.0a | Propuesta escrita: nueve ajustes en `06-repositorio-academico.md` |
+| RA5 | Una experiencia piloto completa, con documentos, conversación, decisiones, teoría en contexto y evaluación independiente | 3.0b | Construida; espera la revisión de Oziel |
+| RA6 | Funciona en computadora y en celular | 3.0b | Comprobado en pantalla de computadora y en pantalla del ancho de un celular; no en un teléfono físico ni con lector de pantalla |
+| RA7 | No acredita dominio, no sube niveles y no agrega habilidades al CV | 3.0b | Vigente: la piloto no registra evidencia y una prueba lo vigila |
+| RA8 | No simplificar en cuestionarios ni opción múltiple | 3.0b, 3.0d | Vigente: la evaluación de la piloto pide cifras por escribir, sin opciones |
+| RA9 | Tres recorridos de prueba por caso y validadores de cálculos y de largo de opciones | 3.0b, 3.0d | Hecho para la piloto |
+| RA10 | Modo de prueba editorial que no afecte a los usuarios | 3.0b | Hecho para la piloto: ruta fuera del menú; para el lote conviene una lista de cuentas revisoras |
+| RA11 | Dos versiones del Executive Challenge antes de usarlo como requisito | 3.0e | Pendiente |
+| RA12 | Reporte por separado: importado, probado, revisado por una persona, publicado y validado con usuarios | Todas | Hecho en `06-repositorio-academico.md`, apartado 10 |
 
 Los 10 objetivos del usuario (sección 1 del documento) y la regla de producto se revisan en cada entrega: cada una indica a qué objetivo responde y con qué evidencia se comprueba.
 
@@ -210,6 +239,14 @@ Los 10 objetivos del usuario (sección 1 del documento) y la regla de producto s
    - Reintento. Cuánto se espera antes de otra oportunidad, qué repaso se pide antes y cuántas variantes hacen falta por nivel.
    - Niveles 7 en adelante. No tienen tope: hay que decidir cómo se generan retos de cierre nuevos sin repetir.
 8. Las siete decisiones del apartado 13 de `05-ajustes-propuestos.md`: programa de 30 habilidades desde el Nivel 4, tronco común de los niveles 2 y 3, media barra por aprender y media por demostrar, regla de aprobación del Executive Challenge, niveles 6 en adelante solo con ficha y contenido nuevos, diagnóstico de reincorporación opcional u obligatorio, y habilidades de análisis de datos y de economía para decisiones.
+9. Repositorio Académico, tras revisar la piloto (`06-repositorio-academico.md`):
+   - Si la calidad educativa y de interacción de la piloto es la que se quiere para el resto del lote.
+   - Variante de EDIT-N1-002: repite tres cifras de la práctica; quien contesta de memoria llega a 70 puntos, justo la regla provisional para pasar.
+   - Nota de exactitud de EDIT-N1-002 (sobregiro de $10,000) frente a su tabla (saldo final de $5,000): la piloto sigue la tabla.
+   - Cómo se comprueban las variantes que piden redactar (EDIT-N1-001, 003 y 005) sin depender de inteligencia artificial.
+   - Qué fuente manda cuando la experiencia y el Atlas citan fuentes distintas, y si se añade la página de contabilidad de Harvard para las habilidades de vocabulario y estados financieros.
+   - Cómo conviven el papel de asesor de las experiencias y el de director de empresa de la aplicación actual.
+   - Si está de acuerdo con que los archivos del paquete queden fuera del repositorio mientras sea público, y con que el contenido de la piloto (con las respuestas de su variante) esté dentro como parte de la aplicación.
 
 ## Bitácora
 
@@ -223,3 +260,4 @@ Los 10 objetivos del usuario (sección 1 del documento) y la regla de producto s
 | 12 nov 2026 | 1.3, 1.4 | Registro de evidencias que solo crece (anular conserva el original) y cálculo de dominio con reglas públicas y con versión. Construidos sin depender de la base de datos, con 79 pruebas propias. No cambian ninguna pantalla ni tocan datos: Hoy, Perfil y Academy siguen con el cálculo anterior. Los umbrales son un punto de partida sin datos reales. Documento: `04-dominio.md`. |
 | 12 nov 2026 | Requisito nuevo | Oziel agrega el MÊTIS Executive Challenge: cada nivel cierra con una simulación ejecutiva integral de las seis academias. Queda registrado como tarea, sin construir: regla 15, entregas 1.7, 1.8, 3.8, 3.9 y 5.7, y doce puntos «EC» en la lista de control. La regla vigente del cálculo (reto integrador de dos academias) no se ha cambiado. |
 | 12 nov 2026 | 1.9 y reglas versión 2 | Oziel aprueba 1.1, 1.2, 1.3, 1.4 y 1.6 y pide diez ajustes (reglas 16 a 25). Hecho: la rapidez deja de descartar respuestas (reglas versión 2); medición con pruebas de cuántos aciertos pide cada nivel (34 a 59 en el Nivel 1; 66 a 119 del Nivel 4 en adelante, donde cada ascenso vuelve a pedir las 52 habilidades); propuesta de ajustes en `05-ajustes-propuestos.md`. Consultadas las páginas oficiales de los cinco programas de referencia. No se cambió nada más del cálculo ni del currículo: espera visto bueno. No se ejecutó la migración 1.5 ni se borró ningún archivo. |
+| 12 nov 2026 | 3.0a, 3.0b · Repositorio Académico | Oziel entrega el Repositorio Académico v1.0 (diez archivos) y pide una piloto antes de integrar el resto (reglas 26 a 31). Hecho: lectura completa; correspondencia de 52 de 52 identificadores; doce fuentes abiertas y leídas, con ocho observaciones; ficha de las seis experiencias del lote; experiencia piloto EDIT-N1-002 jugable por enlace, fuera del menú, que no registra evidencia ni toca dominio, niveles o perfil. Probada con pruebas automáticas y recorrida completa en pantalla de computadora y en pantalla del ancho de un celular. No se hizo: las otras cinco experiencias, el Executive Challenge, tablas en la base de datos, prueba en teléfono físico o con lector de pantalla, calibración de la rúbrica. Los archivos del paquete no se copiaron al repositorio. Documento: `06-repositorio-academico.md`. |

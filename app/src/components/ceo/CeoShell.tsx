@@ -29,14 +29,16 @@ export function CeoShell({ children }: { children: React.ReactNode }) {
   const path = usePathname();
   const router = useRouter();
   const onboarding = path === "/ceo/empezar";
+  // Piloto del Repositorio Académico (/ceo/piloto): no está en el menú, se entra por enlace y no usa la partida.
+  const pilot = path.startsWith("/ceo/piloto/");
 
   useEffect(() => {
-    if (c.ready && !c.s.startedAt && !onboarding && !c.importFlow) router.replace("/ceo/empezar");
-  }, [c.ready, c.s.startedAt, onboarding, router, c.importFlow]);
+    if (c.ready && !c.s.startedAt && !onboarding && !pilot && !c.importFlow) router.replace("/ceo/empezar");
+  }, [c.ready, c.s.startedAt, onboarding, pilot, router, c.importFlow]);
 
   // Antes que nada: si hay una carrera del navegador por decidir, se pregunta (adenda v3.2 §3).
   if (c.ready && c.importFlow) return <ImportPrompt flow={c.importFlow} />;
-  if (onboarding) return <>{children}</>;
+  if (onboarding || pilot) return <>{children}</>;
   // Flujo de experiencia para usuarios actuales: pantalla completa, sin menú.
   if (path === "/ceo/experiencia" && c.ready && c.s.startedAt) return <>{children}</>;
   if (!c.ready || !c.s.startedAt) return <div className="min-h-screen grid place-items-center bg-canvas"><span className="h-8 w-8 rounded-full border-2 border-indigo border-t-transparent animate-spin" /></div>;
