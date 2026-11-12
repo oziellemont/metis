@@ -24,6 +24,14 @@ Este archivo es la referencia de avance. Se actualiza al cerrar cada entrega.
 13. **Prioridad.** Que MÊTIS enseñe. Los casos siguen siendo situaciones empresariales realistas, con personas, conversaciones, consecuencias y decisiones difíciles.
 14. **Revisión después de fusionar.** Además de la revisión de cada propuesta, después de cada fusión se comprueba que la corrida de «Pruebas» sobre `main` termine bien y que la publicación en producción quede confirmada.
 
+### Requisito de Oziel: MÊTIS Executive Challenge (12 de noviembre de 2026)
+
+15. **Cada nivel cierra con una simulación ejecutiva integral: el MÊTIS Executive Challenge.** Es la principal evaluación de integración del nivel. No es un examen de opción múltiple: es un caso empresarial inmersivo, con decisiones conectadas, reportes, datos, conversaciones con personajes, negociación, consecuencias y una historia que cambia según lo que la persona decide. Integra las seis academias y su complejidad corresponde a lo enseñado en el nivel. Debe sentirse como la culminación del nivel y como un logro, no como un cuestionario final ni como una barrera: se puede pausar y reanudar, y si la persona todavía no está lista recibe una ruta clara de mejora y otra oportunidad con una simulación equivalente.
+
+Idea guía que dio Oziel: una aplicación de idiomas presenta una unidad para aprender; MÊTIS presenta una empresa en problemas para demostrar lo aprendido. Subir de nivel debe significar algo.
+
+Estado: registrado como tarea. No se ha construido nada. Sus entregas son 1.7, 1.8, 3.8, 3.9 y 5.7, y sus doce puntos están en la lista de control con la clave «EC».
+
 ## Fases y entregas
 
 Estado: `[x]` hecho y publicado · `[ ]` pendiente.
@@ -38,6 +46,8 @@ Estado: `[x]` hecho y publicado · `[ ]` pendiente.
 - [x] 1.3 Registro de evidencias que no se reescribe: competencia principal y secundarias, dificultad, evidencia observable, calidad del razonamiento, transferencia, resultado, retroalimentación, fecha, versión de rúbrica y confianza. Construido y probado sin depender de la base de datos; todavía no recibe respuestas reales (eso llega con 1.5 y 3.1).
 - [x] 1.4 Cálculo de dominio nuevo: dominio, confianza, vigencia y cobertura por habilidad; tres estados (declarado, en desarrollo, respaldado por evaluaciones); barra general con criterios públicos; protección contra repeticiones y atajos. Puntos y rachas no cuentan. Ver `04-dominio.md`. Construido y probado por separado; todavía no alimenta ninguna pantalla (eso llega con 1.5 y 3.3).
 - [ ] 1.5 Estructura de datos nueva, con su archivo para instalarla y su archivo para deshacerla. En espera: no se prepara para producción hasta que Oziel corra y verifique el respaldo (`docs/sql/metis2_respaldo.sql`).
+- [ ] 1.7 Executive Challenge en la matriz curricular: para cada nivel, qué objetivos de aprendizaje evalúa, qué habilidades de las seis academias cubre, cuántas decisiones tiene, qué apoyos, reportes y conversaciones incluye, y qué hace equivalentes a dos variantes. Pocas decisiones, situaciones sencillas y apoyo en los niveles iniciales; después, análisis financiero, escenarios, negociación, incertidumbre, conflictos entre áreas y decisiones de mayor alcance. Se agrega a `01-curriculo.md`. No depende de la base de datos.
+- [ ] 1.8 Executive Challenge en el cálculo de dominio: el tercer criterio para pasar de nivel deja de ser «un reto integrador que cruce dos academias» (regla vigente, descrita en `04-dominio.md`) y pasa a ser el Executive Challenge del nivel, con las seis academias. Cada decisión deja su evidencia por habilidad; se evalúan comprensión, razonamiento, integración, anticipación de consecuencias y adaptación, no la opción elegida ni el resultado económico del caso. Si no se alcanza, queda el historial y se habilita otra variante. Cambia la versión de las reglas. No depende de la base de datos.
 - [x] 1.6 Documento de currículo: habilidades, prerrequisitos, niveles y al menos cinco ejemplos progresivos por academia. Ver `01-curriculo.md`: qué se pide en cada nivel por habilidad, fundamentos del Nivel 1 y seis ejemplos por academia. Se adelantó a petición de Oziel.
 
 ### Fase 2 · Entrada: perfil, temas, diagnóstico y ruta
@@ -54,6 +64,8 @@ Estado: `[x]` hecho y publicado · `[ ]` pendiente.
 - [ ] 3.5 Academy en seis academias, con avance real por unidad, teoría siempre disponible y práctica de recuperación.
 - [ ] 3.6 Menú nuevo: salen Empresa y Carrera; entran Mi progreso y Mi perfil. El registro deja de pedir empresa. Interruptor para reactivar el simulador. Textos, guía «?» y página de entrada actualizados.
 - [ ] 3.7 Tutor con inteligencia artificial que responde solo con la lección y los datos del caso, con respuesta de respaldo si falla.
+- [ ] 3.8 MÊTIS Executive Challenge: la experiencia de cierre de nivel. Caso inmersivo con decisiones conectadas, reportes, datos, conversaciones con personajes, negociación y consecuencias; la historia cambia según las decisiones. La empresa pertenece al caso, no a la persona. Se puede pausar y reanudar. Varias variantes equivalentes por nivel. Se presenta como culminación y logro.
+- [ ] 3.9 Reporte de nivel y ruta de mejora. Al completar un nivel: habilidades demostradas, aspectos por reforzar y conocimientos que se desbloquean. Si todavía no se alcanza: recomendaciones concretas de repaso y otra oportunidad con una simulación equivalente, sin repetir el nivel ni perder el historial.
 
 ### Fase 4 · Comunicación y hábito
 - [ ] 4.1 Correos firmados por MÊTIS: reto del día, recomendación de Academy, repaso y cierre semanal, con tope de frecuencia.
@@ -69,7 +81,8 @@ Estado: `[x]` hecho y publicado · `[ ]` pendiente.
 - [ ] 5.3 Comprobación de que el simulador se reactiva con sus partidas intactas y de que su historial sigue aparte.
 - [ ] 5.4 Demostración en computadora y celular con dos recorridos de temas prioritarios distintos.
 - [ ] 5.5 Revisión de costos de inteligencia artificial y de los respaldos.
-- [ ] 5.6 Revisión final de los 12 criterios de aceptación y reporte de pendientes.
+- [ ] 5.6 Revisión final de los 12 criterios de aceptación, de los 12 puntos del Executive Challenge y reporte de pendientes.
+- [ ] 5.7 Revisión de los Executive Challenge: que las variantes de un mismo nivel sean equivalentes, que no se evalúe lo que el nivel no enseñó (salvo que el caso dé la información), y que no se pueda aprobar por memoria ni por conseguir el mejor resultado económico del caso.
 
 ### Fase 6 · Perfil profesional y CV de entrada
 - [ ] 6.1 Privacidad: consentimiento para el análisis con inteligencia artificial, almacenamiento privado, controles para actualizar, exportar y eliminar, plazo de conservación y texto legal actualizado.
@@ -93,7 +106,7 @@ Estado: `[x]` hecho y publicado · `[ ]` pendiente.
 
 ## Lista de control
 
-«CA» criterios de aceptación obligatorios, «EN» entregables de la sección 15, «AD» apartados de la adenda, «EX» flujo de exportación.
+«CA» criterios de aceptación obligatorios, «EN» entregables de la sección 15, «AD» apartados de la adenda, «EX» flujo de exportación, «EC» MÊTIS Executive Challenge.
 
 | Núm. | Punto | Entrega | Estado |
 |---|---|---|---|
@@ -131,6 +144,18 @@ Estado: `[x]` hecho y publicado · `[ ]` pendiente.
 | EX4 | Conservar diseño cuando sea posible; plantilla alternativa compatible con lectores automáticos | 7.4 | Pendiente |
 | EX5 | Modelo del CV con versiones como única fuente; PDF seleccionable y Word editable verificados | 6.3, 7.3 | Pendiente |
 | EX6 | Lo no demostrado nunca se agrega solo; la experiencia original queda intacta | 7.6, 8.2 | Pendiente |
+| EC1 | Cada nivel cierra con una simulación ejecutiva integral, principal evaluación de integración del nivel | 1.7, 3.8 | Pendiente |
+| EC2 | Caso inmersivo y no examen de opción múltiple: decisiones conectadas, reportes, datos, conversaciones con personajes, negociación, consecuencias e historia que cambia según las decisiones | 3.8 | Pendiente |
+| EC3 | Integra las seis academias | 1.7, 1.8, 3.8 | Pendiente |
+| EC4 | Complejidad acorde al nivel; no se evalúa lo que no se pudo aprender, salvo que el reto incluya la información necesaria | 1.7, 5.7 | Pendiente |
+| EC5 | Progresión: pocas decisiones, situaciones sencillas y apoyo al inicio; después análisis financiero, escenarios, negociación, incertidumbre, conflictos entre áreas y decisiones de mayor alcance | 1.7 | Pendiente |
+| EC6 | El resultado no depende de escoger opciones correctas ni del mejor resultado económico ficticio; se evalúan comprensión, razonamiento, integración, anticipación de consecuencias y adaptación | 1.8, 3.8 | Pendiente |
+| EC7 | Cada habilidad evaluada deja evidencia verificable en el cálculo de dominio | 1.8 | Pendiente |
+| EC8 | Solo se avanza de nivel con evidencia suficiente de los objetivos de aprendizaje | 1.8 | Pendiente |
+| EC9 | Si no se alcanza: recomendaciones concretas de repaso y otra oportunidad con una simulación equivalente, sin repetir el nivel ni perder el historial | 1.8, 3.9 | Pendiente |
+| EC10 | Variantes equivalentes, para que memorizar respuestas no permita avanzar | 1.7, 3.8, 5.7 | Pendiente |
+| EC11 | Reporte de cada nivel completado: habilidades demostradas, aspectos por reforzar y conocimientos que se desbloquean | 3.9 | Pendiente |
+| EC12 | Se siente como culminación y logro, no como barrera frustrante: se puede pausar y reanudar, y hay una ruta clara de mejora | 3.8, 3.9 | Pendiente |
 
 Los 10 objetivos del usuario (sección 1 del documento) y la regla de producto se revisan en cada entrega: cada una indica a qué objetivo responde y con qué evidencia se comprueba.
 
@@ -147,6 +172,11 @@ Los 10 objetivos del usuario (sección 1 del documento) y la regla de producto s
 4. Nombres de la escala interna de dominio (Sin evidencia, Inicial, En desarrollo, Demostrado, Consistente, Transferible). Son propuesta; el documento de origen solo pide una escala de 0 a 5.
 5. Umbrales del cálculo de dominio (`04-dominio.md`): cuántos aciertos, en cuántas situaciones, cuántos días de espera, qué parte de cada academia. Son un punto de partida razonado, sin datos reales detrás. Oziel puede ajustarlos ahora; en cualquier caso se revisan con datos de uso en la Fase 5.
 6. Respaldo de producción: falta que Oziel corra `docs/sql/metis2_respaldo.sql` en Supabase y confirme los dos conteos. Sin eso no se prepara la entrega 1.5.
+7. Executive Challenge, puntos de diseño por resolver en 1.7 y 1.8:
+   - Apoyo en los niveles iniciales. La regla vigente dice que una respuesta con ayuda no cuenta como acierto. Hay que separar el apoyo que forma parte del diseño del reto (cuenta) de la ayuda que la persona pide (no cuenta).
+   - Cuándo se habilita. Propuesta: cuando ya se cumplen la cobertura en las seis academias y la evidencia suficiente, para que llegue como culminación y no como obstáculo.
+   - Reintento. Cuánto se espera antes de otra oportunidad, qué repaso se pide antes y cuántas variantes hacen falta por nivel.
+   - Niveles 7 en adelante. No tienen tope: hay que decidir cómo se generan retos de cierre nuevos sin repetir.
 
 ## Bitácora
 
@@ -158,3 +188,4 @@ Los 10 objetivos del usuario (sección 1 del documento) y la regla de producto s
 | 12 nov 2026 | Pruebas | Hallazgo: la revisión «Pruebas» pasó en las propuestas #188 y #189, pero la corrida posterior sobre `main` falló por tiempo agotado en una prueba lenta (sin error de contenido). Se subió el límite de tiempo a 20 segundos. Desde ahora, después de cada fusión también se revisa la corrida sobre `main`. |
 | 12 nov 2026 | 1.2 | Clasificación de las 335 piezas del simulador (259 actividades evaluables y 76 de teoría) con academia, habilidades y nivel, sin cambiar identificadores. Medición de cobertura: de 268 casillas del currículo, 92 tienen al menos una actividad; los niveles 1, 5 y 6 no tienen ninguna. Documento: `03-clasificacion.md`. La clasificación es criterio editorial y falta revisar una muestra. |
 | 12 nov 2026 | 1.3, 1.4 | Registro de evidencias que solo crece (anular conserva el original) y cálculo de dominio con reglas públicas y con versión. Construidos sin depender de la base de datos, con 79 pruebas propias. No cambian ninguna pantalla ni tocan datos: Hoy, Perfil y Academy siguen con el cálculo anterior. Los umbrales son un punto de partida sin datos reales. Documento: `04-dominio.md`. |
+| 12 nov 2026 | Requisito nuevo | Oziel agrega el MÊTIS Executive Challenge: cada nivel cierra con una simulación ejecutiva integral de las seis academias. Queda registrado como tarea, sin construir: regla 15, entregas 1.7, 1.8, 3.8, 3.9 y 5.7, y doce puntos «EC» en la lista de control. La regla vigente del cálculo (reto integrador de dos academias) no se ha cambiado. |
