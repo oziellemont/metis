@@ -2,7 +2,7 @@
 Paquetes recibidos: Lote 01 (versión 1.0), Lote 02 (versión 1.1), Lote 03 (versión 1.2). Fuentes abiertas y leídas el 2026-11-13. Este documento se genera desde el código (`app/src/lib/ceo/metis2/experiencias/`); una prueba falla si se desfasa.
 
 ## 1. Estado en una línea
-7 de las 18 experiencias recibidas están convertidas y se pueden recorrer completas por enlace (`/piloto`): 1 de 6 del lote 01, 6 de 6 del lote 02, 0 de 6 del lote 03. Ninguna registra evidencia, cambia dominio, niveles ni perfil, y ninguna aparece en el menú. Ninguna ha sido revisada por una persona. El Executive Challenge está leído y trazado, sin convertir.
+12 de las 18 experiencias recibidas están convertidas y se pueden recorrer completas por enlace (`/piloto`): 1 de 6 del lote 01, 6 de 6 del lote 02, 5 de 6 del lote 03. Ninguna registra evidencia, cambia dominio, niveles ni perfil, y ninguna aparece en el menú. Ninguna ha sido revisada por una persona. El Executive Challenge está leído y trazado, sin convertir.
 
 ## 2. Qué se recibió
 Los archivos se leyeron completos. No se copiaron al repositorio porque es público y los paquetes traen las respuestas de las evaluaciones; se guarda su huella para saber con qué versión se trabajó.
@@ -186,12 +186,12 @@ Fuente académica → habilidad → experiencia → evaluación independiente. L
 ### Lote 03 · versión 1.2
 | Experiencia | Habilidad principal | Secundarias | Fuentes | Evaluación independiente | Rúbrica | En la plataforma |
 |---|---|---|---|---|---|---|
-| EDIT-N1-013 «Tres propuestas, un presupuesto» | `est.priorizacion` Priorización y renuncias | `est.fundamentos`, `ope.indicadores` | HBS_STRAT, STAN_CORE | Centro cultural | 25 / 30 / 30 / 15 | Leída, sin convertir |
+| EDIT-N1-013 «Tres propuestas, un presupuesto» | `est.priorizacion` Priorización y renuncias | `est.fundamentos`, `ope.indicadores` | HBS_STRAT, STAN_CORE | Centro cultural | 25 / 30 / 30 / 15 | Convertida: `exp.n1.est.tres-propuestas-un-presupuesto` |
 | EDIT-N1-014 «¿La tienda tiene más de lo que debe?» | `fin.balance` Balance general | `fin.lenguaje` | STAN_CORE, INSEAD_CORE (Atlas: STAN_CORE, HBS_FIN) | Floristería | 40 / 25 / 20 / 15 | Leída, sin convertir |
-| EDIT-N1-015 «Ese correo necesita una decisión, no más palabras» | `lid.comunicacion` Comunicación ejecutiva | `lid.fundamentos` | INSEAD_CORE, STAN_CORE (Atlas: MIT_CORE, STAN_LAB) | Centro de eventos | 30 / 35 / 20 / 15 | Leída, sin convertir |
-| EDIT-N1-016 «El tablero está en verde, pero los clientes esperan» | `ope.indicadores` Indicadores operativos | `ope.procesos` | INSEAD_CORE, STAN_CORE (Atlas: STAN_CORE, WH_CORE) | Clínica veterinaria | 25 / 35 / 25 / 15 | Leída, sin convertir |
-| EDIT-N1-017 «Cobrar más no siempre significa cobrar de más» | `cre.precios` Precios y valor percibido | `cre.cliente` | INSEAD_CORE, STAN_CORE (Atlas: HBS_MKT, STAN_CORE) | Mantenimiento de jardines | 35 / 25 / 30 / 10 | Leída, sin convertir |
-| EDIT-N1-018 «La misma persona hace todo el pago» | `rie.cumplimiento` Cumplimiento y controles | `rie.etica`, `ope.procesos` | HBS_GOV, INSEAD_CORE (Atlas: HBS_GOV, WH_CORE) | Escuela de talleres | 30 / 35 / 25 / 10 | Leída, sin convertir |
+| EDIT-N1-015 «Ese correo necesita una decisión, no más palabras» | `lid.comunicacion` Comunicación ejecutiva | `lid.fundamentos` | INSEAD_CORE, STAN_CORE (Atlas: MIT_CORE, STAN_LAB) | Centro de eventos | 30 / 35 / 20 / 15 | Convertida: `exp.n1.lid.ese-correo-necesita-una-decision` |
+| EDIT-N1-016 «El tablero está en verde, pero los clientes esperan» | `ope.indicadores` Indicadores operativos | `ope.procesos` | INSEAD_CORE, STAN_CORE (Atlas: STAN_CORE, WH_CORE) | Clínica veterinaria | 25 / 35 / 25 / 15 | Convertida: `exp.n1.ope.el-tablero-esta-en-verde` |
+| EDIT-N1-017 «Cobrar más no siempre significa cobrar de más» | `cre.precios` Precios y valor percibido | `cre.cliente` | INSEAD_CORE, STAN_CORE (Atlas: HBS_MKT, STAN_CORE) | Mantenimiento de jardines | 35 / 25 / 30 / 10 | Convertida: `exp.n1.cre.cobrar-mas-no-es-cobrar-de-mas` |
+| EDIT-N1-018 «La misma persona hace todo el pago» | `rie.cumplimiento` Cumplimiento y controles | `rie.etica`, `ope.procesos` | HBS_GOV, INSEAD_CORE (Atlas: HBS_GOV, WH_CORE) | Escuela de talleres | 30 / 35 / 25 / 10 | Convertida: `exp.n1.rie.la-misma-persona-hace-todo-el-pago` |
 
 Las 18 experiencias cubren 18 de las 24 habilidades de Nivel 1 como habilidad principal. Quedan 6 sin experiencia: `est.alineacion`, `fin.flujo`, `fin.presupuesto`, `lid.delegacion`, `ope.calidad`, `cre.canales`.
 Executive Challenge EC-N1-001-A «La semana en que casi todo parecía urgente»: leído. Sus cuatro cálculos se revisaron a mano y cuadran. No se convirtió: el paquete pide una segunda versión equivalente antes de usarlo, y hoy solo existe la A.
@@ -428,6 +428,168 @@ Decisiones: 2, con 4, 3 rutas. Todas las combinaciones llegan al cierre.
 
 **Avisos del validador.** 60 de 100 puntos de la variante son respuestas escritas: no se califican solas y esperan revisión de una persona; 10 piezas adaptadas y 7 añadidas en la conversión esperan revisión editorial; sin revisión editorial humana.
 
+### EDIT-N1-013 · «Tres propuestas, un presupuesto»
+Estrategia · Lote 03, paquete 1.2 · `exp.n1.est.tres-propuestas-un-presupuesto` · versión 1. Habilidad principal: `est.priorizacion` Priorización y renuncias. Secundarias: `est.fundamentos` Lenguaje de la estrategia; `ope.indicadores` Indicadores operativos. Fuentes: HBS_STRAT, STAN_CORE. Entrada: `/piloto/tres-propuestas-un-presupuesto`.
+| Momento | Nodo | Tipo | Qué pasa y a dónde lleva | Origen |
+|---|---|---|---|---|
+| El chat | `mensaje` | Mensaje de un personaje | → explorar | Texto del paquete |
+| Los documentos | `explorar` | Documentos tocables | → meta_medio | Descrito en el paquete, redactado al convertir |
+| Meta y medios | `meta_medio` | Clasificar tarjetas en grupos | Separa el resultado que se busca de las acciones que podrían acercar a ese resultado. 4 tarjetas en 2 grupos (Resultado que se busca (meta), Acción para lograrlo (iniciativa)). → prioridad | Texto del paquete |
+| La prioridad | `prioridad` | Decisión con rutas | «Solo alcanza para una. ¿Cuál financiamos este mes?» · a (defendible) → renuncia; b (defendible) → renuncia; c (defendible) → renuncia_c; repartir (confusión) → renuncia | Texto del paquete |
+| La renuncia | `renuncia` | Decisión con rutas | «Entonces, ¿mi propuesta de herramientas es mala?» · honesta (defendible) → nota; todo (confusión) → nota; no_importa (con riesgo) → nota | Texto del paquete |
+| La renuncia | `renuncia_c` | Decisión con rutas | «Entonces, ¿mi propuesta del calendario es mala?» · honesta (defendible) → nota; todo (confusión) → nota; no_importa (con riesgo) → nota | Añadido al convertir |
+| Dato nuevo | `nota` | Dato nuevo | Llega una nota del proveedor de piezas. → revisar | Texto del paquete |
+| Dato nuevo | `revisar` | Decisión con rutas | «¿Esto cambia lo que decidimos?» · mantener (defendible) → tarjeta; reevaluar (defendible) → tarjeta; seguro (confusión) → tarjeta; congelar (confusión) → tarjeta | Descrito en el paquete, redactado al convertir |
+| La tarjeta | `tarjeta` | Respuesta escrita | 2 campos cortos; no se califica, se compara con una referencia. → cierre | Texto del paquete |
+| Cierre | `cierre` | Cierre con lo decidido y el concepto | Da paso a la variante. | Añadido al convertir |
+
+Decisiones: 4, con 4, 3, 3, 4 rutas. Todas las combinaciones llegan al cierre.
+**Variante.** «¿Qué iniciativa va primero, a qué se renuncia y con qué se revisa?» Un centro cultural tiene $12,000 para elevar la asistencia a sus talleres infantiles. Nadie te explica los datos: lee, calcula y responde. Tareas: Objetivo frente a acciones (25 puntos, clasificar tarjetas); Coherencia entre evidencia y restricción: presupuesto (10 puntos, cifra por calcular y escribir); Coherencia entre evidencia y restricción: prioridad (20 puntos, respuesta escrita); Renuncia explícita y honesta (30 puntos, respuesta escrita); Indicador de revisión (15 puntos, señalar renglones). Se comprueban solos 50 de 100 puntos; 50 esperan revisión de una persona.
+**Origen de las piezas.** 12 traen el texto del paquete tal cual; 15 están descritas en el paquete y se redactaron al convertir; 10 se añadieron.
+**Por confirmar en la revisión editorial.**
+1. Las tres propuestas son rutas defendibles, como indica el paquete: se evalúa el criterio y la renuncia, no la letra. Se añadió una cuarta ruta («repartir el presupuesto»), tomada de la retroalimentación del paquete para quien promete las tres.
+2. Quien elige «repartir» no ha escogido prioridad; para poder seguir, la consecuencia dice que Valeria prueba con la propuesta de menor costo. Conviene revisar si se prefiere obligar a elegir de nuevo.
+3. La pregunta de Luis («¿mi propuesta de herramientas es mala?») no tiene sentido si se eligieron las herramientas. Para esa ruta se añadió a Marta, que pregunta lo mismo por el calendario. Marta no está en el paquete.
+4. Las tres respuestas a Luis se redactaron a partir de las plantillas del paquete, con largo parecido.
+5. El paquete describe la nota del proveedor y pide «conservar o revaluar»; aquí es una decisión con cuatro rutas, dos defendibles. La ruta «no mirarla siquiera» es nueva.
+6. En la tabla de la pizarra, las causas van separadas con comas en vez de punto y coma.
+7. Variante: «coherencia evidencia-restricción» (30 puntos) se repartió en una cifra (10 puntos: lo que costaría la pareja más barata) y una justificación escrita (20 puntos). La cifra no está en el paquete.
+8. Variante: «renuncia explícita y honesta» (30 puntos) y la justificación de la prioridad (20 puntos) son respuestas escritas. No se califican de forma automática: quedan en espera de revisión de una persona. No se fija una única iniciativa correcta.
+9. Variante: el indicador de revisión se comprueba señalando en el registro los dos datos que miden la asistencia.
+10. La regla para pasar la variante (70 de 100) es provisional.
+
+**Avisos del validador.** 50 de 100 puntos de la variante son respuestas escritas: no se califican solas y esperan revisión de una persona; 15 piezas adaptadas y 10 añadidas en la conversión esperan revisión editorial; sin revisión editorial humana.
+
+### EDIT-N1-015 · «Ese correo necesita una decisión, no más palabras»
+Liderazgo · Lote 03, paquete 1.2 · `exp.n1.lid.ese-correo-necesita-una-decision` · versión 1. Habilidad principal: `lid.comunicacion` Comunicación ejecutiva. Secundarias: `lid.fundamentos` El papel de quien dirige. Fuentes: INSEAD_CORE, STAN_CORE. Entrada: `/piloto/ese-correo-necesita-una-decision`.
+| Momento | Nodo | Tipo | Qué pasa y a dónde lleva | Origen |
+|---|---|---|---|---|
+| La bandeja | `mensaje` | Mensaje de un personaje | → explorar | Texto del paquete |
+| Los documentos | `explorar` | Documentos tocables | → hechos | Descrito en el paquete, redactado al convertir |
+| Hechos y suposiciones | `hechos` | Clasificar tarjetas en grupos | Separa los hechos de las suposiciones. 5 tarjetas en 2 grupos (Hecho del registro, Suposición). → orden | Descrito en el paquete, redactado al convertir |
+| El orden | `orden` | Ordenar una secuencia | Acomoda las tres tarjetas como abrirías el mensaje. No hay un único orden válido. 3 tarjetas; se acepta cualquier orden y se muestra uno de referencia. → borrador | Texto del paquete |
+| El borrador | `borrador` | Decisión con rutas | «Armé cuatro versiones cortas. ¿Cuál le mando al gerente?» · rutas (confusión) → peticion; claro (defendible) → peticion; corto (con riesgo) → peticion; promesa (confusión) → peticion | Descrito en el paquete, redactado al convertir |
+| La petición | `peticion` | Decisión con rutas | «¿Qué necesitas de mí exactamente?» · concreta (defendible) → contacto; apoyo (con riesgo) → contacto; todos (confusión) → contacto | Texto del paquete |
+| Dato nuevo | `contacto` | Dato nuevo | Llegan los datos de contacto de los cinco clientes pendientes. → ajuste | Texto del paquete |
+| Dato nuevo | `ajuste` | Decisión con rutas | «Con esto, ¿cambio lo que pedí?» · rehacer (con riesgo) → final; igual (confusión) → final; ajustar (defendible) → final | Descrito en el paquete, redactado al convertir |
+| La versión final | `final` | Respuesta escrita | Un texto libre; no se califica, se compara con una referencia. → cierre | Texto del paquete |
+| Cierre | `cierre` | Cierre con lo decidido y el concepto | Da paso a la variante. | Añadido al convertir |
+
+Decisiones: 3, con 4, 3, 3 rutas. Todas las combinaciones llegan al cierre.
+**Variante.** «¿Qué le escribes a la directora, en cuatro oraciones como máximo?» El equipo de un centro de eventos prepara un fin de semana. La directora necesita información para decidir cuántas mesas preparar. Nadie te explica los datos: lee y responde. Tareas: Mensaje principal y datos correctos: datos (15 puntos, cifra por calcular y escribir); Mensaje principal y datos correctos: mensaje (15 puntos, respuesta escrita); Petición, responsable y plazo (35 puntos, respuesta escrita); No atribuir resultados no confirmados (20 puntos, señalar renglones); Claridad y respeto (15 puntos, respuesta escrita). Se comprueban solos 35 de 100 puntos; 65 esperan revisión de una persona.
+**Origen de las piezas.** 10 traen el texto del paquete tal cual; 18 están descritas en el paquete y se redactaron al convertir; 9 se añadieron.
+**Por confirmar en la revisión editorial.**
+1. El paquete pide resaltar frases que sean hechos o suposiciones; aquí son cinco tarjetas que se asignan tocando. Las dos suposiciones salen del correo de Alejandra y los tres hechos, del registro.
+2. Ordenar las tres tarjetas no se califica de forma estricta, como indica el paquete: se acepta cualquier orden y se muestra uno de referencia. Se ordena con botones, no arrastrando.
+3. El paquete permite «elaborar un mensaje o escoger entre borradores razonables». Aquí primero se escoge entre cuatro borradores, redactados a partir de las cuatro rutas del paquete, y la redacción propia queda para la versión final.
+4. El gerente no tiene nombre en el paquete; aquí aparece como «El gerente». Sus respuestas «¿Tenemos ese dato verificado?» y «¿Quién confirmó que es posible?» son del paquete; las demás son nuevas.
+5. Las respuestas «apoyo en lo que sea» y «que lo resuelvan todos» se alargaron para que las tres opciones tengan un largo parecido.
+6. El ajuste por el dato nuevo (una llamada y cuatro correos) es una decisión con tres rutas; las rutas «rehacer todo» y «dejarlo como estaba» son nuevas.
+7. Las explicaciones al tocar cada frase del correo son nuevas.
+8. Variante: el registro no muestra el número de reservas pendientes; se calcula (24 − 19 = 5) y se escribe. El paquete lo da como dato.
+9. Variante: el paquete describe «un borrador confuso» sin texto; las cinco frases del borrador se redactaron al convertir.
+10. Variante: el paquete pide un solo mensaje de hasta cuatro oraciones evaluado con cuatro criterios. Aquí el mensaje se escribe en tres partes (apertura, petición y cautela), una por criterio, para que cada una se pueda revisar por separado. Suman 65 puntos que no se califican de forma automática: quedan en espera de revisión de una persona.
+11. La regla para pasar la variante (70 de 100) es provisional.
+
+**Avisos del validador.** 65 de 100 puntos de la variante son respuestas escritas: no se califican solas y esperan revisión de una persona; 18 piezas adaptadas y 9 añadidas en la conversión esperan revisión editorial; sin revisión editorial humana.
+
+### EDIT-N1-016 · «El tablero está en verde, pero los clientes esperan»
+Operaciones · Lote 03, paquete 1.2 · `exp.n1.ope.el-tablero-esta-en-verde` · versión 1. Habilidad principal: `ope.indicadores` Indicadores operativos. Secundarias: `ope.procesos` Procesos. Fuentes: INSEAD_CORE, STAN_CORE. Entrada: `/piloto/el-tablero-esta-en-verde`.
+| Momento | Nodo | Tipo | Qué pasa y a dónde lleva | Origen |
+|---|---|---|---|---|
+| La sala | `mensaje` | Mensaje de un personaje | → explorar | Texto del paquete |
+| El tablero | `explorar` | Documentos tocables | → tasas | Descrito en el paquete, redactado al convertir |
+| Las tasas | `tasas` | Calcular con apoyo | Escribe cada resultado. Puedes usar la calculadora. 6 cifras, con pista por cifra y calculadora. → comparar | Descrito en el paquete, redactado al convertir |
+| Qué cambió | `comparar` | Clasificar tarjetas en grupos | Pon cada resultado en su lugar. 4 tarjetas en 3 grupos (Subió, Bajó, No cambió). → indicador | Texto del paquete |
+| El indicador | `indicador` | Decisión con rutas | «Entonces, ¿con cuál número sigo el objetivo de servicio?» · volumen (confusión) → evidencia; puntualidad (defendible) → evidencia; horas (confusión) → evidencia | Texto del paquete |
+| La evidencia | `evidencia` | Decisión con rutas | «Antes de decir por qué pasó, ¿qué pido?» · horario (defendible) → tarde; personal (confusión) → tarde; comentarios (con riesgo) → tarde | Descrito en el paquete, redactado al convertir |
+| Dato nuevo | `tarde` | Dato nuevo | Llega la lista de entregas tardías de la semana 2. → lectura | Texto del paquete |
+| Dato nuevo | `lectura` | Decisión con rutas | «Once de quince, en la tarde. ¿Qué le digo al equipo?» · conductor (confusión) → nota; esperar (con riesgo) → nota; concentra (defendible) → nota | Descrito en el paquete, redactado al convertir |
+| La nota | `nota` | Respuesta escrita | Un texto libre; no se califica, se compara con una referencia. → cierre | Texto del paquete |
+| Cierre | `cierre` | Cierre con lo decidido y el concepto | Da paso a la variante. | Añadido al convertir |
+
+Decisiones: 3, con 3, 3, 3 rutas. Todas las combinaciones llegan al cierre.
+**Variante.** «¿El servicio mejoró o empeoró al atender más citas, y qué falta saber?» Una clínica veterinaria atiende citas programadas y compara dos semanas. Nadie te explica los datos: lee, calcula y responde. Tareas: Definición y unidad del indicador (25 puntos, clasificar tarjetas); Cálculo y comparación de puntualidad: semana B (20 puntos, cifra por calcular y escribir); Cálculo y comparación de puntualidad: comparación (15 puntos, clasificar tarjetas); Lectura de la meta de errores: semana B (10 puntos, cifra por calcular y escribir); Lectura de la meta de errores: metas (15 puntos, clasificar tarjetas); Distinguir observación de hipótesis causal (15 puntos, respuesta escrita). Se comprueban solos 85 de 100 puntos; 15 esperan revisión de una persona. Ofrece calculadora.
+**Origen de las piezas.** 12 traen el texto del paquete tal cual; 13 están descritas en el paquete y se redactaron al convertir; 7 se añadieron.
+**Por confirmar en la revisión editorial.**
+1. El paquete da las tasas como «cifras derivadas» y pide no dar la respuesta antes de interactuar. Aquí las seis se calculan y se escriben, con pista y calculadora, antes de comparar.
+2. La pregunta «¿qué representa el 85 %?» no es una actividad aparte: la respuesta del paquete se muestra al terminar el cálculo.
+3. Subió, bajó o no cambió se asigna tocando, no arrastrando etiquetas.
+4. En la decisión del indicador solo la puntualidad es defendible, como pide el paquete: no se añadió una segunda ruta correcta.
+5. En la evidencia a pedir, el paquete dice que las tres pueden aportar contexto. Aquí la lista por horario y ruta es la defendible, los comentarios de clientes quedan como ruta con riesgo y el detalle de personal, pedido para confirmar que faltó gente, como concepto erróneo.
+6. La lectura del dato nuevo (11 de 15 por la tarde) se convirtió en una decisión con tres rutas; la ruta «esperar otra semana» es nueva.
+7. Las explicaciones al tocar cada renglón son nuevas.
+8. Variante: no se pide la puntualidad de la semana A ni los errores de la semana A como cifra, porque 90 y 5 están a la vista en las metas. Se piden las de la semana B (82 % y 6 %) y las de la semana A se usan al comparar.
+9. Variante: «definición y unidad» y la comparación con las metas se comprueban clasificando; el dato adicional que conviene pedir (15 puntos) es una respuesta escrita que queda en espera de revisión de una persona.
+10. La regla para pasar la variante (70 de 100) es provisional.
+
+**Avisos del validador.** 15 de 100 puntos de la variante son respuestas escritas: no se califican solas y esperan revisión de una persona; 13 piezas adaptadas y 7 añadidas en la conversión esperan revisión editorial; sin revisión editorial humana.
+
+### EDIT-N1-017 · «Cobrar más no siempre significa cobrar de más»
+Crecimiento · Lote 03, paquete 1.2 · `exp.n1.cre.cobrar-mas-no-es-cobrar-de-mas` · versión 1. Habilidad principal: `cre.precios` Precios y valor percibido. Secundarias: `cre.cliente` Cliente y propuesta de valor. Fuentes: INSEAD_CORE, STAN_CORE. Entrada: `/piloto/cobrar-mas-no-es-cobrar-de-mas`.
+| Momento | Nodo | Tipo | Qué pasa y a dónde lleva | Origen |
+|---|---|---|---|---|
+| El chat | `mensaje` | Mensaje de un personaje | → explorar | Texto del paquete |
+| Los documentos | `explorar` | Documentos tocables | → diferencia | Descrito en el paquete, redactado al convertir |
+| La diferencia | `diferencia` | Calcular con apoyo | Escribe las dos cifras. Puedes usar la calculadora. 2 cifras, con pista por cifra y calculadora. → etiquetas | Texto del paquete |
+| Las etiquetas | `etiquetas` | Clasificar tarjetas en grupos | Ponle a cada tarjeta la etiqueta que le corresponde. 5 tarjetas en 5 grupos (Precio, Costo directo, Puede aportar valor al cliente, Diferencia antes de gastos fijos, Utilidad neta). → cliente1 | Texto del paquete |
+| El primer cliente | `cliente1` | Decisión con rutas | «El cliente que necesita los planos hoy me pregunta por qué cuesta $20 más. ¿Qué le contesto?» · bajar (con riesgo) → cliente2; valor (defendible) → cliente2; malo (confusión) → cliente2 | Texto del paquete |
+| Otro cliente | `cliente2` | Dato nuevo | Llega un segundo cliente. → todos | Texto del paquete |
+| Otro cliente | `todos` | Decisión con rutas | «¿Cómo decido si bajamos el precio para todos?» · evidencia (defendible) → frases; barato (confusión) → frases; rapido (confusión) → frases | Texto del paquete |
+| Para no confundirlo | `frases` | Respuesta escrita | 3 campos cortos; no se califica, se compara con una referencia. → cierre | Texto del paquete |
+| Cierre | `cierre` | Cierre con lo decidido y el concepto | Da paso a la variante. | Añadido al convertir |
+
+Decisiones: 2, con 3, 3 rutas. Todas las combinaciones llegan al cierre.
+**Variante.** «¿Qué cobra, qué le cuesta y quién aprecia la rapidez?» Un servicio de mantenimiento de jardines ofrece una visita rápida y la compara con la alternativa del mercado. Nadie te explica los datos: lee, calcula y responde. Tareas: Conceptos y clasificación (35 puntos, clasificar tarjetas); Cálculo y distinción de utilidad neta: diferencia (15 puntos, cifra por calcular y escribir); Cálculo y distinción de utilidad neta: lectura (10 puntos, clasificar tarjetas); Identificación de valor por cliente (30 puntos, respuesta escrita); Cautela sobre conclusiones de demanda (10 puntos, respuesta escrita). Se comprueban solos 60 de 100 puntos; 40 esperan revisión de una persona. Ofrece calculadora.
+**Origen de las piezas.** 13 traen el texto del paquete tal cual; 11 están descritas en el paquete y se redactaron al convertir; 5 se añadieron.
+**Por confirmar en la revisión editorial.**
+1. El paquete da los $70 y los $50 como «cálculo ilustrativo»; aquí se calculan y se escriben antes de etiquetar, con pista y calculadora.
+2. Al etiquetar se añadió la tarjeta de la revisión de archivos y la etiqueta «utilidad neta», que no corresponde a ninguna tarjeta: está para que confundir los $70 con ganancia neta sea un error posible, como prevé el paquete.
+3. El paquete usa «margen de contribución unitario simplificado»; en pantalla se dice «diferencia antes de gastos fijos», porque el propio paquete indica que el término no se evalúa en este nivel.
+4. La conversación con el primer cliente es una decisión con las tres rutas del paquete. El cliente no es un personaje con nombre: sus respuestas aparecen narradas y son nuevas.
+5. La llegada del segundo cliente se muestra como dato nuevo; lo que cada cliente valora se recoge en la respuesta escrita final.
+6. «¿Cómo decido si bajamos el precio para todos?» es una decisión con tres rutas: pedir evidencia y las dos conclusiones firmes que el paquete pide rechazar.
+7. Las explicaciones al tocar las frases de los clientes y dos renglones de la comparación son nuevas.
+8. Variante: se añadió el renglón «gastos fijos: no incluidos en los costos directos», que el paquete da por entendido al hablar de «diferencia antes de gastos fijos».
+9. Variante: la distinción de utilidad neta (10 puntos) se comprueba clasificando cuatro afirmaciones; el paquete no dice cómo comprobarla.
+10. Variante: el valor por cliente (30 puntos) y la cautela sobre la demanda (10 puntos) son respuestas escritas. No se califican de forma automática: quedan en espera de revisión de una persona.
+11. La regla para pasar la variante (70 de 100) es provisional.
+
+**Avisos del validador.** 40 de 100 puntos de la variante son respuestas escritas: no se califican solas y esperan revisión de una persona; 11 piezas adaptadas y 5 añadidas en la conversión esperan revisión editorial; sin revisión editorial humana.
+
+### EDIT-N1-018 · «La misma persona hace todo el pago»
+Riesgo y gobierno · Lote 03, paquete 1.2 · `exp.n1.rie.la-misma-persona-hace-todo-el-pago` · versión 1. Habilidad principal: `rie.cumplimiento` Cumplimiento y controles. Secundarias: `rie.etica` Ética y dilemas; `ope.procesos` Procesos. Fuentes: HBS_GOV, INSEAD_CORE. Entrada: `/piloto/la-misma-persona-hace-todo-el-pago`.
+| Momento | Nodo | Tipo | Qué pasa y a dónde lleva | Origen |
+|---|---|---|---|---|
+| El mensaje | `mensaje` | Mensaje de un personaje | → explorar | Texto del paquete |
+| Los documentos | `explorar` | Documentos tocables | → puntos | Descrito en el paquete, redactado al convertir |
+| Los puntos débiles | `puntos` | Señalar sobre el documento | Toca los dos pasos del procedimiento donde falta que alguien más compruebe antes de que salga el dinero. 2 renglones por encontrar; cada error trae su explicación. → l208 | Texto del paquete |
+| La factura | `l208` | Decisión con rutas | «¿Qué hacemos con la factura L-208?» · retener (con riesgo) → llegaron; verificar (defendible) → llegaron; pagar (confusión) → llegaron | Texto del paquete |
+| Dato nuevo | `llegaron` | Dato nuevo | Responde quien recibe los materiales. → entrega | Texto del paquete |
+| Dato nuevo | `entrega` | Decisión con rutas | «Los materiales sí llegaron. ¿Ya podemos pagar?» · falta (defendible) → controles; listo (confusión) → controles; acusar (confusión) → controles | Descrito en el paquete, redactado al convertir |
+| Los controles | `controles` | Clasificar tarjetas en grupos | Di qué debilidad atiende cada propuesta, o si no hace falta en un equipo pequeño. 5 tarjetas en 3 grupos (Atiende: nadie más revisa la autorización, Atiende: nadie verifica el cambio de cuenta, No hace falta en este equipo). → propuesta | Texto del paquete |
+| La propuesta | `propuesta` | Respuesta escrita | 3 campos cortos; no se califica, se compara con una referencia. → cierre | Texto del paquete |
+| Cierre | `cierre` | Cierre con lo decidido y el concepto | Da paso a la variante. | Añadido al convertir |
+
+Decisiones: 2, con 3, 3 rutas. Todas las combinaciones llegan al cierre.
+**Variante.** «¿Qué riesgo hay, qué control cabe y qué evidencia deja?» Una escuela privada pequeña recibe pagos por talleres. La dirección pide un control que pueda aplicar con dos personas. Nadie te explica los datos: lee y responde. Tareas: Identificación de riesgo real sin imputación (30 puntos, clasificar tarjetas); Control proporcional y preventivo o detectivo (35 puntos, respuesta escrita); Evidencia verificable de la revisión (25 puntos, clasificar tarjetas); Comunicación respetuosa y precisa (10 puntos, respuesta escrita). Se comprueban solos 55 de 100 puntos; 45 esperan revisión de una persona.
+**Origen de las piezas.** 9 traen el texto del paquete tal cual; 14 están descritas en el paquete y se redactaron al convertir; 6 se añadieron.
+**Por confirmar en la revisión editorial.**
+1. Los dos puntos vulnerables se señalan sobre el procedimiento: el paso 2 (se registra la cuenta bancaria sin verificación) y el paso 3 (la misma persona autoriza). Los pasos 4 y 5 también muestran debilidades; conviene revisar si se aceptan como respuesta. Las explicaciones al tocar un paso distinto son nuevas.
+2. La definición de segregación de funciones, que el paquete da como tarjeta contextual, se muestra como texto de la actividad de señalar.
+3. Quien elige retener todos los pagos o pagar primero ve su consecuencia y después Rocío revisa solo la L-208, para que el dato nuevo (los materiales sí llegaron) tenga sentido en las tres rutas.
+4. El dato nuevo se convirtió en una decisión con tres rutas. La ruta que señala a la auxiliar se redactó a partir de la retroalimentación del paquete para quien acusa sin pruebas.
+5. Colocar dos tarjetas de control sobre el diagrama se convirtió en clasificar cinco propuestas según la debilidad que atienden. Se añadieron la aprobación por lotes del propietario (del propio paquete), el auditor permanente y el sistema costoso (de las notas de QA) como propuestas que no hacen falta.
+6. Las explicaciones al tocar cada paso del procedimiento y cuatro renglones de la factura son nuevas.
+7. El tercer objetivo del paquete habla de distinguir el riesgo de una acusación; aquí se redactó como «riesgo de error o abuso», con las palabras de la microteoría.
+8. Variante: el cuaderno donde la escuela anota sus ingresos aparece como «registro contable».
+9. Ni los documentos, ni las rutas, ni la variante afirman que la factura sea falsa o que alguien actuó con mala intención; la única ruta que lo insinúa está marcada como concepto erróneo.
+10. Variante: la identificación del riesgo sin imputación y la evidencia verificable se comprueban clasificando; las afirmaciones se redactaron al convertir.
+11. Variante: el control propuesto (35 puntos) y la comunicación respetuosa (10 puntos) son respuestas escritas. No se califican de forma automática: quedan en espera de revisión de una persona.
+12. La regla para pasar la variante (70 de 100) es provisional.
+
+**Avisos del validador.** el gancho tiene 37 palabras; el contrato editorial pide de 15 a 35 y se dejó el texto del paquete; 45 de 100 puntos de la variante son respuestas escritas: no se califican solas y esperan revisión de una persona; 14 piezas adaptadas y 6 añadidas en la conversión esperan revisión editorial; sin revisión editorial humana.
+
 ## 10. Qué comprueban las pruebas automáticas
 Para cada experiencia convertida:
 1. Cumple el contrato sin errores y coincide con la ficha de su lote: habilidades, fuentes, título y pesos de la rúbrica.
@@ -453,11 +615,11 @@ Para cada experiencia convertida:
 ## 12. Estado, por separado
 | Etapa | Qué hay |
 |---|---|
-| Importado | Correspondencia de 52 identificadores; registro de 16 fuentes; ficha de las 18 experiencias de los tres lotes; 7 experiencias completas como contenido jugable: EDIT-N1-002, EDIT-N1-007, EDIT-N1-008, EDIT-N1-009, EDIT-N1-010, EDIT-N1-011, EDIT-N1-012 |
-| Probado | Las 7 experiencias convertidas: pruebas automáticas. Recorrido completo en un navegador, a tamaño de computadora (1280 × 800) y de celular (390 × 844), guiado por un programa |
+| Importado | Correspondencia de 52 identificadores; registro de 16 fuentes; ficha de las 18 experiencias de los tres lotes; 12 experiencias completas como contenido jugable: EDIT-N1-002, EDIT-N1-007, EDIT-N1-008, EDIT-N1-009, EDIT-N1-010, EDIT-N1-011, EDIT-N1-012, EDIT-N1-013, EDIT-N1-015, EDIT-N1-016, EDIT-N1-017, EDIT-N1-018 |
+| Probado | Las 12 experiencias convertidas: pruebas automáticas. Recorrido completo en un navegador, a tamaño de computadora (1280 × 800) y de celular (390 × 844), guiado por un programa |
 | Revisado por una persona | Nada. Falta la revisión de Oziel y la revisión editorial |
 | Publicado | Nada para usuarios. Las experiencias están en producción solo por enlace, marcadas como revisión |
 | Validado con usuarios | Nada |
 
 ## 13. Lo que no se hizo
-No se han convertido 11 experiencias: EDIT-N1-001, EDIT-N1-003, EDIT-N1-004, EDIT-N1-005, EDIT-N1-006, EDIT-N1-013, EDIT-N1-014, EDIT-N1-015, EDIT-N1-016, EDIT-N1-017, EDIT-N1-018. No se convirtió el Executive Challenge. No se conectó nada al registro de evidencias ni al cálculo de dominio. No se creó ninguna tabla en la base de datos. Nadie ha revisado las respuestas escritas: no hay pantalla de revisión. No se probó con lector de pantalla ni en un teléfono físico. No se comparó cada habilidad con el temario de cada curso. No se calibró ninguna rúbrica.
+No se han convertido 6 experiencias: EDIT-N1-001, EDIT-N1-003, EDIT-N1-004, EDIT-N1-005, EDIT-N1-006, EDIT-N1-014. No se convirtió el Executive Challenge. No se conectó nada al registro de evidencias ni al cálculo de dominio. No se creó ninguna tabla en la base de datos. Nadie ha revisado las respuestas escritas: no hay pantalla de revisión. No se probó con lector de pantalla ni en un teléfono físico. No se comparó cada habilidad con el temario de cada curso. No se calibró ninguna rúbrica.
