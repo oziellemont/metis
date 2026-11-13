@@ -69,6 +69,7 @@ function cleanSettings(x: unknown): Record<string, unknown> | undefined {
   if (r.dailyGoal === 1 || r.dailyGoal === 2 || r.dailyGoal === 3) out.dailyGoal = r.dailyGoal;
   if (r.displayCurrency === "MXN" || r.displayCurrency === "USD") out.displayCurrency = r.displayCurrency;
   if (typeof r.worldEvents === "boolean") out.worldEvents = r.worldEvents;
+  if (typeof r.simulador === "boolean") out.simulador = r.simulador;
   if (Array.isArray(r.worldMute)) out.worldMute = [...new Set(r.worldMute.filter((f): f is Family => (FAMILIES as readonly unknown[]).includes(f)))];
   if (r.sessionMinutes === 3 || r.sessionMinutes === 5 || r.sessionMinutes === 8 || r.sessionMinutes === 12) out.sessionMinutes = r.sessionMinutes;
   return out; // correo y teléfono nunca entran al diario
