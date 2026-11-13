@@ -106,8 +106,8 @@ export function CeoShell({ children }: { children: React.ReactNode }) {
       {/* móvil: barra inferior */}
       <nav aria-label="Menú" className={clsx("lg:hidden fixed bottom-0 inset-x-0 z-30 bg-[#0F1130] border-t border-white/[.06] grid pb-[env(safe-area-inset-bottom)]", sim ? "grid-cols-7" : "grid-cols-5")}>
         {nav.map(({ href, label, short, icon, badge }) => { const Icon = NAV_ICON[icon]; return (
-          <Link key={href} href={href} aria-current={active(href) ? "page" : undefined} className={clsx("relative flex min-w-0 flex-col items-center gap-0.5 py-2 text-[10px] font-medium transition-colors", active(href) ? "text-white" : "text-white/50 hover:text-white")}>
-            <span className={clsx("h-7 rounded-full grid place-items-center transition-colors", sim ? "w-9" : "w-11", active(href) ? "bg-indigo" : "")}><Icon size={19} strokeWidth={active(href) ? 2.3 : 1.9} /></span> <span className="max-w-full truncate px-0.5">{sim ? short ?? label : label}</span>
+          <Link key={href} href={href} aria-current={active(href) ? "page" : undefined} className={clsx("relative flex min-w-0 flex-col items-center gap-0.5 py-2 font-medium transition-colors", sim ? "text-[9px] max-[359px]:text-[8px] tracking-tight" : "text-[10px]", active(href) ? "text-white" : "text-white/50 hover:text-white")}>
+            <span className={clsx("h-7 rounded-full grid place-items-center transition-colors", sim ? "w-9" : "w-11", active(href) ? "bg-indigo" : "")}><Icon size={19} strokeWidth={active(href) ? 2.3 : 1.9} /></span> <span className={clsx("max-w-full truncate", !sim && "px-0.5")}>{sim ? short ?? label : label}</span>
             {badge && n > 0 && <span className="absolute top-1 left-1/2 ml-2 h-4 min-w-4 px-1 rounded-full bg-coral text-white text-[10px] font-semibold grid place-items-center">{n}</span>}
           </Link>
         ); })}

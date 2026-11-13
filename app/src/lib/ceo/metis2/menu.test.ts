@@ -47,6 +47,8 @@ describe("MÊTIS 2.0 · 3.6 · menú nuevo", () => {
     expect(shell).not.toMatch(/^\s*\{ href: "\/ceo/m);
     expect(shell).toContain('"grid-cols-5"');
     expect(shell).toContain('"grid-cols-7"');
+    // Con siete lugares la letra de la barra del celular se achica para que ningún nombre se recorte.
+    expect(shell).toContain('sim ? "text-[9px] max-[359px]:text-[8px] tracking-tight" : "text-[10px]"');
     // Sin el simulador a la vista, el encabezado no habla del día de la empresa.
     expect(shell).toContain("Tus casos ocurren en");
   });
