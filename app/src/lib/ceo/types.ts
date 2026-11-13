@@ -205,6 +205,8 @@ export interface Settings {
   displayCurrency?: DisplayCurrency;
   /** World Events: «Acontecimientos reales en mi carrera» (opt-in; apagado si no existe). */
   worldEvents?: boolean;
+  /** MÊTIS 2.0 (entrega 3.6): vuelve a mostrar Empresa y Carrera en el menú. Apagado si no existe. Solo cambia el menú: nunca toca la partida. */
+  simulador?: boolean;
   /** Familias que el jugador no quiere recibir (clima, sismo, macro). */
   worldMute?: import("./world/types").Family[];
 }

@@ -12,7 +12,7 @@ import { Avatar, Flame, rel } from "./ui";
 import { ProfileEditor } from "./ProfileFlow";
 import { EXP_AREAS, GOALS, INDUSTRIES, ROLES, YEARS, diagnosticOffered, labelOf, profileAnswered } from "@/lib/ceo/profile";
 
-export function Profile({ onCareer }: { onCareer?: () => void } = {}) {
+export function Profile({ onCareer, career = true, slot }: { onCareer?: () => void; /** Muestra el cargo y el enlace a la trayectoria (solo con el simulador a la vista). */ career?: boolean; /** Sección que va justo debajo del encabezado (Temas y ritmo, en la página Mi perfil). */ slot?: React.ReactNode } = {}) {
   const c = useCeo();
   const p = profileOf(c.s, c.now);
   const badges = badgesOf(c.s, c.now);
@@ -21,7 +21,7 @@ export function Profile({ onCareer }: { onCareer?: () => void } = {}) {
   const [editing, setEditing] = useState(false);
   const pf = c.s.profile;
   const declared: [string, string | undefined][] = [
-    ["Responsabilidad", labelOf(ROLES, pf?.role)],
+    ["Situación actual", labelOf(ROLES, pf?.role)],
     ["Áreas", pf?.areas?.map((a) => labelOf(EXP_AREAS, a)).join(", ")],
     ["Experiencia", pf?.years ? `${labelOf(YEARS, pf.years)} años` : undefined],
     ["Industria", labelOf(INDUSTRIES, pf?.industry)],
@@ -35,8 +35,8 @@ export function Profile({ onCareer }: { onCareer?: () => void } = {}) {
         <div className="relative grid gap-6 md:grid-cols-[1.3fr_1fr]">
           <div>
             <div className="text-xs text-white/60">{c.s.name}</div>
-            <div data-testid="perfil-cargo" className="mt-0.5 text-base font-semibold">{t.appointment.title}</div>
-            {onCareer
+            {career && <div data-testid="perfil-cargo" className="mt-0.5 text-base font-semibold">{t.appointment.title}</div>}
+            {!career ? null : onCareer
               ? <button type="button" onClick={onCareer} className="block text-left text-[11px] text-white/60 hover:text-white">{t.active ? `Mes ${t.month} · ${t.chapter.label} · ver trayectoria →` : "Ver trayectoria →"}</button>
               : <Link href="/ceo/carrera" className="text-[11px] text-white/60 hover:text-white">{t.active ? `Mes ${t.month} · ${t.chapter.label} · ver trayectoria →` : "Ver trayectoria →"}</Link>}
             <div className="mt-2 text-sm text-white/70">Tu estilo de dirección</div>
@@ -57,6 +57,8 @@ export function Profile({ onCareer }: { onCareer?: () => void } = {}) {
           </div>
         </div>
       </section>
+
+      {slot}
 
       <MyLeadership />
 

@@ -25,10 +25,10 @@ export const SESSION_MINUTES = [3, 5, 8, 12] as const;
 export type SessionMinutes = (typeof SESSION_MINUTES)[number];
 export const DEFAULT_SESSION_MINUTES: SessionMinutes = 5;
 
-/** Proyección de la primera semana: 7, 14 o 21. */
-export const weeklyProjection = (goal: DailyDecisionGoal): number => goal * 7;
-export const weeklyProjectionText = (goal: DailyDecisionGoal): string =>
-  `¡Eso son ${weeklyProjection(goal)} decisiones como meta para tu primera semana!`;
+/** Proyección de la primera semana: 7, 14 o 21 si se practica todos los días; menos si la persona eligió 3 o 5 días por semana. */
+export const weeklyProjection = (goal: DailyDecisionGoal, days: number = 7): number => goal * (days === 3 || days === 5 ? days : 7);
+export const weeklyProjectionText = (goal: DailyDecisionGoal, days: number = 7): string =>
+  `¡Eso son ${weeklyProjection(goal, days)} decisiones como meta para tu primera semana!`;
 
 export interface NotificationWindow { start: number; end: number }
 

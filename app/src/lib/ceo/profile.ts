@@ -14,6 +14,7 @@
  */
 import type { CeoState } from "./types";
 import { COMPETENCY_IDS, competencyById, type Competency, type Mastery } from "./mastery";
+import { TOPIC_IDS } from "./metis2/academias";
 
 // ───────────────────────────────────────────── catálogos (ids estables: no renombrar)
 export const ROLES = [
@@ -24,6 +25,7 @@ export const ROLES = [
   { id: "director", label: "Director" },
   { id: "direccion", label: "Dirección general o socio" },
   { id: "fundador", label: "Fundador o emprendedor" },
+  { id: "transicion", label: "En transición de carrera" },
   { id: "otro", label: "Otro" },
 ] as const;
 export type RoleId = (typeof ROLES)[number]["id"];
@@ -79,6 +81,16 @@ export const GOALS = [
 ] as const;
 export type GoalId = (typeof GOALS)[number]["id"];
 
+/** Días de práctica por semana que la persona se propone (registro corto de MÊTIS 2.0, entrega 2.1). Es una meta personal: no castiga. */
+export const PRACTICE_DAYS = [
+  { value: 3, label: "3 días por semana", hint: "Para empezar sin presión" },
+  { value: 5, label: "5 días por semana", hint: "De lunes a viernes" },
+  { value: 7, label: "Todos los días", hint: "Un rato corto cada día" },
+] as const;
+export type PracticeDays = (typeof PRACTICE_DAYS)[number]["value"];
+export const DEFAULT_PRACTICE_DAYS: PracticeDays = 5;
+export const isPracticeDays = (v: unknown): v is PracticeDays => v === 3 || v === 5 || v === 7;
+
 export const QUESTIONS = ["role", "areas", "years", "industry", "goal"] as const;
 export type QuestionId = (typeof QUESTIONS)[number];
 
@@ -89,6 +101,10 @@ export interface ProfessionalProfile {
   years?: YearsBand;
   industry?: IndustryId;
   goal?: GoalId;
+  /** Temas prioritarios elegidos del catálogo (MÊTIS 2.0, entrega 2.1). Ordenan recomendaciones; nunca acreditan dominio. */
+  topics?: string[];
+  /** Días por semana que se propone practicar. */
+  days?: PracticeDays;
   skipped: QuestionId[];
   source: "onboarding" | "perfil" | "aviso";
   answeredAt: number;
@@ -126,6 +142,8 @@ export function sanitizeProfile(raw: unknown): ProfessionalProfile | undefined {
   if (has(YEARS, r.years)) out.years = r.years;
   if (has(INDUSTRIES, r.industry)) out.industry = r.industry;
   if (has(GOALS, r.goal)) out.goal = r.goal;
+  if (Array.isArray(r.topics)) { const t = [...new Set(r.topics.filter((x): x is string => typeof x === "string" && TOPIC_IDS.includes(x)))]; if (t.length) out.topics = t; }
+  if (isPracticeDays(r.days)) out.days = r.days;
   if (typeof r.secs === "number" && r.secs >= 0 && r.secs < 86_400) out.secs = Math.round(r.secs);
   return out;
 }

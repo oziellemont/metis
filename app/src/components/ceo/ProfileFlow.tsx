@@ -27,7 +27,7 @@ function Choice({ on, onClick, children, sub }: { on: boolean; onClick: () => vo
     </button>
   );
 }
-function Foot({ onBack, onSkip, onNext, next = "Siguiente", nextOff, note = "Puedes cambiarlo después en Carrera, en Mi perfil." }: { onBack?: () => void; onSkip?: () => void; onNext: () => void; next?: string; nextOff?: boolean; note?: string }) {
+function Foot({ onBack, onSkip, onNext, next = "Siguiente", nextOff, note = "Puedes cambiarlo después en Mi perfil." }: { onBack?: () => void; onSkip?: () => void; onNext: () => void; next?: string; nextOff?: boolean; note?: string }) {
   return (
     <div className="mt-8 pt-5 border-t border-white/10 flex flex-wrap items-center gap-4">
       {onBack && <button type="button" onClick={onBack} className="inline-flex items-center gap-1.5 text-sm text-white/65 hover:text-white"><ArrowLeft size={14} /> Atrás</button>}
@@ -77,8 +77,8 @@ export function ProfileQuestions({ initial, source, onDone, onBackFirst, onLater
         {onLater && <button type="button" onClick={onLater} className="text-xs font-medium text-white/60 hover:text-white underline-offset-4 hover:underline">Completar después</button>}
       </div>
       {q === "role" && (<>
-        <h1 className="mt-2.5 text-[26px] sm:text-[28px] font-semibold leading-tight">¿Cuál es tu responsabilidad actual?</h1>
-        <p className="mt-2 text-white/70 text-sm leading-relaxed max-w-xl">Nos ayuda a elegir el tono, los ejemplos y por dónde empezar. No cambia tu cargo: todos empiezan como Director General de su empresa.</p>
+        <h1 className="mt-2.5 text-[26px] sm:text-[28px] font-semibold leading-tight">¿Cuál es tu situación actual?</h1>
+        <p className="mt-2 text-white/70 text-sm leading-relaxed max-w-xl">Nos ayuda a elegir el tono, los ejemplos y por dónde empezar. No te da ni te quita avance.</p>
         <div className="mt-6 grid gap-2.5 sm:grid-cols-2">{ROLES.map((r) => <Choice key={r.id} on={p.role === r.id} onClick={() => set("role", r.id)}>{r.label}</Choice>)}</div>
       </>)}
       {q === "areas" && (<>
@@ -97,7 +97,7 @@ export function ProfileQuestions({ initial, source, onDone, onBackFirst, onLater
           {YEARS.map((y, i) => <button key={y.id} type="button" aria-pressed={p.years === y.id} onClick={() => set("years", y.id)} className={clsx("py-3.5 px-2 text-sm transition-colors", i < YEARS.length - 1 && "sm:border-r border-white/10", p.years === y.id ? "bg-white text-indigo font-semibold" : "text-white hover:bg-white/10")}>{y.label}</button>)}
         </div>
       </>)}
-      {q === "industry" && <IndustryPick value={p.industry} onChange={(v) => set("industry", v)} />}
+      {q === "industry" && <IndustryPick value={p.industry} onChange={(v) => set("industry", v)} hint={source === "onboarding" ? "Opcional. Si tenemos una empresa de esa industria, tus primeros casos ocurren en ella." : "Opcional."} />}
       {q === "goal" && (<>
         <h1 className="mt-2.5 text-[26px] sm:text-[28px] font-semibold leading-tight">¿Qué quieres lograr con mêtis?</h1>
         <p className="mt-2 text-white/70 text-sm">Elige la principal.</p>
@@ -108,10 +108,11 @@ export function ProfileQuestions({ initial, source, onDone, onBackFirst, onLater
   );
 }
 
-function IndustryPick({ value, onChange }: { value?: ProfessionalProfile["industry"]; onChange: (v: ProfessionalProfile["industry"]) => void }) {
+function IndustryPick({ value, onChange, hint }: { value?: ProfessionalProfile["industry"]; onChange: (v: ProfessionalProfile["industry"]) => void; hint?: string }) {
   const [open, setOpen] = useState(true);
   return (<>
     <h1 className="mt-2.5 text-[26px] sm:text-[28px] font-semibold leading-tight">¿En qué industria tienes más experiencia?</h1>
+    {hint && <p className="mt-2 text-white/70 text-sm">{hint}</p>}
     <div className="mt-6 rounded-2xl bg-white text-ink overflow-hidden shadow-[0_18px_40px_-18px_rgba(0,0,0,.5)]">
       <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} className="w-full flex items-center justify-between px-4 py-3.5 font-medium border-b border-slate-100">
         <span className={clsx(!value && "text-slate-400 font-normal")}>{labelOf(INDUSTRIES, value) ?? "Elige una industria"}</span><ChevronDown size={16} className={clsx("transition-transform", open && "rotate-180")} />
@@ -128,12 +129,12 @@ function IndustryPick({ value, onChange }: { value?: ProfessionalProfile["indust
 }
 
 // ───────────────────────────────────────────── diagnóstico
-export function DiagnosticOffer({ onStart, onLater, later = "Ahora no, ir a mi empresa" }: { onStart: () => void; onLater: () => void; later?: string }) {
+export function DiagnosticOffer({ onStart, onLater, onBack, later = "Ahora no" }: { onStart: () => void; onLater: () => void; onBack?: () => void; later?: string }) {
   return (
     <section className="academy-in mt-10">
       <div className="inline-flex rounded-full bg-white/10 px-3 py-1 text-xs">Opcional · 3 minutos</div>
       <h1 className="mt-5 text-3xl sm:text-[34px] font-semibold leading-tight">Antes de empezar, tres decisiones.</h1>
-      <p className="mt-3 text-white/70 text-[14.5px] leading-relaxed">Tres situaciones de dirección, sin respuestas obvias. Nos dan una primera lectura de tu criterio para ajustar por dónde empiezas. No suman puntos ni cambian tu cargo o el momento de tu empresa.</p>
+      <p className="mt-3 text-white/70 text-[14.5px] leading-relaxed">Tres situaciones de dirección, sin respuestas obvias. Nos dan una primera lectura de tu criterio para ajustar por dónde empiezas. No suman puntos ni cambian tu avance.</p>
       <div className="mt-7 grid gap-3 sm:grid-cols-3">
         {DIAGNOSTIC.map((d, i) => (
           <div key={d.id} className="rounded-2xl bg-white/[.06] border border-white/[.12] p-4">
@@ -147,6 +148,7 @@ export function DiagnosticOffer({ onStart, onLater, later = "Ahora no, ir a mi e
         <button type="button" onClick={onStart} className="btn-primary flex-1 justify-center py-3">Hacer el diagnóstico <ArrowRight size={15} /></button>
         <button type="button" onClick={onLater} className="btn border border-white/20 text-white/80 hover:text-white justify-center py-3">{later}</button>
       </div>
+      {onBack && <button type="button" onClick={onBack} className="mt-4 inline-flex items-center gap-1.5 text-sm text-white/65 hover:text-white"><ArrowLeft size={14} /> Atrás</button>}
     </section>
   );
 }
@@ -180,7 +182,7 @@ export function DiagnosticCases({ onDone, onSkip }: { onDone: (d: InitialDiagnos
         ))}
       </div>
       <div className="mt-8 pt-5 border-t border-white/10 flex flex-wrap items-center gap-4">
-        <span className="flex-1 text-[11.5px] text-white/45">Sin puntos ni efectos en tu empresa. Al terminar ves tu lectura inicial.</span>
+        <span className="flex-1 text-[11.5px] text-white/45">Sin puntos ni efectos en tu avance. Al terminar ves tu lectura inicial.</span>
         <button type="button" onClick={onSkip} className="text-sm font-medium text-white/75 hover:text-white">Omitir diagnóstico</button>
         <button type="button" disabled={!picked} onClick={confirm} className="btn-primary px-5 py-2.5">Confirmar <ArrowRight size={15} /></button>
       </div>
@@ -199,7 +201,7 @@ const ORDER: Record<Signal, number> = { alta: 0, media: 1, reforzar: 2, sin: 3 }
 
 export function DeclaredCard({ p, onEdit }: { p?: ProfessionalProfile; onEdit?: () => void }) {
   const rows: [string, string | undefined][] = [
-    ["Responsabilidad", labelOf(ROLES, p?.role)],
+    ["Situación actual", labelOf(ROLES, p?.role)],
     ["Áreas", p?.areas?.map((a) => labelOf(EXP_AREAS, a)).join(", ")],
     ["Experiencia", p?.years ? `${labelOf(YEARS, p.years)} años` : undefined],
     ["Industria", labelOf(INDUSTRIES, p?.industry)],
@@ -239,7 +241,7 @@ export function DemonstratedCard({ m, d }: { m: Mastery; d?: InitialDiagnostic }
 }
 
 /** Tres frases concretas de cómo se adapta su primera semana (derivadas de las mismas reglas que usa la app). */
-export function adaptationOf(p: ProfessionalProfile | undefined, m: Mastery, d?: InitialDiagnostic): [string, string][] {
+export function adaptationOf(p: ProfessionalProfile | undefined, m: Mastery, d?: InitialDiagnostic, tierOffer = true): [string, string][] {
   const rec = recommendOrder(p, m, d);
   const first = competencyById(rec[0].competency).name;
   const review = rec.filter((r) => r.review).map((r) => competencyById(r.competency).name.toLowerCase());
@@ -247,18 +249,19 @@ export function adaptationOf(p: ProfessionalProfile | undefined, m: Mastery, d?:
   const outside = rec.find((r) => r.outside);
   return [
     ["Academy", `Empiezas por ${first}.${review.length ? ` Lo básico de ${review.slice(0, 2).join(" y ")} queda como repaso opcional.` : ""}`],
-    ["Casos", band === "breve" ? `Menos explicaciones dentro de cada caso.${suggestTier(p) ? " Puedes empezar con exigencia alta en tu primera empresa." : ""}` : band === "media" ? "Una pista breve de qué entrena cada caso." : "Antes de decidir verás qué entrena cada caso y la lección que lo explica."],
+    ["Casos", band === "breve" ? `Menos explicaciones dentro de cada caso.${tierOffer && suggestTier(p) ? " Puedes empezar con exigencia alta en tu primera empresa." : ""}` : band === "media" ? "Una pista breve de qué entrena cada caso." : "Antes de decidir verás qué entrena cada caso y la lección que lo explica."],
     ["Fuera de tu especialidad", outside ? "Al menos 1 de cada 3 recomendaciones será de un área que no elegiste." : "Te recomendamos de todas las áreas por igual."],
   ];
 }
 
-export function StartingPoint({ name, p, d, m, cta, onCta, onEdit, stage = "Director General", fresh = true }: { name: string; p?: ProfessionalProfile; d?: InitialDiagnostic; m: Mastery; cta: string; onCta: () => void; onEdit?: () => void; stage?: string; fresh?: boolean }) {
-  const plan = useMemo(() => adaptationOf(p, m, d), [p, m, d]);
+export function StartingPoint({ name, p, d, m, cta, onCta, onEdit, stage = "Director General", fresh = true, entry = false }: { name: string; p?: ProfessionalProfile; d?: InitialDiagnostic; m: Mastery; cta: string; onCta: () => void; onEdit?: () => void; stage?: string; fresh?: boolean; /** Registro sin empresa propia: no habla de cargo ni ofrece exigencia. */ entry?: boolean }) {
+  const plan = useMemo(() => adaptationOf(p, m, d, !entry), [p, m, d, entry]);
+  const first = name ? name.split(" ")[0] : "";
   return (
     <section className="academy-in mt-8">
       <div className="inline-flex rounded-full bg-white/10 px-3 py-1 text-xs">Tu punto de partida</div>
-      <h1 className="mt-4 text-3xl sm:text-[34px] font-semibold leading-tight">{fresh ? <>{name ? `${name.split(" ")[0]}, empiezas` : "Empiezas"} como {stage}.</> : <>{name ? `${name.split(" ")[0]}, sigues` : "Sigues"} como {stage}.</>}</h1>
-      <p className="mt-3 text-white/70 text-[14.5px] leading-relaxed">Tu experiencia cambia por dónde {fresh ? "empiezas" : "sigues"} y cómo te acompañamos. Tu cargo es el mismo para todos; tus competencias solo cambian con lo que demuestres en el simulador.</p>
+      <h1 className="mt-4 text-3xl sm:text-[34px] font-semibold leading-tight">{entry ? <>{first ? `${first}, de aquí partes.` : "De aquí partes."}</> : fresh ? <>{first ? `${first}, empiezas` : "Empiezas"} como {stage}.</> : <>{first ? `${first}, sigues` : "Sigues"} como {stage}.</>}</h1>
+      <p className="mt-3 text-white/70 text-[14.5px] leading-relaxed">{entry ? "Lo que nos contaste cambia por dónde empiezas y cómo te acompañamos. Tus competencias solo cambian con lo que demuestres al decidir en los casos." : `Tu experiencia cambia por dónde ${fresh ? "empiezas" : "sigues"} y cómo te acompañamos. Tu cargo es el mismo para todos; tus competencias solo cambian con lo que demuestres en el simulador.`}</p>
       <div className="mt-6 grid gap-4 md:grid-cols-2">
         <DeclaredCard p={p} onEdit={onEdit} />
         <DemonstratedCard m={m} d={d} />
@@ -289,7 +292,7 @@ export function ProfileEditor({ initial, onSave, onCancel }: { initial?: Profess
   const save = () => onSave(finalizeProfile(p, initial?.source ?? "perfil", Date.now()));
   return (
     <div className="text-ink">
-      <Row label="Responsabilidad actual"><div className="flex flex-wrap gap-2">{ROLES.map((r) => <Pill key={r.id} on={p.role === r.id} onClick={() => set("role", p.role === r.id ? undefined : r.id)}>{r.label}</Pill>)}</div></Row>
+      <Row label="Situación actual"><div className="flex flex-wrap gap-2">{ROLES.map((r) => <Pill key={r.id} on={p.role === r.id} onClick={() => set("role", p.role === r.id ? undefined : r.id)}>{r.label}</Pill>)}</div></Row>
       <Row label="Áreas de experiencia"><div className="flex flex-wrap gap-2">{EXP_AREAS.map((a) => <Pill key={a.id} on={!!p.areas?.includes(a.id)} onClick={() => toggleArea(a.id)}>{a.label}</Pill>)}</div></Row>
       <Row label="Años de experiencia">
         <div className="inline-grid grid-cols-5 rounded-xl border border-slate-200 overflow-hidden">{YEARS.map((y, i) => <button key={y.id} type="button" aria-pressed={p.years === y.id} onClick={() => set("years", p.years === y.id ? undefined : y.id)} className={clsx("px-3 py-2 text-[12.5px]", i && "border-l border-slate-200", p.years === y.id ? "bg-indigo text-white font-medium" : "text-slate-600 hover:bg-slate-50")}>{y.label}</button>)}</div>
@@ -300,7 +303,7 @@ export function ProfileEditor({ initial, onSave, onCancel }: { initial?: Profess
       </div>
       <div className="mt-2 grid gap-3 sm:grid-cols-2 text-[12px] leading-relaxed">
         <div className="rounded-xl bg-indigo-soft/60 px-3.5 py-3"><b className="block text-indigo font-semibold mb-0.5">Qué cambia</b><span className="text-slate-600">El orden de lecciones recomendadas, cuánta explicación ves dentro de cada caso y el tono del coach.</span></div>
-        <div className="rounded-xl bg-slate-100 px-3.5 py-3"><b className="block text-ink font-semibold mb-0.5">Qué no cambia</b><span className="text-slate-600">Tu cargo, el capítulo de tu empresa, tus competencias y tu XP. Eso solo cambia con lo que hagas en la empresa.</span></div>
+        <div className="rounded-xl bg-slate-100 px-3.5 py-3"><b className="block text-ink font-semibold mb-0.5">Qué no cambia</b><span className="text-slate-600">Tus competencias y tu XP. Eso solo cambia con lo que decidas en los casos.</span></div>
       </div>
       <div className="mt-4 flex justify-end gap-2"><button type="button" onClick={onCancel} className="btn-ghost">Cancelar</button><button type="button" onClick={save} className="btn-primary">Guardar</button></div>
     </div>

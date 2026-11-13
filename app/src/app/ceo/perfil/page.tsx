@@ -1,3 +1,3 @@
-import { ProfileRedirect } from "@/components/ceo/ProfileRedirect";
+import { ProfilePage } from "@/components/ceo/ProfilePage";
 export const metadata = { title: "Mi perfil" };
-export default function Page() { return <ProfileRedirect />; }
+export default function Page() { return <ProfilePage />; }

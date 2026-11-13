@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { EMPRESA_TABS } from "../../components/ceo/empresa/tabs";
 import { CAREER_TABS } from "../../components/ceo/career-tabs";
 import { ceoGuideFor, ceoGuideKey, ceoGuideKeys, searchCeoGuide, type CompanyKind } from "./guide";
+import { menuFor } from "./metis2/menu";
 
 const KINDS: CompanyKind[] = ["continua", "crecimiento", "temporadas"];
 const read = (f: string) => readFileSync(`src/components/ceo/${f}`, "utf8");
@@ -11,7 +12,7 @@ const text = (g: { title: string; purpose: string; shows: string[]; faqs: { q: s
 
 describe("Guía de mêtis CEO · contenido por pantalla", () => {
   it("cada pantalla del menú tiene su guía, para cualquier tipo de empresa", () => {
-    for (const path of ["/ceo", "/ceo/bandeja", "/ceo/empresa", "/ceo/carrera", "/ceo/academy", "/ceo/ajustes"]) {
+    for (const path of ["/ceo", "/ceo/bandeja", "/ceo/academy", "/ceo/progreso", "/ceo/perfil", "/ceo/empresa", "/ceo/carrera", "/ceo/ajustes"]) {
       for (const kind of KINDS) {
         const g = ceoGuideFor(path, null, kind);
         expect(g.key, path).not.toBe("");
@@ -21,6 +22,20 @@ describe("Guía de mêtis CEO · contenido por pantalla", () => {
         expect(g.faqs.length, `${path} ${kind}`).toBeGreaterThanOrEqual(3);
       }
     }
+  });
+
+  it("el menú nuevo tiene guía propia y explica dónde quedó el simulador (MÊTIS 2.0, 3.6)", () => {
+    for (const m of menuFor(true)) expect(ceoGuideKey(m.href), m.href).not.toBe("");
+    expect(ceoGuideFor("/ceo/progreso").title).toBe("Mi progreso");
+    expect(ceoGuideFor("/ceo/perfil").title).toBe("Mi perfil");
+    // Mi progreso dice sin rodeos que cuenta actividad y no dominio.
+    expect(text(ceoGuideFor("/ceo/progreso"))).toMatch(/No acreditan dominio ni suben niveles/);
+    // Ajustes explica el interruptor, y la guía general dice dónde quedaron Empresa y Carrera.
+    expect(text(ceoGuideFor("/ceo/ajustes"))).toContain("Mostrar el simulador de empresas");
+    expect(text(ceoGuideFor("/ceo/algo-nuevo"))).toContain("Mostrar el simulador de empresas");
+    expect(ceoGuideFor("/ceo/algo-nuevo").shows.join(" ")).toMatch(/Mi progreso/);
+    expect(searchCeoGuide("simulador", "/ceo").length).toBeGreaterThan(0);
+    expect(searchCeoGuide("temas", "/ceo/perfil")[0].here).toBe(true);
   });
 
   it("cada pestaña de Empresa y de Carrera tiene una guía distinta", () => {

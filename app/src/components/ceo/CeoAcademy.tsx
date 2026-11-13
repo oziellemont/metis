@@ -14,6 +14,7 @@ import { celebrate } from "@/lib/ceo/celebrate";
 import { useCeo } from "./CeoProvider";
 import { Stage, StepTitle } from "./Stage";
 import { personalized, trackHints } from "@/lib/ceo/profile";
+import { priorityTracks } from "@/lib/ceo/metis2/entrada";
 
 const ICON = { compass: Compass, users: Users, flag: Flag, message: MessagesSquare, handshake: Handshake, coins: Coins, flame: FlameIcon, rocket: Rocket, target: Target, layers: Layers };
 
@@ -33,6 +34,8 @@ export function CeoAcademyHome() {
   const [order, setOrder] = useState<"ti" | "todas">("ti");
   const hints = forYou ? trackHints(c.s.profile, c.mastery, c.s.diagnostic, TRACK_TO, TRACKS.map((t) => t.id)) : [];
   const hintOf = new Map(hints.map((h, i) => [h.track, { ...h, top: i < 3 }]));
+  // MÊTIS 2.0 (2.1): las rutas que trabajan alguno de los temas elegidos se señalan. No cambia el orden ni abre o cierra nada.
+  const mine = priorityTracks(c.s.profile?.topics ?? [], TRACKS.map((t) => t.id));
   const tracks = forYou && order === "ti" ? hints.map((h) => TRACKS.find((t) => t.id === h.track)!) : TRACKS;
   const focusLesson = focus ? LESSONS.find((l) => rankOf(l) <= rank && !c.s.lessons[l.id] && (TRACK_TO[trackOf(l).track] ?? []).includes(focus)) : undefined;
   return (
@@ -67,7 +70,7 @@ export function CeoAcademyHome() {
 
       {forYou && (
         <div className="mt-6 flex flex-wrap items-center gap-3">
-          <p className="flex-1 min-w-0 text-xs text-slate-500">{order === "ti" ? "Ordenadas según lo que has demostrado y lo que nos contaste. Al menos 1 de cada 3 es de un área que no elegiste." : "Todas las rutas en su orden original."} <Link href="/ceo/carrera#experiencia" className="text-indigo font-medium">Tu experiencia</Link></p>
+          <p className="flex-1 min-w-0 text-xs text-slate-500">{order === "ti" ? "Ordenadas según lo que has demostrado y lo que nos contaste. Al menos 1 de cada 3 es de un área que no elegiste." : "Todas las rutas en su orden original."} <Link href="/ceo/perfil#experiencia" className="text-indigo font-medium">Tu experiencia</Link></p>
           <div className="inline-flex rounded-xl bg-slate-100 p-1 text-xs">
             {(["ti", "todas"] as const).map((o) => <button key={o} type="button" onClick={() => setOrder(o)} aria-pressed={order === o} className={clsx("rounded-lg px-3 py-1.5 font-medium", order === o ? "bg-white text-ink shadow-sm" : "text-slate-500")}>{o === "ti" ? "Para ti" : "Orden original"}</button>)}
           </div>
@@ -91,6 +94,7 @@ export function CeoAcademyHome() {
                 <span className={clsx("h-11 w-11 rounded-2xl grid place-items-center", doneN === ls.length ? "bg-mint-soft text-sob" : "bg-indigo-soft text-indigo")}><Icon size={20} /></span>
                 <span className="flex flex-col items-end gap-1.5">
                   <span className="text-xs text-slate-400 tabular-nums">Nivel {doneN} de {MAX_TRACK_LEVEL}</span>
+                  {mine.has(t.id) && <span data-testid="ruta-de-tus-temas" className="chip bg-mint-soft text-sob text-[10.5px]">De tus temas</span>}
                   {h && order === "ti" && (h.review ? <span className="chip bg-slate-100 text-slate-500 text-[10.5px]">Repaso opcional</span> : h.top ? <span className="chip bg-indigo-soft text-indigo text-[10.5px]">{h.outside ? "Fuera de tu especialidad" : "Recomendada"}</span> : null)}
                 </span>
               </div>

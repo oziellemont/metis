@@ -284,6 +284,45 @@ const GUIDES: Record<string, CeoGuide> = {
     ],
   },
 
+  // ─────────── Mi progreso y Mi perfil (MÊTIS 2.0, entrega 3.6)
+  "/ceo/progreso": {
+    title: "Mi progreso",
+    purpose: "Tu constancia y lo que has practicado en cada una de las seis academias.",
+    shows: [
+      "Arriba, tus totales: días de racha, XP, decisiones tomadas y lecciones terminadas.",
+      "«Tu constancia»: los últimos siete días y tu meta de días por semana.",
+      "«Tu práctica por academia»: lecciones y decisiones en Estrategia, Finanzas, Liderazgo, Operaciones, Crecimiento y Riesgo y gobierno.",
+      "«Tus temas»: lo que elegiste practicar primero, con el enlace para cambiarlo.",
+    ],
+    faqs: [
+      f("¿Qué cuenta como práctica?", "Las lecciones de Academy que terminaste y las decisiones que tomaste en casos y dilemas. Cada una se suma a la academia a la que pertenece."),
+      f("¿Estos números dicen qué tan bien dirijo?", "No. Cuentan actividad: cuánto has practicado, no qué tan bien lo hiciste. No acreditan dominio ni suben niveles. Lo que tus decisiones dejan ver de tu criterio está en Mi perfil, en «Mi liderazgo»."),
+      f("¿Qué significa la etiqueta «Tus temas» en una academia?", "Que alguno de los temas que elegiste pertenece a esa academia. Sirve para ubicar dónde está lo que más te interesa."),
+      f("¿Qué es la meta de días por semana?", "Los días que te propones practicar: 3, 5 o todos. Es una meta personal para sostener el hábito; no hay castigo si una semana no la alcanzas. Se cambia en Mi perfil, en «Temas y ritmo»."),
+      f("¿Por qué no coinciden las decisiones de aquí con las de Mi perfil?", "Cada pantalla cuenta distinto. Aquí entran las decisiones que pertenecen a una academia, incluidos los dilemas; Mi perfil cuenta las decisiones con las que se describe tu estilo."),
+      K.constancia,
+    ],
+  },
+  "/ceo/perfil": {
+    title: "Mi perfil",
+    purpose: "Lo que nos contaste de ti y lo que tus decisiones han dejado ver.",
+    shows: [
+      "Tu estilo de dirección y, aparte, tu constancia (XP y racha).",
+      "«Temas y ritmo»: tus temas prioritarios, tus días por semana y tus minutos por sesión.",
+      "«Mi liderazgo» en tres partes: preferencias, competencias y resultados de la empresa de tus casos.",
+      "«Experiencia declarada», «Cómo decides», tus insignias y tu bitácora con cada decisión.",
+    ],
+    faqs: [
+      f("¿Para qué sirven mis temas?", "Señalan en Academy las rutas que los trabajan, con la etiqueta «De tus temas», y en Mi progreso, sus academias. No te cierran ningún otro tema, no suman competencias ni puntos, y puedes cambiarlos cuando quieras. Son al menos cinco."),
+      f("¿Cómo cambio mis temas o mi ritmo?", "En «Temas y ritmo», con «Editar». Marca o desmarca temas, elige tus días por semana y tus minutos por sesión, y guarda."),
+      f("¿En qué se distinguen preferencias y competencias?", "Las preferencias describen tu estilo y no tienen lado bueno ni malo: corto o largo plazo, prudente o audaz, números o personas, decidir solo o involucrar, evitar o encarar. Las competencias sí miden qué tan bien resuelves: analizar, consultar, anticipar, negociar, ejecutar y priorizar."),
+      f("¿Qué significan las etiquetas de las competencias?", "Tendencia observada: hay señales, pero pocas. En desarrollo: hay evidencia suficiente, sin un patrón claro. Fortaleza consistente: lo hiciste bien muchas veces y en situaciones distintas. Área por desarrollar: la misma dificultad apareció varias veces. Aún sin situaciones: no te ha tocado un asunto que la ponga a prueba."),
+      f("¿Para qué sirve la experiencia declarada?", "Ajusta por dónde empiezas y cuánta ayuda ves. No suma competencias ni puntos, y puedes editarla cuando quieras."),
+      f("¿Qué es la bitácora?", "El registro de cada decisión que tomaste y lo que aprendiste de ella. Puedes abrir cualquier caso para repasarlo."),
+      f("¿Dónde quedó mi trayectoria en la empresa?", "En Carrera. Esa pantalla y la de Empresa vuelven al menú si enciendes «Mostrar el simulador de empresas» en Ajustes."),
+    ],
+  },
+
   // ─────────── Academy y Ajustes
   "/ceo/academy": {
     title: "Academy",
@@ -292,6 +331,7 @@ const GUIDES: Record<string, CeoGuide> = {
       "Cada tema es una ruta de habilidad con niveles: de lo esencial a lo más profundo.",
       "«Tu enfoque de estudio» sugiere la competencia que más te conviene practicar.",
       "Con «Para ti» ves las rutas ordenadas según lo que has demostrado; con «Orden original», todas en su orden.",
+      "La etiqueta «De tus temas» marca las rutas que trabajan alguno de los temas que elegiste.",
       "Al final está el glosario de tu industria, con buscador.",
     ],
     faqs: [
@@ -306,9 +346,10 @@ const GUIDES: Record<string, CeoGuide> = {
     title: "Ajustes",
     purpose: "Tu cuenta, tu horario y el ritmo con que te llegan los asuntos.",
     shows: [
-      "Tu cuenta, el nombre de tu empresa y cómo te llama tu equipo.",
+      "Tu cuenta, tu nombre y cómo te llaman los personajes de tus casos.",
       "«Cómo te llegan los asuntos»: correo, horario, zona horaria y meta diaria.",
       "«Ritmo y notificaciones»: el día tranquilo y la pausa de tu carrera.",
+      "«Simulador de empresas»: el interruptor que vuelve a poner Empresa y Carrera en el menú.",
     ],
     faqs: [
       f("¿Para qué sirve el horario?", "Los asuntos te llegan dentro del horario que marques en «Desde» y «Hasta», según tu zona horaria."),
@@ -316,7 +357,9 @@ const GUIDES: Record<string, CeoGuide> = {
       f("¿Qué es la meta diaria de decisiones?", "Cuántas decisiones te propones al día: Tranquilo (1), Constante (2) o Intensivo (3). Es una meta personal para sostener el hábito."),
       f("¿Qué es un día tranquilo?", "Ese día no llegan asuntos nuevos y tus plazos se detienen hasta mañana. Puedes tomar uno cada semana."),
       f("¿Qué pasa si pauso mi carrera?", "Se detiene todo: plazos, asuntos nuevos y avisos. No pierdes tu avance y los días en pausa no rompen tu racha. Al reanudar, cada asunto conserva el tiempo que le quedaba."),
-      f("¿Por qué conviene crear mi cuenta?", "Sin cuenta, tu empresa vive solo en este navegador. Con tu cuenta no la pierdes y puedes seguirla en cualquier dispositivo."),
+      f("¿Por qué conviene crear mi cuenta?", "Sin cuenta, tu avance vive solo en este navegador. Con tu cuenta no lo pierdes y puedes seguirlo en cualquier dispositivo."),
+      f("¿Qué hace «Mostrar el simulador de empresas»?", "Vuelve a poner Empresa y Carrera en el menú: los indicadores, el equipo, los cierres de mes y la trayectoria de la empresa de tus casos. Solo cambia el menú. Tus decisiones, tu racha y tu avance quedan igual, lo enciendas o lo apagues."),
+      f("¿Dónde cambio mis temas y mis días por semana?", "En Mi perfil, en «Temas y ritmo». Aquí en Ajustes quedan tu horario, tus avisos y tu meta diaria de decisiones."),
     ],
   },
 
@@ -403,21 +446,23 @@ const VIEWS: Record<string, { ids: readonly string[]; first: string }> = {
 };
 
 const GENERAL: CeoFaq[] = [
-  f("¿Cómo funciona mêtis CEO?", "Diriges una empresa como su CEO. Te llegan asuntos, decides, tus decisiones mueven los indicadores y las relaciones, y al cierre de cada periodo el consejo evalúa tu gestión."),
-  f("¿Dónde veo los números de mi empresa?", "En Empresa. Resumen da la lectura rápida; Finanzas, el estado de resultados y el flujo de efectivo; Operación, los KPI del sector; Personas, tus relaciones; y Consejo, cómo te evalúan."),
+  f("¿Cómo funciona mêtis CEO?", "Practicas dirección resolviendo casos. Te llegan asuntos de una empresa que pertenece al caso, decides, y tus decisiones mueven sus indicadores y sus relaciones. En Mi progreso ves cuánto has practicado y en Mi perfil, lo que tus decisiones dejan ver."),
+  f("¿Dónde veo los números de la empresa de mis casos?", "En Empresa: Resumen da la lectura rápida; Finanzas, el estado de resultados y el flujo de efectivo; Operación, los KPI del sector; Personas, tus relaciones; y Consejo, cómo te evalúan. Empresa aparece en el menú al encender «Mostrar el simulador de empresas» en Ajustes."),
+  f("¿Dónde quedaron Empresa y Carrera?", "Salieron del menú, pero siguen existiendo con todo lo que has jugado. Vuelven al encender «Mostrar el simulador de empresas» en Ajustes."),
   K.salud,
   K.consejo,
 ];
 
 const FALLBACK: CeoGuide = {
   title: "mêtis CEO",
-  purpose: "Diriges una empresa: decides, ves las consecuencias y el consejo evalúa tu gestión.",
+  purpose: "Practicas dirección resolviendo casos: decides, ves las consecuencias y aprendes de ellas.",
   shows: [
     "Hoy: lo que espera tu decisión.",
     "Bandeja: todo lo que te ha llegado.",
-    "Empresa: cómo va tu negocio.",
-    "Carrera: tu trayectoria y tu perfil.",
     "Academy: la teoría detrás de las decisiones.",
+    "Mi progreso: tu constancia y tu práctica por academia.",
+    "Mi perfil: tus temas, tu ritmo y lo que tus decisiones dejan ver.",
+    "Empresa y Carrera: el simulador de empresas, si lo enciendes en Ajustes.",
   ],
   faqs: GENERAL,
 };
