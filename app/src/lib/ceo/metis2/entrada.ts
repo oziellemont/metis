@@ -13,7 +13,7 @@
 import { ACADEMIES, MIN_PRIORITY_TOPICS, TOPICS, checkTopics, topicAcademy, topicById, type Academy, type AcademyId, type Topic } from "./academias";
 import { skillsOfTrack, tagOf, tagOfItem } from "./clasificacion";
 import { COMPANIES, FIRST_COMPANY, companyById } from "../companies";
-import { companyForIndustry } from "../profile";
+import { QUESTIONS, companyForIndustry, type PracticeDays, type ProfessionalProfile } from "../profile";
 import { buildSetup, newCompanyId, suggestionForPack, type SetupInput } from "../career/setup";
 
 // ───────────────────────────────────────────── temas prioritarios
@@ -51,9 +51,21 @@ export function priorityTracks(topicIds: readonly string[], tracks: readonly str
   return new Set(tracks.filter((t) => skillsOfTrack(t).some((s) => skills.has(s))));
 }
 
-/** Pone primero las rutas de los temas elegidos, sin cambiar el orden dentro de cada grupo ni quitar ninguna. */
-export function orderByPriority<T extends { id: string }>(tracks: readonly T[], prio: ReadonlySet<string>): T[] {
-  return [...tracks.filter((t) => prio.has(t.id)), ...tracks.filter((t) => !prio.has(t.id))];
+/** Academias a las que pertenecen los temas elegidos. */
+export const topicAcademies = (topicIds: readonly string[]): Set<AcademyId> =>
+  new Set(topicIds.map((id) => topicById(id)).filter((t): t is Topic => !!t).map((t) => topicAcademy(t)));
+
+/**
+ * Perfil que se guarda al terminar el registro: lo que la persona respondió (o nada, si lo dejó para después) más
+ * sus temas y sus días por semana. Si no respondió las preguntas de experiencia, `answeredAt` queda en 0 para que
+ * se las sigamos ofreciendo; los temas y los días se guardan igual.
+ */
+export function entryProfile(p: ProfessionalProfile | undefined, topicIds: readonly string[], days: PracticeDays | undefined, now: number, source: ProfessionalProfile["source"] = "onboarding"): ProfessionalProfile {
+  const base: ProfessionalProfile = p ?? { v: 1, skipped: [...QUESTIONS], source, answeredAt: 0, updatedAt: now };
+  const { topics: _t, days: _d, ...rest } = base;
+  void _t; void _d;
+  const valid = checkTopics([...topicIds]).valid;
+  return { ...rest, updatedAt: now, ...(valid.length ? { topics: valid } : {}), ...(days ? { days } : {}) };
 }
 
 // ───────────────────────────────────────────── la empresa del caso
@@ -63,9 +75,12 @@ export function orderByPriority<T extends { id: string }>(tracks: readonly T[], 
  * declarada si existe en el catálogo; si no, la primera. Lleva el nombre propio del caso.
  * `setup` es null solo si el catálogo no permite armarla; en ese caso la partida empieza con la empresa tal cual.
  */
+export const casePackId = (industry: string | undefined): string => companyForIndustry(industry, COMPANIES.map((c) => c.id)) ?? FIRST_COMPANY;
+
 export function caseCompanyFor(industry: string | undefined, rand?: () => number): { packId: string; setup: SetupInput | null } {
-  const packId = companyForIndustry(industry, COMPANIES.map((c) => c.id)) ?? FIRST_COMPANY;
-  const setup = buildSetup({ ...suggestionForPack(packId), displayName: companyById(packId).name }, newCompanyId(rand));
+  const packId = casePackId(industry);
+  const pack = companyById(packId);
+  const setup = buildSetup({ ...suggestionForPack(packId), displayName: pack.name, shortName: pack.short }, newCompanyId(rand));
   return { packId, setup };
 }
 
@@ -89,8 +104,8 @@ export interface AcademyPractice {
 export function practiceByAcademy(input: {
   lessonIds: readonly string[];
   lessonsDone: Readonly<Record<string, number>>;
-  company: string;
-  decidedItemIds: readonly string[];
+  /** Decisiones tomadas, cada una con la empresa del caso en la que ocurrió. */
+  decided: readonly { company: string; id: string }[];
   dilemmaIds: readonly string[];
 }): AcademyPractice[] {
   const rows = new Map<AcademyId, AcademyPractice>(ACADEMIES.map((a) => [a.id, { academy: a.id, name: a.name, blurb: a.blurb, lessonsDone: 0, lessonsTotal: 0, decisions: 0 }]));
@@ -100,7 +115,14 @@ export function practiceByAcademy(input: {
     row.lessonsTotal += 1;
     if (input.lessonsDone[id]) row.lessonsDone += 1;
   }
-  for (const id of new Set(input.decidedItemIds)) { const row = rows.get(tagOfItem(input.company, id)?.academy as AcademyId); if (row) row.decisions += 1; }
+  const seen = new Set<string>();
+  for (const d of input.decided) {
+    const key = `${d.company}:${d.id}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    const row = rows.get(tagOfItem(d.company, d.id)?.academy as AcademyId);
+    if (row) row.decisions += 1;
+  }
   for (const id of new Set(input.dilemmaIds)) { const row = rows.get(tagOf("dilema", id)?.academy as AcademyId); if (row) row.decisions += 1; }
   return [...rows.values()];
 }

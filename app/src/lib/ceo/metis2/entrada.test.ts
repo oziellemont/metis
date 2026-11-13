@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { ACADEMIES, MIN_PRIORITY_TOPICS, TOPICS } from "./academias";
-import { caseCompanyFor, orderByPriority, practiceByAcademy, priorityTracks, toggleTopic, topicNames, topicsByAcademy, topicsCountText, topicsReady } from "./entrada";
+import { caseCompanyFor, entryProfile, practiceByAcademy, priorityTracks, toggleTopic, topicAcademies, topicNames, topicsByAcademy, topicsCountText, topicsReady } from "./entrada";
 import { INDUSTRIES, PRACTICE_DAYS, isPracticeDays, sanitizeProfile } from "../profile";
 import { COMPANIES, FIRST_COMPANY, companyById } from "../companies";
 import { LESSONS, TRACKS } from "../lessons";
@@ -40,18 +40,16 @@ describe("Registro corto · temas prioritarios", () => {
     expect(topicNames([ids[2], ids[0]])).toEqual([TOPICS[0].name, TOPICS[2].name]);
   });
 
-  it("los temas elegidos ponen primero sus rutas de Academy, sin quitar ninguna", () => {
+  it("los temas elegidos señalan sus rutas de Academy y sus academias", () => {
     const tracks = TRACKS.map((t) => t.id);
     expect(priorityTracks([], tracks).size).toBe(0);
     const some = priorityTracks(TOPICS.slice(0, 5).map((t) => t.id), tracks);
     for (const t of some) expect(tracks).toContain(t);
-    const ordered = orderByPriority(TRACKS, some);
-    expect(ordered.length).toBe(TRACKS.length);
-    expect(new Set(ordered.map((t) => t.id)).size).toBe(TRACKS.length);
-    const firstOther = ordered.findIndex((t) => !some.has(t.id));
-    if (firstOther >= 0) expect(ordered.slice(firstOther).every((t) => !some.has(t.id))).toBe(true);
-    // Con todos los temas del catálogo, al menos una ruta queda marcada.
-    expect(priorityTracks(TOPICS.map((t) => t.id), tracks).size).toBeGreaterThan(0);
+    // Cada ruta de Academy corresponde al menos a un tema del catálogo.
+    expect(priorityTracks(TOPICS.map((t) => t.id), tracks).size).toBe(tracks.length);
+    expect(topicAcademies([]).size).toBe(0);
+    expect([...topicAcademies(TOPICS.map((t) => t.id))].sort()).toEqual(ACADEMIES.map((a) => a.id).sort());
+    expect(topicAcademies(["no-existe"]).size).toBe(0);
   });
 });
 
@@ -67,6 +65,21 @@ describe("Registro corto · el perfil guarda temas y días", () => {
     expect(PRACTICE_DAYS.map((d) => d.value)).toEqual([3, 5, 7]);
     expect(isPracticeDays(7)).toBe(true);
     expect(isPracticeDays("7")).toBe(false);
+  });
+
+  it("al terminar el registro se guardan temas y días, se haya respondido la experiencia o no", () => {
+    const ids = TOPICS.slice(0, 6).map((t) => t.id);
+    const later = entryProfile(undefined, [...ids, "inventado"], 3, 1000);
+    expect(later.topics).toEqual(ids);
+    expect(later.days).toBe(3);
+    expect(later.answeredAt).toBe(0); // la experiencia se sigue ofreciendo después
+    expect(sanitizeProfile(later)).toEqual(later);
+    const answered = entryProfile({ v: 1, role: "gerente", skipped: [], source: "onboarding", answeredAt: 500, updatedAt: 500, topics: ["viejo"], days: 7 }, ids, 5, 1000);
+    expect(answered.role).toBe("gerente");
+    expect(answered.answeredAt).toBe(500);
+    expect(answered.topics).toEqual(ids);
+    expect(answered.days).toBe(5);
+    expect(entryProfile(undefined, [], undefined, 1).topics).toBeUndefined();
   });
 
   it("un perfil anterior, sin temas ni días, sigue siendo válido", () => {
@@ -87,6 +100,25 @@ describe("Registro corto · la empresa pertenece al caso", () => {
     expect(r.setup!.displayName).toBe(companyById(FIRST_COMPANY).name);
   });
 
+  it("la partida arranca con la empresa del caso tal cual: mismo nombre y mismo nombre corto", async () => {
+    const { replay } = await import("../replay");
+    const { isContinuous, packOf } = await import("../engine");
+    const T = Date.UTC(2026, 10, 13, 15, 0, 0);
+    for (const co of COMPANIES) {
+      const ind = INDUSTRIES.find((i) => "company" in i && i.company === co.id);
+      const r = caseCompanyFor(ind?.id, () => 0.4);
+      if (r.packId !== co.id) continue;
+      const { state, rejected } = replay([
+        { type: "start", at: T, name: "Ana Ruiz", company: r.packId, settings: { tz: "America/Monterrey" }, rulesVersion: 3, tier: 0, journey: true },
+        { type: "setupCompany", at: T, ...r.setup! },
+      ]);
+      expect(rejected, co.id).toEqual([]);
+      expect(isContinuous(state), co.id).toBe(true);
+      expect(packOf(state).name, co.id).toBe(co.name);
+      expect(packOf(state).short, co.id).toBe(co.short);
+    }
+  });
+
   it("para cada industria del cuestionario arma una empresa válida, sin pedir nada a la persona", () => {
     for (const ind of INDUSTRIES) {
       const r = caseCompanyFor(ind.id, () => 0.25);
@@ -103,7 +135,7 @@ describe("Mi progreso · práctica por academia", () => {
   const lessonIds = LESSONS.map((l) => l.id);
 
   it("devuelve las seis academias en el orden del catálogo, en cero si no hay actividad", () => {
-    const rows = practiceByAcademy({ lessonIds, lessonsDone: {}, company: FIRST_COMPANY, decidedItemIds: [], dilemmaIds: [] });
+    const rows = practiceByAcademy({ lessonIds, lessonsDone: {}, decided: [], dilemmaIds: [] });
     expect(rows.map((r) => r.academy)).toEqual(ACADEMIES.map((a) => a.id));
     for (const r of rows) { expect(r.lessonsDone).toBe(0); expect(r.decisions).toBe(0); }
     expect(rows.reduce((n, r) => n + r.lessonsTotal, 0)).toBeGreaterThan(0);
@@ -112,9 +144,9 @@ describe("Mi progreso · práctica por academia", () => {
 
   it("cuenta lecciones terminadas y decisiones una sola vez, y nunca más que el total", () => {
     const done = Object.fromEntries(lessonIds.slice(0, 6).map((id) => [id, 1]));
-    const items = companyById(FIRST_COMPANY).items.slice(0, 4).map((i) => i.id);
+    const items = companyById(FIRST_COMPANY).items.slice(0, 4).map((i) => ({ company: FIRST_COMPANY, id: i.id }));
     const dil = DILEMMAS.slice(0, 2).map((d) => d.id);
-    const rows = practiceByAcademy({ lessonIds, lessonsDone: done, company: FIRST_COMPANY, decidedItemIds: [...items, ...items], dilemmaIds: [...dil, ...dil] });
+    const rows = practiceByAcademy({ lessonIds, lessonsDone: done, decided: [...items, ...items], dilemmaIds: [...dil, ...dil] });
     for (const r of rows) expect(r.lessonsDone).toBeLessThanOrEqual(r.lessonsTotal);
     expect(rows.reduce((n, r) => n + r.lessonsDone, 0)).toBeGreaterThan(0);
     expect(rows.reduce((n, r) => n + r.lessonsDone, 0)).toBeLessThanOrEqual(6);
@@ -123,8 +155,14 @@ describe("Mi progreso · práctica por academia", () => {
     expect(decisions).toBeLessThanOrEqual(items.length + dil.length);
   });
 
+  it("cuenta las decisiones de empresas anteriores con la clasificación de su propia empresa", () => {
+    const other = COMPANIES.find((c) => c.id !== FIRST_COMPANY)!;
+    const rows = practiceByAcademy({ lessonIds, lessonsDone: {}, decided: [{ company: FIRST_COMPANY, id: companyById(FIRST_COMPANY).items[0].id }, { company: other.id, id: other.items[0].id }], dilemmaIds: [] });
+    expect(rows.reduce((n, r) => n + r.decisions, 0)).toBe(2);
+  });
+
   it("lo que no está clasificado no se cuenta ni rompe nada", () => {
-    const rows = practiceByAcademy({ lessonIds: ["no-existe"], lessonsDone: { "no-existe": 1 }, company: "empresa-rara", decidedItemIds: ["x"], dilemmaIds: ["y"] });
+    const rows = practiceByAcademy({ lessonIds: ["no-existe"], lessonsDone: { "no-existe": 1 }, decided: [{ company: "empresa-rara", id: "x" }], dilemmaIds: ["y"] });
     expect(rows.every((r) => r.lessonsTotal === 0 && r.lessonsDone === 0 && r.decisions === 0)).toBe(true);
   });
 });

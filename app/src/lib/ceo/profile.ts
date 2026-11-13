@@ -25,6 +25,7 @@ export const ROLES = [
   { id: "director", label: "Director" },
   { id: "direccion", label: "Dirección general o socio" },
   { id: "fundador", label: "Fundador o emprendedor" },
+  { id: "transicion", label: "En transición de carrera" },
   { id: "otro", label: "Otro" },
 ] as const;
 export type RoleId = (typeof ROLES)[number]["id"];
