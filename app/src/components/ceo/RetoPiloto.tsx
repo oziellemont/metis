@@ -4,7 +4,8 @@
  *
  * Una sola historia en tres actos. Los documentos se consultan siempre; no hay tutor ni explicación
  * durante el reto. Pedir ayuda marca el intento como asistido. Al terminar, un informe con 24
- * observaciones por academia y las salvaguardas, sin veredicto: los umbrales no están habilitados.
+ * observaciones por academia, las salvaguardas (cumplida, corregida o sin corregir) y la síntesis,
+ * sin veredicto: no hay regla de aprobación.
  *
  * El intento se guarda solo en este navegador. No escribe en el registro de evidencias,
  * no cambia niveles ni perfil y no llama a ningún servicio.
@@ -24,6 +25,7 @@ import { Stage, StageChoice, StepTitle } from "./Stage";
 const storeKey = (r: Reto) => `metis:reto:${r.id}`;
 const LETTERS = "ABCDEF";
 const RUTA = { defendible: "Ruta defendible", riesgosa: "Ruta con riesgo", concepto_erroneo: "Aquí había una confusión" } as const;
+const ESTADO = { cumplida: "Cumplida desde la primera respuesta.", corregida: "Corregida después de recibir información nueva.", no_corregida: "Decisión crítica sin corregir.", sin_respuesta: "Sin respuesta." } as const;
 const SALVA = { inocuidad: "Inocuidad: cajas con alérgenos mal etiquetados", etica: "Ética: no ocultar la falla al cliente", control_bancario: "Control bancario: verificar antes de pagar" } as const;
 
 export function RetoPiloto({ r }: { r: Reto }) {
@@ -308,7 +310,9 @@ function Ficha({ r, restart }: { r: Reto; restart: () => void }) {
       <dl>
         <Row k="Reto">{r.title} · {r.editorialId} · versión {r.version} · paquete {r.packageVersion}</Row>
         <Row k="Qué observa">Las 24 habilidades del Nivel 1, de 0 a {r.scale.max} cada una (96 en total), en {r.scenes.filter((s) => s.skills.length).length} escenas y una síntesis.</Row>
-        <Row k="Regla de aprobación">No habilitada. Candidatos por calibrar: {r.thresholds.candidates.join(", ")} de 96, además de condiciones por academia y salvaguardas.</Row>
+        <Row k="Regla de aprobación">No hay. Ningún puntaje de aprobación está aprobado: se definirá después de la revisión editorial y de probar el reto con personas, junto con las condiciones por academia.</Row>
+        <Row k="Salvaguardas">Inocuidad, ética y control bancario no se compensan con puntos de otras áreas. Si la primera respuesta abre el riesgo, un personaje da información nueva y se puede rectificar. El informe distingue: cumplida, corregida y decisión crítica sin corregir. Rectificar no devuelve puntos.</Row>
+        <Row k="Síntesis">La reunión final acepta por igual las dos secuencias de prioridades defendibles, si la razón que se da también se sostiene con los hechos. No da puntos.</Row>
         <Row k="Estado">Probado con pruebas automáticas. Revisión editorial: {r.qa.editorialReviewedAt ?? "sin hacer"}. Validación con usuarios: sin hacer.</Row>
         <Row k="Registro">No registra evidencia. No cambia dominio, nivel ni perfil. El intento se guarda solo en este navegador.</Row>
         <Row k="Por confirmar en la revisión"><ul className="space-y-1.5">{r.conversionNotes.map((n) => <li key={n} className="flex gap-2"><span aria-hidden className="mt-2 h-1 w-1 shrink-0 rounded-full bg-slate-400" />{n}</li>)}</ul></Row>
@@ -323,23 +327,54 @@ function Ficha({ r, restart }: { r: Reto; restart: () => void }) {
 function Informe({ r, it, restart }: { r: Reto; it: Intento; restart: () => void }) {
   const inf = useMemo(() => informeOf(r, it), [r, it]);
   const [open, setOpen] = useState<string | null>(null);
-  const failed = inf.safeguards.filter((s) => !s.ok);
+  const fixed = inf.safeguards.filter((s) => s.state === "corregida").length;
+  const open2 = inf.safeguards.filter((s) => s.state === "no_corregida").length;
+  const optText = (stepId: string, optId: string | null) => { const p = stepById(r, stepId)?.step; return p?.kind === "decision" ? p.options.find((o) => o.id === optId) : undefined; };
+  const fixStep = (stepId: string) => r.scenes.flatMap((sc) => sc.steps).find((p) => p.rectifica === stepId);
+  const syn = inf.synthesis;
+  const synSteps = r.scenes.flatMap((sc) => sc.steps).filter((p) => p.sintesis);
+  const synSeq = synSteps.find((p) => p.sintesis === "secuencia");
+  const synOpt = synSeq?.kind === "decision" ? synSeq.options.find((o) => o.id === syn?.sequence) : undefined;
+  const synReason = synSteps.flatMap((p) => (p.sintesis === "fundamento" && p.kind === "decision" && p.id in it.answers ? p.options.filter((o) => o.id === it.answers[p.id]) : []))[0];
   return (
     <div className="space-y-6">
-      <StepTitle eyebrow="Informe del reto" title={`${inf.got} de ${inf.auto} puntos en lo que se comprueba solo`} text={`${inf.pending ? `${inf.pending} de ${inf.max} puntos son respuestas escritas y quedan en espera de revisión de una persona.` : "No dejaste respuestas escritas en espera de revisión."} No hay veredicto: la regla de aprobación todavía no está calibrada ni habilitada.`} />
+      <StepTitle eyebrow="Informe del reto" title={`${inf.got} de ${inf.auto} puntos en lo que se comprueba solo`} text={`${inf.pending ? `${inf.pending} de ${inf.max} puntos son respuestas escritas y quedan en espera de revisión de una persona.` : "No dejaste respuestas escritas en espera de revisión."} No hay veredicto: este reto no tiene regla de aprobación.`} />
       {inf.assisted && <p className="flex items-start gap-2 rounded-xl border border-amber/40 bg-amber/10 px-3 py-2.5 text-sm leading-relaxed text-white/85"><LifeBuoy size={15} className="mt-0.5 shrink-0 text-amber" /> Pediste ayuda durante el reto: este intento es práctica asistida, no una comprobación independiente.</p>}
 
       <section className="space-y-2.5">
         <h2 className="text-xs font-semibold uppercase tracking-wider text-mint">Salvaguardas</h2>
-        <p className="text-sm text-white/70">Son requisitos de seguridad: si no se cumplen, no se compensan con puntos de otras áreas.</p>
-        <ul className="space-y-2">{inf.safeguards.map((s) => (
-          <li key={s.step} className={clsx("flex items-start gap-2.5 rounded-2xl border px-4 py-3 text-sm", s.ok ? "border-mint/50 bg-mint/10" : "border-coral/50 bg-coral/10")}>
-            {s.ok ? <ShieldCheck size={16} className="mt-0.5 shrink-0 text-mint" /> : <AlertTriangle size={16} className="mt-0.5 shrink-0 text-coral" />}
-            <span><span className="font-semibold">{SALVA[s.kind]}.</span> {s.ok ? "Cumplida." : "No cumplida."}</span>
-          </li>
-        ))}</ul>
-        {failed.length > 0 && <p className="text-sm text-white/75">Con {failed.length === 1 ? "una salvaguarda" : `${failed.length} salvaguardas`} sin cumplir, ningún puntaje permitiría acreditar este reto.</p>}
+        <p className="text-sm text-white/70">Son requisitos de seguridad: no se compensan con puntos de otras áreas. Se distingue un error que corregiste al recibir información nueva de una decisión crítica que mantuviste.</p>
+        <ul className="space-y-2">{inf.safeguards.map((s) => {
+          const first = optText(s.step, s.first);
+          const fx = fixStep(s.step);
+          const fix = fx ? optText(fx.id, s.fix) : undefined;
+          const tone = s.state === "cumplida" ? "border-mint/50 bg-mint/10" : s.state === "corregida" ? "border-amber/50 bg-amber/10" : "border-coral/50 bg-coral/10";
+          return (
+            <li key={s.step} data-salvaguarda={s.state} className={clsx("flex items-start gap-2.5 rounded-2xl border px-4 py-3 text-sm leading-relaxed", tone)}>
+              {s.state === "cumplida" ? <ShieldCheck size={16} className="mt-0.5 shrink-0 text-mint" /> : s.state === "corregida" ? <RotateCcw size={16} className="mt-0.5 shrink-0 text-amber" /> : <AlertTriangle size={16} className="mt-0.5 shrink-0 text-coral" />}
+              <div className="min-w-0 space-y-1">
+                <p><span className="font-semibold">{SALVA[s.kind]}.</span> {ESTADO[s.state]}</p>
+                {s.state !== "cumplida" && first && <p className="text-white/75"><span className="font-semibold">Primera respuesta:</span> {first.text} {first.nota}</p>}
+                {fix && <p className="text-white/75"><span className="font-semibold">Con la información nueva:</span> {fix.text} {fix.nota}</p>}
+                {s.state === "corregida" && <p className="text-white/60">Los puntos de la primera respuesta no cambian al rectificar.</p>}
+              </div>
+            </li>
+          );
+        })}</ul>
+        {open2 > 0 && <p className="text-sm text-white/75">Con {open2 === 1 ? "una decisión crítica" : `${open2} decisiones críticas`} sin corregir, ningún puntaje permitiría acreditar este reto: correspondería repasar el tema y presentar una variante distinta.</p>}
+        {open2 === 0 && fixed > 0 && <p className="text-sm text-white/75">{fixed === 1 ? "Un error corregido" : `${fixed} errores corregidos`} durante el reto: queda anotado para la revisión y no pesa igual que una decisión crítica sin corregir.</p>}
       </section>
+
+      {syn && synOpt && (
+        <section className="space-y-2.5">
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-mint">Síntesis de la reunión final</h2>
+          <div data-sintesis={syn.accepted ? "aceptada" : "no"} className={clsx("rounded-2xl border px-4 py-3 text-sm leading-relaxed space-y-1", syn.accepted ? "border-mint/50 bg-mint/10" : "border-white/15 bg-white/[.06]")}>
+            <p><span className="font-semibold">Tu secuencia:</span> {synOpt.text} <span className="text-white/60">({RUTA[synOpt.tipo]})</span></p>
+            {synReason && <p><span className="font-semibold">Tu fundamento:</span> {synReason.text} <span className="text-white/60">({RUTA[synReason.tipo]})</span> {synReason.nota}</p>}
+            <p className="text-white/75">{syn.accepted ? "Secuencia aceptada: es una de las dos defendibles y su fundamento se sostiene con los hechos. Las dos valen lo mismo." : syn.sequenceOk ? "La secuencia es defendible, pero el fundamento que diste no se sostiene con los hechos de la semana." : "Esta secuencia deja para después riesgos que ya ocurrieron."} La síntesis no da puntos.</p>
+          </div>
+        </section>
+      )}
 
       <section className="space-y-3">
         <h2 className="text-xs font-semibold uppercase tracking-wider text-mint">Por academia y por habilidad</h2>

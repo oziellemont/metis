@@ -27,8 +27,18 @@ import { headlineOf } from "@/lib/ceo/trajectory";
 import { COMPANY_STAGES } from "@/lib/ceo/career/identity";
 import { presenterOf } from "@/lib/ceo/business/report";
 import { KpiBoard } from "./KpiBoard";
+import { HoyAprendizaje } from "./HoyAprendizaje";
 
+/**
+ * Hoy. Con «Mostrar el simulador de empresas» apagado (lo normal en MÊTIS 2.0) no se muestra el tablero de la
+ * empresa: se ve la pantalla de práctica. Con el simulador encendido se ve el centro de mando de siempre, sin cambios.
+ */
 export function Today() {
+  const c = useCeo();
+  return c.s.settings.simulador === true ? <TodaySimulador /> : <HoyAprendizaje />;
+}
+
+function TodaySimulador() {
   const c = useCeo();
   const first = c.s.name.split(" ")[0] || "CEO";
   const pk = c.pack;

@@ -67,6 +67,26 @@ const GUIDES: Record<string, CeoGuide> = {
       f("¿Qué hago si no hay nada pendiente?", "Durante el día llegan más asuntos, dentro del horario que elegiste en Ajustes. Mientras tanto puedes repasar la teoría en Academy o revisar cómo va tu empresa."),
     ],
   },
+  // Hoy con el simulador de empresas apagado (lo normal en MÊTIS 2.0): sin tablero de la empresa.
+  "/ceo!practica": {
+    title: "Hoy",
+    purpose: "Tu práctica de hoy: una propuesta para practicar, los casos que esperan y tu actividad en las seis academias.",
+    shows: [
+      "«Tu práctica de hoy» propone una sola cosa: el caso que espera tu decisión, un caso ejecutivo o tu siguiente lección.",
+      "Debajo aparecen los demás casos que esperan. Todos están también en la Bandeja.",
+      "«Las seis academias» cuenta lecciones terminadas y decisiones tomadas. Es un avance provisional: no mide dominio.",
+    ],
+    faqs: [
+      f("¿Qué es un caso?", "Un correo, mensaje, llamada, junta o reporte que necesita tu decisión. Trae la situación, quién te la plantea y varias opciones. Al decidir ves la consecuencia y la idea que hay detrás."),
+      f("¿Qué pasa si dejo vencer un caso?", "Cada caso tiene plazo. Si se vence, alguien decide por ti y ya no puedes resolverlo. Los casos ejecutivos no vencen."),
+      f("¿Qué es un caso ejecutivo?", "Una situación más larga, de varios pasos, que se resuelve en una sola sentada de unos minutos: lees el contexto, te preparas y decides. Aparece en la lista con la etiqueta «Caso ejecutivo»."),
+      f("¿Por qué el avance dice «provisional»?", "Porque cuenta actividad: las lecciones que terminaste y las decisiones que tomaste en cada academia. No mide dominio, no sube niveles y no acredita nada. Lo que tus decisiones dejan ver de tu criterio está en Mi perfil, en Mi liderazgo."),
+      f("¿Dónde quedaron los indicadores de la empresa y la misión del consejo?", "Son parte del simulador de empresas. Vuelven a esta pantalla, junto con Empresa y Carrera en el menú, al encender «Mostrar el simulador de empresas» en Ajustes. Todo lo que ya jugaste se conserva igual."),
+      f("¿Qué significa que el simulador tiene asuntos propios esperando?", "Que la empresa de tus casos tiene algo pendiente que esta pantalla no muestra completo: un cierre de mes, una sesión especial o el cierre del periodo. El aviso trae un enlace directo para abrirlo sin encender el simulador."),
+      K.constancia,
+      f("¿Qué hago si no hay nada pendiente?", "Durante el día llegan más casos, dentro del horario que elegiste en Ajustes. Mientras tanto puedes repasar la teoría en Academy."),
+    ],
+  },
   "/ceo/bandeja": {
     title: "Bandeja",
     purpose: "Todo lo que te ha llegado: correos, WhatsApps, reportes, llamadas y juntas.",
@@ -358,7 +378,7 @@ const GUIDES: Record<string, CeoGuide> = {
       f("¿Qué es un día tranquilo?", "Ese día no llegan asuntos nuevos y tus plazos se detienen hasta mañana. Puedes tomar uno cada semana."),
       f("¿Qué pasa si pauso mi carrera?", "Se detiene todo: plazos, asuntos nuevos y avisos. No pierdes tu avance y los días en pausa no rompen tu racha. Al reanudar, cada asunto conserva el tiempo que le quedaba."),
       f("¿Por qué conviene crear mi cuenta?", "Sin cuenta, tu avance vive solo en este navegador. Con tu cuenta no lo pierdes y puedes seguirlo en cualquier dispositivo."),
-      f("¿Qué hace «Mostrar el simulador de empresas»?", "Vuelve a poner Empresa y Carrera en el menú: los indicadores, el equipo, los cierres de mes y la trayectoria de la empresa de tus casos. Solo cambia el menú. Tus decisiones, tu racha y tu avance quedan igual, lo enciendas o lo apagues."),
+      f("¿Qué hace «Mostrar el simulador de empresas»?", "Vuelve a poner Empresa y Carrera en el menú: los indicadores, el equipo, los cierres de mes y la trayectoria de la empresa de tus casos. En Hoy vuelve el tablero de la empresa en lugar de tu práctica del día. Solo cambia lo que ves: tus decisiones, tu racha y tu avance quedan igual, lo enciendas o lo apagues."),
       f("¿Dónde cambio mis temas y mis días por semana?", "En Mi perfil, en «Temas y ritmo». Aquí en Ajustes quedan tu horario, tus avisos y tu meta diaria de decisiones."),
     ],
   },
@@ -467,7 +487,7 @@ const FALLBACK: CeoGuide = {
   faqs: GENERAL,
 };
 
-const ROUTES = [...new Set(Object.keys(GUIDES).map((k) => k.split(/[#@]/)[0]))].sort((a, b) => b.length - a.length);
+const ROUTES = [...new Set(Object.keys(GUIDES).map((k) => k.split(/[#@!]/)[0]))].sort((a, b) => b.length - a.length);
 const forKind = (g: CeoGuide, kind: CompanyKind): CeoGuide => ({ ...g, faqs: g.faqs.filter((x) => !x.only || x.only.includes(kind)) });
 
 /** Clave de la guía: ruta, o ruta con su vista. Sirve también para subrutas («/ceo/reporte?mes=2» → «/ceo/reporte»). */
@@ -479,15 +499,18 @@ export function ceoGuideKey(path: string, view?: string | null): string {
   return v ? `${route}#${view && v.ids.includes(view) ? view : v.first}` : route;
 }
 
-/** Guía de la pantalla (y vista) actual, según el tipo de empresa. */
-export function ceoGuideFor(path: string, view?: string | null, kind: CompanyKind = "continua"): CeoGuide & { key: string } {
+/**
+ * Guía de la pantalla (y vista) actual, según el tipo de empresa.
+ * `simulador` dice si «Mostrar el simulador de empresas» está encendido: apagado, Hoy tiene otra pantalla y otra guía.
+ */
+export function ceoGuideFor(path: string, view?: string | null, kind: CompanyKind = "continua", simulador = true): CeoGuide & { key: string } {
   const key = ceoGuideKey(path, view);
-  const g = key ? GUIDES[`${key}@${kind}`] ?? GUIDES[key] : undefined;
+  const g = key ? (!simulador ? GUIDES[`${key}!practica`] : undefined) ?? GUIDES[`${key}@${kind}`] ?? GUIDES[key] : undefined;
   return { key, ...forKind(g ?? FALLBACK, kind) };
 }
 
 /** Todas las claves con guía propia (sin variantes por tipo de empresa). */
-export const ceoGuideKeys = (): string[] => Object.keys(GUIDES).filter((k) => !k.includes("@"));
+export const ceoGuideKeys = (): string[] => Object.keys(GUIDES).filter((k) => !/[@!]/.test(k));
 
 /** Busca una duda: primero en la pantalla actual, luego en el resto. Sin preguntas repetidas. */
 export function searchCeoGuide(query: string, path: string, view?: string | null, kind: CompanyKind = "continua", limit = 6): (CeoFaq & { page: string; here: boolean })[] {

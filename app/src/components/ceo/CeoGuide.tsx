@@ -33,7 +33,8 @@ export function CeoGuide() {
   const [seen, setSeen] = useState(true);
   const panel = useRef<HTMLDivElement>(null);
   const btn = useRef<HTMLButtonElement>(null);
-  const g = useMemo(() => ceoGuideFor(path, view, kind), [path, view, kind]);
+  const sim = c.s.settings.simulador === true;
+  const g = useMemo(() => ceoGuideFor(path, view, kind, sim), [path, view, kind, sim]);
 
   // El punto verde se queda hasta que abres la guía por primera vez.
   useEffect(() => { try { setSeen(localStorage.getItem(SEEN) === "1"); } catch { /* sin almacenamiento: no se muestra el punto */ } }, []);

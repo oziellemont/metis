@@ -46,7 +46,7 @@ describe("Executive Challenge EC-N1-002-A", () => {
   it("pasa la revisión del motor sin errores", () => {
     const { errors, warnings } = checkReto(R);
     expect(errors).toEqual([]);
-    expect(warnings.some((w) => /no habilitados/.test(w))).toBe(true);
+    expect(warnings.some((w) => /sin regla de aprobación/.test(w))).toBe(true);
     expect(warnings.some((w) => /4 de 96 puntos son respuestas escritas/.test(w))).toBe(true);
   });
 
@@ -109,17 +109,21 @@ describe("Executive Challenge EC-N1-002-A", () => {
     expect(inf.verdict).toBeNull();
     expect(inf.observations).toHaveLength(24);
     expect(inf.byAcademy).toHaveLength(6);
-    expect(inf.safeguards.length).toBeGreaterThanOrEqual(3);
-    expect(inf.safeguards.every((s) => s.ok)).toBe(true);
+    expect(inf.safeguards.map((s) => s.kind)).toEqual(["inocuidad", "etica", "control_bancario"]);
+    expect(inf.safeguards.every((s) => s.state === "cumplida")).toBe(true);
+    expect(inf.blocked).toBe(false);
+    expect(inf.synthesis).toEqual({ sequence: "seguridad", sequenceOk: true, reason: "hechos", reasonOk: true, accepted: true });
   });
 
-  it("el novato termina con 0 puntos y las salvaguardas sin cumplir; el azar también termina", () => {
+  it("el novato termina con 0 puntos y las tres decisiones críticas sin corregir; el azar también termina", () => {
     const n = play("novato");
     expect(n.phase).toBe("fin");
     const inf = informeOf(R, n);
     expect(inf.got).toBe(0);
     expect(inf.pending).toBe(0);
-    expect(inf.safeguards.every((s) => !s.ok)).toBe(true);
+    expect(inf.safeguards.every((s) => s.state === "no_corregida")).toBe(true);
+    expect(inf.blocked).toBe(true);
+    expect(inf.synthesis!.accepted).toBe(false);
     expect(inf.verdict).toBeNull();
     for (const seed of [1, 2, 3, 4, 5, 6, 8, 9]) {
       const a = play("azar", seed);
@@ -127,6 +131,8 @@ describe("Executive Challenge EC-N1-002-A", () => {
       const x = informeOf(R, a);
       expect(x.got).toBeLessThanOrEqual(96);
       expect(x.verdict).toBeNull();
+      expect(x.safeguards.every((q) => q.state !== "sin_respuesta")).toBe(true);
+      expect(x.blocked).toBe(x.safeguards.some((q) => q.state === "no_corregida"));
     }
   });
 
@@ -202,11 +208,138 @@ describe("Executive Challenge EC-N1-002-A", () => {
     expect(scoreStep(p, { correo: "" })).toEqual({ got: 0, auto: true });
   });
 
-  it("los umbrales candidatos no están habilitados y el reto no registra evidencia", () => {
-    expect(R.thresholds).toEqual({ candidates: [72, 76, 80], enabled: false });
+  it("no hay umbral de aprobación en el reto ni en la pantalla, y el reto no registra evidencia", () => {
+    expect(R.thresholds).toEqual({ candidates: [], enabled: false });
+    expect(checkReto({ ...R, thresholds: { candidates: [72], enabled: false } }).errors).toContain("no hay umbral aprobado: el reto no guarda candidatos");
+    const umbral = /\b72\b[^\n]{0,12}\b76\b[^\n]{0,12}\b80\b|72\/96|76\/96|80\/96/;
+    for (const f of ["ec-n1-002-a.ts", "motor.ts", "tipos.ts", "../../../../components/ceo/RetoPiloto.tsx"]) expect(readFileSync(join(__dirname, f), "utf8")).not.toMatch(umbral);
     expect(R.evidencePolicy).toBe("no_registra");
     expect(R.qa.editorialReviewedAt).toBeNull();
     expect(R.qa.publishedAt).toBeNull();
+  });
+
+  /** Juega como experto, salvo en los pasos indicados (id del paso → id de la opción). */
+  function playWith(over: Record<string, string>): Intento {
+    let i = advanceReto(R, newIntento(R), { t: "empezar", now: NOW });
+    for (let guard = 0; guard < 200; guard++) {
+      const p = stepById(R, i.at!)!.step;
+      const v = over[p.id] ?? answerFor(p, "experto", () => 0);
+      if (v !== undefined) i = advanceReto(R, i, { t: "responder", step: p.id, value: v });
+      if (!nextStep(R, i)) return advanceReto(R, i, { t: "terminar", now: NOW });
+      i = advanceReto(R, i, { t: "avanzar" });
+    }
+    throw new Error("el recorrido no termina");
+  }
+  const CASOS = [
+    { step: "s07.lote", fix: "s07.lote2", critica: "enviar", segura: "retener", sostiene: "sostiene", kind: "inocuidad", lost: 3 },
+    { step: "s12.etica", fix: "s12.etica2", critica: "entregar", segura: "verdad", sostiene: "sostiene", kind: "etica", lost: 4 },
+    { step: "s13.control", fix: "s13.control2", critica: "pagar", segura: "verificar", sostiene: "sostiene", kind: "control_bancario", lost: 2 },
+  ] as const;
+
+  it("salvaguardas: la rectificación aparece solo tras una ruta crítica y después de la información nueva", () => {
+    for (const c of CASOS) {
+      const p = stepById(R, c.step)!.step;
+      if (p.kind !== "decision") throw new Error("la salvaguarda es una decisión");
+      expect(p.salvaguarda).toBe(c.kind);
+      for (const o of p.options) {
+        const shown = pathOf(R, flagsOf(R, { [c.step]: o.id })).some((s) => s.step.id === c.fix);
+        expect(shown).toBe(o.critica === true);
+        // La consecuencia (información nueva) existe antes de pedir la rectificación.
+        if (o.critica) expect(o.reply.length).toBeGreaterThan(0);
+      }
+      const fix = stepById(R, c.fix)!.step;
+      expect(fix.rectifica).toBe(c.step);
+      expect(fix.skill).toBeNull();
+      expect(fix.points).toBe(0);
+      expect(maxBySkill(R)).not.toHaveProperty(c.fix);
+    }
+    // Las rutas críticas son las que el paquete nombra como falla.
+    const crit = allSteps(R).flatMap(({ step }) => (step.kind === "decision" ? step.options.filter((o) => o.critica).map((o) => `${step.id}/${o.id}`) : []));
+    expect(crit).toEqual(["s07.lote/enviar", "s12.etica/entregar", "s12.etica/quitar", "s12.etica/excusa", "s13.control/pagar"]);
+  });
+
+  it("salvaguardas: un error corregido no bloquea, pero tampoco devuelve los puntos", () => {
+    for (const c of CASOS) {
+      const inf = informeOf(R, playWith({ [c.step]: c.critica, [c.fix]: "corrige" }));
+      const mine = inf.safeguards.find((s) => s.step === c.step)!;
+      expect(mine).toEqual({ kind: c.kind, step: c.step, state: "corregida", first: c.critica, fix: "corrige" });
+      expect(inf.safeguards.filter((s) => s.step !== c.step).every((s) => s.state === "cumplida")).toBe(true);
+      expect(inf.blocked).toBe(false);
+      expect(inf.got).toBe(92 - c.lost);
+      expect(inf.max).toBe(96);
+    }
+    const todas = informeOf(R, playWith(Object.fromEntries(CASOS.flatMap((c) => [[c.step, c.critica], [c.fix, "corrige"]]))));
+    expect(todas.safeguards.every((s) => s.state === "corregida")).toBe(true);
+    expect(todas.blocked).toBe(false);
+    expect(todas.got).toBe(92 - 9);
+  });
+
+  it("salvaguardas: una decisión crítica sin corregir no se compensa con ningún puntaje", () => {
+    for (const c of CASOS) {
+      const inf = informeOf(R, playWith({ [c.step]: c.critica, [c.fix]: c.sostiene }));
+      expect(inf.safeguards.find((s) => s.step === c.step)!.state).toBe("no_corregida");
+      // Todo lo demás perfecto: el puntaje es alto y aun así queda bloqueado.
+      expect(inf.got).toBe(92 - c.lost);
+      expect(inf.blocked).toBe(true);
+      expect(inf.verdict).toBeNull();
+    }
+    // Corregir a medias (otra ruta con riesgo) tampoco cuenta como corrección.
+    expect(informeOf(R, playWith({ "s12.etica": "excusa", "s12.etica2": "calla" })).blocked).toBe(true);
+    expect(informeOf(R, playWith({ "s13.control": "pagar", "s13.control2": "firma" })).blocked).toBe(true);
+    expect(informeOf(R, playWith({ "s07.lote": "enviar", "s07.lote2": "aviso" })).blocked).toBe(true);
+  });
+
+  it("salvaguardas: perder puntos sin abrir el daño no es una decisión crítica", () => {
+    const inf = informeOf(R, playWith({ "s07.lote": "todo", "s13.control": "correo" }));
+    expect(inf.safeguards.every((s) => s.state === "cumplida")).toBe(true);
+    expect(inf.blocked).toBe(false);
+    expect(inf.got).toBe(92 - 2 - 1);
+  });
+
+  it("salvaguardas: a medio reto el estado no se adelanta y el intento se retoma en la rectificación", () => {
+    let i = advanceReto(R, newIntento(R), { t: "empezar", now: NOW });
+    for (let guard = 0; guard < 200 && i.at !== "s07.lote"; guard++) {
+      const p = stepById(R, i.at!)!.step;
+      const v = answerFor(p, "experto", () => 0);
+      if (v !== undefined) i = advanceReto(R, i, { t: "responder", step: p.id, value: v });
+      i = advanceReto(R, i, { t: "avanzar" });
+    }
+    expect(informeOf(R, i).safeguards.every((s) => s.state === "sin_respuesta")).toBe(true);
+    i = advanceReto(R, i, { t: "responder", step: "s07.lote", value: "enviar" });
+    expect(informeOf(R, i).safeguards[0].state).toBe("sin_respuesta");
+    expect(informeOf(R, i).blocked).toBe(false);
+    i = advanceReto(R, i, { t: "avanzar" });
+    expect(i.at).toBe("s07.lote2");
+    const back = readIntento(R, JSON.parse(JSON.stringify(i)));
+    expect(back.at).toBe("s07.lote2");
+    // La primera respuesta no se puede cambiar desde la rectificación.
+    expect(advanceReto(R, i, { t: "responder", step: "s07.lote", value: "retener" })).toBe(i);
+    i = advanceReto(R, i, { t: "responder", step: "s07.lote2", value: "corrige" });
+    expect(informeOf(R, i).safeguards[0].state).toBe("corregida");
+    expect(i.answers["s07.lote"]).toBe("enviar");
+  });
+
+  it("síntesis: las dos secuencias defendibles valen igual si su fundamento se sostiene", () => {
+    const a = informeOf(R, playWith({ "s14.plan": "seguridad", "s14.razon.seguridad": "hechos" }));
+    const b = informeOf(R, playWith({ "s14.plan": "entregas", "s14.razon.entregas": "hechos" }));
+    expect(a.synthesis).toEqual({ sequence: "seguridad", sequenceOk: true, reason: "hechos", reasonOk: true, accepted: true });
+    expect(b.synthesis).toEqual({ sequence: "entregas", sequenceOk: true, reason: "hechos", reasonOk: true, accepted: true });
+    // Mismo puntaje, mismas observaciones, mismas salvaguardas: el orden elegido no cambia nada más.
+    expect(b.got).toBe(a.got);
+    expect(b.observations).toEqual(a.observations);
+    expect(b.safeguards).toEqual(a.safeguards);
+    // Una secuencia defendible con un fundamento que no se sostiene no se acepta.
+    for (const [plan, malas] of [["seguridad", ["certeza", "aparicion"]], ["entregas", ["basta", "barato"]]] as const) for (const m of malas) {
+      const x = informeOf(R, playWith({ "s14.plan": plan, [`s14.razon.${plan}`]: m }));
+      expect(x.synthesis).toMatchObject({ sequenceOk: true, reasonOk: false, accepted: false });
+      expect(x.got).toBe(a.got);
+    }
+    // La secuencia con riesgo no pasa por fundamento y no se acepta.
+    const v = playWith({ "s14.plan": "ventas" });
+    expect(Object.keys(v.answers).some((k) => k.startsWith("s14.razon"))).toBe(false);
+    expect(informeOf(R, v).synthesis).toEqual({ sequence: "ventas", sequenceOk: false, reason: null, reasonOk: false, accepted: false });
+    // La síntesis no da puntos a ninguna habilidad.
+    for (const { step } of allSteps(R)) if (step.sintesis) { expect(step.skill).toBeNull(); expect(step.points).toBe(0); }
   });
 
   it("las opciones se barajan siempre igual y la defendible no queda siempre en el mismo lugar", () => {

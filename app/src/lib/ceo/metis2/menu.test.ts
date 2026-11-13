@@ -53,12 +53,12 @@ describe("MÊTIS 2.0 · 3.6 · menú nuevo", () => {
     expect(shell).toContain("Tus casos ocurren en");
   });
 
-  it("Ajustes trae el interruptor, se guarda al tocarlo y dice que solo cambia el menú", () => {
+  it("Ajustes trae el interruptor, se guarda al tocarlo y dice que solo cambia lo que se ve", () => {
     const st = comp("CeoSettings.tsx");
     expect(st).toContain("Mostrar el simulador de empresas");
     expect(st).toContain('data-testid="mostrar-simulador"');
     expect(st).toContain("c.updateSettings({ simulador: on })");
-    expect(st).toMatch(/solo cambia el menú/);
+    expect(st).toMatch(/solo cambia lo que ves/);
     // Cambiar el nombre de la empresa es cosa del simulador: aparece solo con él encendido.
     expect(st).toContain("{sim && <RenameCompany />}");
   });

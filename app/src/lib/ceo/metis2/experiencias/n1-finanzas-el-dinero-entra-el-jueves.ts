@@ -18,7 +18,7 @@ export const N1_FINANZAS_DINERO_JUEVES: Experiencia = {
   academy: "finanzas",
   skills: { primary: "fin.flujo", secondary: ["fin.lenguaje"] },
   level: 1,
-  sourceIds: ["STAN_CORE", "HBS_FIN"],
+  sourceIds: ["STAN_CORE", "HBS_CORE"],
   provenance: "creacion_original",
   minutes: [8, 10],
   objectives: [
@@ -280,7 +280,7 @@ export const N1_FINANZAS_DINERO_JUEVES: Experiencia = {
     passAt: 70,
   },
   evidencePolicy: "no_registra",
-  qa: { estado: "probado", importedAt: "2026-11-14", editorialReviewedAt: null, publishedAt: null },
+  qa: { estado: "probado", importedAt: "2026-11-13", editorialReviewedAt: null, publishedAt: null },
   conversionNotes: [
     "El paquete pide arrastrar cobros y pagos a fechas. Aquí el calendario ya viene ordenado y se escribe el saldo de cada día; el campo no admite cifras negativas, así que el miércoles se pregunta «cuánto falta» (6,000) en lugar de «−6,000».",
     "La primera decisión (cómo revisar la semana) lleva siempre al calendario: mirar solo el resumen del viernes no bloquea el recorrido, pero Nora pide anotar día por día.",
@@ -288,7 +288,7 @@ export const N1_FINANZAS_DINERO_JUEVES: Experiencia = {
     "La tercera decisión («¿con el anticipo vendimos más?») se añadió para que la diferencia entre adelantar un cobro y vender más sea una elección, no solo una lectura.",
     "En la propuesta hay dos rutas defendibles (anticipo confirmado y préstamo confirmado), como pide el paquete. La tercera opción del paquete, negociar la fecha, queda en la referencia escrita.",
     "Comprobación B: el criterio «secuencia y saldos» (40) se reparte en el saldo del lunes y el del viernes; el saldo del jueves (12,000) no se pregunta porque coincide con el efectivo inicial que se muestra. El faltante (25) se reparte en el monto y el momento. «Facturación y cobro» (20) se comprueba clasificando importes. La recomendación (15) es escrita y espera revisión de una persona.",
-    "El lote 04 no trae fuentes por experiencia ni manifiesto (el archivo de trazabilidad que menciona no se recibió). Se usan las fuentes del Atlas para FIN-04.",
+    "Fuentes: las de TRAZABILIDAD_LOTE_04.md para FIN-04 (Stanford, Financial Accounting; Harvard, plan obligatorio, Financial Reporting & Control). El Atlas cita para FIN-04 la página de Finance I y II; conviene corregir el Atlas.",
     "La regla para pasar la comprobación (70 de 100) es provisional.",
   ],
 };
