@@ -3,7 +3,7 @@ import { RenameCompany } from "./empresa/Relocated";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Target, Bell, Cloud, Globe2, LogOut, Clock, FastForward, Mail, RotateCcw, Save, Volume2, Zap } from "lucide-react";
+import { Target, Bell, Building2, Cloud, Globe2, LogOut, Clock, FastForward, Mail, RotateCcw, Save, Volume2, Zap } from "lucide-react";
 import { FAMILIES, FAMILY_LABEL, type Family } from "@/lib/ceo/world/types";
 import { playChime, setSoundOn, soundOn } from "@/lib/ceo/celebrate";
 import { ceoSignOut } from "@/lib/ceo/auth-client";
@@ -32,6 +32,9 @@ export function CeoSettings() {
 
   const set = <K extends keyof typeof f>(k: K, v: (typeof f)[K]) => { setF((x) => ({ ...x, [k]: v })); setSaved(false); };
   const save = () => { c.updateSettings(f); setSaved(true); };
+  // MÊTIS 2.0 (3.6): el interruptor del simulador se guarda al tocarlo. Solo cambia el menú; nunca toca la partida.
+  const sim = f.simulador === true;
+  const toggleSim = (on: boolean) => { setF((x) => ({ ...x, simulador: on })); c.updateSettings({ simulador: on }); };
   const goal = f.dailyGoal ?? DEFAULT_DAILY_GOAL;
   const hours = Array.from({ length: 24 }, (_, i) => i);
   const input = "mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm focus:border-indigo focus:outline-none focus:ring-2 focus:ring-indigo/20";
@@ -42,7 +45,7 @@ export function CeoSettings() {
 
       <AccountCard />
 
-      <RenameCompany />
+      {sim && <RenameCompany />}
 
       <section className="card p-5 sm:p-6 space-y-4">
         <h2 className="font-semibold text-ink">Tú</h2>
@@ -128,10 +131,19 @@ export function CeoSettings() {
 
       {c.cadence === "vacation_paused" ? (
         <section className="card p-5 sm:p-6 flex flex-wrap items-center gap-3 text-sm">
-          <span className="flex-1 min-w-0 text-slate-600">Tu carrera está en pausa. Puedes cambiar tus ajustes; nada corre hasta que reanudes.</span>
+          <span className="flex-1 min-w-0 text-slate-600">Tu práctica está en pausa. Puedes cambiar tus ajustes; nada corre hasta que reanudes.</span>
           <button type="button" onClick={c.resumeCareer} className="btn-primary">Reanudar ahora</button>
         </section>
       ) : <CadenceCard />}
+
+      <section className="card p-5 sm:p-6 space-y-3" data-testid="ajuste-simulador">
+        <h2 className="font-semibold text-ink">Simulador de empresas</h2>
+        <label className="flex items-start gap-3 rounded-2xl bg-slate-50 p-4 text-sm">
+          <input type="checkbox" role="switch" aria-checked={sim} checked={sim} onChange={(e) => toggleSim(e.target.checked)} className="accent-indigo h-4 w-4 mt-0.5" data-testid="mostrar-simulador" />
+          <span><b className="inline-flex items-center gap-1 text-ink"><Building2 size={14} /> Mostrar el simulador de empresas</b><br /><span className="text-slate-500">Vuelve a poner Empresa y Carrera en el menú, con los indicadores, el equipo, los cierres de mes y la trayectoria de la empresa de tus casos. Encenderlo o apagarlo solo cambia el menú: tus decisiones, tu racha y tu avance quedan igual.</span></span>
+        </label>
+        <p className="text-xs text-slate-500" aria-live="polite">{sim ? "Encendido: Empresa y Carrera están en el menú." : "Apagado: el menú es Hoy, Bandeja, Academy, Mi progreso y Mi perfil."}</p>
+      </section>
 
       <section className="card p-5 sm:p-6 space-y-3">
         <h2 className="font-semibold text-ink">{c.testTools ? "Modo prueba" : "Reiniciar"}</h2>
@@ -188,7 +200,7 @@ function AccountCard() {
   if (!c.user) return (
     <section className="card p-5 flex flex-wrap items-center gap-3 text-sm">
       <Cloud size={18} className="text-indigo" />
-      <span className="flex-1 min-w-0">Hoy tu empresa vive solo en este navegador. Crea tu cuenta para no perderla y seguirla en cualquier dispositivo.</span>
+      <span className="flex-1 min-w-0">Hoy tu avance vive solo en este navegador. Crea tu cuenta para no perderlo y seguirlo en cualquier dispositivo.</span>
       <Link href="/entrar?next=/ceo/ajustes" className="btn-primary">Guardar mi avance</Link>
     </section>
   );

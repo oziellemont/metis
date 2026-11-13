@@ -12,7 +12,7 @@ import { Avatar, Flame, rel } from "./ui";
 import { ProfileEditor } from "./ProfileFlow";
 import { EXP_AREAS, GOALS, INDUSTRIES, ROLES, YEARS, diagnosticOffered, labelOf, profileAnswered } from "@/lib/ceo/profile";
 
-export function Profile({ onCareer, career = true }: { onCareer?: () => void; /** Muestra el cargo y el enlace a la trayectoria (solo con el simulador a la vista). */ career?: boolean } = {}) {
+export function Profile({ onCareer, career = true, slot }: { onCareer?: () => void; /** Muestra el cargo y el enlace a la trayectoria (solo con el simulador a la vista). */ career?: boolean; /** Sección que va justo debajo del encabezado (Temas y ritmo, en la página Mi perfil). */ slot?: React.ReactNode } = {}) {
   const c = useCeo();
   const p = profileOf(c.s, c.now);
   const badges = badgesOf(c.s, c.now);
@@ -57,6 +57,8 @@ export function Profile({ onCareer, career = true }: { onCareer?: () => void; /*
           </div>
         </div>
       </section>
+
+      {slot}
 
       <MyLeadership />
 

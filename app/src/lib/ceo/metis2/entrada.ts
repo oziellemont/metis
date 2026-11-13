@@ -126,3 +126,34 @@ export function practiceByAcademy(input: {
   for (const id of new Set(input.dilemmaIds)) { const row = rows.get(tagOf("dilema", id)?.academy as AcademyId); if (row) row.decisions += 1; }
   return [...rows.values()];
 }
+
+/** Lo mínimo de una partida para saber qué se decidió y en qué empresa del caso. */
+export interface DecidedSource {
+  company: string;
+  decisions: Readonly<Record<string, unknown>>;
+  career?: readonly { company: string; decisions: Readonly<Record<string, unknown>> }[];
+  shelf?: readonly { state: { company: string; decisions: Readonly<Record<string, unknown>> } }[];
+}
+
+/** Todas las decisiones tomadas: las de la empresa en curso, las de empresas ya cerradas y las de empresas guardadas. */
+export function decidedOf(s: DecidedSource): { company: string; id: string }[] {
+  const out: { company: string; id: string }[] = [];
+  const add = (company: string, decisions: Readonly<Record<string, unknown>> | undefined) => { for (const id of Object.keys(decisions ?? {})) out.push({ company, id }); };
+  add(s.company, s.decisions);
+  for (const run of s.career ?? []) add(run.company, run.decisions);
+  for (const sh of s.shelf ?? []) add(sh.state.company, sh.state.decisions);
+  return out;
+}
+
+/** Totales de la práctica: lecciones terminadas y decisiones que pertenecen a una academia. */
+export function practiceTotals(rows: readonly AcademyPractice[]): { lessonsDone: number; lessonsTotal: number; decisions: number } {
+  return rows.reduce((t, r) => ({ lessonsDone: t.lessonsDone + r.lessonsDone, lessonsTotal: t.lessonsTotal + r.lessonsTotal, decisions: t.decisions + r.decisions }), { lessonsDone: 0, lessonsTotal: 0, decisions: 0 });
+}
+
+/** Texto de la meta de días frente a los últimos siete días. */
+export function weekGoalText(daysOn: number, goal: PracticeDays | undefined): string {
+  const n = Math.max(0, Math.min(7, Math.round(daysOn)));
+  const did = `Practicaste ${n} de los últimos 7 días`;
+  if (!goal) return `${did}.`;
+  return goal === 7 ? `${did}. Tu meta es practicar todos los días.` : `${did}. Tu meta es practicar ${goal} días por semana.`;
+}

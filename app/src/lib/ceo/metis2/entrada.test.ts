@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { ACADEMIES, MIN_PRIORITY_TOPICS, TOPICS } from "./academias";
-import { caseCompanyFor, entryProfile, practiceByAcademy, priorityTracks, toggleTopic, topicAcademies, topicNames, topicsByAcademy, topicsCountText, topicsReady } from "./entrada";
+import { caseCompanyFor, decidedOf, entryProfile, practiceByAcademy, practiceTotals, priorityTracks, toggleTopic, topicAcademies, topicNames, topicsByAcademy, topicsCountText, topicsReady, weekGoalText } from "./entrada";
 import { INDUSTRIES, PRACTICE_DAYS, isPracticeDays, sanitizeProfile } from "../profile";
 import { COMPANIES, FIRST_COMPANY, companyById } from "../companies";
 import { LESSONS, TRACKS } from "../lessons";
@@ -183,5 +183,36 @@ describe("Menú · el interruptor del simulador viaja con los ajustes", () => {
     expect(withSwitch.state.settings.simulador).toBe(true);
     expect(withSwitch.state.decisions).toEqual(base.state.decisions);
     expect(withSwitch.state.company).toBe(base.state.company);
+  });
+});
+
+describe("Mi progreso · totales, decisiones de toda la trayectoria y meta de días", () => {
+  it("junta las decisiones de la empresa en curso, de las ya cerradas y de las guardadas", () => {
+    const rows = decidedOf({
+      company: "a", decisions: { x1: {}, x2: {} },
+      career: [{ company: "b", decisions: { y1: {} } }],
+      shelf: [{ state: { company: "c", decisions: { z1: {}, z2: {} } } }],
+    });
+    expect(rows).toEqual([{ company: "a", id: "x1" }, { company: "a", id: "x2" }, { company: "b", id: "y1" }, { company: "c", id: "z1" }, { company: "c", id: "z2" }]);
+    expect(decidedOf({ company: "a", decisions: {} })).toEqual([]);
+  });
+
+  it("los totales son la suma de las seis academias", () => {
+    const rows = practiceByAcademy({ lessonIds: LESSONS.map((l) => l.id), lessonsDone: { [LESSONS[0].id]: 1, [LESSONS[1].id]: 1 }, decided: [], dilemmaIds: DILEMMAS.slice(0, 2).map((d) => d.id) });
+    const t = practiceTotals(rows);
+    expect(t.lessonsDone).toBe(rows.reduce((n, r) => n + r.lessonsDone, 0));
+    expect(t.lessonsTotal).toBe(rows.reduce((n, r) => n + r.lessonsTotal, 0));
+    expect(t.decisions).toBe(rows.reduce((n, r) => n + r.decisions, 0));
+    expect(t.lessonsDone).toBeLessThanOrEqual(2);
+    expect(t.lessonsTotal).toBeLessThanOrEqual(LESSONS.length);
+    expect(practiceTotals([])).toEqual({ lessonsDone: 0, lessonsTotal: 0, decisions: 0 });
+  });
+
+  it("la meta de días se dice en claro, y sin meta solo se cuenta lo practicado", () => {
+    expect(weekGoalText(0, undefined)).toBe("Practicaste 0 de los últimos 7 días.");
+    expect(weekGoalText(3, 5)).toBe("Practicaste 3 de los últimos 7 días. Tu meta es practicar 5 días por semana.");
+    expect(weekGoalText(7, 7)).toBe("Practicaste 7 de los últimos 7 días. Tu meta es practicar todos los días.");
+    expect(weekGoalText(12, 3)).toMatch(/^Practicaste 7 de/);
+    expect(weekGoalText(-2, 3)).toMatch(/^Practicaste 0 de/);
   });
 });
