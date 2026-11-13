@@ -184,7 +184,7 @@ export function repositorioMarkdown(): string {
 
   const pend = items.filter((i) => !live(i.editorialId)).map((i) => i.editorialId);
   p("## 13. Lo que no se hizo",
-    `${pend.length ? `No se han convertido ${pend.length} experiencias: ${pend.join(", ")}. ` : ""}No se convirtió el Executive Challenge. No se conectó nada al registro de evidencias ni al cálculo de dominio. No se creó ninguna tabla en la base de datos. Nadie ha revisado las respuestas escritas: no hay pantalla de revisión. No se probó con lector de pantalla ni en un teléfono físico. No se comparó cada habilidad con el temario de cada curso. No se calibró ninguna rúbrica.`);
+    `${pend.length ? `No se han convertido ${pend.length} experiencias: ${pend.join(", ")}. ` : ""}${live("EDIT-N1-014") ? "" : "EDIT-N1-014 llegó a convertirse, pero el archivo se perdió en un reinicio del entorno de trabajo antes de guardarse en el repositorio, junto con la copia de trabajo de los paquetes. Para rehacerla con los textos exactos del paquete hace falta recibir otra vez el lote 03. "}No se convirtió el Executive Challenge. No se conectó nada al registro de evidencias ni al cálculo de dominio. No se creó ninguna tabla en la base de datos. Nadie ha revisado las respuestas escritas: no hay pantalla de revisión. No se probó con lector de pantalla ni en un teléfono físico. No se comparó cada habilidad con el temario de cada curso. No se calibró ninguna rúbrica.`);
 
   return L.join("\n").trimEnd() + "\n";
 }

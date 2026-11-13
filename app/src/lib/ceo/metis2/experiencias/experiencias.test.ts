@@ -244,6 +244,16 @@ describe("registro de experiencias convertidas", () => {
     expect(l2.every(Boolean)).toBe(true);
     expect(new Set(l2.map((x) => x.academy)).size).toBe(6);
   });
+
+  it("del lote 03 hay cinco convertidas, en el orden editorial; EDIT-N1-014 sigue sin convertir y no se muestra", () => {
+    const ids = LOTES[2].items.map((i) => i.editorialId);
+    expect(ids).toHaveLength(6);
+    const hechas = ids.filter((id) => EXPERIENCIAS.some((x) => x.editorialId === id));
+    expect(hechas).toEqual(["EDIT-N1-013", "EDIT-N1-015", "EDIT-N1-016", "EDIT-N1-017", "EDIT-N1-018"]);
+    expect(new Set(hechas.map((id) => by(id).academy)).size).toBe(5);
+    expect(EXPERIENCIAS.map((x) => x.editorialId)).toEqual([...EXPERIENCIAS.map((x) => x.editorialId)].sort());
+    expect(EXPERIENCIAS).toHaveLength(12);
+  });
 });
 
 describe.each(CADA)("%s cumple el contrato", (_id, x) => {
@@ -708,6 +718,112 @@ describe("identidades que los paquetes listan en sus notas de QA", () => {
     // La política es ficticia: los documentos, los mensajes, las rutas y el concepto no hablan de leyes ni de delitos.
     // (Los objetivos y la referencia de la variante sí piden, con esas palabras, no suponer ilegalidad.)
     expect(JSON.stringify([X.docs, X.nodes, X.theory, X.variant.docs, X.variant.setting, X.variant.question])).not.toMatch(/delito|ilegal|la ley\b/i);
+  });
+
+  // ─── Lote 03: identidades que lista QA_Y_PRUEBAS.md del paquete 1.2.
+
+  it("EDIT-N1-013: 40 − 28 = 12; 5 + 4 + 3 = 12; 35 de 40 es 87.5 %; ninguna pareja cabe en $30,000 y las tres propuestas son defendibles", () => {
+    const X = by("EDIT-N1-013");
+    expect(cell(X, "A.terminadas") - cell(X, "A.puntuales")).toBe(cell(X, "A.tarde"));
+    expect(cell(X, "A.tarde")).toBe(12);
+    expect(5 + 4 + 3).toBe(12);
+    expect((35 / 40) * 100).toBe(87.5);
+    const costo = ["B.a", "B.b", "B.c"].map((id) => cell(X, id));
+    expect(costo).toEqual([18000, 24000, 23000]);
+    for (const c of costo) expect(c).toBeLessThanOrEqual(30000);
+    expect([costo[0] + costo[1], costo[0] + costo[2], costo[1] + costo[2]]).toEqual([42000, 41000, 47000]);
+    for (let i = 0; i < 3; i++) for (let j = i + 1; j < 3; j++) expect(costo[i] + costo[j]).toBeGreaterThan(30000);
+    const prioridad = decisions(X).find((n) => n.id === "prioridad")!;
+    expect(prioridad.options.filter((o) => o.tipo === "defendible").map((o) => o.id)).toEqual(["a", "b", "c"]);
+    expect(prioridad.options.find((o) => o.id === "repartir")!.tipo).toBe("concepto_erroneo");
+    // Quien elige las herramientas no recibe la pregunta de Luis por las herramientas.
+    expect(prioridad.options.find((o) => o.id === "c")!.next).toBe("renuncia_c");
+    // Variante: 8 + 6 + 4 = 18 faltas con causa; la pareja más barata (7,000 + 9,000) no cabe en 12,000.
+    const v = (id: string) => num(X.variant.docs.flatMap((d) => d.rows).find((r) => r.id === id)!.cells![0].replace("$", ""));
+    expect(v("V.avisos") + v("V.transporte") + v("V.instructor")).toBe(v("V.faltaron"));
+    expect(v("W.recordatorios") + v("W.reemplazos")).toBe((answers(X, "bien") as Record<string, number>).pareja);
+    expect(v("W.recordatorios") + v("W.reemplazos")).toBeGreaterThan(12000);
+  });
+
+  it("EDIT-N1-015: 39 + 9 = 48 y 4 + 5 = 9; la causa sigue sin confirmar y ninguna ruta defendible la afirma", () => {
+    const X = by("EDIT-N1-015");
+    expect(cell(X, "A.atiempo") + cell(X, "A.tarde")).toBe(cell(X, "A.prometidos"));
+    expect(cell(X, "A.prometidos")).toBe(48);
+    expect(4 + 5).toBe(9);
+    expect(rowsOf(X.docs).find((r) => r.id === "A.causa")!.cells![0]).toBe("No confirmada");
+    for (const o of decisions(X).flatMap((n) => n.options)) if (/por culpa de|la causa está en/i.test(o.text)) expect(o.tipo).toBe("concepto_erroneo");
+    // Ordenar las tres tarjetas no se califica de forma estricta.
+    const orden = X.nodes.find((n) => n.kind === "ordenar")!;
+    if (orden.kind === "ordenar") expect(orden.strict).toBe(false);
+    // Variante: 24 − 19 = 5, y el registro no muestra el 5.
+    const v = (id: string) => Number(X.variant.docs[0].rows.find((r) => r.id === id)!.cells![0]);
+    expect(v("V.reservas") - v("V.confirmadas")).toBe((answers(X, "bien") as Record<string, number>).pendientes);
+    expect(19 + 5).toBe(24);
+  });
+
+  it("EDIT-N1-016: 72/80 = 90 %, 85/100 = 85 %, 4/80 = 5 %, 3/100 = 3 %, 2 pedidos por hora, 100 − 85 = 15 = 11 + 4; solo la puntualidad es defendible", () => {
+    const X = by("EDIT-N1-016");
+    const c = (row: string) => [cell(X, row, 0), cell(X, row, 1)];
+    const [entregados, atiempo, defecto, horas] = ["A.entregados", "A.atiempo", "A.defecto", "A.horas"].map(c);
+    const pct = (a: number, b: number) => Math.round((a / b) * 1e6) / 1e4;
+    expect([pct(atiempo[0], entregados[0]), pct(atiempo[1], entregados[1])]).toEqual([90, 85]);
+    expect([pct(defecto[0], entregados[0]), pct(defecto[1], entregados[1])]).toEqual([5, 3]);
+    expect([entregados[0] / horas[0], entregados[1] / horas[1]]).toEqual([2, 2]);
+    expect(entregados[1] - atiempo[1]).toBe(15);
+    expect(11 + 4).toBe(15);
+    const campos = X.nodes.find((n) => n.kind === "calcular")!;
+    if (campos.kind === "calcular") expect(campos.fields.map((f) => f.answer)).toEqual([90, 85, 5, 3, 2, 2]);
+    const indicador = decisions(X).find((n) => n.id === "indicador")!;
+    expect(indicador.options.filter((o) => o.tipo === "defendible").map((o) => o.id)).toEqual(["puntualidad"]);
+    // 11 de 15 por la tarde no prueba el motivo: atribuirlo a alguien nunca es defendible.
+    expect(decisions(X).find((n) => n.id === "lectura")!.options.find((o) => o.id === "conductor")!.tipo).toBe("concepto_erroneo");
+    // Variante: 36/40 = 90 %, 41/50 = 82 %, 2/40 = 5 %, 3/50 = 6 %.
+    const v = (id: string) => X.variant.docs[0].rows.find((r) => r.id === id)!.cells!.map(Number);
+    const [citas, tiempo, errores] = ["V.citas", "V.atiempo", "V.errores"].map(v);
+    expect([pct(tiempo[0], citas[0]), pct(tiempo[1], citas[1])]).toEqual([90, 82]);
+    expect([pct(errores[0], citas[0]), pct(errores[1], citas[1])]).toEqual([5, 6]);
+    const ans = answers(X, "bien") as Record<string, number>;
+    expect([ans.punt_b, ans.err_b]).toEqual([82, 6]);
+  });
+
+  it("EDIT-N1-017: 190 − 120 = 70 y 170 − 120 = 50; variante 1,200 − 800 = 400; la diferencia nunca se presenta como utilidad neta", () => {
+    const X = by("EDIT-N1-017");
+    const precio = [cell(X, "A.precio", 0), cell(X, "A.precio", 1)];
+    const costo = cell(X, "A.costo", 0);
+    expect([precio[0] - costo, precio[1] - costo, precio[0] - precio[1]]).toEqual([70, 50, 20]);
+    const campos = X.nodes.find((n) => n.kind === "calcular")!;
+    if (campos.kind === "calcular") expect(campos.fields.map((f) => f.answer)).toEqual([70, 50]);
+    const etiquetas = X.nodes.find((n) => n.id === "etiquetas")!;
+    if (etiquetas.kind === "clasificar") {
+      expect(etiquetas.items.find((i) => i.id === "c70")!.group).toBe("diferencia");
+      expect(etiquetas.items.some((i) => list(i.group).includes("neta"))).toBe(false);
+    }
+    // Hablar mal del competidor sin evidencia nunca es defendible.
+    expect(decisions(X).find((n) => n.id === "cliente1")!.options.find((o) => o.id === "malo")!.tipo).toBe("concepto_erroneo");
+    const v = (id: string, col: number) => num(X.variant.docs[0].rows.find((r) => r.id === id)!.cells![col].replace("$", ""));
+    expect(v("V.precio", 0) - v("V.costos", 0)).toBe((answers(X, "bien") as Record<string, number>).diferencia);
+    expect(v("V.precio", 0) - v("V.costos", 0)).toBe(400);
+    expect(v("V.precio", 0) - v("V.precio", 1)).toBe(150);
+  });
+
+  it("EDIT-N1-018: la factura L-208 por $3,600 solo ilustra; nada afirma que hubo perjuicio ni mala intención, y acusar nunca es defendible", () => {
+    const X = by("EDIT-N1-018");
+    expect(rowsOf(X.docs).find((r) => r.id === "B.factura")!.cells![0]).toBe("L-208 · $3,600");
+    const l208 = decisions(X).find((n) => n.id === "l208")!;
+    expect(l208.options.filter((o) => o.tipo === "defendible").map((o) => o.id)).toEqual(["verificar"]);
+    expect(decisions(X).find((n) => n.id === "entrega")!.options.find((o) => o.id === "acusar")!.tipo).toBe("concepto_erroneo");
+    // «Control» no significa un programa caro ni un auditor permanente.
+    const controles = X.nodes.find((n) => n.id === "controles")!;
+    if (controles.kind === "clasificar") expect(controles.items.filter((i) => i.group === "innecesario").map((i) => i.id).sort()).toEqual(["auditor", "sistema"]);
+    // Los documentos, los mensajes, las rutas defendibles y la variante no hablan de fraude, robo ni delito, ni citan leyes concretas.
+    const visible = JSON.stringify([X.docs, X.nodes.filter((n) => n.kind !== "decision"), decisions(X).flatMap((n) => n.options.filter((o) => o.tipo === "defendible")), X.variant.docs, X.variant.setting, X.variant.question]);
+    // «corroborado» contiene «robo»: por eso la palabra se busca completa.
+    expect(visible).not.toMatch(/fraude|(?<![a-záéíóúñ])rob[oó](?![a-záéíóúñ])|delito|ilegal|falsa|deshonest|mala intenci[oó]n/i);
+    expect(JSON.stringify(X)).not.toMatch(/fraude|delito|ilegal|fiscal/i);
+    expect(JSON.stringify(X)).not.toMatch(/\bSAT\b/);
+    // En la variante, afirmar que el encargado tomó dinero se clasifica como acusación sin evidencia.
+    const riesgo = X.variant.tasks.find((t) => t.id === "riesgo")!;
+    if (riesgo.kind === "clasificar") expect(riesgo.items.filter((i) => i.group === "acusa").map((i) => i.id).sort()).toEqual(["quedo", "seguro"]);
   });
 });
 
