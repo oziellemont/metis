@@ -11,7 +11,11 @@
  * la escala del reto va de 0 a 4. Lo escrito no se califica solo: queda en espera de revisión.
  *
  * Política: «no_registra». Nada llega al registro de evidencias, al dominio, a los niveles ni al perfil.
- * Los umbrales de aprobación son candidatos para calibrar y NO están habilitados.
+ * No hay regla de aprobación: ningún umbral está aprobado y el reto no guarda candidatos.
+ *
+ * Salvaguardas (inocuidad, ética, control bancario): no se compensan con puntos. Cada una tiene tres
+ * estados: cumplida, corregida después de recibir información nueva, o decisión crítica sin corregir.
+ * La corrección no devuelve puntos: la primera respuesta es la observación.
  */
 import type { Campo, Documento, Grupo, Linea, Origen, RutaTipo } from "../experiencias/tipos";
 
@@ -33,6 +37,8 @@ export interface OpcionReto {
   /** Explicación que se muestra solo en el informe final. */
   nota: string;
   sets?: Record<string, string>;
+  /** En un paso con salvaguarda: esta ruta abre el camino al daño que la salvaguarda protege. */
+  critica?: true;
   origen: Origen;
 }
 
@@ -48,6 +54,13 @@ interface PasoBase {
   origen: Origen;
   /** Requisito de seguridad: si no se cumple, no se compensa con puntos de otras áreas. */
   salvaguarda?: "inocuidad" | "etica" | "control_bancario";
+  /**
+   * Paso de rectificación de una salvaguarda (id del paso que corrige). Aparece solo si la primera
+   * respuesta fue crítica, después de que un personaje da información nueva. No da puntos.
+   */
+  rectifica?: string;
+  /** Síntesis: «secuencia» es el plan elegido; «fundamento», la razón que lo sostiene. No dan puntos. */
+  sintesis?: "secuencia" | "fundamento";
 }
 export interface PasoDecision extends PasoBase { kind: "decision"; options: OpcionReto[] }
 /** `lee: true` cuando la habilidad es leer la cifra en el documento (por ejemplo, la capacidad menor). */
@@ -100,7 +113,7 @@ export interface Reto {
   docs: (Documento & { from?: string })[];
   acts: Acto[];
   scenes: Escena[];
-  /** Escala por habilidad y umbrales candidatos. Los umbrales NO se aplican. */
+  /** Escala por habilidad. No hay umbral aprobado: la lista de candidatos va vacía y nada se aplica. */
   scale: { max: number; levels: string[] };
   thresholds: { candidates: number[]; enabled: false };
   /** Observación que sustenta 3 o 4 puntos, por habilidad (texto del paquete). */
@@ -162,9 +175,20 @@ export interface Informe {
   auto: number;
   pending: number;
   max: number;
-  /** Requisitos de seguridad que no se cumplieron. No se compensan con otras áreas. */
-  safeguards: { kind: NonNullable<PasoBase["salvaguarda"]>; step: string; ok: boolean }[];
-  /** Nunca hay veredicto: los umbrales no están habilitados. */
+  /** Requisitos de seguridad. No se compensan con otras áreas. `first` y `fix`: ids de las rutas elegidas. */
+  safeguards: { kind: NonNullable<PasoBase["salvaguarda"]>; step: string; state: EstadoSalvaguarda; first: string | null; fix: string | null }[];
+  /** Hay al menos una decisión crítica sin corregir: ningún puntaje la compensa. */
+  blocked: boolean;
+  /** Síntesis final: secuencia elegida y su fundamento. Se acepta si las dos cosas son defendibles. No da puntos. */
+  synthesis: { sequence: string | null; sequenceOk: boolean; reason: string | null; reasonOk: boolean; accepted: boolean } | null;
+  /** Nunca hay veredicto: no hay regla de aprobación. */
   verdict: null;
   assisted: boolean;
 }
+
+/**
+ * cumplida: la primera respuesta no abrió el camino al daño.
+ * corregida: la primera respuesta fue crítica y, con información nueva, se rectificó.
+ * no_corregida: la decisión crítica se mantuvo. sin_respuesta: el paso todavía no se responde.
+ */
+export type EstadoSalvaguarda = "cumplida" | "corregida" | "no_corregida" | "sin_respuesta";

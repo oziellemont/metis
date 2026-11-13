@@ -5,8 +5,10 @@
  * (S01–S05, S06–S09, S10–S13) y una síntesis (S14) que no suma habilidades. Las decisiones dejan marcas
  * que cambian lo que dicen los personajes en escenas posteriores.
  *
- * Demostración no acreditativa: no registra evidencias, no da nivel y los umbrales candidatos
- * (72, 76 y 80 de 96) NO están habilitados. EC-N1-001-A (v1.0) queda intacto en el catálogo editorial.
+ * Demostración no acreditativa: no registra evidencias, no da nivel y no tiene regla de aprobación
+ * (ningún umbral está aprobado; el reto no guarda candidatos). Las tres salvaguardas distinguen
+ * cumplida, corregida tras información nueva y decisión crítica sin corregir.
+ * EC-N1-001-A (v1.0) queda intacto en el catálogo editorial.
  */
 import type { Reto } from "./tipos";
 
@@ -14,7 +16,7 @@ export const EC_N1_002_A: Reto = {
   id: "reto.n1.el-viernes-que-nadie-queria-prometer",
   editorialId: "EC-N1-002-A",
   slug: "el-viernes-que-nadie-queria-prometer",
-  version: 1,
+  version: 2,
   packageVersion: "1.3",
   title: "El viernes que nadie quería prometer",
   invitation:
@@ -455,9 +457,18 @@ export const EC_N1_002_A: Reto = {
           text: { text: "En el lote de 100 hay 4 cajas sin etiqueta correcta de alérgenos y 3 con empaque dañado. El cliente espera hoy. ¿Qué hacemos?" },
           options: [
             { id: "retener", tipo: "defendible", score: 3, sets: { lote: "retenido" }, origen: "fuente", text: "Retener las 4, corregir y verificar su etiqueta, y ver por qué falló el paso.", reply: [{ who: "irene", text: "De acuerdo. Las corrijo, las verifico otra vez y anoto la causa para que no se repita." }], nota: "Identifica el defecto, retiene lo afectado y propone verificar, corregir y prevenir." },
-            { id: "enviar", tipo: "riesgosa", score: 0, sets: { lote: "enviado" }, origen: "fuente", text: "Enviarlas: 96 de 100 llevan su etiqueta y el cliente ya está esperando.", reply: [{ who: "irene", text: "No. Una etiqueta de alérgenos equivocada puede dañar a alguien. Las cuatro se quedan aquí." }], nota: "Cumplir la hora no compensa un riesgo de inocuidad." },
+            { id: "enviar", tipo: "riesgosa", score: 0, critica: true, sets: { lote: "enviado" }, origen: "fuente", text: "Enviarlas: 96 de 100 llevan su etiqueta y el cliente ya está esperando.", reply: [{ who: "irene", text: "No. Una etiqueta de alérgenos equivocada puede dañar a alguien. Las cuatro se quedan aquí." }], nota: "Cumplir la hora no compensa un riesgo de inocuidad." },
             { id: "todo", tipo: "riesgosa", score: 1, sets: { lote: "retenido" }, origen: "conversion", text: "Retener todo el pedido sin avisar al cliente hasta revisar una por una las 100 cajas.", reply: [{ who: "diego", text: "Retenerlo todo deja al cliente sin nada y sin saber por qué." }], nota: "Protege, pero no separa lo afectado ni comunica." },
             { id: "tirar", tipo: "concepto_erroneo", score: 1, sets: { lote: "retenido" }, origen: "conversion", text: "Tirar las 4 cajas, hacerlas de nuevo y no registrar nada del incidente.", reply: [{ who: "irene", text: "Si no lo registramos, mañana pasa igual." }], nota: "Corrige el lote, pero no previene ni deja registro." },
+          ],
+        },
+        {
+          id: "s07.lote2", kind: "decision", skill: null, points: 0, from: "irene", origen: "conversion", when: { flag: "lote", is: "enviado" }, rectifica: "s07.lote",
+          text: { text: "Las cuatro siguen aquí, en inspección, y el cliente espera hoy. Con lo que te acabo de decir, ¿qué hacemos con ellas?" },
+          options: [
+            { id: "corrige", tipo: "defendible", score: 0, origen: "conversion", text: "Tienes razón: se quedan, se corrigen y se verifican antes de salir.", reply: [{ who: "irene", text: "Bien. Las corrijo, las verifico otra vez y anoto la causa para que no se repita." }], nota: "Rectifica al conocer el riesgo: retiene, corrige y verifica." },
+            { id: "sostiene", tipo: "riesgosa", score: 0, origen: "conversion", text: "Que salgan hoy de todos modos: son cuatro cajas y el cliente ya espera.", reply: [{ who: "irene", text: "No las voy a liberar. Queda anotado que la decisión de retenerlas fue de calidad." }], nota: "Mantiene el envío después de conocer el riesgo de alérgenos." },
+            { id: "aviso", tipo: "riesgosa", score: 0, origen: "conversion", text: "Que salgan hoy con un aviso a mano que pida revisar bien los ingredientes.", reply: [{ who: "irene", text: "Un aviso a mano no dice qué lleva cada caja. Se quedan aquí." }], nota: "Un aviso general no sustituye la etiqueta correcta de alérgenos." },
           ],
         },
         {
@@ -691,9 +702,18 @@ export const EC_N1_002_A: Reto = {
           text: { text: "Si entregamos sin verificar esas etiquetas, a lo mejor el cliente nunca se da cuenta. Y llegamos a tiempo." },
           options: [
             { id: "verdad", tipo: "defendible", score: 4, sets: { etica: "transparente" }, origen: "fuente", text: "No. Corregimos las cuatro y le avisamos al cliente la verdad sobre el retraso.", reply: [{ who: "irene", text: "Las tengo listas en 40 minutos. Prefiero llegar tarde que poner a alguien en riesgo." }, { who: "javier", text: "Llamo al cliente y le explico. Mejor que lo sepa por nosotros." }], nota: "Rechaza ocultar la falla y comunica con transparencia." },
-            { id: "entregar", tipo: "riesgosa", score: 0, sets: { etica: "oculta" }, origen: "fuente", text: "Entregamos así a tiempo y en el próximo pedido corregimos el proceso de etiquetas.", reply: [{ who: "irene", text: "Esas cuatro no salen. Alguien alérgico no va a esperar al próximo pedido." }], nota: "Pone el plazo por encima de la seguridad de las personas." },
-            { id: "quitar", tipo: "riesgosa", score: 0, sets: { etica: "oculta" }, origen: "conversion", text: "Entregamos quitando las etiquetas dudosas para no dar información falsa.", reply: [{ who: "irene", text: "Sin etiqueta, quien es alérgico tampoco sabe qué come." }], nota: "Quitar la información también oculta el riesgo." },
-            { id: "excusa", tipo: "riesgosa", score: 1, sets: { etica: "oculta" }, origen: "conversion", text: "Las corregimos, pero al cliente le decimos que el retraso fue por tráfico.", reply: [{ who: "javier", text: "Si un día se entera, ya no nos cree nada." }], nota: "Protege a las personas, pero engaña al cliente." },
+            { id: "entregar", tipo: "riesgosa", score: 0, critica: true, sets: { etica: "oculta" }, origen: "fuente", text: "Entregamos así a tiempo y en el próximo pedido corregimos el proceso de etiquetas.", reply: [{ who: "irene", text: "Esas cuatro no salen. Alguien alérgico no va a esperar al próximo pedido." }], nota: "Pone el plazo por encima de la seguridad de las personas." },
+            { id: "quitar", tipo: "riesgosa", score: 0, critica: true, sets: { etica: "oculta" }, origen: "conversion", text: "Entregamos quitando las etiquetas dudosas para no dar información falsa.", reply: [{ who: "irene", text: "Sin etiqueta, quien es alérgico tampoco sabe qué come." }], nota: "Quitar la información también oculta el riesgo." },
+            { id: "excusa", tipo: "riesgosa", score: 1, critica: true, sets: { etica: "oculta" }, origen: "conversion", text: "Las corregimos, pero al cliente le decimos que el retraso fue por tráfico.", reply: [{ who: "javier", text: "Si un día se entera, ya no nos cree nada." }], nota: "Protege a las personas, pero engaña al cliente." },
+          ],
+        },
+        {
+          id: "s12.etica2", kind: "decision", skill: null, points: 0, from: "irene", origen: "adaptado", when: { flag: "etica", is: "oculta" }, rectifica: "s12.etica",
+          text: { text: "Puedo tener las cuatro corregidas y verificadas en 40 minutos. Llegaríamos tarde y habría que decirle al cliente por qué. ¿Qué hacemos?" },
+          options: [
+            { id: "corrige", tipo: "defendible", score: 0, origen: "adaptado", text: "Corregirlas, llegar tarde y decirle al cliente el motivo real.", reply: [{ who: "irene", text: "Empiezo ahora. Prefiero llegar tarde que poner a alguien en riesgo." }, { who: "javier", text: "Llamo al cliente y le explico. Mejor que lo sepa por nosotros." }], nota: "Rectifica: corrige las cajas y comunica la verdad sobre el retraso." },
+            { id: "calla", tipo: "riesgosa", score: 0, origen: "conversion", text: "Corregirlas, llegar tarde y no explicar nada si el cliente no pregunta.", reply: [{ who: "javier", text: "Va a preguntar. Y si se entera por otro lado, ya no nos cree." }], nota: "Corrige las cajas, pero mantiene oculta la falla." },
+            { id: "sostiene", tipo: "riesgosa", score: 0, origen: "conversion", text: "Entregar a tiempo como están y avisar solo si alguien llega a reclamar.", reply: [{ who: "irene", text: "Así no las libero. Queda anotado que calidad las retuvo." }], nota: "Mantiene el ocultamiento después de tener una salida segura." },
           ],
         },
       ],
@@ -711,7 +731,7 @@ export const EC_N1_002_A: Reto = {
           },
           options: [
             { id: "verificar", tipo: "defendible", score: 2, sets: { banco: "verifica" }, origen: "fuente", text: "No todavía: llamar al teléfono del directorio y pedir una segunda firma.", reply: [{ who: "elisa", text: "Queda pendiente de confirmación. Llamo al número que tenemos registrado." }], nota: "Verifica por canal independiente y respeta la doble autorización." },
-            { id: "pagar", tipo: "riesgosa", score: 0, sets: { banco: "paga" }, origen: "fuente", text: "Sí, es un proveedor de años, confiamos en él y no queremos retrasos.", reply: [{ who: "elisa", text: "El sistema pide la segunda firma para cambiar datos bancarios. No puedo pagar así." }], nota: "La confianza no reemplaza el control." },
+            { id: "pagar", tipo: "riesgosa", score: 0, critica: true, sets: { banco: "paga" }, origen: "fuente", text: "Sí, es un proveedor de años, confiamos en él y no queremos retrasos.", reply: [{ who: "elisa", text: "El sistema pide la segunda firma para cambiar datos bancarios. No puedo pagar así." }], nota: "La confianza no reemplaza el control." },
             { id: "correo", tipo: "riesgosa", score: 1, sets: { banco: "correo" }, origen: "conversion", text: "Contestar al mismo correo y pedir que confirmen bien los datos nuevos.", reply: [{ who: "elisa", text: "Si el correo no es suyo, quien conteste nos dirá que sí." }], nota: "Busca confirmar, pero por el mismo canal sospechoso." },
             { id: "denunciar", tipo: "concepto_erroneo", score: 1, sets: { banco: "verifica" }, origen: "conversion", text: "Bloquear al proveedor y denunciar el fraude hoy mismo ante la autoridad bancaria.", reply: [{ who: "elisa", text: "Aún no sabemos si es fraude. Primero confirmemos con él." }], nota: "Detiene el pago, pero da por probado algo que no se sabe." },
           ],
@@ -720,6 +740,15 @@ export const EC_N1_002_A: Reto = {
           id: "s13.alerta", kind: "dato", skill: null, points: 0, from: "elisa", origen: "fuente", when: { flag: "banco", is: "paga" },
           text: { text: "Alerta de control antes de ejecutar el pago." },
           items: ["El sistema detiene el cambio de cuenta: falta la segunda firma.", "No hay fraude confirmado; el pago queda en espera."],
+        },
+        {
+          id: "s13.control2", kind: "decision", skill: null, points: 0, from: "elisa", origen: "conversion", when: { flag: "banco", is: "paga" }, rectifica: "s13.control",
+          text: { text: "El pago quedó detenido y el proveedor insiste en que es urgente. ¿Qué hago ahora?" },
+          options: [
+            { id: "corrige", tipo: "defendible", score: 0, origen: "conversion", text: "Dejarlo detenido y confirmar la cuenta por el teléfono del directorio.", reply: [{ who: "elisa", text: "Queda pendiente de confirmación. Llamo al número que tenemos registrado." }], nota: "Rectifica: respeta el control y verifica por un canal independiente." },
+            { id: "firma", tipo: "riesgosa", score: 0, origen: "conversion", text: "Pedirle a Alma la segunda firma ahora mismo para que el pago salga hoy.", reply: [{ who: "elisa", text: "Alma firmaría sin saber de quién es la cuenta. Firmar no es verificar." }], nota: "Usa la segunda firma como trámite: nadie verifica la cuenta nueva." },
+            { id: "sostiene", tipo: "riesgosa", score: 0, origen: "conversion", text: "Pagar desde la otra cuenta de la empresa, que no pide esa segunda firma.", reply: [{ who: "elisa", text: "Eso es saltarse el control. No lo voy a hacer; queda anotado." }], nota: "Busca evitar el control después de la alerta." },
+          ],
         },
         {
           id: "s13.pasos", kind: "ordenar", skill: "rie.cumplimiento", points: 2, from: "elisa", origen: "fuente",
@@ -741,12 +770,30 @@ export const EC_N1_002_A: Reto = {
       intro: { text: "Viernes, 13:00. Alma reúne a todos. En el pizarrón: hechos confirmados, acciones propuestas y decisiones pendientes." },
       steps: [
         {
-          id: "s14.plan", kind: "decision", skill: null, points: 0, from: "alma", origen: "adaptado",
+          id: "s14.plan", kind: "decision", skill: null, points: 0, from: "alma", origen: "adaptado", sintesis: "secuencia",
           text: { text: "Necesito tres prioridades para el próximo mes. ¿En qué orden?" },
           options: [
             { id: "seguridad", tipo: "defendible", score: 0, sets: { plan: "seguridad" }, origen: "fuente", text: "Etiquetas y pagos seguros; luego entregas y capacidad; luego cuidar la caja.", reply: [{ who: "alma", text: "Primero lo que puede hacer daño, después lo que nos hace perder clientes." }], nota: "Atiende primero los riesgos inmediatos y justifica el orden." },
             { id: "entregas", tipo: "defendible", score: 0, sets: { plan: "entregas" }, origen: "conversion", text: "Etiquetado primero, que es seguridad y capacidad; luego pagos y la caja.", reply: [{ who: "irene", text: "Si el etiquetado sube de 70, ganamos en seguridad y en entregas." }], nota: "Otra secuencia defendible: une riesgo y cuello de botella." },
             { id: "ventas", tipo: "riesgosa", score: 0, sets: { plan: "ventas" }, origen: "conversion", text: "Primero vender más con anuncios; con más ingresos se arregla lo demás.", reply: [{ who: "elisa", text: "Con 6,000 en caja y 70 cajas al día, ¿a quién le vendemos y con qué?" }], nota: "Deja para después riesgos que ya ocurrieron." },
+          ],
+        },
+        {
+          id: "s14.razon.seguridad", kind: "decision", skill: null, points: 0, from: "alma", origen: "conversion", when: { flag: "plan", is: "seguridad" }, sintesis: "fundamento",
+          text: { text: "¿Por qué en ese orden? Dímelo con lo que vimos esta semana." },
+          options: [
+            { id: "hechos", tipo: "defendible", score: 0, origen: "conversion", text: "Etiquetas y pagos pueden hacer daño hoy; con 6,000 en caja no da para más.", reply: [{ who: "alma", text: "Eso se sostiene con lo que vimos. Lo que no sabemos queda como pendiente." }], nota: "Se apoya en los riesgos inmediatos y en el límite de la caja." },
+            { id: "certeza", tipo: "riesgosa", score: 0, origen: "conversion", text: "Porque con ese orden es seguro que en un mes llegamos al 90 % de puntualidad.", reply: [{ who: "diego", text: "Seguro no es. La meta es a dos meses y aún no sabemos la causa de las tardías." }], nota: "Promete un resultado que los datos no garantizan." },
+            { id: "aparicion", tipo: "concepto_erroneo", score: 0, origen: "conversion", text: "Porque ese es el orden en que fueron apareciendo los problemas en la semana.", reply: [{ who: "alma", text: "El orden en que aparecieron no dice cuál pesa más." }], nota: "Ordena por aparición, no por riesgo ni por restricción." },
+          ],
+        },
+        {
+          id: "s14.razon.entregas", kind: "decision", skill: null, points: 0, from: "alma", origen: "conversion", when: { flag: "plan", is: "entregas" }, sintesis: "fundamento",
+          text: { text: "¿Por qué en ese orden? Dímelo con lo que vimos esta semana." },
+          options: [
+            { id: "hechos", tipo: "defendible", score: 0, origen: "conversion", text: "El etiquetado es el riesgo de alérgenos y también el paso que limita a 70.", reply: [{ who: "alma", text: "Eso se sostiene con lo que vimos. Lo que no sabemos queda como pendiente." }], nota: "Une el riesgo inmediato con la restricción del proceso." },
+            { id: "basta", tipo: "riesgosa", score: 0, origen: "conversion", text: "Porque arreglando el etiquetado ya no hará falta revisar los pagos ni la caja.", reply: [{ who: "elisa", text: "El correo de la cuenta nueva no tiene nada que ver con las etiquetas." }], nota: "Da por resueltos riesgos que son independientes." },
+            { id: "barato", tipo: "concepto_erroneo", score: 0, origen: "conversion", text: "Porque el etiquetado es lo más barato y lo más rápido de todo lo pendiente.", reply: [{ who: "elisa", text: "Todavía no tiene inversión definida. No sabemos cuánto cuesta." }], nota: "Afirma un costo que los documentos no dan." },
           ],
         },
         {
@@ -761,7 +808,7 @@ export const EC_N1_002_A: Reto = {
     },
   ],
   scale: { max: 4, levels: ["Sin demostración", "Reconocimiento fragmentario", "Comprensión parcial", "Fundamento adecuado", "Fundamento sólido"] },
-  thresholds: { candidates: [72, 76, 80], enabled: false },
+  thresholds: { candidates: [], enabled: false },
   criteria: {
     "est.fundamentos": "Distingue resultado y actividad, y explica la propuesta de valor sin confundirla con un eslogan.",
     "est.ventaja": "Propone una diferencia plausible y reconoce que falta prueba para «somos los mejores».",
@@ -789,7 +836,7 @@ export const EC_N1_002_A: Reto = {
     "rie.cumplimiento": "Verifica el cambio bancario por canal independiente y exige autorización y registro.",
   },
   evidencePolicy: "no_registra",
-  qa: { estado: "probado", importedAt: "2026-11-14", editorialReviewedAt: null, publishedAt: null },
+  qa: { estado: "probado", importedAt: "2026-11-13", editorialReviewedAt: null, publishedAt: null },
   conversionNotes: [
     "Los documentos muestran los datos del paquete, pero no las cifras que el reto pide calcular (utilidad, efectivo al cierre, porcentajes, máximo del proceso, 3,000): el paquete las traía escritas.",
     "Las etapas de D04 aparecen en orden alfabético para que ordenar el proceso no sea copiar la tabla.",
@@ -800,7 +847,10 @@ export const EC_N1_002_A: Reto = {
     "Para la caja se pide cuánto bajó el efectivo (16,000) y el puente con la utilidad (42,000 − 8,000 = 34,000), porque el efectivo al cierre (6,000) está a la vista en el balance.",
     "Cuatro de los 96 puntos son respuestas escritas: quedan en espera de revisión de una persona.",
     "Las ramas del paquete se convirtieron en respuestas de los personajes y en marcas que cambian textos de escenas posteriores (prioridad, caja, ventaja, lote, encargo, Óscar, anuncios, banco, plan).",
-    "La síntesis (S14) no suma puntos; acepta dos órdenes de prioridades defendibles.",
+    "La síntesis (S14) no suma puntos. Acepta por igual dos órdenes de prioridades defendibles, siempre que el fundamento elegido después también lo sea; el paso de fundamento es de la conversión.",
+    "Salvaguardas: se marcaron como críticas las rutas que el paquete nombra como falla (enviar las cajas, ocultar la falla al cliente, pagar sin verificar). Tras una ruta crítica, el personaje da información nueva y hay un paso para rectificar, sin puntos. El informe distingue cumplida, corregida y sin corregir. Los pasos de rectificación de S07 y S13 son de la conversión; el de S12 adapta la salida que el paquete pone en voz de Irene.",
+    "Las rutas intermedias que añadió la conversión (retener todo, tirar sin registrar, contestar al mismo correo, denunciar) no se marcaron como críticas: pierden puntos, pero no abren el daño. Está por confirmar.",
+    "El reto no guarda umbrales de aprobación: los candidatos del paquete (hipótesis sin calibrar) no se copiaron.",
     "La variante B (mantenimiento preventivo de edificios) no está escrita en el paquete.",
   ],
 };

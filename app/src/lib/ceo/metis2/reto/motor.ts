@@ -3,10 +3,10 @@
  *
  * Funciones puras: validar un reto, avanzar un intento y armar el informe.
  * No guarda nada, no llama a ningún servicio y no conoce el registro de evidencias, el dominio ni la partida.
- * No hay veredicto: los umbrales candidatos no están habilitados.
+ * No hay veredicto: no existe regla de aprobación ni umbrales en el reto.
  */
 import { skillById, skillsAt } from "../academias";
-import type { AccionReto, Cond, Escena, Informe, Intento, Observacion, PasoReto, RespuestaReto, Reto, Texto } from "./tipos";
+import type { AccionReto, Cond, Escena, EstadoSalvaguarda, Informe, Intento, Observacion, PasoReto, RespuestaReto, Reto, Texto } from "./tipos";
 
 export const MAX_ESCRITO = 300;
 /** Las opciones de una decisión deben tener largo parecido (igual que en las experiencias). */
@@ -116,7 +116,37 @@ export function maxBySkill(r: Reto): Record<string, number> {
   return out;
 }
 
-/** Informe del intento: 24 observaciones, por academia, salvaguardas. Nunca da veredicto. */
+/** Opción elegida en una decisión, si el paso está en el camino y respondido. */
+const chosen = (p: PasoReto | undefined, i: Intento) => (p?.kind === "decision" && holds(p.when, i.flags) ? p.options.find((q) => q.id === i.answers[p.id]) : undefined);
+
+/**
+ * Estado de cada salvaguarda. La primera respuesta manda: si no fue crítica, está cumplida.
+ * Si fue crítica, se mira el paso de rectificación: corregida solo si ahí se eligió la ruta defendible.
+ */
+export function safeguardsOf(r: Reto, i: Intento): Informe["safeguards"] {
+  const steps = allSteps(r).map((s) => s.step);
+  return steps.flatMap((step) => {
+    if (!step.salvaguarda) return [];
+    const first = chosen(step, i);
+    const fix = chosen(steps.find((q) => q.rectifica === step.id), i);
+    const state: EstadoSalvaguarda = !first ? "sin_respuesta" : !first.critica ? "cumplida" : fix?.tipo === "defendible" ? "corregida" : fix ? "no_corregida" : "sin_respuesta";
+    return [{ kind: step.salvaguarda, step: step.id, state, first: first?.id ?? null, fix: fix?.id ?? null }];
+  });
+}
+
+/** Síntesis: se acepta cualquier secuencia defendible si su fundamento también lo es. */
+export function synthesisOf(r: Reto, i: Intento): Informe["synthesis"] {
+  const steps = allSteps(r).map((s) => s.step);
+  const seqStep = steps.find((q) => q.sintesis === "secuencia");
+  if (!seqStep) return null;
+  const seq = chosen(seqStep, i);
+  const reason = steps.filter((q) => q.sintesis === "fundamento").map((q) => chosen(q, i)).find(Boolean);
+  const sequenceOk = seq?.tipo === "defendible";
+  const reasonOk = reason?.tipo === "defendible";
+  return { sequence: seq?.id ?? null, sequenceOk, reason: reason?.id ?? null, reasonOk, accepted: sequenceOk && reasonOk };
+}
+
+/** Informe del intento: 24 observaciones, por academia, salvaguardas y síntesis. Nunca da veredicto. */
 export function informeOf(r: Reto, i: Intento): Informe {
   const max = maxBySkill(r);
   const path = pathOf(r, i.flags);
@@ -128,12 +158,8 @@ export function informeOf(r: Reto, i: Intento): Informe {
   const academies = [...new Set(observations.map((o) => o.academy))];
   const sum = (xs: Observacion[], k: "got" | "auto" | "pending" | "max") => xs.reduce((s, o) => s + o[k], 0);
   const byAcademy = academies.map((academy) => { const xs = observations.filter((o) => o.academy === academy); return { academy, got: sum(xs, "got"), auto: sum(xs, "auto"), pending: sum(xs, "pending"), max: sum(xs, "max") }; });
-  const safeguards = path.flatMap(({ step }) => {
-    if (!step.salvaguarda) return [];
-    const o = step.kind === "decision" ? step.options.find((q) => q.id === i.answers[step.id]) : undefined;
-    return [{ kind: step.salvaguarda, step: step.id, ok: o?.tipo === "defendible" }];
-  });
-  return { observations, byAcademy, got: sum(observations, "got"), auto: sum(observations, "auto"), pending: sum(observations, "pending"), max: sum(observations, "max"), safeguards, verdict: null, assisted: i.assisted };
+  const safeguards = safeguardsOf(r, i);
+  return { observations, byAcademy, got: sum(observations, "got"), auto: sum(observations, "auto"), pending: sum(observations, "pending"), max: sum(observations, "max"), safeguards, blocked: safeguards.some((s) => s.state === "no_corregida"), synthesis: synthesisOf(r, i), verdict: null, assisted: i.assisted };
 }
 
 /** Lee un intento guardado. Si no corresponde a esta versión del reto o está roto, se empieza de nuevo. Las marcas se recalculan. */
@@ -181,6 +207,7 @@ export function checkReto(r: Reto): RevisionReto {
   if (new Set(r.scenes.map((s) => s.id)).size !== r.scenes.length) errors.push("hay escenas con el mismo id");
   if (r.evidencePolicy !== "no_registra") errors.push("el reto no puede registrar evidencia");
   if (r.thresholds.enabled !== false) errors.push("los umbrales no pueden estar habilitados");
+  if (r.thresholds.candidates.length) errors.push("no hay umbral aprobado: el reto no guarda candidatos");
   if (r.acts.length !== 3) errors.push("el reto tiene tres actos");
   for (const s of r.scenes) if (s.act < 0 || s.act >= r.acts.length) errors.push(`${s.id} no pertenece a ningún acto`);
   for (let k = 1; k < r.scenes.length; k++) if (r.scenes[k].act < r.scenes[k - 1].act) errors.push("las escenas no siguen el orden de los actos");
@@ -225,7 +252,10 @@ export function checkReto(r: Reto): RevisionReto {
           for (const [f, v] of Object.entries(o.sets ?? {})) { if (!setters.has(f)) setters.set(f, new Set()); setters.get(f)!.add(v); }
         }
         if (p.salvaguarda && p.options.filter((o) => o.tipo === "defendible").length < 1) errors.push(`${p.id}: la salvaguarda necesita una ruta segura`);
+        if (!p.salvaguarda && p.options.some((o) => o.critica)) errors.push(`${p.id} marca una ruta crítica sin ser salvaguarda`);
+        if (p.options.some((o) => o.critica && (o.tipo === "defendible" || o.score === p.points))) errors.push(`${p.id}: una ruta crítica no puede ser defendible ni dar todos los puntos`);
       }
+      if ((p.salvaguarda || p.rectifica || p.sintesis) && p.kind !== "decision") errors.push(`${p.id}: salvaguardas, rectificaciones y síntesis son decisiones`);
       if (p.kind === "cifras") {
         if (p.fields.reduce((s, f) => s + f.points, 0) !== p.points) errors.push(`${p.id}: los puntos de las cifras no suman los del paso`);
         for (const f of p.fields) {
@@ -244,6 +274,37 @@ export function checkReto(r: Reto): RevisionReto {
       if (p.kind === "escribir" && (!p.reference || !p.ideas.length || !p.fields.length)) errors.push(`${p.id} no trae referencia para comparar`);
     }
   }
+  // Salvaguardas: cada una tiene rutas críticas y un paso de rectificación que aparece solo tras una ruta crítica.
+  for (const { scene, step } of steps) {
+    if (!step.salvaguarda || step.kind !== "decision") continue;
+    const crit = step.options.filter((o) => o.critica);
+    if (!crit.length) errors.push(`${step.id}: la salvaguarda no dice qué rutas son críticas`);
+    const fixes = steps.filter((s) => s.step.rectifica === step.id);
+    if (fixes.length !== 1) { errors.push(`${step.id}: la salvaguarda necesita un paso de rectificación`); continue; }
+    const fix = fixes[0];
+    const w = fix.step.when;
+    if (fix.scene.id !== scene.id || scene.steps.indexOf(fix.step) <= scene.steps.indexOf(step)) errors.push(`${fix.step.id}: la rectificación va después de su salvaguarda, en la misma escena`);
+    if (!w || fix.step.kind !== "decision") { errors.push(`${fix.step.id}: la rectificación es una decisión condicionada`); continue; }
+    for (const o of step.options) if ((o.sets?.[w.flag] === w.is) !== !!o.critica) errors.push(`${step.id}/${o.id}: la rectificación debe aparecer solo tras una ruta crítica`);
+    if (fix.step.options.filter((o) => o.tipo === "defendible").length !== 1) errors.push(`${fix.step.id}: la rectificación tiene una sola ruta que corrige`);
+    if (fix.step.options.some((o) => o.sets?.[w.flag] === w.is)) errors.push(`${fix.step.id}: la rectificación no puede volver a abrirse`);
+  }
+  for (const { step } of steps) if (step.rectifica && !steps.some((s) => s.step.id === step.rectifica && s.step.salvaguarda)) errors.push(`${step.id} rectifica algo que no es salvaguarda`);
+  // Síntesis: toda secuencia defendible lleva a un paso de fundamento; ninguno da puntos.
+  const seqs = steps.filter((s) => s.step.sintesis === "secuencia");
+  if (seqs.length > 1) errors.push("hay más de una síntesis");
+  for (const { step } of seqs) {
+    if (step.kind !== "decision") continue;
+    if (step.skill || step.points) errors.push(`${step.id}: la síntesis no da puntos`);
+    const reasons = steps.filter((s) => s.step.sintesis === "fundamento").map((s) => s.step);
+    for (const o of step.options.filter((q) => q.tipo === "defendible")) {
+      const mine = reasons.filter((q) => q.when && o.sets?.[q.when.flag] === q.when.is);
+      if (mine.length !== 1) errors.push(`${step.id}/${o.id}: la secuencia defendible necesita su paso de fundamento`);
+      for (const q of mine) if (q.kind === "decision" && q.options.filter((x) => x.tipo === "defendible").length !== 1) errors.push(`${q.id}: el fundamento tiene una sola razón defendible`);
+    }
+    if (step.options.filter((q) => q.tipo === "defendible").length < 2) warnings.push(`${step.id}: la síntesis acepta una sola secuencia`);
+  }
+
   // La opción más larga (o la más corta) no puede ser siempre la defendible.
   const sharp = steps.flatMap(({ step }) => (step.kind === "decision" && step.options.filter((o) => o.tipo === "defendible").length === 1 ? [step] : []));
   const always = (cmp: (a: number, b: number) => number) => sharp.every((d) => [...d.options].sort((a, b) => cmp(a.text.length, b.text.length))[0].tipo === "defendible");
@@ -258,7 +319,7 @@ export function checkReto(r: Reto): RevisionReto {
   if (coincide.length) warnings.push(`cifras por calcular que coinciden con otra cifra a la vista en los documentos: ${coincide.join(", ")}`);
   const pending = steps.filter((s) => s.step.kind === "escribir" && s.step.points).reduce((a, s) => a + s.step.points, 0);
   if (pending) warnings.push(`${pending} de ${r.scale.max * n1.length} puntos son respuestas escritas: no se califican solas y esperan revisión de una persona`);
-  warnings.push(`umbrales candidatos ${r.thresholds.candidates.join(", ")} de ${r.scale.max * n1.length}: no habilitados`);
+  warnings.push("sin regla de aprobación: ningún umbral está aprobado ni guardado en el reto");
   if (!r.qa.editorialReviewedAt) warnings.push("sin revisión editorial humana");
   return { errors, warnings };
 }

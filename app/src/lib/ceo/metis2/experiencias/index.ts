@@ -39,4 +39,4 @@ export const experienciaByEditorial = (editorialId: string): Experiencia | undef
 
 export * from "./tipos";
 export * from "./motor";
-export { ALIAS_FUENTES, ATLAS, FUENTES, LOTE_N1, LOTE_02, LOTE_03, LOTE_04, LOTES, RETOS, PAQUETE_ARCHIVOS, PACKAGE_VERSION, SOURCES_CHECKED_AT, atlasSources, editorialOfSkill, itemOf, loteOf, skillOfEditorial } from "./fuentes";
+export { ALIAS_FUENTES, ALIAS_LOTE_04, PAQUETE_MAESTRO, ATLAS, FUENTES, LOTE_N1, LOTE_02, LOTE_03, LOTE_04, LOTES, RETOS, PAQUETE_ARCHIVOS, PACKAGE_VERSION, SOURCES_CHECKED_AT, atlasSources, editorialOfSkill, itemOf, loteOf, skillOfEditorial } from "./fuentes";

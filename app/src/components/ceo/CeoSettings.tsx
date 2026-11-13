@@ -32,7 +32,7 @@ export function CeoSettings() {
 
   const set = <K extends keyof typeof f>(k: K, v: (typeof f)[K]) => { setF((x) => ({ ...x, [k]: v })); setSaved(false); };
   const save = () => { c.updateSettings(f); setSaved(true); };
-  // MÊTIS 2.0 (3.6): el interruptor del simulador se guarda al tocarlo. Solo cambia el menú; nunca toca la partida.
+  // MÊTIS 2.0 (3.6): el interruptor del simulador se guarda al tocarlo. Solo cambia lo que se ve (el menú y la pantalla Hoy); nunca toca la partida.
   const sim = f.simulador === true;
   const toggleSim = (on: boolean) => { setF((x) => ({ ...x, simulador: on })); c.updateSettings({ simulador: on }); };
   const goal = f.dailyGoal ?? DEFAULT_DAILY_GOAL;
@@ -140,9 +140,9 @@ export function CeoSettings() {
         <h2 className="font-semibold text-ink">Simulador de empresas</h2>
         <label className="flex items-start gap-3 rounded-2xl bg-slate-50 p-4 text-sm">
           <input type="checkbox" role="switch" aria-checked={sim} checked={sim} onChange={(e) => toggleSim(e.target.checked)} className="accent-indigo h-4 w-4 mt-0.5" data-testid="mostrar-simulador" />
-          <span><b className="inline-flex items-center gap-1 text-ink"><Building2 size={14} /> Mostrar el simulador de empresas</b><br /><span className="text-slate-500">Vuelve a poner Empresa y Carrera en el menú, con los indicadores, el equipo, los cierres de mes y la trayectoria de la empresa de tus casos. Encenderlo o apagarlo solo cambia el menú: tus decisiones, tu racha y tu avance quedan igual.</span></span>
+          <span><b className="inline-flex items-center gap-1 text-ink"><Building2 size={14} /> Mostrar el simulador de empresas</b><br /><span className="text-slate-500">Vuelve a poner Empresa y Carrera en el menú, y el tablero de la empresa en Hoy, con los indicadores, el equipo, los cierres de mes y la trayectoria de la empresa de tus casos. Encenderlo o apagarlo solo cambia lo que ves: tus decisiones, tu racha y tu avance quedan igual.</span></span>
         </label>
-        <p className="text-xs text-slate-500" aria-live="polite">{sim ? "Encendido: Empresa y Carrera están en el menú." : "Apagado: el menú es Hoy, Bandeja, Academy, Mi progreso y Mi perfil."}</p>
+        <p className="text-xs text-slate-500" aria-live="polite">{sim ? "Encendido: Empresa y Carrera están en el menú, y Hoy muestra el tablero de la empresa." : "Apagado: el menú es Hoy, Bandeja, Academy, Mi progreso y Mi perfil, y Hoy muestra tu práctica del día."}</p>
       </section>
 
       <section className="card p-5 sm:p-6 space-y-3">

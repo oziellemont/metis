@@ -11,7 +11,7 @@ export const SOURCES_CHECKED_AT = "2026-11-13";
 export interface Fuente { institution: string; component: string; url: string; seen: string }
 
 export const FUENTES: Record<string, Fuente> = {
-  HBS_CORE: { institution: "Harvard Business School", component: "Required Curriculum", url: "https://www.hbs.edu/mba/academic-experience/curriculum", seen: "Página del plan obligatorio del MBA. Responde y lista los cursos del primer año." },
+  HBS_CORE: { institution: "Harvard Business School", component: "Required Curriculum", url: "https://www.hbs.edu/mba/academic-experience/curriculum", seen: "Página del plan obligatorio del MBA. Responde y lista los cursos del primer año: Finance 1, Financial Reporting & Control, Leadership & Organizational Behavior, Marketing, Technology & Operations Management y Strategy en el primer periodo; Finance II y Leadership & Corporate Accountability, entre otros, en el segundo. Solo los nombra; no describe su contenido. Releída el 13 de noviembre de 2026 para la trazabilidad del lote 04." },
   HBS_STRAT: { institution: "Harvard Business School", component: "Strategy — MBA Required Curriculum", url: "https://www.hbs.edu/faculty/units/strategy/Pages/curriculum.aspx", seen: "Describe el curso obligatorio Strategy: entorno de la empresa, ventaja competitiva y valor para el cliente." },
   HBS_FIN: { institution: "Harvard Business School", component: "Finance I / Finance II", url: "https://www.hbs.edu/faculty/units/finance/Pages/curriculum.aspx", seen: "Describe Finance I y Finance II: finanzas corporativas, mercados de capital, presupuesto de capital, valuación y política financiera. No trata vocabulario contable, estado de resultados ni flujo de efectivo." },
   HBS_MKT: { institution: "Harvard Business School", component: "Marketing — MBA Required Curriculum", url: "https://www.hbs.edu/faculty/units/marketing/Pages/curriculum.aspx", seen: "Describe el curso obligatorio Marketing: comportamiento del comprador y mezcla de producto, canales, comunicación y precio." },
@@ -90,7 +90,11 @@ export const editorialOfSkill = (skillId: string): string | undefined => ATLAS.f
 export const atlasSources = (skillId: string): string[] => ATLAS.find((a) => a[1] === skillId)?.[2] ?? [];
 
 /** Las seis experiencias del lote piloto, como vienen en el paquete: habilidades y fuentes que cita cada una. */
-/** `manifest`: fuentes que el manifiesto del paquete guarda para la experiencia (el lote 02 llegó sin manifiesto). */
+/**
+ * `sources`: fuentes que el paquete cita para la experiencia (en su texto o en su archivo de trazabilidad).
+ * `manifest`: fuentes que el manifiesto del paquete guarda para la experiencia. Los manifiestos de los lotes 02 y 04
+ * no guardan fuentes: traen identificadores, academia, habilidad y estado.
+ */
 export interface LoteItem { editorialId: string; title: string; primary: string; secondary: string[]; sources: string[]; manifest: string[]; variant: string; rubric: string }
 
 export const LOTE_N1: LoteItem[] = [
@@ -102,7 +106,10 @@ export const LOTE_N1: LoteItem[] = [
   { editorialId: "EDIT-N1-006", title: "Dos riesgos, una sola prioridad", primary: "rie.fundamentos", secondary: ["rie.cumplimiento", "rie.etica"], sources: ["HBS_GOV", "WH_CORE", "INSEAD"], manifest: ["HBS_GOV"], variant: "Centro de distribución", rubric: "35 / 25 / 40" },
 ];
 
-/** Lote 02 (paquete 1.1): un solo documento, sin manifiesto ni archivo de rúbricas. */
+/**
+ * Lote 02 (paquete 1.1): seis archivos. Las fuentes coinciden con su TRAZABILIDAD_ACADEMICA.md.
+ * No trae archivo de rúbricas: los pesos están en el texto de cada experiencia.
+ */
 export const LOTE_02: LoteItem[] = [
   { editorialId: "EDIT-N1-007", title: "¿Por qué nos eligen si no somos los más baratos?", primary: "est.ventaja", secondary: ["est.fundamentos", "cre.cliente"], sources: ["HBS_STRAT", "HBS_ISC"], manifest: [], variant: "Taller de bicicletas", rubric: "40 / 35 / 25" },
   { editorialId: "EDIT-N1-008", title: "Las ventas no son la utilidad", primary: "fin.resultados", secondary: ["fin.lenguaje", "fin.presupuesto"], sources: ["HBS_AM", "STAN_CORE"], manifest: [], variant: "Hotel pequeño", rubric: "40 / 40 / 20" },
@@ -123,16 +130,16 @@ export const LOTE_03: LoteItem[] = [
 ];
 
 /**
- * Lote 04 (paquete 1.3). Llegaron dos archivos: las seis experiencias y el Executive Challenge ampliado.
- * No trae fuentes por experiencia ni manifiesto: se anotan las fuentes del Atlas para la habilidad principal.
+ * Lote 04 (paquete 1.3): nueve archivos. Las fuentes son las de TRAZABILIDAD_LOTE_04.md para la habilidad principal
+ * (difieren del Atlas en las seis). Los pesos coinciden con RUBRICAS_EDITORIALES_LOTE04_Y_CHALLENGE.json.
  */
 export const LOTE_04: LoteItem[] = [
-  { editorialId: "EDIT-N1-019", title: "La meta de todos no es la misma", primary: "est.alineacion", secondary: ["ope.indicadores", "est.priorizacion"], sources: ["HBS_STRAT", "STAN_CORE"], manifest: [], variant: "Mantenimiento de elevadores", rubric: "30 / 30 / 25 / 15" },
-  { editorialId: "EDIT-N1-020", title: "El dinero entra el jueves", primary: "fin.flujo", secondary: ["fin.lenguaje"], sources: ["STAN_CORE", "HBS_FIN"], manifest: [], variant: "Clínica veterinaria", rubric: "40 / 25 / 20 / 15" },
-  { editorialId: "EDIT-N1-021", title: "¿Por qué este gasto se salió del plan?", primary: "fin.presupuesto", secondary: ["fin.resultados", "lid.comunicacion"], sources: ["WH_CORE", "HBS_FIN"], manifest: [], variant: "Peluquería canina", rubric: "40 / 30 / 20 / 10" },
-  { editorialId: "EDIT-N1-022", title: "Te lo encargo, ¿pero hasta dónde puedes decidir?", primary: "lid.delegacion", secondary: ["lid.fundamentos"], sources: ["STAN_CORE", "STAN_LAB"], manifest: [], variant: "Centro de eventos", rubric: "30 / 30 / 25 / 15" },
-  { editorialId: "EDIT-N1-023", title: "La devolución que no cabía en la estadística", primary: "ope.calidad", secondary: ["ope.procesos", "rie.cumplimiento"], sources: ["WH_CORE"], manifest: [], variant: "Materiales escolares", rubric: "30 / 35 / 25 / 10" },
-  { editorialId: "EDIT-N1-024", title: "¿Por dónde compran realmente?", primary: "cre.canales", secondary: ["cre.cliente", "cre.segmentacion"], sources: ["HBS_MKT", "STAN_CORE"], manifest: [], variant: "Renta de equipos", rubric: "25 / 35 / 20 / 20" },
+  { editorialId: "EDIT-N1-019", title: "La meta de todos no es la misma", primary: "est.alineacion", secondary: ["ope.indicadores", "est.priorizacion"], sources: ["STAN_CORE", "HBS_CORE"], manifest: [], variant: "Mantenimiento de elevadores", rubric: "30 / 30 / 25 / 15" },
+  { editorialId: "EDIT-N1-020", title: "El dinero entra el jueves", primary: "fin.flujo", secondary: ["fin.lenguaje"], sources: ["STAN_CORE", "HBS_CORE"], manifest: [], variant: "Clínica veterinaria", rubric: "40 / 25 / 20 / 15" },
+  { editorialId: "EDIT-N1-021", title: "¿Por qué este gasto se salió del plan?", primary: "fin.presupuesto", secondary: ["fin.resultados", "lid.comunicacion"], sources: ["HBS_CORE", "STAN_CORE"], manifest: [], variant: "Peluquería canina", rubric: "40 / 30 / 20 / 10" },
+  { editorialId: "EDIT-N1-022", title: "Te lo encargo, ¿pero hasta dónde puedes decidir?", primary: "lid.delegacion", secondary: ["lid.fundamentos"], sources: ["STAN_CORE", "HBS_CORE"], manifest: [], variant: "Centro de eventos", rubric: "30 / 30 / 25 / 15" },
+  { editorialId: "EDIT-N1-023", title: "La devolución que no cabía en la estadística", primary: "ope.calidad", secondary: ["ope.procesos", "rie.cumplimiento"], sources: ["HBS_TOM", "STAN_CORE"], manifest: [], variant: "Materiales escolares", rubric: "30 / 35 / 25 / 10" },
+  { editorialId: "EDIT-N1-024", title: "¿Por dónde compran realmente?", primary: "cre.canales", secondary: ["cre.cliente", "cre.segmentacion"], sources: ["STAN_CORE", "HBS_CORE"], manifest: [], variant: "Renta de equipos", rubric: "25 / 35 / 20 / 20" },
 ];
 
 /**
@@ -148,9 +155,16 @@ export const RETOS: RetoEditorial[] = [
 /** Nombres que usa el manifiesto del lote 03 para fuentes que ya estaban en el registro. */
 export const ALIAS_FUENTES: Record<string, string> = { HBS_STRATEGY: "HBS_STRAT", STAN_FIRST_YEAR: "STAN_CORE", HBS_LCA: "HBS_GOV", INSEAD_CORE: "INSEAD_CORE" };
 
+/** Nombres que usa la trazabilidad del lote 04 para fuentes que ya estaban en el registro. */
+export const ALIAS_LOTE_04: Record<string, string> = { "HBS-MBA-CORE": "HBS_CORE", "HBS-TOM": "HBS_TOM", "STAN-GSB-CORE": "STAN_CORE" };
+
 export interface Lote { id: string; name: string; packageVersion: string; items: LoteItem[]; files: [string, string][] }
 
-/** Archivos del paquete v1.0 tal como se recibieron (primeros 16 caracteres de su huella SHA-256). */
+/**
+ * Archivos de cada paquete tal como se recibieron (primeros 16 caracteres de su huella SHA-256).
+ * Los 33 se comprobaron el 13 de noviembre de 2026 contra SHA256SUMS.txt y MANIFIESTO_REENVIO.json del
+ * paquete maestro: 33 de 33 coinciden en huella y tamaño. Los 21 que ya estaban anotados no cambiaron.
+ */
 export const PAQUETE_ARCHIVOS: [string, string][] = [
   ["README_PARA_SUPERNINJA.md", "eb619f982cddacd2"],
   ["ESTANDAR_EDITORIAL_Y_EVALUACION.md", "bb6f17f01abc2740"],
@@ -166,7 +180,13 @@ export const PAQUETE_ARCHIVOS: [string, string][] = [
 
 export const LOTES: Lote[] = [
   { id: "lote-01", name: "Lote 01", packageVersion: "1.0", items: LOTE_N1, files: PAQUETE_ARCHIVOS },
-  { id: "lote-02", name: "Lote 02", packageVersion: "1.1", items: LOTE_02, files: [["EXPERIENCIAS_N1_LOTE_02.md", "58b0b42735551d3e"]] },
+  {
+    id: "lote-02", name: "Lote 02", packageVersion: "1.1", items: LOTE_02,
+    files: [
+      ["README_PARA_SN.md", "efb62ffdce5a1a29"], ["EXPERIENCIAS_N1_LOTE_02.md", "58b0b42735551d3e"], ["MANIFIESTO_LOTE_02.json", "efa757cf8ecfac66"],
+      ["TRAZABILIDAD_ACADEMICA.md", "5385214fb88f4a4a"], ["QA_Y_ERRATAS.md", "0345a32d31507923"], ["PLAN_LOTES_03_04.md", "1bc648ea2351c5cc"],
+    ],
+  },
   {
     id: "lote-03", name: "Lote 03", packageVersion: "1.2", items: LOTE_03,
     files: [
@@ -176,8 +196,27 @@ export const LOTES: Lote[] = [
   },
   {
     id: "lote-04", name: "Lote 04", packageVersion: "1.3", items: LOTE_04,
-    files: [["EXPERIENCIAS_N1_LOTE_04.md", "f7f50075b39b408e"], ["EXECUTIVE_CHALLENGE_N1_V2.md", "fdb978067df15689"]],
+    files: [
+      ["README_PARA_SUPERNINJA.md", "c3b2de0b2370d88d"], ["EXPERIENCIAS_N1_LOTE_04.md", "f7f50075b39b408e"], ["EXECUTIVE_CHALLENGE_N1_V2.md", "fdb978067df15689"],
+      ["RUBRICAS_EDITORIALES_LOTE04_Y_CHALLENGE.json", "ee8472b105bf4056"], ["MANIFIESTO_LOTE04_Y_CHALLENGE.json", "eb833cb4ca7a22c0"], ["TRAZABILIDAD_LOTE_04.md", "23bbf77f3918a45d"],
+      ["COBERTURA_24_HABILIDADES_N1.md", "237dbd3535d78ea5"], ["QA_Y_VALIDACION.md", "d8e59f6ee7db412b"], ["PLAN_SIGUIENTE_ETAPA.md", "e66cd75a142bbac1"],
+    ],
   },
 ];
+
+/**
+ * Paquete maestro del 13 de noviembre de 2026: un solo ZIP con los cuatro paquetes originales y cuatro archivos de control.
+ * Corrige la recepción incompleta anterior (se habían anotado 21 de los 33). No se copia al repositorio.
+ */
+export const PAQUETE_MAESTRO = {
+  receivedAt: "2026-11-13",
+  zip: "5c3033593013286f",
+  sources: 33,
+  previously: 21,
+  control: [
+    ["00_LEER_PRIMERO.md", "98933c049c5dbeb2"], ["AUDITORIA_Y_DECISIONES_PENDIENTES.md", "bffee85668b789b4"],
+    ["MANIFIESTO_REENVIO.json", "d4c0b5e475e1cbc1"], ["SHA256SUMS.txt", "7c361cc2f0ba4568"],
+  ] as [string, string][],
+};
 export const loteOf = (editorialId: string): Lote | undefined => LOTES.find((l) => l.items.some((i) => i.editorialId === editorialId));
 export const itemOf = (editorialId: string): LoteItem | undefined => LOTES.flatMap((l) => l.items).find((i) => i.editorialId === editorialId);

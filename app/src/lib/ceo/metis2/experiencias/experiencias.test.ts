@@ -14,10 +14,10 @@
  */
 import { describe, expect, it } from "vitest";
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { ACADEMY_IDS, SKILLS, skillById, skillsAt } from "../academias";
 import {
-  ALIAS_FUENTES, ATLAS, EXPERIENCIAS, FUENTES, LOTES, LOTE_N1, RETOS, MAX_FIELD, MAX_REPLY, OPTION_LENGTH_RATIO, REVEAL_AFTER, advance, atlasSources, calc, checkExperiencia, correctOf,
+  ALIAS_FUENTES, ALIAS_LOTE_04, ATLAS, EXPERIENCIAS, FUENTES, LOTES, LOTE_N1, PAQUETE_MAESTRO, RETOS, MAX_FIELD, MAX_REPLY, OPTION_LENGTH_RATIO, REVEAL_AFTER, advance, atlasSources, calc, checkExperiencia, correctOf,
   editorialOfSkill, experienciaByEditorial, experienciaBySlug, itemOf, loteOf, newRun, nextOf, nodeOf, originCount, readRun, recompute, routeOf, rowsOf, scoreVariant, sharedAmounts,
   sharpDecisions, shownNumbers, skillOfEditorial, stepOf, variantReady,
   type Accion, type Experiencia, type NodoDecision, type Opcion, type Recorrido, type Respuesta, type Tarea,
@@ -223,11 +223,53 @@ describe("correspondencia de identificadores (Atlas ↔ catálogo)", () => {
         expect(l.rubric.split("/").reduce((a, b) => a + Number(b), 0)).toBe(100);
       }
     }
-    // El lote 02 llegó sin manifiesto.
+    // Los manifiestos de los lotes 02 y 04 no guardan fuentes por experiencia.
     expect(LOTES[1].items.every((l) => l.manifest.length === 0)).toBe(true);
-    // El lote 04 tampoco trae manifiesto: sus fuentes son las del Atlas para la habilidad principal.
-    expect(LOTES[3].items.every((l) => l.manifest.length === 0 && [...l.sources].sort().join() === [...atlasSources(l.primary)].sort().join())).toBe(true);
-    expect(LOTES[3].files.map((f) => f[0])).toEqual(["EXPERIENCIAS_N1_LOTE_04.md", "EXECUTIVE_CHALLENGE_N1_V2.md"]);
+    expect(LOTES[3].items.every((l) => l.manifest.length === 0)).toBe(true);
+    // Lote 04: las fuentes son las de su archivo de trazabilidad, con los nombres del registro; difieren del Atlas en las seis.
+    const traza = new Set(Object.values(ALIAS_LOTE_04));
+    for (const f of traza) expect(FUENTES[f], f).toBeDefined();
+    expect(LOTES[3].items.every((l) => l.sources.length === 2 && l.sources.every((f) => traza.has(f)))).toBe(true);
+    expect(LOTES[3].items.filter((l) => [...l.sources].sort().join() !== [...atlasSources(l.primary)].sort().join())).toHaveLength(6);
+    // Las habilidades de Finanzas del lote 04 ya no se apoyan en la página de Finance I y II.
+    expect(LOTES[3].items.filter((l) => l.primary.startsWith("fin.")).every((l) => !l.sources.includes("HBS_FIN"))).toBe(true);
+  });
+
+  it("paquete maestro: 33 archivos originales, 10 + 6 + 8 + 9, cada uno con su huella", () => {
+    expect(LOTES.map((l) => l.files.length)).toEqual([10, 6, 8, 9]);
+    const files = LOTES.flatMap((l) => l.files.map(([name, hash]) => ({ lote: l.id, name, hash })));
+    expect(files).toHaveLength(33);
+    expect(PAQUETE_MAESTRO.sources).toBe(files.length);
+    for (const f of files) expect(f.hash, `${f.lote}/${f.name}`).toMatch(/^[0-9a-f]{16}$/);
+    // Ninguna huella se repite: son 33 archivos distintos, aunque dos lotes usen el mismo nombre.
+    expect(new Set(files.map((f) => f.hash)).size).toBe(33);
+    for (const l of LOTES) expect(new Set(l.files.map((f) => f[0])).size).toBe(l.files.length);
+    // Los 21 que ya estaban anotados antes del paquete maestro siguen con la misma huella.
+    const antes: Record<string, string> = {
+      "lote-01/EXPERIENCIAS_N1.md": "f66be87d82045c8e", "lote-01/EXECUTIVE_CHALLENGE_N1.md": "7f591d374b44ff45", "lote-02/EXPERIENCIAS_N1_LOTE_02.md": "58b0b42735551d3e",
+      "lote-03/EXPERIENCIAS_N1_LOTE_03.md": "f22631caebd9b8c6", "lote-03/RUBRICAS_LOTE_03.json": "ff7012150558a469",
+      "lote-04/EXPERIENCIAS_N1_LOTE_04.md": "f7f50075b39b408e", "lote-04/EXECUTIVE_CHALLENGE_N1_V2.md": "fdb978067df15689",
+    };
+    for (const [k, h] of Object.entries(antes)) expect(files.find((f) => `${f.lote}/${f.name}` === k)?.hash, k).toBe(h);
+    expect(PAQUETE_MAESTRO.previously).toBe(21);
+    // Lo que faltaba: cinco del lote 02 y siete del lote 04.
+    for (const n of ["README_PARA_SN.md", "MANIFIESTO_LOTE_02.json", "TRAZABILIDAD_ACADEMICA.md", "QA_Y_ERRATAS.md", "PLAN_LOTES_03_04.md"]) expect(LOTES[1].files.map((f) => f[0])).toContain(n);
+    for (const n of ["README_PARA_SUPERNINJA.md", "RUBRICAS_EDITORIALES_LOTE04_Y_CHALLENGE.json", "MANIFIESTO_LOTE04_Y_CHALLENGE.json", "TRAZABILIDAD_LOTE_04.md", "COBERTURA_24_HABILIDADES_N1.md", "QA_Y_VALIDACION.md", "PLAN_SIGUIENTE_ETAPA.md"]) expect(LOTES[3].files.map((f) => f[0])).toContain(n);
+    expect(PAQUETE_MAESTRO.control.map((c) => c[0])).toEqual(["00_LEER_PRIMERO.md", "AUDITORIA_Y_DECISIONES_PENDIENTES.md", "MANIFIESTO_REENVIO.json", "SHA256SUMS.txt"]);
+  });
+
+  it("los paquetes no se copian al repositorio: solo sus huellas", () => {
+    const root = join(__dirname, "../../../../../..");
+    const names = new Set([...LOTES.flatMap((l) => l.files.map((f) => f[0])), ...PAQUETE_MAESTRO.control.map((c) => c[0])]);
+    const found: string[] = [];
+    const walk = (dir: string, depth: number) => {
+      for (const e of readdirSync(dir, { withFileTypes: true })) {
+        if (e.name === "node_modules" || e.name.startsWith(".")) continue;
+        if (e.isDirectory()) { if (depth < 6) walk(join(dir, e.name), depth + 1); } else if (names.has(e.name)) found.push(e.name);
+      }
+    };
+    walk(root, 0);
+    expect(found).toEqual([]);
   });
 
   it("deja a la vista dónde el Atlas y la experiencia no citan las mismas fuentes", () => {
@@ -991,6 +1033,19 @@ describe("documento 06 · Repositorio Académico", () => {
     expect(md).not.toMatch(/de cero a ceo|\blibro\b/i);
     expect(md).not.toMatch(/pr[oó]ximamente|en preparaci[oó]n|pr[oó]xima versi[oó]n|llegan? pronto|m[aá]s adelante:|todav[ií]a no est[aá] disponible|coming soon/i);
     expect(md).not.toMatch(/[\p{Extended_Pictographic}\u2605\u2606\u2713\u2717]/u);
+  });
+
+  it("los documentos que cita existen y tampoco usan frases prohibidas ni símbolos", () => {
+    for (const name of ["07-revision-humana.md", "08-auditoria-de-claves.md"]) {
+      expect(md).toContain(name);
+      const file = join(dirname(DOC), name);
+      expect(existsSync(file)).toBe(true);
+      const text = readFileSync(file, "utf8");
+      expect(text).not.toMatch(/de cero a ceo|\blibro\b/i);
+      expect(text).not.toMatch(/pr[oó]ximamente|en preparaci[oó]n|pr[oó]xima versi[oó]n|llegan? pronto|m[aá]s adelante:|todav[ií]a no est[aá] disponible|coming soon/i);
+      expect(text).not.toMatch(/[\p{Extended_Pictographic}\u2605\u2606\u2713\u2717]/u);
+      expect(text).toMatch(/## .*Lo que no se hizo/);
+    }
   });
 
   it.runIf(!!process.env.REPOSITORIO_DOC)("escribe docs/metis2/06-repositorio-academico.md", () => {
