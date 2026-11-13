@@ -11,7 +11,7 @@ La lógica que gobierna todo lo que sigue: MÊTIS gira alrededor de desarrollar 
 Instrucciones de Oziel del 13 de noviembre de 2026, registradas como reglas 48 a 61 en `plan-y-control.md`:
 
 1. Cuatro pestañas principales: Hoy, Academy, Mi progreso y Mi perfil. Bandeja sale de la navegación principal en computadora y en celular. No se crea una pestaña de Retos ni una de Historial.
-2. Hoy se organiza en cinco bloques: tu criterio ejecutivo, tu siguiente experiencia, continuar aprendiendo, repasa y fortalece, y Executive Challenge como hito.
+2. Hoy conserva el mismo diseño del Hoy anterior: una zona principal oscura y minimalista, y una barra lateral blanca muy sencilla a la derecha. Dentro de ese diseño viven los cinco bloques: tu criterio ejecutivo, tu siguiente experiencia, continuar aprendiendo, repasa y fortalece, y Executive Challenge como hito.
 3. Academy es el único centro académico: seis academias, por nivel, por habilidad y por objetivo de aprendizaje, con el contenido anterior y el Repositorio Académico juntos.
 4. No hay un historial de decisiones protagonista, pero no se borra ninguna respuesta, decisión, evidencia ni registro.
 5. Los mensajes (WhatsApp, correos, llamadas, documentos) ocurren dentro de cada caso, no en una bandeja permanente.
@@ -42,7 +42,45 @@ El contador rojo que hoy va sobre el icono de Bandeja se propone convertir en un
 
 ### 3.2 Hoy
 
-Una sola columna, cinco bloques, en este orden. Un bloque sin contenido no se muestra.
+Instrucción de Oziel sobre esta pantalla (regla 62 del plan): Hoy tiene que ser muy similar a como estaba antes, minimalista, mostrando solo lo necesario, con la barra lateral derecha muy sencilla, con el mismo diseño y con los datos nuevos. Por eso no se diseña una pantalla nueva: se conserva el diseño de dos zonas del Hoy anterior y solo cambian los datos.
+
+**Zona principal (izquierda, fondo oscuro).** De arriba hacia abajo, igual que antes:
+
+1. El renglón de constancia: los días de la semana, la racha y el XP. Ya está publicado así.
+2. La fecha, el saludo y una sola cifra grande: cuántos pendientes hay por resolver.
+3. Un solo botón blanco: empezar la siguiente experiencia.
+4. Una lista corta, de dos renglones como máximo: la siguiente experiencia y, si existe, lo que quedó a medias. Si hay más casos esperando, una línea lo dice y los despliega ahí mismo.
+5. Al pie, una tarjeta discreta con el Executive Challenge como hito.
+
+**Barra lateral (derecha, fondo blanco).** El mismo panel de antes, con otros datos:
+
+1. «Tu criterio ejecutivo» con una cifra grande y su barra.
+2. Seis renglones delgados, uno por academia, cada uno con su barra y su número. Tocar un renglón abre esa academia.
+3. Una línea con icono sobre el dominio demostrado.
+4. Un enlace: «Ver todo en Mi progreso».
+5. Una tarjeta de «Repasa y fortalece», solo cuando hay datos de la persona.
+6. «Lo último que hiciste», con dos renglones.
+
+En celular se conserva también el comportamiento de antes: la zona principal va arriba y el panel blanco baja como una tarjeta, con el menú de cuatro pestañas al pie.
+
+Correspondencia, elemento por elemento:
+
+| En el Hoy anterior | En el Hoy propuesto | Bloque |
+|---|---|---|
+| Cifra grande «Asuntos por resolver» y botón «Atender» | Cifra grande «Pendientes por resolver» y botón «Empezar» con el título de la siguiente experiencia | B |
+| Renglones de asuntos pendientes | Renglón «Tu siguiente experiencia» y renglón «Continuar», cuando hay algo a medias | B y C |
+| Tarjeta «Misión del consejo», al pie | Tarjeta del Executive Challenge como hito, al pie | E |
+| «Salud de la empresa», con su cifra sobre 100 | «Tu criterio ejecutivo», con las piezas completadas del total y la etiqueta «Aprendizaje» | A |
+| Cinco barras: Caja, Margen, Clientes, Equipo y Consejo | Seis barras: una por academia | A |
+| Línea de indicadores en buen estado | Línea «Dominio demostrado»: se mostrará cuando haya evaluaciones validadas | A |
+| Enlace a los números completos en Empresa | Enlace «Ver todo en Mi progreso» | A |
+| «Tomar el mando» | No se muestra (regla 57) | |
+| Tarjeta de la lección sugerida | Tarjeta «Repasa y fortalece» | D |
+| «Lo último que decidiste» | «Lo último que hiciste» | |
+
+Lo que se deja fuera a propósito para que la pantalla siga siendo mínima: descripciones largas, más de dos renglones en la lista, más de una recomendación de repaso y cualquier cifra que no esté respaldada. Un bloque sin contenido no se muestra.
+
+El contenido y el respaldo de cada bloque son los mismos de la propuesta original:
 
 **A. Tu criterio ejecutivo.** Nivel general, avance real hacia el siguiente nivel, las seis academias y dos medidas distintas por academia, siempre separadas y con su nombre:
 
@@ -149,6 +187,7 @@ Siete archivos de pruebas automáticas mencionan Bandeja. Las del menú y las de
 |---|---|
 | Regla de una sola propuesta (`misionDelDia`, `hoy.ts`) | Bloque B de Hoy |
 | Hoy sin simulador (`HoyAprendizaje.tsx`): saludo, constancia, renglones de casos, aviso del simulador, acceso de revisión | Base del Hoy nuevo |
+| Diseño de dos zonas del Hoy anterior (`Today.tsx`): zona oscura con una cifra grande y un botón, y panel blanco con una cifra, barras delgadas, una tarjeta y lo último | Se reutiliza como diseño del Hoy nuevo, con los datos del programa. `Today.tsx` no se modifica: sigue siendo el Hoy del simulador |
 | Clasificación de las 335 piezas (`clasificacion.ts`) y catálogo de 52 habilidades (`academias.ts`) | Estructura de Academy y etiquetas de cada recomendación |
 | Matriz curricular (`curriculo/`) | Objetivos de aprendizaje por habilidad y nivel |
 | Conteo de práctica por academia (`entrada.ts`) | Medida de aprendizaje en Hoy, Academy y Mi progreso |
@@ -250,7 +289,7 @@ Rutas dentro de `app/src/`. La lista incluye todos los archivos que hoy menciona
 |---|---|---|
 | `lib/ceo/metis2/menu.ts` | Bandeja sale de la lista del menú; cuatro columnas (seis con el simulador); el aviso de pendientes pasa a Hoy | 1 |
 | `components/ceo/CeoShell.tsx` | Dibuja el menú de cuatro; punto de pendientes sobre Hoy | 1 |
-| `components/ceo/HoyAprendizaje.tsx` | Etapa 1: salen el enlace y el botón de Bandeja; la lista de pendientes se despliega completa. Etapa 2: bloques A a D | 1 y 2 |
+| `components/ceo/HoyAprendizaje.tsx` | Etapa 1: salen el enlace y el botón de Bandeja; la lista de pendientes se despliega completa. Etapa 2: bloques A a D, con el diseño de dos zonas del Hoy anterior | 1 y 2 |
 | `components/ceo/Progress.tsx` | Sale «Ver mi bandeja»; entra «Actividad reciente»; después, evidencias por habilidad | 1 y 4 |
 | `components/ceo/Profile.tsx` | Sale «Tu bitácora» (pasa a Mi progreso) | 1 |
 | `components/ceo/CaseView.tsx` | La salida del caso vuelve a Hoy o a la habilidad de Academy | 1 |
@@ -264,7 +303,7 @@ Rutas dentro de `app/src/`. La lista incluye todos los archivos que hoy menciona
 | `lib/ceo/types.ts` | Un dato nuevo para guardar el paso de la lección; nada existente cambia | 2 |
 | `components/ceo/CeoAcademy.tsx` y las páginas de `app/ceo/academy` | Academy por academia, nivel y habilidad | 3 |
 | `lib/ceo/metis2/clasificacion.ts` | Marca de calidad por pieza | 3 |
-| `components/ceo/Today.tsx` | Sin cambios: es el Hoy del simulador y conserva sus enlaces a Bandeja | No cambia |
+| `components/ceo/Today.tsx` | Sin cambios: es el Hoy del simulador y conserva sus enlaces a Bandeja. Su diseño sirve de modelo para el Hoy nuevo | No cambia |
 | `app/ceo/bandeja/page.tsx` y `components/ceo/InboxView.tsx` | Sin cambios: la página de Bandeja se conserva | No cambia |
 | `lib/ceo/auth-routes.ts` y `middleware.ts` | Sin cambios: solo la mencionan en comentarios, como ejemplo de dirección | No cambia |
 | `components/site/ceo-landing/HowSlides.tsx` | Sin cambios: un comentario interno | No cambia |
@@ -278,5 +317,6 @@ Pruebas que se actualizan en la etapa 1: `lib/ceo/metis2/menu.test.ts` y `lib/ce
 - No se tocó la base de datos, el sistema de dominio, las partidas ni el contenido.
 - No se recorrió la aplicación en un navegador para esta propuesta: el inventario es de lectura del programa.
 - Las maquetas que acompañan esta propuesta son imágenes fijas hechas fuera de la aplicación, con datos de ejemplo. No son pantallas que funcionen y no están en el repositorio.
+- La maqueta de Hoy se rehízo con el diseño del Hoy anterior a petición de Oziel. Sus cifras (22 de 76 piezas, 9 de 24 experiencias, la racha y el XP) son ejemplos, no datos de una cuenta. Se comparó contra una captura del Hoy anterior, no contra la aplicación en funcionamiento.
 - No se estimó el tiempo de cada etapa.
 - No se convirtió ninguna experiencia nueva ni se cambió ninguna de las existentes.

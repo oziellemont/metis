@@ -36,6 +36,11 @@ describe("MÊTIS 2.0 · arquitectura de cuatro pestañas · propuesta", () => {
     for (const t of ["Se reutiliza", "Se mueve", "Se oculta"]) expect(doc, t).toContain(t);
   });
 
+  it("Hoy conserva el diseño de dos zonas del Hoy anterior, con los datos nuevos (regla 62)", () => {
+    for (const t of ["mismo diseño del Hoy anterior", "Zona principal (izquierda, fondo oscuro)", "Barra lateral (derecha, fondo blanco)", "Correspondencia, elemento por elemento", "Ver todo en Mi progreso"]) expect(doc, t).toContain(t);
+    expect(doc).toMatch(/`Today\.tsx` no se modifica/);
+  });
+
   it("todo archivo del programa que menciona Bandeja está en el inventario del documento", () => {
     const hits = sources("src").filter((f) => /bandeja/i.test(readFileSync(f, "utf8"))).map((f) => f.replace(/\\/g, "/").replace(/^src\//, ""));
     expect(hits.length).toBeGreaterThan(0);
@@ -51,7 +56,7 @@ describe("MÊTIS 2.0 · arquitectura de cuatro pestañas · propuesta", () => {
     const plan = readFileSync(PLAN, "utf8");
     expect(plan).toContain("09-arquitectura-cuatro-pestanas.md");
     expect(plan).toMatch(/### Instrucciones de Oziel sobre la arquitectura de cuatro pestañas/);
-    for (let n = 48; n <= 61; n++) expect(plan, `regla ${n}`).toMatch(new RegExp(`^${n}\\. \\*\\*`, "m"));
+    for (let n = 48; n <= 62; n++) expect(plan, `regla ${n}`).toMatch(new RegExp(`^${n}\\. \\*\\*`, "m"));
     expect(plan).not.toMatch(/^- \[ \] 3\.4 Retos e Historial en lugar de Bandeja/m);
   });
 });
