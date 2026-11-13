@@ -5,7 +5,7 @@ import { toggleTopic, topicsByAcademy, topicsCountText, topicsReady } from "@/li
 
 /**
  * Temas prioritarios (MÊTIS 2.0, entrega 2.1): los temas del catálogo agrupados por academia; se eligen al menos cinco.
- * Elegir un tema ordena lo que se recomienda. No acredita dominio ni suma puntos.
+ * Elegir un tema señala sus rutas en Academy y su academia en Mi progreso. No acredita dominio ni suma puntos.
  * `dark` es para el registro (fondo mêtis); sin él, para Mi perfil (fondo claro).
  */
 export function TopicsPicker({ value, onChange, dark = false }: { value: readonly string[]; onChange: (ids: string[]) => void; dark?: boolean }) {

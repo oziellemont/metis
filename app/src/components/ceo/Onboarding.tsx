@@ -105,7 +105,7 @@ export function Onboarding() {
           <section key="s2" data-testid="registro-temas" className="academy-in mt-10">
             <div className="text-xs font-semibold uppercase tracking-wider text-mint">Tus temas</div>
             <h1 className="mt-2 text-3xl font-semibold leading-tight">¿Qué quieres practicar primero?</h1>
-            <p className="mt-3 text-white/70 text-[15px] leading-relaxed">Elige al menos cinco temas. Con ellos ordenamos lo que te recomendamos; no te cierran ningún otro tema y puedes cambiarlos cuando quieras en Mi perfil.</p>
+            <p className="mt-3 text-white/70 text-[15px] leading-relaxed">Elige al menos cinco temas. Con ellos señalamos en Academy las rutas que los trabajan y, en Mi progreso, sus academias. No te cierran ningún otro tema y puedes cambiarlos cuando quieras en Mi perfil.</p>
             <div className="mt-6"><TopicsPicker dark value={topics} onChange={setTopics} /></div>
             <div className="mt-6 flex gap-3"><button onClick={() => setStep(1)} className="btn text-white/70 hover:text-white">Atrás</button><button disabled={!topicsReady(topics)} onClick={() => setStep(3)} className="btn bg-white text-ink hover:bg-white/90 flex-1 justify-center py-3 text-base font-semibold disabled:opacity-50">Continuar <ArrowRight size={16} /></button></div>
           </section>

@@ -111,6 +111,14 @@ describe("MÊTIS 2.0 · 2.1 · registro corto, sin empresa", () => {
     expect(ob).toContain('track("diagnostico_saltado"');
     expect(ob).toContain("<StartingPoint entry ");
   });
+  it("los temas se notan: Academy señala sus rutas y Mi progreso sus academias, sin prometer más", () => {
+    const ac = comp("CeoAcademy.tsx");
+    expect(ac).toContain("priorityTracks(c.s.profile?.topics ?? []");
+    expect(ac).toContain("De tus temas");
+    expect(comp("Progress.tsx")).toContain("topicAcademies(topics)");
+    // Elegir la siguiente práctica según los temas es la entrega 2.3: ningún texto lo da por hecho.
+    for (const f of ["Onboarding.tsx", "PracticePlan.tsx", "Progress.tsx", "TopicsPicker.tsx"]) expect(comp(f), f).not.toMatch(/ordenamos lo que te recomendamos|Ordena lo que te recomendamos|ordena lo que se recomienda/);
+  });
   it("quien ya tenía cuenta completa lo mismo desde Mi perfil", () => {
     const pp = comp("PracticePlan.tsx");
     expect(pp).toContain("<TopicsPicker ");

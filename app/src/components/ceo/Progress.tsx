@@ -101,7 +101,7 @@ export function Progress() {
       <section className="card p-5 sm:p-6" data-testid="progreso-temas">
         <div className="flex flex-wrap items-center gap-3">
           <span className="h-9 w-9 rounded-xl bg-indigo-soft text-indigo grid place-items-center"><ListChecks size={16} /></span>
-          <div className="flex-1 min-w-0"><h2 className="font-semibold text-ink">Tus temas</h2><p className="text-xs text-slate-400">Lo que elegiste practicar primero. Ordena lo que te recomendamos.</p></div>
+          <div className="flex-1 min-w-0"><h2 className="font-semibold text-ink">Tus temas</h2><p className="text-xs text-slate-400">Lo que elegiste practicar primero. Sus rutas aparecen señaladas en Academy.</p></div>
           <Link href="/ceo/perfil#temas" className={names.length >= MIN_PRIORITY_TOPICS ? "inline-flex items-center gap-1 text-xs font-medium text-indigo" : "btn-primary text-sm"}>{names.length >= MIN_PRIORITY_TOPICS ? "Cambiar" : "Elegir mis temas"} <ArrowRight size={13} /></Link>
         </div>
         {names.length > 0

@@ -35,7 +35,7 @@ export function PracticePlan() {
     <section id="temas" data-testid="perfil-temas" className="card p-5 sm:p-6">
       <div className="flex flex-wrap items-center gap-3">
         <span className="h-9 w-9 rounded-xl bg-indigo-soft text-indigo grid place-items-center"><ListChecks size={16} /></span>
-        <div className="flex-1 min-w-0"><h2 className="font-semibold text-ink">Temas y ritmo</h2><p className="text-xs text-slate-400">Lo que más te interesa practicar y cada cuánto. Ordena lo que te recomendamos; no suma competencias ni puntos.</p></div>
+        <div className="flex-1 min-w-0"><h2 className="font-semibold text-ink">Temas y ritmo</h2><p className="text-xs text-slate-400">Lo que más te interesa practicar y cada cuánto. Tus temas señalan sus rutas en Academy; no suman competencias ni puntos.</p></div>
         {!editing && (saved.length >= MIN_PRIORITY_TOPICS
           ? <button type="button" onClick={open} className="inline-flex items-center gap-1 text-xs font-medium text-indigo"><Pencil size={12} /> Editar</button>
           : <button type="button" onClick={open} className="btn-primary text-sm">Elegir mis temas</button>)}

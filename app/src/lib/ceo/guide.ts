@@ -313,7 +313,7 @@ const GUIDES: Record<string, CeoGuide> = {
       "«Experiencia declarada», «Cómo decides», tus insignias y tu bitácora con cada decisión.",
     ],
     faqs: [
-      f("¿Para qué sirven mis temas?", "Ordenan lo que te recomendamos. No te cierran ningún otro tema, no suman competencias ni puntos, y puedes cambiarlos cuando quieras. Son al menos cinco."),
+      f("¿Para qué sirven mis temas?", "Señalan en Academy las rutas que los trabajan, con la etiqueta «De tus temas», y en Mi progreso, sus academias. No te cierran ningún otro tema, no suman competencias ni puntos, y puedes cambiarlos cuando quieras. Son al menos cinco."),
       f("¿Cómo cambio mis temas o mi ritmo?", "En «Temas y ritmo», con «Editar». Marca o desmarca temas, elige tus días por semana y tus minutos por sesión, y guarda."),
       f("¿En qué se distinguen preferencias y competencias?", "Las preferencias describen tu estilo y no tienen lado bueno ni malo: corto o largo plazo, prudente o audaz, números o personas, decidir solo o involucrar, evitar o encarar. Las competencias sí miden qué tan bien resuelves: analizar, consultar, anticipar, negociar, ejecutar y priorizar."),
       f("¿Qué significan las etiquetas de las competencias?", "Tendencia observada: hay señales, pero pocas. En desarrollo: hay evidencia suficiente, sin un patrón claro. Fortaleza consistente: lo hiciste bien muchas veces y en situaciones distintas. Área por desarrollar: la misma dificultad apareció varias veces. Aún sin situaciones: no te ha tocado un asunto que la ponga a prueba."),
@@ -331,6 +331,7 @@ const GUIDES: Record<string, CeoGuide> = {
       "Cada tema es una ruta de habilidad con niveles: de lo esencial a lo más profundo.",
       "«Tu enfoque de estudio» sugiere la competencia que más te conviene practicar.",
       "Con «Para ti» ves las rutas ordenadas según lo que has demostrado; con «Orden original», todas en su orden.",
+      "La etiqueta «De tus temas» marca las rutas que trabajan alguno de los temas que elegiste.",
       "Al final está el glosario de tu industria, con buscador.",
     ],
     faqs: [
