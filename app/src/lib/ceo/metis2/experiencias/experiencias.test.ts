@@ -17,7 +17,7 @@ import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { ACADEMY_IDS, SKILLS, skillById, skillsAt } from "../academias";
 import {
-  ALIAS_FUENTES, ATLAS, EXPERIENCIAS, FUENTES, LOTES, LOTE_N1, MAX_FIELD, MAX_REPLY, OPTION_LENGTH_RATIO, REVEAL_AFTER, advance, atlasSources, calc, checkExperiencia, correctOf,
+  ALIAS_FUENTES, ATLAS, EXPERIENCIAS, FUENTES, LOTES, LOTE_N1, RETOS, MAX_FIELD, MAX_REPLY, OPTION_LENGTH_RATIO, REVEAL_AFTER, advance, atlasSources, calc, checkExperiencia, correctOf,
   editorialOfSkill, experienciaByEditorial, experienciaBySlug, itemOf, loteOf, newRun, nextOf, nodeOf, originCount, readRun, recompute, routeOf, rowsOf, scoreVariant, sharedAmounts,
   sharpDecisions, shownNumbers, skillOfEditorial, stepOf, variantReady,
   type Accion, type Experiencia, type NodoDecision, type Opcion, type Recorrido, type Respuesta, type Tarea,
@@ -201,15 +201,18 @@ describe("correspondencia de identificadores (Atlas ↔ catálogo)", () => {
     for (const f of Object.values(ALIAS_FUENTES)) expect(FUENTES[f], f).toBeDefined();
   });
 
-  it("tres lotes de seis experiencias, una por academia, con dieciocho habilidades distintas de nivel 1", () => {
-    expect(LOTES.map((l) => l.items.length)).toEqual([6, 6, 6]);
+  it("cuatro lotes de seis experiencias que completan las veinticuatro habilidades de nivel 1", () => {
+    expect(LOTES.map((l) => l.items.length)).toEqual([6, 6, 6, 6]);
     const n1 = skillsAt(1).map((s) => s.id);
     expect(n1).toHaveLength(24);
     const items = LOTES.flatMap((l) => l.items);
-    expect(new Set(items.map((i) => i.primary)).size).toBe(18);
-    expect(new Set(items.map((i) => i.editorialId)).size).toBe(18);
+    expect(new Set(items.map((i) => i.primary)).size).toBe(24);
+    expect([...new Set(items.map((i) => i.primary))].sort()).toEqual([...n1].sort());
+    expect(new Set(items.map((i) => i.editorialId)).size).toBe(24);
+    // Los lotes 01 a 03 traen una experiencia por academia. El 04 completa las 24: dos de Finanzas y ninguna de Riesgo.
+    for (const lote of LOTES.slice(0, 3)) expect(new Set(lote.items.map((l) => skillById(l.primary)!.academy)).size).toBe(6);
+    expect(LOTES[3].items.map((l) => skillById(l.primary)!.academy).sort()).toEqual(["crecimiento", "estrategia", "finanzas", "finanzas", "liderazgo", "operaciones"]);
     for (const lote of LOTES) {
-      expect(new Set(lote.items.map((l) => skillById(l.primary)!.academy)).size).toBe(6);
       expect(lote.files.length).toBeGreaterThan(0);
       for (const l of lote.items) {
         expect(n1, l.editorialId).toContain(l.primary);
@@ -222,6 +225,9 @@ describe("correspondencia de identificadores (Atlas ↔ catálogo)", () => {
     }
     // El lote 02 llegó sin manifiesto.
     expect(LOTES[1].items.every((l) => l.manifest.length === 0)).toBe(true);
+    // El lote 04 tampoco trae manifiesto: sus fuentes son las del Atlas para la habilidad principal.
+    expect(LOTES[3].items.every((l) => l.manifest.length === 0 && [...l.sources].sort().join() === [...atlasSources(l.primary)].sort().join())).toBe(true);
+    expect(LOTES[3].files.map((f) => f[0])).toEqual(["EXPERIENCIAS_N1_LOTE_04.md", "EXECUTIVE_CHALLENGE_N1_V2.md"]);
   });
 
   it("deja a la vista dónde el Atlas y la experiencia no citan las mismas fuentes", () => {
@@ -252,7 +258,19 @@ describe("registro de experiencias convertidas", () => {
     expect(hechas).toEqual(["EDIT-N1-013", "EDIT-N1-015", "EDIT-N1-016", "EDIT-N1-017", "EDIT-N1-018"]);
     expect(new Set(hechas.map((id) => by(id).academy)).size).toBe(5);
     expect(EXPERIENCIAS.map((x) => x.editorialId)).toEqual([...EXPERIENCIAS.map((x) => x.editorialId)].sort());
-    expect(EXPERIENCIAS).toHaveLength(12);
+    expect(EXPERIENCIAS).toHaveLength(13);
+  });
+
+  it("del lote 04 hay una convertida, EDIT-N1-020; las otras cinco están leídas y no se muestran", () => {
+    const ids = LOTES[3].items.map((i) => i.editorialId);
+    expect(ids).toEqual(["EDIT-N1-019", "EDIT-N1-020", "EDIT-N1-021", "EDIT-N1-022", "EDIT-N1-023", "EDIT-N1-024"]);
+    expect(ids.filter((id) => EXPERIENCIAS.some((x) => x.editorialId === id))).toEqual(["EDIT-N1-020"]);
+  });
+
+  it("los dos Executive Challenge son piezas distintas: el nuevo no sobrescribe al anterior", () => {
+    expect(RETOS.map((r) => r.editorialId)).toEqual(["EC-N1-001-A", "EC-N1-002-A"]);
+    expect(RETOS[0]).toMatchObject({ packageVersion: "1.0", estado: "leido" });
+    expect(RETOS[1]).toMatchObject({ packageVersion: "1.3", scenes: 14, skills: 24, estado: "demostracion" });
   });
 });
 
@@ -664,6 +682,37 @@ describe("identidades que los paquetes listan en sus notas de QA", () => {
     expect(v["V.ingresos"] - v["V.cobros"]).toBe(ans.por_cobrar);
   });
 
+  it("EDIT-N1-020: 18 − 10 − 14 + 25 − 8 = 11; miércoles −6; con 7 anticipados 1, restan 18 y el viernes sigue en 11; B 12 − 5 − 9 + 14 − 4 = 8 (miles)", () => {
+    const X = by("EDIT-N1-020");
+    const a = X.docs[0];
+    expect(recompute(a, "A.final")).toBe(11000);
+    const amt = (id: string) => a.rows.find((r) => r.id === id)!.amount!;
+    const lunes = amt("A.inicial") + amt("A.materias");
+    const miercoles = lunes + amt("A.nomina");
+    const jueves = miercoles + amt("A.cobro");
+    expect([lunes, miercoles, jueves, jueves + amt("A.proveedor")]).toEqual([8000, -6000, 19000, 11000]);
+    const s = X.nodes.find((n) => n.id === "saldos")!;
+    if (s.kind === "calcular") expect(s.fields.map((f) => f.answer)).toEqual([8000, 6000, 19000, 11000]);
+    const anticipo = 7000;
+    expect(18000 - 10000 - 14000 + anticipo).toBe(1000);
+    expect(25000 - anticipo).toBe(18000);
+    expect(1000 + 18000 - 8000).toBe(11000);
+    const r = X.nodes.find((n) => n.id === "recalculo")!;
+    if (r.kind === "calcular") expect(r.fields.map((f) => f.answer)).toEqual([1000, 18000, 11000]);
+    // Ninguna ruta defendible da por hecho dinero que nadie confirmó ni dice que el anticipo es una venta nueva.
+    const p = X.nodes.find((n) => n.id === "propuesta")!;
+    if (p.kind === "decision") { expect(p.options.filter((o) => o.tipo === "defendible").map((o) => o.id)).toEqual(["anticipo", "prestamo"]); for (const o of p.options.filter((q) => q.tipo === "defendible")) expect(o.text).toMatch(/confirm/); }
+    const v = Object.fromEntries(X.variant.docs[0].rows.map((q) => [q.id, q.amount!]));
+    const vl = v["V.inicial"] + v["V.insumos"];
+    const vm = vl + v["V.nomina"];
+    const vj = vm + v["V.cobro"];
+    expect([vl, vm, vj, vj + v["V.renta"]]).toEqual([7000, -2000, 12000, 8000]);
+    const ans = answers(X, "bien") as Record<string, number>;
+    expect([ans.lunes, ans.viernes, ans.faltante]).toEqual([7000, 8000, 2000]);
+    // La variante no reutiliza el calendario: otra empresa, el faltante cae en otro día.
+    expect(JSON.stringify(X.variant)).not.toMatch(/panader|cafeter|Nora/i);
+  });
+
   it("EDIT-N1-007: 118 − 92 = 26; 15 de 20 es 75 % en la muestra, sin hablar de una tasa general", () => {
     const X = by("EDIT-N1-007");
     expect(cell(X, "A.precio", 0) - cell(X, "A.precio", 1)).toBe(26);
@@ -885,7 +934,7 @@ describe("recorridos guardados con el formato anterior", () => {
 describe("las experiencias no acreditan ni tocan la partida", () => {
   const read = (p: string) => readFileSync(join(process.cwd(), p), "utf8");
   const imports = (p: string) => [...read(p).matchAll(/from "([^"]+)"/g)].map((m) => m[1]);
-  const SCREENS = ["src/components/ceo/ExperienciaPiloto.tsx", "src/app/ceo/piloto/page.tsx", "src/app/ceo/piloto/[slug]/page.tsx"];
+  const SCREENS = ["src/components/ceo/ExperienciaPiloto.tsx", "src/app/ceo/piloto/page.tsx", "src/app/ceo/piloto/[slug]/page.tsx", "src/components/ceo/RetoPiloto.tsx", "src/app/ceo/piloto/reto/[slug]/page.tsx"];
 
   it("la política de evidencia es «no registra» y ninguna está publicada ni revisada", () => {
     for (const x of EXPERIENCIAS) { expect(x.evidencePolicy).toBe("no_registra"); expect(x.qa.publishedAt).toBeNull(); expect(x.qa.editorialReviewedAt).toBeNull(); expect(x.provenance).toBe("creacion_original"); }
@@ -908,13 +957,20 @@ describe("las experiencias no acreditan ni tocan la partida", () => {
     expect(src).toContain("metis:piloto:");
     expect(src).toContain("No cuenta para tu avance, tu nivel ni tu perfil.");
     expect(read(SCREENS[1])).not.toMatch(/localStorage/);
+    // El reto guarda su intento con otra clave y avisa que no cuenta.
+    const reto = read(SCREENS[3]);
+    expect(reto.match(/localStorage\.(setItem|getItem)/g)).toHaveLength(2);
+    expect(reto).toContain("metis:reto:");
+    expect(reto).toContain("No cuenta para tu avance, tu nivel ni tu perfil.");
+    expect(reto).toContain("No hay veredicto");
+    expect(read(SCREENS[4])).not.toMatch(/localStorage/);
   });
 
   it("no están en el menú y los buscadores no las indexan", () => {
     const shell = read("src/components/ceo/CeoShell.tsx");
     const nav = shell.slice(shell.indexOf("const NAV"), shell.indexOf("export function CeoShell"));
     expect(nav).not.toContain("piloto");
-    for (const p of SCREENS.slice(1)) expect(read(p)).toMatch(/index:\s*false/);
+    for (const p of SCREENS.filter((q) => q.includes("/app/"))) expect(read(p)).toMatch(/index:\s*false/);
   });
 });
 

@@ -49,7 +49,7 @@ export function repositorioMarkdown(): string {
     `Paquetes recibidos: ${LOTES.map((l) => `${l.name} (versión ${l.packageVersion})`).join(", ")}. Fuentes abiertas y leídas el ${SOURCES_CHECKED_AT}. Este documento se genera desde el código (\`app/src/lib/ceo/metis2/experiencias/\`); una prueba falla si se desfasa.`);
 
   p("## 1. Estado en una línea",
-    `${EXPERIENCIAS.length} de las ${items.length} experiencias recibidas están convertidas y se pueden recorrer completas por enlace (\`/piloto\`): ${LOTES.map((l) => `${done(l.id)} de ${l.items.length} del ${l.name.toLowerCase()}`).join(", ")}. Ninguna registra evidencia, cambia dominio, niveles ni perfil, y ninguna aparece en el menú. Ninguna ha sido revisada por una persona. El Executive Challenge está leído y trazado, sin convertir.`);
+    `${EXPERIENCIAS.length} de las ${items.length} experiencias recibidas están convertidas y se pueden recorrer completas por enlace (\`/piloto\`): ${LOTES.map((l) => `${done(l.id)} de ${l.items.length} del ${l.name.toLowerCase()}`).join(", ")}. Ninguna registra evidencia, cambia dominio, niveles ni perfil, y ninguna aparece en el menú. Ninguna ha sido revisada por una persona. El Executive Challenge EC-N1-002-A está convertido como demostración (\`/piloto/reto/el-viernes-que-nadie-queria-prometer\`), sin regla de aprobación habilitada; EC-N1-001-A sigue leído, sin convertir y sin cambios.`);
 
   p("## 2. Qué se recibió",
     "Los archivos se leyeron completos. No se copiaron al repositorio porque es público y los paquetes traen las respuestas de las evaluaciones; se guarda su huella para saber con qué versión se trabajó.");
@@ -57,7 +57,9 @@ export function repositorioMarkdown(): string {
   p("Diferencias entre paquetes que conviene conocer:",
     "1. El lote 02 llegó como un solo archivo de experiencias. No trae manifiesto ni rúbricas en formato de datos, como sí traen el lote 01 y el lote 03; las rúbricas se tomaron del texto de cada experiencia.",
     "2. El archivo de pruebas del lote 03 remite a un `QA_Y_ERRATAS.md` del lote 02. Ese archivo no se recibió.",
-    `3. El lote 03 usa otros nombres para tres fuentes. Se leen como la misma fuente del registro: ${Object.entries(ALIAS_FUENTES).map(([a, b]) => `${a} es ${b}`).join("; ")}.`);
+    `3. El lote 03 usa otros nombres para tres fuentes. Se leen como la misma fuente del registro: ${Object.entries(ALIAS_FUENTES).map(([a, b]) => `${a} es ${b}`).join("; ")}.`,
+    "4. Del paquete 1.3 (lote 04) se recibieron solo dos archivos: las seis experiencias y el Executive Challenge ampliado. El mensaje de entrega anuncia también rúbricas, manifiesto, `TRAZABILIDAD_LOTE_04.md`, controles de calidad y plan de continuación; esos archivos no llegaron. Las fuentes y las rúbricas del lote 04 se tomaron del texto de cada experiencia; su columna de manifiesto queda vacía.",
+    "5. El lote 04 no trae una experiencia por academia: completa las 24 habilidades con dos de Finanzas y ninguna de Riesgo, porque Riesgo ya tenía sus tres habilidades cubiertas.");
 
   p("## 3. Correspondencia de identificadores",
     "Los 52 identificadores editoriales del Atlas corresponden uno a uno con las 52 habilidades del catálogo: mismo nombre, mismo orden, misma academia, mismo nivel de entrada y la misma descripción de lo que se sabe hacer. La única diferencia de forma: cinco prerrequisitos del Atlas llevan entre paréntesis la academia de la habilidad a la que apuntan (EST-05, EST-06, CRE-08, CRE-09 y RIE-07); son las mismas habilidades.",
@@ -98,7 +100,8 @@ export function repositorioMarkdown(): string {
   const missing = n1.filter((s) => !covered.includes(s));
   const twice = covered.filter((s) => items.filter((i) => i.primary === s.id).length > 1);
   p(`Las ${items.length} experiencias cubren ${covered.length} de las ${n1.length} habilidades de Nivel 1 como habilidad principal${twice.length ? ` (${twice.map((s) => `\`${s.id}\``).join(", ")} aparece más de una vez)` : ""}. ${missing.length ? `Quedan ${missing.length} sin experiencia: ${missing.map((s) => `\`${s.id}\``).join(", ")}.` : "No queda ninguna sin experiencia."}`,
-    "Executive Challenge EC-N1-001-A «La semana en que casi todo parecía urgente»: leído. Sus cuatro cálculos se revisaron a mano y cuadran. No se convirtió: el paquete pide una segunda versión equivalente antes de usarlo, y hoy solo existe la A.");
+    "Executive Challenge EC-N1-001-A «La semana en que casi todo parecía urgente» (paquete 1.0): leído. Sus cuatro cálculos se revisaron a mano y cuadran. No se convirtió y no se modificó: el paquete 1.3 lo deja como prototipo narrativo, no como variante para acreditar.",
+    "Executive Challenge EC-N1-002-A «El viernes que nadie quería prometer» (paquete 1.3): convertido como demostración, en `app/src/lib/ceo/metis2/reto/`. Tres actos, trece escenas con habilidades y una síntesis que no suma; cada una de las 24 habilidades de Nivel 1 se observa en una sola escena y vale de 0 a 4 (96 en total). Las decisiones dejan marcas que cambian lo que dicen los personajes después. Tiene salvaguardas de inocuidad, ética y control bancario que no se compensan con otros puntos. Los umbrales candidatos (72, 76 y 80 de 96) no están habilitados: el informe nunca da veredicto. La variante B que pide el paquete (mantenimiento preventivo de edificios) no está escrita.");
 
   p("## 6. Cómo se convierte cada pieza del documento editorial",
     "| En el documento editorial | En la plataforma | Qué se conserva y qué cambia |", "|---|---|---|",
@@ -184,7 +187,7 @@ export function repositorioMarkdown(): string {
 
   const pend = items.filter((i) => !live(i.editorialId)).map((i) => i.editorialId);
   p("## 13. Lo que no se hizo",
-    `${pend.length ? `No se han convertido ${pend.length} experiencias: ${pend.join(", ")}. ` : ""}${live("EDIT-N1-014") ? "" : "EDIT-N1-014 llegó a convertirse, pero el archivo se perdió en un reinicio del entorno de trabajo antes de guardarse en el repositorio, junto con la copia de trabajo de los paquetes. Para rehacerla con los textos exactos del paquete hace falta recibir otra vez el lote 03. "}No se convirtió el Executive Challenge. No se conectó nada al registro de evidencias ni al cálculo de dominio. No se creó ninguna tabla en la base de datos. Nadie ha revisado las respuestas escritas: no hay pantalla de revisión. No se probó con lector de pantalla ni en un teléfono físico. No se comparó cada habilidad con el temario de cada curso. No se calibró ninguna rúbrica.`);
+    `${pend.length ? `No se han convertido ${pend.length} experiencias: ${pend.join(", ")}. ` : ""}${live("EDIT-N1-014") ? "" : "EDIT-N1-014 llegó a convertirse, pero el archivo se perdió en un reinicio del entorno de trabajo antes de guardarse en el repositorio, junto con la copia de trabajo de los paquetes. Para rehacerla con los textos exactos del paquete hace falta recibir otra vez el lote 03. "}El Executive Challenge EC-N1-002-A no tiene variante B ni regla de aprobación, y su reparto de puntos por paso es propuesta de la conversión. No se conectó nada al registro de evidencias ni al cálculo de dominio. No se creó ninguna tabla en la base de datos. Nadie ha revisado las respuestas escritas: no hay pantalla de revisión. No se probó con lector de pantalla ni en un teléfono físico. No se comparó cada habilidad con el temario de cada curso. No se calibró ninguna rúbrica.`);
 
   return L.join("\n").trimEnd() + "\n";
 }
