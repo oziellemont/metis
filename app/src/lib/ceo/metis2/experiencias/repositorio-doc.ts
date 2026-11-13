@@ -1,48 +1,63 @@
 /**
  * MÊTIS 2.0 · genera docs/metis2/06-repositorio-academico.md a partir de los datos del código,
- * para que la correspondencia, las fuentes y el estado del piloto no se desfasen del documento.
+ * para que la correspondencia, las fuentes y el estado de cada experiencia no se desfasen del documento.
  */
-import { ACADEMIES, skillById, skillsAt } from "../academias";
-import { ATLAS, FUENTES, LOTE_N1, PACKAGE_VERSION, PAQUETE_ARCHIVOS, SOURCES_CHECKED_AT, atlasSources } from "./fuentes";
-import { checkExperiencia, originCount, sharedAmounts, money } from "./motor";
+import { ACADEMIES, academyById, skillById, skillsAt } from "../academias";
+import { ALIAS_FUENTES, ATLAS, FUENTES, LOTES, SOURCES_CHECKED_AT, atlasSources, loteOf } from "./fuentes";
+import { checkExperiencia, correctOf, originCount, sharedAmounts, money } from "./motor";
 import { EXPERIENCIAS } from "./index";
-import type { Experiencia, Nodo } from "./tipos";
+import type { Experiencia, Nodo, Tarea } from "./tipos";
 
 const KIND: Record<Nodo["kind"], string> = {
   mensaje: "Mensaje de un personaje", explorar: "Documentos tocables", decision: "Decisión con rutas", senalar: "Señalar sobre el documento",
+  clasificar: "Clasificar tarjetas en grupos", ordenar: "Ordenar una secuencia", calcular: "Calcular con apoyo",
   dato: "Dato nuevo", redactar: "Respuesta escrita", cierre: "Cierre con lo decidido y el concepto",
 };
+const TASK: Record<Tarea["kind"], string> = { cifra: "cifra por calcular y escribir", clasificar: "clasificar tarjetas", ordenar: "ordenar una secuencia", senalar: "señalar renglones", texto: "respuesta escrita" };
 const ORIGEN = { fuente: "Texto del paquete", adaptado: "Descrito en el paquete, redactado al convertir", conversion: "Añadido al convertir" } as const;
+const TIPO = { defendible: "defendible", riesgosa: "con riesgo", concepto_erroneo: "confusión" } as const;
 
 const name = (id: string) => skillById(id)?.name ?? id;
+const cell = (t: string) => t.replace(/\|/g, "/");
 
 function flow(x: Experiencia): string[] {
   return x.nodes.map((n) => {
-    const what = n.kind === "decision" ? `«${n.text}» · ${n.options.map((o) => `${o.id} (${o.tipo === "defendible" ? "defendible" : o.tipo === "riesgosa" ? "con riesgo" : "confusión"}) → ${o.next}`).join("; ")}`
-      : n.kind === "senalar" ? `${n.prompt} Solo llega aquí quien no eligió la ruta defendible. → ${n.next}`
+    const what = n.kind === "decision" ? `«${n.text}» · ${n.options.map((o) => `${o.id} (${TIPO[o.tipo]}) → ${o.next}`).join("; ")}`
+      : n.kind === "senalar" ? `${n.prompt} ${correctOf(n).length} ${correctOf(n).length === 1 ? "renglón" : "renglones"} por encontrar; cada error trae su explicación. → ${n.next}`
+      : n.kind === "clasificar" ? `${n.prompt} ${n.items.length} tarjetas en ${n.groups.length} grupos (${n.groups.map((g) => g.label).join(", ")}). → ${n.next}`
+      : n.kind === "ordenar" ? `${n.prompt} ${n.cards.length} tarjetas; ${n.strict ? "se revisa el orden" : "se acepta cualquier orden y se muestra uno de referencia"}. → ${n.next}`
+      : n.kind === "calcular" ? `${n.prompt} ${n.fields.length} cifras, con pista por cifra y calculadora. → ${n.next}`
+      : n.kind === "redactar" ? `${n.fields ? `${n.fields.length} campos cortos` : "Un texto libre"}; no se califica, se compara con una referencia. → ${n.next}`
+      : n.kind === "dato" ? `${n.title}. → ${n.next}`
       : n.kind === "cierre" ? "Da paso a la variante." : `→ ${n.next}`;
-    return `| ${x.moments[n.moment]} | \`${n.id}\` | ${KIND[n.kind]} | ${what} | ${ORIGEN[n.origen]} |`;
+    return `| ${x.moments[n.moment]} | \`${n.id}\` | ${KIND[n.kind]} | ${cell(what)} | ${ORIGEN[n.origen]} |`;
   });
 }
 
 export function repositorioMarkdown(): string {
-  const x = EXPERIENCIAS[0];
-  const rev = checkExperiencia(x);
-  const o = originCount(x);
   const uses = (f: string) => ATLAS.filter((a) => a[2].includes(f)).length;
+  const cited = (f: string) => LOTES.flatMap((l) => l.items).filter((i) => i.sources.includes(f)).length;
   const n1 = skillsAt(1);
+  const items = LOTES.flatMap((l) => l.items);
+  const live = (editorialId: string) => EXPERIENCIAS.find((e) => e.editorialId === editorialId);
+  const pilot = EXPERIENCIAS.find((e) => e.editorialId === "EDIT-N1-002")!;
   const L: string[] = [];
   const p = (...s: string[]) => L.push(...s, "");
+  const done = (lote: string) => LOTES.find((l) => l.id === lote)!.items.filter((i) => live(i.editorialId)).length;
 
   p("# MÊTIS 2.0 · Repositorio Académico",
-    `Paquete recibido: versión ${PACKAGE_VERSION}. Fuentes abiertas y leídas el ${SOURCES_CHECKED_AT}. Este documento se genera desde el código (\`app/src/lib/ceo/metis2/experiencias/\`); una prueba falla si se desfasa.`);
+    `Paquetes recibidos: ${LOTES.map((l) => `${l.name} (versión ${l.packageVersion})`).join(", ")}. Fuentes abiertas y leídas el ${SOURCES_CHECKED_AT}. Este documento se genera desde el código (\`app/src/lib/ceo/metis2/experiencias/\`); una prueba falla si se desfasa.`);
 
   p("## 1. Estado en una línea",
-    "Una experiencia piloto está convertida y se puede recorrer completa por enlace. No registra evidencia, no cambia dominio, niveles ni perfil, y no aparece en el menú. Las otras cinco experiencias y el Executive Challenge están leídos y trazados, sin convertir, a la espera de la revisión de la piloto.");
+    `${EXPERIENCIAS.length} de las ${items.length} experiencias recibidas están convertidas y se pueden recorrer completas por enlace (\`/piloto\`): ${LOTES.map((l) => `${done(l.id)} de ${l.items.length} del ${l.name.toLowerCase()}`).join(", ")}. Ninguna registra evidencia, cambia dominio, niveles ni perfil, y ninguna aparece en el menú. Ninguna ha sido revisada por una persona. El Executive Challenge está leído y trazado, sin convertir.`);
 
   p("## 2. Qué se recibió",
-    "Diez archivos. Se leyeron completos. No se copiaron al repositorio porque es público y el paquete trae las respuestas de las evaluaciones; se guarda su huella para saber con qué versión se trabajó.",
-    "| Archivo | Huella (SHA-256, primeros 16) |", "|---|---|", ...PAQUETE_ARCHIVOS.map(([f, h]) => `| ${f} | \`${h}\` |`));
+    "Los archivos se leyeron completos. No se copiaron al repositorio porque es público y los paquetes traen las respuestas de las evaluaciones; se guarda su huella para saber con qué versión se trabajó.");
+  for (const l of LOTES) p(`### ${l.name} · versión ${l.packageVersion}`, "| Archivo | Huella (SHA-256, primeros 16) |", "|---|---|", ...l.files.map(([f, h]) => `| ${f} | \`${h}\` |`));
+  p("Diferencias entre paquetes que conviene conocer:",
+    "1. El lote 02 llegó como un solo archivo de experiencias. No trae manifiesto ni rúbricas en formato de datos, como sí traen el lote 01 y el lote 03; las rúbricas se tomaron del texto de cada experiencia.",
+    "2. El archivo de pruebas del lote 03 remite a un `QA_Y_ERRATAS.md` del lote 02. Ese archivo no se recibió.",
+    `3. El lote 03 usa otros nombres para tres fuentes. Se leen como la misma fuente del registro: ${Object.entries(ALIAS_FUENTES).map(([a, b]) => `${a} es ${b}`).join("; ")}.`);
 
   p("## 3. Correspondencia de identificadores",
     "Los 52 identificadores editoriales del Atlas corresponden uno a uno con las 52 habilidades del catálogo: mismo nombre, mismo orden, misma academia, mismo nivel de entrada y la misma descripción de lo que se sabe hacer. La única diferencia de forma: cinco prerrequisitos del Atlas llevan entre paréntesis la academia de la habilidad a la que apuntan (EST-05, EST-06, CRE-08, CRE-09 y RIE-07); son las mismas habilidades.",
@@ -54,91 +69,122 @@ export function repositorioMarkdown(): string {
   }
 
   p("## 4. Revisión de las fuentes",
-    "Qué se hizo: se abrió cada una de las doce direcciones y se leyó lo que la página dice. Qué no se hizo: comparar concepto por concepto cada una de las 52 habilidades con el temario de cada curso. El propio Atlas declara que el respaldo es «correspondencia temática curricular; no equivalencia de curso», y eso es lo que estas páginas permiten sostener.",
-    "| Fuente | Institución y componente | Habilidades que la citan | Qué muestra la página |", "|---|---|---|---|",
-    ...Object.entries(FUENTES).map(([k, f]) => `| ${k} | [${f.institution} · ${f.component}](${f.url}) | ${uses(k)} | ${f.seen} |`));
+    `Qué se hizo: se abrió cada una de las ${Object.keys(FUENTES).length} direcciones y se leyó lo que la página dice. Qué no se hizo: comparar concepto por concepto cada una de las 52 habilidades con el temario de cada curso. El propio Atlas declara que el respaldo es «correspondencia temática curricular; no equivalencia de curso», y eso es lo que estas páginas permiten sostener.`,
+    "| Fuente | Institución y componente | Habilidades del Atlas que la citan | Experiencias que la citan | Qué muestra la página |", "|---|---|---|---|---|",
+    ...Object.entries(FUENTES).map(([k, f]) => `| ${k} | [${f.institution} · ${f.component}](${f.url}) | ${uses(k)} | ${cited(k)} | ${f.seen} |`));
   p("### Observaciones sobre exactitud",
-    "1. **Finanzas, vocabulario y estados financieros.** El Atlas cita HBS_FIN en las diez habilidades de Finanzas. Esa página describe Finance I y Finance II (finanzas corporativas, mercados, valuación), no contabilidad. Para vocabulario financiero, estado de resultados y balance, el curso de Harvard que corresponde es Financial Reporting and Control, de la unidad Accounting and Management; su página (https://www.hbs.edu/faculty/units/am/Pages/curriculum.aspx) abre y habla de «the vocabulary of financial statements». Se sugiere añadirla al registro y citarla en FIN-01 a FIN-04.",
+    "1. **Finanzas, vocabulario y estados financieros.** El Atlas cita HBS_FIN en las diez habilidades de Finanzas. Esa página describe Finance I y Finance II (finanzas corporativas, mercados, valuación), no contabilidad. Para vocabulario financiero, estado de resultados y balance, el curso de Harvard que corresponde es Financial Reporting and Control, de la unidad Accounting and Management; su página (https://www.hbs.edu/faculty/units/am/Pages/curriculum.aspx) abre y habla de «the vocabulary of financial statements». Ya está en el registro como HBS_AM y el lote 02 la cita en EDIT-N1-008; el Atlas sigue citando HBS_FIN en FIN-01 a FIN-04.",
     "2. **Riesgo.** HBS_GOV se cita en siete de las ocho habilidades de Riesgo. La página describe responsabilidades legales, éticas y económicas, y sistemas de gobierno: respalda bien ética, cumplimiento y gobierno corporativo. No menciona riesgo, incertidumbre ni crisis, así que es un respaldo débil para RIE-01, RIE-04 y RIE-07.",
     "3. **Wharton.** WH_CORE se cita en 17 habilidades (todas las de Riesgo y casi todas las de Operaciones). La página solo lista cursos por clave y nombre; no describe contenidos. Sirve para decir que el curso existe en el núcleo, no para sostener un concepto.",
     `4. **Stanford.** STAN_CORE se cita en ${uses("STAN_CORE")} de las 52 habilidades. Es una página con una descripción breve por curso. Con tanta carga en una sola página conviene, al profundizar, citar el curso concreto y no la página general.`,
     "5. **Liderazgo.** STAN_LAB respalda las nueve habilidades de Liderazgo. La página describe ejercicios y simulaciones en equipo con acompañamiento; no habla de retroalimentación de forma expresa.",
-    "6. **Fuentes distintas entre archivos.** En cinco de las seis experiencias, las fuentes que cita la experiencia no son las mismas que cita el Atlas para su habilidad principal, y el manifiesto guarda una sola por experiencia. Ejemplo: EDIT-N1-002 cita STAN_CORE y WH_CORE; el Atlas, para FIN-01, cita STAN_CORE y HBS_FIN. Conviene decidir cuál manda.",
+    "6. **Fuentes distintas entre archivos.** En cinco de las seis experiencias del lote 01, las fuentes que cita la experiencia no son las mismas que cita el Atlas para su habilidad principal, y el manifiesto guarda una sola por experiencia. Ejemplo: EDIT-N1-002 cita STAN_CORE y WH_CORE; el Atlas, para FIN-01, cita STAN_CORE y HBS_FIN. Conviene decidir cuál manda.",
     "7. **Columnas iguales en las 52 filas.** «tipo_respaldo», «diseno_metis» y «estado» traen el mismo texto en todas las filas del Atlas; todavía no distinguen una habilidad de otra.",
     "8. **Nombre del archivo.** «FUENTES_VERIFICADAS» describe bien que las direcciones existen y son oficiales. No debe leerse como que cada habilidad está verificada contra su curso.");
 
-  p("## 5. Trazabilidad del lote piloto",
-    "Fuente académica → habilidad → experiencia → evaluación independiente. Las fuentes de la columna son las que cita la experiencia; entre paréntesis, las que cita el Atlas cuando difieren.",
-    "| Experiencia | Habilidad principal | Secundarias | Fuentes | Evaluación independiente | Rúbrica | En la plataforma |", "|---|---|---|---|---|---|---|",
-    ...LOTE_N1.map((l) => {
-      const at = atlasSources(l.primary);
-      const same = [...at].sort().join() === [...l.sources].sort().join();
-      const live = EXPERIENCIAS.find((e) => e.editorialId === l.editorialId);
-      return `| ${l.editorialId} «${l.title}» | \`${l.primary}\` ${name(l.primary)} | ${l.secondary.map((s) => `\`${s}\``).join(", ")} | ${l.sources.join(", ")}${same ? "" : ` (Atlas: ${at.join(", ")})`} | ${l.variant} | ${l.rubric} | ${live ? `Piloto convertida: \`${live.id}\`` : "Leída, sin convertir"} |`;
-    }));
-  p(`Las seis habilidades principales son 6 de las ${n1.length} de Nivel 1. Quedan ${n1.length - LOTE_N1.length} sin experiencia: ${n1.filter((s) => !LOTE_N1.some((l) => l.primary === s.id)).map((s) => `\`${s.id}\``).join(", ")}.`,
+  p("## 5. Trazabilidad por lote",
+    "Fuente académica → habilidad → experiencia → evaluación independiente. Las fuentes de la columna son las que cita la experiencia; entre paréntesis, las que cita el Atlas cuando difieren.");
+  for (const l of LOTES) {
+    p(`### ${l.name} · versión ${l.packageVersion}`,
+      "| Experiencia | Habilidad principal | Secundarias | Fuentes | Evaluación independiente | Rúbrica | En la plataforma |", "|---|---|---|---|---|---|---|",
+      ...l.items.map((i) => {
+        const at = atlasSources(i.primary);
+        const same = [...at].sort().join() === [...i.sources].sort().join();
+        const x = live(i.editorialId);
+        return `| ${i.editorialId} «${i.title}» | \`${i.primary}\` ${name(i.primary)} | ${i.secondary.map((s) => `\`${s}\``).join(", ")} | ${i.sources.join(", ")}${same ? "" : ` (Atlas: ${at.join(", ")})`} | ${i.variant} | ${i.rubric} | ${x ? `Convertida: \`${x.id}\`` : "Leída, sin convertir"} |`;
+      }));
+  }
+  const covered = n1.filter((s) => items.some((i) => i.primary === s.id));
+  const missing = n1.filter((s) => !covered.includes(s));
+  const twice = covered.filter((s) => items.filter((i) => i.primary === s.id).length > 1);
+  p(`Las ${items.length} experiencias cubren ${covered.length} de las ${n1.length} habilidades de Nivel 1 como habilidad principal${twice.length ? ` (${twice.map((s) => `\`${s.id}\``).join(", ")} aparece más de una vez)` : ""}. ${missing.length ? `Quedan ${missing.length} sin experiencia: ${missing.map((s) => `\`${s.id}\``).join(", ")}.` : "No queda ninguna sin experiencia."}`,
     "Executive Challenge EC-N1-001-A «La semana en que casi todo parecía urgente»: leído. Sus cuatro cálculos se revisaron a mano y cuadran. No se convirtió: el paquete pide una segunda versión equivalente antes de usarlo, y hoy solo existe la A.");
 
-  p("## 6. Cómo entra en lo que ya está construido",
-    "| Pieza | Qué había | Qué se añadió para el piloto | Qué falta antes de integrar el lote |", "|---|---|---|---|",
+  p("## 6. Cómo se convierte cada pieza del documento editorial",
+    "| En el documento editorial | En la plataforma | Qué se conserva y qué cambia |", "|---|---|---|",
+    "| Gancho (mensaje, correo, audio, chat) | Nodo «mensaje» con personaje y canal | El texto es el del paquete. Se añade una línea que dice qué papel tiene quien juega |",
+    "| Artefactos y documentos | Documentos tocables: renglones con importe, con columnas o de solo texto | Los datos son los del paquete. Las explicaciones al tocar son nuevas y solo aparecen en la práctica |",
+    "| Clasificación activa, mapas, arrastrar tarjetas | Nodo «clasificar»: cada tarjeta se asigna tocando su grupo | No se arrastra: se toca, para que funcione igual en celular y con teclado. Cada tarjeta mal puesta trae su explicación |",
+    "| Ordenar un flujo | Nodo «ordenar»: flechas para subir y bajar cada tarjeta | Igual: sin arrastrar. La pista señala qué paso necesita a cuál |",
+    "| Calcular o comparar cifras | Nodo «calcular»: se escribe cada cifra, con pista y calculadora | No hay opciones. Tras dos revisiones sin acertar se puede ver la solución |",
+    "| Encontrar algo en un documento | Nodo «señalar»: se toca el renglón | Uno o varios renglones. Cada error trae su explicación |",
+    "| Decisiones y elecciones | Nodo «decisión» con rutas defendibles, con riesgo o con una confusión | Cada ruta tiene consecuencia y retroalimentación propias. Donde el paquete dice que varias son defendibles, lo son |",
+    "| Nueva condición o evidencia | Nodo «dato» | Texto del paquete. Cuando el paquete pide reaccionar al dato, se añadió una decisión y queda anotada |",
+    "| Redactar un mensaje o una frase | Nodo «redactar», con un texto o varios campos cortos | No se califica ni cuenta el largo: se compara con una referencia y queda guardado |",
+    "| Microteoría | Concepto, disponible todo el tiempo en la práctica | Texto del paquete, sin cambios |",
+    "| Retroalimentación por ruta | Retroalimentación de cada opción y de cada tarjeta | Redactada a partir de lo que el paquete indica para cada ruta |",
+    "| Evaluación inédita o demostración independiente | Variante: otra situación, sin explicaciones, sin concepto y sin los documentos de la práctica | Ver la sección 7 |",
+    "| Rúbrica | Peso de cada tarea de la variante | Los pesos son los del paquete y suman 100 |",
+    "| Notas de QA | Pruebas automáticas | Cada identidad numérica del paquete es una prueba |");
+
+  p("## 7. Decisiones de conversión que cambian algo respecto del documento editorial",
+    "1. **Lo escrito no se califica solo.** Varias rúbricas dan puntos a respuestas redactadas. La plataforma no usa inteligencia artificial para calificar ni acredita con estas experiencias. Lo que se puede comprobar sin una persona (clasificar, ordenar, señalar, cifras) se comprueba; lo escrito se guarda, se compara con una respuesta de referencia y su peso queda «en espera de revisión de una persona». Cuando hay texto pendiente no se da veredicto de aprobado o no aprobado.",
+    "2. **Nada se convirtió en opción múltiple.** Donde el paquete pide identificar, clasificar u ordenar, la variante lo pide con tarjetas, secuencias o renglones, no con incisos.",
+    "3. **Tocar en vez de arrastrar.** Todas las actividades se resuelven tocando botones de al menos 36 píxeles. Nada depende solo del color: cada estado lleva texto.",
+    "4. **Piezas añadidas.** Para que cada experiencia tenga al menos dos decisiones conectadas y para que la variante tenga algo comprobable, se añadieron decisiones, tarjetas o datos. Cada uno está marcado como «añadido al convertir» y listado en la experiencia, en la sección 9.",
+    "5. **Calculadora.** Donde el paquete permite calculadora en la evaluación, la variante ofrece una calculadora aritmética que solo opera; no explica conceptos.",
+    "6. **Regla para pasar.** 70 de 100 en todas, provisional y sin calibrar.");
+
+  p("## 8. Cómo entra en lo que ya está construido",
+    "| Pieza | Qué había | Qué se añadió | Qué falta antes de acreditar |", "|---|---|---|---|",
     "| Catálogo de 52 habilidades | Identificadores estables | Tabla de correspondencia editorial y catálogo, con prueba | Nada |",
-    "| Contenido | Currículo en archivos con tipos | Contrato de experiencia: personajes, documentos, nodos, rutas, consecuencias, concepto, variante, rúbrica, fuentes, política de evidencia, estado de revisión | Cuatro tipos de interacción nuevos (ver 7) |",
-    "| Revisión automática | Pruebas del currículo | Validador: cifras recalculables, opciones de largo parecido, respuesta nunca a la vista, variante sin personajes ni explicaciones de la práctica, gancho de 15 a 35 palabras, concepto de 80 a 180 | Ampliarlo con cada tipo nuevo |",
-    "| Registro de evidencias y cálculo de dominio | Hechos y probados; sin conectar a pantallas | Nada: el piloto no los toca, y una prueba lo vigila | Decidir qué evidencia deja cada modo (ver 7) |",
-    "| Pantalla | Pantalla de decisión por pasos | Pantalla de experiencia: documentos tocables, conversación, rutas, comprobación sobre el documento, respuesta escrita, cierre, variante con cifras por escribir | Recuperar teoría y respuestas desde Academy |",
-    "| Guardar y continuar | Partida en la cuenta | El recorrido del piloto se guarda solo en el navegador | Guardarlo en la cuenta (tabla nueva) |");
+    "| Contenido | Currículo en archivos con tipos | Contrato de experiencia: personajes, documentos, nodos, rutas, consecuencias, concepto, variante, rúbrica, fuentes, política de evidencia, estado de revisión | Revisión editorial de cada experiencia |",
+    "| Revisión automática | Pruebas del currículo | Validador: cifras recalculables, opciones de largo parecido, respuesta nunca a la vista, variante sin personajes ni explicaciones de la práctica, gancho de 15 a 35 palabras, concepto de 80 a 180, al menos una tarea comprobable en la variante | Calibrar con datos de uso |",
+    "| Registro de evidencias y cálculo de dominio | Hechos y probados; sin conectar a pantallas | Nada: las experiencias no los tocan, y una prueba lo vigila | Decidir qué evidencia deja cada modo |",
+    "| Pantalla | Pantalla de decisión por pasos, con el fondo mêtis | Pantalla de experiencia: documentos tocables, conversación, rutas, clasificar, ordenar, calcular, señalar, respuesta escrita, cierre, variante y resultado; lista de experiencias | Recuperar teoría y respuestas desde Academy |",
+    "| Guardar y continuar | Partida en la cuenta | El recorrido se guarda solo en el navegador | Guardarlo en la cuenta (tabla nueva) |",
+    "| Calificación | En la aplicación | Igual. Para experiencias que no acreditan es aceptable | Calificar en el servidor y revisar lo escrito |");
 
-  p("## 7. Ajustes técnicos necesarios",
-    "1. **Tipos de interacción que piden las otras cinco experiencias.** Clasificar frases en categorías (EDIT-N1-001); señalar sobre un diagrama de flujo con capacidades (EDIT-N1-004, reutiliza «señalar»); asignar papeles en un mapa de actores (EDIT-N1-005); ordenar riesgos con su cálculo y una acción inmediata aparte (EDIT-N1-006); armar un mensaje en tres partes (EDIT-N1-003).",
-    "2. **Evaluar texto escrito.** Las variantes de EDIT-N1-001, 003 y 005 piden redactar. Calificarlas exige una persona o un modelo; el estándar pide que todo funcione también sin inteligencia artificial. Hay que decidir cómo se comprueban esas tres sin perder la independencia. En la piloto, lo escrito se guarda y se compara con una referencia, sin calificarse.",
-    "3. **Tres modos frente a una sola marca.** El estándar distingue aprender con apoyo, practicar sin apoyo y demostrar. El registro de evidencias solo tiene «con ayuda: sí o no». Propuesta, en línea con el documento 05: la práctica no deja evidencia que acredite; la variante es la que cuenta. Requiere el ajuste 1.12, pendiente de aprobación.",
-    "4. **Evidencia parcial para habilidades secundarias.** Una evidencia admite hasta tres habilidades con un solo resultado. La rúbrica de la variante califica por criterio (en la piloto: ingreso frente a cobro, utilidad, saldo). Para dar evidencia parcial hay que registrar un resultado por criterio, cada uno con su habilidad.",
-    "5. **Calificación en el servidor.** Hoy las respuestas de la variante viajan dentro de la aplicación. Para un piloto que no acredita es aceptable; antes de acreditar, la calificación debe hacerse en el servidor.",
-    "6. **Una variante no alcanza para «Demostrado».** La regla actual pide tres aciertos en tres situaciones distintas. El plan de producción del paquete ya prevé, por habilidad, experiencia principal, variante y dos escenarios más: coincide.",
-    "7. **Modo de prueba editorial.** Resuelto para el piloto con una ruta fuera del menú, que exige cuenta y no escribe nada en la partida. Para el lote completo conviene una lista de cuentas revisoras.",
-    "8. **Dónde vive el contenido.** El estándar sugiere una carpeta `content/learning/`. Se dejó junto al resto del currículo, en archivos con tipos, para que las mismas pruebas lo cubran. Se puede mover sin cambiar el contrato.",
-    "9. **Executive Challenge.** Necesita la versión B, el banco de variantes y las reglas del documento 05 aprobadas antes de construirse.");
+  p("## 9. Experiencias convertidas");
+  for (const x of EXPERIENCIAS) {
+    const rev = checkExperiencia(x);
+    const o = originCount(x);
+    const lote = loteOf(x.editorialId);
+    const pending = x.variant.tasks.filter((t) => t.kind === "texto").reduce((s, t) => s + t.weight, 0);
+    const routes = x.nodes.flatMap((n) => (n.kind === "decision" ? [n.options.length] : []));
+    p(`### ${x.editorialId} · «${x.title}»`,
+      `${academyById(x.academy).name} · ${lote?.name ?? "sin lote"}, paquete ${x.packageVersion} · \`${x.id}\` · versión ${x.version}. Habilidad principal: \`${x.skills.primary}\` ${name(x.skills.primary)}. Secundarias: ${x.skills.secondary.map((s) => `\`${s}\` ${name(s)}`).join("; ")}. Fuentes: ${x.sourceIds.join(", ")}. Entrada: \`/piloto/${x.slug}\`.`,
+      "| Momento | Nodo | Tipo | Qué pasa y a dónde lleva | Origen |", "|---|---|---|---|---|", ...flow(x));
+    p(`Decisiones: ${routes.length}, con ${routes.join(", ")} rutas. Todas las combinaciones llegan al cierre.`,
+      `**Variante.** «${x.variant.question}» ${x.variant.setting} Tareas: ${x.variant.tasks.map((t) => `${t.criterion} (${t.weight} puntos, ${TASK[t.kind]})`).join("; ")}. Se comprueban solos ${100 - pending} de 100 puntos${pending ? `; ${pending} esperan revisión de una persona` : ""}.${x.variant.calculator ? " Ofrece calculadora." : ""}`,
+      `**Origen de las piezas.** ${o.fuente} traen el texto del paquete tal cual; ${o.adaptado} están descritas en el paquete y se redactaron al convertir; ${o.conversion} se añadieron.`,
+      "**Por confirmar en la revisión editorial.**", ...x.conversionNotes.map((n, i) => `${i + 1}. ${n}`));
+    p(`**Avisos del validador.** ${rev.errors.length ? `Errores: ${rev.errors.join("; ")}. ` : ""}${rev.warnings.join("; ")}.`);
+  }
 
-  const [d1, d2] = x.nodes.filter((n) => n.kind === "decision");
-  p("## 8. La experiencia piloto",
-    `**${x.editorialId} · «${x.title}»** · \`${x.id}\` · versión ${x.version}. Habilidad principal: \`${x.skills.primary}\` ${name(x.skills.primary)}. Secundarias: ${x.skills.secondary.map((s) => `\`${s}\` ${name(s)}`).join("; ")}. Fuentes: ${x.sourceIds.join(", ")}. Entrada: \`/piloto/${x.slug}\`.`,
-    "Por qué esta: usa dos documentos tocables, un concepto que se malentiende con frecuencia, una decisión con una confusión típica y una variante que se comprueba con cifras, sin opciones y sin necesidad de calificar texto.",
-    "### Recorrido", "| Momento | Nodo | Tipo | Qué pasa y a dónde lleva | Origen |", "|---|---|---|---|---|", ...flow(x));
-  p(`Nueve combinaciones de rutas (${d1 && d1.kind === "decision" ? d1.options.length : 0} × ${d2 && d2.kind === "decision" ? d2.options.length : 0}). Todas pasan por el dato nuevo y por la respuesta escrita; quien no elige la ruta defendible en el diagnóstico pasa además por la comprobación sobre los documentos.`,
-    "### Variante independiente",
-    `«${x.variant.question}» ${x.variant.setting} Tres cifras por calcular y escribir, sin opciones: ${x.variant.tasks.map((t) => `${t.criterion} (${t.weight} puntos)`).join("; ")}. Regla provisional para pasar: ${x.variant.passAt} de 100, sin calibrar.`,
-    "### De dónde viene cada pieza",
-    `${o.fuente} piezas traen el texto del paquete tal cual; ${o.adaptado} están descritas en el paquete y se redactaron al convertir; ${o.conversion} se añadieron. Las cifras, el concepto, el mensaje inicial y los renglones de los documentos son los del paquete, sin cambios.`,
-    "### Por confirmar en la revisión editorial", ...x.conversionNotes.map((n, i) => `${i + 1}. ${n}`));
-  p("### Qué comprueban las pruebas automáticas",
-    "1. Tres recorridos: quien sabe (dos rutas defendibles), quien empieza (cae en la confusión, pasa por la comprobación y termina) y 600 recorridos al azar (todos terminan; aciertan las dos decisiones cerca de 1 de cada 9).",
-    "2. Elegir siempre la opción más larga no lleva por ninguna ruta defendible; elegir siempre la más corta, tampoco.",
-    "3. Todas las cifras de los documentos, del cierre y de la variante se recalculan.",
-    "4. En la variante: la respuesta nunca está a la vista, las preguntas no dicen cómo calcular, no aparecen personajes de la práctica, y de 2,000 intentos sin calcular pasa menos de 1 de cada 100.",
-    "5. La respuesta escrita es opcional y su largo no cambia nada.",
-    "6. Un recorrido guardado se retoma donde iba; un resultado alterado a mano se vuelve a calcular.",
-    "7. El motor, el contenido y la pantalla no usan el registro de evidencias, el cálculo de dominio, la partida ni ningún servicio.",
-    `Avisos que deja el validador: ${rev.warnings.join("; ")}.`);
+  p("## 10. Qué comprueban las pruebas automáticas",
+    "Para cada experiencia convertida:",
+    "1. Cumple el contrato sin errores y coincide con la ficha de su lote: habilidades, fuentes, título y pesos de la rúbrica.",
+    "2. Tres recorridos: quien sabe (rutas defendibles y actividades resueltas a la primera), quien empieza (cae en las confusiones, falla las actividades y pide ver la solución) y recorridos al azar. Todos terminan en el cierre.",
+    "3. Todas las combinaciones de rutas llegan al cierre.",
+    "4. Elegir siempre la opción más larga no lleva por todas las rutas defendibles.",
+    "5. Las igualdades que se muestran (documentos, cálculos del cierre, pistas, variante) se recalculan, y las identidades numéricas que cada paquete lista en sus notas de QA son pruebas.",
+    "6. En la variante: la respuesta nunca está a la vista, no aparecen personajes de la práctica ni explicaciones, quien responde bien obtiene todos los puntos comprobables, y responder al azar casi nunca los obtiene.",
+    "7. Lo escrito es opcional, no cambia los puntos comprobables y deja su peso en espera de revisión.",
+    "8. Un recorrido guardado en cualquier paso se retoma donde iba; un resultado alterado a mano se vuelve a calcular; un recorrido guardado con el formato anterior se conserva.",
+    "9. El motor, el contenido y las pantallas no usan el registro de evidencias, el cálculo de dominio, la partida ni ningún servicio.");
 
-  p("## 9. Observaciones editoriales del paquete",
-    "1. **EDIT-N1-002, advertencia de exactitud.** Habla de un sobregiro de $10,000 utilizado y caja libre de $0. La tabla y los cálculos dan saldo final de $5,000 y faltante de $7,000. Son dos historias distintas; la piloto sigue la tabla.",
-    `2. **EDIT-N1-002, variante.** Dice «con cifras distintas», pero repite ${sharedAmounts(x).map(money).join(", ")}. Quien conteste de memoria con las cifras de la práctica acierta dos de tres criterios (70 puntos) y, con la regla provisional, pasa. Se sugiere cambiar el efectivo inicial o los cobros de la variante.`,
-    "3. **EDIT-N1-002, criterio «diferencias ingreso/cobro».** El paquete le da 35 % pero la pregunta de la variante («¿Ganó dinero y qué saldo le queda?») solo pide utilidad y saldo. La piloto lo comprueba pidiendo cuánto sigue sin cobrarse.",
+  p("## 11. Observaciones editoriales de los paquetes",
+    "1. **EDIT-N1-002, advertencia de exactitud.** El lote 01 habla de un sobregiro de $10,000 utilizado y caja libre de $0. La tabla y los cálculos dan saldo final de $5,000 y faltante de $7,000. Las notas de QA del lote 03 confirman la discrepancia y piden corregir el texto antes de publicar. La experiencia convertida sigue la tabla desde el principio: muestra saldo final de $5,000 y no menciona el sobregiro.",
+    `2. **EDIT-N1-002, variante.** Dice «con cifras distintas», pero repite ${sharedAmounts(pilot).map(money).join(", ")}. Quien conteste de memoria con las cifras de la práctica acierta dos de tres criterios (70 puntos) y, con la regla provisional, pasa. Se sugiere cambiar el efectivo inicial o los cobros de la variante.`,
+    "3. **EDIT-N1-002, criterio «diferencias ingreso/cobro».** El paquete le da 35 % pero la pregunta de la variante («¿Ganó dinero y qué saldo le queda?») solo pide utilidad y saldo. La experiencia lo comprueba pidiendo cuánto sigue sin cobrarse.",
     "4. **EDIT-N1-001, título.** «¿Nueve tareas o una estrategia?» presenta seis frases, no nueve.",
     "5. **EDIT-N1-001, línea 34.** Usa una frase que la aplicación tiene vetada en sus textos; habrá que redactarla de otra forma al convertir.",
     "6. **Estándar, tiempos mínimos.** Todavía menciona tiempos mínimos de respuesta como hipótesis del motor. Las reglas vigentes (versión 2) ya no descartan nada por rapidez.",
-    "7. **Papel de quien juega.** En las seis experiencias es asesor o invitado, nunca dueño. La aplicación actual lo trata como director de una empresa. Conviene decidir cómo conviven los dos papeles.");
+    "7. **Papel de quien juega.** En todas las experiencias es asesor, colega o invitado, nunca dueño. La aplicación actual lo trata como director de una empresa. Conviene decidir cómo conviven los dos papeles.",
+    ...EXPERIENCIAS.filter((x) => x !== pilot && sharedAmounts(x).length > 0).map((x, i) => `${8 + i}. **${x.editorialId}, variante.** Repite cifras de la práctica: ${sharedAmounts(x).map(money).join(", ")}. Son las cifras que el paquete indica; conviene revisar si se quieren distintas.`));
 
-  p("## 10. Estado, por separado",
+  p("## 12. Estado, por separado",
     "| Etapa | Qué hay |", "|---|---|",
-    "| Importado | Correspondencia de 52 identificadores; registro de 12 fuentes; ficha de las 6 experiencias del lote; EDIT-N1-002 completa como contenido jugable |",
-    "| Probado | EDIT-N1-002: pruebas automáticas y recorrido completo en un navegador, a tamaño de computadora (1280 × 800) y de celular (390 × 844), guiado por un programa |",
+    `| Importado | Correspondencia de 52 identificadores; registro de ${Object.keys(FUENTES).length} fuentes; ficha de las ${items.length} experiencias de los tres lotes; ${EXPERIENCIAS.length} experiencias completas como contenido jugable: ${EXPERIENCIAS.map((x) => x.editorialId).join(", ")} |`,
+    `| Probado | Las ${EXPERIENCIAS.length} experiencias convertidas: pruebas automáticas. Recorrido completo en un navegador, a tamaño de computadora (1280 × 800) y de celular (390 × 844), guiado por un programa |`,
     "| Revisado por una persona | Nada. Falta la revisión de Oziel y la revisión editorial |",
-    "| Publicado | Nada para usuarios. La piloto está en producción solo por enlace, marcada como revisión |",
+    "| Publicado | Nada para usuarios. Las experiencias están en producción solo por enlace, marcadas como revisión |",
     "| Validado con usuarios | Nada |");
 
-  p("## 11. Lo que no se hizo",
-    "No se convirtieron las otras cinco experiencias ni el Executive Challenge. No se conectó nada al registro de evidencias ni al cálculo de dominio. No se creó ninguna tabla en la base de datos. No se probó con lector de pantalla ni en un teléfono físico. No se comparó cada habilidad con el temario de cada curso. No se calibró ninguna rúbrica.");
+  const pend = items.filter((i) => !live(i.editorialId)).map((i) => i.editorialId);
+  p("## 13. Lo que no se hizo",
+    `${pend.length ? `No se han convertido ${pend.length} experiencias: ${pend.join(", ")}. ` : ""}No se convirtió el Executive Challenge. No se conectó nada al registro de evidencias ni al cálculo de dominio. No se creó ninguna tabla en la base de datos. Nadie ha revisado las respuestas escritas: no hay pantalla de revisión. No se probó con lector de pantalla ni en un teléfono físico. No se comparó cada habilidad con el temario de cada curso. No se calibró ninguna rúbrica.`);
 
   return L.join("\n").trimEnd() + "\n";
 }

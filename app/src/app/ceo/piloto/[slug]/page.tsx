@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ExperienciaPiloto } from "@/components/ceo/ExperienciaPiloto";
-import { experienciaBySlug } from "@/lib/ceo/metis2/experiencias";
+import { EXPERIENCIAS, experienciaBySlug } from "@/lib/ceo/metis2/experiencias";
 
 export const metadata: Metadata = { title: "Experiencia en revisión", robots: { index: false, follow: false } };
 
+export function generateStaticParams() {
+  return EXPERIENCIAS.map((x) => ({ slug: x.slug }));
+}
+
 /**
- * Piloto del Repositorio Académico. No aparece en el menú: se entra por enlace.
+ * Experiencia del Repositorio Académico. No aparece en el menú: se entra por enlace.
  * No registra evidencia ni cambia el avance de nadie.
  */
 export default async function Page({ params }: { params: Promise<{ slug: string }> }) {

@@ -30,7 +30,7 @@ export function CeoShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const onboarding = path === "/ceo/empezar";
   // Piloto del Repositorio Académico (/ceo/piloto): no está en el menú, se entra por enlace y no usa la partida.
-  const pilot = path.startsWith("/ceo/piloto/");
+  const pilot = path === "/ceo/piloto" || path.startsWith("/ceo/piloto/");
 
   useEffect(() => {
     if (c.ready && !c.s.startedAt && !onboarding && !pilot && !c.importFlow) router.replace("/ceo/empezar");
