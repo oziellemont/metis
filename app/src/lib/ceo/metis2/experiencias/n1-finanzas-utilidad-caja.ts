@@ -59,7 +59,7 @@ export const N1_FINANZAS_UTILIDAD_CAJA: Experiencia = {
       attachments: ["A", "B"], next: "explorar",
     },
     {
-      id: "explorar", kind: "explorar", moment: 1, origen: "adaptado",
+      id: "explorar", kind: "explorar", moment: 1, origen: "adaptado", title: "Dos documentos, dos preguntas distintas",
       prompt: "Toca cualquier renglón para ver qué significa. Puedes volver a estos documentos en cualquier momento.",
       docs: ["A", "B"], next: "diagnostico",
     },
@@ -157,6 +157,7 @@ export const N1_FINANZAS_UTILIDAD_CAJA: Experiencia = {
     title: "Otra situación, sin apoyo",
     setting: "Un estudio de diseño cierra el mes con estos datos. Nadie te los explica: lee, calcula y responde.",
     question: "¿Ganó dinero y qué saldo le queda?",
+    intro: "Otra empresa y otras cifras. Sin explicaciones, sin documentos de la práctica y sin el concepto a la mano. Son tres cálculos.",
     docs: [
       {
         id: "V", letter: "V", title: "Estudio de diseño · datos del mes", unit: "En pesos",
@@ -172,9 +173,9 @@ export const N1_FINANZAS_UTILIDAD_CAJA: Experiencia = {
       },
     ],
     tasks: [
-      { id: "por_cobrar", criterion: "Diferencia entre ingreso y cobro", weight: 35, origen: "conversion", prompt: "¿Cuánto de lo que el estudio reconoció como ingreso sigue sin cobrarse?", answer: 45000, calc: "80,000 − 35,000 = 45,000" },
-      { id: "utilidad", criterion: "Utilidad", weight: 30, origen: "adaptado", prompt: "¿Cuál fue la utilidad del mes?", answer: 17000, calc: "80,000 − 38,000 − 25,000 = 17,000" },
-      { id: "saldo", criterion: "Flujo y saldo de efectivo", weight: 35, origen: "adaptado", prompt: "¿Con cuánto efectivo terminó el mes?", answer: 5000, calc: "25,000 + 35,000 − 30,000 − 25,000 = 5,000" },
+      { id: "por_cobrar", kind: "cifra", unit: "$", criterion: "Diferencia entre ingreso y cobro", weight: 35, origen: "conversion", prompt: "¿Cuánto de lo que el estudio reconoció como ingreso sigue sin cobrarse?", answer: 45000, calc: "80,000 − 35,000 = 45,000" },
+      { id: "utilidad", kind: "cifra", unit: "$", criterion: "Utilidad", weight: 30, origen: "adaptado", prompt: "¿Cuál fue la utilidad del mes?", answer: 17000, calc: "80,000 − 38,000 − 25,000 = 17,000" },
+      { id: "saldo", kind: "cifra", unit: "$", criterion: "Flujo y saldo de efectivo", weight: 35, origen: "adaptado", prompt: "¿Con cuánto efectivo terminó el mes?", answer: 5000, calc: "25,000 + 35,000 − 30,000 − 25,000 = 5,000" },
     ],
     passAt: 70,
   },
