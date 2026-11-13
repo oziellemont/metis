@@ -1,8 +1,8 @@
 # MÊTIS 2.0 · Repositorio Académico
-Paquetes recibidos: Lote 01 (versión 1.0), Lote 02 (versión 1.1), Lote 03 (versión 1.2). Fuentes abiertas y leídas el 2026-11-13. Este documento se genera desde el código (`app/src/lib/ceo/metis2/experiencias/`); una prueba falla si se desfasa.
+Paquetes recibidos: Lote 01 (versión 1.0), Lote 02 (versión 1.1), Lote 03 (versión 1.2), Lote 04 (versión 1.3). Fuentes abiertas y leídas el 2026-11-13. Este documento se genera desde el código (`app/src/lib/ceo/metis2/experiencias/`); una prueba falla si se desfasa.
 
 ## 1. Estado en una línea
-12 de las 18 experiencias recibidas están convertidas y se pueden recorrer completas por enlace (`/piloto`): 1 de 6 del lote 01, 6 de 6 del lote 02, 5 de 6 del lote 03. Ninguna registra evidencia, cambia dominio, niveles ni perfil, y ninguna aparece en el menú. Ninguna ha sido revisada por una persona. El Executive Challenge está leído y trazado, sin convertir.
+13 de las 24 experiencias recibidas están convertidas y se pueden recorrer completas por enlace (`/piloto`): 1 de 6 del lote 01, 6 de 6 del lote 02, 5 de 6 del lote 03, 1 de 6 del lote 04. Ninguna registra evidencia, cambia dominio, niveles ni perfil, y ninguna aparece en el menú. Ninguna ha sido revisada por una persona. El Executive Challenge EC-N1-002-A está convertido como demostración (`/piloto/reto/el-viernes-que-nadie-queria-prometer`), sin regla de aprobación habilitada; EC-N1-001-A sigue leído, sin convertir y sin cambios.
 
 ## 2. Qué se recibió
 Los archivos se leyeron completos. No se copiaron al repositorio porque es público y los paquetes traen las respuestas de las evaluaciones; se guarda su huella para saber con qué versión se trabajó.
@@ -38,10 +38,18 @@ Los archivos se leyeron completos. No se copiaron al repositorio porque es públ
 | PLAN_LOTE_04.md | `d0332c8416e43f45` |
 | VALIDACION_LOCAL.txt | `11f7a12b4f94f04b` |
 
+### Lote 04 · versión 1.3
+| Archivo | Huella (SHA-256, primeros 16) |
+|---|---|
+| EXPERIENCIAS_N1_LOTE_04.md | `f7f50075b39b408e` |
+| EXECUTIVE_CHALLENGE_N1_V2.md | `fdb978067df15689` |
+
 Diferencias entre paquetes que conviene conocer:
 1. El lote 02 llegó como un solo archivo de experiencias. No trae manifiesto ni rúbricas en formato de datos, como sí traen el lote 01 y el lote 03; las rúbricas se tomaron del texto de cada experiencia.
 2. El archivo de pruebas del lote 03 remite a un `QA_Y_ERRATAS.md` del lote 02. Ese archivo no se recibió.
 3. El lote 03 usa otros nombres para tres fuentes. Se leen como la misma fuente del registro: HBS_STRATEGY es HBS_STRAT; STAN_FIRST_YEAR es STAN_CORE; HBS_LCA es HBS_GOV; INSEAD_CORE es INSEAD_CORE.
+4. Del paquete 1.3 (lote 04) se recibieron solo dos archivos: las seis experiencias y el Executive Challenge ampliado. El mensaje de entrega anuncia también rúbricas, manifiesto, `TRAZABILIDAD_LOTE_04.md`, controles de calidad y plan de continuación; esos archivos no llegaron. Las fuentes y las rúbricas del lote 04 se tomaron del texto de cada experiencia; su columna de manifiesto queda vacía.
+5. El lote 04 no trae una experiencia por academia: completa las 24 habilidades con dos de Finanzas y ninguna de Riesgo, porque Riesgo ya tenía sus tres habilidades cubiertas.
 
 ## 3. Correspondencia de identificadores
 Los 52 identificadores editoriales del Atlas corresponden uno a uno con las 52 habilidades del catálogo: mismo nombre, mismo orden, misma academia, mismo nivel de entrada y la misma descripción de lo que se sabe hacer. La única diferencia de forma: cinco prerrequisitos del Atlas llevan entre paréntesis la academia de la habilidad a la que apuntan (EST-05, EST-06, CRE-08, CRE-09 y RIE-07); son las mismas habilidades.
@@ -134,16 +142,16 @@ Qué se hizo: se abrió cada una de las 16 direcciones y se leyó lo que la pág
 | Fuente | Institución y componente | Habilidades del Atlas que la citan | Experiencias que la citan | Qué muestra la página |
 |---|---|---|---|---|
 | HBS_CORE | [Harvard Business School · Required Curriculum](https://www.hbs.edu/mba/academic-experience/curriculum) | 0 | 0 | Página del plan obligatorio del MBA. Responde y lista los cursos del primer año. |
-| HBS_STRAT | [Harvard Business School · Strategy — MBA Required Curriculum](https://www.hbs.edu/faculty/units/strategy/Pages/curriculum.aspx) | 7 | 3 | Describe el curso obligatorio Strategy: entorno de la empresa, ventaja competitiva y valor para el cliente. |
-| HBS_FIN | [Harvard Business School · Finance I / Finance II](https://www.hbs.edu/faculty/units/finance/Pages/curriculum.aspx) | 10 | 0 | Describe Finance I y Finance II: finanzas corporativas, mercados de capital, presupuesto de capital, valuación y política financiera. No trata vocabulario contable, estado de resultados ni flujo de efectivo. |
-| HBS_MKT | [Harvard Business School · Marketing — MBA Required Curriculum](https://www.hbs.edu/faculty/units/marketing/Pages/curriculum.aspx) | 8 | 2 | Describe el curso obligatorio Marketing: comportamiento del comprador y mezcla de producto, canales, comunicación y precio. |
+| HBS_STRAT | [Harvard Business School · Strategy — MBA Required Curriculum](https://www.hbs.edu/faculty/units/strategy/Pages/curriculum.aspx) | 7 | 4 | Describe el curso obligatorio Strategy: entorno de la empresa, ventaja competitiva y valor para el cliente. |
+| HBS_FIN | [Harvard Business School · Finance I / Finance II](https://www.hbs.edu/faculty/units/finance/Pages/curriculum.aspx) | 10 | 2 | Describe Finance I y Finance II: finanzas corporativas, mercados de capital, presupuesto de capital, valuación y política financiera. No trata vocabulario contable, estado de resultados ni flujo de efectivo. |
+| HBS_MKT | [Harvard Business School · Marketing — MBA Required Curriculum](https://www.hbs.edu/faculty/units/marketing/Pages/curriculum.aspx) | 8 | 3 | Describe el curso obligatorio Marketing: comportamiento del comprador y mezcla de producto, canales, comunicación y precio. |
 | HBS_GOV | [Harvard Business School · Leadership and Corporate Accountability](https://www.hbs.edu/faculty/units/gm/Pages/curriculum.aspx) | 7 | 3 | Describe Leadership and Corporate Accountability: responsabilidades legales, éticas y económicas, y sistemas de gobierno. No menciona riesgo, crisis ni incertidumbre. |
 | HBS_CASE | [Harvard Business School · The Case Method](https://www.hbs.edu/mba/academic-experience/the-case-method) | 0 | 0 | Explica el método del caso. Sirve como respaldo del diseño, no de una habilidad. |
 | MIT_CORE | [MIT Sloan · MBA Curriculum / First-Semester Core](https://mitsloan.mit.edu/mba/explore-program/mba-curriculum) | 1 | 2 | Lista el núcleo del primer semestre y las optativas de núcleo; Operaciones aparece como optativa de núcleo. |
 | MIT_DESC | [MIT Sloan · MBA Course Descriptions](https://mitsloan.mit.edu/mba/mba-course-descriptions) | 2 | 0 | Describe los cursos del núcleo y las optativas de núcleo, entre ellos Financial Accounting e Intro to Operations Management. |
-| STAN_CORE | [Stanford GSB · First-Year Curriculum](https://www.gsb.stanford.edu/programs/mba/academic-experience/curriculum/first-year) | 40 | 13 | Describe los cursos del primer año, entre ellos Financial Accounting, Finance, Operations, Strategy, Marketing, Leadership Laboratory y Managing Groups and Teams. |
-| STAN_LAB | [Stanford GSB · Leadership Labs](https://www.gsb.stanford.edu/experience/learning/leadership/labs) | 9 | 1 | Describe Leadership Labs: curso obligatorio con ejercicios y simulaciones en equipo, con acompañamiento. No menciona retroalimentación de forma expresa. |
-| WH_CORE | [Wharton · Core Curriculum](https://mba-inside.wharton.upenn.edu/core-curriculum/) | 17 | 4 | Lista los cursos del núcleo fijo y flexible por clave y nombre, sin describir su contenido. |
+| STAN_CORE | [Stanford GSB · First-Year Curriculum](https://www.gsb.stanford.edu/programs/mba/academic-experience/curriculum/first-year) | 40 | 17 | Describe los cursos del primer año, entre ellos Financial Accounting, Finance, Operations, Strategy, Marketing, Leadership Laboratory y Managing Groups and Teams. |
+| STAN_LAB | [Stanford GSB · Leadership Labs](https://www.gsb.stanford.edu/experience/learning/leadership/labs) | 9 | 2 | Describe Leadership Labs: curso obligatorio con ejercicios y simulaciones en equipo, con acompañamiento. No menciona retroalimentación de forma expresa. |
+| WH_CORE | [Wharton · Core Curriculum](https://mba-inside.wharton.upenn.edu/core-curriculum/) | 17 | 6 | Lista los cursos del núcleo fijo y flexible por clave y nombre, sin describir su contenido. |
 | INSEAD | [INSEAD · MBA Curriculum / Capstone](https://www.insead.edu/master-programmes/master-business-administration/curriculum) | 1 | 1 | Lista los 14 cursos obligatorios por periodo y el proyecto final. La página no abre con una consulta automática simple; se leyó con el lector de páginas. |
 | HBS_ISC | [Harvard Business School · Institute for Strategy and Competitiveness — Creating a Successful Strategy](https://www.isc.hbs.edu/strategy/creating-a-successful-strategy/Pages/default.aspx) | 0 | 1 | Presenta los elementos de una estrategia; nombra de forma expresa la propuesta de valor («Value Proposition») y las renuncias («Making Strategic Trade-offs»). Añadida por el lote 02. |
 | HBS_AM | [Harvard Business School · Accounting and Management — Financial Reporting and Control](https://www.hbs.edu/faculty/units/am/Pages/curriculum.aspx) | 0 | 1 | Describe el curso obligatorio Financial Reporting and Control; habla del vocabulario de los estados financieros y los informes contables. Añadida por el lote 02. |
@@ -193,8 +201,19 @@ Fuente académica → habilidad → experiencia → evaluación independiente. L
 | EDIT-N1-017 «Cobrar más no siempre significa cobrar de más» | `cre.precios` Precios y valor percibido | `cre.cliente` | INSEAD_CORE, STAN_CORE (Atlas: HBS_MKT, STAN_CORE) | Mantenimiento de jardines | 35 / 25 / 30 / 10 | Convertida: `exp.n1.cre.cobrar-mas-no-es-cobrar-de-mas` |
 | EDIT-N1-018 «La misma persona hace todo el pago» | `rie.cumplimiento` Cumplimiento y controles | `rie.etica`, `ope.procesos` | HBS_GOV, INSEAD_CORE (Atlas: HBS_GOV, WH_CORE) | Escuela de talleres | 30 / 35 / 25 / 10 | Convertida: `exp.n1.rie.la-misma-persona-hace-todo-el-pago` |
 
-Las 18 experiencias cubren 18 de las 24 habilidades de Nivel 1 como habilidad principal. Quedan 6 sin experiencia: `est.alineacion`, `fin.flujo`, `fin.presupuesto`, `lid.delegacion`, `ope.calidad`, `cre.canales`.
-Executive Challenge EC-N1-001-A «La semana en que casi todo parecía urgente»: leído. Sus cuatro cálculos se revisaron a mano y cuadran. No se convirtió: el paquete pide una segunda versión equivalente antes de usarlo, y hoy solo existe la A.
+### Lote 04 · versión 1.3
+| Experiencia | Habilidad principal | Secundarias | Fuentes | Evaluación independiente | Rúbrica | En la plataforma |
+|---|---|---|---|---|---|---|
+| EDIT-N1-019 «La meta de todos no es la misma» | `est.alineacion` De la estrategia a metas e indicadores | `ope.indicadores`, `est.priorizacion` | HBS_STRAT, STAN_CORE | Mantenimiento de elevadores | 30 / 30 / 25 / 15 | Leída, sin convertir |
+| EDIT-N1-020 «El dinero entra el jueves» | `fin.flujo` Flujo de efectivo | `fin.lenguaje` | STAN_CORE, HBS_FIN | Clínica veterinaria | 40 / 25 / 20 / 15 | Convertida: `exp.n1.fin.el-dinero-entra-el-jueves` |
+| EDIT-N1-021 «¿Por qué este gasto se salió del plan?» | `fin.presupuesto` Presupuesto y variaciones | `fin.resultados`, `lid.comunicacion` | WH_CORE, HBS_FIN | Peluquería canina | 40 / 30 / 20 / 10 | Leída, sin convertir |
+| EDIT-N1-022 «Te lo encargo, ¿pero hasta dónde puedes decidir?» | `lid.delegacion` Delegación y seguimiento | `lid.fundamentos` | STAN_CORE, STAN_LAB | Centro de eventos | 30 / 30 / 25 / 15 | Leída, sin convertir |
+| EDIT-N1-023 «La devolución que no cabía en la estadística» | `ope.calidad` Calidad | `ope.procesos`, `rie.cumplimiento` | WH_CORE | Materiales escolares | 30 / 35 / 25 / 10 | Leída, sin convertir |
+| EDIT-N1-024 «¿Por dónde compran realmente?» | `cre.canales` Canales y ventas | `cre.cliente`, `cre.segmentacion` | HBS_MKT, STAN_CORE | Renta de equipos | 25 / 35 / 20 / 20 | Leída, sin convertir |
+
+Las 24 experiencias cubren 24 de las 24 habilidades de Nivel 1 como habilidad principal. No queda ninguna sin experiencia.
+Executive Challenge EC-N1-001-A «La semana en que casi todo parecía urgente» (paquete 1.0): leído. Sus cuatro cálculos se revisaron a mano y cuadran. No se convirtió y no se modificó: el paquete 1.3 lo deja como prototipo narrativo, no como variante para acreditar.
+Executive Challenge EC-N1-002-A «El viernes que nadie quería prometer» (paquete 1.3): convertido como demostración, en `app/src/lib/ceo/metis2/reto/`. Tres actos, trece escenas con habilidades y una síntesis que no suma; cada una de las 24 habilidades de Nivel 1 se observa en una sola escena y vale de 0 a 4 (96 en total). Las decisiones dejan marcas que cambian lo que dicen los personajes después. Tiene salvaguardas de inocuidad, ética y control bancario que no se compensan con otros puntos. Los umbrales candidatos (72, 76 y 80 de 96) no están habilitados: el informe nunca da veredicto. La variante B que pide el paquete (mantenimiento preventivo de edificios) no está escrita.
 
 ## 6. Cómo se convierte cada pieza del documento editorial
 | En el documento editorial | En la plataforma | Qué se conserva y qué cambia |
@@ -590,6 +609,38 @@ Decisiones: 2, con 3, 3 rutas. Todas las combinaciones llegan al cierre.
 
 **Avisos del validador.** el gancho tiene 37 palabras; el contrato editorial pide de 15 a 35 y se dejó el texto del paquete; 45 de 100 puntos de la variante son respuestas escritas: no se califican solas y esperan revisión de una persona; 14 piezas adaptadas y 6 añadidas en la conversión esperan revisión editorial; sin revisión editorial humana.
 
+### EDIT-N1-020 · «El dinero entra el jueves»
+Finanzas · Lote 04, paquete 1.3 · `exp.n1.fin.el-dinero-entra-el-jueves` · versión 1. Habilidad principal: `fin.flujo` Flujo de efectivo. Secundarias: `fin.lenguaje` Vocabulario financiero. Fuentes: STAN_CORE, HBS_FIN. Entrada: `/piloto/el-dinero-entra-el-jueves`.
+| Momento | Nodo | Tipo | Qué pasa y a dónde lleva | Origen |
+|---|---|---|---|---|
+| El mensaje | `mensaje` | Mensaje de un personaje | → explorar | Texto del paquete |
+| Los documentos | `explorar` | Documentos tocables | → abrir | Descrito en el paquete, redactado al convertir |
+| El calendario | `abrir` | Decisión con rutas | «¿Por dónde empezamos a revisarlo?» · calendario (defendible) → saldos; viernes (con riesgo) → saldos; sumar (confusión) → saldos | Texto del paquete |
+| El calendario | `saldos` | Calcular con apoyo | Usa el documento A. Escribe el saldo al cierre de cada día; para el miércoles, escribe cuánto falta. 4 cifras, con pista por cifra y calculadora. → razonar | Descrito en el paquete, redactado al convertir |
+| ¿Hay problema? | `razonar` | Decisión con rutas | «Si al viernes terminamos con $11,000, entonces el miércoles no hay problema, ¿verdad?» · no_alcanza (defendible) → propuesta; final (con riesgo) → comprobar; factura (confusión) → comprobar | Texto del paquete |
+| ¿Hay problema? | `comprobar` | Señalar sobre el documento | Toca los dos renglones que explican por qué el miércoles falta dinero aunque el viernes sobre. 2 renglones por encontrar; cada error trae su explicación. → propuesta | Añadido al convertir |
+| Qué proponer | `propuesta` | Decisión con rutas | «¿Qué hago para que el miércoles alcance?» · anticipo (defendible) → dato; prestamo (defendible) → dato; suponer (con riesgo) → dato; venta (confusión) → dato | Texto del paquete |
+| Si el cliente acepta | `dato` | Dato nuevo | Supón que el cliente acepta. → recalculo | Texto del paquete |
+| Si el cliente acepta | `recalculo` | Calcular con apoyo | Vuelve a calcular con el anticipo de $7,000 del miércoles. 3 cifras, con pista por cifra y calculadora. → efecto | Descrito en el paquete, redactado al convertir |
+| Si el cliente acepta | `efecto` | Decisión con rutas | «Entonces, ¿con el anticipo vendimos más esta semana?» · misma (defendible) → respuesta; mas_venta (confusión) → respuesta; mas_caja (con riesgo) → respuesta | Añadido al convertir |
+| Tu respuesta | `respuesta` | Respuesta escrita | Un texto libre; no se califica, se compara con una referencia. → cierre | Texto del paquete |
+| Cierre | `cierre` | Cierre con lo decidido y el concepto | Da paso a la variante. | Añadido al convertir |
+
+Decisiones: 4, con 3, 3, 4, 3 rutas. Todas las combinaciones llegan al cierre.
+**Variante.** «¿Puede la clínica cumplir cada pago en su fecha?» Una clínica veterinaria tiene estos movimientos confirmados para la semana. Nadie te los explica: lee, calcula y responde. Tareas: Secuencia y saldos: lunes (20 puntos, cifra por calcular y escribir); Secuencia y saldos: viernes (20 puntos, cifra por calcular y escribir); Faltante temporal: monto (15 puntos, cifra por calcular y escribir); Faltante temporal: momento (10 puntos, señalar renglones); Facturación y cobro (20 puntos, clasificar tarjetas); Recomendación condicionada (15 puntos, respuesta escrita). Se comprueban solos 85 de 100 puntos; 15 esperan revisión de una persona. Ofrece calculadora.
+**Origen de las piezas.** 17 traen el texto del paquete tal cual; 12 están descritas en el paquete y se redactaron al convertir; 12 se añadieron.
+**Por confirmar en la revisión editorial.**
+1. El paquete pide arrastrar cobros y pagos a fechas. Aquí el calendario ya viene ordenado y se escribe el saldo de cada día; el campo no admite cifras negativas, así que el miércoles se pregunta «cuánto falta» (6,000) en lugar de «−6,000».
+2. La primera decisión (cómo revisar la semana) lleva siempre al calendario: mirar solo el resumen del viernes no bloquea el recorrido, pero Nora pide anotar día por día.
+3. Quien dice que el miércoles no hay problema pasa por una comprobación añadida: tocar la nómina y el cobro del jueves.
+4. La tercera decisión («¿con el anticipo vendimos más?») se añadió para que la diferencia entre adelantar un cobro y vender más sea una elección, no solo una lectura.
+5. En la propuesta hay dos rutas defendibles (anticipo confirmado y préstamo confirmado), como pide el paquete. La tercera opción del paquete, negociar la fecha, queda en la referencia escrita.
+6. Comprobación B: el criterio «secuencia y saldos» (40) se reparte en el saldo del lunes y el del viernes; el saldo del jueves (12,000) no se pregunta porque coincide con el efectivo inicial que se muestra. El faltante (25) se reparte en el monto y el momento. «Facturación y cobro» (20) se comprueba clasificando importes. La recomendación (15) es escrita y espera revisión de una persona.
+7. El lote 04 no trae fuentes por experiencia ni manifiesto (el archivo de trazabilidad que menciona no se recibió). Se usan las fuentes del Atlas para FIN-04.
+8. La regla para pasar la comprobación (70 de 100) es provisional.
+
+**Avisos del validador.** 15 de 100 puntos de la variante son respuestas escritas: no se califican solas y esperan revisión de una persona; la variante repite cifras de la práctica: $7,000, $8,000, $14,000; 12 piezas adaptadas y 12 añadidas en la conversión esperan revisión editorial; sin revisión editorial humana.
+
 ## 10. Qué comprueban las pruebas automáticas
 Para cada experiencia convertida:
 1. Cumple el contrato sin errores y coincide con la ficha de su lote: habilidades, fuentes, título y pesos de la rúbrica.
@@ -611,15 +662,16 @@ Para cada experiencia convertida:
 6. **Estándar, tiempos mínimos.** Todavía menciona tiempos mínimos de respuesta como hipótesis del motor. Las reglas vigentes (versión 2) ya no descartan nada por rapidez.
 7. **Papel de quien juega.** En todas las experiencias es asesor, colega o invitado, nunca dueño. La aplicación actual lo trata como director de una empresa. Conviene decidir cómo conviven los dos papeles.
 8. **EDIT-N1-008, variante.** Repite cifras de la práctica: $30,000, $48,000. Son las cifras que el paquete indica; conviene revisar si se quieren distintas.
+9. **EDIT-N1-020, variante.** Repite cifras de la práctica: $7,000, $8,000, $14,000. Son las cifras que el paquete indica; conviene revisar si se quieren distintas.
 
 ## 12. Estado, por separado
 | Etapa | Qué hay |
 |---|---|
-| Importado | Correspondencia de 52 identificadores; registro de 16 fuentes; ficha de las 18 experiencias de los tres lotes; 12 experiencias completas como contenido jugable: EDIT-N1-002, EDIT-N1-007, EDIT-N1-008, EDIT-N1-009, EDIT-N1-010, EDIT-N1-011, EDIT-N1-012, EDIT-N1-013, EDIT-N1-015, EDIT-N1-016, EDIT-N1-017, EDIT-N1-018 |
-| Probado | Las 12 experiencias convertidas: pruebas automáticas. Recorrido completo en un navegador, a tamaño de computadora (1280 × 800) y de celular (390 × 844), guiado por un programa |
+| Importado | Correspondencia de 52 identificadores; registro de 16 fuentes; ficha de las 24 experiencias de los tres lotes; 13 experiencias completas como contenido jugable: EDIT-N1-002, EDIT-N1-007, EDIT-N1-008, EDIT-N1-009, EDIT-N1-010, EDIT-N1-011, EDIT-N1-012, EDIT-N1-013, EDIT-N1-015, EDIT-N1-016, EDIT-N1-017, EDIT-N1-018, EDIT-N1-020 |
+| Probado | Las 13 experiencias convertidas: pruebas automáticas. Recorrido completo en un navegador, a tamaño de computadora (1280 × 800) y de celular (390 × 844), guiado por un programa |
 | Revisado por una persona | Nada. Falta la revisión de Oziel y la revisión editorial |
 | Publicado | Nada para usuarios. Las experiencias están en producción solo por enlace, marcadas como revisión |
 | Validado con usuarios | Nada |
 
 ## 13. Lo que no se hizo
-No se han convertido 6 experiencias: EDIT-N1-001, EDIT-N1-003, EDIT-N1-004, EDIT-N1-005, EDIT-N1-006, EDIT-N1-014. EDIT-N1-014 llegó a convertirse, pero el archivo se perdió en un reinicio del entorno de trabajo antes de guardarse en el repositorio, junto con la copia de trabajo de los paquetes. Para rehacerla con los textos exactos del paquete hace falta recibir otra vez el lote 03. No se convirtió el Executive Challenge. No se conectó nada al registro de evidencias ni al cálculo de dominio. No se creó ninguna tabla en la base de datos. Nadie ha revisado las respuestas escritas: no hay pantalla de revisión. No se probó con lector de pantalla ni en un teléfono físico. No se comparó cada habilidad con el temario de cada curso. No se calibró ninguna rúbrica.
+No se han convertido 11 experiencias: EDIT-N1-001, EDIT-N1-003, EDIT-N1-004, EDIT-N1-005, EDIT-N1-006, EDIT-N1-014, EDIT-N1-019, EDIT-N1-021, EDIT-N1-022, EDIT-N1-023, EDIT-N1-024. EDIT-N1-014 llegó a convertirse, pero el archivo se perdió en un reinicio del entorno de trabajo antes de guardarse en el repositorio, junto con la copia de trabajo de los paquetes. Para rehacerla con los textos exactos del paquete hace falta recibir otra vez el lote 03. El Executive Challenge EC-N1-002-A no tiene variante B ni regla de aprobación, y su reparto de puntos por paso es propuesta de la conversión. No se conectó nada al registro de evidencias ni al cálculo de dominio. No se creó ninguna tabla en la base de datos. Nadie ha revisado las respuestas escritas: no hay pantalla de revisión. No se probó con lector de pantalla ni en un teléfono físico. No se comparó cada habilidad con el temario de cada curso. No se calibró ninguna rúbrica.

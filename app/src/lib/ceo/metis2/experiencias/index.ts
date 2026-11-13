@@ -16,6 +16,7 @@ import { N1_LIDERAZGO_CORREO_DECISION } from "./n1-liderazgo-ese-correo-necesita
 import { N1_OPERACIONES_TABLERO_EN_VERDE } from "./n1-operaciones-el-tablero-esta-en-verde";
 import { N1_CRECIMIENTO_COBRAR_MAS } from "./n1-crecimiento-cobrar-mas-no-es-cobrar-de-mas";
 import { N1_RIESGO_MISMA_PERSONA } from "./n1-riesgo-la-misma-persona-hace-todo-el-pago";
+import { N1_FINANZAS_DINERO_JUEVES } from "./n1-finanzas-el-dinero-entra-el-jueves";
 
 export const EXPERIENCIAS: Experiencia[] = [
   N1_FINANZAS_UTILIDAD_CAJA,
@@ -30,6 +31,7 @@ export const EXPERIENCIAS: Experiencia[] = [
   N1_OPERACIONES_TABLERO_EN_VERDE,
   N1_CRECIMIENTO_COBRAR_MAS,
   N1_RIESGO_MISMA_PERSONA,
+  N1_FINANZAS_DINERO_JUEVES,
 ];
 
 export const experienciaBySlug = (slug: string): Experiencia | undefined => EXPERIENCIAS.find((x) => x.slug === slug);
@@ -37,4 +39,4 @@ export const experienciaByEditorial = (editorialId: string): Experiencia | undef
 
 export * from "./tipos";
 export * from "./motor";
-export { ALIAS_FUENTES, ATLAS, FUENTES, LOTE_N1, LOTE_02, LOTE_03, LOTES, PAQUETE_ARCHIVOS, PACKAGE_VERSION, SOURCES_CHECKED_AT, atlasSources, editorialOfSkill, itemOf, loteOf, skillOfEditorial } from "./fuentes";
+export { ALIAS_FUENTES, ATLAS, FUENTES, LOTE_N1, LOTE_02, LOTE_03, LOTE_04, LOTES, RETOS, PAQUETE_ARCHIVOS, PACKAGE_VERSION, SOURCES_CHECKED_AT, atlasSources, editorialOfSkill, itemOf, loteOf, skillOfEditorial } from "./fuentes";

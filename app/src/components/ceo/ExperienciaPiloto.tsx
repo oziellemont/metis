@@ -27,7 +27,7 @@ const RUTA: Record<RutaTipo, { label: string; cls: string }> = {
 const LETTERS = "ABCDEF";
 const isObj = (v: unknown): v is Record<string, string> => !!v && typeof v === "object" && !Array.isArray(v);
 const digits = (t: string) => { const d = t.replace(/\D/g, "").slice(0, 9); return d ? Number(d) : null; };
-type Marks = Record<string, { ok: boolean; text: string }>;
+export type Marks = Record<string, { ok: boolean; text: string }>;
 /** Dos documentos caben lado a lado solo si son listas cortas de importes; los de texto o columnas van uno bajo otro. */
 const docGrid = (docs: Documento[]) => clsx("grid gap-4", docs.length > 1 && docs.every((d) => !d.cols && d.rows.every((r) => typeof r.amount === "number")) && "sm:grid-cols-2");
 
@@ -120,7 +120,7 @@ export function ExperienciaPiloto({ x }: { x: Experiencia }) {
 
 // ───────────────────────────────────────────── piezas
 
-function Face({ name }: { name: string }) {
+export function Face({ name }: { name: string }) {
   return <span aria-hidden className="h-10 w-10 shrink-0 rounded-full bg-mint/90 text-ink grid place-items-center text-sm font-semibold">{name.slice(0, 1)}</span>;
 }
 
@@ -138,7 +138,7 @@ function Bubble({ x, who, children, channel }: { x: Experiencia; who: string | n
   );
 }
 
-function Mine({ children }: { children: React.ReactNode }) {
+export function Mine({ children }: { children: React.ReactNode }) {
   return <div className="ml-10 rounded-2xl rounded-tr-md bg-indigo-light px-4 py-3 text-[15px] leading-relaxed text-white"><div className="text-[11px] font-semibold uppercase tracking-wide text-white/70">Tú</div>{children}</div>;
 }
 
@@ -162,7 +162,7 @@ function Note({ ok, children }: { ok: boolean; children: React.ReactNode }) {
  * Modo «señalar»: tocar un renglón es la respuesta. Sin `onOpen` ni `onPick` es un documento simple (variante).
  * Los renglones pueden traer un importe, columnas de datos o solo texto.
  */
-function DocCard({ doc, opened, onOpen, onPick, marks, chosen }: { doc: Documento; opened?: string[]; onOpen?: (row: string) => void; onPick?: (row: string) => void; marks?: Marks; chosen?: string[] }) {
+export function DocCard({ doc, opened, onOpen, onPick, marks, chosen }: { doc: Documento; opened?: string[]; onOpen?: (row: string) => void; onPick?: (row: string) => void; marks?: Marks; chosen?: string[] }) {
   const [open, setOpen] = useState<string | null>(null);
   const data = doc.cols ? doc.cols.length - 1 : 0;
   const long = doc.rows.some((r) => (r.cells ?? []).some((c) => c.length > 12));
@@ -237,7 +237,7 @@ function Feedback({ o }: { o: Opcion }) {
 }
 
 /** Asignar tarjetas a grupos tocando el grupo en cada tarjeta. */
-function Sorter({ groups, items, assign, onAssign, locked, marks }: { groups: Grupo[]; items: { id: string; text: string }[]; assign: Record<string, string>; onAssign: (item: string, group: string) => void; locked?: boolean; marks?: Marks }) {
+export function Sorter({ groups, items, assign, onAssign, locked, marks }: { groups: Grupo[]; items: { id: string; text: string }[]; assign: Record<string, string>; onAssign: (item: string, group: string) => void; locked?: boolean; marks?: Marks }) {
   return (
     <ul className="space-y-3">
       {items.map((it) => {
@@ -265,7 +265,7 @@ function Sorter({ groups, items, assign, onAssign, locked, marks }: { groups: Gr
 }
 
 /** Poner tarjetas en secuencia con los botones de subir y bajar. */
-function Sequencer({ cards, order, onMove, locked }: { cards: { id: string; text: string }[]; order: string[]; onMove: (card: string, dir: -1 | 1) => void; locked?: boolean }) {
+export function Sequencer({ cards, order, onMove, locked }: { cards: { id: string; text: string }[]; order: string[]; onMove: (card: string, dir: -1 | 1) => void; locked?: boolean }) {
   return (
     <ol className="space-y-2.5">
       {order.map((id, i) => {
@@ -287,7 +287,7 @@ function Sequencer({ cards, order, onMove, locked }: { cards: { id: string; text
   );
 }
 
-function Figure({ id, label, unit, value, onChange, locked, children }: { id: string; label: React.ReactNode; unit?: "$" | "%" | ""; value: number | null | undefined; onChange: (v: number | null) => void; locked?: boolean; children?: React.ReactNode }) {
+export function Figure({ id, label, unit, value, onChange, locked, children }: { id: string; label: React.ReactNode; unit?: "$" | "%" | ""; value: number | null | undefined; onChange: (v: number | null) => void; locked?: boolean; children?: React.ReactNode }) {
   return (
     <div>
       <label htmlFor={id} className="block text-[15px] leading-relaxed text-white/90">{label}</label>
@@ -303,7 +303,7 @@ function Figure({ id, label, unit, value, onChange, locked, children }: { id: st
 }
 
 /** Calculadora aritmética neutra: no explica nada, solo opera. */
-function Calc() {
+export function Calc() {
   const [open, setOpen] = useState(false);
   const [expr, setExpr] = useState("");
   const out = expr.trim() ? calc(expr) : null;
@@ -700,7 +700,7 @@ function Ficha({ x, restart }: { x: Experiencia; restart: () => void }) {
   );
 }
 
-function Sheet({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
+export function Sheet({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
   const close = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     close.current?.focus();

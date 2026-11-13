@@ -122,6 +122,29 @@ export const LOTE_03: LoteItem[] = [
   { editorialId: "EDIT-N1-018", title: "La misma persona hace todo el pago", primary: "rie.cumplimiento", secondary: ["rie.etica", "ope.procesos"], sources: ["HBS_GOV", "INSEAD_CORE"], manifest: ["HBS_GOV", "INSEAD_CORE"], variant: "Escuela de talleres", rubric: "30 / 35 / 25 / 10" },
 ];
 
+/**
+ * Lote 04 (paquete 1.3). Llegaron dos archivos: las seis experiencias y el Executive Challenge ampliado.
+ * No trae fuentes por experiencia ni manifiesto: se anotan las fuentes del Atlas para la habilidad principal.
+ */
+export const LOTE_04: LoteItem[] = [
+  { editorialId: "EDIT-N1-019", title: "La meta de todos no es la misma", primary: "est.alineacion", secondary: ["ope.indicadores", "est.priorizacion"], sources: ["HBS_STRAT", "STAN_CORE"], manifest: [], variant: "Mantenimiento de elevadores", rubric: "30 / 30 / 25 / 15" },
+  { editorialId: "EDIT-N1-020", title: "El dinero entra el jueves", primary: "fin.flujo", secondary: ["fin.lenguaje"], sources: ["STAN_CORE", "HBS_FIN"], manifest: [], variant: "Clínica veterinaria", rubric: "40 / 25 / 20 / 15" },
+  { editorialId: "EDIT-N1-021", title: "¿Por qué este gasto se salió del plan?", primary: "fin.presupuesto", secondary: ["fin.resultados", "lid.comunicacion"], sources: ["WH_CORE", "HBS_FIN"], manifest: [], variant: "Peluquería canina", rubric: "40 / 30 / 20 / 10" },
+  { editorialId: "EDIT-N1-022", title: "Te lo encargo, ¿pero hasta dónde puedes decidir?", primary: "lid.delegacion", secondary: ["lid.fundamentos"], sources: ["STAN_CORE", "STAN_LAB"], manifest: [], variant: "Centro de eventos", rubric: "30 / 30 / 25 / 15" },
+  { editorialId: "EDIT-N1-023", title: "La devolución que no cabía en la estadística", primary: "ope.calidad", secondary: ["ope.procesos", "rie.cumplimiento"], sources: ["WH_CORE"], manifest: [], variant: "Materiales escolares", rubric: "30 / 35 / 25 / 10" },
+  { editorialId: "EDIT-N1-024", title: "¿Por dónde compran realmente?", primary: "cre.canales", secondary: ["cre.cliente", "cre.segmentacion"], sources: ["HBS_MKT", "STAN_CORE"], manifest: [], variant: "Renta de equipos", rubric: "25 / 35 / 20 / 20" },
+];
+
+/**
+ * Executive Challenge de Nivel 1. Son dos borradores distintos y ninguno sustituye al otro.
+ * EC-N1-001-A (paquete 1.0): seis decisiones, leído y sin convertir. EC-N1-002-A (paquete 1.3): tres actos, trece escenas y síntesis.
+ */
+export interface RetoEditorial { editorialId: string; title: string; packageVersion: string; scenes: number; skills: number; estado: "leido" | "demostracion" }
+export const RETOS: RetoEditorial[] = [
+  { editorialId: "EC-N1-001-A", title: "La semana en que casi todo parecía urgente", packageVersion: "1.0", scenes: 6, skills: 0, estado: "leido" },
+  { editorialId: "EC-N1-002-A", title: "El viernes que nadie quería prometer", packageVersion: "1.3", scenes: 14, skills: 24, estado: "demostracion" },
+];
+
 /** Nombres que usa el manifiesto del lote 03 para fuentes que ya estaban en el registro. */
 export const ALIAS_FUENTES: Record<string, string> = { HBS_STRATEGY: "HBS_STRAT", STAN_FIRST_YEAR: "STAN_CORE", HBS_LCA: "HBS_GOV", INSEAD_CORE: "INSEAD_CORE" };
 
@@ -150,6 +173,10 @@ export const LOTES: Lote[] = [
       ["README_PARA_SN.md", "27336077f276368d"], ["EXPERIENCIAS_N1_LOTE_03.md", "f22631caebd9b8c6"], ["MANIFIESTO_LOTE_03.json", "8a4eb1bb7f96112d"], ["RUBRICAS_LOTE_03.json", "ff7012150558a469"],
       ["TRAZABILIDAD_ACADEMICA.md", "d5f386d4822193b9"], ["QA_Y_PRUEBAS.md", "00a39ffbc1c53b82"], ["PLAN_LOTE_04.md", "d0332c8416e43f45"], ["VALIDACION_LOCAL.txt", "11f7a12b4f94f04b"],
     ],
+  },
+  {
+    id: "lote-04", name: "Lote 04", packageVersion: "1.3", items: LOTE_04,
+    files: [["EXPERIENCIAS_N1_LOTE_04.md", "f7f50075b39b408e"], ["EXECUTIVE_CHALLENGE_N1_V2.md", "fdb978067df15689"]],
   },
 ];
 export const loteOf = (editorialId: string): Lote | undefined => LOTES.find((l) => l.items.some((i) => i.editorialId === editorialId));
