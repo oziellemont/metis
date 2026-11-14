@@ -204,14 +204,17 @@ describe("P0-D · vacaciones y reconstrucción desde el diario", () => {
 });
 
 describe("P0-D · pantallas", () => {
-  it("Hoy, Bandeja y el menú avisan del reporte pendiente; Carrera pide revisarlo antes de cerrar", () => {
+  it("los dos Hoy y Bandeja avisan del reporte pendiente; Carrera pide revisarlo antes de cerrar", () => {
     const today = readFileSync("src/components/ceo/Today.tsx", "utf8");
+    const hoy = readFileSync("src/components/ceo/HoyAprendizaje.tsx", "utf8");
     const inbox = readFileSync("src/components/ceo/InboxView.tsx", "utf8");
     const shell = readFileSync("src/components/ceo/CeoShell.tsx", "utf8");
     const career = readFileSync("src/components/ceo/Career.tsx", "utf8");
     expect(today).toMatch(/c\.reportDue/);
+    expect(hoy).toMatch(/c\.reportDue/);
     expect(inbox).toMatch(/c\.reportDue/);
-    expect(shell).toMatch(/c\.reportDue/);
+    // Directiva v1.1: el menú ya no lleva contador de pendientes.
+    expect(shell).not.toMatch(/c\.reportDue/);
     expect(career).toMatch(/reportFirst/);
   });
 

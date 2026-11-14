@@ -34,14 +34,14 @@ describe("Carrera · Mi carrera y Mi perfil en una sola pantalla", () => {
     expect(read("Profile.tsx")).toContain('id="experiencia"');
     expect(read("Profile.tsx")).toContain('id="liderazgo"');
   });
-  it("Mi perfil está en el menú; la barra del celular tiene cinco lugares, o siete con el simulador", () => {
+  it("Mi perfil está en el menú; la barra del celular tiene cuatro lugares, o seis con el simulador", () => {
     const shell = read("CeoShell.tsx");
     expect(MENU.map((m) => m.href)).toContain("/ceo/perfil");
-    expect(MENU.length).toBe(5);
-    expect(menuFor(true).length).toBe(7);
+    expect(MENU.length).toBe(4);
+    expect(menuFor(true).length).toBe(6);
     expect(shell).toContain("menuFor(sim)");
-    expect(shell).toContain('"grid-cols-5"');
-    expect(shell).toContain('"grid-cols-7"');
+    expect(shell).toContain('"grid-cols-4"');
+    expect(shell).toContain('"grid-cols-6"');
   });
   it("las pantallas enlazan a Mi perfil por su dirección propia, no por la de Carrera", () => {
     expect(read("Experience.tsx")).toContain('"/ceo/perfil#experiencia"');

@@ -2,14 +2,14 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
-import { ArrowLeft, ArrowRight, BookOpen, CheckCheck, PenLine, ListChecks, Clock, Globe2, Lightbulb, Lock, PhoneMissed, Play, Quote, XCircle } from "lucide-react";
+import { ArrowLeft, ArrowRight, BookOpen, CheckCheck, PenLine, ListChecks, Clock, Globe2, Lightbulb, PhoneMissed, Play, Quote, XCircle } from "lucide-react";
 import { firstName, personOf, personalizeText } from "@/lib/ceo/cast";
-import { econPass, economyOf, entryXp, isEconItem, LEVELS, nextLessonXp, rankFor, rulesVersionOf, type FactLine } from "@/lib/ceo/engine";
+import { econPass, economyOf, entryXp, isEconItem, nextLessonXp, rulesVersionOf, type FactLine } from "@/lib/ceo/engine";
 import { moneyText } from "@/lib/ceo/economy";
 import { isOmissionRedLine } from "@/lib/ceo/editorial";
 import { runSpans } from "@/lib/ceo/pausetime";
 import { entryRipples, moodOf, REL_START } from "@/lib/ceo/relations";
-import { lessonById, rankOf } from "@/lib/ceo/lessons";
+import { lessonById } from "@/lib/ceo/lessons";
 import type { Entry, Item, Option, Written } from "@/lib/ceo/types";
 import { MAX_CHARS, MIN_CHARS, textProblem, writtenEligible } from "@/lib/ceo/written";
 import { displayOptions } from "@/lib/ceo/option-order";
@@ -50,9 +50,9 @@ export function CaseView({ id }: { id: string }) {
 
   if (!e || e.status === "futuro") {
     return (
-      <Stage steps={CASE_STEPS} at={0} exit="/ceo/bandeja">
-        <StepTitle title="Este asunto todavía no llega" text="Cuando llegue lo verás en tu bandeja." />
-        <Link href="/ceo/bandeja" className="btn bg-white text-ink mt-6 inline-flex">Ir a la bandeja</Link>
+      <Stage steps={CASE_STEPS} at={0} exit="/ceo">
+        <StepTitle title="Este asunto todavía no llega" text="Cuando llegue lo verás en Hoy." />
+        <Link href="/ceo" className="btn bg-white text-ink mt-6 inline-flex">Ir a Hoy</Link>
       </Stage>
     );
   }
@@ -90,7 +90,7 @@ export function CaseView({ id }: { id: string }) {
   const nextLabel = step === 0 ? "Ver el contexto" : step === 1 ? "Decidir" : "Lo que aprendes";
 
   return (
-    <Stage steps={CASE_STEPS} at={step} reach={done ? 4 : 2} exit="/ceo/bandeja" top={deadline} onBack={back} onNext={fwd} next={nextLabel}
+    <Stage steps={CASE_STEPS} at={step} reach={done ? 4 : 2} exit="/ceo" top={deadline} onBack={back} onNext={fwd} next={nextLabel}
       aside={step === 4 ? (nextPending ? <Link href={`/ceo/caso/${nextPending.item.id}`} className="btn bg-white text-ink hover:bg-white/90 px-5 py-2.5 font-semibold">Siguiente asunto <ArrowRight size={15} /></Link> : <Link href="/ceo" className="btn bg-white text-ink hover:bg-white/90 px-5 py-2.5 font-semibold">Volver a Hoy <ArrowRight size={15} /></Link>) : undefined}>
       {step === 0 && (
         <>
@@ -551,18 +551,16 @@ function ConceptLessonLink({ lessonId, itemId }: { lessonId: string | null; item
   const lesson = lessonId ? lessonById(lessonId) : undefined;
   if (!lesson) return null;
   const done = !!c.s.lessons[lesson.id];
-  const locked = !done && rankOf(lesson) > rankFor(c.s, c.now);
+  // La teoría nunca se bloquea (Directiva v1.1): no hay candado por XP.
   const xp = nextLessonXp(c.s, c.now);
   const body = (
     <>
-      {locked ? <Lock size={16} className="shrink-0" /> : <BookOpen size={16} className="shrink-0" />}
-      <span className="flex-1 text-sm leading-snug"><b>{locked ? "Lección por abrir:" : "Aprende la teoría:"}</b> {lesson.title} · {lesson.minutes} min</span>
+      <BookOpen size={16} className="shrink-0" />
+      <span className="flex-1 text-sm leading-snug"><b>Aprende la teoría:</b> {lesson.title} · {lesson.minutes} min</span>
       {done ? <span className="chip bg-mint-soft text-sob text-xs">Completada</span>
-        : locked ? <span className="chip bg-slate-100 text-slate-500 text-xs">Se abre con {LEVELS[rankOf(lesson)]?.min} XP</span>
         : xp > 0 ? <span className="chip bg-indigo-soft text-indigo text-xs">+{xp} XP</span> : null}
     </>
   );
-  if (locked) return <div className="mt-3 flex items-center gap-2.5 rounded-xl border border-slate-100 bg-slate-50 px-3.5 py-2.5 text-slate-500" data-testid="concepto-leccion" data-state="bloqueada">{body}</div>;
   return (
     <Link href={`/ceo/academy/${lesson.id}?from=${itemId}`} className="mt-3 flex items-center gap-2.5 rounded-xl border border-indigo/15 bg-indigo-soft/40 px-3.5 py-2.5 text-indigo hover:bg-indigo-soft transition-colors" data-testid="concepto-leccion" data-state={done ? "completada" : "disponible"}>
       {body}

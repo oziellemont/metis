@@ -42,7 +42,7 @@ const K = {
   revisa: f("¿Qué revisa el consejo para aprobar un periodo?", "Tres cosas: que cumplas el encargo (tus indicadores objetivo en la línea o más), que la empresa cierre sana (salud mínima y ningún indicador debajo del piso) y que tus decisiones estén bien razonadas. Además, no cruzar ninguna línea roja."),
   noAprueba: f("¿Qué pasa si el consejo no aprueba el periodo?", "No hay despido. Sigues al frente de la misma empresa y el siguiente periodo es para corregir lo que quedó debajo de la línea."),
   vencer: f("¿Qué pasa si dejo vencer un asunto?", "Cada asunto tiene plazo. Si se vence, alguien decide por ti y tú cargas con el resultado: a quien te escribió le cae mal y el asunto cuenta en contra de tu criterio ante el consejo."),
-  constancia: f("¿Qué son la racha y los XP?", "Miden tu constancia. La racha cuenta los días seguidos en que decidiste o estudiaste algo; los XP se suman con tu práctica diaria. Son tu hábito, no un requisito: no abren cargos ni capítulos. En Academy, los XP sí abren lecciones nuevas."),
+  constancia: f("¿Qué son la racha y los XP?", "Miden tu constancia. La racha cuenta los días seguidos en que decidiste o estudiaste algo; los XP se suman con tu práctica diaria. Son tu hábito, no un requisito: no abren cargos ni capítulos. Tampoco abren lecciones: en Academy todo está abierto."),
   kpi: f("¿Qué es un KPI?", "Un indicador clave de desempeño: un número que resume si una parte del negocio va bien, por ejemplo cuánto compra en promedio cada cliente o cuántos días de inventario tienes. Cada industria tiene los suyos."),
 } as const;
 
@@ -70,16 +70,16 @@ const GUIDES: Record<string, CeoGuide> = {
   // Hoy con el simulador de empresas apagado (lo normal en MÊTIS 2.0): sin tablero de la empresa.
   "/ceo!practica": {
     title: "Hoy",
-    purpose: "Tu práctica de hoy: una propuesta para practicar, los casos que esperan y tu actividad en las seis academias.",
+    purpose: "Tu práctica de hoy, como camino: lo último que terminaste, tu siguiente paso y las dos estaciones que siguen.",
     shows: [
-      "«Tu práctica de hoy» propone una sola cosa: el caso que espera tu decisión, un caso ejecutivo o tu siguiente lección.",
-      "Debajo aparecen los demás casos que esperan. Todos están también en la Bandeja.",
-      "«Las seis academias» cuenta lecciones terminadas y decisiones tomadas. Es un avance provisional: no mide dominio.",
+      "«Tu siguiente paso» propone una sola cosa: el caso ejecutivo que dejaste a medias, un caso que espera tu decisión o tu siguiente lección.",
+      "Debajo, sin caja, las dos estaciones que siguen. Si conviene trabajar algo antes, se dice; la teoría no tiene candados.",
+      "«Tu criterio ejecutivo» cuenta aprendizaje completado: lecciones terminadas en cada academia. Es un avance provisional: el dominio aún no se evalúa.",
     ],
     faqs: [
       f("¿Qué es un caso?", "Un correo, mensaje, llamada, junta o reporte que necesita tu decisión. Trae la situación, quién te la plantea y varias opciones. Al decidir ves la consecuencia y la idea que hay detrás."),
       f("¿Qué pasa si dejo vencer un caso?", "Cada caso tiene plazo. Si se vence, alguien decide por ti y ya no puedes resolverlo. Los casos ejecutivos no vencen."),
-      f("¿Qué es un caso ejecutivo?", "Una situación más larga, de varios pasos, que se resuelve en una sola sentada de unos minutos: lees el contexto, te preparas y decides. Aparece en la lista con la etiqueta «Caso ejecutivo»."),
+      f("¿Qué es un caso ejecutivo?", "Una situación más larga, de varios pasos, que se resuelve en una sola sentada de unos minutos: lees el contexto, te preparas y decides. Aparece en tu camino de Hoy."),
       f("¿Por qué el avance dice «provisional»?", "Porque cuenta actividad: las lecciones que terminaste y las decisiones que tomaste en cada academia. No mide dominio, no sube niveles y no acredita nada. Lo que tus decisiones dejan ver de tu criterio está en Mi perfil, en Mi liderazgo."),
       f("¿Dónde quedaron los indicadores de la empresa y la misión del consejo?", "Son parte del simulador de empresas. Vuelven a esta pantalla, junto con Empresa y Carrera en el menú, al encender «Mostrar el simulador de empresas» en Ajustes. Todo lo que ya jugaste se conserva igual."),
       f("¿Qué significa que el simulador tiene asuntos propios esperando?", "Que la empresa de tus casos tiene algo pendiente que esta pantalla no muestra completo: un cierre de mes, una sesión especial o el cierre del periodo. El aviso trae un enlace directo para abrirlo sin encender el simulador."),
@@ -346,17 +346,17 @@ const GUIDES: Record<string, CeoGuide> = {
   // ─────────── Academy y Ajustes
   "/ceo/academy": {
     title: "Academy",
-    purpose: "La teoría detrás de tus decisiones, en lecciones cortas.",
+    purpose: "Seis disciplinas. Un criterio ejecutivo integral.",
     shows: [
-      "Cada tema es una ruta de habilidad con niveles: de lo esencial a lo más profundo.",
-      "«Tu enfoque de estudio» sugiere la competencia que más te conviene practicar.",
-      "Con «Para ti» ves las rutas ordenadas según lo que has demostrado; con «Orden original», todas en su orden.",
-      "La etiqueta «De tus temas» marca las rutas que trabajan alguno de los temas que elegiste.",
+      "Arriba, las seis academias. Toca una para ver su recorrido.",
+      "El recorrido marca lo completado, lo recomendado (con su botón «Empezar») y lo disponible. Sigue el mismo orden que tu camino de Hoy.",
+      "La biblioteca de conceptos explica cada idea en corto y lleva a su lección.",
+      "La etiqueta «De tus temas» marca las academias de los temas que elegiste.",
       "Al final está el glosario de tu industria, con buscador.",
     ],
     faqs: [
-      f("¿Cómo se abren más lecciones?", "Con tu constancia: al reunir más XP se abren niveles nuevos. Los XP se ganan decidiendo en tu empresa y completando lecciones."),
-      f("¿Qué es «Tu enfoque de estudio»?", "Es la competencia donde tus decisiones muestran menos dominio por ahora. Las lecciones sugeridas te ayudan a practicarla; tu lectura en Mi liderazgo cambia con lo que decidas en la empresa."),
+      f("¿Hay lecciones cerradas?", "No. La teoría, los conceptos y el glosario están abiertos siempre; ni el XP ni la racha cierran nada. Si conviene ver antes otra lección, el recorrido lo dice con «Conviene antes», pero puedes entrar igual."),
+      f("¿Cómo se decide lo recomendado?", "Con la misma regla que tu camino de Hoy: primero lo que no tiene algo pendiente antes, luego las academias de tus temas, alternando academias y de lo más sencillo a lo más exigente."),
       f("¿Las lecciones mueven a mi empresa?", "No mueven los indicadores ni el veredicto. Suman XP de constancia, cuentan para tu racha y te dan criterio para decidir mejor. El XP por lecciones tiene un tope por día."),
       f("¿Puedo repetir una lección?", "Sí. Repasar no suma XP de nuevo, pero la teoría se vuelve criterio cuando la aplicas."),
       f("¿Qué es el glosario?", "Las palabras propias de tu industria explicadas en corto. Úsalo cuando un asunto traiga un término que no conozcas."),
@@ -477,8 +477,7 @@ const FALLBACK: CeoGuide = {
   title: "mêtis CEO",
   purpose: "Practicas dirección resolviendo casos: decides, ves las consecuencias y aprendes de ellas.",
   shows: [
-    "Hoy: lo que espera tu decisión.",
-    "Bandeja: todo lo que te ha llegado.",
+    "Hoy: tu camino y tu siguiente paso.",
     "Academy: la teoría detrás de las decisiones.",
     "Mi progreso: tu constancia y tu práctica por academia.",
     "Mi perfil: tus temas, tu ritmo y lo que tus decisiones dejan ver.",

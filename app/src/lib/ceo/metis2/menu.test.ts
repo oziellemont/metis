@@ -5,13 +5,22 @@ import { MENU, SIMULATOR_MENU, menuColumns, menuFor } from "./menu";
 const comp = (f: string) => readFileSync(`src/components/ceo/${f}`, "utf8");
 
 describe("MÊTIS 2.0 · 3.6 · menú nuevo", () => {
-  it("el menú es Hoy, Bandeja, Academy, Mi progreso y Mi perfil, en ese orden", () => {
-    expect(MENU.map((m) => m.label)).toEqual(["Hoy", "Bandeja", "Academy", "Mi progreso", "Mi perfil"]);
-    expect(MENU.map((m) => m.href)).toEqual(["/ceo", "/ceo/bandeja", "/ceo/academy", "/ceo/progreso", "/ceo/perfil"]);
+  it("el menú es Hoy, Academy, Mi progreso y Mi perfil, en ese orden (Directiva v1.1)", () => {
+    expect(MENU.map((m) => m.label)).toEqual(["Hoy", "Academy", "Mi progreso", "Mi perfil"]);
+    expect(MENU.map((m) => m.href)).toEqual(["/ceo", "/ceo/academy", "/ceo/progreso", "/ceo/perfil"]);
     expect(menuFor(false)).toEqual([...MENU]);
     expect(menuFor(undefined)).toEqual([...MENU]);
-    expect(menuColumns(false)).toBe(5);
-    expect(menuColumns(undefined)).toBe(5);
+    expect(menuColumns(false)).toBe(4);
+    expect(menuColumns(undefined)).toBe(4);
+  });
+
+  it("la página de pendientes sale del menú pero sigue existiendo y abre desde el Hoy del simulador", () => {
+    expect(menuFor(true).map((m) => m.href)).not.toContain("/ceo/bandeja");
+    expect(existsSync("src/app/ceo/bandeja/page.tsx")).toBe(true);
+    expect(comp("Today.tsx")).toContain('href="/ceo/bandeja"');
+    // Ningún aviso de pendientes en el menú.
+    const shell = comp("CeoShell.tsx");
+    expect(shell).not.toMatch(/c\.pending\.length|bg-coral text-white text-\[10px\]/);
   });
 
   it("Empresa y Carrera no están en el menú, ni tampoco Personas, Ranking o el piloto", () => {
@@ -20,15 +29,13 @@ describe("MÊTIS 2.0 · 3.6 · menú nuevo", () => {
     expect(readFileSync("src/lib/ceo/metis2/menu.ts", "utf8")).not.toMatch(/piloto|personas|ranking/i);
   });
 
-  it("con el simulador encendido vuelven Empresa y Carrera, después de Bandeja, y nada más cambia", () => {
+  it("con el simulador encendido vuelven Empresa y Carrera, después de Hoy, y nada más cambia", () => {
     const on = menuFor(true);
-    expect(on.map((m) => m.label)).toEqual(["Hoy", "Bandeja", "Empresa", "Carrera", "Academy", "Mi progreso", "Mi perfil"]);
+    expect(on.map((m) => m.label)).toEqual(["Hoy", "Empresa", "Carrera", "Academy", "Mi progreso", "Mi perfil"]);
     expect(SIMULATOR_MENU.map((m) => m.href)).toEqual(["/ceo/empresa", "/ceo/carrera"]);
-    expect(menuColumns(true)).toBe(7);
+    expect(menuColumns(true)).toBe(6);
     expect(new Set(on.map((m) => m.href)).size).toBe(on.length);
-    // Solo Bandeja lleva el contador de pendientes.
-    expect(on.filter((m) => m.badge).map((m) => m.href)).toEqual(["/ceo/bandeja"]);
-    // Con siete lugares, los nombres largos tienen su versión corta para el celular.
+    // Con seis lugares, los nombres largos tienen su versión corta para el celular.
     for (const m of on) expect((m.short ?? m.label).length, m.label).toBeLessThanOrEqual(8);
   });
 
@@ -45,10 +52,11 @@ describe("MÊTIS 2.0 · 3.6 · menú nuevo", () => {
     expect(shell).toContain("c.s.settings.simulador === true");
     expect(shell).toContain("menuFor(sim)");
     expect(shell).not.toMatch(/^\s*\{ href: "\/ceo/m);
-    expect(shell).toContain('"grid-cols-5"');
-    expect(shell).toContain('"grid-cols-7"');
-    // Con siete lugares la letra de la barra del celular se achica para que ningún nombre se recorte.
-    expect(shell).toContain('sim ? "text-[9px] max-[359px]:text-[8px] tracking-tight" : "text-[10px]"');
+    expect(shell).toContain('"grid-cols-4"');
+    expect(shell).toContain('"grid-cols-6"');
+    // Con seis lugares la letra de la barra del celular se ajusta para que ningún nombre se recorte; cada lugar lleva su nombre completo para lectores de pantalla.
+    expect(shell).toContain('sim ? "text-[10px] max-[359px]:text-[9px] tracking-tight" : "text-[11px]"');
+    expect(shell).toContain("aria-label={label}");
     // Sin el simulador a la vista, el encabezado no habla del día de la empresa.
     expect(shell).toContain("Tus casos ocurren en");
   });
@@ -77,6 +85,10 @@ describe("MÊTIS 2.0 · 3.6 · Mi progreso", () => {
     expect(pg).toContain("Esto cuenta actividad");
     expect(pg).toContain("No acredita dominio ni sube niveles");
     expect(pg).toContain('"/ceo/perfil#liderazgo"');
+    // La actividad reciente vive aquí, plegada; ya no hay botón a la página de pendientes.
+    expect(pg).toContain('data-testid="progreso-actividad"');
+    expect(pg).toMatch(/<details className="card/);
+    expect(pg).not.toContain("/ceo/bandeja");
     // No toma nada del motor de dominio ni de la ruta de niveles.
     expect(pg).not.toMatch(/c\.mastery|masteryOf|@\/lib\/ceo\/mastery|rutaDe|nivelDe/);
   });
@@ -115,7 +127,7 @@ describe("MÊTIS 2.0 · 2.1 · registro corto, sin empresa", () => {
   });
   it("los temas se notan: Academy señala sus rutas y Mi progreso sus academias, sin prometer más", () => {
     const ac = comp("CeoAcademy.tsx");
-    expect(ac).toContain("priorityTracks(c.s.profile?.topics ?? []");
+    expect(ac).toContain("topicAcademies(c.s.profile?.topics ?? [])");
     expect(ac).toContain("De tus temas");
     expect(comp("Progress.tsx")).toContain("topicAcademies(topics)");
     // Elegir la siguiente práctica según los temas es la entrega 2.3: ningún texto lo da por hecho.

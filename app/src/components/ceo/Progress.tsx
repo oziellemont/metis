@@ -4,7 +4,8 @@ import Link from "next/link";
 import clsx from "clsx";
 import { ArrowRight, CalendarDays, ChartColumn, ListChecks } from "lucide-react";
 import { useCeo } from "./CeoProvider";
-import { Flame } from "./ui";
+import { Avatar, Flame, rel } from "./ui";
+import { firstName } from "@/lib/ceo/cast";
 import { LESSONS } from "@/lib/ceo/lessons";
 import { MIN_PRIORITY_TOPICS } from "@/lib/ceo/metis2/academias";
 import { decidedOf, practiceByAcademy, practiceTotals, topicAcademies, topicNames, weekGoalText } from "@/lib/ceo/metis2/entrada";
@@ -27,6 +28,8 @@ export function Progress() {
   const mine = topicAcademies(topics);
   const names = topicNames(topics);
   const daysOn = c.streak.week.filter((d) => d.on).length;
+  // Actividad reciente (antes «Tu bitácora» en Mi perfil): lo decidido y lo vencido, lo más nuevo primero.
+  const history = c.entries.filter((e) => e.status === "decidido" || e.status === "vencido").sort((a, b) => (b.decision?.at ?? b.deadline) - (a.decision?.at ?? a.deadline));
 
   return (
     <div className="space-y-5" data-testid="mi-progreso">
@@ -109,9 +112,30 @@ export function Progress() {
           : <p className="mt-4 text-sm text-slate-500">Elige al menos {MIN_PRIORITY_TOPICS} temas en Mi perfil y aquí verás cuáles academias los trabajan.</p>}
       </section>
 
+      <details className="card p-5 sm:p-6 group" data-testid="progreso-actividad">
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 font-semibold text-ink">
+          <span>Actividad reciente <span className="ml-1 font-normal text-slate-400 tabular-nums">{history.length}</span></span>
+          <ArrowRight size={15} className="text-slate-400 transition-transform group-open:rotate-90" aria-hidden />
+        </summary>
+        {!history.length && <p className="mt-3 text-sm text-slate-400">Aquí quedará cada caso que decidas.</p>}
+        <ul className="mt-3 divide-y divide-slate-100">
+          {history.slice(0, 30).map((e) => (
+            <li key={e.item.id}>
+              <Link href={`/ceo/caso/${e.item.id}`} className="flex items-start gap-3 py-3 hover:bg-slate-50 -mx-2 px-2 rounded-xl">
+                <Avatar id={e.item.from} size={34} />
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium text-ink truncate">{e.item.bitacora.title}</div>
+                  <div className="text-xs text-slate-500 truncate">{e.status === "vencido" ? "Venció sin respuesta" : `Elegiste: ${e.option?.text}`}</div>
+                </div>
+                <span className="text-[11px] text-slate-400 shrink-0">{firstName(c.pack, e.item.from)} · {rel(e.decision?.at ?? e.deadline, c.now)}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </details>
+
       <div className="flex flex-wrap gap-3">
         <Link href="/ceo/academy" className="btn-primary">Ir a Academy <ArrowRight size={15} /></Link>
-        <Link href="/ceo/bandeja" className="btn-ghost">Ver mi bandeja</Link>
       </div>
     </div>
   );

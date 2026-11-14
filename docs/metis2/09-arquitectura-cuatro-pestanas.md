@@ -1,8 +1,26 @@
 # MÊTIS 2.0 · Arquitectura de cuatro pestañas
 
-Propuesta de diseño y de cambios técnicos. 13 de noviembre de 2026.
+Diseño del 13 de noviembre de 2026, sustituido por la Directiva v1.1 de Oziel del 14 de noviembre de 2026, que aprueba la dirección visual y manda implementar y publicar.
 
-Este documento es una propuesta. No cambia nada de lo que hoy ve una persona en la aplicación: el menú publicado sigue siendo Hoy, Bandeja, Academy, Mi progreso y Mi perfil. La construcción empieza cuando Oziel apruebe el diseño y el orden.
+Estado al 14 de noviembre de 2026: las etapas 1, 2 y 3 están construidas y publicadas (sección 0). El menú publicado es Hoy, Academy, Mi progreso y Mi perfil; Bandeja salió del menú y su página sigue abriendo por su dirección. Las secciones 1 a 12 conservan el diseño original como referencia; donde la Directiva v1.1 decide otra cosa, manda la sección 0.
+
+## 0. Lo construido con la Directiva v1.1
+
+La Directiva v1.1 pide menos textos explicativos, menos divisiones y menos aclaraciones; los detalles viven en Mi progreso. Mientras el dominio no esté validado, el panel muestra solo el aprendizaje completado, con su etiqueta.
+
+| Pantalla | Cómo quedó |
+|---|---|
+| Menú | Hoy, Academy, Mi progreso y Mi perfil en computadora y en celular, sin contador ni punto rojo. Con el simulador encendido se suman Empresa y Carrera. Ajustes sigue en su lugar. Cada destino tiene su nombre completo para lectores de pantalla |
+| Hoy | Fecha, racha, «Tu camino ejecutivo» y el saludo. Un camino: la última completada en una línea con palomita verde (solo si existe), una sola tarjeta activa con un único botón blanco («Empezar» o «Continuar») y hasta dos pasos siguientes sin recuadro, con su nodo. Si un paso tiene un prerrequisito pendiente, una línea breve «Conviene antes: …»; no hay candado. Enlace «Ver mi camino en Academy». Sin lista de pendientes ni cifra de pendientes |
+| Panel blanco de Hoy | «Tu criterio ejecutivo»: lecciones completadas sobre lecciones publicadas, con la etiqueta «Aprendizaje completado»; las seis barras por academia; la nota «Dominio aún no evaluado.»; «Ver mi progreso» y una sola tarjeta «Repaso recomendado» cuando hay una lección terminada hace tres días o más. Sin XP. En celular baja después del camino |
+| Executive Challenge | Oculto para las cuentas públicas, porque su contenido no está autorizado. Para el equipo aparece como hito compacto al pie del camino, separado, sin competir con el botón |
+| Academy | Seis disciplinas arriba (tres por dos en computadora, dos columnas en celular). Al elegir una, su recorrido: completadas con palomita, la recomendada destacada con «Empezar», el resto disponibles. A la derecha, la «Biblioteca de conceptos» abierta, con la definición y la lección de cada concepto, y el glosario de la industria. Ninguna lección se cierra por rango ni por XP |
+| Mi progreso | «Actividad reciente» corta y plegada (hasta 30 renglones); sale «Ver mi bandeja» |
+| Mi perfil | Sale «Tu bitácora» (pasó a Mi progreso). «Mi liderazgo» lleva la marca «Histórico»: lectura de decisiones anteriores, no una competencia validada |
+
+La regla que ordena el camino es la primera versión de la entrega 2.3 (`lib/ceo/metis2/ruta.ts`, versión 1). Hoy y Academy usan la misma. Es determinista: primero lo empezado que se puede retomar (un caso conversacional a medias), después los casos que esperan, después las lecciones publicadas. Las lecciones se ordenan por prerrequisitos que enseña otra lección, intereses declarados, variedad entre academias, nivel y orden del catálogo, con desempate estable. Simula que se completa el paso actual para prever los siguientes, pero no inventa pasos: si no hay tres, muestra menos. No usa pilotos ni claves de evaluación. Mientras falte el diagnóstico (2.2) usa intereses y actividad real.
+
+Lo que no se construyó en esta entrega: guardar el paso exacto de una lección (exigiría un dato nuevo; no se afirma reanudación exacta de lecciones); la práctica independiente del simulador (3.1), así que los casos anteriores siguen con su vencimiento y su efecto en la partida; la marca de calidad editorial y la muestra de 30 piezas; la vista de cada habilidad con objetivo, conceptos, práctica y evidencia; las experiencias del Nivel 1 para todas las cuentas; el dominio y el nivel (etapa 5).
 
 La lógica que gobierna todo lo que sigue: MÊTIS gira alrededor de desarrollar el criterio ejecutivo de una persona mediante experiencias empresariales inmersivas.
 
@@ -364,12 +382,12 @@ Pruebas que se actualizan en la etapa 1: `lib/ceo/metis2/menu.test.ts` y `lib/ce
 
 ## 13. Lo que no se hizo
 
-- No se cambió el menú ni ninguna pantalla. Bandeja sigue publicada como pestaña.
+- Con la Directiva v1.1 sí se cambiaron el menú, Hoy, Academy, Mi progreso y Mi perfil (sección 0). Lo que sigue en esta lista describe la propuesta del 13 de noviembre; lo pendiente hoy está al final de la sección 0.
 - No se tocó la base de datos, el sistema de dominio, las partidas ni el contenido.
 - No se recorrió la aplicación en un navegador para esta propuesta: el inventario es de lectura del programa.
 - Las maquetas que acompañan esta propuesta son imágenes fijas hechas fuera de la aplicación, con datos de ejemplo. No son pantallas que funcionen y no están en el repositorio.
 - La maqueta de Hoy se rehízo con el diseño del Hoy anterior a petición de Oziel. Sus cifras (22 de 76 piezas, 9 de 24 experiencias, la racha y el XP) son ejemplos, no datos de una cuenta. Se comparó contra una captura del Hoy anterior, no contra la aplicación en funcionamiento.
 - Las maquetas del camino (Hoy con la experiencia activa, las dos siguientes y una completada; el camino después de avanzar; el caso de continuar; y el recorrido de Academy en Finanzas) también son imágenes fijas con datos de ejemplo. Usan títulos, duraciones y prerrequisitos reales del programa, pero las cifras de avance (22 de 76 piezas, 3 de 24 experiencias, la racha y el XP) son ejemplos. Las animaciones no se ven en una imagen fija.
-- No se construyó la regla que ordena el camino ni se cambió ningún candado: Academy publicada sigue bloqueando lecciones por rango y XP hasta la etapa 3.
+- En la propuesta del 13 de noviembre no se construyó la regla del camino ni se cambió ningún candado. Con la Directiva v1.1 la regla existe (versión 1) y el candado por rango y XP salió de Academy y de los casos.
 - No se estimó el tiempo de cada etapa.
 - No se convirtió ninguna experiencia nueva ni se cambió ninguna de las existentes.

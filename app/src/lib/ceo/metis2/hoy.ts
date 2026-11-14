@@ -6,6 +6,7 @@
  * textos que la acompañan. Lógica pura, sin React ni navegador, para poder probarla.
  *
  * Esta pantalla no mide dominio: las barras de criterio son de la entrega 3.3 y dependen de reglas sin validar.
+ * Desde la Directiva v1.1 el orden del camino lo decide `ruta.ts`; `misionDelDia` se conserva para quien la use.
  */
 export type MisionKind = "caso" | "caso_ejecutivo" | "leccion" | "academy";
 
@@ -55,6 +56,13 @@ export function avisoSimulador(x: { asuntos: readonly string[]; periodoCerrado: 
   partes.push("Esta pantalla los muestra completos al encender el simulador en Ajustes.");
   return n > 0 ? { text: partes.join(" "), href: x.asuntos[0], cta: n === 1 ? "Abrirlo" : "Abrir el primero" } : { text: partes.join(" "), href: "/ceo/carrera", cta: "Ver el cierre" };
 }
+
+/**
+ * Panel blanco de Hoy (Directiva v1.1). Mientras el dominio no esté validado, la cifra es solo aprendizaje completado:
+ * lecciones terminadas en cada academia, con su nombre explícito y la nota de que el dominio no está evaluado.
+ */
+export const APRENDIZAJE_COMPLETADO = "Aprendizaje completado";
+export const DOMINIO_PENDIENTE = "Dominio aún no evaluado.";
 
 /** Aviso fijo bajo las seis academias: lo que se ve es un conteo de actividad, no una medición. */
 export const AVANCE_PROVISIONAL = "Avance provisional. Cuenta actividad: lecciones que terminaste y decisiones que tomaste. No mide dominio, no sube niveles y no acredita nada.";
