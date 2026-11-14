@@ -43,7 +43,7 @@ export function EpisodeView({ id }: { id: string }) {
   // Parte de tu temporada (reglas v3+): se abre cuando llega. Fuera de ella, solo como práctica en modo prueba.
   const inSeason = seasonEpisodesOf(c.s).some((x) => x.spec.id === id);
   const entry = c.episodes.find((e) => e.spec.id === id);
-  if (inSeason && entry?.status === "futuro") return <Notice title="Este caso todavía no llega" text="Te avisamos en Hoy y en tu Bandeja cuando llegue." icon="lock" />;
+  if (inSeason && entry?.status === "futuro") return <Notice title="Este caso todavía no llega" text="Te avisamos en Hoy cuando llegue." icon="lock" />;
   if (!inSeason && !c.testTools) return <Notice title="Caso no disponible" text="Este caso no está abierto para tu cuenta." icon="lock" />;
   const run = inSeason ? seasonRunOf(c.s, id) : c.s.episodes?.[id];
   if (!run) return <Cover spec={spec} />;

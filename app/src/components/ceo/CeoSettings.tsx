@@ -142,7 +142,7 @@ export function CeoSettings() {
           <input type="checkbox" role="switch" aria-checked={sim} checked={sim} onChange={(e) => toggleSim(e.target.checked)} className="accent-indigo h-4 w-4 mt-0.5" data-testid="mostrar-simulador" />
           <span><b className="inline-flex items-center gap-1 text-ink"><Building2 size={14} /> Mostrar el simulador de empresas</b><br /><span className="text-slate-500">Vuelve a poner Empresa y Carrera en el menú, y el tablero de la empresa en Hoy, con los indicadores, el equipo, los cierres de mes y la trayectoria de la empresa de tus casos. Encenderlo o apagarlo solo cambia lo que ves: tus decisiones, tu racha y tu avance quedan igual.</span></span>
         </label>
-        <p className="text-xs text-slate-500" aria-live="polite">{sim ? "Encendido: Empresa y Carrera están en el menú, y Hoy muestra el tablero de la empresa." : "Apagado: el menú es Hoy, Bandeja, Academy, Mi progreso y Mi perfil, y Hoy muestra tu práctica del día."}</p>
+        <p className="text-xs text-slate-500" aria-live="polite">{sim ? "Encendido: Empresa y Carrera están en el menú, y Hoy muestra el tablero de la empresa." : "Apagado: el menú es Hoy, Academy, Mi progreso y Mi perfil, y Hoy muestra tu práctica del día."}</p>
       </section>
 
       <section className="card p-5 sm:p-6 space-y-3">

@@ -282,7 +282,7 @@ export function streakEmail(i: { pack?: CompanyPack; name: string; appUrl: strin
       <div style="font-family:${FONT};font-size:13px;color:${MUTED}">${i.streak === 1 ? "día de racha" : "días de racha"}</div>
     </td></tr></table>
     <div style="font-family:${FONT};font-size:20px;line-height:28px;font-weight:600;color:${INK};text-align:center;margin:0 0 10px">No la dejes caer, ${esc(first)}.</div>
-    ${p(`Hoy todavía no tomas ninguna decisión. ${i.pending ? `Tienes <b style="color:${INK}">${i.pending} ${i.pending === 1 ? "asunto esperando" : "asuntos esperando"}</b> en tu bandeja.` : "Tu bandeja está al día, pero una lección corta también cuenta."}`, "text-align:center")}
+    ${p(`Hoy todavía no tomas ninguna decisión. ${i.pending ? `Tienes <b style="color:${INK}">${i.pending} ${i.pending === 1 ? "asunto esperando" : "asuntos esperando"}</b> esperándote.` : "No tienes casos esperando, pero una lección corta también cuenta."}`, "text-align:center")}
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td align="center" style="padding:6px 0 4px">
       ${button(i.pending ? "Tomar una decisión" : "Tomar una lección de 4 min", i.pending ? base(i.appUrl) : `${base(i.appUrl)}/academy${i.lessonId ? `/${i.lessonId}` : ""}`, AMBER)}
     </td></tr></table>

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import clsx from "clsx";
-import { Home, Inbox, GraduationCap, Settings, X, Building2, Network, Route, ChartColumn, UserRound } from "lucide-react";
+import { Home, GraduationCap, Settings, X, Building2, Network, Route, ChartColumn, UserRound } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { menuFor, type MenuIcon } from "@/lib/ceo/metis2/menu";
 import { useCeo } from "./CeoProvider";
@@ -12,10 +12,11 @@ import { ImportPrompt } from "./ImportPrompt";
 import { RestScreen, ReturnScreen } from "./Cadence";
 import { CeoGuide } from "./CeoGuide";
 
-// MÊTIS 2.0 (entrega 3.6): el menú es Hoy, Bandeja, Academy, Mi progreso y Mi perfil (lib/ceo/metis2/menu.ts).
+// MÊTIS 2.0 (Directiva v1.1): el menú es Hoy, Academy, Mi progreso y Mi perfil (lib/ceo/metis2/menu.ts), sin contador.
+// La página de pendientes (/ceo/bandeja) sigue abriendo por su dirección y desde el Hoy del simulador.
 // Empresa y Carrera salieron del menú; vuelven solo con «Mostrar el simulador de empresas» en Ajustes.
 // «Personas» (/ceo/personas) y «Ranking» (/ceo/ranking) siguen ocultas: sus páginas existen, pero no están en el menú.
-const NAV_ICON: Record<MenuIcon, typeof Home> = { hoy: Home, bandeja: Inbox, academy: GraduationCap, progreso: ChartColumn, perfil: UserRound, empresa: Network, carrera: Route };
+const NAV_ICON: Record<MenuIcon, typeof Home> = { hoy: Home, academy: GraduationCap, progreso: ChartColumn, perfil: UserRound, empresa: Network, carrera: Route };
 
 export function CeoShell({ children }: { children: React.ReactNode }) {
   const c = useCeo();
@@ -43,7 +44,6 @@ export function CeoShell({ children }: { children: React.ReactNode }) {
   if (path.startsWith("/ceo/caso/") || path.startsWith("/ceo/episodio/") || path.startsWith("/ceo/academy/")) return <>{children}</>;
 
   const active = (h: string) => (h === "/ceo" ? path === "/ceo" : path.startsWith(h));
-  const n = c.pending.length + (c.reportDue !== null ? 1 : 0);
   // Hoy es el centro de mando: ocupa todo el ancho con el fondo mêtis y trae su propio encabezado.
   const home = path === "/ceo";
   const sim = c.s.settings.simulador === true;
@@ -57,10 +57,9 @@ export function CeoShell({ children }: { children: React.ReactNode }) {
       <aside className="hidden lg:flex fixed inset-y-0 left-0 z-30 w-[76px] flex-col items-center bg-[#0F1130] border-r border-white/[.06] py-5">
         <Link href="/ceo" aria-label="mêtis, inicio" className="h-11 w-11 grid place-items-center rounded-xl transition-colors hover:bg-white/10"><Logo variant="icon" height={26} /></Link>
         <nav className="mt-7 flex flex-col items-center gap-2" aria-label="Menú">
-          {nav.map(({ href, label, icon, badge }) => { const Icon = NAV_ICON[icon]; return (
+          {nav.map(({ href, label, icon }) => { const Icon = NAV_ICON[icon]; return (
             <Link key={href} href={href} aria-label={label} aria-current={active(href) ? "page" : undefined} className={railCls(active(href))}>
               <Icon size={20} strokeWidth={active(href) ? 2.2 : 1.9} />
-              {badge && n > 0 && <span className="absolute -top-1 -right-1 h-[18px] min-w-[18px] px-1 rounded-full bg-coral text-white text-[10px] font-semibold grid place-items-center ring-2 ring-[#0F1130]">{n}</span>}
               <span className="pointer-events-none absolute left-full ml-3 whitespace-nowrap rounded-lg bg-white px-2.5 py-1 text-xs font-medium text-ink opacity-0 -translate-x-1 shadow-lg transition-all group-hover:opacity-100 group-hover:translate-x-0">{label}</span>
             </Link>
           ); })}
@@ -104,11 +103,10 @@ export function CeoShell({ children }: { children: React.ReactNode }) {
       </main>
 
       {/* móvil: barra inferior */}
-      <nav aria-label="Menú" className={clsx("lg:hidden fixed bottom-0 inset-x-0 z-30 bg-[#0F1130] border-t border-white/[.06] grid pb-[env(safe-area-inset-bottom)]", sim ? "grid-cols-7" : "grid-cols-5")}>
-        {nav.map(({ href, label, short, icon, badge }) => { const Icon = NAV_ICON[icon]; return (
-          <Link key={href} href={href} aria-current={active(href) ? "page" : undefined} className={clsx("relative flex min-w-0 flex-col items-center gap-0.5 py-2 font-medium transition-colors", sim ? "text-[9px] max-[359px]:text-[8px] tracking-tight" : "text-[10px]", active(href) ? "text-white" : "text-white/50 hover:text-white")}>
+      <nav aria-label="Menú" className={clsx("lg:hidden fixed bottom-0 inset-x-0 z-30 bg-[#0F1130] border-t border-white/[.06] grid pb-[env(safe-area-inset-bottom)]", sim ? "grid-cols-6" : "grid-cols-4")}>
+        {nav.map(({ href, label, short, icon }) => { const Icon = NAV_ICON[icon]; return (
+          <Link key={href} href={href} aria-label={label} aria-current={active(href) ? "page" : undefined} className={clsx("relative flex min-w-0 flex-col items-center gap-0.5 py-2 font-medium transition-colors", sim ? "text-[10px] max-[359px]:text-[9px] tracking-tight" : "text-[11px]", active(href) ? "text-white" : "text-white/50 hover:text-white")}>
             <span className={clsx("h-7 rounded-full grid place-items-center transition-colors", sim ? "w-9" : "w-11", active(href) ? "bg-indigo" : "")}><Icon size={19} strokeWidth={active(href) ? 2.3 : 1.9} /></span> <span className={clsx("max-w-full truncate", !sim && "px-0.5")}>{sim ? short ?? label : label}</span>
-            {badge && n > 0 && <span className="absolute top-1 left-1/2 ml-2 h-4 min-w-4 px-1 rounded-full bg-coral text-white text-[10px] font-semibold grid place-items-center">{n}</span>}
           </Link>
         ); })}
       </nav>

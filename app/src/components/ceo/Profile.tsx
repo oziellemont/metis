@@ -4,11 +4,10 @@ import Link from "next/link";
 import clsx from "clsx";
 import { Award, Briefcase, Lock, Pencil, ShieldCheck } from "lucide-react";
 import { badgesOf, profileOf } from "@/lib/ceo/engine";
-import { firstName } from "@/lib/ceo/cast";
 import { useCeo } from "./CeoProvider";
 import { LEADERSHIP_MIN_EVIDENCE, leadershipOf, type Leadership } from "@/lib/ceo/leadership";
 import { track } from "@/lib/ceo/events";
-import { Avatar, Flame, rel } from "./ui";
+import { Flame } from "./ui";
 import { ProfileEditor } from "./ProfileFlow";
 import { EXP_AREAS, GOALS, INDUSTRIES, ROLES, YEARS, diagnosticOffered, labelOf, profileAnswered } from "@/lib/ceo/profile";
 
@@ -16,7 +15,6 @@ export function Profile({ onCareer, career = true, slot }: { onCareer?: () => vo
   const c = useCeo();
   const p = profileOf(c.s, c.now);
   const badges = badgesOf(c.s, c.now);
-  const history = c.entries.filter((e) => e.status === "decidido" || e.status === "vencido").sort((a, b) => (b.decision?.at ?? b.deadline) - (a.decision?.at ?? a.deadline));
   const t = c.trajectory;
   const [editing, setEditing] = useState(false);
   const pf = c.s.profile;
@@ -117,24 +115,7 @@ export function Profile({ onCareer, career = true, slot }: { onCareer?: () => vo
         </div>
       </section>
 
-      <section className="card p-5 sm:p-6">
-        <h2 className="font-semibold text-ink">Tu bitácora</h2>
-        {!history.length && <p className="mt-3 text-sm text-slate-400">Aquí quedará el registro de cada decisión y lo que aprendiste de ella.</p>}
-        <ul className="mt-3 divide-y divide-slate-100">
-          {history.map((e) => (
-            <li key={e.item.id}>
-              <Link href={`/ceo/caso/${e.item.id}`} className="flex items-start gap-3 py-3 hover:bg-slate-50 -mx-2 px-2 rounded-xl">
-                <Avatar id={e.item.from} size={34} />
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-ink truncate">{e.item.bitacora.title}</div>
-                  <div className="text-xs text-slate-500 truncate">{e.status === "vencido" ? "Lo dejaste vencer" : `Elegiste: ${e.option?.text}`}</div>
-                </div>
-                <span className="text-[11px] text-slate-400 shrink-0">{firstName(c.pack, e.item.from)} · {rel(e.decision?.at ?? e.deadline, c.now)}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </section>
+      {/* «Tu bitácora» pasó a Mi progreso, como «Actividad reciente» (Directiva v1.1). */}
     </div>
   );
 }
@@ -146,8 +127,8 @@ function MyLeadership() {
   const pk = c.pack;
   return (
     <section id="liderazgo" data-testid="mi-liderazgo" className="card p-5 sm:p-6">
-      <h2 className="font-semibold text-ink">Mi liderazgo</h2>
-      <p className="text-xs text-slate-400 mt-1">Según tus {L.periods > 1 ? L.decisionsAll : L.decisions} decisiones{L.periods > 1 ? ` de ${L.periods} periodos` : ""}.</p>
+      <div className="flex flex-wrap items-center gap-2"><h2 className="font-semibold text-ink">Mi liderazgo</h2><span data-testid="liderazgo-historico" className="chip bg-slate-100 text-slate-500 text-[11px]">Histórico</span></div>
+      <p className="text-xs text-slate-400 mt-1">Lectura de tus decisiones anteriores. No es una competencia validada. Según tus {L.periods > 1 ? L.decisionsAll : L.decisions} decisiones{L.periods > 1 ? ` de ${L.periods} periodos` : ""}.</p>
 
       <div data-testid="liderazgo-preferencias" className="mt-5">
         <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">1 · Preferencias · estilo, no calificación</div>

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
-import { ACCESO_REVISION, AVANCE_PROVISIONAL, avisoSimulador, misionDelDia, otrosCasosText } from "./hoy";
+import { ACCESO_REVISION, APRENDIZAJE_COMPLETADO, AVANCE_PROVISIONAL, DOMINIO_PENDIENTE, avisoSimulador, misionDelDia, otrosCasosText } from "./hoy";
 import { ceoGuideFor, ceoGuideKeys } from "../guide";
 
 const comp = (f: string) => readFileSync(`src/components/ceo/${f}`, "utf8");
@@ -26,26 +26,40 @@ describe("MÊTIS 2.0 · Hoy sin el simulador de empresas", () => {
     expect(hoy).toContain('data-testid="hoy-aviso-simulador"');
   });
 
-  it("muestra la práctica de hoy, las seis academias y el avance declarado como provisional", () => {
-    for (const id of ["hoy-aprendizaje", "hoy-mision", "hoy-decisiones", "hoy-academias", "hoy-provisional", "hoy-revision"]) expect(hoy, id).toContain(`data-testid="${id}"`);
-    expect(hoy).toContain("practiceByAcademy(");
-    expect(hoy).toContain("decidedOf(c.s)");
-    expect(hoy).toContain("{AVANCE_PROVISIONAL}");
-    expect(AVANCE_PROVISIONAL).toMatch(/^Avance provisional\./);
-    expect(AVANCE_PROVISIONAL).toMatch(/No mide dominio, no sube niveles y no acredita nada/);
-    for (const href of ["/ceo/bandeja", "/ceo/academy", "/ceo/progreso", "/ceo/perfil#liderazgo"]) expect(hoy, href).toContain(`href="${href}"`);
-    // El dilema del día y el día tranquilo siguen funcionando igual.
+  it("Hoy es un camino de dos zonas: un solo paso con un solo botón, hasta dos estaciones sin caja y el panel blanco", () => {
+    for (const id of ["hoy-aprendizaje", "hoy-camino", "hoy-mision", "hoy-completado", "hoy-siguiente", "hoy-academias", "hoy-provisional", "hoy-revision", "hoy-repaso"]) expect(hoy, id).toContain(`data-testid="${id}"`);
+    expect(hoy).toContain("lg:grid lg:grid-cols-[minmax(0,1fr)_400px] xl:grid-cols-[minmax(0,1fr)_420px]");
+    for (const t of ["Tu camino ejecutivo", "Tu siguiente paso", "Continúa tu aprendizaje", "Tu criterio ejecutivo", "Ver mi camino en Academy →", "Ver mi progreso", "Repaso recomendado"]) expect(hoy, t).toContain(t);
+    // La regla del camino es la compartida con Academy.
+    expect(hoy).toContain("caminoDelDia(");
+    expect(hoy).toContain("camino.siguientes.map(");
+    // Un solo botón principal: el blanco del paso actual (y el de «Explorar» cuando no hay paso).
+    expect(hoy.match(/btn bg-white text-ink hover:bg-white\/90 px-5 py-3/g)?.length).toBe(2);
+    // Sin lista de pendientes, sin contador, sin enlaces a la página de pendientes.
+    expect(hoy).not.toMatch(/\/ceo\/bandeja|Bandeja|otrosCasosText|hoy-decisiones|c\.pending\.length/);
+    for (const href of ["/ceo/academy", "/ceo/progreso", "/ceo/ajustes"]) expect(hoy, href).toContain(`href="${href}"`);
     expect(hoy).toMatch(/<DilemmaPrompt \/>/);
     expect(hoy).toContain("c.resumeCareer");
   });
 
-  it("no muestra barras de criterio ni niveles: eso es de la entrega 3.3 y sus reglas no están validadas", () => {
-    expect(hoy).not.toMatch(/metis2\/dominio|masteryOf|Tu criterio ejecutivo|levelLabel|tramoOf/);
+  it("el panel cuenta solo aprendizaje completado, con su etiqueta, y dice que el dominio aún no se evalúa", () => {
+    expect(APRENDIZAJE_COMPLETADO).toBe("Aprendizaje completado");
+    expect(DOMINIO_PENDIENTE).toBe("Dominio aún no evaluado.");
+    expect(hoy).toContain("{APRENDIZAJE_COMPLETADO}");
+    expect(hoy).toContain("{DOMINIO_PENDIENTE}");
+    expect(hoy).toContain("practiceByAcademy(");
+    expect(hoy).toContain("r.lessonsDone}/{r.lessonsTotal}");
+    // El XP no aparece en Hoy y no decide nada.
+    expect(hoy).not.toMatch(/c\.xp|rankFor|rankOf|nextLessonXp/);
+    expect(AVANCE_PROVISIONAL).toMatch(/No mide dominio, no sube niveles y no acredita nada/);
+    // Ni dominio ni niveles: sus reglas no están validadas.
+    expect(hoy).not.toMatch(/metis2\/dominio|masteryOf|c\.mastery|levelLabel|tramoOf/);
     expect(hoy).not.toMatch(/\bNivel \d|aprobad|acreditad/i);
   });
 
   it("el acceso a las experiencias en revisión lo ven solo las cuentas del equipo, y dice que no cuentan", () => {
     expect(hoy).toMatch(/\{c\.testTools && \(\s*<section data-testid="hoy-revision"/);
+    expect(hoy).toContain("Executive Challenge");
     expect(ACCESO_REVISION.title).toBe("Solo para revisión");
     expect(ACCESO_REVISION.href).toBe("/ceo/piloto");
     expect(ACCESO_REVISION.text).toMatch(/No cuentan para el avance, el nivel ni el perfil/);
@@ -93,7 +107,7 @@ describe("MÊTIS 2.0 · Hoy sin el simulador de empresas", () => {
     const on = ceoGuideFor("/ceo", null, "continua", true);
     expect(off.key).toBe("/ceo");
     expect(off.title).toBe("Hoy");
-    expect(off.purpose).toMatch(/Tu práctica de hoy/);
+    expect(off.purpose).toMatch(/Tu práctica de hoy, como camino/);
     expect(on.purpose).toMatch(/centro de mando/);
     expect(ceoGuideFor("/ceo").purpose).toBe(on.purpose);
     const txt = [off.purpose, ...off.shows, ...off.faqs.flatMap((x) => [x.q, x.a])].join("\n");

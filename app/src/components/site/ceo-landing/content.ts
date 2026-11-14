@@ -158,7 +158,7 @@ export const HOW = {
     today: {
       top: "Hoy · Día 2 en Botanas Cumbre",
       title: "Esperando tu decisión",
-      inbox: "Bandeja",
+      inbox: "Ver todo",
       items: [
         { initials: "SL", tone: "#171A3A", name: "Sofía Leal", channel: "email", text: "Condiciones comerciales 2027 · Botanas Cumbre", due: "Vence en 23 h" },
         { initials: "AM", tone: "#5B4BE8", name: "Ana Martínez", channel: "reporte", text: "Pronóstico Q1 · versión final (22 láminas)", due: "Vence en 23 h" },

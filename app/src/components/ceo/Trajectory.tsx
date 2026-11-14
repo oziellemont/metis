@@ -73,7 +73,7 @@ export function Trajectory({ t, short, now, kpiLabel }: { t: T; short: string; n
           <section data-testid="compromisos-abiertos" className="card p-5 sm:p-6">
             <h2 className="font-semibold text-ink">Compromisos y consecuencias abiertas</h2>
             {t.open.length === 0
-              ? <p className="mt-2 text-sm text-slate-500">No hay nada abierto ahora mismo. Lo que llegue aparecerá aquí y en tu bandeja.</p>
+              ? <p className="mt-2 text-sm text-slate-500">No hay nada abierto ahora mismo. Lo que llegue aparecerá aquí y en Hoy.</p>
               : <ul className="mt-3 space-y-2">
                   {t.open.slice(0, 6).map((o) => (
                     <li key={o.item} className="rounded-xl border border-slate-100 px-3.5 py-2.5">
