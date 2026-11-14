@@ -1,6 +1,8 @@
 -- ============================================================================
 -- MÊTIS 2.0 · 0025 · Intentos, respuestas, rúbricas, revisiones y evidencias
--- ESTADO: PROPUESTA. NO SE HA EJECUTADO. NO ESTÁ EN supabase/migrations A PROPÓSITO.
+-- ESTADO: EJECUTADA POR OZIEL EN PRODUCCIÓN EL 14 DE NOVIEMBRE DE 2026 (comprobación: 6 tablas con RLS activo).
+-- Ninguna parte de la aplicación la usa todavía. NO ESTÁ EN supabase/migrations A PROPÓSITO.
+-- Se puede volver a correr sin error.
 --
 -- Antes de correrla hacen falta tres cosas, en este orden:
 --   1. Autorización explícita de Oziel para ejecutar esta migración.
@@ -86,6 +88,7 @@ create table if not exists metis2.rubricas (
   created_at    timestamptz not null default now(),
   unique (pieza, version)
 );
+alter table metis2.intentos drop constraint if exists intentos_rubrica_fk;
 alter table metis2.intentos
   add constraint intentos_rubrica_fk foreign key (rubrica_id) references metis2.rubricas(id) not valid;
 
