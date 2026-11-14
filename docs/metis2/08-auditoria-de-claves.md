@@ -3,6 +3,20 @@
 Fecha: 13 de noviembre de 2026.
 Responde al punto 8 de las instrucciones de Oziel al entregar el paquete maestro corregido, y a la acción 6 del archivo de entrada del paquete: no publicar las claves de evaluación en lo que recibe el navegador.
 
+## Actualización del 14 de noviembre de 2026: corrección aplicada en la aplicación
+
+Con la segunda directiva («MÊTIS 2.0 · Prioridades académicas y técnicas», prioridad P0 de integridad) se hizo el cambio de fondo de los apartados 7 y 8 en la aplicación, para las 13 experiencias y el Executive Challenge a la vez (el patrón se probó primero con EDIT-N1-020 y EC-N1-002-A y, como es el mismo motor, se aplicó a las otras 12 en la misma entrega):
+
+1. **Solo el equipo.** En producción, las páginas del piloto y las cuatro acciones de servidor que califican comprueban en el servidor que hay sesión y que la cuenta está en el equipo mêtis (`metis.platform_admins`). Si no, la página responde como si no existiera. En Preview y desarrollo siguen abiertas para revisar.
+2. **Lo visible y lo que califica, separados.** La página de cada experiencia lleva la práctica guiada completa (ahí las explicaciones son deliberadas) y la comprobación sin cifras correctas, grupos, órdenes, renglones correctos, cálculos, respuestas de referencia ni notas de conversión. El Executive Challenge ya no viaja: el navegador recibe la escena y el paso actuales, sin puntos, rutas, notas ni marcas críticas.
+3. **Califica el servidor.** El navegador manda lo respondido; el servidor limpia la entrada, califica con la clave que solo él tiene, y devuelve el resultado y un sello cifrado con la identidad, la pieza y la versión. En el reto, el servidor impone el orden de las escenas, no deja cambiar lo respondido, pone la hora y calcula el informe. Un doble envío no cuenta dos veces.
+4. **La regla provisional de 70 de 100 se retiró.** Ningún resultado dice «pasa» o «no pasa».
+5. **Pruebas que vigilan.** `piloto-servidor.test.ts` falla si una sola clave aparece en lo que recibe el navegador (13 comprobaciones y todas las vistas del reto, para quien sabe y para quien empieza), si el sello se puede alterar o usar con otra cuenta o versión, o si alguna página o acción deja de comprobar al equipo.
+
+Lo que sigue igual y necesita a Oziel: el repositorio de código sigue siendo público y las claves están en él (decidir repositorio privado o claves guardadas aparte, punto 2 del apartado 9). El intento vive en el sello y no en la base: quien borra su sello puede empezar otro intento. Guardarlo en la cuenta necesita la tabla propuesta en `docs/sql/metis2_0025_intentos_PROPUESTA.sql`, que no se ha ejecutado. Mientras las claves estén en un repositorio público, ninguna de estas variantes puede acreditar.
+
+Lo que sigue es el texto original de la auditoría, del 13 de noviembre.
+
 ## 1. Respuesta corta
 
 **Sí llegan.** No están en los archivos de programa que la aplicación reparte a todo el mundo, pero viajan completas dentro de la página de cada experiencia y del Executive Challenge. Una persona con cuenta que abra una de esas páginas y sepa dónde mirar puede leer todas las respuestas antes de contestar.

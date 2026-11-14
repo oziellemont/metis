@@ -5,21 +5,27 @@ import { Stage, StepTitle } from "@/components/ceo/Stage";
 import { ACADEMIES, skillById } from "@/lib/ceo/metis2/academias";
 import { EXPERIENCIAS } from "@/lib/ceo/metis2/experiencias";
 import { RETOS_DEMO } from "@/lib/ceo/metis2/reto";
+import { equipoServidor } from "@/lib/ceo/equipo-servidor";
+import { notFound } from "next/navigation";
 
 export const metadata: Metadata = { title: "Experiencias en revisión", robots: { index: false, follow: false } };
+/** Se arma en cada petición: solo el equipo mêtis, comprobado en el servidor. */
+export const dynamic = "force-dynamic";
 
 /**
  * Entrada a las experiencias del Repositorio Académico que ya están convertidas.
- * No aparece en el menú: se entra por enlace. Nada de lo que ocurre aquí registra evidencia.
+ * No aparece en el menú. Solo la abre el equipo mêtis, comprobado en el servidor: a cualquier otra cuenta
+ * le responde «no encontrado». Nada de lo que ocurre aquí registra evidencia.
  */
-export default function Page() {
+export default async function Page() {
+  if (!(await equipoServidor()).ok) notFound();
   const groups = ACADEMIES.map((a) => ({ a, list: EXPERIENCIAS.filter((x) => x.academy === a.id) })).filter((g) => g.list.length > 0);
   return (
     <Stage steps={[]} at={0} exit="/ceo">
       <div className="space-y-7 pb-10">
         <StepTitle eyebrow="Repositorio Académico · Nivel 1" title="Experiencias en revisión" text={`${EXPERIENCIAS.length} experiencias convertidas. Cada una es un caso corto con documentos, decisiones y una comprobación con otra situación.`} />
         <p className="flex items-start gap-2 rounded-xl border border-white/10 bg-white/[.06] px-3 py-2.5 text-sm leading-relaxed text-white/75">
-          <Info size={15} className="mt-0.5 shrink-0 text-mint" /> No cuentan para tu avance, tu nivel ni tu perfil. El recorrido se guarda solo en este navegador.
+          <Info size={15} className="mt-0.5 shrink-0 text-mint" /> No cuentan para tu avance, tu nivel ni tu perfil. Las comprobaciones se califican en el servidor; el avance se guarda en este navegador, con un sello cifrado.
         </p>
         <section className="space-y-2.5">
           <h2 className="text-xs font-semibold uppercase tracking-wider text-mint">Executive Challenge · demostración</h2>

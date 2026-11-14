@@ -209,7 +209,6 @@ export const N1_CRECIMIENTO_NO_TODOS_COMPRAN_IGUAL: Experiencia = {
         ideas: ["El mensaje responde a la necesidad del grupo elegido.", "Nombra un dato que no está en las entrevistas: tamaño, disposición a pagar, costo de atenderlo o conversión.", "No afirma que el grupo sea el más grande ni el más rentable."],
       },
     ],
-    passAt: 70,
   },
   evidencePolicy: "no_registra",
   qa: { estado: "probado", importedAt: "2026-11-13", editorialReviewedAt: null, publishedAt: null },
@@ -221,6 +220,6 @@ export const N1_CRECIMIENTO_NO_TODOS_COMPRAN_IGUAL: Experiencia = {
     "Esta experiencia no tiene respuesta escrita en la práctica: el paquete no la pide.",
     "Variante: las seis voces de la biblioteca digital se redactaron aquí; el paquete solo nombra los tres tipos de persona.",
     "Variante: «criterio coherente» (30 puntos) e «hipótesis y dato pendiente» (25 puntos) son respuestas escritas. No se califican de forma automática: quedan en espera de revisión de una persona.",
-    "La regla para pasar la variante (70 de 100) es provisional.",
+    "No hay regla para pasar la variante: la regla provisional se retiró y el puntaje se muestra sin veredicto.",
   ],
 };

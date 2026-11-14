@@ -186,7 +186,6 @@ export const N1_LIDERAZGO_RESPONSABLE: Experiencia = {
         ideas: ["Tiene resultado, responsables y fecha.", "Atiende lo que no tenía dueño.", "Incluye un momento para revisar."],
       },
     ],
-    passAt: 70,
   },
   evidencePolicy: "no_registra",
   qa: { estado: "probado", importedAt: "2026-11-13", editorialReviewedAt: null, publishedAt: null },
@@ -197,6 +196,6 @@ export const N1_LIDERAZGO_RESPONSABLE: Experiencia = {
     "Las respuestas de Nora después de cada decisión son nuevas.",
     "Variante: los nombres de los encargados, las tareas y los estados se redactaron al convertir; el paquete solo describe la situación.",
     "Variante: «vacío de responsabilidad» (30 puntos) y «seguimiento concreto» (25 puntos) son respuestas escritas. No se califican de forma automática: quedan en espera de revisión de una persona.",
-    "La regla para pasar la variante (70 de 100) es provisional.",
+    "No hay regla para pasar la variante: la regla provisional se retiró y el puntaje se muestra sin veredicto.",
   ],
 };

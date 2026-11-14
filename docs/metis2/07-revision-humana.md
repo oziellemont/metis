@@ -15,7 +15,7 @@ Comprobado en el código y en las pruebas automáticas:
 
 - Lo que una persona escribe en una experiencia o en el Executive Challenge se guarda **solo en su navegador**. No llega al servidor. Nadie del equipo puede leerlo.
 - Lo escrito no se califica solo. Sus puntos quedan «en espera de revisión de una persona» y, mientras haya puntos en espera, la pantalla no da veredicto.
-- No existe una regla de aprobación habilitada en el Executive Challenge. En las 13 experiencias la variante guarda una regla provisional de 70 de 100, sin calibrar; solo se menciona en pantalla, como texto, en las dos experiencias que no tienen nada escrito (EDIT-N1-002 y EDIT-N1-010). Para esas dos, el cálculo interno sí llega a un «pasa» o «no pasa» con esa regla, pero la pantalla no lo muestra ni lo usa para nada.
+- No existe una regla de aprobación habilitada ni en el Executive Challenge ni en las 13 experiencias. La regla provisional de 70 de 100 que guardaban las experiencias se retiró el 14 de noviembre de 2026 por indicación de la segunda directiva: el puntaje se muestra sin veredicto y lo calcula el servidor.
 - Nada de esto registra evidencia, sube niveles ni acredita.
 
 ### Cuánto pesa lo escrito en cada pieza
@@ -178,7 +178,7 @@ En ningún paso se conecta el resultado al registro de evidencias ni al cálculo
 4. Si la persona ve el nombre de quien la revisó.
 5. Qué parte de las respuestas pasa a segunda revisión y con qué margen de diferencia sube a Oziel.
 6. Quién redacta los niveles de cada criterio escrito: Oziel, o SuperNinja como borrador para que Oziel corrija.
-7. Qué hacer con la regla provisional de 70 de 100 que guardan las 13 experiencias: dejarla como está, quitar su mención de la pantalla o retirarla hasta calibrar.
+7. Resuelto: la regla provisional de 70 de 100 se retiró hasta calibrar (segunda directiva).
 8. Si las tablas nuevas se crean ya o cuando termine la revisión del Executive Challenge y de EDIT-N1-020.
 
 ## 8. Lo que no se hizo

@@ -177,7 +177,6 @@ export const N1_FINANZAS_UTILIDAD_CAJA: Experiencia = {
       { id: "utilidad", kind: "cifra", unit: "$", criterion: "Utilidad", weight: 30, origen: "adaptado", prompt: "¿Cuál fue la utilidad del mes?", answer: 17000, calc: "80,000 − 38,000 − 25,000 = 17,000" },
       { id: "saldo", kind: "cifra", unit: "$", criterion: "Flujo y saldo de efectivo", weight: 35, origen: "adaptado", prompt: "¿Con cuánto efectivo terminó el mes?", answer: 5000, calc: "25,000 + 35,000 − 30,000 − 25,000 = 5,000" },
     ],
-    passAt: 70,
   },
   evidencePolicy: "no_registra",
   qa: { estado: "probado", importedAt: "2026-11-12", editorialReviewedAt: null, publishedAt: null },
@@ -188,6 +187,6 @@ export const N1_FINANZAS_UTILIDAD_CAJA: Experiencia = {
     "El criterio «diferencia entre ingreso y cobro» de la variante se pregunta como una cifra por calcular (lo que sigue sin cobrarse).",
     "La «advertencia de exactitud» del paquete habla de un sobregiro de $10,000 y caja libre de $0; la tabla y los cálculos dan saldo final de $5,000. Se siguió la tabla.",
     "La variante repite tres cifras de la práctica (25,000 de efectivo inicial y de gastos, 45,000 por cobrar y 5,000 de saldo final).",
-    "La regla para pasar la variante (70 de 100) es provisional.",
+    "No hay regla para pasar la variante: la regla provisional se retiró y el puntaje se muestra sin veredicto.",
   ],
 };

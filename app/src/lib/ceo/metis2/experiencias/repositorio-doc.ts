@@ -130,7 +130,8 @@ export function repositorioMarkdown(): string {
     "3. **Tocar en vez de arrastrar.** Todas las actividades se resuelven tocando botones de al menos 36 píxeles. Nada depende solo del color: cada estado lleva texto.",
     "4. **Piezas añadidas.** Para que cada experiencia tenga al menos dos decisiones conectadas y para que la variante tenga algo comprobable, se añadieron decisiones, tarjetas o datos. Cada uno está marcado como «añadido al convertir» y listado en la experiencia, en la sección 9.",
     "5. **Calculadora.** Donde el paquete permite calculadora en la evaluación, la variante ofrece una calculadora aritmética que solo opera; no explica conceptos.",
-    "6. **Regla para pasar.** 70 de 100 en todas, provisional y sin calibrar.");
+    "6. **Regla para pasar.** No hay. La regla provisional de 70 de 100 se retiró: el puntaje se muestra sin veredicto hasta que exista una regla calibrada con datos y revisada por el equipo académico.",
+    "7. **La variante se califica en el servidor.** La pantalla recibe la práctica y las tareas de la variante sin respuestas, sin criterios de aceptación y sin referencias. Las respuestas se mandan al servidor, que califica y devuelve el resultado con un sello cifrado. El navegador no decide puntajes.");
 
   p("## 8. Cómo entra en lo que ya está construido",
     "| Pieza | Qué había | Qué se añadió | Qué falta antes de acreditar |", "|---|---|---|---|",
@@ -168,12 +169,12 @@ export function repositorioMarkdown(): string {
     "5. Las igualdades que se muestran (documentos, cálculos del cierre, pistas, variante) se recalculan, y las identidades numéricas que cada paquete lista en sus notas de QA son pruebas.",
     "6. En la variante: la respuesta nunca está a la vista, no aparecen personajes de la práctica ni explicaciones, quien responde bien obtiene todos los puntos comprobables, y responder al azar casi nunca los obtiene.",
     "7. Lo escrito es opcional, no cambia los puntos comprobables y deja su peso en espera de revisión.",
-    "8. Un recorrido guardado en cualquier paso se retoma donde iba; un resultado alterado a mano se vuelve a calcular; un recorrido guardado con el formato anterior se conserva.",
+    "8. Un recorrido guardado en cualquier paso se retoma donde iba; el resultado guardado en el navegador nunca se usa: se vuelve a pedir al servidor con el sello, y sin sello válido no hay resultado; un recorrido guardado con el formato anterior se conserva.",
     "9. El motor, el contenido y las pantallas no usan el registro de evidencias, el cálculo de dominio, la partida ni ningún servicio.");
 
   p("## 11. Observaciones editoriales de los paquetes",
     "1. **EDIT-N1-002, advertencia de exactitud.** El lote 01 habla de un sobregiro de $10,000 utilizado y caja libre de $0. La tabla y los cálculos dan saldo final de $5,000 y faltante de $7,000. Las notas de QA del lote 03 confirman la discrepancia y piden corregir el texto antes de publicar. La experiencia convertida sigue la tabla desde el principio: muestra saldo final de $5,000 y no menciona el sobregiro.",
-    `2. **EDIT-N1-002, variante.** Dice «con cifras distintas», pero repite ${sharedAmounts(pilot).map(money).join(", ")}. Quien conteste de memoria con las cifras de la práctica acierta dos de tres criterios (70 puntos) y, con la regla provisional, pasa. Se sugiere cambiar el efectivo inicial o los cobros de la variante.`,
+    `2. **EDIT-N1-002, variante.** Dice «con cifras distintas», pero repite ${sharedAmounts(pilot).map(money).join(", ")}. Quien conteste de memoria con las cifras de la práctica acierta dos de tres criterios (70 puntos) y, con la regla provisional que ya se retiró, habría pasado. Se sugiere cambiar el efectivo inicial o los cobros de la variante.`,
     "3. **EDIT-N1-002, criterio «diferencias ingreso/cobro».** El paquete le da 35 % pero la pregunta de la variante («¿Ganó dinero y qué saldo le queda?») solo pide utilidad y saldo. La experiencia lo comprueba pidiendo cuánto sigue sin cobrarse.",
     "4. **EDIT-N1-001, título.** «¿Nueve tareas o una estrategia?» presenta seis frases, no nueve.",
     "5. **EDIT-N1-001, línea 34.** Usa una frase que la aplicación tiene vetada en sus textos; habrá que redactarla de otra forma al convertir.",

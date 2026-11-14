@@ -198,7 +198,6 @@ export const N1_RIESGO_EL_PROVEEDOR_ES_FAMILIA: Experiencia = {
         ideas: ["Propone declarar y aceptar la revisión independiente.", "No pide descalificar a Nube Clara sin más ni ocultar la participación.", "Trata al integrante con respeto, sin acusarlo."],
       },
     ],
-    passAt: 70,
   },
   evidencePolicy: "no_registra",
   qa: { estado: "probado", importedAt: "2026-11-13", editorialReviewedAt: null, publishedAt: null },
@@ -212,6 +211,6 @@ export const N1_RIESGO_EL_PROVEEDOR_ES_FAMILIA: Experiencia = {
     "Variante: el nombre del oferente (Nube Clara), el plazo de ocho semanas y la frase «no hay ningún indicio de pagos ni favores» se añadieron para dar piezas que identificar. La identificación (40 puntos) se comprueba clasificando cinco piezas del caso.",
     "Variante: «interpretación de la política» (35 puntos) y «respuesta proporcionada y respetuosa» (25 puntos) son respuestas escritas. No se califican de forma automática: quedan en espera de revisión de una persona.",
     "La política es ficticia. Ninguna pantalla afirma obligaciones legales ni delitos.",
-    "La regla para pasar la variante (70 de 100) es provisional.",
+    "No hay regla para pasar la variante: la regla provisional se retiró y el puntaje se muestra sin veredicto.",
   ],
 };

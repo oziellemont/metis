@@ -223,7 +223,6 @@ export const N1_RIESGO_MISMA_PERSONA: Experiencia = {
         ideas: ["No acusa ni insinúa una falta.", "Explica el motivo: es el procedimiento, no la persona.", "Es preciso sobre qué cambia."],
       },
     ],
-    passAt: 70,
   },
   evidencePolicy: "no_registra",
   qa: { estado: "probado", importedAt: "2026-11-13", editorialReviewedAt: null, publishedAt: null },
@@ -239,6 +238,6 @@ export const N1_RIESGO_MISMA_PERSONA: Experiencia = {
     "Ni los documentos, ni las rutas, ni la variante afirman que la factura sea falsa o que alguien actuó con mala intención; la única ruta que lo insinúa está marcada como concepto erróneo.",
     "Variante: la identificación del riesgo sin imputación y la evidencia verificable se comprueban clasificando; las afirmaciones se redactaron al convertir.",
     "Variante: el control propuesto (35 puntos) y la comunicación respetuosa (10 puntos) son respuestas escritas. No se califican de forma automática: quedan en espera de revisión de una persona.",
-    "La regla para pasar la variante (70 de 100) es provisional.",
+    "No hay regla para pasar la variante: la regla provisional se retiró y el puntaje se muestra sin veredicto.",
   ],
 };

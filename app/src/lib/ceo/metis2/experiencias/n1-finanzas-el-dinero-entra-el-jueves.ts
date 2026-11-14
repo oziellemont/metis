@@ -277,7 +277,6 @@ export const N1_FINANZAS_DINERO_JUEVES: Experiencia = {
         ideas: ["Separa el saldo final del saldo en la fecha de la nómina.", "Propone adelantar un cobro, mover una fecha o conseguir financiamiento.", "Condiciona la acción a que se confirme antes del pago."],
       },
     ],
-    passAt: 70,
   },
   evidencePolicy: "no_registra",
   qa: { estado: "probado", importedAt: "2026-11-13", editorialReviewedAt: null, publishedAt: null },
@@ -289,6 +288,6 @@ export const N1_FINANZAS_DINERO_JUEVES: Experiencia = {
     "En la propuesta hay dos rutas defendibles (anticipo confirmado y préstamo confirmado), como pide el paquete. La tercera opción del paquete, negociar la fecha, queda en la referencia escrita.",
     "Comprobación B: el criterio «secuencia y saldos» (40) se reparte en el saldo del lunes y el del viernes; el saldo del jueves (12,000) no se pregunta porque coincide con el efectivo inicial que se muestra. El faltante (25) se reparte en el monto y el momento. «Facturación y cobro» (20) se comprueba clasificando importes. La recomendación (15) es escrita y espera revisión de una persona.",
     "Fuentes: las de TRAZABILIDAD_LOTE_04.md para FIN-04 (Stanford, Financial Accounting; Harvard, plan obligatorio, Financial Reporting & Control). El Atlas cita para FIN-04 la página de Finance I y II; conviene corregir el Atlas.",
-    "La regla para pasar la comprobación (70 de 100) es provisional.",
+    "No hay regla para pasar la comprobación: la regla provisional se retiró y el puntaje se muestra sin veredicto.",
   ],
 };
