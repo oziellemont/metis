@@ -123,7 +123,12 @@ const answers = (x: Experiencia, how: "bien" | "mal", text?: string): Record<str
 function deliver(x: Experiencia, run: Recorrido, ans: Record<string, Respuesta>): Recorrido {
   let r = advance(x, run, { t: "comprobar" });
   for (const [task, value] of Object.entries(ans)) r = advance(x, r, { t: "responder", task, value });
-  return advance(x, r, { t: "entregar" });
+  return advance(x, r, entregado(x, r));
+}
+
+/** Lo que hace el servidor al recibir la entrega: califica con la variante completa y sella. */
+function entregado(x: Experiencia, r: Recorrido): Accion {
+  return { t: "entregado", result: scoreVariant(x.variant, r.answers), sello: "s1.prueba" };
 }
 
 /** Responde la variante sin leer: cifras del documento o inventadas, tarjetas a cualquier grupo, orden barajado, renglones sueltos. */
@@ -600,7 +605,8 @@ describe.each(CADA)("%s · variante independiente (otra situación, sin apoyo)",
       expect(t.prompt).not.toMatch(/[−+=×÷]|menos|rest[ae]|sum[ae]|divid|multipl/i);
     }
     expect(v.id).not.toBe(x.id);
-    expect(v.passAt).toBe(70);
+    // La regla provisional de 70 de 100 se retiró: no hay umbral para pasar.
+    expect("passAt" in v).toBe(false);
   });
 
   it("quien responde bien obtiene todos los puntos que se comprueban solos; lo escrito queda en espera y no hay veredicto", () => {
@@ -608,7 +614,7 @@ describe.each(CADA)("%s · variante independiente (otra situación, sin apoyo)",
     expect(escrito.pending).toBe(pend);
     expect(escrito.auto).toBe(100 - pend);
     expect(escrito.score).toBe(100 - pend);
-    expect(escrito.pass).toBe(pend ? null : true);
+    expect(escrito.pass).toBeNull();
     for (const it of escrito.items) {
       const t = v.tasks.find((q) => q.id === it.id)!;
       expect(it.weight).toBe(t.weight);
@@ -624,13 +630,13 @@ describe.each(CADA)("%s · variante independiente (otra situación, sin apoyo)",
     expect(blanco.pending).toBe(0);
     expect(blanco.auto).toBe(100);
     expect(blanco.score).toBe(100 - pend);
-    expect(blanco.pass).toBe(100 - pend >= v.passAt);
+    expect(blanco.pass).toBeNull();
   });
 
   it("quien responde mal no obtiene puntos, y el crédito parcial solo existe al clasificar", () => {
     const mal = deliver(x, done, answers(x, "mal")).result!;
     expect(mal.score).toBe(0);
-    expect(mal.pass).toBe(false);
+    expect(mal.pass).toBeNull();
     for (const t of v.tasks) {
       if (t.kind === "texto") continue;
       const one = scoreVariant(v, { ...answers(x, "bien"), [t.id]: answerOf(x, t, "mal")! });
@@ -663,11 +669,11 @@ describe.each(CADA)("%s · variante independiente (otra situación, sin apoyo)",
     const needs = v.tasks.filter((t) => t.kind === "cifra" || t.kind === "clasificar" || t.kind === "senalar");
     expect(needs.length).toBeGreaterThan(0);
     expect(variantReady(x, before)).toBe(false);
-    expect(advance(x, before, { t: "entregar" })).toBe(before);
+    expect(advance(x, before, entregado(x, before))).toBe(before);
     // Falta una sola tarea: tampoco.
     let r = before;
     for (const [task, value] of Object.entries(answers(x, "bien"))) if (task !== needs[0].id) r = advance(x, r, { t: "responder", task, value });
-    expect(advance(x, r, { t: "entregar" })).toBe(r);
+    expect(advance(x, r, entregado(x, r))).toBe(r);
     const fin = deliver(x, done, answers(x, "bien"));
     expect(fin.phase).toBe("fin");
     // Entregado, ya no se cambia.
@@ -681,21 +687,22 @@ describe("EDIT-N1-002 · variante del piloto", () => {
   it("cada criterio pesa lo que dice la rúbrica del paquete (35 / 30 / 35)", () => {
     const right = answers(X, "bien");
     expect(right).toEqual({ por_cobrar: 45000, utilidad: 17000, saldo: 5000 });
-    expect(scoreVariant(X.variant, right).pass).toBe(true);
+    expect(scoreVariant(X.variant, right).score).toBe(100);
+    expect(scoreVariant(X.variant, right).pass).toBeNull();
     expect(scoreVariant(X.variant, { ...right, utilidad: 1 }).score).toBe(70);
     expect(scoreVariant(X.variant, { ...right, saldo: 1 }).score).toBe(65);
-    expect(scoreVariant(X.variant, { ...right, saldo: 1 }).pass).toBe(false);
+    expect(scoreVariant(X.variant, { ...right, saldo: 1 }).pass).toBeNull();
   });
 
-  it("quien confunde utilidad con caja no pasa; quien repite de memoria las cifras de la práctica acierta dos de tres", () => {
+  it("quien confunde utilidad con caja obtiene 0; quien repite de memoria las cifras de la práctica acierta dos de tres", () => {
     // Cree que el saldo es la utilidad, y que la utilidad es lo cobrado menos lo pagado.
     const r = scoreVariant(X.variant, { por_cobrar: 80000, utilidad: 35000 - 30000 - 25000 + 25000, saldo: 17000 });
     expect(r.score).toBe(0);
-    expect(r.pass).toBe(false);
+    expect(r.pass).toBeNull();
     const memoria = scoreVariant(X.variant, { por_cobrar: 45000, utilidad: 15000, saldo: 5000 });
     expect(memoria.score).toBe(70);
-    // Aviso para la revisión editorial: con la regla provisional de 70, eso alcanza para pasar.
-    expect(memoria.pass).toBe(true);
+    // Aviso para la revisión editorial: con la regla provisional de 70, ya retirada, eso habría alcanzado para pasar.
+    expect(memoria.pass).toBeNull();
     expect(sharedAmounts(X)).toEqual([5000, 25000, 45000]);
   });
 });
@@ -929,20 +936,29 @@ describe.each(CADA)("%s · guardar y continuar", (_id, x) => {
       let r = advance(x, done, { t: "comprobar" });
       log.push(r);
       for (const [task, value] of Object.entries(answers(x, "bien", "Texto."))) { r = advance(x, r, { t: "responder", task, value }); log.push(r); }
-      log.push(advance(x, r, { t: "entregar" }));
+      log.push(advance(x, r, entregado(x, r)));
       expect(log[log.length - 1].phase).toBe("fin");
-      for (const run of log) expect(readRun(x, JSON.parse(JSON.stringify(run)))).toEqual(run);
+      // El resultado nunca se lee de lo guardado: se vuelve a pedir al servidor con el sello.
+      for (const run of log) expect(readRun(x, JSON.parse(JSON.stringify(run)))).toEqual({ ...run, result: null });
     }
   });
 
-  it("el resultado guardado se vuelve a calcular: no se puede alterar a mano", () => {
+  it("el resultado guardado no se usa: alterarlo a mano no cambia nada y sin sello la comprobación vuelve a quedar abierta", () => {
     const fin = deliver(x, play(x, EXPERTO), answers(x, "mal"));
     expect(fin.result!.score).toBe(0);
     const raw = JSON.parse(JSON.stringify(fin));
     raw.result = { items: [], score: 100, auto: 100, pending: 0, pass: true };
-    const back = readRun(x, raw).result!;
-    expect(back.score).toBe(0);
-    expect(back.pass).toBe(false);
+    const back = readRun(x, raw);
+    expect(back.result).toBeNull();
+    expect(back.phase).toBe("fin");
+    expect(back.sello).toBe("s1.prueba");
+    const sinSello = readRun(x, { ...raw, sello: null });
+    expect(sinSello.phase).toBe("demostrar");
+    expect(sinSello.result).toBeNull();
+    expect(sinSello.answers).toEqual(fin.answers);
+    // Un resultado inventado tampoco se acepta como entrega si no corresponde a las tareas.
+    const d = advance(x, deliver(x, play(x, EXPERTO), {}), { t: "comprobar" });
+    expect(advance(x, d, { t: "entregado", result: { items: [], score: 100, auto: 100, pending: 0, pass: null }, sello: "s1.x" })).toBe(d);
   });
 
   it("algo guardado que no corresponde (otra versión, otra experiencia, datos rotos) empieza de nuevo", () => {

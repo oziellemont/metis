@@ -192,7 +192,6 @@ export const N1_ESTRATEGIA_POR_QUE_NOS_ELIGEN: Experiencia = {
         ideas: ["Pide comprobar el cumplimiento de la promesa o cuánto la valoran los clientes.", "Reconoce que dos testimonios no representan al mercado.", "No da por hecha una ventaja sostenible."],
       },
     ],
-    passAt: 70,
   },
   evidencePolicy: "no_registra",
   qa: { estado: "probado", importedAt: "2026-11-13", editorialReviewedAt: null, publishedAt: null },
@@ -202,6 +201,6 @@ export const N1_ESTRATEGIA_POR_QUE_NOS_ELIGEN: Experiencia = {
     "Las explicaciones al tocar cada renglón y cada entrevista son nuevas.",
     "Variante: los nombres de los talleres (Pedal y Rayo), la fila «cómo se recibe la bicicleta» y la tarjeta «mejor calidad de reparación» (sin dato) se añadieron para poder comprobar los atributos sin opciones.",
     "Variante: «grupo objetivo y propuesta» (35 puntos) y «evidencia pendiente» (25 puntos) son respuestas escritas. No se califican de forma automática: quedan en espera de revisión de una persona.",
-    "La regla para pasar la variante (70 de 100) es provisional.",
+    "No hay regla para pasar la variante: la regla provisional se retiró y el puntaje se muestra sin veredicto.",
   ],
 };

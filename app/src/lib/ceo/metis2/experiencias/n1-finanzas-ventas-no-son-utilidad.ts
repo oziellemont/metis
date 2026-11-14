@@ -194,7 +194,6 @@ export const N1_FINANZAS_VENTAS_NO_SON_UTILIDAD: Experiencia = {
         ideas: ["Separa resultado del periodo y dinero disponible.", "Menciona que faltan datos de cobros, pagos o saldo inicial.", "No afirma un saldo de caja."],
       },
     ],
-    passAt: 70,
   },
   evidencePolicy: "no_registra",
   qa: { estado: "probado", importedAt: "2026-11-13", editorialReviewedAt: null, publishedAt: null },
@@ -206,6 +205,6 @@ export const N1_FINANZAS_VENTAS_NO_SON_UTILIDAD: Experiencia = {
     "Variante: el paquete da 40 puntos a «relaciones y cálculos»; se repartieron 20 a la utilidad bruta y 20 al resultado operativo.",
     "Variante: «distinción entre resultado y caja» (20 puntos) es una respuesta escrita. No se califica de forma automática: queda en espera de revisión de una persona. La pregunta no menciona la cifra para no dar la respuesta del cálculo anterior.",
     "Los márgenes brutos (40 % y 33⅓ %) son opcionales en el paquete; no se piden.",
-    "La regla para pasar la variante (70 de 100) es provisional.",
+    "No hay regla para pasar la variante: la regla provisional se retiró y el puntaje se muestra sin veredicto.",
   ],
 };

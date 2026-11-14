@@ -257,7 +257,6 @@ export const N1_OPERACIONES_TABLERO_EN_VERDE: Experiencia = {
         ideas: ["Pide un dato ligado al indicador, como el detalle de las citas atendidas tarde.", "Separa lo que se observa de la causa.", "No atribuye el resultado a una persona ni al mayor número de citas."],
       },
     ],
-    passAt: 70,
   },
   evidencePolicy: "no_registra",
   qa: { estado: "probado", importedAt: "2026-11-13", editorialReviewedAt: null, publishedAt: null },
@@ -271,6 +270,6 @@ export const N1_OPERACIONES_TABLERO_EN_VERDE: Experiencia = {
     "Las explicaciones al tocar cada renglón son nuevas.",
     "Variante: no se pide la puntualidad de la semana A ni los errores de la semana A como cifra, porque 90 y 5 están a la vista en las metas. Se piden las de la semana B (82 % y 6 %) y las de la semana A se usan al comparar.",
     "Variante: «definición y unidad» y la comparación con las metas se comprueban clasificando; el dato adicional que conviene pedir (15 puntos) es una respuesta escrita que queda en espera de revisión de una persona.",
-    "La regla para pasar la variante (70 de 100) es provisional.",
+    "No hay regla para pasar la variante: la regla provisional se retiró y el puntaje se muestra sin veredicto.",
   ],
 };

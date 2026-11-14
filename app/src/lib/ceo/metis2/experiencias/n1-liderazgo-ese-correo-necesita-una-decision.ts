@@ -254,7 +254,6 @@ export const N1_LIDERAZGO_CORREO_DECISION: Experiencia = {
         ideas: ["Dice con claridad lo que no se sabe.", "No culpa a los clientes ni al equipo.", "No promete un resultado."],
       },
     ],
-    passAt: 70,
   },
   evidencePolicy: "no_registra",
   qa: { estado: "probado", importedAt: "2026-11-13", editorialReviewedAt: null, publishedAt: null },
@@ -269,6 +268,6 @@ export const N1_LIDERAZGO_CORREO_DECISION: Experiencia = {
     "Variante: el registro no muestra el número de reservas pendientes; se calcula (24 − 19 = 5) y se escribe. El paquete lo da como dato.",
     "Variante: el paquete describe «un borrador confuso» sin texto; las cinco frases del borrador se redactaron al convertir.",
     "Variante: el paquete pide un solo mensaje de hasta cuatro oraciones evaluado con cuatro criterios. Aquí el mensaje se escribe en tres partes (apertura, petición y cautela), una por criterio, para que cada una se pueda revisar por separado. Suman 65 puntos que no se califican de forma automática: quedan en espera de revisión de una persona.",
-    "La regla para pasar la variante (70 de 100) es provisional.",
+    "No hay regla para pasar la variante: la regla provisional se retiró y el puntaje se muestra sin veredicto.",
   ],
 };

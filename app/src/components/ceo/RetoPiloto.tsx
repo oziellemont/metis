@@ -7,96 +7,117 @@
  * observaciones por academia, las salvaguardas (cumplida, corregida o sin corregir) y la síntesis,
  * sin veredicto: no hay regla de aprobación.
  *
- * El intento se guarda solo en este navegador. No escribe en el registro de evidencias,
- * no cambia niveles ni perfil y no llama a ningún servicio.
+ * El reto vive en el servidor. Esta pantalla recibe la escena y el paso que tocan, sin puntos, sin rutas
+ * defendibles, sin notas y sin marcas críticas; manda cada acción y el servidor responde con la vista siguiente
+ * y un sello cifrado del intento. El navegador guarda el sello para poder salir y retomar, pero no puede
+ * leerlo ni cambiarlo. No escribe en el registro de evidencias y no cambia niveles ni perfil.
  */
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import { AlertTriangle, Check, Clock, FileText, Info, LifeBuoy, Mail, RotateCcw, ShieldCheck, X } from "lucide-react";
+import { abrirReto, moverReto } from "@/app/ceo/piloto/acciones";
 import { academyById, skillById, type AcademyId } from "@/lib/ceo/metis2/academias";
-import {
-  advanceReto, informeOf, nextStep, newIntento, ordenOpciones, pathOf, progressOf, readIntento, scoreStep, stepById, stepDone, textOf, validAnswer,
-  type AccionReto, type Intento, type PasoReto, type RespuestaReto, type Reto,
-} from "@/lib/ceo/metis2/reto";
+import { scoreStep, stepById, textOf } from "@/lib/ceo/metis2/reto/motor";
+import { respuestaValida, type AccionCliente, type PasoPublico, type RetoPublico, type VistaReto } from "@/lib/ceo/metis2/reto/publica";
+import type { Documento, Intento, Linea, RespuestaReto, Reto } from "@/lib/ceo/metis2/reto/tipos";
 import { Calc, DocCard, Face, Figure, Mine, Sequencer, Sheet, Sorter } from "./ExperienciaPiloto";
 import { Stage, StageChoice, StepTitle } from "./Stage";
 
-const storeKey = (r: Reto) => `metis:reto:${r.id}`;
+const storeKey = (r: RetoPublico) => `metis:reto:${r.id}`;
 const LETTERS = "ABCDEF";
 const RUTA = { defendible: "Ruta defendible", riesgosa: "Ruta con riesgo", concepto_erroneo: "Aquí había una confusión" } as const;
 const ESTADO = { cumplida: "Cumplida desde la primera respuesta.", corregida: "Corregida después de recibir información nueva.", no_corregida: "Decisión crítica sin corregir.", sin_respuesta: "Sin respuesta." } as const;
 const SALVA = { inocuidad: "Inocuidad: cajas con alérgenos mal etiquetados", etica: "Ética: no ocultar la falla al cliente", control_bancario: "Control bancario: verificar antes de pagar" } as const;
 
-export function RetoPiloto({ r }: { r: Reto }) {
-  const [it, setIt] = useState<Intento | null>(null);
+export function RetoPiloto({ r }: { r: RetoPublico }) {
+  const [vista, setVista] = useState<VistaReto | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
   const [sheet, setSheet] = useState<{ k: "docs"; doc?: string } | { k: "ayuda" } | { k: "ficha" } | null>(null);
   const [draft, setDraft] = useState<Record<string, RespuestaReto>>({});
+  const sello = useRef<string | null>(null);
+  // Las acciones van en fila: cada una sale con el sello que devolvió la anterior.
+  const queue = useRef<Promise<unknown>>(Promise.resolve());
+
+  const take = useCallback((res: Awaited<ReturnType<typeof abrirReto>>) => {
+    if (!res.ok) { setError(res.error); return; }
+    sello.current = res.sello;
+    try { window.localStorage.setItem(storeKey(r), JSON.stringify({ v: 2, sello: res.sello })); } catch { /* sin espacio: se sigue sin guardar */ }
+    setError(null);
+    setVista(res.vista);
+  }, [r]);
 
   useEffect(() => {
-    let raw: unknown = null;
-    try { raw = JSON.parse(window.localStorage.getItem(storeKey(r)) ?? "null"); } catch { raw = null; }
-    const back = readIntento(r, raw);
-    setIt(back.phase === "reto" ? advanceReto(r, back, { t: "retomar" }) : back);
-  }, [r]);
-  useEffect(() => { if (it) try { window.localStorage.setItem(storeKey(r), JSON.stringify(it)); } catch { /* sin espacio: se sigue sin guardar */ } }, [it, r]);
-  useEffect(() => { window.scrollTo({ top: 0 }); }, [it?.at, it?.phase]);
+    let saved: string | null = null;
+    try { const raw = JSON.parse(window.localStorage.getItem(storeKey(r)) ?? "null"); saved = raw && raw.v === 2 && typeof raw.sello === "string" ? raw.sello : null; } catch { saved = null; }
+    abrirReto(r.id, saved).then(take).catch(() => setError("No pude abrir el reto. Revisa tu conexión y vuelve a cargar la página."));
+  }, [r, take]);
+  useEffect(() => { window.scrollTo({ top: 0 }); }, [vista?.step?.id, vista?.phase]);
 
-  if (!it) return <div className="min-h-screen grid place-items-center bg-[#0F1130]"><span className="h-8 w-8 rounded-full border-2 border-white border-t-transparent animate-spin" /></div>;
+  const act = useCallback((a: AccionCliente, quiet = false) => {
+    if (!quiet) setBusy(true);
+    queue.current = queue.current.then(async () => {
+      try { take(await moverReto(r.id, sello.current, a)); }
+      catch { setError("No se pudo guardar ese paso. Revisa tu conexión e inténtalo de nuevo."); }
+      finally { if (!quiet) setBusy(false); }
+    });
+  }, [r, take]);
 
-  const act = (a: AccionReto) => setIt((x) => (x ? advanceReto(r, x, a) : x));
-  const restart = () => { setDraft({}); setIt(newIntento(r)); setSheet(null); };
-  const now = () => new Date().toISOString();
+  if (!vista) return (
+    <div className="min-h-screen grid place-items-center bg-[#0F1130] px-6 text-center text-white">
+      {error ? <p role="alert" className="max-w-sm text-sm leading-relaxed text-white/85">{error}</p> : <span className="h-8 w-8 rounded-full border-2 border-white border-t-transparent animate-spin" />}
+    </div>
+  );
 
-  const cur = it.at ? stepById(r, it.at) : undefined;
-  const sceneIdx = cur ? r.scenes.indexOf(cur.scene) : it.phase === "fin" ? r.scenes.length : -1;
-  const available = r.docs.filter((d) => !d.from || r.scenes.findIndex((s) => s.id === d.from) <= sceneIdx);
+  const restart = () => { setDraft({}); setSheet(null); setBusy(true); abrirReto(r.id, null).then(take).catch(() => setError("No pude empezar de nuevo.")).finally(() => setBusy(false)); };
+  const p = vista.step;
+  const answered = vista.given !== null;
 
   let next: { label: string; off?: boolean; go: () => void } | undefined;
-  if (it.phase === "inicio") next = { label: "Empezar el reto", go: () => act({ t: "empezar", now: now() }) };
-  else if (it.phase === "reto" && cur) {
-    const p = cur.step;
-    if (p.kind !== "dato" && !(p.id in it.answers)) {
+  if (vista.phase === "inicio") next = { label: "Empezar el reto", off: busy, go: () => act({ t: "empezar" }) };
+  else if (vista.phase === "reto" && p) {
+    if (p.kind !== "dato" && !answered) {
       const v = draftValue(p, draft[p.id]);
-      next = { label: p.kind === "escribir" ? "Enviar" : "Responder", off: !validAnswer(p, v) || (p.kind === "escribir" && !Object.values(v as Record<string, string>).some((t) => t.trim())), go: () => act({ t: "responder", step: p.id, value: v! }) };
-    } else if (nextStep(r, it)) next = { label: "Continuar", go: () => act({ t: "avanzar" }) };
-    else next = { label: "Terminar y ver el informe", off: !stepDone(r, it), go: () => act({ t: "terminar", now: now() }) };
+      next = { label: p.kind === "escribir" ? "Enviar" : "Responder", off: busy || !respuestaValida(p, v) || (p.kind === "escribir" && !Object.values(v as Record<string, string>).some((t) => t.trim())), go: () => act({ t: "responder", step: p.id, value: v! }) };
+    } else if (!vista.last) next = { label: "Continuar", off: busy, go: () => act({ t: "avanzar" }) };
+    else next = { label: "Terminar y ver el informe", off: busy || !vista.canNext, go: () => act({ t: "terminar" }) };
   }
-  const skipWrite = it.phase === "reto" && cur?.step.kind === "escribir" && !(cur.step.id in it.answers)
-    ? <button type="button" onClick={() => act({ t: "responder", step: cur.step.id, value: Object.fromEntries((cur.step.kind === "escribir" ? cur.step.fields : []).map((f) => [f.id, ""])) })} className="min-h-[36px] py-2 text-sm text-white/65 hover:text-white">Prefiero no escribir</button>
+  const skipWrite = vista.phase === "reto" && p?.kind === "escribir" && !answered
+    ? <button type="button" disabled={busy} onClick={() => act({ t: "responder", step: p.id, value: Object.fromEntries(p.fields.map((f) => [f.id, ""])) })} className="min-h-[36px] py-2 text-sm text-white/65 hover:text-white">Prefiero no escribir</button>
     : undefined;
 
-  const prog = progressOf(r, it);
-  const steps = it.phase === "inicio" ? [] : [...r.acts.map((a, k) => `Acto ${k + 1}`), "Informe"];
-  const at = it.phase === "fin" ? r.acts.length : prog.act;
+  const steps = vista.phase === "inicio" ? [] : [...r.acts.map((_a, k) => `Acto ${k + 1}`), "Informe"];
+  const at = vista.phase === "fin" ? r.acts.length : vista.progress.act;
 
   return (
     <>
       <Stage steps={steps} at={at} exit="/ceo/piloto" onNext={next?.go} next={next?.label} nextOff={next?.off} aside={skipWrite}>
-        <div data-noswipe key={`${it.phase}-${it.at}`} className="academy-in">
+        <div data-noswipe key={`${vista.phase}-${p?.id ?? ""}`} className="academy-in">
           <div className="mb-6 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl border border-white/10 bg-white/[.06] px-3 py-2 text-xs text-white/75">
             <span className="inline-flex min-w-0 items-center gap-1.5"><Info size={13} className="shrink-0 text-mint" /> Reto en demostración. No cuenta para tu avance, tu nivel ni tu perfil.</span>
             <div className="ml-auto flex shrink-0 flex-wrap items-center gap-2">
-              {it.phase !== "inicio" && <button type="button" onClick={() => setSheet({ k: "docs" })} className="inline-flex items-center gap-1 min-h-[36px] rounded-lg bg-white/10 px-3 py-2 font-medium text-white hover:bg-white/20"><FileText size={13} /> Documentos ({available.length})</button>}
-              {it.phase === "reto" && <button type="button" onClick={() => setSheet({ k: "ayuda" })} className="inline-flex items-center gap-1 min-h-[36px] rounded-lg bg-white/10 px-3 py-2 font-medium text-white hover:bg-white/20"><LifeBuoy size={13} /> Pedir ayuda</button>}
+              {vista.phase !== "inicio" && <button type="button" onClick={() => setSheet({ k: "docs" })} className="inline-flex items-center gap-1 min-h-[36px] rounded-lg bg-white/10 px-3 py-2 font-medium text-white hover:bg-white/20"><FileText size={13} /> Documentos ({vista.docs.length})</button>}
+              {vista.phase === "reto" && <button type="button" onClick={() => setSheet({ k: "ayuda" })} className="inline-flex items-center gap-1 min-h-[36px] rounded-lg bg-white/10 px-3 py-2 font-medium text-white hover:bg-white/20"><LifeBuoy size={13} /> Pedir ayuda</button>}
               <button type="button" onClick={() => setSheet({ k: "ficha" })} className="inline-flex items-center gap-1 min-h-[36px] rounded-lg bg-white/10 px-3 py-2 font-medium text-white hover:bg-white/20">Ficha</button>
             </div>
           </div>
-          {it.assisted && it.phase === "reto" && <p className="mb-5 flex items-start gap-2 rounded-xl border border-amber/40 bg-amber/10 px-3 py-2.5 text-sm leading-relaxed text-white/85"><LifeBuoy size={15} className="mt-0.5 shrink-0 text-amber" /> Pediste ayuda: este intento queda como práctica asistida.</p>}
+          {error && <p role="alert" className="mb-5 rounded-xl border border-amber/40 bg-amber/10 px-3 py-2.5 text-sm leading-relaxed text-white/85">{error}</p>}
+          {vista.assisted && vista.phase === "reto" && <p className="mb-5 flex items-start gap-2 rounded-xl border border-amber/40 bg-amber/10 px-3 py-2.5 text-sm leading-relaxed text-white/85"><LifeBuoy size={15} className="mt-0.5 shrink-0 text-amber" /> Pediste ayuda: este intento queda como práctica asistida.</p>}
 
-          {it.phase === "inicio" && <Intro r={r} />}
-          {it.phase === "reto" && cur && (
-            <StepView r={r} it={it} step={cur.step} prog={prog} draft={draft} setDraft={setDraft} openDoc={(doc) => setSheet({ k: "docs", doc })} available={available.map((d) => d.id)} />
+          {vista.phase === "inicio" && <Intro r={r} />}
+          {vista.phase === "reto" && p && vista.scene && (
+            <StepView r={r} vista={vista} step={p} draft={draft} setDraft={setDraft} openDoc={(doc) => setSheet({ k: "docs", doc })} />
           )}
-          {it.phase === "fin" && <Informe r={r} it={it} restart={restart} />}
+          {vista.phase === "fin" && vista.final && <Informe r={vista.final.reto} it={vista.final.intento} inf={vista.final.informe} restart={restart} />}
         </div>
       </Stage>
 
       {sheet && (
         <Sheet title={sheet.k === "docs" ? "Sala de documentos" : sheet.k === "ayuda" ? "Pedir ayuda" : "Ficha del reto"} onClose={() => setSheet(null)}>
-          {sheet.k === "docs" && <Docs r={r} docs={available.map((d) => d.id)} first={sheet.doc} onOpen={(d) => act({ t: "abrir", doc: d })} />}
-          {sheet.k === "ayuda" && <Ayuda it={it} step={cur?.step} onAsk={() => act({ t: "ayuda" })} />}
-          {sheet.k === "ficha" && <Ficha r={r} restart={restart} />}
+          {sheet.k === "docs" && <Docs docs={vista.docs} first={sheet.doc} onOpen={(d) => { if (vista.phase === "reto" && !vista.opened.includes(d)) act({ t: "abrir", doc: d }, true); }} />}
+          {sheet.k === "ayuda" && <Ayuda assisted={vista.assisted} step={p ?? undefined} onAsk={() => act({ t: "ayuda" })} />}
+          {sheet.k === "ficha" && <Ficha r={r} notes={vista.notes} restart={restart} />}
         </Sheet>
       )}
     </>
@@ -104,7 +125,7 @@ export function RetoPiloto({ r }: { r: Reto }) {
 }
 
 /** Convierte lo que está en pantalla (borrador) en la respuesta que espera el motor. */
-function draftValue(p: PasoReto, d: RespuestaReto | undefined): RespuestaReto | undefined {
+function draftValue(p: PasoPublico, d: RespuestaReto | undefined): RespuestaReto | undefined {
   if (p.kind === "ordenar") return Array.isArray(d) ? d : p.cards.map((c) => c.id);
   if (p.kind === "escribir") return { ...Object.fromEntries(p.fields.map((f) => [f.id, ""])), ...((d as Record<string, string>) ?? {}) };
   return d;
@@ -112,7 +133,7 @@ function draftValue(p: PasoReto, d: RespuestaReto | undefined): RespuestaReto | 
 
 // ─────────────────────────────────────────────── inicio
 
-function Intro({ r }: { r: Reto }) {
+function Intro({ r }: { r: RetoPublico }) {
   return (
     <div className="space-y-6">
       <StepTitle eyebrow={`Executive Challenge · Nivel 1 · ${r.editorialId}`} title={r.title} text={r.role} />
@@ -143,53 +164,51 @@ function Intro({ r }: { r: Reto }) {
 
 // ─────────────────────────────────────────────── paso
 
-function StepView({ r, it, step, prog, draft, setDraft, openDoc, available }: {
-  r: Reto; it: Intento; step: PasoReto; prog: ReturnType<typeof progressOf>; draft: Record<string, RespuestaReto>;
-  setDraft: React.Dispatch<React.SetStateAction<Record<string, RespuestaReto>>>; openDoc: (d: string) => void; available: string[];
+function StepView({ r, vista, step, draft, setDraft, openDoc }: {
+  r: RetoPublico; vista: VistaReto; step: PasoPublico; draft: Record<string, RespuestaReto>;
+  setDraft: React.Dispatch<React.SetStateAction<Record<string, RespuestaReto>>>; openDoc: (d: string) => void;
 }) {
-  const scene = prog.scene!;
-  const firstOfScene = pathOf(r, it.flags).find((s) => s.scene.id === scene.id)?.step.id === step.id;
-  const answered = step.id in it.answers;
-  const given = it.answers[step.id];
+  const scene = vista.scene!;
+  const answered = vista.given !== null;
+  const given = vista.given ?? undefined;
   const d = draft[step.id];
   const set = (v: RespuestaReto) => setDraft((x) => ({ ...x, [step.id]: v }));
   const obj = (v: RespuestaReto | undefined) => (v && typeof v === "object" && !Array.isArray(v) ? v : {}) as Record<string, string>;
   const who = r.characters.find((c) => c.id === step.from);
-  const docs = scene.docs.filter((x) => available.includes(x));
 
   return (
     <div className="space-y-5">
       <div>
-        <div className="text-xs font-semibold uppercase tracking-wider text-mint">Acto {scene.act + 1} · {r.acts[scene.act].title} · escena {r.scenes.indexOf(scene) + 1} de {r.scenes.length}</div>
+        <div className="text-xs font-semibold uppercase tracking-wider text-mint">Acto {scene.act + 1} · {r.acts[scene.act].title} · escena {scene.index + 1} de {r.scenes}</div>
         <h1 className="mt-1.5 text-xl sm:text-2xl font-semibold leading-tight">{scene.title}</h1>
       </div>
-      {firstOfScene
-        ? <p className="text-[15px] leading-relaxed text-white/80">{textOf(scene.intro, it.flags)}</p>
-        : <p className="text-sm leading-relaxed text-white/55">{textOf(scene.intro, it.flags)}</p>}
-      {docs.length > 0 && (
+      {scene.first
+        ? <p className="text-[15px] leading-relaxed text-white/80">{scene.intro}</p>
+        : <p className="text-sm leading-relaxed text-white/55">{scene.intro}</p>}
+      {scene.docs.length > 0 && (
         <div className="flex flex-wrap items-center gap-2 text-xs text-white/60">
           <span>A la mano:</span>
-          {docs.map((x) => { const doc = r.docs.find((q) => q.id === x)!; return <button key={x} type="button" onClick={() => openDoc(x)} className="inline-flex min-h-[36px] items-center gap-1 rounded-lg border border-white/15 bg-white/[.06] px-2.5 py-1.5 text-white/85 hover:bg-white/15"><FileText size={12} /> {doc.letter} · {doc.title}</button>; })}
+          {scene.docs.map((x) => { const doc = vista.docs.find((q) => q.id === x)!; return <button key={x} type="button" onClick={() => openDoc(x)} className="inline-flex min-h-[36px] items-center gap-1 rounded-lg border border-white/15 bg-white/[.06] px-2.5 py-1.5 text-white/85 hover:bg-white/15"><FileText size={12} /> {doc.letter} · {doc.title}</button>; })}
         </div>
       )}
 
       {step.kind === "dato" ? (
         <div className="rounded-2xl border border-white/10 bg-white/[.06] px-4 py-3.5">
           {who && <div className="mb-2 flex items-center gap-2 text-sm"><Face name={who.name} /><span className="font-semibold">{who.name}</span><span className="text-white/55">{who.role}</span></div>}
-          <p className="text-[15px] font-medium">{textOf(step.text, it.flags)}</p>
+          <p className="text-[15px] font-medium">{step.text}</p>
           <ul className="mt-2 space-y-1.5 text-[15px] leading-relaxed text-white/85">{step.items.map((t) => <li key={t} className="flex gap-2"><span aria-hidden className="mt-2.5 h-1 w-1 shrink-0 rounded-full bg-white/60" />{t}</li>)}</ul>
         </div>
       ) : (
-        <Said r={r} who={step.from}>{textOf(step.text, it.flags)}</Said>
+        <Said r={r} who={step.from}>{step.text}</Said>
       )}
 
       {step.kind === "decision" && !answered && (
         <div className="space-y-2.5" role="group" aria-label="Elige una opción">
-          {ordenOpciones(step.id, step.options).map((o, k) => <StageChoice key={o.id} on={d === o.id} onClick={() => set(o.id)} letter={LETTERS[k]}>{o.text}</StageChoice>)}
+          {step.options.map((o, k) => <StageChoice key={o.id} on={d === o.id} onClick={() => set(o.id)} letter={LETTERS[k]}>{o.text}</StageChoice>)}
         </div>
       )}
       {step.kind === "decision" && answered && (() => { const o = step.options.find((q) => q.id === given)!; return (
-        <div className="space-y-4"><Mine>{o.text}</Mine>{o.reply.map((l, k) => <Said key={k} r={r} who={l.who}>{l.text}</Said>)}</div>
+        <div className="space-y-4"><Mine>{o.text}</Mine>{vista.reply.map((l: Linea, k) => <Said key={k} r={r} who={l.who}>{l.text}</Said>)}</div>
       ); })()}
 
       {step.kind === "cifras" && (
@@ -250,7 +269,7 @@ function StepView({ r, it, step, prog, draft, setDraft, openDoc, available }: {
   );
 }
 
-function Said({ r, who, children }: { r: Reto; who: string | null; children: React.ReactNode }) {
+function Said({ r, who, children }: { r: { characters: Reto["characters"] }; who: string | null; children: React.ReactNode }) {
   const p = r.characters.find((c) => c.id === who);
   if (!p) return <div className="rounded-2xl border border-white/10 bg-white/[.06] px-4 py-3 text-[15px] leading-relaxed text-white/85">{children}</div>;
   return (
@@ -270,14 +289,14 @@ function Anotado({ text = "Anotado. Lo verás en el informe al terminar." }: { t
 
 // ─────────────────────────────────────────────── hojas
 
-function Docs({ r, docs, first, onOpen }: { r: Reto; docs: string[]; first?: string; onOpen: (d: string) => void }) {
-  const [sel, setSel] = useState(first ?? docs[0]);
+function Docs({ docs, first, onOpen }: { docs: Documento[]; first?: string; onOpen: (d: string) => void }) {
+  const [sel, setSel] = useState(first ?? docs[0]?.id);
   useEffect(() => { if (sel) onOpen(sel); }, [sel]); // eslint-disable-line react-hooks/exhaustive-deps
-  const doc = r.docs.find((d) => d.id === sel);
+  const doc = docs.find((d) => d.id === sel);
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2" role="tablist" aria-label="Documentos">
-        {docs.map((x) => { const q = r.docs.find((d) => d.id === x)!; return <button key={x} type="button" role="tab" aria-selected={sel === x} onClick={() => setSel(x)} className={clsx("min-h-[36px] rounded-lg px-3 py-1.5 text-sm font-medium", sel === x ? "bg-indigo text-white" : "bg-slate-200/70 text-slate-700 hover:bg-slate-200")}>{q.letter}</button>; })}
+        {docs.map((q) => <button key={q.id} type="button" role="tab" aria-selected={sel === q.id} onClick={() => setSel(q.id)} className={clsx("min-h-[36px] rounded-lg px-3 py-1.5 text-sm font-medium", sel === q.id ? "bg-indigo text-white" : "bg-slate-200/70 text-slate-700 hover:bg-slate-200")}>{q.letter}</button>)}
       </div>
       {doc && <DocCard doc={doc} />}
       <p className="text-xs text-slate-500">Los documentos que aparecen después en la historia se suman a esta sala cuando llegas a su escena.</p>
@@ -285,9 +304,9 @@ function Docs({ r, docs, first, onOpen }: { r: Reto; docs: string[]; first?: str
   );
 }
 
-function Ayuda({ it, step, onAsk }: { it: Intento; step?: PasoReto; onAsk: () => void }) {
+function Ayuda({ assisted, step, onAsk }: { assisted: boolean; step?: PasoPublico; onAsk: () => void }) {
   const s = step?.skill ? skillById(step.skill) : undefined;
-  if (!it.assisted) return (
+  if (!assisted) return (
     <div className="space-y-4 text-[15px] leading-relaxed text-slate-700">
       <p>Puedes pedir ayuda cuando quieras. Si lo haces, verás de qué trata la habilidad de este paso y podrás seguir con el reto.</p>
       <p>El intento quedará marcado como <span className="font-semibold">práctica asistida</span>: el informe lo dirá y no servirá como comprobación independiente. No pierdes nada de lo que llevas.</p>
@@ -303,19 +322,19 @@ function Ayuda({ it, step, onAsk }: { it: Intento; step?: PasoReto; onAsk: () =>
   );
 }
 
-function Ficha({ r, restart }: { r: Reto; restart: () => void }) {
+function Ficha({ r, notes, restart }: { r: RetoPublico; notes: string[]; restart: () => void }) {
   const Row = ({ k, children }: { k: string; children: React.ReactNode }) => <div className="py-2.5 border-b border-slate-100 last:border-b-0"><dt className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{k}</dt><dd className="mt-0.5 text-sm leading-relaxed text-slate-700">{children}</dd></div>;
   return (
     <div>
       <dl>
         <Row k="Reto">{r.title} · {r.editorialId} · versión {r.version} · paquete {r.packageVersion}</Row>
-        <Row k="Qué observa">Las 24 habilidades del Nivel 1, de 0 a {r.scale.max} cada una (96 en total), en {r.scenes.filter((s) => s.skills.length).length} escenas y una síntesis.</Row>
+        <Row k="Qué observa">Las 24 habilidades del Nivel 1, de 0 a {r.scaleMax} cada una (96 en total), en {r.observedScenes} escenas y una síntesis.</Row>
         <Row k="Regla de aprobación">No hay. Ningún puntaje de aprobación está aprobado: se definirá después de la revisión editorial y de probar el reto con personas, junto con las condiciones por academia.</Row>
         <Row k="Salvaguardas">Inocuidad, ética y control bancario no se compensan con puntos de otras áreas. Si la primera respuesta abre el riesgo, un personaje da información nueva y se puede rectificar. El informe distingue: cumplida, corregida y decisión crítica sin corregir. Rectificar no devuelve puntos.</Row>
         <Row k="Síntesis">La reunión final acepta por igual las dos secuencias de prioridades defendibles, si la razón que se da también se sostiene con los hechos. No da puntos.</Row>
         <Row k="Estado">Probado con pruebas automáticas. Revisión editorial: {r.qa.editorialReviewedAt ?? "sin hacer"}. Validación con usuarios: sin hacer.</Row>
-        <Row k="Registro">No registra evidencia. No cambia dominio, nivel ni perfil. El intento se guarda solo en este navegador.</Row>
-        <Row k="Por confirmar en la revisión"><ul className="space-y-1.5">{r.conversionNotes.map((n) => <li key={n} className="flex gap-2"><span aria-hidden className="mt-2 h-1 w-1 shrink-0 rounded-full bg-slate-400" />{n}</li>)}</ul></Row>
+        <Row k="Registro">No registra evidencia. No cambia dominio, nivel ni perfil. El reto lo conduce y lo califica el servidor; el intento queda en un sello cifrado guardado en este navegador. Si borras los datos del navegador, el intento se pierde: todavía no se guarda en tu cuenta.</Row>
+        <Row k="Por confirmar en la revisión">{notes.length === 0 ? "Las decisiones de conversión hablan del contenido del reto; se muestran al terminar." : <ul className="space-y-1.5">{notes.map((n) => <li key={n} className="flex gap-2"><span aria-hidden className="mt-2 h-1 w-1 shrink-0 rounded-full bg-slate-400" />{n}</li>)}</ul>}</Row>
       </dl>
       <button type="button" onClick={restart} className="btn-ghost mt-4"><RotateCcw size={15} /> Borrar mi intento y empezar de nuevo</button>
     </div>
@@ -324,8 +343,7 @@ function Ficha({ r, restart }: { r: Reto; restart: () => void }) {
 
 // ─────────────────────────────────────────────── informe
 
-function Informe({ r, it, restart }: { r: Reto; it: Intento; restart: () => void }) {
-  const inf = useMemo(() => informeOf(r, it), [r, it]);
+function Informe({ r, it, inf, restart }: { r: Reto; it: Intento; inf: VistaReto["final"] extends infer F ? F extends { informe: infer I } ? I : never : never; restart: () => void }) {
   const [open, setOpen] = useState<string | null>(null);
   const fixed = inf.safeguards.filter((s) => s.state === "corregida").length;
   const open2 = inf.safeguards.filter((s) => s.state === "no_corregida").length;

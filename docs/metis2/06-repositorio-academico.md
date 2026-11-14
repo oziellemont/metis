@@ -262,7 +262,8 @@ Executive Challenge EC-N1-002-A «El viernes que nadie quería prometer» (paque
 3. **Tocar en vez de arrastrar.** Todas las actividades se resuelven tocando botones de al menos 36 píxeles. Nada depende solo del color: cada estado lleva texto.
 4. **Piezas añadidas.** Para que cada experiencia tenga al menos dos decisiones conectadas y para que la variante tenga algo comprobable, se añadieron decisiones, tarjetas o datos. Cada uno está marcado como «añadido al convertir» y listado en la experiencia, en la sección 9.
 5. **Calculadora.** Donde el paquete permite calculadora en la evaluación, la variante ofrece una calculadora aritmética que solo opera; no explica conceptos.
-6. **Regla para pasar.** 70 de 100 en todas, provisional y sin calibrar.
+6. **Regla para pasar.** No hay. La regla provisional de 70 de 100 se retiró: el puntaje se muestra sin veredicto hasta que exista una regla calibrada con datos y revisada por el equipo académico.
+7. **La variante se califica en el servidor.** La pantalla recibe la práctica y las tareas de la variante sin respuestas, sin criterios de aceptación y sin referencias. Las respuestas se mandan al servidor, que califica y devuelve el resultado con un sello cifrado. El navegador no decide puntajes.
 
 ## 8. Cómo entra en lo que ya está construido
 | Pieza | Qué había | Qué se añadió | Qué falta antes de acreditar |
@@ -300,7 +301,7 @@ Decisiones: 2, con 3, 3 rutas. Todas las combinaciones llegan al cierre.
 4. El criterio «diferencia entre ingreso y cobro» de la variante se pregunta como una cifra por calcular (lo que sigue sin cobrarse).
 5. La «advertencia de exactitud» del paquete habla de un sobregiro de $10,000 y caja libre de $0; la tabla y los cálculos dan saldo final de $5,000. Se siguió la tabla.
 6. La variante repite tres cifras de la práctica (25,000 de efectivo inicial y de gastos, 45,000 por cobrar y 5,000 de saldo final).
-7. La regla para pasar la variante (70 de 100) es provisional.
+7. No hay regla para pasar la variante: la regla provisional se retiró y el puntaje se muestra sin veredicto.
 
 **Avisos del validador.** la variante repite cifras de la práctica: $5,000, $25,000, $45,000; 11 piezas adaptadas y 10 añadidas en la conversión esperan revisión editorial; sin revisión editorial humana.
 
@@ -326,7 +327,7 @@ Decisiones: 2, con 3, 3 rutas. Todas las combinaciones llegan al cierre.
 3. Las explicaciones al tocar cada renglón y cada entrevista son nuevas.
 4. Variante: los nombres de los talleres (Pedal y Rayo), la fila «cómo se recibe la bicicleta» y la tarjeta «mejor calidad de reparación» (sin dato) se añadieron para poder comprobar los atributos sin opciones.
 5. Variante: «grupo objetivo y propuesta» (35 puntos) y «evidencia pendiente» (25 puntos) son respuestas escritas. No se califican de forma automática: quedan en espera de revisión de una persona.
-6. La regla para pasar la variante (70 de 100) es provisional.
+6. No hay regla para pasar la variante: la regla provisional se retiró y el puntaje se muestra sin veredicto.
 
 **Avisos del validador.** 60 de 100 puntos de la variante son respuestas escritas: no se califican solas y esperan revisión de una persona; 10 piezas adaptadas y 11 añadidas en la conversión esperan revisión editorial; sin revisión editorial humana.
 
@@ -354,7 +355,7 @@ Decisiones: 2, con 3, 3 rutas. Todas las combinaciones llegan al cierre.
 5. Variante: el paquete da 40 puntos a «relaciones y cálculos»; se repartieron 20 a la utilidad bruta y 20 al resultado operativo.
 6. Variante: «distinción entre resultado y caja» (20 puntos) es una respuesta escrita. No se califica de forma automática: queda en espera de revisión de una persona. La pregunta no menciona la cifra para no dar la respuesta del cálculo anterior.
 7. Los márgenes brutos (40 % y 33⅓ %) son opcionales en el paquete; no se piden.
-8. La regla para pasar la variante (70 de 100) es provisional.
+8. No hay regla para pasar la variante: la regla provisional se retiró y el puntaje se muestra sin veredicto.
 
 **Avisos del validador.** 20 de 100 puntos de la variante son respuestas escritas: no se califican solas y esperan revisión de una persona; la variante repite cifras de la práctica: $30,000, $48,000; 14 piezas adaptadas y 4 añadidas en la conversión esperan revisión editorial; sin revisión editorial humana.
 
@@ -381,7 +382,7 @@ Decisiones: 2, con 3, 3 rutas. Todas las combinaciones llegan al cierre.
 4. Las respuestas de Nora después de cada decisión son nuevas.
 5. Variante: los nombres de los encargados, las tareas y los estados se redactaron al convertir; el paquete solo describe la situación.
 6. Variante: «vacío de responsabilidad» (30 puntos) y «seguimiento concreto» (25 puntos) son respuestas escritas. No se califican de forma automática: quedan en espera de revisión de una persona.
-7. La regla para pasar la variante (70 de 100) es provisional.
+7. No hay regla para pasar la variante: la regla provisional se retiró y el puntaje se muestra sin veredicto.
 
 **Avisos del validador.** 55 de 100 puntos de la variante son respuestas escritas: no se califican solas y esperan revisión de una persona; 7 piezas adaptadas y 8 añadidas en la conversión esperan revisión editorial; sin revisión editorial humana.
 
@@ -408,7 +409,7 @@ Decisiones: 2, con 3, 3 rutas. Todas las combinaciones llegan al cierre.
 4. El paquete no pide una respuesta escrita en esta experiencia; no se añadió.
 5. Variante: el equipo a reparar (una báscula), las marcas de tiempo y los eventos del registro se redactaron al convertir. No se presupone ningún requisito de salud.
 6. Variante: las tres tareas se comprueban solas (ordenar, clasificar y señalar el renglón). El orden vale todo o nada.
-7. La regla para pasar la variante (70 de 100) es provisional.
+7. No hay regla para pasar la variante: la regla provisional se retiró y el puntaje se muestra sin veredicto.
 
 **Avisos del validador.** 5 piezas adaptadas y 10 añadidas en la conversión esperan revisión editorial; sin revisión editorial humana.
 
@@ -436,7 +437,7 @@ Decisiones: 3, con 3, 4, 3 rutas. Todas las combinaciones llegan al cierre.
 5. Esta experiencia no tiene respuesta escrita en la práctica: el paquete no la pide.
 6. Variante: las seis voces de la biblioteca digital se redactaron aquí; el paquete solo nombra los tres tipos de persona.
 7. Variante: «criterio coherente» (30 puntos) e «hipótesis y dato pendiente» (25 puntos) son respuestas escritas. No se califican de forma automática: quedan en espera de revisión de una persona.
-8. La regla para pasar la variante (70 de 100) es provisional.
+8. No hay regla para pasar la variante: la regla provisional se retiró y el puntaje se muestra sin veredicto.
 
 **Avisos del validador.** 55 de 100 puntos de la variante son respuestas escritas: no se califican solas y esperan revisión de una persona; 14 piezas adaptadas y 9 añadidas en la conversión esperan revisión editorial; sin revisión editorial humana.
 
@@ -466,7 +467,7 @@ Decisiones: 2, con 4, 3 rutas. Todas las combinaciones llegan al cierre.
 7. Variante: el nombre del oferente (Nube Clara), el plazo de ocho semanas y la frase «no hay ningún indicio de pagos ni favores» se añadieron para dar piezas que identificar. La identificación (40 puntos) se comprueba clasificando cinco piezas del caso.
 8. Variante: «interpretación de la política» (35 puntos) y «respuesta proporcionada y respetuosa» (25 puntos) son respuestas escritas. No se califican de forma automática: quedan en espera de revisión de una persona.
 9. La política es ficticia. Ninguna pantalla afirma obligaciones legales ni delitos.
-10. La regla para pasar la variante (70 de 100) es provisional.
+10. No hay regla para pasar la variante: la regla provisional se retiró y el puntaje se muestra sin veredicto.
 
 **Avisos del validador.** 60 de 100 puntos de la variante son respuestas escritas: no se califican solas y esperan revisión de una persona; 10 piezas adaptadas y 7 añadidas en la conversión esperan revisión editorial; sin revisión editorial humana.
 
@@ -498,7 +499,7 @@ Decisiones: 4, con 4, 3, 3, 4 rutas. Todas las combinaciones llegan al cierre.
 7. Variante: «coherencia evidencia-restricción» (30 puntos) se repartió en una cifra (10 puntos: lo que costaría la pareja más barata) y una justificación escrita (20 puntos). La cifra no está en el paquete.
 8. Variante: «renuncia explícita y honesta» (30 puntos) y la justificación de la prioridad (20 puntos) son respuestas escritas. No se califican de forma automática: quedan en espera de revisión de una persona. No se fija una única iniciativa correcta.
 9. Variante: el indicador de revisión se comprueba señalando en el registro los dos datos que miden la asistencia.
-10. La regla para pasar la variante (70 de 100) es provisional.
+10. No hay regla para pasar la variante: la regla provisional se retiró y el puntaje se muestra sin veredicto.
 
 **Avisos del validador.** 50 de 100 puntos de la variante son respuestas escritas: no se califican solas y esperan revisión de una persona; 15 piezas adaptadas y 10 añadidas en la conversión esperan revisión editorial; sin revisión editorial humana.
 
@@ -531,7 +532,7 @@ Decisiones: 3, con 4, 3, 3 rutas. Todas las combinaciones llegan al cierre.
 8. Variante: el registro no muestra el número de reservas pendientes; se calcula (24 − 19 = 5) y se escribe. El paquete lo da como dato.
 9. Variante: el paquete describe «un borrador confuso» sin texto; las cinco frases del borrador se redactaron al convertir.
 10. Variante: el paquete pide un solo mensaje de hasta cuatro oraciones evaluado con cuatro criterios. Aquí el mensaje se escribe en tres partes (apertura, petición y cautela), una por criterio, para que cada una se pueda revisar por separado. Suman 65 puntos que no se califican de forma automática: quedan en espera de revisión de una persona.
-11. La regla para pasar la variante (70 de 100) es provisional.
+11. No hay regla para pasar la variante: la regla provisional se retiró y el puntaje se muestra sin veredicto.
 
 **Avisos del validador.** 65 de 100 puntos de la variante son respuestas escritas: no se califican solas y esperan revisión de una persona; 18 piezas adaptadas y 9 añadidas en la conversión esperan revisión editorial; sin revisión editorial humana.
 
@@ -563,7 +564,7 @@ Decisiones: 3, con 3, 3, 3 rutas. Todas las combinaciones llegan al cierre.
 7. Las explicaciones al tocar cada renglón son nuevas.
 8. Variante: no se pide la puntualidad de la semana A ni los errores de la semana A como cifra, porque 90 y 5 están a la vista en las metas. Se piden las de la semana B (82 % y 6 %) y las de la semana A se usan al comparar.
 9. Variante: «definición y unidad» y la comparación con las metas se comprueban clasificando; el dato adicional que conviene pedir (15 puntos) es una respuesta escrita que queda en espera de revisión de una persona.
-10. La regla para pasar la variante (70 de 100) es provisional.
+10. No hay regla para pasar la variante: la regla provisional se retiró y el puntaje se muestra sin veredicto.
 
 **Avisos del validador.** 15 de 100 puntos de la variante son respuestas escritas: no se califican solas y esperan revisión de una persona; 13 piezas adaptadas y 7 añadidas en la conversión esperan revisión editorial; sin revisión editorial humana.
 
@@ -595,7 +596,7 @@ Decisiones: 2, con 3, 3 rutas. Todas las combinaciones llegan al cierre.
 8. Variante: se añadió el renglón «gastos fijos: no incluidos en los costos directos», que el paquete da por entendido al hablar de «diferencia antes de gastos fijos».
 9. Variante: la distinción de utilidad neta (10 puntos) se comprueba clasificando cuatro afirmaciones; el paquete no dice cómo comprobarla.
 10. Variante: el valor por cliente (30 puntos) y la cautela sobre la demanda (10 puntos) son respuestas escritas. No se califican de forma automática: quedan en espera de revisión de una persona.
-11. La regla para pasar la variante (70 de 100) es provisional.
+11. No hay regla para pasar la variante: la regla provisional se retiró y el puntaje se muestra sin veredicto.
 
 **Avisos del validador.** 40 de 100 puntos de la variante son respuestas escritas: no se califican solas y esperan revisión de una persona; 11 piezas adaptadas y 5 añadidas en la conversión esperan revisión editorial; sin revisión editorial humana.
 
@@ -628,7 +629,7 @@ Decisiones: 2, con 3, 3 rutas. Todas las combinaciones llegan al cierre.
 9. Ni los documentos, ni las rutas, ni la variante afirman que la factura sea falsa o que alguien actuó con mala intención; la única ruta que lo insinúa está marcada como concepto erróneo.
 10. Variante: la identificación del riesgo sin imputación y la evidencia verificable se comprueban clasificando; las afirmaciones se redactaron al convertir.
 11. Variante: el control propuesto (35 puntos) y la comunicación respetuosa (10 puntos) son respuestas escritas. No se califican de forma automática: quedan en espera de revisión de una persona.
-12. La regla para pasar la variante (70 de 100) es provisional.
+12. No hay regla para pasar la variante: la regla provisional se retiró y el puntaje se muestra sin veredicto.
 
 **Avisos del validador.** el gancho tiene 37 palabras; el contrato editorial pide de 15 a 35 y se dejó el texto del paquete; 45 de 100 puntos de la variante son respuestas escritas: no se califican solas y esperan revisión de una persona; 14 piezas adaptadas y 6 añadidas en la conversión esperan revisión editorial; sin revisión editorial humana.
 
@@ -660,7 +661,7 @@ Decisiones: 4, con 3, 3, 4, 3 rutas. Todas las combinaciones llegan al cierre.
 5. En la propuesta hay dos rutas defendibles (anticipo confirmado y préstamo confirmado), como pide el paquete. La tercera opción del paquete, negociar la fecha, queda en la referencia escrita.
 6. Comprobación B: el criterio «secuencia y saldos» (40) se reparte en el saldo del lunes y el del viernes; el saldo del jueves (12,000) no se pregunta porque coincide con el efectivo inicial que se muestra. El faltante (25) se reparte en el monto y el momento. «Facturación y cobro» (20) se comprueba clasificando importes. La recomendación (15) es escrita y espera revisión de una persona.
 7. Fuentes: las de TRAZABILIDAD_LOTE_04.md para FIN-04 (Stanford, Financial Accounting; Harvard, plan obligatorio, Financial Reporting & Control). El Atlas cita para FIN-04 la página de Finance I y II; conviene corregir el Atlas.
-8. La regla para pasar la comprobación (70 de 100) es provisional.
+8. No hay regla para pasar la comprobación: la regla provisional se retiró y el puntaje se muestra sin veredicto.
 
 **Avisos del validador.** 15 de 100 puntos de la variante son respuestas escritas: no se califican solas y esperan revisión de una persona; la variante repite cifras de la práctica: $7,000, $8,000, $14,000; 12 piezas adaptadas y 12 añadidas en la conversión esperan revisión editorial; sin revisión editorial humana.
 
@@ -673,12 +674,12 @@ Para cada experiencia convertida:
 5. Las igualdades que se muestran (documentos, cálculos del cierre, pistas, variante) se recalculan, y las identidades numéricas que cada paquete lista en sus notas de QA son pruebas.
 6. En la variante: la respuesta nunca está a la vista, no aparecen personajes de la práctica ni explicaciones, quien responde bien obtiene todos los puntos comprobables, y responder al azar casi nunca los obtiene.
 7. Lo escrito es opcional, no cambia los puntos comprobables y deja su peso en espera de revisión.
-8. Un recorrido guardado en cualquier paso se retoma donde iba; un resultado alterado a mano se vuelve a calcular; un recorrido guardado con el formato anterior se conserva.
+8. Un recorrido guardado en cualquier paso se retoma donde iba; el resultado guardado en el navegador nunca se usa: se vuelve a pedir al servidor con el sello, y sin sello válido no hay resultado; un recorrido guardado con el formato anterior se conserva.
 9. El motor, el contenido y las pantallas no usan el registro de evidencias, el cálculo de dominio, la partida ni ningún servicio.
 
 ## 11. Observaciones editoriales de los paquetes
 1. **EDIT-N1-002, advertencia de exactitud.** El lote 01 habla de un sobregiro de $10,000 utilizado y caja libre de $0. La tabla y los cálculos dan saldo final de $5,000 y faltante de $7,000. Las notas de QA del lote 03 confirman la discrepancia y piden corregir el texto antes de publicar. La experiencia convertida sigue la tabla desde el principio: muestra saldo final de $5,000 y no menciona el sobregiro.
-2. **EDIT-N1-002, variante.** Dice «con cifras distintas», pero repite $5,000, $25,000, $45,000. Quien conteste de memoria con las cifras de la práctica acierta dos de tres criterios (70 puntos) y, con la regla provisional, pasa. Se sugiere cambiar el efectivo inicial o los cobros de la variante.
+2. **EDIT-N1-002, variante.** Dice «con cifras distintas», pero repite $5,000, $25,000, $45,000. Quien conteste de memoria con las cifras de la práctica acierta dos de tres criterios (70 puntos) y, con la regla provisional que ya se retiró, habría pasado. Se sugiere cambiar el efectivo inicial o los cobros de la variante.
 3. **EDIT-N1-002, criterio «diferencias ingreso/cobro».** El paquete le da 35 % pero la pregunta de la variante («¿Ganó dinero y qué saldo le queda?») solo pide utilidad y saldo. La experiencia lo comprueba pidiendo cuánto sigue sin cobrarse.
 4. **EDIT-N1-001, título.** «¿Nueve tareas o una estrategia?» presenta seis frases, no nueve.
 5. **EDIT-N1-001, línea 34.** Usa una frase que la aplicación tiene vetada en sus textos; habrá que redactarla de otra forma al convertir.

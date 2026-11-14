@@ -3,10 +3,13 @@
  *
  * Funciones puras: validar una experiencia, avanzar un recorrido y calificar la variante.
  * No guarda nada, no llama a ningún servicio y no conoce el registro de evidencias ni el cálculo de dominio.
+ *
+ * El recorrido funciona con la experiencia pública (sin claves de la comprobación). La calificación necesita la
+ * experiencia completa y solo se ejecuta en el servidor: el navegador recibe el resultado ya calculado.
  */
 import { skillById } from "../academias";
 import { FUENTES } from "./fuentes";
-import type { Accion, Documento, Experiencia, Nodo, NodoDecision, NodoSenalar, Opcion, Origen, Paso, Recorrido, Respuesta, ResultadoVariante, Tarea, Variante } from "./tipos";
+import type { Accion, Documento, Experiencia, ExperienciaPublica, Nodo, NodoDecision, NodoSenalar, Opcion, Origen, Paso, Recorrido, Respuesta, ResultadoVariante, TareaPublica, Variante } from "./tipos";
 
 export const MAX_REPLY = 400;
 /** Largo máximo de cada campo cuando la respuesta escrita se divide en campos cortos. */
@@ -28,7 +31,7 @@ export const correctOf = (n: NodoSenalar) => list(n.correct);
 export const groupOk = (group: string | string[], given: string | undefined) => !!given && list(group).includes(given);
 export const orderOk = (given: string[] | undefined, order: string[], accept?: string[][]) => !!given && [order, ...(accept ?? [])].some((o) => same(given, o));
 
-export const nodeOf = (x: Experiencia, id: string): Nodo | undefined => x.nodes.find((n) => n.id === id);
+export const nodeOf = (x: ExperienciaPublica, id: string): Nodo | undefined => x.nodes.find((n) => n.id === id);
 export const rowsOf = (docs: Documento[]) => docs.flatMap((d) => d.rows);
 export const money = (n: number) => (n < 0 ? "−" : "") + "$" + Math.abs(n).toLocaleString("en-US");
 
@@ -219,12 +222,12 @@ export function checkExperiencia(x: Experiencia): Revision {
 
 // ───────────────────────────────────────────── recorrido
 
-export const newRun = (x: Experiencia): Recorrido => ({ v: 2, exp: x.id, ver: x.version, phase: "aprender", at: x.start, trail: [{ node: x.start }], opened: [], theory: 0, replies: {}, answers: {}, result: null });
+export const newRun = (x: ExperienciaPublica): Recorrido => ({ v: 2, exp: x.id, ver: x.version, phase: "aprender", at: x.start, trail: [{ node: x.start }], opened: [], theory: 0, replies: {}, answers: {}, result: null, sello: null });
 
 export const stepOf = (run: Recorrido): Paso => run.trail[run.trail.length - 1];
 
 /** A dónde sigue el nodo actual, o null si todavía falta algo por hacer en él. */
-export function nextOf(x: Experiencia, run: Recorrido): string | null {
+export function nextOf(x: ExperienciaPublica, run: Recorrido): string | null {
   const n = nodeOf(x, run.at);
   const s = stepOf(run);
   if (!n || run.phase !== "aprender") return null;
@@ -236,7 +239,7 @@ export function nextOf(x: Experiencia, run: Recorrido): string | null {
 }
 
 /** ¿La tarea ya tiene lo mínimo para entregarse? Lo escrito puede quedar en blanco. */
-export function taskReady(t: Tarea, a: Respuesta | undefined): boolean {
+export function taskReady(t: TareaPublica, a: Respuesta | undefined): boolean {
   if (t.kind === "cifra") return typeof a === "number";
   if (t.kind === "clasificar") return isObj(a) && t.items.every((i) => !!a[i.id]);
   if (t.kind === "senalar") return Array.isArray(a) && a.length > 0;
@@ -246,7 +249,7 @@ export function taskReady(t: Tarea, a: Respuesta | undefined): boolean {
 const written = (a: Respuesta | undefined) => isObj(a) && Object.values(a).some((v) => v.trim().length > 0);
 
 /**
- * Califica lo que se puede calificar solo. Clasificar da crédito por tarjeta; cifra, orden y señalar, todo o nada.
+ * Califica lo que se puede calificar solo. SOLO EN EL SERVIDOR: necesita las claves de la variante. Clasificar da crédito por tarjeta; cifra, orden y señalar, todo o nada.
  * Lo escrito no suma ni resta: su peso queda en `pending`, en espera de que lo revise una persona.
  */
 export function scoreVariant(v: Variante, answers: Record<string, Respuesta>): ResultadoVariante {
@@ -263,11 +266,11 @@ export function scoreVariant(v: Variante, answers: Record<string, Respuesta>): R
   });
   const score = items.reduce((s, i) => s + i.got, 0);
   const pending = items.filter((i) => !i.auto).reduce((s, i) => s + i.weight, 0);
-  return { items, score, auto: 100 - pending, pending, pass: pending ? null : score >= v.passAt };
+  return { items, score, auto: 100 - pending, pending, pass: null };
 }
 
 /** Avanza el recorrido. Una acción que no aplica en el nodo actual deja todo igual. */
-export function advance(x: Experiencia, run: Recorrido, a: Accion): Recorrido {
+export function advance(x: ExperienciaPublica, run: Recorrido, a: Accion): Recorrido {
   const n = nodeOf(x, run.at);
   const s = stepOf(run);
   const patch = (p: Partial<Paso>): Recorrido => ({ ...run, trail: [...run.trail.slice(0, -1), { ...s, ...p }] });
@@ -337,15 +340,16 @@ export function advance(x: Experiencia, run: Recorrido, a: Accion): Recorrido {
   }
   if (run.phase === "demostrar") {
     if (a.t === "responder" && x.variant.tasks.some((t) => t.id === a.task)) return { ...run, answers: { ...run.answers, [a.task]: a.value } };
-    if (a.t === "entregar" && variantReady(x, run)) return { ...run, phase: "fin", result: scoreVariant(x.variant, run.answers) };
+    // El resultado lo calcula el servidor; aquí solo se acepta si corresponde, tarea por tarea, a esta comprobación.
+    if (a.t === "entregado" && variantReady(x, run) && !!a.sello && same(a.result.items.map((i) => i.id), x.variant.tasks.map((t) => t.id))) return { ...run, phase: "fin", result: a.result, sello: a.sello };
   }
   return run;
 }
 
-export const variantReady = (x: Experiencia, run: Recorrido) => x.variant.tasks.every((t) => taskReady(t, run.answers[t.id]));
+export const variantReady = (x: ExperienciaPublica, run: Recorrido) => x.variant.tasks.every((t) => taskReady(t, run.answers[t.id]));
 
 /** Decisiones tomadas, en orden, con su ruta. Para el cierre y para el historial. */
-export function routeOf(x: Experiencia, run: Recorrido): { node: NodoDecision; option: Opcion }[] {
+export function routeOf(x: ExperienciaPublica, run: Recorrido): { node: NodoDecision; option: Opcion }[] {
   return run.trail.flatMap((p) => {
     const n = nodeOf(x, p.node);
     const o = n?.kind === "decision" ? n.options.find((q) => q.id === p.choice) : undefined;
@@ -353,8 +357,12 @@ export function routeOf(x: Experiencia, run: Recorrido): { node: NodoDecision; o
   });
 }
 
-/** Lee un recorrido guardado. Si no corresponde a esta versión de la experiencia, se empieza de nuevo. */
-export function readRun(x: Experiencia, raw: unknown): Recorrido {
+/**
+ * Lee un recorrido guardado. Si no corresponde a esta versión de la experiencia, se empieza de nuevo.
+ * El resultado guardado nunca se usa: si la comprobación ya se entregó, la pantalla se lo vuelve a pedir al servidor
+ * con el sello. Sin sello, la comprobación vuelve a quedar abierta con lo que se había respondido.
+ */
+export function readRun(x: ExperienciaPublica, raw: unknown): Recorrido {
   const r = raw as (Partial<Recorrido> & { reply?: string | null }) | null;
   const ok = !!r && ((r.v as number) === 1 || r.v === 2) && r.exp === x.id && r.ver === x.version && typeof r.at === "string" && !!nodeOf(x, r.at)
     && Array.isArray(r.trail) && r.trail.length > 0 && r.trail.every((p) => !!p && !!nodeOf(x, p.node)) && r.trail[r.trail.length - 1].node === r.at
@@ -369,5 +377,7 @@ export function readRun(x: Experiencia, raw: unknown): Recorrido {
   const { reply: _old, ...rest } = r;
   void _old;
   const run = { ...rest, v: 2, replies } as Recorrido;
-  return { ...run, theory: Number(run.theory) || 0, result: run.phase === "fin" ? scoreVariant(x.variant, run.answers) : null };
+  const sello = typeof run.sello === "string" && run.sello ? run.sello : null;
+  const phase = run.phase === "fin" && !sello ? "demostrar" : run.phase;
+  return { ...run, phase, theory: Number(run.theory) || 0, result: null, sello: phase === "fin" ? sello : null };
 }

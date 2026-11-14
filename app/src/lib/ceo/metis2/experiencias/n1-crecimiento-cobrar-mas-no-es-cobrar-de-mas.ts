@@ -224,7 +224,6 @@ export const N1_CRECIMIENTO_COBRAR_MAS: Experiencia = {
         ideas: ["No afirma que todos pagarían por la rapidez.", "Reconoce que dos clientes no son una muestra.", "Puede proponer qué dato haría falta."],
       },
     ],
-    passAt: 70,
   },
   evidencePolicy: "no_registra",
   qa: { estado: "probado", importedAt: "2026-11-13", editorialReviewedAt: null, publishedAt: null },
@@ -239,6 +238,6 @@ export const N1_CRECIMIENTO_COBRAR_MAS: Experiencia = {
     "Variante: se añadió el renglón «gastos fijos: no incluidos en los costos directos», que el paquete da por entendido al hablar de «diferencia antes de gastos fijos».",
     "Variante: la distinción de utilidad neta (10 puntos) se comprueba clasificando cuatro afirmaciones; el paquete no dice cómo comprobarla.",
     "Variante: el valor por cliente (30 puntos) y la cautela sobre la demanda (10 puntos) son respuestas escritas. No se califican de forma automática: quedan en espera de revisión de una persona.",
-    "La regla para pasar la variante (70 de 100) es provisional.",
+    "No hay regla para pasar la variante: la regla provisional se retiró y el puntaje se muestra sin veredicto.",
   ],
 };

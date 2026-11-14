@@ -116,8 +116,6 @@ export interface Variante {
   intro: string;
   docs: Documento[];
   tasks: Tarea[];
-  /** Regla provisional, sin calibrar. */
-  passAt: number;
   /** Se ofrece una calculadora aritmética neutra (suma, resta, multiplica, divide). No explica conceptos. */
   calculator?: boolean;
 }
@@ -179,7 +177,10 @@ export interface Recorrido {
   /** Por nodo de redacción: null = prefirió no escribir; sin entrada = todavía no llega. Un solo texto usa el campo «texto». */
   replies: Record<string, Record<string, string> | null>;
   answers: Record<string, Respuesta>;
+  /** Lo calcula el servidor al entregar; en el navegador solo se muestra. Al leer lo guardado se pide de nuevo con el sello. */
   result: ResultadoVariante | null;
+  /** Sello cifrado de la entrega, emitido por el servidor. Sin sello, una comprobación no está entregada. */
+  sello?: string | null;
 }
 
 export interface ResultadoVariante {
@@ -189,9 +190,40 @@ export interface ResultadoVariante {
   score: number;
   auto: number;
   pending: number;
-  /** null cuando parte de la comprobación espera revisión: no hay veredicto. */
-  pass: boolean | null;
+  /**
+   * Nunca hay veredicto: la regla provisional de 70 de 100 se retiró (directiva de prioridades, 14 de noviembre de 2026)
+   * y ningún umbral está aprobado. Se informa lo obtenido, no si «pasó».
+   */
+  pass: null;
 }
+
+// ───────────────────────────────────────────── lo que recibe el navegador
+
+/**
+ * Lo que la pantalla necesita de cada tarea de la comprobación, sin su clave:
+ * ni la cifra correcta, ni el grupo de cada tarjeta, ni el orden de referencia, ni los renglones que hay que señalar,
+ * ni el cálculo, ni la respuesta de referencia. La clave se queda en el servidor, que es quien califica.
+ */
+export type TareaPublica =
+  | Omit<TareaCifra, "answer" | "calc">
+  | (Omit<TareaClasificar, "items" | "calc"> & { items: { id: string; text: string }[] })
+  | Omit<TareaOrdenar, "order" | "accept" | "calc">
+  | Omit<TareaSenalar, "correct" | "calc">
+  | Omit<TareaTexto, "reference" | "ideas">;
+
+export interface VariantePublica { id: string; title: string; setting: string; question: string; intro: string; docs: Documento[]; tasks: TareaPublica[]; calculator?: boolean }
+
+/**
+ * La experiencia tal como llega al navegador: la práctica guiada completa (ahí las explicaciones son deliberadas,
+ * porque es donde se aprende) y la comprobación sin claves. Las notas de conversión llegan solo después de entregar.
+ */
+export type ExperienciaPublica = Omit<Experiencia, "variant" | "conversionNotes"> & { variant: VariantePublica };
+
+/**
+ * Lo que el servidor devuelve al entregar la comprobación: el resultado que él calculó, la variante ya con su clave
+ * (para mostrar qué se esperaba en cada tarea), las notas de conversión y el sello de la entrega.
+ */
+export interface Entrega { result: ResultadoVariante; variant: Variante; notes: string[]; sello: string }
 
 export type Accion =
   | { t: "abrir"; row: string }
@@ -207,4 +239,5 @@ export type Accion =
   | { t: "revelar" }
   | { t: "comprobar" }
   | { t: "responder"; task: string; value: Respuesta }
-  | { t: "entregar" };
+  /** El servidor calificó la entrega: el navegador solo guarda lo que recibió. */
+  | { t: "entregado"; result: ResultadoVariante; sello: string };

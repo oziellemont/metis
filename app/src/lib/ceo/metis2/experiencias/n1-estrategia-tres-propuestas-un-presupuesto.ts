@@ -271,7 +271,6 @@ export const N1_ESTRATEGIA_TRES_PROPUESTAS: Experiencia = {
         calc: "La asistencia se sigue con los inscritos y con cuántos de ellos faltan. Las causas ayudan a elegir la iniciativa, pero no miden el objetivo.",
       },
     ],
-    passAt: 70,
   },
   evidencePolicy: "no_registra",
   qa: { estado: "probado", importedAt: "2026-11-13", editorialReviewedAt: null, publishedAt: null },
@@ -285,6 +284,6 @@ export const N1_ESTRATEGIA_TRES_PROPUESTAS: Experiencia = {
     "Variante: «coherencia evidencia-restricción» (30 puntos) se repartió en una cifra (10 puntos: lo que costaría la pareja más barata) y una justificación escrita (20 puntos). La cifra no está en el paquete.",
     "Variante: «renuncia explícita y honesta» (30 puntos) y la justificación de la prioridad (20 puntos) son respuestas escritas. No se califican de forma automática: quedan en espera de revisión de una persona. No se fija una única iniciativa correcta.",
     "Variante: el indicador de revisión se comprueba señalando en el registro los dos datos que miden la asistencia.",
-    "La regla para pasar la variante (70 de 100) es provisional.",
+    "No hay regla para pasar la variante: la regla provisional se retiró y el puntaje se muestra sin veredicto.",
   ],
 };

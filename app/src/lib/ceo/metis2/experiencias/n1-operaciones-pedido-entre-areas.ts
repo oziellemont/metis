@@ -217,7 +217,6 @@ export const N1_OPERACIONES_PEDIDO_ENTRE_AREAS: Experiencia = {
         calc: "Falta la autorización del costo: se pidió el lunes y el miércoles seguía sin respuesta. Sin ella, la reparación no puede empezar.",
       },
     ],
-    passAt: 70,
   },
   evidencePolicy: "no_registra",
   qa: { estado: "probado", importedAt: "2026-11-13", editorialReviewedAt: null, publishedAt: null },
@@ -228,6 +227,6 @@ export const N1_OPERACIONES_PEDIDO_ENTRE_AREAS: Experiencia = {
     "El paquete no pide una respuesta escrita en esta experiencia; no se añadió.",
     "Variante: el equipo a reparar (una báscula), las marcas de tiempo y los eventos del registro se redactaron al convertir. No se presupone ningún requisito de salud.",
     "Variante: las tres tareas se comprueban solas (ordenar, clasificar y señalar el renglón). El orden vale todo o nada.",
-    "La regla para pasar la variante (70 de 100) es provisional.",
+    "No hay regla para pasar la variante: la regla provisional se retiró y el puntaje se muestra sin veredicto.",
   ],
 };

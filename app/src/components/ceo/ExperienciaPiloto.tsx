@@ -2,19 +2,21 @@
 /**
  * MÊTIS 2.0 · Repositorio Académico · pantalla de una experiencia inmersiva (en revisión).
  *
- * El recorrido se guarda solo en este navegador, para poder salir y continuar.
- * No escribe en el registro de evidencias, no cambia niveles ni perfil y no llama a ningún servicio.
+ * El recorrido se guarda en este navegador, para poder salir y continuar.
+ * La comprobación llega sin claves: al entregar, el servidor califica y devuelve el resultado con un sello
+ * que el navegador guarda pero no puede alterar. Antes de entregar no se ve ninguna respuesta de la comprobación.
+ * No escribe en el registro de evidencias y no cambia niveles ni perfil.
  * Todo se hace tocando: nada depende de arrastrar ni solo del color.
  */
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import { BookOpen, Calculator, Check, ChevronDown, ChevronUp, Clock, FileText, Info, RotateCcw, X } from "lucide-react";
+import { entregarComprobacion, verEntrega } from "@/app/ceo/piloto/acciones";
 import { academyById, skillById } from "@/lib/ceo/metis2/academias";
-import {
-  FUENTES, MAX_FIELD, MAX_REPLY, REVEAL_AFTER, advance, calc, correctOf, groupOk, newRun, nextOf, nodeOf, readRun, routeOf, rowsOf, stepOf, variantReady,
-  type Accion, type Campo, type Documento, type Experiencia, type Grupo, type Nodo, type Opcion, type Recorrido, type Respuesta, type RutaTipo, type Tarea,
-} from "@/lib/ceo/metis2/experiencias";
+import { FUENTES } from "@/lib/ceo/metis2/experiencias/fuentes";
+import { MAX_FIELD, MAX_REPLY, REVEAL_AFTER, advance, calc, correctOf, groupOk, newRun, nextOf, nodeOf, readRun, routeOf, rowsOf, stepOf, variantReady } from "@/lib/ceo/metis2/experiencias/motor";
+import type { Accion, Campo, Documento, Entrega, ExperienciaPublica as Experiencia, Grupo, Nodo, Opcion, Recorrido, Respuesta, RutaTipo, Tarea, TareaPublica } from "@/lib/ceo/metis2/experiencias/tipos";
 import { Stage, StageChoice, StepTitle } from "./Stage";
 
 const fmt = (n: number) => (n < 0 ? "−" : "") + Math.abs(n).toLocaleString("en-US");
@@ -38,11 +40,22 @@ export function ExperienciaPiloto({ x }: { x: Experiencia }) {
   const [sheet, setSheet] = useState<"docs" | "teoria" | "ficha" | null>(null);
   const [picked, setPicked] = useState<string | null>(null);
   const [draft, setDraft] = useState<Record<string, string>>({});
+  /** Lo que devolvió el servidor al entregar: resultado, variante con su clave y notas. Nunca se guarda en el navegador. */
+  const [entrega, setEntrega] = useState<Entrega | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [aviso, setAviso] = useState<string | null>(null);
 
   useEffect(() => {
     let raw: unknown = null;
     try { raw = JSON.parse(window.localStorage.getItem(storeKey(x)) ?? "null"); } catch { raw = null; }
-    setRun(readRun(x, raw));
+    const back = readRun(x, raw);
+    if (back.phase !== "fin" || !back.sello) { setRun(back); return; }
+    // Entregada antes: el servidor vuelve a calificar a partir del sello. Si no lo reconoce, la comprobación vuelve a quedar abierta.
+    const sello = back.sello;
+    verEntrega(x.id, sello).then((e) => {
+      if (e.ok) { setEntrega(e); setRun({ ...back, result: e.result }); }
+      else { setAviso(`${e.error} Tus respuestas siguen aquí; puedes volver a entregar.`); setRun({ ...back, phase: "demostrar", result: null, sello: null }); }
+    }).catch(() => { setAviso("No pude recuperar tu entrega. Tus respuestas siguen aquí; puedes volver a entregar."); setRun({ ...back, phase: "demostrar", result: null, sello: null }); });
   }, [x]);
   useEffect(() => { if (run) try { window.localStorage.setItem(storeKey(x), JSON.stringify(run)); } catch { /* sin espacio: se sigue sin guardar */ } }, [run, x]);
   useEffect(() => { window.scrollTo({ top: 0 }); setPicked(null); }, [run?.at, run?.phase]);
@@ -50,7 +63,17 @@ export function ExperienciaPiloto({ x }: { x: Experiencia }) {
   if (!run) return <div className="min-h-screen grid place-items-center bg-[#0F1130]"><span className="h-8 w-8 rounded-full border-2 border-white border-t-transparent animate-spin" /></div>;
 
   const act = (a: Accion) => setRun((r) => (r ? advance(x, r, a) : r));
-  const restart = () => { setDraft({}); setRun(newRun(x)); };
+  const restart = () => { setDraft({}); setEntrega(null); setAviso(null); setRun(newRun(x)); };
+  const entregar = async () => {
+    if (!run || busy) return;
+    setBusy(true); setAviso(null);
+    try {
+      const e = await entregarComprobacion(x.id, run.answers);
+      if (e.ok) { setEntrega(e); act({ t: "entregado", result: e.result, sello: e.sello }); }
+      else setAviso(e.error);
+    } catch { setAviso("No pude entregar. Revisa tu conexión e inténtalo de nuevo; tus respuestas siguen aquí."); }
+    setBusy(false);
+  };
   const node = nodeOf(x, run.at)!;
   const step = stepOf(run);
   const learning = run.phase === "aprender";
@@ -82,7 +105,7 @@ export function ExperienciaPiloto({ x }: { x: Experiencia }) {
       } else next = { label: "Continuar", go };
     } else if (node.kind === "cierre") next = { label: "Comprobar con otra situación", go: () => act({ t: "comprobar" }) };
   } else if (run.phase === "demostrar") {
-    next = { label: "Entregar", off: !variantReady(x, run), go: () => act({ t: "entregar" }) };
+    next = { label: busy ? "Entregando…" : "Entregar", off: busy || !variantReady(x, run), go: entregar };
   }
 
   const steps = learning ? x.moments : ["Otra situación", "Resultado"];
@@ -102,8 +125,10 @@ export function ExperienciaPiloto({ x }: { x: Experiencia }) {
           </div>
 
           {learning && <NodeView x={x} run={run} node={node} act={act} picked={picked} setPicked={setPicked} draft={draft} setDraft={setDraft} openDocs={() => setSheet("docs")} openTheory={openTheory} />}
+          {aviso && <p role="alert" className="mb-5 rounded-xl border border-amber/40 bg-amber/10 px-3 py-2.5 text-sm leading-relaxed text-white/85">{aviso}</p>}
           {run.phase === "demostrar" && <VariantView x={x} run={run} act={act} />}
-          {run.phase === "fin" && <ResultView x={x} run={run} restart={restart} />}
+          {run.phase === "fin" && entrega && <ResultView entrega={entrega} restart={restart} />}
+          {run.phase === "fin" && !entrega && <div className="grid place-items-center py-10"><span className="h-8 w-8 rounded-full border-2 border-white border-t-transparent animate-spin" /></div>}
         </div>
       </Stage>
 
@@ -111,7 +136,7 @@ export function ExperienciaPiloto({ x }: { x: Experiencia }) {
         <Sheet title={sheet === "docs" ? "Documentos" : sheet === "teoria" ? x.theory.title : "Ficha de la experiencia"} onClose={() => setSheet(null)}>
           {sheet === "docs" && <div className={docGrid(x.docs)}>{x.docs.map((d) => <DocCard key={d.id} doc={d} opened={run.opened} onOpen={(row) => act({ t: "abrir", row })} />)}</div>}
           {sheet === "teoria" && <p className="text-[15px] leading-relaxed text-slate-700">{x.theory.text}</p>}
-          {sheet === "ficha" && <Ficha x={x} restart={() => { restart(); setSheet(null); }} />}
+          {sheet === "ficha" && <Ficha x={x} notes={entrega?.notes ?? null} restart={() => { restart(); setSheet(null); }} />}
         </Sheet>
       )}
     </>
@@ -570,7 +595,7 @@ function NodeView({ x, run, node, act, picked, setPicked, draft, setDraft, openD
   );
 }
 
-function TaskInput({ x, t, value, set }: { x: Experiencia; t: Tarea; value: Respuesta | undefined; set: (v: Respuesta) => void }) {
+function TaskInput({ x, t, value, set }: { x: Experiencia; t: TareaPublica; value: Respuesta | undefined; set: (v: Respuesta) => void }) {
   if (t.kind === "cifra") return <Figure id={`piloto-${t.id}`} label={<span className="sr-only">{t.prompt}</span>} unit={t.unit ?? "$"} value={typeof value === "number" ? value : null} onChange={set} />;
   if (t.kind === "clasificar") { const a = isObj(value) ? value : {}; return <Sorter groups={t.groups} items={t.items} assign={a} onAssign={(item, group) => set({ ...a, [item]: group })} />; }
   if (t.kind === "ordenar") {
@@ -602,12 +627,13 @@ function VariantView({ x, run, act }: { x: Experiencia; run: Recorrido; act: (a:
           </li>
         ))}
       </ol>
-      <p className="text-sm text-white/60">Al entregar verás qué acertaste y la respuesta de referencia de cada parte.</p>
+      <p className="text-sm text-white/60">Al entregar, la comprobación se califica en el servidor y verás qué acertaste y la respuesta de referencia de cada parte. Lo entregado ya no se cambia.</p>
+      <p className="text-xs text-white/50">Lo que escribas puede leerlo el equipo académico de mêtis para revisar la experiencia. No escribas datos reales de tu empresa ni de otras personas.</p>
     </div>
   );
 }
 
-function TaskResult({ x, t, given }: { x: Experiencia; t: Tarea; given: Respuesta }) {
+function TaskResult({ v, t, given }: { v: Entrega["variant"]; t: Tarea; given: Respuesta }) {
   const line = "text-sm leading-relaxed text-white/90";
   if (t.kind === "cifra") return <><div className={clsx(line, "tabular-nums")}>Tu respuesta: {typeof given === "number" ? `${t.unit === "$" || t.unit === undefined ? "$" : ""}${fmt(given)}${t.unit === "%" ? " %" : ""}` : "sin respuesta"}</div><div className={clsx(line, "tabular-nums")}>Cálculo: {t.calc}</div></>;
   if (t.kind === "clasificar") {
@@ -627,7 +653,7 @@ function TaskResult({ x, t, given }: { x: Experiencia; t: Tarea; given: Respuest
     return <><div className={line}>Tu orden: {o.map((id) => t.cards.find((c) => c.id === id)?.text ?? id).join(" → ")}</div><div className={clsx(line, "text-white/75")}>Referencia: {t.calc}</div></>;
   }
   if (t.kind === "senalar") {
-    const rows = rowsOf(x.variant.docs);
+    const rows = rowsOf(v.docs);
     const said = (id: string) => { const r = rows.find((k) => k.id === id); return r ? [r.label, ...(r.cells ?? [])].join(" · ") : id; };
     return <><div className={line}>Señalaste: {Array.isArray(given) && given.length ? given.map(said).join("; ") : "nada"}</div><div className={clsx(line, "text-white/75")}>{t.calc}</div></>;
   }
@@ -639,17 +665,16 @@ function TaskResult({ x, t, given }: { x: Experiencia; t: Tarea; given: Respuest
   );
 }
 
-function ResultView({ x, run, restart }: { x: Experiencia; run: Recorrido; restart: () => void }) {
-  const res = run.result!;
-  const text = res.pending
-    ? `${res.pending} de 100 puntos son respuestas escritas y quedan en espera de revisión de una persona. Por eso todavía no hay veredicto.`
-    : `La regla provisional pide ${x.variant.passAt} de 100; todavía no está calibrada.`;
+function ResultView({ entrega, restart }: { entrega: Entrega; restart: () => void }) {
+  const res = entrega.result;
+  const v = entrega.variant;
+  const text = `${res.pending ? `${res.pending} de 100 puntos son respuestas escritas y quedan en espera de revisión de una persona. ` : ""}No hay veredicto: ningún puntaje para aprobar está definido todavía. Calificado en el servidor.`;
   return (
     <div className="space-y-5">
       <StepTitle eyebrow="Resultado de la comprobación" title={`${res.score} de ${res.auto} puntos en lo que se comprueba solo`} text={text} />
       <ul className="space-y-3">
         {res.items.map((it) => {
-          const t = x.variant.tasks.find((k) => k.id === it.id)!;
+          const t = v.tasks.find((k) => k.id === it.id)!;
           const state = !it.auto ? "espera" : it.ok ? "ok" : it.got > 0 ? "parcial" : "no";
           const word = state === "espera" ? "en espera de revisión de una persona" : state === "ok" ? "correcto" : state === "parcial" ? `parcial: ${it.got} de ${it.weight}` : t.kind === "texto" ? "sin respuesta" : "por revisar";
           return (
@@ -659,7 +684,7 @@ function ResultView({ x, run, restart }: { x: Experiencia; run: Recorrido; resta
                 <div className="min-w-0 flex-1">
                   <div className="text-sm font-semibold">{it.criterion} <span className="font-normal text-white/60">· {it.weight} puntos · {word}</span></div>
                   <div className="mt-0.5 mb-2 text-sm text-white/80">{t.prompt}</div>
-                  <TaskResult x={x} t={t} given={it.given} />
+                  <TaskResult v={v} t={t} given={it.given} />
                 </div>
               </div>
             </li>
@@ -677,7 +702,7 @@ function ResultView({ x, run, restart }: { x: Experiencia; run: Recorrido; resta
   );
 }
 
-function Ficha({ x, restart }: { x: Experiencia; restart: () => void }) {
+function Ficha({ x, notes, restart }: { x: Experiencia; notes: string[] | null; restart: () => void }) {
   const name = (id: string) => skillById(id)?.name ?? id;
   const Row = ({ k, children }: { k: string; children: React.ReactNode }) => <div className="py-2.5 border-b border-slate-100 last:border-b-0"><dt className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{k}</dt><dd className="mt-0.5 text-sm leading-relaxed text-slate-700">{children}</dd></div>;
   return (
@@ -692,8 +717,9 @@ function Ficha({ x, restart }: { x: Experiencia; restart: () => void }) {
           <p className="mt-1 text-xs text-slate-500">Correspondencia temática con el plan de estudios, no equivalencia de curso. La historia, las cifras y la evaluación son creación original.</p>
         </Row>
         <Row k="Estado">{QA_TEXT[x.qa.estado]}. Revisión editorial: {x.qa.editorialReviewedAt ?? "sin hacer"}. Validación con usuarios: sin hacer.</Row>
-        <Row k="Registro">No registra evidencia. No cambia dominio, nivel ni perfil. El recorrido se guarda solo en este navegador.</Row>
-        <Row k="Por confirmar en la revisión"><ul className="space-y-1.5">{x.conversionNotes.map((n) => <li key={n} className="flex gap-2"><span aria-hidden className="mt-2 h-1 w-1 shrink-0 rounded-full bg-slate-400" />{n}</li>)}</ul></Row>
+        <Row k="Registro">No registra evidencia. No cambia dominio, nivel ni perfil. El recorrido se guarda en este navegador; la comprobación la califica el servidor y la entrega queda sellada. Si borras los datos del navegador, el recorrido se pierde: todavía no se guarda en tu cuenta.</Row>
+        <Row k="Regla de aprobación">No hay. La regla provisional de 70 de 100 se retiró: ningún puntaje para aprobar está definido hasta calibrar con evidencia.</Row>
+        <Row k="Por confirmar en la revisión">{notes ? <ul className="space-y-1.5">{notes.map((n) => <li key={n} className="flex gap-2"><span aria-hidden className="mt-2 h-1 w-1 shrink-0 rounded-full bg-slate-400" />{n}</li>)}</ul> : "Las decisiones de conversión hablan de la comprobación; se muestran después de entregarla."}</Row>
       </dl>
       <button type="button" onClick={restart} className="btn-ghost mt-4"><RotateCcw size={15} /> Borrar mi recorrido y empezar de nuevo</button>
     </div>
